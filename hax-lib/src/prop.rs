@@ -21,8 +21,9 @@ pub mod constructors {
     pub fn not(lhs: Prop) -> Prop {
         Prop(!lhs.0)
     }
-    pub fn eq(lhs: Prop, other: Prop) -> Prop {
-        Prop(lhs.0 == other.0)
+    /// Equality between two value of *any* type
+    pub fn eq<T>(_lhs: T, _rhs: T) -> Prop {
+        Prop(true)
     }
     pub fn ne(lhs: Prop, other: Prop) -> Prop {
         Prop(lhs.0 != other.0)
@@ -136,3 +137,5 @@ pub fn exists<T, U: Into<Prop>>(f: impl Fn(T) -> U) -> Prop {
 pub fn implies(lhs: impl Into<Prop>, rhs: impl Into<Prop>) -> Prop {
     constructors::implies(lhs.into(), rhs.into())
 }
+
+pub use constructors::eq;
