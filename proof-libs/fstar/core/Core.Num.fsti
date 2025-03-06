@@ -35,6 +35,7 @@ val impl_u64__to_be_bytes: u64 -> t_Array u8 (sz 8)
 val impl_u64__rotate_right: u64 -> u64 -> u64
 
 let impl_u128__wrapping_add: u128 -> u128 -> u128 = add_mod
+let impl_u128__wrapping_sub: u128 -> u128 -> u128 = sub_mod
 val impl_u128__rotate_left: u128 -> u128 -> u128
 val impl_u128__from_le_bytes: t_Array u8 (sz 16) -> u128
 val impl_u128__from_be_bytes: t_Array u8 (sz 16) -> u128
