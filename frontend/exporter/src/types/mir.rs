@@ -442,9 +442,11 @@ fn translate_terminator_kind_call<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasO
 // We don't use the LitIntType on purpose (we don't want the "unsuffixed" case)
 #[derive_group(Serializers)]
 #[derive(Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub enum IntUintTy {
+pub enum ScalarTy {
+    Bool,
     Int(IntTy),
     Uint(UintTy),
+    Char,
 }
 
 #[derive_group(Serializers)]
@@ -452,71 +454,44 @@ pub enum IntUintTy {
 pub struct ScalarInt {
     /// Little-endian representation of the integer
     pub data_le_bytes: [u8; 16],
-    pub int_ty: IntUintTy,
+    pub int_ty: ScalarTy,
 }
 
-// TODO: naming conventions: is "translate" ok?
-/// Translate switch targets
+/// Translate a `SwitchInt` terminator.
 #[cfg(feature = "rustc")]
-fn translate_switch_targets<'tcx, S: UnderOwnerState<'tcx>>(
+fn translate_switchint<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>(
     s: &S,
-    switch_ty: &Ty,
-    targets: &rustc_middle::mir::SwitchTargets,
-) -> SwitchTargets {
-    let targets_vec: Vec<(u128, BasicBlock)> =
-        targets.iter().map(|(v, b)| (v, b.sinto(s))).collect();
+    discr: &mir::Operand<'tcx>,
+    targets: &mir::SwitchTargets,
+) -> TerminatorKind {
+    let discr = discr.sinto(s);
+    let ty = match discr.ty().kind() {
+        TyKind::Bool => ScalarTy::Bool,
+        TyKind::Int(ty) => ScalarTy::Int(*ty),
+        TyKind::Uint(ty) => ScalarTy::Uint(*ty),
+        TyKind::Char => ScalarTy::Char,
+        ty => fatal!(s, "Unexpected switch_ty: {:?}", ty),
+    };
 
-    match switch_ty.kind() {
-        TyKind::Bool => {
-            // This is an: `if ... then ... else ...`
-            assert!(targets_vec.len() == 1);
-            // It seems the block targets are inverted
-            let (test_val, otherwise_block) = targets_vec[0];
-
-            assert!(test_val == 0);
-
-            // It seems the block targets are inverted
-            let if_block = targets.otherwise().sinto(s);
-
-            SwitchTargets::If(if_block, otherwise_block)
-        }
-        TyKind::Int(_) | TyKind::Uint(_) => {
-            let int_ty = match switch_ty.kind() {
-                TyKind::Int(ty) => IntUintTy::Int(*ty),
-                TyKind::Uint(ty) => IntUintTy::Uint(*ty),
-                _ => unreachable!(),
+    // Convert all the test values to the proper values.
+    let otherwise = targets.otherwise().sinto(s);
+    let targets_vec: Vec<(ScalarInt, BasicBlock)> = targets
+        .iter()
+        .map(|(v, b)| {
+            let v = ScalarInt {
+                data_le_bytes: v.to_le_bytes(),
+                int_ty: ty,
             };
+            (v, b.sinto(s))
+        })
+        .collect();
 
-            // This is a: switch(int).
-            // Convert all the test values to the proper values.
-            let mut targets_map: Vec<(ScalarInt, BasicBlock)> = Vec::new();
-            for (v, tgt) in targets_vec {
-                // We need to reinterpret the bytes (`v as i128` is not correct)
-                let v = ScalarInt {
-                    data_le_bytes: v.to_le_bytes(),
-                    int_ty,
-                };
-                targets_map.push((v, tgt));
-            }
-            let otherwise_block = targets.otherwise().sinto(s);
-
-            SwitchTargets::SwitchInt(int_ty, targets_map, otherwise_block)
-        }
-        _ => {
-            fatal!(s, "Unexpected switch_ty: {:?}", switch_ty)
-        }
+    TerminatorKind::SwitchInt {
+        discr,
+        ty,
+        targets: targets_vec,
+        otherwise,
     }
-}
-
-#[derive_group(Serializers)]
-#[derive(Clone, Debug, JsonSchema)]
-pub enum SwitchTargets {
-    /// Gives the `if` block and the `else` block
-    If(BasicBlock, BasicBlock),
-    /// Gives the integer type, a map linking values to switch branches, and the
-    /// otherwise block. Note that matches over enumerations are performed by
-    /// switching over the discriminant, which is an integer.
-    SwitchInt(IntUintTy, Vec<(ScalarInt, BasicBlock)>, BasicBlock),
 }
 
 /// A value of type `fn<...> A -> B` that can be called.
@@ -549,17 +524,18 @@ pub enum TerminatorKind {
     },
     #[custom_arm(
         rustc_middle::mir::TerminatorKind::SwitchInt { discr, targets } => {
-          let discr = discr.sinto(s);
-          let targets = translate_switch_targets(s, discr.ty(), targets);
-          TerminatorKind::SwitchInt {
-              discr,
-              targets,
-          }
+            translate_switchint(s, discr, targets)
         }
     )]
     SwitchInt {
+        /// The value being switched one.
         discr: Operand,
-        targets: SwitchTargets,
+        /// The type that is being switched on.
+        ty: ScalarTy,
+        /// Possible success cases.
+        targets: Vec<(ScalarInt, BasicBlock)>,
+        /// If none of the `targets` match, branch to that block.
+        otherwise: BasicBlock,
     },
     Return,
     Unreachable,
