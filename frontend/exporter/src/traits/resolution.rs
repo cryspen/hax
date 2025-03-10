@@ -428,15 +428,19 @@ impl<'tcx> PredicateSearcher<'tcx> {
                     .in_definition_order()
                     .filter(|assoc| matches!(assoc.kind, AssocKind::Type))
                     .filter_map(|assoc| {
-                        let ty = AliasTy::new(tcx, assoc.def_id, erased_tref.skip_binder().args)
-                            .to_ty(tcx);
+                        let ty =
+                            Ty::new_projection(tcx, assoc.def_id, erased_tref.skip_binder().args);
                         let ty = erase_and_norm(tcx, self.param_env, ty);
                         if let TyKind::Alias(_, alias_ty) = ty.kind() {
                             if alias_ty.def_id == assoc.def_id {
-                                warn(&format!("Failed to compute associated type {ty}"));
+                                // Couldn't normalize the type to anything different than itself;
+                                // this must be a built-in associated type such as
+                                // `DiscriminantKind::Discriminant`.
                                 // We can't return the unnormalized associated type as that would
                                 // make the trait ref contain itself, which would make hax's
-                                // `sinto` infrastructure loop.
+                                // `sinto` infrastructure loop. That's ok because we can't provide
+                                // a value for this type other than the associate type alias
+                                // itself.
                                 return None;
                             }
                         }
