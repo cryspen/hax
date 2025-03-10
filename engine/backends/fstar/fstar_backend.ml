@@ -873,9 +873,23 @@ struct
 
   let add_clauses_effect_type ~no_tot_abbrev (attrs : attrs) typ : F.AST.typ =
     let attr_term ?keep_last_args ?map_expr kind f =
+      (* This is a hack to rename `self_` into `self`. *)
+      let subst_self =
+        let self = Local_ident.{ name = "self"; id = mk_id Typ 0 } in
+        let renamer =
+          let f (id : local_ident) =
+            if [%eq: string] "self_" id.name then self else id
+          in
+          U.Mappers.rename_local_idents f
+        in
+        renamer#visit_expr ()
+      in
       Attrs.associated_expr ?keep_last_args kind attrs
       |> Option.map
-           ~f:(Option.value ~default:Fn.id map_expr >> pexpr >> f >> F.term)
+           ~f:
+             (subst_self
+             >> Option.value ~default:Fn.id map_expr
+             >> pexpr >> f >> F.term)
     in
     let decreases =
       let visitor =
