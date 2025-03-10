@@ -280,6 +280,11 @@ val logor: #t:inttype
   -> int_t t
   -> int_t t
 
+val logor_disjoint: #t:inttype -> a:int_t t -> b:int_t t -> m:nat{m < bits t} ->
+  Lemma
+    (requires 0 <= v a /\ 0 <= v b /\ v a % pow2 m == 0 /\ v b < pow2 m)
+    (ensures  v (logor a b) == v a + v b)
+
 val logor_lemma: #t:inttype -> a:int_t t -> b:int_t t ->
   Lemma (logor a zero == a /\
          logor a ones == ones /\
