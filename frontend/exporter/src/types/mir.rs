@@ -159,12 +159,30 @@ pub mod mir_kinds {
 #[cfg(feature = "rustc")]
 pub use mir_kinds::IsMirKind;
 
+/// Part of a MIR body that was promoted to be a constant.
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema)]
+pub struct PromotedConstant {
+    /// The `def_id` of the body this was extracted from.
+    pub def_id: DefId,
+    /// The identifier for this sub-body. This is the contents of a `mir::Promoted` identifier.
+    pub promoted_id: u32,
+    /// The MIR for this sub-body. This MIR is only present in the current crate; for foreign
+    /// crates, only the evaluated constant is stored in the rlib.
+    // Note: `tcx.mir_promoted` returns MIRs in the promoted phase; `tcx.promoted_mir` returns it
+    // as in `tcx.mir_drops_elaborated_etc`. We use `mir_promoted` here.
+    pub mir: Option<MirBody<mir_kinds::Promoted>>,
+}
+
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct ConstOperand {
     pub span: Span,
     pub ty: Ty,
-    pub const_: ConstantExpr,
+    /// The final evaluated value.
+    pub evaluated: ConstantExpr,
+    /// A MIR constant may come from a part of the MIR body that was promoted to be a constant.
+    pub promoted: Option<PromotedConstant>,
 }
 
 #[cfg(feature = "rustc")]
@@ -172,11 +190,85 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstOperand>
     for rustc_middle::mir::ConstOperand<'tcx>
 {
     fn sinto(&self, s: &S) -> ConstOperand {
+        let (evaluated, promoted) = translate_mir_const(s, self.span, self.const_);
         ConstOperand {
             span: self.span.sinto(s),
             ty: self.const_.ty().sinto(s),
-            const_: self.const_.sinto(s),
+            evaluated,
+            promoted,
         }
+    }
+}
+
+#[cfg(feature = "rustc")]
+/// Translate a MIR constant.
+fn translate_mir_const<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+    span: rustc_span::Span,
+    konst: mir::Const<'tcx>,
+) -> (ConstantExpr, Option<PromotedConstant>) {
+    use rustc_middle::mir::Const;
+    let tcx = s.base().tcx;
+    let mut promoted = None;
+    let evaluated = match konst {
+        Const::Val(const_value, ty) => const_value_to_constant_expr(s, ty, const_value, span)
+            .unwrap_or_else(|err| {
+                fatal!(
+                    s[span], "Cannot convert constant back to an expression";
+                    {const_value, ty, err}
+                )
+            }),
+        Const::Ty(_ty, c) => c.sinto(s),
+        Const::Unevaluated(ucv, _ty) => {
+            use crate::rustc_middle::query::Key;
+            let span = span.substitute_dummy(
+                tcx.def_ident_span(ucv.def)
+                    .unwrap_or_else(|| ucv.def.default_span(tcx)),
+            );
+            match ucv.promoted {
+                Some(promoted_id) => {
+                    let (_, promoteds) = tcx.mir_promoted(ucv.def.as_local().unwrap());
+                    // TODO: also fallback to `promoted_mir`
+                    let mir = if promoteds.is_stolen() {
+                        None
+                    } else {
+                        let promoteds = promoteds.borrow();
+                        let body = &promoteds[promoted_id];
+                        let body = body.sinto(&State {
+                            base: s.base(),
+                            owner_id: s.owner_id(),
+                            mir: Rc::new(body.clone()),
+                            binder: (),
+                            thir: (),
+                        });
+                        Some(body)
+                    };
+                    promoted = Some(PromotedConstant {
+                        def_id: ucv.def.sinto(s),
+                        promoted_id: promoted_id.as_u32(),
+                        mir,
+                    });
+                    konst
+                        .eval_constant(s)
+                        .unwrap_or_else(|| {
+                            supposely_unreachable_fatal!(s, "UnevalPromotedConstant"; {konst, ucv});
+                        })
+                        .sinto(s)
+                }
+                _ => match konst.translate_uneval(s, ucv.shrink(), span) {
+                    TranslateUnevalRes::EvaluatedConstant(c) => c.sinto(s),
+                    TranslateUnevalRes::GlobalName(c) => c,
+                },
+            }
+        }
+    };
+    (evaluated, promoted)
+}
+
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for rustc_middle::mir::Const<'tcx> {
+    fn sinto(&self, s: &S) -> ConstantExpr {
+        translate_mir_const(s, rustc_span::DUMMY_SP, *self).0
     }
 }
 
@@ -1039,38 +1131,6 @@ pub enum BinOp {
     Gt,
     Cmp,
     Offset,
-}
-
-#[cfg(feature = "rustc")]
-impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for rustc_middle::mir::Const<'tcx> {
-    fn sinto(&self, s: &S) -> ConstantExpr {
-        use rustc_middle::mir::Const;
-        let tcx = s.base().tcx;
-        match self {
-            Const::Val(const_value, ty) => {
-                const_value_to_constant_expr(s, *ty, *const_value, rustc_span::DUMMY_SP)
-            }
-            Const::Ty(_ty, c) => c.sinto(s),
-            Const::Unevaluated(ucv, _ty) => {
-                use crate::rustc_middle::query::Key;
-                let span = tcx
-                    .def_ident_span(ucv.def)
-                    .unwrap_or_else(|| ucv.def.default_span(tcx));
-                if ucv.promoted.is_some() {
-                    self.eval_constant(s)
-                        .unwrap_or_else(|| {
-                            supposely_unreachable_fatal!(s, "UnevalPromotedConstant"; {self, ucv});
-                        })
-                        .sinto(s)
-                } else {
-                    match self.translate_uneval(s, ucv.shrink(), span) {
-                        TranslateUnevalRes::EvaluatedConstant(c) => c.sinto(s),
-                        TranslateUnevalRes::GlobalName(c) => c,
-                    }
-                }
-            }
-        }
-    }
 }
 
 /// Reflects [`rustc_middle::mir::BorrowKind`]
