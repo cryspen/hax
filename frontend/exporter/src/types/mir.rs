@@ -248,16 +248,19 @@ fn translate_mir_const<'tcx, S: UnderOwnerState<'tcx>>(
                         promoted_id: promoted_id.as_u32(),
                         mir,
                     });
-                    konst
-                        .eval_constant(s)
+                    eval_mir_constant(s, konst)
                         .unwrap_or_else(|| {
                             supposely_unreachable_fatal!(s, "UnevalPromotedConstant"; {konst, ucv});
                         })
                         .sinto(s)
                 }
-                _ => match konst.translate_uneval(s, ucv.shrink(), span) {
-                    TranslateUnevalRes::EvaluatedConstant(c) => c.sinto(s),
-                    TranslateUnevalRes::GlobalName(c) => c,
+                None => match translate_constant_reference(s, span, ucv.shrink()) {
+                    Some(val) => val,
+                    None => match eval_mir_constant(s, konst) {
+                        Some(val) => val.sinto(s),
+                        // TODO: This is triggered when compiling using `generic_const_exprs`
+                        None => supposely_unreachable_fatal!(s, "TranslateUneval"; {konst, ucv}),
+                    },
                 },
             }
         }
