@@ -259,6 +259,7 @@ struct
                 (M.pat_PWild ~span ~typ:unit.typ, unit)
           in
           let body = dexpr body in
+          let { body; invariant } = extract_loop_invariant body in
           let condition = dexpr condition in
           let condition : B.expr =
             M.expr_Closure ~params:[ bpat ] ~body:condition ~captures:[]
@@ -276,8 +277,24 @@ struct
             | Some (BreakOnly, _) -> Rust_primitives__hax__while_loop_cf
             | None -> Rust_primitives__hax__while_loop
           in
-          UB.call fold_operator [ condition; init; body ] span
-            (dty span expr.typ)
+          let invariant : B.expr =
+            let default = MS.expr_Literal ~typ:TBool (Bool true) in
+            let invariant =
+              invariant |> Option.map ~f:snd |> Option.value ~default
+            in
+            UB.make_closure [ bpat ] invariant invariant.span
+          in
+          let fuel =
+            let kind = { size = S32; signedness = Unsigned } in
+            let e =
+              MS.expr_Literal ~typ:(TInt kind)
+                (Int { value = "0"; negative = false; kind })
+            in
+            UB.make_closure [ bpat ] e e.span
+          in
+          UB.call fold_operator
+            [ condition; invariant; fuel; init; body ]
+            span (dty span expr.typ)
       | Loop { state = None; _ } ->
           Error.unimplemented ~issue_id:405 ~details:"Loop without mutation"
             span
