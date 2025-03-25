@@ -1,3 +1,4 @@
+use core::fmt;
 use core::ops::*;
 use num_traits::cast::ToPrimitive;
 
@@ -12,8 +13,14 @@ pub use hax_lib_macros::int;
 /// Mathematical integers for writting specifications. Mathematical
 /// integers are unbounded and arithmetic operation on them never over
 /// or underflow.
-#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Debug)]
 pub struct Int(BigInt);
+
+impl fmt::Display for Int {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.get())
+    }
+}
 
 impl Int {
     fn new(x: impl Into<num_bigint::BigInt>) -> Self {

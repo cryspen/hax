@@ -5,7 +5,7 @@
 
 /// Maximal number of bytes stored in our copiable `BigInt`s.
 const BYTES: usize = 1024;
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub(super) struct BigInt {
     sign: num_bigint::Sign,
     data: [u8; BYTES],
