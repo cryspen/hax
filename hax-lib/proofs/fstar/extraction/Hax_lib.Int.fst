@@ -18,4 +18,5 @@ unfold let impl_Int__to_i64 (#t:inttype) (n:range_t t) : int_t t = mk_int #t n
 unfold let impl_Int__to_i128 (#t:inttype) (n:range_t t) : int_t t = mk_int #t n
 unfold let impl_Int__to_isize (#t:inttype) (n:range_t t) : int_t t = mk_int #t n
 
+unfold let impl_Int__pow2 (n: nat) = pow2 n
 unfold let impl_Int__rem_euclid = (%)
