@@ -15,10 +15,12 @@ impl BigInt {
     /// operation panics when the provided [`num_bigint::BigInt`]
     /// has more than [`BYTES`] bytes.
     pub(super) fn new(i: &num_bigint::BigInt) -> Self {
-        let (sign, data) = i.to_bytes_be();
-        let data = data
-            .try_into()
-            .expect("`copiable_bigint::BigInt::new`: too big, please consider increasing `BYTES`");
+        let (sign, bytes) = i.to_bytes_be();
+        if bytes.len() > BYTES {
+            panic!("`copiable_bigint::BigInt::new`: too big, please consider increasing `BYTES`");
+        }
+        let mut data = [0; BYTES];
+        data[BYTES - bytes.len()..].copy_from_slice(&bytes[..]);
         BigInt { sign, data }
     }
 
