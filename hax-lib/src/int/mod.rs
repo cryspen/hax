@@ -70,6 +70,11 @@ impl Int {
         use core::str::FromStr;
         Self::new(num_bigint::BigInt::from_str(s).unwrap())
     }
+
+    pub fn rem_euclid(&self, v: Self) -> Self {
+        use num_traits::Euclid;
+        Self::new(self.get().rem_euclid(&v.get()))
+    }
 }
 
 #[cfg(feature = "macros")]

@@ -119,6 +119,9 @@ pub mod int {
         pub fn _unsafe_from_str(_s: &str) -> Self {
             Int(0)
         }
+        pub fn rem_euclid(&self, v: Self) -> Self {
+            Self::new(self.0.rem_euclid(v.0))
+        }
     }
 
     pub trait ToInt {
