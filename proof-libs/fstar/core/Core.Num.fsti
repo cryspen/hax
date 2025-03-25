@@ -34,6 +34,11 @@ val impl_u64__from_be_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__to_le_bytes: u64 -> t_Array u8 (sz 8)
 val impl_u64__to_be_bytes: u64 -> t_Array u8 (sz 8)
 val impl_u64__rotate_right: u64 -> u64 -> u64
+let impl_u64__overflowing_sub (x y: u64): u64 * bool
+  = let sub = v x - v y in
+    let borrow = sub < 0 in
+    let out = if borrow then pow2 64 + sub else sub in
+    (mk_u64 out, borrow)
 
 let impl_u128__wrapping_add: u128 -> u128 -> u128 = add_mod
 let impl_u128__wrapping_sub: u128 -> u128 -> u128 = sub_mod
