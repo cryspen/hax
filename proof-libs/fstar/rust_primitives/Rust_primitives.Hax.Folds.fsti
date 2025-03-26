@@ -37,6 +37,26 @@ val fold_enumerated_chunked_slice
   )
   : result: acc_t {inv result (mk_int (Seq.length s / v chunk_size))}
 
+/// Fold function that is generated for `for` loops iterating on
+/// `s.chunks_exact(chunk_size)`-like iterators
+val fold_chunked_slice
+  (#t: Type0) (#acc_t: Type0)
+  (chunk_size: usize {v chunk_size > 0})
+  (s: t_Slice t)
+  (inv: acc_t -> (i:usize) -> Type0)
+  (init: acc_t {inv init (sz 0)})
+  (f: ( acc:acc_t
+      -> item:(t_Slice t) {
+        length item == chunk_size /\
+        inv acc (sz 0)
+      }
+      -> acc':acc_t {
+        inv acc' (sz 0)
+      }
+      )
+  )
+  : result: acc_t {inv result (mk_int 0)}
+
 (**** `s.enumerate()` *)
 /// Fold function that is generated for `for` loops iterating on
 /// `s.enumerate()`-like iterators

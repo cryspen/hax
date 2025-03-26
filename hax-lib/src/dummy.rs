@@ -46,6 +46,9 @@ pub fn inline_unsafe<T>(_: &str) -> T {
 #[doc(hidden)]
 pub const fn _internal_loop_invariant<T, R: Into<Prop>, P: FnOnce(T) -> R>(_: P) {}
 
+#[doc(hidden)]
+pub const fn _internal_loop_decreases(_: ::hax_lib::Int) {}
+
 pub trait Refinement {
     type InnerType;
     fn new(x: Self::InnerType) -> Self;

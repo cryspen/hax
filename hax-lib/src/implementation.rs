@@ -143,6 +143,10 @@ pub fn any_to_unit<T>(_: T) -> () {
 #[doc(hidden)]
 pub fn _internal_loop_invariant<T, R: Into<Prop>, P: FnOnce(T) -> R>(_: P) {}
 
+/// A dummy function that holds a loop variant.
+#[doc(hidden)]
+pub fn _internal_loop_decreases(_: Int) {}
+
 /// A type that implements `Refinement` should be a newtype for a
 /// type `T`. The field holding the value of type `T` should be
 /// private, and `Refinement` should be the only interface to the

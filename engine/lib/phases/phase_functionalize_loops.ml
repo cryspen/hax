@@ -74,6 +74,25 @@ struct
           { body; invariant = Some (pat, invariant) }
       | _ -> { body; invariant = None }
 
+    let extract_loop_variant (body : B.expr) : B.expr * B.expr =
+      match body.e with
+      | Let
+          {
+            monadic = None;
+            lhs = { p = PWild; _ };
+            rhs = { e = App { f = { e = GlobalVar f; _ }; args = [ e ]; _ }; _ };
+            body;
+          }
+        when Global_ident.eq_name Hax_lib___internal_loop_decreases f ->
+          (body, e)
+      | _ ->
+          let kind = { size = S32; signedness = Unsigned } in
+          let e =
+            UB.M.expr_Literal ~typ:(TInt kind) ~span:body.span
+              (Int { value = "0"; negative = false; kind })
+          in
+          (body, e)
+
     type iterator =
       | Range of { start : B.expr; end_ : B.expr }
       | Slice of B.expr
@@ -142,6 +161,16 @@ struct
             | Some BreakOnly ->
                 Rust_primitives__hax__folds__fold_enumerated_chunked_slice_cf
             | None -> Rust_primitives__hax__folds__fold_enumerated_chunked_slice
+          in
+          Some (fold_op, [ size; slice ], usize)
+      | ChunksExact { size; slice } ->
+          let fold_op =
+            match cf with
+            | Some BreakOrReturn ->
+                Rust_primitives__hax__folds__fold_chunked_slice_return
+            | Some BreakOnly ->
+                Rust_primitives__hax__folds__fold_chunked_slice_cf
+            | None -> Rust_primitives__hax__folds__fold_chunked_slice
           in
           Some (fold_op, [ size; slice ], usize)
       | Enumerate (Slice slice) ->
@@ -260,6 +289,7 @@ struct
           in
           let body = dexpr body in
           let { body; invariant } = extract_loop_invariant body in
+          let body, variant = extract_loop_variant body in
           let condition = dexpr condition in
           let condition : B.expr =
             M.expr_Closure ~params:[ bpat ] ~body:condition ~captures:[]
@@ -284,16 +314,9 @@ struct
             in
             UB.make_closure [ bpat ] invariant invariant.span
           in
-          let fuel =
-            let kind = { size = S32; signedness = Unsigned } in
-            let e =
-              MS.expr_Literal ~typ:(TInt kind)
-                (Int { value = "0"; negative = false; kind })
-            in
-            UB.make_closure [ bpat ] e e.span
-          in
+          let variant = UB.make_closure [ bpat ] variant variant.span in
           UB.call fold_operator
-            [ condition; invariant; fuel; init; body ]
+            [ condition; invariant; variant; init; body ]
             span (dty span expr.typ)
       | Loop { state = None; _ } ->
           Error.unimplemented ~issue_id:405 ~details:"Loop without mutation"
