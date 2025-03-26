@@ -1313,10 +1313,9 @@ impl ClosureArgs {
             parent_args: from.parent_args().sinto(s),
             // The solved predicates from the parent (i.e., the item which defines the closure).
             parent_trait_refs: {
-                // TODO: handle nested closures
                 let parent = tcx.generics_of(def_id).parent.unwrap();
                 let parent_generics_ref = tcx.mk_args(from.parent_args());
-                solve_item_required_traits(s, parent, parent_generics_ref)
+                solve_item_and_parents_required_traits(s, parent, parent_generics_ref)
             },
             tupled_sig: sig.sinto(s),
             untupled_sig: tcx

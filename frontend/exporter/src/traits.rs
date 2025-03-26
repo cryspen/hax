@@ -197,6 +197,36 @@ pub fn solve_item_required_traits<'tcx, S: UnderOwnerState<'tcx>>(
     solve_item_traits_inner(s, generics, predicates)
 }
 
+/// Like `solve_item_required_traits`, but also includes predicates coming from the parent items.
+#[cfg(feature = "rustc")]
+#[tracing::instrument(level = "trace", skip(s), ret)]
+pub fn solve_item_and_parents_required_traits<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+    def_id: RDefId,
+    generics: ty::GenericArgsRef<'tcx>,
+) -> Vec<ImplExpr> {
+    fn accumulate<'tcx, S: UnderOwnerState<'tcx>>(
+        s: &S,
+        def_id: RDefId,
+        generics: ty::GenericArgsRef<'tcx>,
+        impl_exprs: &mut Vec<ImplExpr>,
+    ) {
+        let tcx = s.base().tcx;
+        use rustc_hir::def::DefKind::*;
+        match tcx.def_kind(def_id) {
+            AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant => {
+                let parent = tcx.parent(def_id);
+                accumulate(s, parent, generics, impl_exprs);
+            }
+            _ => {}
+        }
+        impl_exprs.extend(solve_item_required_traits(s, def_id, generics));
+    }
+    let mut impl_exprs = vec![];
+    accumulate(s, def_id, generics, &mut impl_exprs);
+    impl_exprs
+}
+
 /// Solve the trait obligations for implementing a trait (or for trait associated type bounds) in
 /// the current context.
 #[cfg(feature = "rustc")]
