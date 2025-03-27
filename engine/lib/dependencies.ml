@@ -68,7 +68,7 @@ module Make (F : Features.T) = struct
       let empty () = empty
     end
 
-    module Topological = Graph.Topological.Make_stable (GInt)
+    module Topological = Graph_stable_sort.Make_stable (GInt)
     module Map_G_GInt = Graph.Gmap.Edge (G) (GInt)
     module Oper = Graph.Oper.P (G)
 
@@ -264,7 +264,7 @@ module Make (F : Features.T) = struct
 
     (** Returns the namespaces in topological order *)
     let order g : Namespace.t list =
-      let module ModTopo = Graph.Topological.Make_stable (G) in
+      let module ModTopo = Graph_stable_sort.Make_stable (G) in
       ModTopo.fold List.cons g []
 
     open Graph.Graphviz.Dot (struct
