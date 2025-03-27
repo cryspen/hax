@@ -188,3 +188,8 @@ pub fn trait_fn_decoration(_attr: TokenStream, _item: TokenStream) -> TokenStrea
 pub fn loop_invariant(_predicate: TokenStream) -> TokenStream {
     quote! {}.into()
 }
+
+#[proc_macro]
+pub fn loop_decreases(_predicate: TokenStream) -> TokenStream {
+    quote! {}.into()
+}
