@@ -91,6 +91,16 @@ struct
             UB.M.expr_Literal ~typ:(TInt kind) ~span:body.span
               (Int { value = "0"; negative = false; kind })
           in
+          let e =
+            UB.call Rust_primitives__hax__int__from_machine [ e ] e.span
+              (TApp
+                 {
+                   ident =
+                     `Concrete
+                       (Concrete_ident.of_name ~value:false Hax_lib__int__Int);
+                   args = [];
+                 })
+          in
           (body, e)
 
     type iterator =
