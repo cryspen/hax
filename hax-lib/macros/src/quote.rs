@@ -142,12 +142,14 @@ pub(super) fn item(
     let kind_attr = AttrPayload::ItemQuote(kind);
     let status_attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
     use AttrPayload::NeverErased;
+    let id = uuid::Uuid::new_v4().as_u128();
+    let name = format_ident!("_{}", id);
     quote! {
         #assoc_attr
         #item
         #attribute_to_inject
         #status_attr
-        const _: () = {
+        const #name: () = {
             #NeverErased
             #uid_attr
             #kind_attr

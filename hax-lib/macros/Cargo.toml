@@ -22,6 +22,7 @@ syn = { version = "2.0", features = ["full", "visit-mut", "visit"] }
 syn = { version = "2.0", features = ["full", "visit", "visit-mut"] }
 proc-macro2 = { workspace = true }
 quote = { workspace = true }
+uuid = { version = "1.5", features = ["v4"] }
 
 [dev-dependencies]
 hax-lib = { path = ".." }

@@ -460,3 +460,16 @@ mod issue_1276 {
         fn f(&self, self_: u8, self_0: u8, self_1: u8, self_2: u8) {}
     }
 }
+
+mod issue_1315 {
+    struct T(u8);
+    #[hax_lib::attributes]
+    impl T {
+        #[hax_lib::fstar::verification_status(lax)]
+        fn f() {}
+        #[hax_lib::fstar::before("let x = 1 in")]
+        fn h() {}
+    }
+    #[hax_lib::fstar::verification_status(lax)]
+    fn g() {}
+}

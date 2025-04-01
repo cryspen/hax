@@ -173,6 +173,30 @@ let impl_S__f (self: t_S) (self_ self_0_ self_1_ self_2_: u8)
       (requires self._0 =. mk_u8 0 && self_ =. self_1_ && self_2_ =. mk_u8 9)
       (fun _ -> Prims.l_True) = ()
 '''
+"Attributes.Issue_1315_.fst" = '''
+module Attributes.Issue_1315_
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open Core
+open FStar.Mul
+
+type t_T = | T : u8 -> t_T
+
+#push-options "--admit_smt_queries true"
+
+let impl_T__f (_: Prims.unit) : Prims.unit = ()
+
+#pop-options
+
+let x = 1 in
+
+let impl_T__h (_: Prims.unit) : Prims.unit = ()
+
+#push-options "--admit_smt_queries true"
+
+let g (_: Prims.unit) : Prims.unit = ()
+
+#pop-options
+'''
 "Attributes.Nested_refinement_elim.fst" = '''
 module Attributes.Nested_refinement_elim
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
