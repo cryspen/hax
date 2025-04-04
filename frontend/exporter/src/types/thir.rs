@@ -33,6 +33,15 @@ pub struct FruInfo {
     pub field_types: Vec<Ty>,
 }
 
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Debug, JsonSchema)]
+#[args(<'tcx, S: ExprState<'tcx>>, from: thir::AdtExprBase<'tcx>, state: S as gstate)]
+pub enum AdtExprBase {
+    None,
+    Base(FruInfo),
+    DefaultFields(Vec<Ty>),
+}
+
 /// A field expression: a field name along with a value
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
@@ -48,7 +57,7 @@ pub struct AdtExpr {
     pub info: VariantInformations,
     pub user_ty: Option<CanonicalUserType>,
     pub fields: Vec<FieldExpr>,
-    pub base: Option<FruInfo>,
+    pub base: AdtExprBase,
 }
 
 #[cfg(feature = "rustc")]
@@ -136,7 +145,7 @@ sinto_as_usize!(rustc_middle::middle::region, FirstStatementIndex);
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
 #[args(<'tcx, S: UnderOwnerState<'tcx> + HasThir<'tcx>>, from: rustc_middle::middle::region::Scope, state: S as gstate)]
 pub struct Scope {
-    pub id: ItemLocalId,
+    pub local_id: ItemLocalId,
     pub data: ScopeData,
 }
 
@@ -226,9 +235,9 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Expr> for thir::Expr<'tcx> {
                         supposely_unreachable_fatal!(s[span], "PhantomDataNotAdt"; {kind, ty})
                     };
                     let adt_def = AdtExpr {
-                        info: get_variant_information(def, rustc_target::abi::FIRST_VARIANT, s),
+                        info: get_variant_information(def, rustc_abi::FIRST_VARIANT, s),
                         user_ty: None,
-                        base: None,
+                        base: AdtExprBase::None,
                         fields: vec![],
                     };
                     return Expr {
@@ -348,7 +357,7 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Pat> for thir::Pat<'tcx> {
                 rustc_middle::ty::TyKind::Adt(adt_def, args) => (thir::PatKind::Variant {
                     adt_def: *adt_def,
                     args,
-                    variant_index: rustc_target::abi::VariantIdx::from_usize(0),
+                    variant_index: rustc_abi::VariantIdx::from_usize(0),
                     subpatterns: subpatterns.clone(),
                 })
                 .sinto(s),
@@ -566,7 +575,7 @@ pub struct Param {
     pub self_kind: Option<ImplicitSelfKind>,
     pub hir_id: Option<HirId>,
     #[value(hir_id.map(|id| {
-        s.base().tcx.hir().attrs(id).sinto(s)
+        s.base().tcx.hir_attrs(id).sinto(s)
     }).unwrap_or(vec![]))]
     /// attributes on this parameter
     pub attributes: Vec<Attribute>,

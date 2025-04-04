@@ -170,3 +170,13 @@ where
             .unwrap_or(x),
     )
 }
+
+pub trait ToPolyTraitRef<'tcx> {
+    fn to_poly_trait_ref(&self) -> PolyTraitRef<'tcx>;
+}
+
+impl<'tcx> ToPolyTraitRef<'tcx> for PolyTraitPredicate<'tcx> {
+    fn to_poly_trait_ref(&self) -> PolyTraitRef<'tcx> {
+        self.map_bound_ref(|trait_pred| trait_pred.trait_ref)
+    }
+}

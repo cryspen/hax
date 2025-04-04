@@ -168,7 +168,7 @@ impl From<ConstantExpr> for Expr {
             Adt { info, fields } => ExprKind::Adt(AdtExpr {
                 info,
                 fields: fields.into_iter().map(|field| field.into()).collect(),
-                base: None,
+                base: AdtExprBase::None,
                 user_ty: None,
             }),
             // TODO: propagate the generics and trait refs (see #636)

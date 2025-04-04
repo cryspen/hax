@@ -53,10 +53,7 @@ let f (x: u8) : Core.Result.t_Result u16 u16 =
     Core.Result.Result_Ok (f_my_from #u16 #u8 #FStar.Tactics.Typeclasses.solve x)
     <:
     Core.Result.t_Result u16 u16
-  | Core.Result.Result_Err err ->
-    Core.Result.Result_Err (Core.Convert.f_from #u16 #u8 #FStar.Tactics.Typeclasses.solve err)
-    <:
-    Core.Result.t_Result u16 u16
+  | Core.Result.Result_Err err -> Core.Result.Result_Err err <: Core.Result.t_Result u16 u16
 '''
 "Side_effects.Issue_1089_.fst" = '''
 module Side_effects.Issue_1089_
@@ -292,10 +289,7 @@ let direct_result_question_mark_coercion (y: Core.Result.t_Result i8 u16)
     : Core.Result.t_Result i8 u32 =
   match y <: Core.Result.t_Result i8 u16 with
   | Core.Result.Result_Ok hoist17 -> Core.Result.Result_Ok hoist17 <: Core.Result.t_Result i8 u32
-  | Core.Result.Result_Err err ->
-    Core.Result.Result_Err (Core.Convert.f_from #u32 #u16 #FStar.Tactics.Typeclasses.solve err)
-    <:
-    Core.Result.t_Result i8 u32
+  | Core.Result.Result_Err err -> Core.Result.Result_Err err <: Core.Result.t_Result i8 u32
 
 /// Test question mark on `Option`s with some control flow
 let options (x y: Core.Option.t_Option u8) (z: Core.Option.t_Option u64) : Core.Option.t_Option u8 =
@@ -470,10 +464,7 @@ let question_mark (x: u32) : Core.Result.t_Result u32 u32 =
         Core.Result.Result_Ok (Core.Num.impl_u32__wrapping_add (mk_u32 3) x)
         <:
         Core.Result.t_Result u32 u32
-      | Core.Result.Result_Err err ->
-        Core.Result.Result_Err (Core.Convert.f_from #u32 #u8 #FStar.Tactics.Typeclasses.solve err)
-        <:
-        Core.Result.t_Result u32 u32
+      | Core.Result.Result_Err err -> Core.Result.Result_Err err <: Core.Result.t_Result u32 u32
     else
       Core.Result.Result_Ok (Core.Num.impl_u32__wrapping_add (mk_u32 3) x)
       <:

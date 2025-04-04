@@ -382,7 +382,17 @@ pub struct EarlyParamRegion {
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::LateParamRegion, state: S as gstate)]
 pub struct LateParamRegion {
     pub scope: DefId,
-    pub bound_region: BoundRegionKind,
+    pub kind: LateParamRegionKind,
+}
+
+/// Reflects [`ty::LateParamRegionKind`]
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::LateParamRegionKind, state: S as gstate)]
+pub enum LateParamRegionKind {
+    Anon(u32),
+    Named(DefId, Symbol),
+    ClosureEnv,
 }
 
 /// Reflects [`ty::RegionKind`]
@@ -978,7 +988,7 @@ pub struct TyFnSig {
     pub output: Ty,
     pub c_variadic: bool,
     pub safety: Safety,
-    pub abi: Abi,
+    pub abi: ExternAbi,
 }
 
 /// Reflects [`ty::PolyFnSig`]

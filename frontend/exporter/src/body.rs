@@ -60,7 +60,7 @@ mod module {
         // be local. It is safe to do so, because if we have access to HIR objects,
         // it necessarily means we are exploring a local item (we don't have
         // access to the HIR of external objects, only their MIR).
-        Body::body(s.base().tcx.hir().body_owner_def_id(id), s)
+        Body::body(s.base().tcx.hir_body_owner_def_id(id), s)
     }
 
     mod implementations {

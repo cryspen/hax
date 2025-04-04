@@ -7,6 +7,7 @@ mod utils;
 #[cfg(feature = "rustc")]
 pub use utils::{
     erase_and_norm, implied_predicates, predicates_defined_on, required_predicates, self_predicate,
+    ToPolyTraitRef,
 };
 
 #[cfg(feature = "rustc")]
@@ -131,7 +132,6 @@ pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
     clause: rustc_middle::ty::Clause<'tcx>,
     span: rustc_span::Span,
 ) -> Option<(Clause, ImplExpr, Span)> {
-    use rustc_middle::ty::ToPolyTraitRef;
     let tcx = s.base().tcx;
     let impl_trait_ref = tcx
         .impl_trait_ref(impl_did)
@@ -248,7 +248,6 @@ fn solve_item_traits_inner<'tcx, S: UnderOwnerState<'tcx>>(
     generics: ty::GenericArgsRef<'tcx>,
     predicates: ty::GenericPredicates<'tcx>,
 ) -> Vec<ImplExpr> {
-    use crate::rustc_middle::ty::ToPolyTraitRef;
     let tcx = s.base().tcx;
     let typing_env = s.typing_env();
     predicates

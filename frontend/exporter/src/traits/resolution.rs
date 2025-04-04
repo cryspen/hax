@@ -13,7 +13,7 @@ use rustc_trait_selection::traits::ImplSource;
 
 use crate::{self_predicate, traits::utils::erase_and_norm};
 
-use super::utils::{implied_predicates, required_predicates};
+use super::utils::{implied_predicates, required_predicates, ToPolyTraitRef};
 
 #[derive(Debug, Clone)]
 pub enum PathChunk<'tcx> {
@@ -552,7 +552,7 @@ pub fn shallow_resolve_trait_ref<'tcx>(
         Ok(Some(selection)) => selection,
         Ok(None) => return Err(CodegenObligationError::Ambiguity),
         Err(Unimplemented) => return Err(CodegenObligationError::Unimplemented),
-        Err(_) => return Err(CodegenObligationError::FulfillmentError),
+        Err(_) => return Err(CodegenObligationError::Ambiguity),
     };
 
     // Currently, we use a fulfillment context to completely resolve
@@ -567,7 +567,7 @@ pub fn shallow_resolve_trait_ref<'tcx>(
 
     let errors = ocx.select_all_or_error();
     if !errors.is_empty() {
-        return Err(CodegenObligationError::FulfillmentError);
+        return Err(CodegenObligationError::Ambiguity);
     }
 
     let impl_source = infcx.resolve_vars_if_possible(impl_source);
@@ -575,7 +575,7 @@ pub fn shallow_resolve_trait_ref<'tcx>(
 
     if impl_source.has_infer() {
         // Unused lifetimes on an impl get replaced with inference vars, but never resolved.
-        return Err(CodegenObligationError::FulfillmentError);
+        return Err(CodegenObligationError::Ambiguity);
     }
 
     Ok(impl_source)

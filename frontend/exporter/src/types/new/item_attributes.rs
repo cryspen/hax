@@ -39,12 +39,11 @@ impl ItemAttributes {
         }
         use rustc_hir::hir_id::HirId;
         let tcx = s.base().tcx;
-        let hir = tcx.hir();
-        let attrs_of = |id| tcx.hir().attrs(HirId::from(id)).sinto(s);
+        let attrs_of = |id| tcx.hir_attrs(HirId::from(id)).sinto(s);
         ItemAttributes {
             attributes: attrs_of(oid),
-            parent_attributes: hir
-                .parent_owner_iter(HirId::from(oid))
+            parent_attributes: tcx
+                .hir_parent_owner_iter(HirId::from(oid))
                 .map(|(oid, _)| oid)
                 .flat_map(attrs_of)
                 .collect(),

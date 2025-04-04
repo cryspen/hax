@@ -90,12 +90,6 @@ impl<S, D: Clone, T: SInto<S, D>> SInto<S, Vec<D>> for Vec<T> {
         self.iter().map(|x| x.sinto(s)).collect()
     }
 }
-#[cfg(feature = "rustc")]
-impl<S> SInto<S, Vec<u8>> for rustc_data_structures::sync::Lrc<[u8]> {
-    fn sinto(&self, _s: &S) -> Vec<u8> {
-        (**self).to_vec()
-    }
-}
 
 macro_rules! sinto_clone {
     ($t:ty) => {

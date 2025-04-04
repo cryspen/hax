@@ -165,7 +165,7 @@ Hint Unfold int16_t_MyFrom.
 
 Equations f {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int8) : both L1 I1 (t_Result int16 int16) :=
   f x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] _ := impl__map_err (Result_Err (ret_both (1 : int8))) f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := Result_Err (ret_both (1 : int8)) in
     Result_Ok (Result_Ok (f_my_from x)))) : both L1 I1 (t_Result int16 int16).
 Fail Next Obligation.
 
@@ -266,7 +266,7 @@ Fail Next Obligation.
 
 Equations direct_result_question_mark_coercion {L1 : {fset Location}} {I1 : Interface} (y : both L1 I1 (t_Result int8 int16)) : both L1 I1 (t_Result int8 int32) :=
   direct_result_question_mark_coercion y  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] hoist17 := impl__map_err y f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] hoist17 := y in
     Result_Ok (Result_Ok hoist17))) : both L1 I1 (t_Result int8 int32).
 Fail Next Obligation.
 
@@ -305,14 +305,14 @@ Fail Next Obligation.
 
 Equations question_mark {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int32) : both L1 I1 (t_Result int32 int32) :=
   question_mark x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] _ := ifb x >.? (ret_both (40 : int32))
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := ifb x >.? (ret_both (40 : int32))
     then letb y loc(y_loc) := ret_both (0 : int32) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb hoist34 := x >.? (ret_both (90 : int32)) in
     ifb hoist34
-    then impl__map_err (Result_Err (ret_both (12 : int8))) f_from
+    then Result_Err (ret_both (12 : int8))
     else ()
     else () in
     Result_Ok (Result_Ok (impl_u32__wrapping_add (ret_both (3 : int32)) x)))) : both L1 I1 (t_Result int32 int32).
@@ -567,7 +567,7 @@ Hint Unfold int16_t_MyFrom.
 
 Equations f {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int8) : both L1 I1 (t_Result int16 int16) :=
   f x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] _ := impl__map_err (Result_Err (ret_both (1 : int8))) f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := Result_Err (ret_both (1 : int8)) in
     Result_Ok (Result_Ok (f_my_from x)))) : both L1 I1 (t_Result int16 int16).
 Fail Next Obligation.
 
@@ -668,7 +668,7 @@ Fail Next Obligation.
 
 Equations direct_result_question_mark_coercion {L1 : {fset Location}} {I1 : Interface} (y : both L1 I1 (t_Result int8 int16)) : both L1 I1 (t_Result int8 int32) :=
   direct_result_question_mark_coercion y  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] hoist17 := impl__map_err y f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] hoist17 := y in
     Result_Ok (Result_Ok hoist17))) : both L1 I1 (t_Result int8 int32).
 Fail Next Obligation.
 
@@ -707,14 +707,14 @@ Fail Next Obligation.
 
 Equations question_mark {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int32) : both L1 I1 (t_Result int32 int32) :=
   question_mark x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] _ := ifb x >.? (ret_both (40 : int32))
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := ifb x >.? (ret_both (40 : int32))
     then letb y loc(y_loc) := ret_both (0 : int32) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb hoist34 := x >.? (ret_both (90 : int32)) in
     ifb hoist34
-    then impl__map_err (Result_Err (ret_both (12 : int8))) f_from
+    then Result_Err (ret_both (12 : int8))
     else ()
     else () in
     Result_Ok (Result_Ok (impl_u32__wrapping_add (ret_both (3 : int32)) x)))) : both L1 I1 (t_Result int32 int32).
@@ -969,7 +969,7 @@ Hint Unfold int16_t_MyFrom.
 
 Equations f {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int8) : both L1 I1 (t_Result int16 int16) :=
   f x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] _ := impl__map_err (Result_Err (ret_both (1 : int8))) f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := Result_Err (ret_both (1 : int8)) in
     Result_Ok (Result_Ok (f_my_from x)))) : both L1 I1 (t_Result int16 int16).
 Fail Next Obligation.
 
@@ -1070,7 +1070,7 @@ Fail Next Obligation.
 
 Equations direct_result_question_mark_coercion {L1 : {fset Location}} {I1 : Interface} (y : both L1 I1 (t_Result int8 int16)) : both L1 I1 (t_Result int8 int32) :=
   direct_result_question_mark_coercion y  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] hoist17 := impl__map_err y f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] hoist17 := y in
     Result_Ok (Result_Ok hoist17))) : both L1 I1 (t_Result int8 int32).
 Fail Next Obligation.
 
@@ -1109,14 +1109,14 @@ Fail Next Obligation.
 
 Equations question_mark {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int32) : both L1 I1 (t_Result int32 int32) :=
   question_mark x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] _ := ifb x >.? (ret_both (40 : int32))
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := ifb x >.? (ret_both (40 : int32))
     then letb y loc(y_loc) := ret_both (0 : int32) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb hoist34 := x >.? (ret_both (90 : int32)) in
     ifb hoist34
-    then impl__map_err (Result_Err (ret_both (12 : int8))) f_from
+    then Result_Err (ret_both (12 : int8))
     else ()
     else () in
     Result_Ok (Result_Ok (impl_u32__wrapping_add (ret_both (3 : int32)) x)))) : both L1 I1 (t_Result int32 int32).
@@ -1371,7 +1371,7 @@ Hint Unfold int16_t_MyFrom.
 
 Equations f {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int8) : both L1 I1 (t_Result int16 int16) :=
   f x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] _ := impl__map_err (Result_Err (ret_both (1 : int8))) f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := Result_Err (ret_both (1 : int8)) in
     Result_Ok (Result_Ok (f_my_from x)))) : both L1 I1 (t_Result int16 int16).
 Fail Next Obligation.
 
@@ -1472,7 +1472,7 @@ Fail Next Obligation.
 
 Equations direct_result_question_mark_coercion {L1 : {fset Location}} {I1 : Interface} (y : both L1 I1 (t_Result int8 int16)) : both L1 I1 (t_Result int8 int32) :=
   direct_result_question_mark_coercion y  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] hoist17 := impl__map_err y f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] hoist17 := y in
     Result_Ok (Result_Ok hoist17))) : both L1 I1 (t_Result int8 int32).
 Fail Next Obligation.
 
@@ -1511,14 +1511,14 @@ Fail Next Obligation.
 
 Equations question_mark {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int32) : both L1 I1 (t_Result int32 int32) :=
   question_mark x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] _ := ifb x >.? (ret_both (40 : int32))
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := ifb x >.? (ret_both (40 : int32))
     then letb y loc(y_loc) := ret_both (0 : int32) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb hoist34 := x >.? (ret_both (90 : int32)) in
     ifb hoist34
-    then impl__map_err (Result_Err (ret_both (12 : int8))) f_from
+    then Result_Err (ret_both (12 : int8))
     else ()
     else () in
     Result_Ok (Result_Ok (impl_u32__wrapping_add (ret_both (3 : int32)) x)))) : both L1 I1 (t_Result int32 int32).
@@ -1773,7 +1773,7 @@ Hint Unfold int16_t_MyFrom.
 
 Equations f {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int8) : both L1 I1 (t_Result int16 int16) :=
   f x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] _ := impl__map_err (Result_Err (ret_both (1 : int8))) f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := Result_Err (ret_both (1 : int8)) in
     Result_Ok (Result_Ok (f_my_from x)))) : both L1 I1 (t_Result int16 int16).
 Fail Next Obligation.
 
@@ -1874,7 +1874,7 @@ Fail Next Obligation.
 
 Equations direct_result_question_mark_coercion {L1 : {fset Location}} {I1 : Interface} (y : both L1 I1 (t_Result int8 int16)) : both L1 I1 (t_Result int8 int32) :=
   direct_result_question_mark_coercion y  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] hoist17 := impl__map_err y f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] hoist17 := y in
     Result_Ok (Result_Ok hoist17))) : both L1 I1 (t_Result int8 int32).
 Fail Next Obligation.
 
@@ -1913,14 +1913,14 @@ Fail Next Obligation.
 
 Equations question_mark {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int32) : both L1 I1 (t_Result int32 int32) :=
   question_mark x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] _ := ifb x >.? (ret_both (40 : int32))
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := ifb x >.? (ret_both (40 : int32))
     then letb y loc(y_loc) := ret_both (0 : int32) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb hoist34 := x >.? (ret_both (90 : int32)) in
     ifb hoist34
-    then impl__map_err (Result_Err (ret_both (12 : int8))) f_from
+    then Result_Err (ret_both (12 : int8))
     else ()
     else () in
     Result_Ok (Result_Ok (impl_u32__wrapping_add (ret_both (3 : int32)) x)))) : both L1 I1 (t_Result int32 int32).
@@ -2175,7 +2175,7 @@ Hint Unfold int16_t_MyFrom.
 
 Equations f {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int8) : both L1 I1 (t_Result int16 int16) :=
   f x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] _ := impl__map_err (Result_Err (ret_both (1 : int8))) f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := Result_Err (ret_both (1 : int8)) in
     Result_Ok (Result_Ok (f_my_from x)))) : both L1 I1 (t_Result int16 int16).
 Fail Next Obligation.
 
@@ -2276,7 +2276,7 @@ Fail Next Obligation.
 
 Equations direct_result_question_mark_coercion {L1 : {fset Location}} {I1 : Interface} (y : both L1 I1 (t_Result int8 int16)) : both L1 I1 (t_Result int8 int32) :=
   direct_result_question_mark_coercion y  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] hoist17 := impl__map_err y f_from in
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int16] hoist17 := y in
     Result_Ok (Result_Ok hoist17))) : both L1 I1 (t_Result int8 int32).
 Fail Next Obligation.
 
@@ -2315,14 +2315,14 @@ Fail Next Obligation.
 
 Equations question_mark {L1 : {fset Location}} {I1 : Interface} (x : both L1 I1 int32) : both L1 I1 (t_Result int32 int32) :=
   question_mark x  :=
-    solve_lift (run (letm[choice_typeMonad.result_bind_code int32] _ := ifb x >.? (ret_both (40 : int32))
+    solve_lift (run (letm[choice_typeMonad.result_bind_code int8] _ := ifb x >.? (ret_both (40 : int32))
     then letb y loc(y_loc) := ret_both (0 : int32) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb _ := assign todo(term) in
     letb hoist34 := x >.? (ret_both (90 : int32)) in
     ifb hoist34
-    then impl__map_err (Result_Err (ret_both (12 : int8))) f_from
+    then Result_Err (ret_both (12 : int8))
     else ()
     else () in
     Result_Ok (Result_Ok (impl_u32__wrapping_add (ret_both (3 : int32)) x)))) : both L1 I1 (t_Result int32 int32).

@@ -273,10 +273,10 @@ impl std::convert::From<DefId> for Path {
     fn from(v: DefId) -> Vec<String> {
         std::iter::once(&v.krate)
             .chain(v.path.iter().filter_map(|item| match &item.data {
-                DefPathItem::TypeNs(s)
-                | DefPathItem::ValueNs(s)
-                | DefPathItem::MacroNs(s)
-                | DefPathItem::LifetimeNs(s) => Some(s),
+                DefPathItem::TypeNs(s) => s.as_ref(),
+                DefPathItem::ValueNs(s) | DefPathItem::MacroNs(s) | DefPathItem::LifetimeNs(s) => {
+                    Some(s)
+                }
                 _ => None,
             }))
             .cloned()
@@ -308,7 +308,7 @@ pub enum DefPathItem {
     ForeignMod,
     Use,
     GlobalAsm,
-    TypeNs(Symbol),
+    TypeNs(Option<Symbol>),
     ValueNs(Symbol),
     MacroNs(Symbol),
     LifetimeNs(Symbol),
@@ -316,7 +316,6 @@ pub enum DefPathItem {
     Ctor,
     AnonConst,
     OpaqueTy,
-    AnonAdt,
 }
 
 #[derive_group(Serializers)]

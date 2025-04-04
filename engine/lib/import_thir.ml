@@ -74,6 +74,11 @@ let c_uint_ty (ty : Thir.uint_ty) : int_kind =
 let csafety (safety : Types.safety) : safety_kind =
   match safety with Safe -> Safe | Unsafe -> Unsafe W.unsafe
 
+let c_header_safety (safety : Types.header_safety) : safety_kind =
+  match safety with
+  | SafeTargetFeatures -> Safe
+  | Normal safety -> csafety safety
+
 let c_mutability (witness : 'a) : bool -> 'a Ast.mutability = function
   | true -> Mutable witness
   | false -> Immutable
@@ -103,35 +108,28 @@ let c_logical_op : Thir.logical_op -> logical_op = function
   | And -> And
   | Or -> Or
 
-let c_attr (attr : Thir.attribute) : attr =
-  let kind =
-    match attr.kind with
-    | DocComment (kind, body) ->
-        let kind =
-          match kind with Thir.Line -> DCKLine | Thir.Block -> DCKBlock
-        in
-        DocComment { kind; body }
-    | Normal
-        {
-          item =
-            { args = Eq (_, Hir { symbol; _ }); path = "doc"; tokens = None; _ };
-          tokens = None;
-        } ->
-        DocComment { kind = DCKLine; body = symbol }
-        (* Looks for `#[doc = "something"]` *)
-    | Normal { item = { args; path; tokens = subtokens; _ }; tokens } ->
-        let args_tokens =
-          match args with Delimited { tokens; _ } -> Some tokens | _ -> None
-        in
-        let tokens =
-          let ( || ) = Option.first_some in
-          Option.value ~default:"" (args_tokens || tokens || subtokens)
-        in
-        Tool { path; tokens }
-  in
-  { kind; span = Span.of_thir attr.span }
+let c_attr (attr : Thir.attribute) : attr option =
+  match attr with
+  | Parsed (DocComment { kind; comment; span; _ }) ->
+      let kind =
+        match kind with Thir.Line -> DCKLine | Thir.Block -> DCKBlock
+      in
+      let kind = DocComment { kind; body = comment } in
+      Some { kind; span = Span.of_thir span }
+  | Unparsed { args = Eq { expr = { symbol; _ }; _ }; path = "doc"; span; _ } ->
+      (* Looks for `#[doc = "something"]` *)
+      let kind = DocComment { kind = DCKLine; body = symbol } in
+      Some { kind; span = Span.of_thir span }
+  | Unparsed { args; path; span; _ } ->
+      let args_tokens =
+        match args with Delimited { tokens; _ } -> Some tokens | _ -> None
+      in
+      let tokens = Option.value ~default:"" args_tokens in
+      let kind = Tool { path; tokens } in
+      Some { kind; span = Span.of_thir span }
+  | _ -> None
 
-let c_attrs : Thir.attribute list -> attrs = List.map ~f:c_attr
+let c_attrs : Thir.attribute list -> attrs = List.filter_map ~f:c_attr
 
 let c_item_attrs (attrs : Thir.item_attributes) : attrs =
   (* TODO: This is a quite coarse approximation, we need to reflect
@@ -691,9 +689,12 @@ end) : EXPR = struct
           in
           let constructor = def_id ~value:true info.variant in
           let base =
-            Option.map
-              ~f:(fun base -> (c_expr base.base, W.construct_base))
-              base
+            match base with
+            | None' -> None
+            | Base base -> Some (c_expr base.base, W.construct_base)
+            | DefaultFields _ ->
+                unimplemented ~issue_id:1386 [ e.span ]
+                  "Default field values: not supported"
           in
           let fields =
             List.map
@@ -834,7 +835,7 @@ end) : EXPR = struct
           Literal { lit = { node = lit; span }; neg }
       | Adt { fields; info } ->
           let fields = List.map ~f:constant_field_expr fields in
-          Adt { fields; info; base = None; user_ty = None }
+          Adt { fields; info; base = None'; user_ty = None }
       | Array { fields } ->
           Array { fields = List.map ~f:constant_expr_to_expr fields }
       | Tuple { fields } ->
@@ -1346,8 +1347,9 @@ let c_trait_item (item : Thir.trait_item) : trait_item =
 let is_automatically_derived (attrs : Thir.attribute list) =
   List.exists (* We need something better here, see issue #108 *)
     ~f:(function
-      | { kind = Normal { item = { path; _ }; _ }; _ } ->
-          String.equal path "automatically_derived"
+      (* This will break once these attributes get properly parsed. It will
+          then be very easy to parse them correctly *)
+      | Unparsed { path; _ } -> String.equal path "automatically_derived"
       | _ -> false)
     attrs
 
@@ -1486,7 +1488,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
   in
   (* TODO: things might be unnamed (e.g. constants) *)
   match (item.kind : Thir.item_kind) with
-  | Const (_, generics, body) ->
+  | Const (_, _, generics, body) ->
       mk
       @@ Fn
            {
@@ -1496,14 +1498,14 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              params = [];
              safety = Safe;
            }
-  | Static (_, true, _) ->
+  | Static (_, _, true, _) ->
       unimplemented ~issue_id:1343 [ item.span ]
         "Mutable static items are not supported."
-  | Static (_ty, false, body) ->
+  | Static (_, _ty, false, body) ->
       let name = Concrete_ident.of_def_id ~value:true (assert_item_def_id ()) in
       let generics = { params = []; constraints = [] } in
       mk (Fn { name; generics; body = c_body body; params = []; safety = Safe })
-  | TyAlias (ty, generics) ->
+  | TyAlias (_, ty, generics) ->
       mk
       @@ TyAlias
            {
@@ -1512,7 +1514,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              generics = c_generics generics;
              ty = c_ty item.span ty;
            }
-  | Fn (generics, { body; params; header = { safety; _ }; _ }) ->
+  | Fn { generics; def = { body; params; header = { safety; _ }; _ }; _ } ->
       mk
       @@ Fn
            {
@@ -1520,15 +1522,15 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              generics = c_generics generics;
              body = c_body body;
              params = c_fn_params item.span params;
-             safety = csafety safety;
+             safety = c_header_safety safety;
            }
-  | (Enum (_, generics, _) | Struct (_, generics)) when erased ->
+  | (Enum (_, _, generics, _) | Struct (_, _, generics)) when erased ->
       let generics = c_generics generics in
       let is_struct = match item.kind with Struct _ -> true | _ -> false in
       let def_id = assert_item_def_id () in
       let name = Concrete_ident.of_def_id ~value:false def_id in
       mk @@ Type { name; generics; variants = []; is_struct }
-  | Enum (variants, generics, repr) ->
+  | Enum (_, variants, generics, repr) ->
       let def_id = assert_item_def_id () in
       let generics = c_generics generics in
       let is_struct = false in
@@ -1586,7 +1588,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         mk_one (Type { name; generics; variants; is_struct }) :: discs
       in
       if is_primitive then cast_fun :: result else result
-  | Struct (v, generics) ->
+  | Struct (_, v, generics) ->
       let generics = c_generics generics in
       let def_id = assert_item_def_id () in
       let is_struct = true in
@@ -1613,7 +1615,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
       let variants = [ v ] in
       let name = Concrete_ident.of_def_id ~value:false def_id in
       mk @@ Type { name; generics; variants; is_struct }
-  | Trait (No, safety, generics, _bounds, items) ->
+  | Trait (No, safety, _, generics, _bounds, items) ->
       let items =
         List.filter
           ~f:(fun { attributes; _ } -> not (should_skip attributes))
@@ -1633,7 +1635,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
       let items = List.map ~f:c_trait_item items in
       let safety = csafety safety in
       mk @@ Trait { name; generics; items; safety }
-  | Trait (Yes, _, _, _, _) ->
+  | Trait (Yes, _, _, _, _, _) ->
       unimplemented ~issue_id:930 [ item.span ] "Auto trait"
   | Impl { of_trait = None; generics; items; _ } ->
       let items =
@@ -1674,7 +1676,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                         (c_generics item.generics);
                     body = c_body body;
                     params;
-                    safety = csafety safety;
+                    safety = c_header_safety safety;
                   }
             | Const (_ty, e) ->
                 Fn
