@@ -1,0 +1,3531 @@
+[
+  {
+    "def_id": {
+      "contents": {
+        "id": 7,
+        "value": {
+          "krate": "literals",
+          "path": [
+            {
+              "data": {
+                "TypeNs": "my_mod"
+              },
+              "disambiguator": 0
+            },
+            {
+              "data": {
+                "ValueNs": "index"
+              },
+              "disambiguator": 0
+            }
+          ],
+          "parent": {
+            "contents": {
+              "id": 6,
+              "value": {
+                "krate": "literals",
+                "path": [
+                  {
+                    "data": {
+                      "TypeNs": "my_mod"
+                    },
+                    "disambiguator": 0
+                  }
+                ],
+                "parent": {
+                  "contents": {
+                    "id": 0,
+                    "value": {
+                      "krate": "literals",
+                      "path": [],
+                      "parent": null,
+                      "index": [
+                        0,
+                        0
+                      ],
+                      "is_local": true,
+                      "kind": "Mod"
+                    }
+                  }
+                },
+                "index": [
+                  0,
+                  3
+                ],
+                "is_local": true,
+                "kind": "Mod"
+              }
+            }
+          },
+          "index": [
+            0,
+            4
+          ],
+          "is_local": true,
+          "kind": "Fn"
+        }
+      }
+    },
+    "owner_id": {
+      "contents": {
+        "id": 7,
+        "value": {
+          "krate": "literals",
+          "path": [
+            {
+              "data": {
+                "TypeNs": "my_mod"
+              },
+              "disambiguator": 0
+            },
+            {
+              "data": {
+                "ValueNs": "index"
+              },
+              "disambiguator": 0
+            }
+          ],
+          "parent": {
+            "contents": {
+              "id": 6,
+              "value": {
+                "krate": "literals",
+                "path": [
+                  {
+                    "data": {
+                      "TypeNs": "my_mod"
+                    },
+                    "disambiguator": 0
+                  }
+                ],
+                "parent": {
+                  "contents": {
+                    "id": 0,
+                    "value": {
+                      "krate": "literals",
+                      "path": [],
+                      "parent": null,
+                      "index": [
+                        0,
+                        0
+                      ],
+                      "is_local": true,
+                      "kind": "Mod"
+                    }
+                  }
+                },
+                "index": [
+                  0,
+                  3
+                ],
+                "is_local": true,
+                "kind": "Mod"
+              }
+            }
+          },
+          "index": [
+            0,
+            4
+          ],
+          "is_local": true,
+          "kind": "Fn"
+        }
+      }
+    },
+    "span": {
+      "lo": {
+        "line": 2,
+        "col": 4
+      },
+      "hi": {
+        "line": 5,
+        "col": 5
+      },
+      "filename": {
+        "Real": {
+          "LocalPath": "literals/src/lib.rs"
+        }
+      }
+    },
+    "vis_span": {
+      "lo": {
+        "line": 2,
+        "col": 4
+      },
+      "hi": {
+        "line": 5,
+        "col": 5
+      },
+      "filename": {
+        "Real": {
+          "LocalPath": "literals/src/lib.rs"
+        }
+      }
+    },
+    "kind": {
+      "Fn": [
+        {
+          "params": [
+            {
+              "hir_id": {
+                "owner": {
+                  "contents": {
+                    "id": 7,
+                    "value": {
+                      "krate": "literals",
+                      "path": [
+                        {
+                          "data": {
+                            "TypeNs": "my_mod"
+                          },
+                          "disambiguator": 0
+                        },
+                        {
+                          "data": {
+                            "ValueNs": "index"
+                          },
+                          "disambiguator": 0
+                        }
+                      ],
+                      "parent": {
+                        "contents": {
+                          "id": 6,
+                          "value": {
+                            "krate": "literals",
+                            "path": [
+                              {
+                                "data": {
+                                  "TypeNs": "my_mod"
+                                },
+                                "disambiguator": 0
+                              }
+                            ],
+                            "parent": {
+                              "contents": {
+                                "id": 0,
+                                "value": {
+                                  "krate": "literals",
+                                  "path": [],
+                                  "parent": null,
+                                  "index": [
+                                    0,
+                                    0
+                                  ],
+                                  "is_local": true,
+                                  "kind": "Mod"
+                                }
+                              }
+                            },
+                            "index": [
+                              0,
+                              3
+                            ],
+                            "is_local": true,
+                            "kind": "Mod"
+                          }
+                        }
+                      },
+                      "index": [
+                        0,
+                        4
+                      ],
+                      "is_local": true,
+                      "kind": "Fn"
+                    }
+                  }
+                },
+                "local_id": 8
+              },
+              "def_id": {
+                "contents": {
+                  "id": 8,
+                  "value": {
+                    "krate": "literals",
+                    "path": [
+                      {
+                        "data": {
+                          "TypeNs": "my_mod"
+                        },
+                        "disambiguator": 0
+                      },
+                      {
+                        "data": {
+                          "ValueNs": "index"
+                        },
+                        "disambiguator": 0
+                      },
+                      {
+                        "data": {
+                          "LifetimeNs": "'_"
+                        },
+                        "disambiguator": 0
+                      }
+                    ],
+                    "parent": {
+                      "contents": {
+                        "id": 7,
+                        "value": {
+                          "krate": "literals",
+                          "path": [
+                            {
+                              "data": {
+                                "TypeNs": "my_mod"
+                              },
+                              "disambiguator": 0
+                            },
+                            {
+                              "data": {
+                                "ValueNs": "index"
+                              },
+                              "disambiguator": 0
+                            }
+                          ],
+                          "parent": {
+                            "contents": {
+                              "id": 6,
+                              "value": {
+                                "krate": "literals",
+                                "path": [
+                                  {
+                                    "data": {
+                                      "TypeNs": "my_mod"
+                                    },
+                                    "disambiguator": 0
+                                  }
+                                ],
+                                "parent": {
+                                  "contents": {
+                                    "id": 0,
+                                    "value": {
+                                      "krate": "literals",
+                                      "path": [],
+                                      "parent": null,
+                                      "index": [
+                                        0,
+                                        0
+                                      ],
+                                      "is_local": true,
+                                      "kind": "Mod"
+                                    }
+                                  }
+                                },
+                                "index": [
+                                  0,
+                                  3
+                                ],
+                                "is_local": true,
+                                "kind": "Mod"
+                              }
+                            }
+                          },
+                          "index": [
+                            0,
+                            4
+                          ],
+                          "is_local": true,
+                          "kind": "Fn"
+                        }
+                      }
+                    },
+                    "index": [
+                      0,
+                      7
+                    ],
+                    "is_local": true,
+                    "kind": "LifetimeParam"
+                  }
+                }
+              },
+              "name": "Fresh",
+              "span": {
+                "lo": {
+                  "line": 2,
+                  "col": 39
+                },
+                "hi": {
+                  "line": 2,
+                  "col": 40
+                },
+                "filename": {
+                  "Real": {
+                    "LocalPath": "literals/src/lib.rs"
+                  }
+                }
+              },
+              "pure_wrt_drop": false,
+              "kind": {
+                "Lifetime": {
+                  "kind": {
+                    "Elided": {
+                      "MissingLifetimeKind": {
+                        "todo": "Ampersand"
+                      }
+                    }
+                  }
+                }
+              },
+              "colon_span": null,
+              "attributes": []
+            }
+          ],
+          "bounds": [],
+          "has_where_clause_predicates": false,
+          "where_clause_span": {
+            "lo": {
+              "line": 2,
+              "col": 51
+            },
+            "hi": {
+              "line": 2,
+              "col": 51
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          },
+          "span": {
+            "lo": {
+              "line": 2,
+              "col": 16
+            },
+            "hi": {
+              "line": 2,
+              "col": 16
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        },
+        {
+          "header": {
+            "safety": "Safe",
+            "constness": "NotConst",
+            "asyncness": "NotAsync",
+            "abi": "Rust"
+          },
+          "params": [
+            {
+              "pat": {
+                "ty": {
+                  "id": 9,
+                  "value": {
+                    "Uint": "Usize"
+                  }
+                },
+                "span": {
+                  "lo": {
+                    "line": 2,
+                    "col": 17
+                  },
+                  "hi": {
+                    "line": 2,
+                    "col": 22
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                },
+                "contents": {
+                  "Binding": {
+                    "mode": {
+                      "by_ref": "No",
+                      "mutability": false
+                    },
+                    "var": {
+                      "name": "index",
+                      "id": {
+                        "owner": {
+                          "contents": {
+                            "id": 7,
+                            "value": {
+                              "krate": "literals",
+                              "path": [
+                                {
+                                  "data": {
+                                    "TypeNs": "my_mod"
+                                  },
+                                  "disambiguator": 0
+                                },
+                                {
+                                  "data": {
+                                    "ValueNs": "index"
+                                  },
+                                  "disambiguator": 0
+                                }
+                              ],
+                              "parent": {
+                                "contents": {
+                                  "id": 6,
+                                  "value": {
+                                    "krate": "literals",
+                                    "path": [
+                                      {
+                                        "data": {
+                                          "TypeNs": "my_mod"
+                                        },
+                                        "disambiguator": 0
+                                      }
+                                    ],
+                                    "parent": {
+                                      "contents": {
+                                        "id": 0,
+                                        "value": {
+                                          "krate": "literals",
+                                          "path": [],
+                                          "parent": null,
+                                          "index": [
+                                            0,
+                                            0
+                                          ],
+                                          "is_local": true,
+                                          "kind": "Mod"
+                                        }
+                                      }
+                                    },
+                                    "index": [
+                                      0,
+                                      3
+                                    ],
+                                    "is_local": true,
+                                    "kind": "Mod"
+                                  }
+                                }
+                              },
+                              "index": [
+                                0,
+                                4
+                              ],
+                              "is_local": true,
+                              "kind": "Fn"
+                            }
+                          }
+                        },
+                        "local_id": 2
+                      }
+                    },
+                    "ty": {
+                      "id": 9,
+                      "value": {
+                        "Uint": "Usize"
+                      }
+                    },
+                    "subpattern": null,
+                    "is_primary": true
+                  }
+                },
+                "hir_id": null,
+                "attributes": []
+              },
+              "ty": {
+                "id": 9,
+                "value": {
+                  "Uint": "Usize"
+                }
+              },
+              "ty_span": {
+                "lo": {
+                  "line": 2,
+                  "col": 24
+                },
+                "hi": {
+                  "line": 2,
+                  "col": 29
+                },
+                "filename": {
+                  "Real": {
+                    "LocalPath": "literals/src/lib.rs"
+                  }
+                }
+              },
+              "self_kind": null,
+              "hir_id": {
+                "owner": {
+                  "contents": {
+                    "id": 7,
+                    "value": {
+                      "krate": "literals",
+                      "path": [
+                        {
+                          "data": {
+                            "TypeNs": "my_mod"
+                          },
+                          "disambiguator": 0
+                        },
+                        {
+                          "data": {
+                            "ValueNs": "index"
+                          },
+                          "disambiguator": 0
+                        }
+                      ],
+                      "parent": {
+                        "contents": {
+                          "id": 6,
+                          "value": {
+                            "krate": "literals",
+                            "path": [
+                              {
+                                "data": {
+                                  "TypeNs": "my_mod"
+                                },
+                                "disambiguator": 0
+                              }
+                            ],
+                            "parent": {
+                              "contents": {
+                                "id": 0,
+                                "value": {
+                                  "krate": "literals",
+                                  "path": [],
+                                  "parent": null,
+                                  "index": [
+                                    0,
+                                    0
+                                  ],
+                                  "is_local": true,
+                                  "kind": "Mod"
+                                }
+                              }
+                            },
+                            "index": [
+                              0,
+                              3
+                            ],
+                            "is_local": true,
+                            "kind": "Mod"
+                          }
+                        }
+                      },
+                      "index": [
+                        0,
+                        4
+                      ],
+                      "is_local": true,
+                      "kind": "Fn"
+                    }
+                  }
+                },
+                "local_id": 1
+              },
+              "attributes": []
+            },
+            {
+              "pat": {
+                "ty": {
+                  "id": 12,
+                  "value": {
+                    "Ref": [
+                      {
+                        "kind": "ReErased"
+                      },
+                      {
+                        "id": 11,
+                        "value": {
+                          "Slice": {
+                            "id": 10,
+                            "value": {
+                              "Uint": "U8"
+                            }
+                          }
+                        }
+                      },
+                      false
+                    ]
+                  }
+                },
+                "span": {
+                  "lo": {
+                    "line": 2,
+                    "col": 31
+                  },
+                  "hi": {
+                    "line": 2,
+                    "col": 37
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                },
+                "contents": {
+                  "Binding": {
+                    "mode": {
+                      "by_ref": "No",
+                      "mutability": false
+                    },
+                    "var": {
+                      "name": "values",
+                      "id": {
+                        "owner": {
+                          "contents": {
+                            "id": 7,
+                            "value": {
+                              "krate": "literals",
+                              "path": [
+                                {
+                                  "data": {
+                                    "TypeNs": "my_mod"
+                                  },
+                                  "disambiguator": 0
+                                },
+                                {
+                                  "data": {
+                                    "ValueNs": "index"
+                                  },
+                                  "disambiguator": 0
+                                }
+                              ],
+                              "parent": {
+                                "contents": {
+                                  "id": 6,
+                                  "value": {
+                                    "krate": "literals",
+                                    "path": [
+                                      {
+                                        "data": {
+                                          "TypeNs": "my_mod"
+                                        },
+                                        "disambiguator": 0
+                                      }
+                                    ],
+                                    "parent": {
+                                      "contents": {
+                                        "id": 0,
+                                        "value": {
+                                          "krate": "literals",
+                                          "path": [],
+                                          "parent": null,
+                                          "index": [
+                                            0,
+                                            0
+                                          ],
+                                          "is_local": true,
+                                          "kind": "Mod"
+                                        }
+                                      }
+                                    },
+                                    "index": [
+                                      0,
+                                      3
+                                    ],
+                                    "is_local": true,
+                                    "kind": "Mod"
+                                  }
+                                }
+                              },
+                              "index": [
+                                0,
+                                4
+                              ],
+                              "is_local": true,
+                              "kind": "Fn"
+                            }
+                          }
+                        },
+                        "local_id": 4
+                      }
+                    },
+                    "ty": {
+                      "id": 12,
+                      "value": {
+                        "Ref": [
+                          {
+                            "kind": "ReErased"
+                          },
+                          {
+                            "id": 11,
+                            "value": {
+                              "Slice": {
+                                "id": 10,
+                                "value": {
+                                  "Uint": "U8"
+                                }
+                              }
+                            }
+                          },
+                          false
+                        ]
+                      }
+                    },
+                    "subpattern": null,
+                    "is_primary": true
+                  }
+                },
+                "hir_id": null,
+                "attributes": []
+              },
+              "ty": {
+                "id": 12,
+                "value": {
+                  "Ref": [
+                    {
+                      "kind": "ReErased"
+                    },
+                    {
+                      "id": 11,
+                      "value": {
+                        "Slice": {
+                          "id": 10,
+                          "value": {
+                            "Uint": "U8"
+                          }
+                        }
+                      }
+                    },
+                    false
+                  ]
+                }
+              },
+              "ty_span": {
+                "lo": {
+                  "line": 2,
+                  "col": 39
+                },
+                "hi": {
+                  "line": 2,
+                  "col": 44
+                },
+                "filename": {
+                  "Real": {
+                    "LocalPath": "literals/src/lib.rs"
+                  }
+                }
+              },
+              "self_kind": null,
+              "hir_id": {
+                "owner": {
+                  "contents": {
+                    "id": 7,
+                    "value": {
+                      "krate": "literals",
+                      "path": [
+                        {
+                          "data": {
+                            "TypeNs": "my_mod"
+                          },
+                          "disambiguator": 0
+                        },
+                        {
+                          "data": {
+                            "ValueNs": "index"
+                          },
+                          "disambiguator": 0
+                        }
+                      ],
+                      "parent": {
+                        "contents": {
+                          "id": 6,
+                          "value": {
+                            "krate": "literals",
+                            "path": [
+                              {
+                                "data": {
+                                  "TypeNs": "my_mod"
+                                },
+                                "disambiguator": 0
+                              }
+                            ],
+                            "parent": {
+                              "contents": {
+                                "id": 0,
+                                "value": {
+                                  "krate": "literals",
+                                  "path": [],
+                                  "parent": null,
+                                  "index": [
+                                    0,
+                                    0
+                                  ],
+                                  "is_local": true,
+                                  "kind": "Mod"
+                                }
+                              }
+                            },
+                            "index": [
+                              0,
+                              3
+                            ],
+                            "is_local": true,
+                            "kind": "Mod"
+                          }
+                        }
+                      },
+                      "index": [
+                        0,
+                        4
+                      ],
+                      "is_local": true,
+                      "kind": "Fn"
+                    }
+                  }
+                },
+                "local_id": 3
+              },
+              "attributes": []
+            }
+          ],
+          "ret": {
+            "id": 10,
+            "value": {
+              "Uint": "U8"
+            }
+          },
+          "body": {
+            "ty": {
+              "id": 10,
+              "value": {
+                "Uint": "U8"
+              }
+            },
+            "span": {
+              "lo": {
+                "line": 2,
+                "col": 52
+              },
+              "hi": {
+                "line": 5,
+                "col": 5
+              },
+              "filename": {
+                "Real": {
+                  "LocalPath": "literals/src/lib.rs"
+                }
+              }
+            },
+            "contents": {
+              "Block": {
+                "targeted_by_break": false,
+                "region_scope": {
+                  "id": 5,
+                  "data": "Node"
+                },
+                "span": {
+                  "lo": {
+                    "line": 2,
+                    "col": 52
+                  },
+                  "hi": {
+                    "line": 5,
+                    "col": 5
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                },
+                "stmts": [],
+                "expr": {
+                  "ty": {
+                    "id": 10,
+                    "value": {
+                      "Uint": "U8"
+                    }
+                  },
+                  "span": {
+                    "lo": {
+                      "line": 4,
+                      "col": 8
+                    },
+                    "hi": {
+                      "line": 4,
+                      "col": 9
+                    },
+                    "filename": {
+                      "Real": {
+                        "LocalPath": "literals/src/lib.rs"
+                      }
+                    }
+                  },
+                  "contents": {
+                    "Literal": {
+                      "lit": {
+                        "node": {
+                          "Int": [
+                            "0",
+                            "Unsuffixed"
+                          ]
+                        },
+                        "span": {
+                          "lo": {
+                            "line": 4,
+                            "col": 8
+                          },
+                          "hi": {
+                            "line": 4,
+                            "col": 9
+                          },
+                          "filename": {
+                            "Real": {
+                              "LocalPath": "literals/src/lib.rs"
+                            }
+                          }
+                        }
+                      },
+                      "neg": false
+                    }
+                  },
+                  "hir_id": [
+                    4,
+                    6
+                  ],
+                  "attributes": []
+                },
+                "safety_mode": "Safe"
+              }
+            },
+            "hir_id": [
+              4,
+              7
+            ],
+            "attributes": []
+          },
+          "sig_span": {
+            "lo": {
+              "line": 2,
+              "col": 4
+            },
+            "hi": {
+              "line": 2,
+              "col": 51
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "attributes": {
+      "attributes": [],
+      "parent_attributes": [
+        {
+          "kind": {
+            "Normal": {
+              "item": {
+                "path": "feature",
+                "args": {
+                  "Delimited": {
+                    "dspan": {
+                      "DelimSpan": {
+                        "todo": "DelimSpan { open: <crate attribute>:1:8: 1:9 (#0), close: <crate attribute>:1:22: 1:23 (#0) }"
+                      }
+                    },
+                    "delim": "Parenthesis",
+                    "tokens": "register_tool"
+                  }
+                },
+                "tokens": null
+              },
+              "tokens": null
+            }
+          },
+          "id": 0,
+          "style": "Inner",
+          "span": {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 22
+            },
+            "filename": {
+              "CliCrateAttr": 12163675990738283201
+            }
+          }
+        },
+        {
+          "kind": {
+            "Normal": {
+              "item": {
+                "path": "register_tool",
+                "args": {
+                  "Delimited": {
+                    "dspan": {
+                      "DelimSpan": {
+                        "todo": "DelimSpan { open: <crate attribute>:1:14: 1:15 (#0), close: <crate attribute>:1:19: 1:20 (#0) }"
+                      }
+                    },
+                    "delim": "Parenthesis",
+                    "tokens": "_hax"
+                  }
+                },
+                "tokens": null
+              },
+              "tokens": null
+            }
+          },
+          "id": 1,
+          "style": "Inner",
+          "span": {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 19
+            },
+            "filename": {
+              "CliCrateAttr": 4528390502165333492
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "def_id": {
+      "contents": {
+        "id": 13,
+        "value": {
+          "krate": "literals",
+          "path": [
+            {
+              "data": {
+                "ValueNs": "my_main"
+              },
+              "disambiguator": 0
+            }
+          ],
+          "parent": {
+            "contents": {
+              "id": 0,
+              "value": {
+                "krate": "literals",
+                "path": [],
+                "parent": null,
+                "index": [
+                  0,
+                  0
+                ],
+                "is_local": true,
+                "kind": "Mod"
+              }
+            }
+          },
+          "index": [
+            0,
+            5
+          ],
+          "is_local": true,
+          "kind": "Fn"
+        }
+      }
+    },
+    "owner_id": {
+      "contents": {
+        "id": 13,
+        "value": {
+          "krate": "literals",
+          "path": [
+            {
+              "data": {
+                "ValueNs": "my_main"
+              },
+              "disambiguator": 0
+            }
+          ],
+          "parent": {
+            "contents": {
+              "id": 0,
+              "value": {
+                "krate": "literals",
+                "path": [],
+                "parent": null,
+                "index": [
+                  0,
+                  0
+                ],
+                "is_local": true,
+                "kind": "Mod"
+              }
+            }
+          },
+          "index": [
+            0,
+            5
+          ],
+          "is_local": true,
+          "kind": "Fn"
+        }
+      }
+    },
+    "span": {
+      "lo": {
+        "line": 8,
+        "col": 0
+      },
+      "hi": {
+        "line": 11,
+        "col": 1
+      },
+      "filename": {
+        "Real": {
+          "LocalPath": "literals/src/lib.rs"
+        }
+      }
+    },
+    "vis_span": {
+      "lo": {
+        "line": 8,
+        "col": 0
+      },
+      "hi": {
+        "line": 11,
+        "col": 1
+      },
+      "filename": {
+        "Real": {
+          "LocalPath": "literals/src/lib.rs"
+        }
+      }
+    },
+    "kind": {
+      "Fn": [
+        {
+          "params": [],
+          "bounds": [],
+          "has_where_clause_predicates": false,
+          "where_clause_span": {
+            "lo": {
+              "line": 8,
+              "col": 12
+            },
+            "hi": {
+              "line": 8,
+              "col": 12
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          },
+          "span": {
+            "lo": {
+              "line": 8,
+              "col": 10
+            },
+            "hi": {
+              "line": 8,
+              "col": 10
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        },
+        {
+          "header": {
+            "safety": "Safe",
+            "constness": "NotConst",
+            "asyncness": "NotAsync",
+            "abi": "Rust"
+          },
+          "params": [],
+          "ret": {
+            "id": 14,
+            "value": {
+              "Tuple": []
+            }
+          },
+          "body": {
+            "ty": {
+              "id": 14,
+              "value": {
+                "Tuple": []
+              }
+            },
+            "span": {
+              "lo": {
+                "line": 8,
+                "col": 13
+              },
+              "hi": {
+                "line": 11,
+                "col": 1
+              },
+              "filename": {
+                "Real": {
+                  "LocalPath": "literals/src/lib.rs"
+                }
+              }
+            },
+            "contents": {
+              "Block": {
+                "targeted_by_break": false,
+                "region_scope": {
+                  "id": 1,
+                  "data": "Node"
+                },
+                "span": {
+                  "lo": {
+                    "line": 8,
+                    "col": 13
+                  },
+                  "hi": {
+                    "line": 11,
+                    "col": 1
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                },
+                "stmts": [
+                  {
+                    "kind": {
+                      "Let": {
+                        "remainder_scope": {
+                          "id": 1,
+                          "data": {
+                            "Remainder": 0
+                          }
+                        },
+                        "init_scope": {
+                          "id": 2,
+                          "data": "Node"
+                        },
+                        "pattern": {
+                          "ty": {
+                            "id": 17,
+                            "value": {
+                              "Array": [
+                                {
+                                  "id": 15,
+                                  "value": {
+                                    "Uint": "U8"
+                                  }
+                                },
+                                {
+                                  "ty": {
+                                    "id": 16,
+                                    "value": {
+                                      "Uint": "Usize"
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 1,
+                                      "col": 0
+                                    },
+                                    "hi": {
+                                      "line": 1,
+                                      "col": 0
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "Literal": {
+                                      "Int": {
+                                        "Uint": [
+                                          "3",
+                                          "Usize"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "hir_id": null,
+                                  "attributes": []
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "lo": {
+                              "line": 9,
+                              "col": 8
+                            },
+                            "hi": {
+                              "line": 9,
+                              "col": 14
+                            },
+                            "filename": {
+                              "Real": {
+                                "LocalPath": "literals/src/lib.rs"
+                              }
+                            }
+                          },
+                          "contents": {
+                            "Binding": {
+                              "mode": {
+                                "by_ref": "No",
+                                "mutability": false
+                              },
+                              "var": {
+                                "name": "values",
+                                "id": {
+                                  "owner": {
+                                    "contents": {
+                                      "id": 13,
+                                      "value": {
+                                        "krate": "literals",
+                                        "path": [
+                                          {
+                                            "data": {
+                                              "ValueNs": "my_main"
+                                            },
+                                            "disambiguator": 0
+                                          }
+                                        ],
+                                        "parent": {
+                                          "contents": {
+                                            "id": 0,
+                                            "value": {
+                                              "krate": "literals",
+                                              "path": [],
+                                              "parent": null,
+                                              "index": [
+                                                0,
+                                                0
+                                              ],
+                                              "is_local": true,
+                                              "kind": "Mod"
+                                            }
+                                          }
+                                        },
+                                        "index": [
+                                          0,
+                                          5
+                                        ],
+                                        "is_local": true,
+                                        "kind": "Fn"
+                                      }
+                                    }
+                                  },
+                                  "local_id": 8
+                                }
+                              },
+                              "ty": {
+                                "id": 17,
+                                "value": {
+                                  "Array": [
+                                    {
+                                      "id": 15,
+                                      "value": {
+                                        "Uint": "U8"
+                                      }
+                                    },
+                                    {
+                                      "ty": {
+                                        "id": 16,
+                                        "value": {
+                                          "Uint": "Usize"
+                                        }
+                                      },
+                                      "span": {
+                                        "lo": {
+                                          "line": 1,
+                                          "col": 0
+                                        },
+                                        "hi": {
+                                          "line": 1,
+                                          "col": 0
+                                        },
+                                        "filename": {
+                                          "Real": {
+                                            "LocalPath": "literals/src/lib.rs"
+                                          }
+                                        }
+                                      },
+                                      "contents": {
+                                        "Literal": {
+                                          "Int": {
+                                            "Uint": [
+                                              "3",
+                                              "Usize"
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "hir_id": null,
+                                      "attributes": []
+                                    }
+                                  ]
+                                }
+                              },
+                              "subpattern": null,
+                              "is_primary": true
+                            }
+                          },
+                          "hir_id": null,
+                          "attributes": []
+                        },
+                        "initializer": {
+                          "ty": {
+                            "id": 17,
+                            "value": {
+                              "Array": [
+                                {
+                                  "id": 15,
+                                  "value": {
+                                    "Uint": "U8"
+                                  }
+                                },
+                                {
+                                  "ty": {
+                                    "id": 16,
+                                    "value": {
+                                      "Uint": "Usize"
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 1,
+                                      "col": 0
+                                    },
+                                    "hi": {
+                                      "line": 1,
+                                      "col": 0
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "Literal": {
+                                      "Int": {
+                                        "Uint": [
+                                          "3",
+                                          "Usize"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "hir_id": null,
+                                  "attributes": []
+                                }
+                              ]
+                            }
+                          },
+                          "span": {
+                            "lo": {
+                              "line": 9,
+                              "col": 17
+                            },
+                            "hi": {
+                              "line": 9,
+                              "col": 28
+                            },
+                            "filename": {
+                              "Real": {
+                                "LocalPath": "literals/src/lib.rs"
+                              }
+                            }
+                          },
+                          "contents": {
+                            "Array": {
+                              "fields": [
+                                {
+                                  "ty": {
+                                    "id": 15,
+                                    "value": {
+                                      "Uint": "U8"
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 9,
+                                      "col": 18
+                                    },
+                                    "hi": {
+                                      "line": 9,
+                                      "col": 21
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "Literal": {
+                                      "lit": {
+                                        "node": {
+                                          "Int": [
+                                            "1",
+                                            {
+                                              "Unsigned": "U8"
+                                            }
+                                          ]
+                                        },
+                                        "span": {
+                                          "lo": {
+                                            "line": 9,
+                                            "col": 18
+                                          },
+                                          "hi": {
+                                            "line": 9,
+                                            "col": 21
+                                          },
+                                          "filename": {
+                                            "Real": {
+                                              "LocalPath": "literals/src/lib.rs"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "neg": false
+                                    }
+                                  },
+                                  "hir_id": [
+                                    5,
+                                    4
+                                  ],
+                                  "attributes": []
+                                },
+                                {
+                                  "ty": {
+                                    "id": 15,
+                                    "value": {
+                                      "Uint": "U8"
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 9,
+                                      "col": 23
+                                    },
+                                    "hi": {
+                                      "line": 9,
+                                      "col": 24
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "Literal": {
+                                      "lit": {
+                                        "node": {
+                                          "Int": [
+                                            "2",
+                                            "Unsuffixed"
+                                          ]
+                                        },
+                                        "span": {
+                                          "lo": {
+                                            "line": 9,
+                                            "col": 23
+                                          },
+                                          "hi": {
+                                            "line": 9,
+                                            "col": 24
+                                          },
+                                          "filename": {
+                                            "Real": {
+                                              "LocalPath": "literals/src/lib.rs"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "neg": false
+                                    }
+                                  },
+                                  "hir_id": [
+                                    5,
+                                    5
+                                  ],
+                                  "attributes": []
+                                },
+                                {
+                                  "ty": {
+                                    "id": 15,
+                                    "value": {
+                                      "Uint": "U8"
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 9,
+                                      "col": 26
+                                    },
+                                    "hi": {
+                                      "line": 9,
+                                      "col": 27
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "Literal": {
+                                      "lit": {
+                                        "node": {
+                                          "Int": [
+                                            "3",
+                                            "Unsuffixed"
+                                          ]
+                                        },
+                                        "span": {
+                                          "lo": {
+                                            "line": 9,
+                                            "col": 26
+                                          },
+                                          "hi": {
+                                            "line": 9,
+                                            "col": 27
+                                          },
+                                          "filename": {
+                                            "Real": {
+                                              "LocalPath": "literals/src/lib.rs"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "neg": false
+                                    }
+                                  },
+                                  "hir_id": [
+                                    5,
+                                    6
+                                  ],
+                                  "attributes": []
+                                }
+                              ]
+                            }
+                          },
+                          "hir_id": [
+                            5,
+                            3
+                          ],
+                          "attributes": []
+                        },
+                        "else_block": null,
+                        "lint_level": {
+                          "Explicit": {
+                            "owner": {
+                              "contents": {
+                                "id": 13,
+                                "value": {
+                                  "krate": "literals",
+                                  "path": [
+                                    {
+                                      "data": {
+                                        "ValueNs": "my_main"
+                                      },
+                                      "disambiguator": 0
+                                    }
+                                  ],
+                                  "parent": {
+                                    "contents": {
+                                      "id": 0,
+                                      "value": {
+                                        "krate": "literals",
+                                        "path": [],
+                                        "parent": null,
+                                        "index": [
+                                          0,
+                                          0
+                                        ],
+                                        "is_local": true,
+                                        "kind": "Mod"
+                                      }
+                                    }
+                                  },
+                                  "index": [
+                                    0,
+                                    5
+                                  ],
+                                  "is_local": true,
+                                  "kind": "Fn"
+                                }
+                              }
+                            },
+                            "local_id": 7
+                          }
+                        },
+                        "attributes": []
+                      }
+                    }
+                  },
+                  {
+                    "kind": {
+                      "Expr": {
+                        "scope": {
+                          "id": 17,
+                          "data": "Node"
+                        },
+                        "expr": {
+                          "ty": {
+                            "id": 15,
+                            "value": {
+                              "Uint": "U8"
+                            }
+                          },
+                          "span": {
+                            "lo": {
+                              "line": 10,
+                              "col": 4
+                            },
+                            "hi": {
+                              "line": 10,
+                              "col": 29
+                            },
+                            "filename": {
+                              "Real": {
+                                "LocalPath": "literals/src/lib.rs"
+                              }
+                            }
+                          },
+                          "contents": {
+                            "Call": {
+                              "ty": {
+                                "id": 20,
+                                "value": {
+                                  "Arrow": {
+                                    "value": {
+                                      "inputs": [
+                                        {
+                                          "id": 16,
+                                          "value": {
+                                            "Uint": "Usize"
+                                          }
+                                        },
+                                        {
+                                          "id": 19,
+                                          "value": {
+                                            "Ref": [
+                                              {
+                                                "kind": {
+                                                  "ReBound": [
+                                                    0,
+                                                    {
+                                                      "var": 0,
+                                                      "kind": {
+                                                        "Named": [
+                                                          {
+                                                            "contents": {
+                                                              "id": 8,
+                                                              "value": {
+                                                                "krate": "literals",
+                                                                "path": [
+                                                                  {
+                                                                    "data": {
+                                                                      "TypeNs": "my_mod"
+                                                                    },
+                                                                    "disambiguator": 0
+                                                                  },
+                                                                  {
+                                                                    "data": {
+                                                                      "ValueNs": "index"
+                                                                    },
+                                                                    "disambiguator": 0
+                                                                  },
+                                                                  {
+                                                                    "data": {
+                                                                      "LifetimeNs": "'_"
+                                                                    },
+                                                                    "disambiguator": 0
+                                                                  }
+                                                                ],
+                                                                "parent": {
+                                                                  "contents": {
+                                                                    "id": 7,
+                                                                    "value": {
+                                                                      "krate": "literals",
+                                                                      "path": [
+                                                                        {
+                                                                          "data": {
+                                                                            "TypeNs": "my_mod"
+                                                                          },
+                                                                          "disambiguator": 0
+                                                                        },
+                                                                        {
+                                                                          "data": {
+                                                                            "ValueNs": "index"
+                                                                          },
+                                                                          "disambiguator": 0
+                                                                        }
+                                                                      ],
+                                                                      "parent": {
+                                                                        "contents": {
+                                                                          "id": 6,
+                                                                          "value": {
+                                                                            "krate": "literals",
+                                                                            "path": [
+                                                                              {
+                                                                                "data": {
+                                                                                  "TypeNs": "my_mod"
+                                                                                },
+                                                                                "disambiguator": 0
+                                                                              }
+                                                                            ],
+                                                                            "parent": {
+                                                                              "contents": {
+                                                                                "id": 0,
+                                                                                "value": {
+                                                                                  "krate": "literals",
+                                                                                  "path": [],
+                                                                                  "parent": null,
+                                                                                  "index": [
+                                                                                    0,
+                                                                                    0
+                                                                                  ],
+                                                                                  "is_local": true,
+                                                                                  "kind": "Mod"
+                                                                                }
+                                                                              }
+                                                                            },
+                                                                            "index": [
+                                                                              0,
+                                                                              3
+                                                                            ],
+                                                                            "is_local": true,
+                                                                            "kind": "Mod"
+                                                                          }
+                                                                        }
+                                                                      },
+                                                                      "index": [
+                                                                        0,
+                                                                        4
+                                                                      ],
+                                                                      "is_local": true,
+                                                                      "kind": "Fn"
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "index": [
+                                                                  0,
+                                                                  7
+                                                                ],
+                                                                "is_local": true,
+                                                                "kind": "LifetimeParam"
+                                                              }
+                                                            }
+                                                          },
+                                                          "'_"
+                                                        ]
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "id": 18,
+                                                "value": {
+                                                  "Slice": {
+                                                    "id": 15,
+                                                    "value": {
+                                                      "Uint": "U8"
+                                                    }
+                                                  }
+                                                }
+                                              },
+                                              false
+                                            ]
+                                          }
+                                        }
+                                      ],
+                                      "output": {
+                                        "id": 15,
+                                        "value": {
+                                          "Uint": "U8"
+                                        }
+                                      },
+                                      "c_variadic": false,
+                                      "safety": "Safe",
+                                      "abi": "Rust"
+                                    },
+                                    "bound_vars": [
+                                      {
+                                        "Region": {
+                                          "Named": [
+                                            {
+                                              "contents": {
+                                                "id": 8,
+                                                "value": {
+                                                  "krate": "literals",
+                                                  "path": [
+                                                    {
+                                                      "data": {
+                                                        "TypeNs": "my_mod"
+                                                      },
+                                                      "disambiguator": 0
+                                                    },
+                                                    {
+                                                      "data": {
+                                                        "ValueNs": "index"
+                                                      },
+                                                      "disambiguator": 0
+                                                    },
+                                                    {
+                                                      "data": {
+                                                        "LifetimeNs": "'_"
+                                                      },
+                                                      "disambiguator": 0
+                                                    }
+                                                  ],
+                                                  "parent": {
+                                                    "contents": {
+                                                      "id": 7,
+                                                      "value": {
+                                                        "krate": "literals",
+                                                        "path": [
+                                                          {
+                                                            "data": {
+                                                              "TypeNs": "my_mod"
+                                                            },
+                                                            "disambiguator": 0
+                                                          },
+                                                          {
+                                                            "data": {
+                                                              "ValueNs": "index"
+                                                            },
+                                                            "disambiguator": 0
+                                                          }
+                                                        ],
+                                                        "parent": {
+                                                          "contents": {
+                                                            "id": 6,
+                                                            "value": {
+                                                              "krate": "literals",
+                                                              "path": [
+                                                                {
+                                                                  "data": {
+                                                                    "TypeNs": "my_mod"
+                                                                  },
+                                                                  "disambiguator": 0
+                                                                }
+                                                              ],
+                                                              "parent": {
+                                                                "contents": {
+                                                                  "id": 0,
+                                                                  "value": {
+                                                                    "krate": "literals",
+                                                                    "path": [],
+                                                                    "parent": null,
+                                                                    "index": [
+                                                                      0,
+                                                                      0
+                                                                    ],
+                                                                    "is_local": true,
+                                                                    "kind": "Mod"
+                                                                  }
+                                                                }
+                                                              },
+                                                              "index": [
+                                                                0,
+                                                                3
+                                                              ],
+                                                              "is_local": true,
+                                                              "kind": "Mod"
+                                                            }
+                                                          }
+                                                        },
+                                                        "index": [
+                                                          0,
+                                                          4
+                                                        ],
+                                                        "is_local": true,
+                                                        "kind": "Fn"
+                                                      }
+                                                    }
+                                                  },
+                                                  "index": [
+                                                    0,
+                                                    7
+                                                  ],
+                                                  "is_local": true,
+                                                  "kind": "LifetimeParam"
+                                                }
+                                              }
+                                            },
+                                            "'_"
+                                          ]
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              "fun": {
+                                "ty": {
+                                  "id": 20,
+                                  "value": {
+                                    "Arrow": {
+                                      "value": {
+                                        "inputs": [
+                                          {
+                                            "id": 16,
+                                            "value": {
+                                              "Uint": "Usize"
+                                            }
+                                          },
+                                          {
+                                            "id": 19,
+                                            "value": {
+                                              "Ref": [
+                                                {
+                                                  "kind": {
+                                                    "ReBound": [
+                                                      0,
+                                                      {
+                                                        "var": 0,
+                                                        "kind": {
+                                                          "Named": [
+                                                            {
+                                                              "contents": {
+                                                                "id": 8,
+                                                                "value": {
+                                                                  "krate": "literals",
+                                                                  "path": [
+                                                                    {
+                                                                      "data": {
+                                                                        "TypeNs": "my_mod"
+                                                                      },
+                                                                      "disambiguator": 0
+                                                                    },
+                                                                    {
+                                                                      "data": {
+                                                                        "ValueNs": "index"
+                                                                      },
+                                                                      "disambiguator": 0
+                                                                    },
+                                                                    {
+                                                                      "data": {
+                                                                        "LifetimeNs": "'_"
+                                                                      },
+                                                                      "disambiguator": 0
+                                                                    }
+                                                                  ],
+                                                                  "parent": {
+                                                                    "contents": {
+                                                                      "id": 7,
+                                                                      "value": {
+                                                                        "krate": "literals",
+                                                                        "path": [
+                                                                          {
+                                                                            "data": {
+                                                                              "TypeNs": "my_mod"
+                                                                            },
+                                                                            "disambiguator": 0
+                                                                          },
+                                                                          {
+                                                                            "data": {
+                                                                              "ValueNs": "index"
+                                                                            },
+                                                                            "disambiguator": 0
+                                                                          }
+                                                                        ],
+                                                                        "parent": {
+                                                                          "contents": {
+                                                                            "id": 6,
+                                                                            "value": {
+                                                                              "krate": "literals",
+                                                                              "path": [
+                                                                                {
+                                                                                  "data": {
+                                                                                    "TypeNs": "my_mod"
+                                                                                  },
+                                                                                  "disambiguator": 0
+                                                                                }
+                                                                              ],
+                                                                              "parent": {
+                                                                                "contents": {
+                                                                                  "id": 0,
+                                                                                  "value": {
+                                                                                    "krate": "literals",
+                                                                                    "path": [],
+                                                                                    "parent": null,
+                                                                                    "index": [
+                                                                                      0,
+                                                                                      0
+                                                                                    ],
+                                                                                    "is_local": true,
+                                                                                    "kind": "Mod"
+                                                                                  }
+                                                                                }
+                                                                              },
+                                                                              "index": [
+                                                                                0,
+                                                                                3
+                                                                              ],
+                                                                              "is_local": true,
+                                                                              "kind": "Mod"
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "index": [
+                                                                          0,
+                                                                          4
+                                                                        ],
+                                                                        "is_local": true,
+                                                                        "kind": "Fn"
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "index": [
+                                                                    0,
+                                                                    7
+                                                                  ],
+                                                                  "is_local": true,
+                                                                  "kind": "LifetimeParam"
+                                                                }
+                                                              }
+                                                            },
+                                                            "'_"
+                                                          ]
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                },
+                                                {
+                                                  "id": 18,
+                                                  "value": {
+                                                    "Slice": {
+                                                      "id": 15,
+                                                      "value": {
+                                                        "Uint": "U8"
+                                                      }
+                                                    }
+                                                  }
+                                                },
+                                                false
+                                              ]
+                                            }
+                                          }
+                                        ],
+                                        "output": {
+                                          "id": 15,
+                                          "value": {
+                                            "Uint": "U8"
+                                          }
+                                        },
+                                        "c_variadic": false,
+                                        "safety": "Safe",
+                                        "abi": "Rust"
+                                      },
+                                      "bound_vars": [
+                                        {
+                                          "Region": {
+                                            "Named": [
+                                              {
+                                                "contents": {
+                                                  "id": 8,
+                                                  "value": {
+                                                    "krate": "literals",
+                                                    "path": [
+                                                      {
+                                                        "data": {
+                                                          "TypeNs": "my_mod"
+                                                        },
+                                                        "disambiguator": 0
+                                                      },
+                                                      {
+                                                        "data": {
+                                                          "ValueNs": "index"
+                                                        },
+                                                        "disambiguator": 0
+                                                      },
+                                                      {
+                                                        "data": {
+                                                          "LifetimeNs": "'_"
+                                                        },
+                                                        "disambiguator": 0
+                                                      }
+                                                    ],
+                                                    "parent": {
+                                                      "contents": {
+                                                        "id": 7,
+                                                        "value": {
+                                                          "krate": "literals",
+                                                          "path": [
+                                                            {
+                                                              "data": {
+                                                                "TypeNs": "my_mod"
+                                                              },
+                                                              "disambiguator": 0
+                                                            },
+                                                            {
+                                                              "data": {
+                                                                "ValueNs": "index"
+                                                              },
+                                                              "disambiguator": 0
+                                                            }
+                                                          ],
+                                                          "parent": {
+                                                            "contents": {
+                                                              "id": 6,
+                                                              "value": {
+                                                                "krate": "literals",
+                                                                "path": [
+                                                                  {
+                                                                    "data": {
+                                                                      "TypeNs": "my_mod"
+                                                                    },
+                                                                    "disambiguator": 0
+                                                                  }
+                                                                ],
+                                                                "parent": {
+                                                                  "contents": {
+                                                                    "id": 0,
+                                                                    "value": {
+                                                                      "krate": "literals",
+                                                                      "path": [],
+                                                                      "parent": null,
+                                                                      "index": [
+                                                                        0,
+                                                                        0
+                                                                      ],
+                                                                      "is_local": true,
+                                                                      "kind": "Mod"
+                                                                    }
+                                                                  }
+                                                                },
+                                                                "index": [
+                                                                  0,
+                                                                  3
+                                                                ],
+                                                                "is_local": true,
+                                                                "kind": "Mod"
+                                                              }
+                                                            }
+                                                          },
+                                                          "index": [
+                                                            0,
+                                                            4
+                                                          ],
+                                                          "is_local": true,
+                                                          "kind": "Fn"
+                                                        }
+                                                      }
+                                                    },
+                                                    "index": [
+                                                      0,
+                                                      7
+                                                    ],
+                                                    "is_local": true,
+                                                    "kind": "LifetimeParam"
+                                                  }
+                                                }
+                                              },
+                                              "'_"
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                },
+                                "span": {
+                                  "lo": {
+                                    "line": 10,
+                                    "col": 4
+                                  },
+                                  "hi": {
+                                    "line": 10,
+                                    "col": 17
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                },
+                                "contents": {
+                                  "GlobalName": {
+                                    "id": {
+                                      "contents": {
+                                        "id": 7,
+                                        "value": {
+                                          "krate": "literals",
+                                          "path": [
+                                            {
+                                              "data": {
+                                                "TypeNs": "my_mod"
+                                              },
+                                              "disambiguator": 0
+                                            },
+                                            {
+                                              "data": {
+                                                "ValueNs": "index"
+                                              },
+                                              "disambiguator": 0
+                                            }
+                                          ],
+                                          "parent": {
+                                            "contents": {
+                                              "id": 6,
+                                              "value": {
+                                                "krate": "literals",
+                                                "path": [
+                                                  {
+                                                    "data": {
+                                                      "TypeNs": "my_mod"
+                                                    },
+                                                    "disambiguator": 0
+                                                  }
+                                                ],
+                                                "parent": {
+                                                  "contents": {
+                                                    "id": 0,
+                                                    "value": {
+                                                      "krate": "literals",
+                                                      "path": [],
+                                                      "parent": null,
+                                                      "index": [
+                                                        0,
+                                                        0
+                                                      ],
+                                                      "is_local": true,
+                                                      "kind": "Mod"
+                                                    }
+                                                  }
+                                                },
+                                                "index": [
+                                                  0,
+                                                  3
+                                                ],
+                                                "is_local": true,
+                                                "kind": "Mod"
+                                              }
+                                            }
+                                          },
+                                          "index": [
+                                            0,
+                                            4
+                                          ],
+                                          "is_local": true,
+                                          "kind": "Fn"
+                                        }
+                                      }
+                                    },
+                                    "constructor": null
+                                  }
+                                },
+                                "hir_id": null,
+                                "attributes": []
+                              },
+                              "args": [
+                                {
+                                  "ty": {
+                                    "id": 16,
+                                    "value": {
+                                      "Uint": "Usize"
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 10,
+                                      "col": 18
+                                    },
+                                    "hi": {
+                                      "line": 10,
+                                      "col": 19
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "Literal": {
+                                      "lit": {
+                                        "node": {
+                                          "Int": [
+                                            "1",
+                                            "Unsuffixed"
+                                          ]
+                                        },
+                                        "span": {
+                                          "lo": {
+                                            "line": 10,
+                                            "col": 18
+                                          },
+                                          "hi": {
+                                            "line": 10,
+                                            "col": 19
+                                          },
+                                          "filename": {
+                                            "Real": {
+                                              "LocalPath": "literals/src/lib.rs"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "neg": false
+                                    }
+                                  },
+                                  "hir_id": [
+                                    5,
+                                    13
+                                  ],
+                                  "attributes": []
+                                },
+                                {
+                                  "ty": {
+                                    "id": 22,
+                                    "value": {
+                                      "Ref": [
+                                        {
+                                          "kind": "ReErased"
+                                        },
+                                        {
+                                          "id": 18,
+                                          "value": {
+                                            "Slice": {
+                                              "id": 15,
+                                              "value": {
+                                                "Uint": "U8"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        false
+                                      ]
+                                    }
+                                  },
+                                  "span": {
+                                    "lo": {
+                                      "line": 10,
+                                      "col": 21
+                                    },
+                                    "hi": {
+                                      "line": 10,
+                                      "col": 28
+                                    },
+                                    "filename": {
+                                      "Real": {
+                                        "LocalPath": "literals/src/lib.rs"
+                                      }
+                                    }
+                                  },
+                                  "contents": {
+                                    "PointerCoercion": {
+                                      "cast": "Unsize",
+                                      "source": {
+                                        "ty": {
+                                          "id": 21,
+                                          "value": {
+                                            "Ref": [
+                                              {
+                                                "kind": "ReErased"
+                                              },
+                                              {
+                                                "id": 17,
+                                                "value": {
+                                                  "Array": [
+                                                    {
+                                                      "id": 15,
+                                                      "value": {
+                                                        "Uint": "U8"
+                                                      }
+                                                    },
+                                                    {
+                                                      "ty": {
+                                                        "id": 16,
+                                                        "value": {
+                                                          "Uint": "Usize"
+                                                        }
+                                                      },
+                                                      "span": {
+                                                        "lo": {
+                                                          "line": 1,
+                                                          "col": 0
+                                                        },
+                                                        "hi": {
+                                                          "line": 1,
+                                                          "col": 0
+                                                        },
+                                                        "filename": {
+                                                          "Real": {
+                                                            "LocalPath": "literals/src/lib.rs"
+                                                          }
+                                                        }
+                                                      },
+                                                      "contents": {
+                                                        "Literal": {
+                                                          "Int": {
+                                                            "Uint": [
+                                                              "3",
+                                                              "Usize"
+                                                            ]
+                                                          }
+                                                        }
+                                                      },
+                                                      "hir_id": null,
+                                                      "attributes": []
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              false
+                                            ]
+                                          }
+                                        },
+                                        "span": {
+                                          "lo": {
+                                            "line": 10,
+                                            "col": 21
+                                          },
+                                          "hi": {
+                                            "line": 10,
+                                            "col": 28
+                                          },
+                                          "filename": {
+                                            "Real": {
+                                              "LocalPath": "literals/src/lib.rs"
+                                            }
+                                          }
+                                        },
+                                        "contents": {
+                                          "Borrow": {
+                                            "borrow_kind": "Shared",
+                                            "arg": {
+                                              "ty": {
+                                                "id": 17,
+                                                "value": {
+                                                  "Array": [
+                                                    {
+                                                      "id": 15,
+                                                      "value": {
+                                                        "Uint": "U8"
+                                                      }
+                                                    },
+                                                    {
+                                                      "ty": {
+                                                        "id": 16,
+                                                        "value": {
+                                                          "Uint": "Usize"
+                                                        }
+                                                      },
+                                                      "span": {
+                                                        "lo": {
+                                                          "line": 1,
+                                                          "col": 0
+                                                        },
+                                                        "hi": {
+                                                          "line": 1,
+                                                          "col": 0
+                                                        },
+                                                        "filename": {
+                                                          "Real": {
+                                                            "LocalPath": "literals/src/lib.rs"
+                                                          }
+                                                        }
+                                                      },
+                                                      "contents": {
+                                                        "Literal": {
+                                                          "Int": {
+                                                            "Uint": [
+                                                              "3",
+                                                              "Usize"
+                                                            ]
+                                                          }
+                                                        }
+                                                      },
+                                                      "hir_id": null,
+                                                      "attributes": []
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              "span": {
+                                                "lo": {
+                                                  "line": 10,
+                                                  "col": 21
+                                                },
+                                                "hi": {
+                                                  "line": 10,
+                                                  "col": 28
+                                                },
+                                                "filename": {
+                                                  "Real": {
+                                                    "LocalPath": "literals/src/lib.rs"
+                                                  }
+                                                }
+                                              },
+                                              "contents": {
+                                                "Deref": {
+                                                  "arg": {
+                                                    "ty": {
+                                                      "id": 21,
+                                                      "value": {
+                                                        "Ref": [
+                                                          {
+                                                            "kind": "ReErased"
+                                                          },
+                                                          {
+                                                            "id": 17,
+                                                            "value": {
+                                                              "Array": [
+                                                                {
+                                                                  "id": 15,
+                                                                  "value": {
+                                                                    "Uint": "U8"
+                                                                  }
+                                                                },
+                                                                {
+                                                                  "ty": {
+                                                                    "id": 16,
+                                                                    "value": {
+                                                                      "Uint": "Usize"
+                                                                    }
+                                                                  },
+                                                                  "span": {
+                                                                    "lo": {
+                                                                      "line": 1,
+                                                                      "col": 0
+                                                                    },
+                                                                    "hi": {
+                                                                      "line": 1,
+                                                                      "col": 0
+                                                                    },
+                                                                    "filename": {
+                                                                      "Real": {
+                                                                        "LocalPath": "literals/src/lib.rs"
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "contents": {
+                                                                    "Literal": {
+                                                                      "Int": {
+                                                                        "Uint": [
+                                                                          "3",
+                                                                          "Usize"
+                                                                        ]
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "hir_id": null,
+                                                                  "attributes": []
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          false
+                                                        ]
+                                                      }
+                                                    },
+                                                    "span": {
+                                                      "lo": {
+                                                        "line": 10,
+                                                        "col": 21
+                                                      },
+                                                      "hi": {
+                                                        "line": 10,
+                                                        "col": 28
+                                                      },
+                                                      "filename": {
+                                                        "Real": {
+                                                          "LocalPath": "literals/src/lib.rs"
+                                                        }
+                                                      }
+                                                    },
+                                                    "contents": {
+                                                      "Borrow": {
+                                                        "borrow_kind": "Shared",
+                                                        "arg": {
+                                                          "ty": {
+                                                            "id": 17,
+                                                            "value": {
+                                                              "Array": [
+                                                                {
+                                                                  "id": 15,
+                                                                  "value": {
+                                                                    "Uint": "U8"
+                                                                  }
+                                                                },
+                                                                {
+                                                                  "ty": {
+                                                                    "id": 16,
+                                                                    "value": {
+                                                                      "Uint": "Usize"
+                                                                    }
+                                                                  },
+                                                                  "span": {
+                                                                    "lo": {
+                                                                      "line": 1,
+                                                                      "col": 0
+                                                                    },
+                                                                    "hi": {
+                                                                      "line": 1,
+                                                                      "col": 0
+                                                                    },
+                                                                    "filename": {
+                                                                      "Real": {
+                                                                        "LocalPath": "literals/src/lib.rs"
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "contents": {
+                                                                    "Literal": {
+                                                                      "Int": {
+                                                                        "Uint": [
+                                                                          "3",
+                                                                          "Usize"
+                                                                        ]
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "hir_id": null,
+                                                                  "attributes": []
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          "span": {
+                                                            "lo": {
+                                                              "line": 10,
+                                                              "col": 22
+                                                            },
+                                                            "hi": {
+                                                              "line": 10,
+                                                              "col": 28
+                                                            },
+                                                            "filename": {
+                                                              "Real": {
+                                                                "LocalPath": "literals/src/lib.rs"
+                                                              }
+                                                            }
+                                                          },
+                                                          "contents": {
+                                                            "VarRef": {
+                                                              "id": {
+                                                                "name": "values",
+                                                                "id": {
+                                                                  "owner": {
+                                                                    "contents": {
+                                                                      "id": 13,
+                                                                      "value": {
+                                                                        "krate": "literals",
+                                                                        "path": [
+                                                                          {
+                                                                            "data": {
+                                                                              "ValueNs": "my_main"
+                                                                            },
+                                                                            "disambiguator": 0
+                                                                          }
+                                                                        ],
+                                                                        "parent": {
+                                                                          "contents": {
+                                                                            "id": 0,
+                                                                            "value": {
+                                                                              "krate": "literals",
+                                                                              "path": [],
+                                                                              "parent": null,
+                                                                              "index": [
+                                                                                0,
+                                                                                0
+                                                                              ],
+                                                                              "is_local": true,
+                                                                              "kind": "Mod"
+                                                                            }
+                                                                          }
+                                                                        },
+                                                                        "index": [
+                                                                          0,
+                                                                          5
+                                                                        ],
+                                                                        "is_local": true,
+                                                                        "kind": "Fn"
+                                                                      }
+                                                                    }
+                                                                  },
+                                                                  "local_id": 8
+                                                                }
+                                                              }
+                                                            }
+                                                          },
+                                                          "hir_id": [
+                                                            5,
+                                                            15
+                                                          ],
+                                                          "attributes": []
+                                                        }
+                                                      }
+                                                    },
+                                                    "hir_id": null,
+                                                    "attributes": []
+                                                  }
+                                                }
+                                              },
+                                              "hir_id": null,
+                                              "attributes": []
+                                            }
+                                          }
+                                        },
+                                        "hir_id": null,
+                                        "attributes": []
+                                      }
+                                    }
+                                  },
+                                  "hir_id": [
+                                    5,
+                                    14
+                                  ],
+                                  "attributes": []
+                                }
+                              ],
+                              "from_hir_call": true,
+                              "fn_span": {
+                                "lo": {
+                                  "line": 10,
+                                  "col": 4
+                                },
+                                "hi": {
+                                  "line": 10,
+                                  "col": 29
+                                },
+                                "filename": {
+                                  "Real": {
+                                    "LocalPath": "literals/src/lib.rs"
+                                  }
+                                }
+                              },
+                              "generic_args": [],
+                              "bounds_impls": [],
+                              "trait": null
+                            }
+                          },
+                          "hir_id": [
+                            5,
+                            9
+                          ],
+                          "attributes": []
+                        }
+                      }
+                    }
+                  }
+                ],
+                "expr": null,
+                "safety_mode": "Safe"
+              }
+            },
+            "hir_id": [
+              5,
+              18
+            ],
+            "attributes": []
+          },
+          "sig_span": {
+            "lo": {
+              "line": 8,
+              "col": 0
+            },
+            "hi": {
+              "line": 8,
+              "col": 12
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "attributes": {
+      "attributes": [],
+      "parent_attributes": [
+        {
+          "kind": {
+            "Normal": {
+              "item": {
+                "path": "feature",
+                "args": {
+                  "Delimited": {
+                    "dspan": {
+                      "DelimSpan": {
+                        "todo": "DelimSpan { open: <crate attribute>:1:8: 1:9 (#0), close: <crate attribute>:1:22: 1:23 (#0) }"
+                      }
+                    },
+                    "delim": "Parenthesis",
+                    "tokens": "register_tool"
+                  }
+                },
+                "tokens": null
+              },
+              "tokens": null
+            }
+          },
+          "id": 0,
+          "style": "Inner",
+          "span": {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 22
+            },
+            "filename": {
+              "CliCrateAttr": 12163675990738283201
+            }
+          }
+        },
+        {
+          "kind": {
+            "Normal": {
+              "item": {
+                "path": "register_tool",
+                "args": {
+                  "Delimited": {
+                    "dspan": {
+                      "DelimSpan": {
+                        "todo": "DelimSpan { open: <crate attribute>:1:14: 1:15 (#0), close: <crate attribute>:1:19: 1:20 (#0) }"
+                      }
+                    },
+                    "delim": "Parenthesis",
+                    "tokens": "_hax"
+                  }
+                },
+                "tokens": null
+              },
+              "tokens": null
+            }
+          },
+          "id": 1,
+          "style": "Inner",
+          "span": {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 19
+            },
+            "filename": {
+              "CliCrateAttr": 4528390502165333492
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "def_id": {
+      "contents": {
+        "id": 23,
+        "value": {
+          "krate": "literals",
+          "path": [
+            {
+              "data": {
+                "ValueNs": "f"
+              },
+              "disambiguator": 0
+            }
+          ],
+          "parent": {
+            "contents": {
+              "id": 0,
+              "value": {
+                "krate": "literals",
+                "path": [],
+                "parent": null,
+                "index": [
+                  0,
+                  0
+                ],
+                "is_local": true,
+                "kind": "Mod"
+              }
+            }
+          },
+          "index": [
+            0,
+            6
+          ],
+          "is_local": true,
+          "kind": "Fn"
+        }
+      }
+    },
+    "owner_id": {
+      "contents": {
+        "id": 23,
+        "value": {
+          "krate": "literals",
+          "path": [
+            {
+              "data": {
+                "ValueNs": "f"
+              },
+              "disambiguator": 0
+            }
+          ],
+          "parent": {
+            "contents": {
+              "id": 0,
+              "value": {
+                "krate": "literals",
+                "path": [],
+                "parent": null,
+                "index": [
+                  0,
+                  0
+                ],
+                "is_local": true,
+                "kind": "Mod"
+              }
+            }
+          },
+          "index": [
+            0,
+            6
+          ],
+          "is_local": true,
+          "kind": "Fn"
+        }
+      }
+    },
+    "span": {
+      "lo": {
+        "line": 13,
+        "col": 0
+      },
+      "hi": {
+        "line": 15,
+        "col": 1
+      },
+      "filename": {
+        "Real": {
+          "LocalPath": "literals/src/lib.rs"
+        }
+      }
+    },
+    "vis_span": {
+      "lo": {
+        "line": 13,
+        "col": 0
+      },
+      "hi": {
+        "line": 15,
+        "col": 1
+      },
+      "filename": {
+        "Real": {
+          "LocalPath": "literals/src/lib.rs"
+        }
+      }
+    },
+    "kind": {
+      "Fn": [
+        {
+          "params": [],
+          "bounds": [],
+          "has_where_clause_predicates": false,
+          "where_clause_span": {
+            "lo": {
+              "line": 13,
+              "col": 21
+            },
+            "hi": {
+              "line": 13,
+              "col": 21
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          },
+          "span": {
+            "lo": {
+              "line": 13,
+              "col": 4
+            },
+            "hi": {
+              "line": 13,
+              "col": 4
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        },
+        {
+          "header": {
+            "safety": "Safe",
+            "constness": "NotConst",
+            "asyncness": "NotAsync",
+            "abi": "Rust"
+          },
+          "params": [
+            {
+              "pat": {
+                "ty": {
+                  "id": 24,
+                  "value": "Bool"
+                },
+                "span": {
+                  "lo": {
+                    "line": 13,
+                    "col": 5
+                  },
+                  "hi": {
+                    "line": 13,
+                    "col": 6
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                },
+                "contents": {
+                  "Binding": {
+                    "mode": {
+                      "by_ref": "No",
+                      "mutability": false
+                    },
+                    "var": {
+                      "name": "x",
+                      "id": {
+                        "owner": {
+                          "contents": {
+                            "id": 23,
+                            "value": {
+                              "krate": "literals",
+                              "path": [
+                                {
+                                  "data": {
+                                    "ValueNs": "f"
+                                  },
+                                  "disambiguator": 0
+                                }
+                              ],
+                              "parent": {
+                                "contents": {
+                                  "id": 0,
+                                  "value": {
+                                    "krate": "literals",
+                                    "path": [],
+                                    "parent": null,
+                                    "index": [
+                                      0,
+                                      0
+                                    ],
+                                    "is_local": true,
+                                    "kind": "Mod"
+                                  }
+                                }
+                              },
+                              "index": [
+                                0,
+                                6
+                              ],
+                              "is_local": true,
+                              "kind": "Fn"
+                            }
+                          }
+                        },
+                        "local_id": 2
+                      }
+                    },
+                    "ty": {
+                      "id": 24,
+                      "value": "Bool"
+                    },
+                    "subpattern": null,
+                    "is_primary": true
+                  }
+                },
+                "hir_id": null,
+                "attributes": []
+              },
+              "ty": {
+                "id": 24,
+                "value": "Bool"
+              },
+              "ty_span": {
+                "lo": {
+                  "line": 13,
+                  "col": 8
+                },
+                "hi": {
+                  "line": 13,
+                  "col": 12
+                },
+                "filename": {
+                  "Real": {
+                    "LocalPath": "literals/src/lib.rs"
+                  }
+                }
+              },
+              "self_kind": null,
+              "hir_id": {
+                "owner": {
+                  "contents": {
+                    "id": 23,
+                    "value": {
+                      "krate": "literals",
+                      "path": [
+                        {
+                          "data": {
+                            "ValueNs": "f"
+                          },
+                          "disambiguator": 0
+                        }
+                      ],
+                      "parent": {
+                        "contents": {
+                          "id": 0,
+                          "value": {
+                            "krate": "literals",
+                            "path": [],
+                            "parent": null,
+                            "index": [
+                              0,
+                              0
+                            ],
+                            "is_local": true,
+                            "kind": "Mod"
+                          }
+                        }
+                      },
+                      "index": [
+                        0,
+                        6
+                      ],
+                      "is_local": true,
+                      "kind": "Fn"
+                    }
+                  }
+                },
+                "local_id": 1
+              },
+              "attributes": []
+            }
+          ],
+          "ret": {
+            "id": 24,
+            "value": "Bool"
+          },
+          "body": {
+            "ty": {
+              "id": 24,
+              "value": "Bool"
+            },
+            "span": {
+              "lo": {
+                "line": 13,
+                "col": 22
+              },
+              "hi": {
+                "line": 15,
+                "col": 1
+              },
+              "filename": {
+                "Real": {
+                  "LocalPath": "literals/src/lib.rs"
+                }
+              }
+            },
+            "contents": {
+              "Block": {
+                "targeted_by_break": false,
+                "region_scope": {
+                  "id": 3,
+                  "data": "Node"
+                },
+                "span": {
+                  "lo": {
+                    "line": 13,
+                    "col": 22
+                  },
+                  "hi": {
+                    "line": 15,
+                    "col": 1
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                },
+                "stmts": [],
+                "expr": {
+                  "ty": {
+                    "id": 24,
+                    "value": "Bool"
+                  },
+                  "span": {
+                    "lo": {
+                      "line": 14,
+                      "col": 4
+                    },
+                    "hi": {
+                      "line": 14,
+                      "col": 8
+                    },
+                    "filename": {
+                      "Real": {
+                        "LocalPath": "literals/src/lib.rs"
+                      }
+                    }
+                  },
+                  "contents": {
+                    "Literal": {
+                      "lit": {
+                        "node": {
+                          "Bool": true
+                        },
+                        "span": {
+                          "lo": {
+                            "line": 14,
+                            "col": 4
+                          },
+                          "hi": {
+                            "line": 14,
+                            "col": 8
+                          },
+                          "filename": {
+                            "Real": {
+                              "LocalPath": "literals/src/lib.rs"
+                            }
+                          }
+                        }
+                      },
+                      "neg": false
+                    }
+                  },
+                  "hir_id": [
+                    6,
+                    4
+                  ],
+                  "attributes": []
+                },
+                "safety_mode": "Safe"
+              }
+            },
+            "hir_id": [
+              6,
+              5
+            ],
+            "attributes": []
+          },
+          "sig_span": {
+            "lo": {
+              "line": 13,
+              "col": 0
+            },
+            "hi": {
+              "line": 13,
+              "col": 21
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "attributes": {
+      "attributes": [],
+      "parent_attributes": [
+        {
+          "kind": {
+            "Normal": {
+              "item": {
+                "path": "feature",
+                "args": {
+                  "Delimited": {
+                    "dspan": {
+                      "DelimSpan": {
+                        "todo": "DelimSpan { open: <crate attribute>:1:8: 1:9 (#0), close: <crate attribute>:1:22: 1:23 (#0) }"
+                      }
+                    },
+                    "delim": "Parenthesis",
+                    "tokens": "register_tool"
+                  }
+                },
+                "tokens": null
+              },
+              "tokens": null
+            }
+          },
+          "id": 0,
+          "style": "Inner",
+          "span": {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 22
+            },
+            "filename": {
+              "CliCrateAttr": 12163675990738283201
+            }
+          }
+        },
+        {
+          "kind": {
+            "Normal": {
+              "item": {
+                "path": "register_tool",
+                "args": {
+                  "Delimited": {
+                    "dspan": {
+                      "DelimSpan": {
+                        "todo": "DelimSpan { open: <crate attribute>:1:14: 1:15 (#0), close: <crate attribute>:1:19: 1:20 (#0) }"
+                      }
+                    },
+                    "delim": "Parenthesis",
+                    "tokens": "_hax"
+                  }
+                },
+                "tokens": null
+              },
+              "tokens": null
+            }
+          },
+          "id": 1,
+          "style": "Inner",
+          "span": {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 19
+            },
+            "filename": {
+              "CliCrateAttr": 4528390502165333492
+            }
+          }
+        }
+      ]
+    }
+  }
+]
