@@ -4,9 +4,10 @@ open FStar.Mul
 
 #set-options "--max_fuel 0 --max_ifuel 1 --z3rlimit 20"
 
-let pow2: nat -> pos = function
+unfold let pow2 (n: nat): pos = match n with
    | 0  -> 1
    | 1  -> 2
+   | 7 -> 128
    | 8  -> 256
    | 16 -> 65536
    | 31 -> 2147483648
