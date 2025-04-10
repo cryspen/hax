@@ -77,6 +77,27 @@ pub fn loop_invariant(predicate: pm::TokenStream) -> pm::TokenStream {
     ts
 }
 
+/// Must be used to prove termination of while loops. This takes an
+/// expression that should be a usize that decreases at every iteration
+///
+/// This function must be called just after `loop_invariant`, or at the first
+/// line of the loop if there is no invariant.
+#[proc_macro]
+pub fn loop_decreases(predicate: pm::TokenStream) -> pm::TokenStream {
+    let predicate: TokenStream = predicate.into();
+    let ts: pm::TokenStream = quote! {
+        #[cfg(#HaxCfgOptionName)]
+        {
+            hax_lib::_internal_loop_decreases({
+                #HaxQuantifiers
+                #predicate
+            })
+        }
+    }
+    .into();
+    ts
+}
+
 /// When extracting to F*, inform about what is the current
 /// verification status for an item. It can either be `lax` or
 /// `panic_free`.
