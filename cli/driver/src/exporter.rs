@@ -192,7 +192,9 @@ pub(crate) struct ExtractionCallbacks {
 
 impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
     fn from(opts: ExtractionCallbacks) -> hax_frontend_exporter_options::Options {
-        hax_frontend_exporter_options::Options {}
+        hax_frontend_exporter_options::Options {
+            inline_anon_consts: true,
+        }
     }
 }
 

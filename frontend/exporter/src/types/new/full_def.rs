@@ -294,9 +294,23 @@ pub enum FullDefKind<Body> {
         body: Option<Body>,
     },
     /// Anonymous constant, e.g. the `1 + 2` in `[u8; 1 + 2]`
-    AnonConst,
+    AnonConst {
+        #[value(get_param_env(s, s.owner_id()))]
+        param_env: ParamEnv,
+        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
+        ty: Ty,
+        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        body: Option<Body>,
+    },
     /// An inline constant, e.g. `const { 1 + 2 }`
-    InlineConst,
+    InlineConst {
+        #[value(get_param_env(s, s.owner_id()))]
+        param_env: ParamEnv,
+        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
+        ty: Ty,
+        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        body: Option<Body>,
+    },
     Static {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
@@ -433,6 +447,8 @@ impl<Body> FullDef<Body> {
             | AssocFn { param_env, .. }
             | Const { param_env, .. }
             | AssocConst { param_env, .. }
+            | AnonConst { param_env, .. }
+            | InlineConst { param_env, .. }
             | Static { param_env, .. }
             | TraitImpl { param_env, .. }
             | InherentImpl { param_env, .. } => Some(param_env),

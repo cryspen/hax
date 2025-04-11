@@ -56,6 +56,9 @@ pub enum ConstantExprKind {
     ///   const LEN: usize = N; // This has generics <N, T>
     /// }
     /// ```
+    ///
+    /// If `options.inline_anon_consts` is `false`, this is also used for inline const blocks and
+    /// advanced const generics expressions.
     GlobalName {
         id: GlobalIdent,
         generics: Vec<GenericArg>,
@@ -199,8 +202,7 @@ impl From<ConstantExpr> for Expr {
                 source: source.into(),
             },
             kind @ (FnPtr { .. } | TraitConst { .. } | Memory { .. }) => {
-                // SH: I see the `Closure` kind, but it's not the same as function pointer?
-                ExprKind::Todo(format!("FnPtr or TraitConst or Memory. kind={:#?}", kind))
+                ExprKind::Todo(format!("Unsupported constant kind. kind={:#?}", kind))
             }
             Todo(msg) => ExprKind::Todo(msg),
         };

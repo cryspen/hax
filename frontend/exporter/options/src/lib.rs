@@ -96,4 +96,9 @@ impl Namespace {
 }
 
 #[derive(Debug, Clone)]
-pub struct Options {}
+pub struct Options {
+    /// Whether we should evaluate and inline the value of anonymous constants (inline `const {}`
+    /// blocks or advanced constant expressions as in `[T; N+1]`), or refer to them as
+    /// `GlobalName`s.
+    pub inline_anon_consts: bool,
+}

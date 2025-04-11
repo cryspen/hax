@@ -534,7 +534,9 @@ impl NormalizePaths for Options {
 
 impl From<Options> for hax_frontend_exporter_options::Options {
     fn from(_opts: Options) -> hax_frontend_exporter_options::Options {
-        hax_frontend_exporter_options::Options {}
+        hax_frontend_exporter_options::Options {
+            inline_anon_consts: true,
+        }
     }
 }
 
