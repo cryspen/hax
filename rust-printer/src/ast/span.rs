@@ -1,5 +1,10 @@
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
 // TODO: implement, interned (statically -- bumpalo or something)
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Span(());
 
 impl From<hax_frontend_exporter::Span> for Span {
