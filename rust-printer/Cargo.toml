@@ -21,3 +21,4 @@ proc-macro2.workspace = true
 prettyplease = "0.2.33"
 quote.workspace = true
 itertools.workspace = true
+schemars.workspace = true

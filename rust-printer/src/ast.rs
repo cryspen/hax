@@ -23,8 +23,13 @@ pub use literals::*;
 pub use node::Node;
 pub use span::Span;
 
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum GenericValue {
     /// A type-level generic value.
     /// Example: `i32` in `Vec<i32>`
@@ -38,7 +43,9 @@ pub enum GenericValue {
 }
 
 /// Built-in primitive types.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum PrimitiveTy {
     /// The `bool` type.
     Bool,
@@ -47,7 +54,9 @@ pub enum PrimitiveTy {
 }
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum Ty {
     /// A primitive type.
     /// Example: `i32`, `bool`
@@ -86,7 +95,9 @@ pub enum Ty {
 }
 
 /// Extra information attached to syntax nodes.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Metadata {
     /// The location in the source code.
     pub span: Span,
@@ -96,7 +107,9 @@ pub struct Metadata {
 }
 
 /// A typed expression with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Expr {
     /// The kind of expression.
     pub kind: Box<ExprKind>,
@@ -107,7 +120,9 @@ pub struct Expr {
 }
 
 /// A typed pattern with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Pat {
     /// The kind of pattern.
     pub kind: Box<PatKind>,
@@ -140,7 +155,9 @@ pub struct Guard {
 }
 
 /// Represents different levels of borrowing.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum BorrowKind {
     /// Shared reference: `&x`
     Shared,
@@ -151,7 +168,9 @@ pub enum BorrowKind {
 }
 
 /// Binding modes used in patterns.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum BindingMode {
     /// Binding by value: `x`
     ByValue,
@@ -160,7 +179,9 @@ pub enum BindingMode {
 }
 
 /// Represents the various kinds of patterns.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum PatKind {
     /// Wildcard pattern: `_`
     Wild,
@@ -200,7 +221,9 @@ pub struct ImplExpr;
 
 /// Describes the shape of an expression.
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum ExprKind {
     /// If expression.
     /// Example: `if x > 0 { 1 } else { 2 }`
@@ -375,7 +398,9 @@ pub struct Generics {
 }
 
 /// Safety level of a function.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum SafetyKind {
     /// Safe function (default).
     Safe,
@@ -385,21 +410,27 @@ pub enum SafetyKind {
 
 /// Represents a single attribute.
 // TODO: implement
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Attribute;
 
 /// A list of attributes.
 pub type Attributes = Vec<Attribute>;
 
 /// A type with its associated span.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct SpannedTy {
     pub span: Span,
     pub ty: Ty,
 }
 
 /// A function parameter (pattern + type, e.g. `x: u8`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Param {
     /// Pattern part: `x`, `mut y`, etc.
     pub pat: Pat,
@@ -410,7 +441,9 @@ pub struct Param {
 }
 
 /// A top-level item in the module.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum ItemKind {
     /// A function or constant item.
     /// Example:
@@ -442,7 +475,9 @@ pub enum ItemKind {
 }
 
 /// A top-level item with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Item {
     /// The global identifier of the item.
     pub ident: GlobalId,

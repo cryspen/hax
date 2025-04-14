@@ -1219,10 +1219,14 @@ version = "0.3.0"
 dependencies = [
  "hax-frontend-exporter",
  "hax-types",
+<<<<<<< HEAD
  "itertools",
  "prettyplease",
  "proc-macro2",
  "quote",
+=======
+ "schemars",
+>>>>>>> 7d6a3bb3 (feat(rust-printer): derive `[De]Serialize`, `JsonSchema`)
  "serde",
  "serde_json",
  "syn 2.0.101",

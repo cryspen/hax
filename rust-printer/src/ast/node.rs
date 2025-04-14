@@ -4,5 +4,7 @@
 //! It acts as a type-erased wrapper around various core AST node types.
 
 use crate::ast::*;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 include!("generated/node.rs");

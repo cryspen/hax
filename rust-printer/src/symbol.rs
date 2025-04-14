@@ -3,7 +3,12 @@
 //! Symbols are lightweight wrappers around `String` for use in identifiers.
 //! Eventually, this could be backed by a real interner or arena.
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Symbol(String);
 
 impl Symbol {
