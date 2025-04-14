@@ -218,6 +218,12 @@ end = struct
              in
              (* we regenerate spans IDs, so that we have more precise regions *)
              let l = List.map ~f:regenerate_span_ids !l in
+             let ritems =
+               List.filter_map
+                 ~f:(fun i ->
+                   try Some (Export_ast.Full.c_item i) with _ -> None)
+                 l
+             in
              let rustish = Print_rust.pitems l in
              let json =
                `Assoc
@@ -228,6 +234,7 @@ end = struct
                    ( "rustish",
                      [%yojson_of: Print_rust.AnnotatedString.Output.t] rustish
                    );
+                   ("ritems", [%yojson_of: Rust_printer_types.item list] ritems);
                  ]
              in
              json)
