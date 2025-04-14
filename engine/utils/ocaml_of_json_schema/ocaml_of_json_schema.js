@@ -587,6 +587,9 @@ end
 
     impl += `let hax_version = {escape|${contents['$id'].replace(/\|escape\}/g, '|_escape}')}|escape}`;
 
+    let MEMO_TABLE_MODE = Object.entries(definitions)
+        .filter(([name, def]) => 'Node_for_TyKind' == name).length > 0;
+
     let items = Object.entries(definitions)
         .map(([name, def]) => ['Node_for_TyKind' == name ? 'node_for_ty_kind_generated' : name, def])
         .map(([name, def]) => ['Node_for_DefIdContents' == name ? 'node_for_def_id_contents_generated' : name, def])
@@ -622,18 +625,23 @@ open ParseError
         ).join('\nand ')
         + derive_clause
     );
-    impl += `
+    if (MEMO_TABLE_MODE)
+        impl += `
 and node_for__ty_kind = node_for_ty_kind_generated
 and node_for__def_id_contents = node_for_def_id_contents_generated
 
 
 type map_types = ${"[`TyKind of ty_kind | `DefIdContents of def_id_contents]"}
 let cache_map: (int64, ${"[ `Value of map_types | `JSON of Yojson.Safe.t ]"}) Base.Hashtbl.t = Base.Hashtbl.create (module Base.Int64)
+`;
 
-module Exn = struct
-let table_id_node_of_yojson (type t) (name: string) (encode: t -> map_types) (decode: map_types -> t option) (parse: Yojson.Safe.t -> t) (o: Yojson.Safe.t): (t * int64) =
+    impl += `\nmodule Exn = struct\n`;
+
+    if (MEMO_TABLE_MODE)
+        impl += `
+    let table_id_node_of_yojson (type t) (name: string) (encode: t -> map_types) (decode: map_types -> t option) (parse: Yojson.Safe.t -> t) (o: Yojson.Safe.t): (t * int64) =
     let label = "table_id_node_of_yojson:" ^ name ^ ": " in
-    match o with
+        match o with
     | \`Assoc alist -> begin
           let id = match List.assoc_opt "id" alist with
             | Some (\`Int id) -> Base.Int.to_int64 id
@@ -662,7 +670,8 @@ let table_id_node_of_yojson (type t) (name: string) (encode: t -> map_types) (de
     impl += ('let rec ' + items.map(({ name, type, parse }) =>
         `${name}_of_yojson (o: Yojson.Safe.t): ${name} = ${parse}`
     ).join('\nand '));
-    impl += `
+    if (MEMO_TABLE_MODE)
+        impl += `
 and node_for__ty_kind_of_yojson (o: Yojson.Safe.t): node_for__ty_kind =
    let (value, _id) =
        table_id_node_of_yojson "TyKind"
@@ -683,12 +692,16 @@ and node_for__def_id_contents_of_yojson (o: Yojson.Safe.t): node_for__def_id_con
    {value; id = Base.Int64.zero}
 `;
     impl += ('');
-    impl += ('let rec ' + items.map(({ name, type, parse, to_json }) =>
+    impl += ('\nlet rec ' + items.map(({ name, type, parse, to_json }) =>
         `yojson_of_${name} (o: ${name}): Yojson.Safe.t = ${to_json}`
     ).join('\nand '));
-    impl += `
+
+    if (MEMO_TABLE_MODE)
+        impl += `
 and yojson_of_node_for__ty_kind {value; id} = yojson_of_node_for_ty_kind_generated {value; id}
-and yojson_of_node_for__def_id_contents {value; id} = yojson_of_node_for_def_id_contents_generated {value; id}
+and yojson_of_node_for__def_id_contents {value; id} = yojson_of_node_for_def_id_contents_generated {value; id}`
+
+    impl += `
 end
 
 open struct
