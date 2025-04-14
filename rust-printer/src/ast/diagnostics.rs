@@ -4,21 +4,29 @@
 //! This module is used to attach semantic or translation errors to AST nodes.
 
 use crate::ast::*;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct Diagnostic {
     node: Box<Node>,
     info: DiagnosticInfo,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct DiagnosticInfo {
     pub context: Context,
     pub span: Span,
     pub kind: DiagnosticInfoKind,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum DiagnosticInfoKind {
     Custom(String),
     ImportParamWithoutPattern,
@@ -42,7 +50,9 @@ impl Diagnostic {
     }
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum Context {
     Import,
 }

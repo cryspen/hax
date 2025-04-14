@@ -1,5 +1,5 @@
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum GenericValue<'a> {
     /// A type-level generic value.
     ///
@@ -18,7 +18,7 @@ pub enum GenericValue<'a> {
     Lifetime,
 }
 /// Built-in primitive types.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum PrimitiveTy<'a> {
     /// The `bool` type.
     Bool,
@@ -32,7 +32,7 @@ pub enum PrimitiveTy<'a> {
     Str,
 }
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum Ty<'a> {
     /// A primitive type.
     ///
@@ -121,7 +121,7 @@ pub enum Ty<'a> {
 /// ```rust
 /// dyn Tr<A, B>
 /// ```
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct DynTraitGoal<'a> {
     /// `Tr` in the example above
     pub trait_: PrintContext<'a, origin::GlobalId>,
@@ -129,7 +129,7 @@ pub struct DynTraitGoal<'a> {
     pub non_self_args: PrintContext<'a, origin::Vec<origin::GenericValue>>,
 }
 /// Extra information attached to syntax nodes.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Metadata<'a> {
     /// The location in the source code.
     pub span: PrintContext<'a, origin::Span>,
@@ -137,7 +137,7 @@ pub struct Metadata<'a> {
     pub attributes: PrintContext<'a, origin::Attributes>,
 }
 /// A typed expression with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Expr<'a> {
     /// The kind of expression.
     pub kind: PrintContext<'a, origin::Box<origin::ExprKind>>,
@@ -147,7 +147,7 @@ pub struct Expr<'a> {
     pub meta: PrintContext<'a, origin::Metadata>,
 }
 /// A typed pattern with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Pat<'a> {
     /// The kind of pattern.
     pub kind: PrintContext<'a, origin::Box<origin::PatKind>>,
@@ -157,7 +157,7 @@ pub struct Pat<'a> {
     pub meta: PrintContext<'a, origin::Metadata>,
 }
 /// A pattern matching arm with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Arm<'a> {
     /// The pattern of the arm.
     pub pat: PrintContext<'a, origin::Pat>,
@@ -169,7 +169,7 @@ pub struct Arm<'a> {
     pub meta: PrintContext<'a, origin::Metadata>,
 }
 /// A pattern matching arm guard with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Guard<'a> {
     /// The kind of guard.
     pub kind: PrintContext<'a, origin::GuardKind>,
@@ -177,7 +177,7 @@ pub struct Guard<'a> {
     pub meta: PrintContext<'a, origin::Metadata>,
 }
 /// Represents different levels of borrowing.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum BorrowKind {
     /// Shared reference
     ///
@@ -193,7 +193,7 @@ pub enum BorrowKind {
     Mut,
 }
 /// Binding modes used in patterns.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum BindingMode<'a> {
     /// Binding by value
     ///
@@ -207,7 +207,7 @@ pub enum BindingMode<'a> {
     ByRef(PrintContext<'a, origin::BorrowKind>),
 }
 /// Represents the various kinds of patterns.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum PatKind<'a> {
     /// Wildcard pattern
     ///
@@ -272,13 +272,13 @@ pub enum PatKind<'a> {
     Error(PrintContext<'a, origin::Diagnostic>),
 }
 /// Represents the various kinds of pattern guards.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum GuardKind<'a> {
     /// An `if let` guard
     IfLet { lhs: PrintContext<'a, origin::Pat>, rhs: PrintContext<'a, origin::Expr> },
 }
 /// The left-hand side of an assignment.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum Lhs<'a> {
     LocalVar {
         var: PrintContext<'a, origin::LocalId>,
@@ -297,7 +297,7 @@ pub enum Lhs<'a> {
     },
 }
 /// Represents a witness of trait implementation
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct ImplExpr<'a> {
     pub kind: PrintContext<'a, origin::Box<origin::ImplExprKind>>,
     pub goal: PrintContext<'a, origin::TraitGoal>,
@@ -312,7 +312,7 @@ pub struct ImplExpr<'a> {
 ///   x.clone()
 /// }
 /// ```
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum ImplExprKind<'a> {
     /// The trait implementation being defined.
     ///
@@ -392,7 +392,7 @@ pub enum ImplExprKind<'a> {
     Builtin(PrintContext<'a, origin::TraitGoal>),
 }
 /// Represents an impl item (associated type or function)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct ImplItem<'a> {
     pub meta: PrintContext<'a, origin::Metadata>,
     pub generics: PrintContext<'a, origin::Generics>,
@@ -400,7 +400,7 @@ pub struct ImplItem<'a> {
     pub ident: PrintContext<'a, origin::GlobalId>,
 }
 /// Represents the kinds of impl items
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum ImplItemKind<'a> {
     /// An instantiation of associated type
     Type {
@@ -417,7 +417,7 @@ pub enum ImplItemKind<'a> {
     },
 }
 /// Represents a trait item (associated type, fn, or default)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct TraitItem<'a> {
     pub kind: PrintContext<'a, origin::TraitItemKind>,
     pub generics: PrintContext<'a, origin::Generics>,
@@ -425,7 +425,7 @@ pub struct TraitItem<'a> {
     pub meta: PrintContext<'a, origin::Metadata>,
 }
 /// Represents the kinds of trait items
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum TraitItemKind<'a> {
     Type(PrintContext<'a, origin::Vec<origin::ImplIdent>>),
     Fn(PrintContext<'a, origin::Ty>),
@@ -441,7 +441,7 @@ pub enum TraitItemKind<'a> {
 /// fstar!("f ${x + 3} + 10")
 /// ```
 /// results in `[Verbatim("f"), Expr([[x + 3]]), Verbatim(" + 10")]`
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum QuoteContent<'a> {
     Verbatim(PrintContext<'a, origin::String>),
     Expr(PrintContext<'a, origin::Expr>),
@@ -449,17 +449,17 @@ pub enum QuoteContent<'a> {
     Typ(PrintContext<'a, origin::Ty>),
 }
 /// Represents an inlined piece of backend code
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Quote<'a>(pub PrintContext<'a, origin::Vec<origin::QuoteContent>>);
 /// The origin of a quote item
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct ItemQuoteOrigin<'a> {
     pub item_kind: PrintContext<'a, origin::Box<origin::ItemKind>>,
     pub item_ident: PrintContext<'a, origin::GlobalId>,
     pub position: PrintContext<'a, origin::ItemQuoteOriginPosition>,
 }
 /// The position of a quote item relative to its origin
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum ItemQuoteOriginPosition {
     Before,
     After,
@@ -467,7 +467,7 @@ pub enum ItemQuoteOriginPosition {
 }
 /// The kind of a loop (resugared by respective `Reconstruct...Loops` phases).
 /// Useful for `FunctionalizeLoops`.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum LoopKind<'a> {
     UnconditionalLoop,
     WhileLoop { condition: PrintContext<'a, origin::Expr> },
@@ -483,18 +483,18 @@ pub enum LoopKind<'a> {
 /// It is added by phase `DropReturnBreakContinue` and the information is used in
 /// `FunctionalizeLoops`. We need it to replace the control flow nodes of the AST
 /// by an encoding in the `ControlFlow` enum.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum ControlFlowKind {
     BreakOnly,
     BreakOrReturn,
 }
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct LoopState<'a> {
     pub init: PrintContext<'a, origin::Expr>,
     pub body_pat: PrintContext<'a, origin::Pat>,
 }
 /// Describes the shape of an expression.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum ExprKind<'a> {
     /// If expression.
     ///
@@ -641,7 +641,7 @@ pub enum ExprKind<'a> {
     Error(PrintContext<'a, origin::Diagnostic>),
 }
 /// Represents the kinds of generic parameters
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum GenericParamKind<'a> {
     Lifetime,
     Type,
@@ -651,7 +651,7 @@ pub enum GenericParamKind<'a> {
 ///
 /// # Example:
 /// A bound `_: std::ops::Add<u8>`
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct TraitGoal<'a> {
     /// `std::ops::Add` in the example.
     pub trait_: PrintContext<'a, origin::GlobalId>,
@@ -659,7 +659,7 @@ pub struct TraitGoal<'a> {
     pub args: PrintContext<'a, origin::Vec<origin::GenericValue>>,
 }
 /// Represents a trait bound in a generic constraint
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct ImplIdent<'a> {
     pub goal: PrintContext<'a, origin::TraitGoal>,
     pub name: PrintContext<'a, origin::Symbol>,
@@ -669,34 +669,34 @@ pub struct ImplIdent<'a> {
 /// fn f<T: Foo<S = String>>(...)
 /// ```
 /// In this example `Foo` has an associated type `S`.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct ProjectionPredicate<'a> {
     pub impl_: PrintContext<'a, origin::ImplExpr>,
     pub assoc_item: PrintContext<'a, origin::GlobalId>,
     pub ty: PrintContext<'a, origin::Ty>,
 }
 /// A generic constraint (lifetime, type or projection)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum GenericConstraint<'a> {
     Lifetime(PrintContext<'a, origin::String>),
     Type(PrintContext<'a, origin::ImplIdent>),
     Projection(PrintContext<'a, origin::ProjectionPredicate>),
 }
 /// A generic parameter (lifetime, type parameter or const parameter)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct GenericParam<'a> {
     pub ident: PrintContext<'a, origin::LocalId>,
     pub meta: PrintContext<'a, origin::Metadata>,
     pub kind: PrintContext<'a, origin::GenericParamKind>,
 }
 /// Generic parameters and constraints (contained between `<>` in function declarations)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Generics<'a> {
     pub params: PrintContext<'a, origin::Vec<origin::GenericParam>>,
     pub constraints: PrintContext<'a, origin::Vec<origin::GenericConstraint>>,
 }
 /// Safety level of a function.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum SafetyKind {
     /// Safe function (default).
     Safe,
@@ -704,13 +704,13 @@ pub enum SafetyKind {
     Unsafe,
 }
 /// Represents a single attribute.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Attribute<'a> {
     pub kind: PrintContext<'a, origin::AttributeKind>,
     pub span: PrintContext<'a, origin::Span>,
 }
 /// Represents the kind of an attribute.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum AttributeKind<'a> {
     Tool {
         path: PrintContext<'a, origin::String>,
@@ -722,7 +722,7 @@ pub enum AttributeKind<'a> {
     },
 }
 /// Represents the kind of a doc comment.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum DocCommentKind {
     Line,
     Block,
@@ -730,13 +730,13 @@ pub enum DocCommentKind {
 /// A list of attributes.
 pub type Attributes = origin::Vec<origin::Attribute>;
 /// A type with its associated span.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct SpannedTy<'a> {
     pub span: PrintContext<'a, origin::Span>,
     pub ty: PrintContext<'a, origin::Ty>,
 }
 /// A function parameter (pattern + type, e.g. `x: u8`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Param<'a> {
     /// Pattern part
     /// Examples: `x`, `mut y`, etc.
@@ -748,7 +748,7 @@ pub struct Param<'a> {
 }
 /// A variant of an enum or struct.
 /// In our representation structs always have one variant with an argument for each field.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Variant<'a> {
     pub name: PrintContext<'a, origin::GlobalId>,
     pub arguments: PrintContext<
@@ -759,7 +759,7 @@ pub struct Variant<'a> {
     pub attributes: PrintContext<'a, origin::Attributes>,
 }
 /// A top-level item in the module.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum ItemKind<'a> {
     /// A function or constant item.
     ///
@@ -878,7 +878,7 @@ pub enum ItemKind<'a> {
     NotImplementedYet,
 }
 /// A top-level item with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Item<'a> {
     /// The global identifier of the item.
     pub ident: PrintContext<'a, origin::GlobalId>,
@@ -1133,7 +1133,8 @@ impl<'a> From<ResugaredTy> for Node<'a> {
         Self::ResugaredTy(item)
     }
 }
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive()]
+#[macro_rules_attribute::apply(derive_AST)]
 pub enum Node<'a> {
     GenericValue(GenericValue<'a>),
     PrimitiveTy(PrimitiveTy<'a>),
