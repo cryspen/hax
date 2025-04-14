@@ -1,25 +1,21 @@
 use hax_frontend_exporter as frontend;
 use rust_printer::ast::*;
+use serde::Deserialize;
 
-fn main() {
-    let items: Vec<frontend::Item<frontend::ThirBody>> =
-        serde_json::from_reader(std::io::stdin()).expect("Valid JSON on stdin");
+fn module_path(global_id: &GlobalId) -> Vec<String> {
+    let global_id = global_id.to_string();
+    let chunks = global_id.split("::").collect::<Vec<_>>();
+    let Some((_def_name, [_krate, module_path @ ..])) = chunks.split_last() else {
+        unimplemented!()
+    };
+    module_path.iter().map(ToString::to_string).collect()
+}
 
-    fn module_path(global_id: &GlobalId) -> Vec<String> {
-        let global_id = global_id.to_string();
-        let chunks = global_id.split("::").collect::<Vec<_>>();
-        let Some((_def_name, [_krate, module_path @ ..])) = chunks.split_last() else {
-            unimplemented!()
-        };
-        module_path.iter().map(ToString::to_string).collect()
-    }
-
+fn print_items(items: Vec<Item>) {
     let items: Vec<_> = items
-        .iter()
-        .map(rust_printer::import::translate_item)
+        .into_iter()
         .filter(|item| !matches!(item.kind, ItemKind::Error(_)))
         .collect();
-
     let modules: Vec<Vec<String>> = items.iter().map(|item| module_path(&item.ident)).collect();
     let modules: Vec<Vec<&str>> = modules
         .iter()
@@ -79,4 +75,23 @@ fn main() {
     }
 
     printer.print();
+}
+
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum Input {
+    Thir(Vec<frontend::Item<frontend::ThirBody>>),
+    Ast(Vec<rust_printer::ast::Item>),
+}
+
+fn main() {
+    print_items(
+        match serde_json::from_reader(std::io::stdin()).expect("Valid JSON on stdin") {
+            Input::Thir(items) => items
+                .iter()
+                .map(rust_printer::import::translate_item)
+                .collect(),
+            Input::Ast(items) => items,
+        },
+    )
 }
