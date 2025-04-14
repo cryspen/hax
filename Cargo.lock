@@ -577,6 +577,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "hax-rust-printer-print-json-types"
+version = "0.1.0"
+dependencies = [
+ "rust-printer",
+ "schemars",
+ "serde_json",
+]
+
+[[package]]
 name = "hax-test-harness"
 version = "0.3.0"
 dependencies = [
