@@ -16,5 +16,6 @@ pub mod origin {
     pub use span::Span;
 }
 use super::print_context::PrintContext;
+use crate::ast::derives::{apply, derive_AST_base as derive_AST};
 
 include!("generated/print_view.rs");

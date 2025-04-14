@@ -67,6 +67,11 @@ fn generate_enum(name: &str, file: &File, reference: bool, add_variant_unknown: 
 
     // Produce token streams accoding to `reference` and `add_variant_unknown`
     let copy_bound = (reference && !add_variant_unknown).then_some(quote! {Copy});
+    let derive_name = if reference && !add_variant_unknown {
+        quote! {derive_AST_base}
+    } else {
+        quote! {derive_AST}
+    };
     let reference_generics = reference.then_some(parse_quote! {<'lt>});
     let reference_lt = &reference.then_some(quote! {&'lt});
     let add_variant_unknown = add_variant_unknown.then_some(quote! {Unknown(String)});
@@ -98,7 +103,8 @@ fn generate_enum(name: &str, file: &File, reference: bool, add_variant_unknown: 
 
     parse_quote! {
         #(#into_instances)*
-        #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, #copy_bound)]
+        #[derive(#copy_bound)]
+        #[macro_rules_attribute::apply(#derive_name)]
         pub enum #name #merged_generics {
             #(#variants,)*
             #add_variant_unknown
