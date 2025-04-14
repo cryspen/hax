@@ -5,13 +5,19 @@
 //! - `LocalId`: local variable identifiers
 
 use crate::symbol::Symbol;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 use std::fmt;
 
 mod global_id {
     use hax_frontend_exporter::{DefId, DefPathItem};
+    use schemars::JsonSchema;
+    use serde::{Deserialize, Serialize};
 
     // TODO: this should be interned, so that it's copiable
-    #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+    #[derive(
+        Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+    )]
     pub struct GlobalId {
         name: String,
         // rust_def_id: hax_frontend_exporter::DefIdContents,
@@ -80,7 +86,9 @@ mod global_id {
     // struct FreshModule;
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub struct LocalId(pub Symbol);
 
 impl fmt::Display for LocalId {

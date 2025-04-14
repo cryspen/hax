@@ -4,9 +4,13 @@
 //! It acts as a type-erased wrapper around various core AST node types.
 
 use crate::ast::*;
+use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
 
 /// An enumeration for representing any kind of AST node. This is useful for diagnostics.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[derive(
+    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
+)]
 pub enum Node {
     GenericValue(GenericValue),
     PrimitiveTy(PrimitiveTy),
