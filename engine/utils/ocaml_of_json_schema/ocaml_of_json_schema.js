@@ -438,12 +438,27 @@ let exporters = {
         },
     },
     empty_struct: {
-        guard: def => (eq(keys(def), new Set(["type"])) && def.type == 'object'),
+        guard: def => (eq(keys(def), new Set(["type"])) && (def.type == 'object' || def.type == 'null')),
         f: (name, _) => {
             return {
                 type: `EmptyStruct${name}`,
                 parse: `EmptyStruct${name}`,
                 to_json: '`Null',
+            };
+        },
+    },
+    newtype: {
+        guard: def => !exporters['empty_struct'].guard(def) && is_type.expr(def, ["try-parse"]),
+        f: (name, o) => {
+            let path = [name + '-newtype-ref'];
+            let te = is_type.expr(o, path);
+            let ocaml_type = ocaml_of_type_expr(te, path);
+            let arms = ocaml_arms_of_type_expr(te, path);
+            let to_json = ocaml_yojson_of_type_expr(te, `(let Newtype${name} inner = o in inner)`, path);
+            return {
+                type: `Newtype${name} of ${ocaml_type}`,
+                parse: `Newtype${name}(${mk_match('o', arms, path)})`,
+                to_json,
             };
         },
     },
