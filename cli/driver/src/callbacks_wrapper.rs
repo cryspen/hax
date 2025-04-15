@@ -1,7 +1,9 @@
 use hax_types::cli_options::{Command, Options, ENV_VAR_OPTIONS_FRONTEND};
 
+use rustc_ast::Crate;
 use rustc_driver::{Callbacks, Compilation};
-use rustc_interface::{interface, Queries};
+use rustc_interface::interface;
+use rustc_middle::ty::TyCtxt;
 use rustc_span::symbol::Symbol;
 
 /// Wraps a [Callbacks] structure, and injects some cache-related
@@ -34,22 +36,22 @@ impl<'a> Callbacks for CallbacksWrapper<'a> {
     fn after_crate_root_parsing<'tcx>(
         &mut self,
         compiler: &interface::Compiler,
-        queries: &'tcx Queries<'tcx>,
+        krate: &mut Crate,
     ) -> Compilation {
-        self.sub.after_crate_root_parsing(compiler, queries)
+        self.sub.after_crate_root_parsing(compiler, krate)
     }
     fn after_expansion<'tcx>(
         &mut self,
         compiler: &interface::Compiler,
-        queries: &'tcx Queries<'tcx>,
+        tcx: TyCtxt<'tcx>,
     ) -> Compilation {
-        self.sub.after_expansion(compiler, queries)
+        self.sub.after_expansion(compiler, tcx)
     }
     fn after_analysis<'tcx>(
         &mut self,
         compiler: &interface::Compiler,
-        queries: &'tcx Queries<'tcx>,
+        tcx: TyCtxt<'tcx>,
     ) -> Compilation {
-        self.sub.after_analysis(compiler, queries)
+        self.sub.after_analysis(compiler, tcx)
     }
 }

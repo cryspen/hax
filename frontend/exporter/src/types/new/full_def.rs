@@ -127,9 +127,9 @@ pub enum FullDefKind<Body> {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
         /// `Some` if the item is in the local crate.
-        #[value(s.base().tcx.hir().get_if_local(s.owner_id()).map(|node| {
+        #[value(s.base().tcx.hir_get_if_local(s.owner_id()).map(|node| {
             let rustc_hir::Node::Item(item) = node else { unreachable!() };
-            let rustc_hir::ItemKind::TyAlias(ty, _generics) = &item.kind else { unreachable!() };
+            let rustc_hir::ItemKind::TyAlias(_, ty, _generics) = &item.kind else { unreachable!() };
             let mut s = State::from_under_owner(s);
             s.base.ty_alias_mode = true;
             ty.sinto(&s)
@@ -539,7 +539,7 @@ fn get_def_attrs<'tcx>(
     tcx: ty::TyCtxt<'tcx>,
     def_id: RDefId,
     def_kind: RDefKind,
-) -> &'tcx [rustc_ast::ast::Attribute] {
+) -> &'tcx [rustc_hir::Attribute] {
     use RDefKind::*;
     match def_kind {
         // These kinds cause `get_attrs_unchecked` to panic.
@@ -555,7 +555,7 @@ fn get_mod_children<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Vec<RDefId> 
         Some(ldid) => match tcx.hir_node_by_def_id(ldid) {
             rustc_hir::Node::Crate(m)
             | rustc_hir::Node::Item(&rustc_hir::Item {
-                kind: rustc_hir::ItemKind::Mod(m),
+                kind: rustc_hir::ItemKind::Mod(_, m),
                 ..
             }) => m
                 .item_ids

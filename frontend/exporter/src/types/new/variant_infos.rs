@@ -21,7 +21,7 @@ pub enum VariantKind {
     },
 }
 
-sinto_as_usize!(rustc_target::abi, VariantIdx);
+sinto_as_usize!(rustc_abi, VariantIdx);
 
 /// Describe a variant
 #[derive_group(Serializers)]

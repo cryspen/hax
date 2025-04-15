@@ -675,7 +675,7 @@ let map_path_strings ~(f : string -> string) (did : t) : t =
     |> List.map ~f:(fun (chunk : Types.disambiguated_def_path_item) ->
            let data =
              match chunk.data with
-             | TypeNs s -> Types.TypeNs (f s)
+             | TypeNs s -> Types.TypeNs (Option.map ~f s)
              | ValueNs s -> ValueNs (f s)
              | MacroNs s -> MacroNs (f s)
              | LifetimeNs s -> LifetimeNs (f s)
@@ -699,7 +699,8 @@ let matches_namespace (ns : Types.namespace) (did : t) : bool =
     @ List.map
         ~f:(fun (chunk : Types.disambiguated_def_path_item) ->
           match chunk.data with
-          | TypeNs s | ValueNs s | MacroNs s | LifetimeNs s -> Some s
+          | TypeNs s -> s
+          | ValueNs s | MacroNs s | LifetimeNs s -> Some s
           | _ -> None)
         did.path
   in

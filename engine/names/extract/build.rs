@@ -55,7 +55,7 @@ fn disambiguator_to_str(disambiguator: u32) -> String {
 
 fn def_path_item_to_str(path_item: DefPathItem) -> String {
     match path_item {
-        DefPathItem::TypeNs(s)
+        DefPathItem::TypeNs(Some(s))
         | DefPathItem::ValueNs(s)
         | DefPathItem::MacroNs(s)
         | DefPathItem::LifetimeNs(s) => s,
@@ -67,8 +67,7 @@ fn def_path_item_to_str(path_item: DefPathItem) -> String {
         DefPathItem::Closure => "Closure".into(),
         DefPathItem::Ctor => "Ctor".into(),
         DefPathItem::AnonConst => "AnonConst".into(),
-        DefPathItem::OpaqueTy => "OpaqueTy".into(),
-        DefPathItem::AnonAdt => "AnonAdt".into(),
+        DefPathItem::TypeNs(None) | DefPathItem::OpaqueTy => "OpaqueTy".into(),
     }
 }
 

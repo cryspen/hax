@@ -812,31 +812,29 @@ impl<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>> SInto<S, Place>
             let cur_ty = current_ty;
             let cur_kind = current_kind.clone();
             use rustc_middle::ty::TyKind;
-            let mk_field =
-                |index: &rustc_target::abi::FieldIdx,
-                 variant_idx: Option<rustc_target::abi::VariantIdx>| {
-                    ProjectionElem::Field(match cur_ty.kind() {
-                        TyKind::Adt(adt_def, _) => {
-                            assert!(
-                                ((adt_def.is_struct() || adt_def.is_union())
-                                    && variant_idx.is_none())
-                                    || (adt_def.is_enum() && variant_idx.is_some())
-                            );
-                            ProjectionElemFieldKind::Adt {
-                                typ: adt_def.did().sinto(s),
-                                variant: variant_idx.map(|id| id.sinto(s)),
-                                index: index.sinto(s),
-                            }
+            let mk_field = |index: &rustc_abi::FieldIdx,
+                            variant_idx: Option<rustc_abi::VariantIdx>| {
+                ProjectionElem::Field(match cur_ty.kind() {
+                    TyKind::Adt(adt_def, _) => {
+                        assert!(
+                            ((adt_def.is_struct() || adt_def.is_union()) && variant_idx.is_none())
+                                || (adt_def.is_enum() && variant_idx.is_some())
+                        );
+                        ProjectionElemFieldKind::Adt {
+                            typ: adt_def.did().sinto(s),
+                            variant: variant_idx.map(|id| id.sinto(s)),
+                            index: index.sinto(s),
                         }
-                        TyKind::Tuple(_types) => ProjectionElemFieldKind::Tuple(index.sinto(s)),
-                        ty_kind => {
-                            supposely_unreachable_fatal!(
-                                s, "ProjectionElemFieldBadType";
-                                {index, ty_kind, variant_idx, &cur_ty, &cur_kind}
-                            );
-                        }
-                    })
-                };
+                    }
+                    TyKind::Tuple(_types) => ProjectionElemFieldKind::Tuple(index.sinto(s)),
+                    ty_kind => {
+                        supposely_unreachable_fatal!(
+                            s, "ProjectionElemFieldBadType";
+                            {index, ty_kind, variant_idx, &cur_ty, &cur_kind}
+                        );
+                    }
+                })
+            };
             let elem_kind: ProjectionElem = match elems {
                 [Downcast(_, variant_idx), Field(index, ty), rest @ ..] => {
                     elems = rest;
@@ -924,6 +922,7 @@ impl<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>> SInto<S, Place>
                         // and `fn(‘static ())` (according to @compiler-errors on Zulip).
                         Subtype { .. } => panic!("unexpected Subtype"),
                         Downcast { .. } => panic!("unexpected Downcast"),
+                        UnwrapUnsafeBinder { .. } => panic!("unsupported feature: unsafe binders"),
                     }
                 }
                 [] => break,
@@ -1012,8 +1011,9 @@ pub enum CoercionSource {
 pub enum NullOp {
     SizeOf,
     AlignOf,
-    OffsetOf(Vec<(usize, FieldIdx)>),
+    OffsetOf(Vec<(VariantIdx, FieldIdx)>),
     UbChecks,
+    ContractChecks,
 }
 
 #[derive_group(Serializers)]
@@ -1030,7 +1030,7 @@ pub enum Rvalue {
     Repeat(Operand, ConstantExpr),
     Ref(Region, BorrowKind, Place),
     ThreadLocalRef(DefId),
-    RawPtr(Mutability, Place),
+    RawPtr(RawPtrKind, Place),
     Len(Place),
     Cast(CastKind, Operand, Ty),
     BinaryOp(BinOp, (Operand, Operand)),
@@ -1040,6 +1040,16 @@ pub enum Rvalue {
     Aggregate(AggregateKind, IndexVec<FieldIdx, Operand>),
     ShallowInitBox(Operand, Ty),
     CopyForDeref(Place),
+    WrapUnsafeBinder(Operand, Ty),
+}
+
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Debug, JsonSchema)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: rustc_middle::mir::RawPtrKind, state: S as _s)]
+pub enum RawPtrKind {
+    Mut,
+    Const,
+    FakeForPtrMetadata,
 }
 
 #[derive_group(Serializers)]
@@ -1055,7 +1065,7 @@ make_idx_wrapper!(rustc_middle::mir, BasicBlock);
 make_idx_wrapper!(rustc_middle::mir, SourceScope);
 make_idx_wrapper!(rustc_middle::mir, Local);
 make_idx_wrapper!(rustc_middle::ty, UserTypeAnnotationIndex);
-make_idx_wrapper!(rustc_target::abi, FieldIdx);
+make_idx_wrapper!(rustc_abi, FieldIdx);
 
 /// Reflects [`rustc_middle::mir::UnOp`]
 #[derive_group(Serializers)]

@@ -184,7 +184,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
                 },
             },
 
-            ty::ConstKind::Value(ty, valtree) => valtree_to_constant_expr(s, valtree, ty, span),
+            ty::ConstKind::Value(val) => valtree_to_constant_expr(s, val.valtree, val.ty, span),
             ty::ConstKind::Error(_) => fatal!(s[span], "ty::ConstKind::Error"),
             ty::ConstKind::Expr(e) => fatal!(s[span], "ty::ConstKind::Expr {:#?}", e),
 
@@ -203,15 +203,15 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
     ty: rustc_middle::ty::Ty<'tcx>,
     span: rustc_span::Span,
 ) -> ConstantExpr {
-    let kind = match (valtree, ty.kind()) {
+    let kind = match (&*valtree, ty.kind()) {
         (_, ty::Ref(_, inner_ty, _)) => {
             ConstantExprKind::Borrow(valtree_to_constant_expr(s, valtree, *inner_ty, span))
         }
-        (ty::ValTree::Branch(valtrees), ty::Str) => {
+        (ty::ValTreeKind::Branch(valtrees), ty::Str) => {
             let bytes = valtrees
                 .iter()
-                .map(|x| match x {
-                    ty::ValTree::Leaf(leaf) => leaf.to_u8(),
+                .map(|x| match &***x {
+                    ty::ValTreeKind::Leaf(leaf) => leaf.to_u8(),
                     _ => fatal!(
                         s[span],
                         "Expected a flat list of leaves while translating \
@@ -221,7 +221,7 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
                 .collect();
             ConstantExprKind::Literal(ConstantLiteral::byte_str(bytes))
         }
-        (ty::ValTree::Branch(_), ty::Array(..) | ty::Tuple(..) | ty::Adt(..)) => {
+        (ty::ValTreeKind::Branch(_), ty::Array(..) | ty::Tuple(..) | ty::Adt(..)) => {
             let contents: rustc_middle::ty::DestructuredConst = s
                 .base()
                 .tcx
@@ -255,7 +255,7 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
                 _ => unreachable!(),
             }
         }
-        (ty::ValTree::Leaf(x), ty::RawPtr(_, _)) => {
+        (ty::ValTreeKind::Leaf(x), ty::RawPtr(_, _)) => {
             use crate::rustc_type_ir::inherent::Ty;
             let raw_address = x.to_bits_unchecked();
             let uint_ty = UintTy::Usize;
@@ -265,8 +265,8 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
                 source: ConstantExprKind::Literal(lit).decorate(usize_ty, span.sinto(s)),
             }
         }
-        (ty::ValTree::Leaf(x), _) => {
-            ConstantExprKind::Literal(scalar_int_to_constant_literal(s, x, ty))
+        (ty::ValTreeKind::Leaf(x), _) => {
+            ConstantExprKind::Literal(scalar_int_to_constant_literal(s, *x, ty))
         }
         _ => supposely_unreachable_fatal!(
             s[span], "valtree_to_expr";

@@ -224,14 +224,15 @@ module Make (Options : OPTS) : MAKE = struct
           string "accessor" ^^ underscore ^^ prefix ^^ underscore
           ^^ print#concrete_ident field_name
 
-        method match_arm scrutinee { arm_pat; body } =
-          let body_typ = print#ty AlreadyPar body.typ in
+        method match_arm arms_typ scrutinee { arm_pat; body } =
           let body = print#expr_at Arm_body body in
           match arm_pat with
           | { p = PWild; _ } -> body
           | { p = PConstruct { constructor; _ } }
             when Global_ident.eq_name Core__result__Result__Err constructor ->
-              print#pv_letfun_call (print#error_letfun_name body_typ) []
+              print#pv_letfun_call
+                (print#error_letfun_name (print#ty AlreadyPar arms_typ))
+                []
           | _ ->
               let pat =
                 match arm_pat with
@@ -445,9 +446,11 @@ module Make (Options : OPTS) : MAKE = struct
                 | Some (name, translation) -> translation fields
                 | None -> super#expr' ctx e)
             | Match { scrutinee; arms } ->
+                let first_arm = Option.value_exn (List.hd arms) in
+                let arms_typ = first_arm.arm.body.typ in
                 separate_map
                   (hardline ^^ string "else ")
-                  (fun { arm; span } -> print#match_arm scrutinee arm)
+                  (fun { arm; span } -> print#match_arm arms_typ scrutinee arm)
                   arms
             | If { cond; then_; else_ } -> (
                 let if_then =
@@ -641,7 +644,7 @@ module Make (Options : OPTS) : MAKE = struct
             string "let" ^^ space
             ^^ iblock Fn.id (print#pat_at Expr_Let_lhs lhs)
             ^^ space ^^ equals ^^ space
-            ^^ iblock Fn.id (print#expr_at Expr_Let_rhs rhs)
+            ^^ iblock parens (print#expr_at Expr_Let_rhs rhs |> group)
             ^^ space ^^ string "in" ^^ hardline
             ^^ (print#expr_at Expr_Let_body body |> group)
 

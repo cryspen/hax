@@ -15,7 +15,7 @@ module Imported = struct
 
   and file_name =
     | Real of real_file_name
-    | QuoteExpansion of string
+    | CfgSpec of string
     | Anon of string
     | MacroExpansion of string
     | ProcMacroSourceCode of string
@@ -36,7 +36,7 @@ module Imported = struct
           | LocalPath x -> LocalPath x
           | Remapped { local_path; virtual_name } ->
               Remapped { local_path; virtual_name })
-    | QuoteExpansion x -> QuoteExpansion x
+    | CfgSpec x -> CfgSpec x
     | Anon x -> Anon x
     | MacroExpansion x -> MacroExpansion x
     | ProcMacroSourceCode x -> ProcMacroSourceCode x
@@ -62,7 +62,7 @@ module Imported = struct
           | LocalPath x -> LocalPath x
           | Remapped { local_path; virtual_name } ->
               Remapped { local_path; virtual_name })
-    | QuoteExpansion x -> QuoteExpansion x
+    | CfgSpec x -> CfgSpec x
     | Anon x -> Anon x
     | MacroExpansion x -> MacroExpansion x
     | ProcMacroSourceCode x -> ProcMacroSourceCode x

@@ -115,7 +115,7 @@ pub enum RealFileName {
 }
 
 #[cfg(feature = "rustc")]
-impl<S> SInto<S, u64> for rustc_data_structures::stable_hasher::Hash64 {
+impl<S> SInto<S, u64> for rustc_hashes::Hash64 {
     fn sinto(&self, _: &S) -> u64 {
         self.as_u64()
     }
@@ -128,7 +128,7 @@ impl<S> SInto<S, u64> for rustc_data_structures::stable_hasher::Hash64 {
 #[derive(Clone, Debug, JsonSchema, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum FileName {
     Real(RealFileName),
-    QuoteExpansion(u64),
+    CfgSpec(u64),
     Anon(u64),
     MacroExpansion(u64),
     ProcMacroSourceCode(u64),

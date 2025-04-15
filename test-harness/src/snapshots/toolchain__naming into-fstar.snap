@@ -34,7 +34,7 @@ open FStar.Mul
 
 let debug (label value: u32) : Prims.unit =
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_2__new_v1 (mk_usize 3)
+    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 3)
           (mk_usize 2)
           (let list = ["["; "] a="; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);

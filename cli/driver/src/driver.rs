@@ -14,6 +14,7 @@ extern crate rustc_data_structures;
 extern crate rustc_driver;
 extern crate rustc_errors;
 extern crate rustc_feature;
+extern crate rustc_hashes;
 extern crate rustc_hir;
 extern crate rustc_hir_analysis;
 extern crate rustc_index;
@@ -39,7 +40,7 @@ use features::*;
 use hax_types::cli_options::{BackendOptions, Command, ENV_VAR_OPTIONS_FRONTEND};
 
 use rustc_driver::{Callbacks, Compilation};
-use rustc_interface::{interface, Queries};
+use rustc_interface::interface;
 use rustc_span::symbol::Symbol;
 
 fn rustc_sysroot() -> String {
@@ -174,7 +175,7 @@ fn main() {
 
     let exit_code = rustc_driver::catch_with_exit_code({
         let rustc_args = rustc_args.clone();
-        move || rustc_driver::RunCompiler::new(&rustc_args, &mut callbacks).run()
+        move || rustc_driver::run_compiler(&rustc_args, &mut callbacks)
     });
 
     std::process::exit(

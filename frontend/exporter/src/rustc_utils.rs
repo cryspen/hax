@@ -15,7 +15,7 @@ impl<'tcx, T: ty::TypeFoldable<ty::TyCtxt<'tcx>>> ty::Binder<'tcx, T> {
 #[tracing::instrument(skip(s))]
 pub(crate) fn get_variant_information<'s, S: UnderOwnerState<'s>>(
     adt_def: &ty::AdtDef<'s>,
-    variant_index: rustc_target::abi::VariantIdx,
+    variant_index: rustc_abi::VariantIdx,
     s: &S,
 ) -> VariantInformations {
     fn is_named<'s, I: std::iter::Iterator<Item = &'s ty::FieldDef> + Clone>(it: I) -> bool {
@@ -96,9 +96,8 @@ pub(crate) fn attribute_from_scope<'tcx, S: ExprState<'tcx>>(
     let scope_tree = tcx.region_scope_tree(owner);
     let hir_id = scope.hir_id(scope_tree);
     let tcx = s.base().tcx;
-    let map = tcx.hir();
     let attributes = hir_id
-        .map(|hir_id| map.attrs(hir_id).sinto(s))
+        .map(|hir_id| tcx.hir_attrs(hir_id).sinto(s))
         .unwrap_or_default();
     (hir_id, attributes)
 }
