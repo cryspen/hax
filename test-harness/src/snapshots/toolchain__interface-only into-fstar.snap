@@ -47,6 +47,7 @@ val f': x: u8
           let r:t_Array u8 (mk_usize 4) = r in
           (r.[ mk_usize 0 ] <: u8) >. x)
 
+unfold
 let f = f'
 
 type t_Bar = | Bar : t_Bar
@@ -58,6 +59,7 @@ type t_Bar = | Bar : t_Bar
 assume
 val impl': Core.Convert.t_From t_Bar Prims.unit
 
+unfold
 let impl = impl'
 
 /// If you need to drop the body of a method, please hoist it:
@@ -65,11 +67,13 @@ let impl = impl'
 assume
 val impl_1': Core.Convert.t_From t_Bar u8
 
+unfold
 let impl_1 = impl_1'
 
 assume
 val f_from__from': u8 -> t_Bar
 
+unfold
 let f_from__from = f_from__from'
 
 type t_Holder (v_T: Type0) = { f_value:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global }
@@ -78,6 +82,7 @@ type t_Holder (v_T: Type0) = { f_value:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global 
 assume
 val impl_2': #v_T: Type0 -> Core.Convert.t_From (t_Holder v_T) Prims.unit
 
+unfold
 let impl_2 (#v_T: Type0) = impl_2' #v_T
 
 type t_Param (v_SIZE: usize) = { f_value:t_Array u8 v_SIZE }
@@ -86,11 +91,13 @@ type t_Param (v_SIZE: usize) = { f_value:t_Array u8 v_SIZE }
 assume
 val impl_3': v_SIZE: usize -> Core.Convert.t_From (t_Param v_SIZE) Prims.unit
 
+unfold
 let impl_3 (v_SIZE: usize) = impl_3' v_SIZE
 
 assume
 val ff_generic': v_X: usize -> #v_U: Type0 -> e_x: v_U -> t_Param v_X
 
+unfold
 let ff_generic (v_X: usize) (#v_U: Type0) = ff_generic' v_X #v_U
 
 class t_T (v_Self: Type0) = {
@@ -134,5 +141,6 @@ val padlen': b: t_Slice u8 -> n: usize
           let out:usize = out in
           out <=. n)
 
+unfold
 let padlen = padlen'
 '''

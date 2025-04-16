@@ -60,18 +60,21 @@ type t_Dummy = | Dummy : t_Dummy
 assume
 val impl_1': Core.Marker.t_StructuralPartialEq t_Dummy
 
+unfold
 let impl_1 = impl_1'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_2': Core.Cmp.t_PartialEq t_Dummy t_Dummy
 
+unfold
 let impl_2 = impl_2'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl': Core.Cmp.t_Eq t_Dummy
 
+unfold
 let impl = impl'
 
 let impl_Dummy__f (self: t_Dummy)
@@ -130,12 +133,14 @@ unfold type t_Int = int
 assume
 val impl_1': Core.Clone.t_Clone t_Int
 
+unfold
 let impl_1 = impl_1'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl': Core.Marker.t_Copy t_Int
 
+unfold
 let impl = impl'
 
 unfold let add x y = x + y

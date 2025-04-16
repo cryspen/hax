@@ -80,18 +80,21 @@ type t_Foo = { f_field:u8 }
 assume
 val impl': Core.Marker.t_StructuralPartialEq t_Foo
 
+unfold
 let impl = impl'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_1': Core.Cmp.t_PartialEq t_Foo t_Foo
 
+unfold
 let impl_1 = impl_1'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
 val impl_2': Core.Cmp.t_Eq t_Foo
 
+unfold
 let impl_2 = impl_2'
 
 let v_CONSTANT: t_Foo = { f_field = mk_u8 3 } <: t_Foo

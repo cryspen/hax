@@ -1010,7 +1010,7 @@ struct
       [
         F.decl ~quals:[ Assumption ] ~fsti:false ~attrs
         @@ F.AST.Assume (name', ty);
-        F.decl ~fsti:false
+        F.decl ~quals:[ Unfold_for_unification_and_vcgen ] ~fsti:false
         @@ F.AST.TopLevelLet (NoLetQualifier, [ (F.pat @@ pat, term) ]);
       ]
     in
