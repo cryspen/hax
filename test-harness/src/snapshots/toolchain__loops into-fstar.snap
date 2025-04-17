@@ -208,6 +208,12 @@ let bigger_power_2_ (x: i32) : i32 =
   Rust_primitives.Hax.while_loop_cf (fun pow ->
         let pow:i32 = pow in
         pow <. mk_i32 1000000 <: bool)
+    (fun pow ->
+        let pow:i32 = pow in
+        true)
+    (fun pow ->
+        let pow:i32 = pow in
+        Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
     pow
     (fun pow ->
         let pow:i32 = pow in
@@ -842,6 +848,32 @@ let f (_: Prims.unit) : u8 =
     Rust_primitives.Hax.while_loop (fun x ->
           let x:u8 = x in
           x <. mk_u8 10 <: bool)
+      (fun x ->
+          let x:u8 = x in
+          true)
+      (fun x ->
+          let x:u8 = x in
+          Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
+      x
+      (fun x ->
+          let x:u8 = x in
+          let x:u8 = x +! mk_u8 3 in
+          x)
+  in
+  x +! mk_u8 12
+
+let while_invariant_decr (_: Prims.unit) : u8 =
+  let x:u8 = mk_u8 0 in
+  let x:u8 =
+    Rust_primitives.Hax.while_loop (fun x ->
+          let x:u8 = x in
+          x <. mk_u8 10 <: bool)
+      (fun x ->
+          let x:u8 = x in
+          x <=. mk_u8 10 <: bool)
+      (fun x ->
+          let x:u8 = x in
+          Rust_primitives.Hax.Int.from_machine (mk_u8 10 -! x <: u8) <: Hax_lib.Int.t_Int)
       x
       (fun x ->
           let x:u8 = x in

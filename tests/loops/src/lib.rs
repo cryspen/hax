@@ -138,6 +138,16 @@ mod while_loops {
         }
         x + 12
     }
+    fn while_invariant_decr() -> u8 {
+        use hax_lib::ToInt;
+        let mut x = 0;
+        while x < 10 {
+            hax_lib::loop_invariant!(|_: usize| x <= 10);
+            hax_lib::loop_decreases!((10 - x).to_int());
+            x = x + 3;
+        }
+        x + 12
+    }
 }
 
 mod control_flow {
