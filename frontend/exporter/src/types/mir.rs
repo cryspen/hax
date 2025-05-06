@@ -546,6 +546,16 @@ pub enum FunOperand {
 
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: rustc_middle::mir::UnwindAction, state: S as _s)]
+pub enum UnwindAction {
+    Continue,
+    Unreachable,
+    Terminate(UnwindTerminateReason),
+    Cleanup(BasicBlock),
+}
+
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Debug, JsonSchema)]
 #[args(<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>, from: rustc_middle::mir::TerminatorKind<'tcx>, state: S as s)]
 pub enum TerminatorKind {
     Goto {
@@ -1101,7 +1111,6 @@ sinto_todo!(rustc_ast::ast, InlineAsmTemplatePiece);
 sinto_todo!(rustc_ast::ast, InlineAsmOptions);
 sinto_todo!(rustc_middle::mir, InlineAsmOperand<'tcx>);
 sinto_todo!(rustc_middle::mir, AssertMessage<'tcx>);
-sinto_todo!(rustc_middle::mir, UnwindAction);
 sinto_todo!(rustc_middle::mir, FakeReadCause);
 sinto_todo!(rustc_middle::mir, RetagKind);
 sinto_todo!(rustc_middle::mir, UserTypeProjection);
