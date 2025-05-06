@@ -470,6 +470,38 @@ fn translate_terminator_kind_call<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasO
     }
 }
 
+#[cfg(feature = "rustc")]
+fn translate_terminator_kind_drop<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasOwnerId>(
+    s: &S,
+    terminator: &rustc_middle::mir::TerminatorKind<'tcx>,
+) -> TerminatorKind {
+    let tcx = s.base().tcx;
+    let mir::TerminatorKind::Drop {
+        place,
+        target,
+        unwind,
+        ..
+    } = terminator
+    else {
+        unreachable!()
+    };
+
+    let local_decls = &s.mir().local_decls;
+    let place_ty = place.ty(local_decls, tcx).ty;
+    let drop_trait = tcx.lang_items().drop_trait().unwrap();
+    let impl_expr = solve_trait(
+        s,
+        ty::Binder::dummy(ty::TraitRef::new(tcx, drop_trait, [place_ty])),
+    );
+
+    TerminatorKind::Drop {
+        place: place.sinto(s),
+        impl_expr,
+        target: target.sinto(s),
+        unwind: unwind.sinto(s),
+    }
+}
+
 // We don't use the LitIntType on purpose (we don't want the "unsuffixed" case)
 #[derive_group(Serializers)]
 #[derive(Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -570,11 +602,17 @@ pub enum TerminatorKind {
     },
     Return,
     Unreachable,
+    #[custom_arm(
+        x @ rustc_middle::mir::TerminatorKind::Drop { .. } => {
+          translate_terminator_kind_drop(s, x)
+        }
+    )]
     Drop {
         place: Place,
+        /// Implementation of `place.ty(): Drop`.
+        impl_expr: ImplExpr,
         target: BasicBlock,
         unwind: UnwindAction,
-        replace: bool,
     },
     #[custom_arm(
         x @ rustc_middle::mir::TerminatorKind::Call { .. } => {
