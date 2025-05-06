@@ -43,7 +43,7 @@ pub type Mutability = bool;
 
 /// Reflects [`hir::def::CtorKind`]
 #[derive_group(Serializers)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema, AdtInto))]
 #[cfg_attr(not(feature = "extract_names_mode"), args(<S>, from: hir::def::CtorKind, state: S as _s))]
 pub enum CtorKind {
@@ -53,7 +53,7 @@ pub enum CtorKind {
 
 /// Reflects [`hir::def::CtorOf`]
 #[derive_group(Serializers)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Hash, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema, AdtInto))]
 #[cfg_attr(not(feature = "extract_names_mode"), args(<S>, from: hir::def::CtorOf, state: S as _s))]
 pub enum CtorOf {
@@ -63,7 +63,7 @@ pub enum CtorOf {
 
 /// Reflects [`rustc_span::hygiene::MacroKind`]
 #[derive_group(Serializers)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Copy, Hash, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema, AdtInto))]
 #[cfg_attr(not(feature = "extract_names_mode"), args(<S>, from: rustc_span::hygiene::MacroKind, state: S as _s))]
 pub enum MacroKind {
@@ -95,7 +95,7 @@ impl PromotedId {
 #[derive_group(Serializers)]
 #[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema, AdtInto))]
 #[cfg_attr(not(feature = "extract_names_mode"), args(<S>, from: rustc_hir::def::DefKind, state: S as tcx))]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Hash, Eq, PartialOrd, Ord)]
 pub enum DefKind {
     Mod,
     Struct,
@@ -149,7 +149,7 @@ pub struct DefId {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Hash, Clone, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema))]
 pub struct DefIdContents {
     pub krate: String,

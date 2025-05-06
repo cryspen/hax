@@ -3,8 +3,8 @@ use crate::prelude::*;
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct ItemAttributes {
-    attributes: Vec<Attribute>,
-    parent_attributes: Vec<Attribute>,
+    pub attributes: Vec<Attribute>,
+    pub parent_attributes: Vec<Attribute>,
 }
 
 impl Default for ItemAttributes {

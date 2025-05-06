@@ -471,7 +471,7 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
         if let Some(toolchain) = toolchain() {
             cmd.env("RUSTUP_TOOLCHAIN", toolchain);
         }
-        cmd.args(["build".into()].iter().chain(options.cargo_flags.iter()));
+        cmd.args(["check".into()].iter().chain(options.cargo_flags.iter()));
         const COLOR_FLAG: &str = "--color";
         let explicit_color_flag = options.cargo_flags.iter().any(|flag| flag == COLOR_FLAG);
         if !explicit_color_flag && std::io::stderr().is_terminal() {

@@ -13,7 +13,7 @@ env:
 jobs:
   extract-bertie:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'merge_group' }}
-    runs-on: "ubuntu-latest"
+    runs-on: linux
 
     steps:
       - name: ⤵ Clone Bertie repository
@@ -25,7 +25,9 @@ jobs:
         with:
           path: hax
 
-      - uses: DeterminateSystems/nix-installer-action@main
+      - if: runner.environment == 'github-hosted'
+        uses: DeterminateSystems/nix-installer-action@main
+        
       - name: ⤵ Install hax
         run: |
           nix profile install ./hax

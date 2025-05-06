@@ -16,126 +16,6 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-type ThirBundle<'tcx> = (Rc<rustc_middle::thir::Thir<'tcx>>, ExprId);
-/// Generates a dummy THIR body with an error literal as first expression
-fn dummy_thir_body(
-    tcx: TyCtxt<'_>,
-    span: rustc_span::Span,
-    guar: rustc_errors::ErrorGuaranteed,
-) -> ThirBundle<'_> {
-    use rustc_middle::thir::*;
-    let ty = tcx.mk_ty_from_kind(rustc_type_ir::TyKind::Never);
-    let mut thir = Thir::new(BodyTy::Const(ty));
-    let lit_err = tcx.hir_arena.alloc(rustc_span::source_map::Spanned {
-        node: rustc_ast::ast::LitKind::Err(guar),
-        span: rustc_span::DUMMY_SP,
-    });
-    let expr = thir.exprs.push(Expr {
-        kind: ExprKind::Literal {
-            lit: lit_err,
-            neg: false,
-        },
-        ty,
-        temp_lifetime: TempLifetime {
-            temp_lifetime: None,
-            backwards_incompatible: None,
-        },
-        span,
-    });
-    (Rc::new(thir), expr)
-}
-
-/// Precompute all THIR bodies in a certain order so that we avoid
-/// stealing issues (theoretically...)
-fn precompute_local_thir_bodies(
-    tcx: TyCtxt<'_>,
-) -> impl Iterator<Item = (rustc_hir::def_id::DefId, ThirBundle<'_>)> {
-    use rustc_hir::def::DefKind::*;
-    use rustc_hir::*;
-
-    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-    enum ConstLevel {
-        Const,
-        ConstFn,
-        NotConst,
-    }
-
-    #[tracing::instrument(skip(tcx))]
-    fn const_level_of(tcx: TyCtxt<'_>, ldid: rustc_span::def_id::LocalDefId) -> ConstLevel {
-        let did = ldid.to_def_id();
-        if matches!(
-            tcx.def_kind(did),
-            Const | ConstParam | AssocConst | AnonConst | InlineConst
-        ) {
-            ConstLevel::Const
-        } else if tcx.is_const_fn(ldid.to_def_id()) {
-            ConstLevel::ConstFn
-        } else {
-            ConstLevel::NotConst
-        }
-    }
-
-    use itertools::Itertools;
-    tcx.hir_body_owners()
-        .filter(|ldid| match tcx.def_kind(ldid.to_def_id()) {
-            InlineConst | AnonConst => {
-                fn is_fn(tcx: TyCtxt<'_>, did: rustc_span::def_id::DefId) -> bool {
-                    use rustc_hir::def::DefKind;
-                    matches!(
-                        tcx.def_kind(did),
-                        DefKind::Fn | DefKind::AssocFn | DefKind::Ctor(..) | DefKind::Closure
-                    )
-                }
-                !is_fn(tcx, tcx.local_parent(*ldid).to_def_id())
-            }
-            _ => true,
-        })
-        .sorted_by_key(|ldid| const_level_of(tcx, *ldid))
-        .filter(move |ldid| tcx.hir_maybe_body_owned_by(*ldid).is_some())
-        .map(move |ldid| {
-            tracing::debug!("⏳ Type-checking THIR body for {:#?}", ldid);
-            let hir_id = tcx.local_def_id_to_hir_id(ldid);
-            // The `type_of` anon constants isn't available directly, it needs to be fed by some
-            // other query. This hack ensures this happens, otherwise `thir_body` returns an error.
-            // See https://rust-lang.zulipchat.com/#narrow/channel/182449-t-compiler.2Fhelp/topic/Change.20in.20THIR.20of.20anonymous.20constants.3F/near/509764021 .
-            for (parent_id, parent) in tcx.hir_parent_iter(hir_id) {
-                if let rustc_hir::Node::Item(..) = parent {
-                    let _ = tcx.check_well_formed(parent_id.owner.def_id);
-                    break;
-                }
-            }
-            let span = tcx.hir().span(hir_id);
-            let (thir, expr) = match tcx.thir_body(ldid) {
-                Ok(x) => x,
-                Err(e) => {
-                    let guar = tcx.dcx().span_err(
-                        span,
-                        "While trying to reach a body's THIR defintion, got a typechecking error.",
-                    );
-                    return (ldid, dummy_thir_body(tcx, span, guar));
-                }
-            };
-            if thir.is_stolen() {
-                let guar = tcx.dcx().span_err(
-                    span,
-                    format!(
-                        "The THIR body of item {:?} was stolen.\n\
-                        This is not supposed to happen.\n\
-                        This is a bug in Hax's frontend.\n\
-                        This is discussed in issue https://github.com/hacspec/hax/issues/27.\n\
-                        Please comment this issue if you see this error message!",
-                        ldid
-                    ),
-                );
-                return (ldid, dummy_thir_body(tcx, span, guar));
-            }
-            let thir = thir.borrow().clone();
-            tracing::debug!("✅ Type-checked THIR body for {:#?}", ldid);
-            (ldid, (Rc::new(thir), expr))
-        })
-        .map(|(ldid, bundle)| (ldid.to_def_id(), bundle))
-}
-
 /// Browse a crate and translate every item from HIR+THIR to "THIR'"
 /// (I call "THIR'" the AST described in this crate)
 #[tracing::instrument(skip_all)]
@@ -154,9 +34,6 @@ fn convert_thir<'tcx, Body: hax_frontend_exporter::IsBody>(
 ) {
     use hax_frontend_exporter::WithGlobalCacheExt;
     let state = hax_frontend_exporter::state::State::new(tcx, options.clone());
-    for (def_id, thir) in precompute_local_thir_bodies(tcx) {
-        state.with_item_cache(def_id, |caches| caches.thir = Some(thir));
-    }
 
     let result = tcx
         .hir_free_items()
@@ -199,6 +76,11 @@ impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
 }
 
 impl Callbacks for ExtractionCallbacks {
+    fn config(&mut self, config: &mut rustc_interface::interface::Config) {
+        config.override_queries = Some(|_sess, providers| {
+            hax_frontend_exporter::override_queries_store_body(providers);
+        });
+    }
     fn after_expansion<'tcx>(&mut self, compiler: &Compiler, tcx: TyCtxt<'tcx>) -> Compilation {
         use std::ops::{Deref, DerefMut};
 

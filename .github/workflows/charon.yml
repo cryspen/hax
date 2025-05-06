@@ -3,9 +3,10 @@ on:
 
 jobs:
   charon:
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
-      - uses: DeterminateSystems/nix-installer-action@main
+      - if: runner.environment == 'github-hosted'
+        uses: DeterminateSystems/nix-installer-action@main
       - uses: actions/checkout@v4
         with:
           repository: AeneasVerif/charon

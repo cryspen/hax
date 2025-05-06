@@ -18,3 +18,8 @@ textarea.code.inline+div.CodeMirror div.CodeMirror-lines {
 pre.md-hax-playground-pre {
     margin: 0 !important;
 }
+
+.center {
+    display: block;
+    margin: 0 auto;
+}

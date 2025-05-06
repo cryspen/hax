@@ -10,10 +10,11 @@ on:
 jobs:
   tests:
     name: nix-action
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
     - uses: actions/checkout@v4
-    - uses: DeterminateSystems/nix-installer-action@main
+    - if: runner.environment == 'github-hosted'
+      uses: DeterminateSystems/nix-installer-action@main
     - uses: cachix/cachix-action@v15
       with:
         name: hax
@@ -23,9 +24,11 @@ jobs:
 
     - name: Install the toolchain
       run: |
-        nix profile install nixpkgs#yq
-        nix profile install .#rustc
-        nix profile install .
+        mkdir binaries
+        # Install binaries in `binaries`
+        nix build nixpkgs#yq .#rustc . -o binaries/result
+        # Add the paths to PATH
+        for path in $PWD/binaries/*/bin; do echo "$path"; done >> $GITHUB_PATH
         
     - name: Ensure readme coherency
       run: |
