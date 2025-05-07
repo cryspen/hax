@@ -93,6 +93,11 @@ pub enum ImplExprAtom {
     /// `dyn Trait` implements `Trait` using a built-in implementation; this refers to that
     /// built-in implementation.
     Dyn,
+    /// A virtual `Drop` implementation.
+    /// `Drop` doesn't work like a real trait but we want to pretend it does. If a type has a
+    /// user-defined `impl Drop for X` we just use the `Concrete` variant, but if it doesn't we use
+    /// this variant to supply the data needed to know what code will run on drop.
+    Drop(DropData),
     /// A built-in trait whose implementation is computed by the compiler, such as `FnMut`. This
     /// morally points to an invisible `impl` block; as such it contains the information we may
     /// need from one.
@@ -107,6 +112,30 @@ pub enum ImplExprAtom {
     },
     /// An error happened while resolving traits.
     Error(String),
+}
+
+#[derive(AdtInto)]
+#[args(<'tcx, S: UnderOwnerState<'tcx> >, from: resolution::DropData<'tcx>, state: S as s)]
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
+pub enum DropData {
+    /// A drop that does nothing, e.g. for scalars and pointers.
+    Noop,
+    /// An implicit `Drop` local clause, if the `resolve_drop_bounds` option is `false`. If that
+    /// option is `true`, we'll add `Drop` bounds to every type param, and use that to resolve
+    /// `Drop` impls of generics. If it's `false`, we use this variant to indicate that the drop
+    /// clause comes from a generic or associated type.
+    Implicit,
+    /// The implicit `Drop` impl that exists for every type without an explicit `Drop` impl. The
+    /// virtual impl is considered to have one `T: Drop` bound for each generic argument of the
+    /// target type; it then simply drops each field in order.
+    Glue {
+        /// The type we're generating glue for.
+        ty: Ty,
+        /// The `ImplExpr`s for the `T: Drop` bounds of the virtual impl. There is one for each
+        /// generic argument, in order.
+        impl_exprs: Vec<ImplExpr>,
+    },
 }
 
 /// An `ImplExpr` describes the full data of a trait implementation. Because of generics, this may
