@@ -3,6 +3,8 @@ module Rust_primitives
 include Rust_primitives.Integers
 include Rust_primitives.Arrays
 include Rust_primitives.BitVectors
+include Rust_primitives.Float
+include Rust_primitives.Char
 
 let (let?) 
   (#a #b: Type)
