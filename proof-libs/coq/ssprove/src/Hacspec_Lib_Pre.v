@@ -10,7 +10,7 @@ Require Import Sumbool.
 
 From mathcomp Require Import fintype.
 
-From Crypt Require Import choice_type Package Prelude.
+From SSProve Require Import choice_type Package Prelude.
 Import PackageNotation.
 From extructures Require Import ord fset fmap.
 
@@ -18,7 +18,7 @@ Require Import ChoiceEquality.
 
 From mathcomp Require Import ssrZ word.
 (* From Jasmin Require Import word. *)
-From Crypt Require Import jasmin_word.
+From SSProve Require Import jasmin_word.
 
 
 From Coq Require Import ZArith List.

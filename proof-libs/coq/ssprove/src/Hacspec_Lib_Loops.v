@@ -10,7 +10,7 @@ Require Import Sumbool.
 
 From mathcomp Require Import fintype.
 
-From Crypt Require Import choice_type Package Prelude.
+From SSProve Require Import choice_type Package Prelude.
 Import PackageNotation.
 From extructures Require Import ord fset fmap.
 
@@ -219,17 +219,17 @@ Section Loops.
     reflexivity.
   Qed.
 
-  Lemma valid_remove_back :
-    forall x (xs : {fset Location}) I {ct} c,
-      ValidCode (fset xs) I c ->
-      @ValidCode (fset (xs ++ [x])) I ct c.
-  Proof.
-    intros.
-    apply (valid_injectLocations) with (L1 := fset xs).
-    - rewrite fset_cat.
-      apply fsubsetUl.
-    - apply H.
-  Qed.
+  (* Lemma valid_remove_back : *)
+  (*   forall x (xs : Locations) I {ct} c, *)
+  (*     ValidCode (xs) I c -> *)
+  (*     @ValidCode ((xs ++ [x])) I ct c. *)
+  (* Proof. *)
+  (*   intros. *)
+  (*   apply (valid_injectLocations) with (L1 := fset xs). *)
+  (*   - rewrite fset_cat. *)
+  (*     apply fsubsetUl. *)
+  (*   - apply H. *)
+  (* Qed. *)
 
   Lemma list_constructor : forall {A : Type} (x : A) (xs : list A) (l : list A) (H : (x :: xs) = l), (l <> []).
   Proof.
@@ -282,26 +282,26 @@ Section Loops.
         reflexivity.
   Qed.
 
-  Ltac valid_remove_back' :=
-    match goal with
-    | _ : _ |- (ValidCode (fset (?l)) _ _) =>
-        rewrite (@pop_back_is_id _ l)
-    end ;
-    apply valid_remove_back.
+  (* Ltac valid_remove_back' := *)
+  (*   match goal with *)
+  (*   | _ : _ |- (ValidCode (fset (?l)) _ _) => *)
+  (*       rewrite (@pop_back_is_id _ l) *)
+  (*   end ; *)
+  (*   apply valid_remove_back. *)
 
 
-  Lemma valid_remove_front :
-    forall x xs I {ct} c,
-      ValidCode (fset xs) I c ->
-      @ValidCode (fset (x :: xs)) I ct c.
-  Proof.
-    intros.
-    apply (@valid_injectLocations) with (L1 := fset xs).
-    - replace (x :: xs) with (seq.cat [x] xs) by reflexivity.
-      rewrite fset_cat.
-      apply fsubsetUr.
-    - apply H.
-  Qed.
+  (* Lemma valid_remove_front : *)
+  (*   forall x xs I {ct} c, *)
+  (*     ValidCode (fset xs) I c -> *)
+  (*     @ValidCode (fset (x :: xs)) I ct c. *)
+  (* Proof. *)
+  (*   intros. *)
+  (*   apply (@valid_injectLocations) with (L1 := fset xs). *)
+  (*   - replace (x :: xs) with (seq.cat [x] xs) by reflexivity. *)
+  (*     rewrite fset_cat. *)
+  (*     apply fsubsetUr. *)
+  (*   - apply H. *)
+  (* Qed. *)
 
 Theorem for_loop_unfold :
   forall c n,
@@ -351,54 +351,54 @@ Program Fixpoint vars_to_tuple (vars : list (∑ (t : choice_type), t)) {measure
   | (x :: s :: xs) => (vars_to_tuple (s :: xs) , _)
   end.
 
-Fixpoint for_loop_return_ (ℓ : list Location) (vars : list (∑ (t : choice_type), t)) : raw_code (list_types (seq.cat (seq.map (fun '(x ; y) => x) vars) (seq.map (fun '(x ; y) => x) ℓ) )).
+(* Fixpoint for_loop_return_ (ℓ : list Location) (vars : list (∑ (t : choice_type), t)) : raw_code (list_types (seq.cat (seq.map (fun '(x ; y) => x) vars) (seq.map (fun '(x ; y) => x) ℓ) )). *)
 
-  destruct ℓ as [ | l ls ].
-  - rewrite seq.cats0.
-    pose (ret (vars_to_tuple vars)).
-    replace (fun pat : ∑ t : choice_type, t => _) with
-      (fun pat : @sigT choice_type
-       (fun t : choice_type => t) =>
-         match pat return choice_type with
-         | @existT _ _ x _ => x
-         end)
-      in r by (apply functional_extensionality ; now intros []).
-    apply r.
-  - apply (getr (l)).
-    intros x.
-    destruct l.
-    cbn in x.
-    pose (for_loop_return_ ls (vars ++ [(x0 ; x)])).
-    rewrite seq.map_cat in r.
-    cbn in r.
-    rewrite <- seq.catA in r.
-    cbn in r.
-    apply r.
-Defined.
+(*   destruct ℓ as [ | l ls ]. *)
+(*   - rewrite seq.cats0. *)
+(*     pose (ret (vars_to_tuple vars)). *)
+(*     replace (fun pat : ∑ t : choice_type, t => _) with *)
+(*       (fun pat : @sigT choice_type *)
+(*        (fun t : choice_type => t) => *)
+(*          match pat return choice_type with *)
+(*          | @existT _ _ x _ => x *)
+(*          end) *)
+(*       in r by (apply functional_extensionality ; now intros []). *)
+(*     apply r. *)
+(*   - apply (getr (l)). *)
+(*     intros x. *)
+(*     destruct l. *)
+(*     cbn in x. *)
+(*     pose (for_loop_return_ ls (vars ++ [(x0 ; x)])). *)
+(*     rewrite seq.map_cat in r. *)
+(*     cbn in r. *)
+(*     rewrite <- seq.catA in r. *)
+(*     cbn in r. *)
+(*     apply r. *)
+(* Defined. *)
 
-Definition for_loop_return (ℓ : list Location) : raw_code (list_types (seq.map (fun '(x ; y) => x) ℓ)) := for_loop_return_ ℓ [].
+(* Definition for_loop_return (ℓ : list Location) : raw_code (list_types (seq.map (fun '(x ; y) => x) ℓ)) := for_loop_return_ ℓ []. *)
 
-Definition for_loop_locations
-           (lo: nat)
-           (hi: nat)
-           (ℓ : list Location)
-           (f : nat -> raw_code 'unit) :=
-  match hi - lo with
-  | O => @ret 'unit tt
-  | S i => for_loop (fun n => f (n + lo)) i
-  end  ;; for_loop_return ℓ.
+(* Definition for_loop_locations *)
+(*            (lo: nat) *)
+(*            (hi: nat) *)
+(*            (ℓ : list Location) *)
+(*            (f : nat -> raw_code 'unit) := *)
+(*   match hi - lo with *)
+(*   | O => @ret 'unit tt *)
+(*   | S i => for_loop (fun n => f (n + lo)) i *)
+(*   end  ;; for_loop_return ℓ. *)
 
-Theorem empty_put {B} ℓ v (k h : raw_code B) :
-  ⊢ ⦃ true_precond ⦄ k ≈ h ⦃ pre_to_post true_precond ⦄ ->
-  ⊢ ⦃ true_precond ⦄ #put ℓ := v ;; k ≈ h ⦃ pre_to_post true_precond ⦄.
-Proof.
-  intros.
-  apply better_r_put_lhs.
-  eapply rpre_weaken_rule.
-  apply H.
-  intros.
-  reflexivity.
-Qed.
+(* Theorem empty_put {B} ℓ v (k h : raw_code B) : *)
+(*   ⊢ ⦃ true_precond ⦄ k ≈ h ⦃ pre_to_post true_precond ⦄ -> *)
+(*   ⊢ ⦃ true_precond ⦄ #put ℓ := v ;; k ≈ h ⦃ pre_to_post true_precond ⦄. *)
+(* Proof. *)
+(*   intros. *)
+(*   apply better_r_put_lhs. *)
+(*   eapply rpre_weaken_rule. *)
+(*   apply H. *)
+(*   intros. *)
+(*   reflexivity. *)
+(* Qed. *)
 
 Theorem length_merge_sort_pop : forall {A} leb (l1 : list (list A)) (l2 : list A),
     length (path.merge_sort_pop leb l2 l1) = length (seq.cat (seq.flatten l1) l2).

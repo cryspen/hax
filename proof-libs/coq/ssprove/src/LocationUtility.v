@@ -1,9 +1,9 @@
 From mathcomp Require Import all_ssreflect all_algebra.
 
 From Coq Require Import ZArith List.
-From Crypt Require Import choice_type Package.
+From SSProve Require Import choice_type Package.
 Import PackageNotation.
-From Crypt Require Import pkg_interpreter.
+From SSProve Require Import pkg_interpreter.
 From extructures Require Import ord fset fmap.
 Require Import Hacspec_Lib_Comparable.
 
@@ -17,55 +17,140 @@ Import List.ListNotations.
 
 (*** Location *)
 
+Set Warnings "ambiguous-paths,notation-overridden,notation-incompatible-format".
 From HB Require Import structures.
-HB.instance Definition _ := hasDecEq.Build Location (fun x y => @tag_eqP _ _ x y).
-(* Variables (I : eqType) (T_ : I -> eqType). *)
-(* Implicit Types u v : {i : I & T_ i}. *)
-(* HB.instance Definition _ := hasDecEq.Build {x : _ & _} (fun x y => @tag_eqP _ _ x y). *)
-Definition loc_eqType := pkg_core_definition_Location__canonical__eqtype_Equality.
+From SSProve.Crypt Require Import jasmin_word jasmin_util.
+From SSProve.Crypt Require Import Prelude Axioms Casts.
 
-Definition location_eqb (ℓ ℓ' : Location) :=
-  andb (@eqtype.eq_op Datatypes_nat__canonical__eqtype_Equality (projT2 ℓ) (projT2 ℓ'))
-       (@eqtype.eq_op _ (projT1 ℓ) (projT1 ℓ')).
+(* Fixpoint choice_type_test (u v : choice_type) : bool. *)
+(* Proof. *)
+(*   epose (@eq_op  _). *)
+(*   epose (choice_Choice__to__eqtype_Equality (chElement u) *)
+(*          choice_Choice__to__eqtype_Equality (chElement v)). *)
+(*   refine (@eqP choiceType). *)
+(*   chElement u == chElement v. *)
 
-Definition location_eqbP : forall (l1 l2 : Location),
-    @location_eqb (l1) (l2)
-    = (@eqtype.eq_op
-         _ (* (@eqtype.tag_eqType choice_type_eqType *)
-           (*                   (fun _ : choice_type => ssrnat.nat_eqType)) *) l1 l2).
-Proof.
-  intros.
 
-  unfold location_eqb.
-  unfold eqtype.eq_op.
+(* Fixpoint choice_type_test (u v : choice_type) : bool := *)
+(*   match u, v with *)
+(*   | chNat , chNat => true *)
+(*   | chInt , chInt => true *)
+(*   | chUnit , chUnit => true *)
+(*   | chBool , chBool => true *)
+(*   | chProd a b , chProd a' b' => choice_type_test a a' && choice_type_test b b' *)
+(*   | chMap a b , chMap a' b' => choice_type_test a a' && choice_type_test b b' *)
+(*   | chOption a, chOption a' => choice_type_test a a' *)
+(*   | chFin n, chFin n' => n == n' *)
+(*   | chWord nbits, chWord nbits' => *)
+(*       nbits == nbits' *)
+(*   | chList a, chList b => choice_type_test a b *)
+(*   | chSum a b, chSum a' b' =>  choice_type_test a a' && choice_type_test b b' *)
+(*   | _ , _ => false *)
+(*   end. *)
 
-  cbn.
-  rewrite ssrnat.eqnE.
-  unfold eqtype.tag_eq.
-  unfold eqtype.tagged_as.
-  unfold ssrfun.tag.
-  unfold ssrfun.tagged.
+(* Definition choice_type_eq : rel choice_type := *)
+(*   fun u v => choice_type_test u v. *)
 
-  rewrite Bool.andb_comm.
+(* Lemma choice_type_eqP : Equality.axiom choice_type_eq. *)
+(* Proof. *)
+(*   move=> x y. *)
+(*   induction x as [ | | | | x1 ih1 x2 ih2 | x1 ih1 x2 ih2 | x1 ih1 | x1 | x1 | x1 ih1 | x1 ih1 x2 ih2 ] *)
+(*     in y |- *. *)
+(*   all: destruct y as [ | | | | y1 y2 | y1 y2 | y1 | y1 | y1 | y1 | y1 y2 ]. *)
+(*   all: simpl. *)
+(*   all: try solve [ right ; discriminate ]. *)
+(*   all: try solve [ left ; reflexivity ]. *)
+(*   (* chProd *) *)
+(*   - destruct (ih1 y1), (ih2 y2). *)
+(*     all: simpl. *)
+(*     all: subst. *)
+(*     all: try solve [ right ; congruence ]. *)
+(*     left. reflexivity. *)
+(*   (* chMap *) *)
+(*   - destruct (ih1 y1), (ih2 y2). *)
+(*     all: simpl. *)
+(*     all: subst. *)
+(*     all: try solve [ right ; congruence ]. *)
+(*     left. reflexivity. *)
+(*   (* chOption *) *)
+(*   - destruct (ih1 y1). *)
+(*     all: subst. *)
+(*     + left. reflexivity. *)
+(*     + right. congruence. *)
+(*   (* chFin *) *)
+(*   - destruct (x1 == y1) eqn:e. *)
+(*     + move: e => /eqP e. subst. left.  reflexivity. *)
+(*     + move: e => /eqP e. right. intro h. *)
+(*       apply e. inversion h. reflexivity. *)
+(*   (* chWord *) *)
+(*   - destruct (x1 == y1) eqn:e. *)
+(*     + move: e => /eqP e. subst. left. reflexivity. *)
+(*     + move: e => /eqP e. right. intro h. *)
+(*       apply e. inversion h. reflexivity. *)
+(*   (* chList *) *)
+(*   - destruct (ih1 y1). *)
+(*     all: subst. *)
+(*     + left. reflexivity. *)
+(*     + right. congruence. *)
+(*   (* chSum *) *)
+(*   - destruct (ih1 y1), (ih2 y2). *)
+(*     all: simpl. *)
+(*     all: subst. *)
+(*     all: try solve [right ; congruence]. *)
+(*     left. reflexivity. *)
+(* Qed. *)
 
-  unfold eq_rect_r, eq_rect.
+(* HB.instance Definition _ := hasDecEq.Build choice_type choice_type_eqP. *)
 
-  set (eqtype.eq_op _ _) at 2.
-  replace (choice_type_eq _ _) with b by reflexivity.
+(* From HB Require Import structures. *)
+(* HB.instance Definition _ := hasDecEq.Build Location (fun (x y : nat * choice_type) => pair_eqP x y). *)
+(* (* Variables (I : eqType) (T_ : I -> eqType). *) *)
+(* (* Implicit Types u v : {i : I & T_ i}. *) *)
+(* (* HB.instance Definition _ := hasDecEq.Build {x : _ & _} (fun x y => @tag_eqP _ _ x y). *) *)
+(* Definition loc_eqType := pkg_core_definition_Location__canonical__eqtype_Equality. *)
 
-  destruct b eqn:b_eq ; subst b.
-  - f_equal.
-    case eqtype.eqP ; intros.
-    + rewrite e in b_eq.
-      rewrite <- e.
-      simpl.
-      reflexivity.
-    + exfalso.
-      apply (ssrbool.elimT eqtype.eqP) in b_eq.
-      apply n.
-      eapply b_eq.
-  - reflexivity.
-Qed.
+(* Definition location_eqb (ℓ ℓ' : Location) := *)
+(*   andb (@eqtype.eq_op Datatypes_nat__canonical__eqtype_Equality (fst ℓ) (fst ℓ')) *)
+(*        (@eqtype.eq_op _ (snd ℓ) (snd ℓ')). *)
+
+(* Definition location_eqbP : forall (l1 l2 : Location), *)
+(*     @location_eqb (l1) (l2) *)
+(*     = (@eqtype.eq_op *)
+(*          _ (* (@eqtype.tag_eqType choice_type_eqType *) *)
+(*            (*                   (fun _ : choice_type => ssrnat.nat_eqType)) *) l1 l2). *)
+(* Proof. *)
+(*   intros. *)
+(*   reflexivity. *)
+(*   (* unfold location_eqb. *) *)
+(*   (* unfold eqtype.eq_op. *) *)
+
+(*   (* cbn. *) *)
+(*   (* rewrite ssrnat.eqnE. *) *)
+(*   (* unfold eqtype.tag_eq. *) *)
+(*   (* unfold eqtype.tagged_as. *) *)
+(*   (* unfold ssrfun.tag. *) *)
+(*   (* unfold ssrfun.tagged. *) *)
+
+(*   (* rewrite Bool.andb_comm. *) *)
+
+(*   (* unfold eq_rect_r, eq_rect. *) *)
+
+(*   (* reflexivity. (eqtype.eq_op _ _) at 2. *) *)
+(*   (* replace (choice_type_eq _ _) with b by reflexivity. *) *)
+
+(*   (* destruct b eqn:b_eq ; subst b. *) *)
+(*   (* - f_equal. *) *)
+(*   (*   case eqtype.eqP ; intros. *) *)
+(*   (*   + rewrite e in b_eq. *) *)
+(*   (*     rewrite <- e. *) *)
+(*   (*     simpl. *) *)
+(*   (*     reflexivity. *) *)
+(*   (*   + exfalso. *) *)
+(*   (*     apply (ssrbool.elimT eqtype.eqP) in b_eq. *) *)
+(*   (*     apply n. *) *)
+(*   (*     eapply b_eq. *) *)
+(*   (* - reflexivity. *) *)
+(* Qed. *)
 
 Theorem is_true_split_or : forall a b, is_true (a || b)%bool = (is_true a \/ is_true b).
 Proof.
@@ -111,35 +196,35 @@ Qed.
 (*     + apply IHL ; assumption. *)
 (* Qed. *)
 
-Lemma location_eqb_sound : forall ℓ ℓ' : Location, is_true (location_eqb ℓ ℓ') <-> ℓ = ℓ'.
-Proof.
-  intros.
-  rewrite location_eqbP.
-  pose (@eqtype.eqP loc_eqType).
-  (* unfold eqtype.Equality.axiom in a. *)
-  pose (ssrbool.elimT).
-  pose (@eqtype.tag_eqP ).
+(* Lemma location_eqb_sound : forall ℓ ℓ' : Location, is_true (location_eqb ℓ ℓ') <-> ℓ = ℓ'. *)
+(* Proof. *)
+(*   intros. *)
+(*   rewrite location_eqbP. *)
+(*   pose (@eqtype.eqP loc_eqType). *)
+(*   (* unfold eqtype.Equality.axiom in a. *) *)
+(*   pose (ssrbool.elimT). *)
+(*   pose (@eqtype.tag_eqP ). *)
 
-  split.
+(*   split. *)
 
-  apply (Couplings.reflection_nonsense _ ℓ ℓ').
-  intros. subst.
-  apply eqtype.eq_refl.
-Qed.
+(*   apply (Couplings.reflection_nonsense _ ℓ ℓ'). *)
+(*   intros. subst. *)
+(*   apply eqtype.eq_refl. *)
+(* Qed. *)
 
-Global Program Instance location_eqdec: EqDec (Location) := {
-    eqb := location_eqb;
-    eqb_leibniz := location_eqb_sound;
-  }.
+(* Global Program Instance location_eqdec: EqDec (Location) := { *)
+(*     eqb := location_eqb; *)
+(*     eqb_leibniz := location_eqb_sound; *)
+(*   }. *)
 
-Definition location_ltb : Location -> Location -> bool :=
-  (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord)).
+(* Definition location_ltb : Location -> Location -> bool := *)
+(*   (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord)). *)
 
-Definition location_ltb_simple : Location -> Location -> bool :=
-  fun x y => ltb (projT2 x) (projT2 y).
+(* Definition location_ltb_simple : Location -> Location -> bool := *)
+(*   fun x y => ltb (projT2 x) (projT2 y). *)
 
-Global Instance location_comparable : Comparable (Location) :=
-  eq_dec_lt_Comparable location_ltb.
+(* Global Instance location_comparable : Comparable (Location) := *)
+(*   eq_dec_lt_Comparable location_ltb. *)
 
 Definition le_is_ord_leq : forall s s0 : Datatypes_nat__canonical__Ord_Ord,
     eqtype.eq_op s s0 = false -> ltb s s0 = (s <= s0)%ord.
@@ -159,48 +244,48 @@ Proof.
     assumption.
 Qed.
 
-Definition opsig_eqb (ℓ ℓ' : opsig) : bool :=
-  andb (@eqtype.eq_op Datatypes_nat__canonical__eqtype_Equality (fst ℓ) (fst ℓ'))
-       (andb (@eqtype.eq_op _ (fst (snd ℓ)) (fst (snd ℓ')))
-             (@eqtype.eq_op _ (snd (snd ℓ)) (snd (snd ℓ')))).
+(* Definition opsig_eqb (ℓ ℓ' : opsig) : bool := *)
+(*   andb (@eqtype.eq_op Datatypes_nat__canonical__eqtype_Equality (fst ℓ) (fst ℓ')) *)
+(*        (andb (@eqtype.eq_op _ (fst (snd ℓ)) (fst (snd ℓ'))) *)
+(*              (@eqtype.eq_op _ (snd (snd ℓ)) (snd (snd ℓ')))). *)
 
-Lemma opsig_eqb_sound : forall ℓ ℓ' : opsig, is_true (opsig_eqb ℓ ℓ') <-> ℓ = ℓ'.
-Proof.
-  intros.
+(* Lemma opsig_eqb_sound : forall ℓ ℓ' : opsig, is_true (opsig_eqb ℓ ℓ') <-> ℓ = ℓ'. *)
+(* Proof. *)
+(*   intros. *)
 
-  destruct ℓ as [? []] , ℓ' as [? []].
-  setoid_rewrite is_true_split_and.
-  rewrite is_true_split_and.
-  unfold fst, snd in *.
+(*   destruct ℓ as [? []] , ℓ' as [? []]. *)
+(*   setoid_rewrite is_true_split_and. *)
+(*   rewrite is_true_split_and. *)
+(*   unfold fst, snd in *. *)
 
-  transitivity (i = i0 /\ c = c1 /\ c0 = c2).
-  {
-    apply ZifyClasses.and_morph.
-    symmetry.
-    apply (ssrbool.rwP (@eqtype.eqP Datatypes_nat__canonical__eqtype_Equality i i0)).
-    apply ZifyClasses.and_morph.
-    symmetry.
-    apply (ssrbool.rwP (@eqtype.eqP _ c c1)).
-    symmetry.
-    apply (ssrbool.rwP (@eqtype.eqP _ c0 c2)).
-  }
+(*   transitivity (i = i0 /\ c = c1 /\ c0 = c2). *)
+(*   { *)
+(*     apply ZifyClasses.and_morph. *)
+(*     symmetry. *)
+(*     apply (ssrbool.rwP (@eqtype.eqP Datatypes_nat__canonical__eqtype_Equality i i0)). *)
+(*     apply ZifyClasses.and_morph. *)
+(*     symmetry. *)
+(*     apply (ssrbool.rwP (@eqtype.eqP _ c c1)). *)
+(*     symmetry. *)
+(*     apply (ssrbool.rwP (@eqtype.eqP _ c0 c2)). *)
+(*   } *)
 
-  split ; [ intros [? []] | intros H ; inversion H ] ; subst ; easy.
-Qed.
+(*   split ; [ intros [? []] | intros H ; inversion H ] ; subst ; easy. *)
+(* Qed. *)
 
-Global Program Instance opsig_eqdec: EqDec (opsig) := {
-    eqb := opsig_eqb;
-    eqb_leibniz := opsig_eqb_sound;
-  }.
+(* Global Program Instance opsig_eqdec: EqDec (opsig) := { *)
+(*     eqb := opsig_eqb; *)
+(*     eqb_leibniz := opsig_eqb_sound; *)
+(*   }. *)
 
 (* Theorem fset_compute : forall {T : ordType}, forall l : T, forall n : list T, List.In l n <-> is_true (ssrbool.in_mem l (@ssrbool.mem _ (seq.seq_predType (Ord.eqType T)) n)). *)
 (*   intros. *)
 (*   apply (ssrbool.rwP (xseq.InP _ _)). *)
 (* Qed. *)
 
-Definition opsig_ordType := (Datatypes_prod__canonical__Ord_Ord Datatypes_nat__canonical__Ord_Ord (Datatypes_prod__canonical__Ord_Ord choice_type_choice_type__canonical__Ord_Ord choice_type_choice_type__canonical__Ord_Ord)).
+(* Definition opsig_ordType := (Datatypes_prod__canonical__Ord_Ord Datatypes_nat__canonical__Ord_Ord (Datatypes_prod__canonical__Ord_Ord choice_type_choice_type__canonical__Ord_Ord choice_type_choice_type__canonical__Ord_Ord)). *)
 
-Definition loc_ordType : ordType := @Specif_sigT__canonical__Ord_Ord choice_type_choice_type__canonical__Ord_Ord (fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord).
+(* Definition loc_ordType : ordType := @Specif_sigT__canonical__Ord_Ord choice_type_choice_type__canonical__Ord_Ord (fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord). *)
 
 Fixpoint incl_expand A `{EqDec A} (l1 l2 : list A) : Prop :=
   match l1 with
@@ -399,49 +484,49 @@ Fixpoint incl_expand A `{EqDec A} (l1 l2 : list A) : Prop :=
 (*     apply IHl1. *)
 (* Qed. *)
 
-Definition location_lebP : (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__eqtype_Equality)) = leb.
-Proof.
-  intros.
-  do 2 (apply (@functional_extensionality Location) ; intros []).
-  cbn.
+(* Definition location_lebP : (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__eqtype_Equality)) = leb. *)
+(* Proof. *)
+(*   intros. *)
+(*   do 2 (apply (@functional_extensionality Location) ; intros []). *)
+(*   cbn. *)
 
-  unfold tag_leq.
-  unfold eqtype.tag_eq.
+(*   unfold tag_leq. *)
+(*   unfold eqtype.tag_eq. *)
 
-  unfold location_ltb.
-  unfold tag_leq.
+(*   unfold location_ltb. *)
+(*   unfold tag_leq. *)
 
-  unfold location_eqb.
+(*   unfold location_eqb. *)
 
-  unfold ssrfun.tag , ssrfun.tagged , projT1 , projT2 in *.
+(*   unfold ssrfun.tag , ssrfun.tagged , projT1 , projT2 in *. *)
 
-  rewrite (Bool.andb_comm _ (eqtype.eq_op _ _)).
+(*   rewrite (Bool.andb_comm _ (eqtype.eq_op _ _)). *)
 
-  destruct (eqtype.eq_op x _) eqn:x_eq_x0.
-  2: reflexivity.
-  apply Couplings.reflection_nonsense in x_eq_x0.
-  subst.
-  rewrite eqtype.eq_refl.
-  rewrite Bool.andb_true_l.
-  rewrite Bool.andb_true_l.
-  rewrite Ord.ltxx.
-  rewrite Bool.orb_false_l.
+(*   destruct (eqtype.eq_op x _) eqn:x_eq_x0. *)
+(*   2: reflexivity. *)
+(*   apply Couplings.reflection_nonsense in x_eq_x0. *)
+(*   subst. *)
+(*   rewrite eqtype.eq_refl. *)
+(*   rewrite Bool.andb_true_l. *)
+(*   rewrite Bool.andb_true_l. *)
+(*   rewrite Ord.ltxx. *)
+(*   rewrite Bool.orb_false_l. *)
 
-  destruct (eqtype.eq_op _ _) eqn:n_eq_n0.
-  2: reflexivity.
+(*   destruct (eqtype.eq_op _ _) eqn:n_eq_n0. *)
+(*   2: reflexivity. *)
 
-  unfold eqtype.tagged_as in *.
-  unfold ssrfun.tagged ,  projT2 in *.
-  unfold eq_rect_r , eq_rect in *.
+(*   unfold eqtype.tagged_as in *. *)
+(*   unfold ssrfun.tagged ,  projT2 in *. *)
+(*   unfold eq_rect_r , eq_rect in *. *)
 
-  destruct eqtype.eqP in *.
-  2: contradiction.
-  cbn in n_eq_n0.
-  rewrite <- e.
-  rewrite ssrnat.eqnE in n_eq_n0.
-  apply Couplings.reflection_nonsense in n_eq_n0.
-  apply Ord.eq_leq. assumption.
-Qed.
+(*   destruct eqtype.eqP in *. *)
+(*   2: contradiction. *)
+(*   cbn in n_eq_n0. *)
+(*   rewrite <- e. *)
+(*   rewrite ssrnat.eqnE in n_eq_n0. *)
+(*   apply Couplings.reflection_nonsense in n_eq_n0. *)
+(*   apply Ord.eq_leq. assumption. *)
+(* Qed. *)
 
 Lemma iff_extensionality : forall {A} (P Q : A -> Prop), (forall a, P a <-> Q a) -> ((forall a, P a) <-> (forall a, Q a)).
 Proof.
@@ -453,25 +538,25 @@ Proof.
   intros. split ; intuition.
 Qed.
 
-Definition loc_seq_has (a : Location) := seq.has (ssrbool.fun_of_rel (@eqtype.eq_op loc_eqType) a).
+(* Definition loc_seq_has (a : Location) := seq.has (ssrbool.fun_of_rel (@eqtype.eq_op loc_eqType) a). *)
 
-Theorem loc_seq_has_remove_sort {A} `{EqDec A} : forall (l : list Location) (a : Location) leb,
-    is_true (loc_seq_has a l) <->
-    is_true (loc_seq_has a (path.sort leb l)).
-Proof.
-  intros.
-  rewrite <- (Bool.negb_involutive (loc_seq_has a (path.sort leb l))).
+(* Theorem loc_seq_has_remove_sort {A} `{EqDec A} : forall (l : list Location) (a : Location) leb, *)
+(*     is_true (loc_seq_has a l) <-> *)
+(*     is_true (loc_seq_has a (path.sort leb l)). *)
+(* Proof. *)
+(*   intros. *)
+(*   rewrite <- (Bool.negb_involutive (loc_seq_has a (path.sort leb l))). *)
 
-  unfold loc_seq_has.
+(*   unfold loc_seq_has. *)
 
-  rewrite <- seq.all_predC.
-  rewrite path.all_sort.
-  rewrite seq.all_predC.
+(*   rewrite <- seq.all_predC. *)
+(*   rewrite path.all_sort. *)
+(*   rewrite seq.all_predC. *)
 
-  rewrite Bool.negb_involutive.
+(*   rewrite Bool.negb_involutive. *)
 
-  reflexivity.
-Qed.
+(*   reflexivity. *)
+(* Qed. *)
 
 (* Theorem list_in_iff_seq_has {A} `{EqDec A} : forall (l : list Location) (a : Location), *)
 (*     is_true (loc_seq_has a l) <-> List.In a l. *)
@@ -528,12 +613,12 @@ Qed.
 (*   reflexivity. *)
 (* Qed. *)
 
-Theorem choice_type_test_refl : forall x , is_true (choice_type_test x x).
-Proof.
-  intros.
-  replace (choice_type_test _ _) with (eqtype.eq_op x x) by reflexivity.
-  apply eqtype.eq_refl.
-Qed.
+(* Theorem choice_type_test_refl : forall x , is_true (choice_type_test x x). *)
+(* Proof. *)
+(*   intros. *)
+(*   replace (choice_type_test _ _) with (eqtype.eq_op x x) by reflexivity. *)
+(*   apply eqtype.eq_refl. *)
+(* Qed. *)
 
 (* Theorem fset_eqEincl: forall a b : list Location, fset a = fset b <-> List.incl a b /\ List.incl b a. *)
 (* Proof. *)
@@ -593,8 +678,7 @@ Proof.
   - intros.
     destruct x , y.
     unfold eqb_fset in H0.
-
-    apply pkg_composition.fsval_eq.
+    apply val_inj.
     simpl.
 
     generalize dependent fsval0.

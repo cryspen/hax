@@ -10,13 +10,13 @@ Require Import Sumbool.
 
 From mathcomp Require Import fintype.
 
-From Crypt Require Import choice_type Package Prelude.
+From SSProve Require Import choice_type Package Prelude.
 Import PackageNotation.
 From extructures Require Import ord fset fmap.
 
 From mathcomp Require Import ssrZ word.
 (* From Jasmin Require Import word. *)
-From Crypt Require Import jasmin_word.
+From SSProve Require Import jasmin_word.
 
 From Coq Require Import ZArith List.
 Import List.ListNotations.
@@ -106,11 +106,11 @@ Ltac progress_step_code :=
       apply (r_transL (#put l := y ;; a )) ;
       [ apply contract_put | ]
   end
-  ||
-  match goal with
-  | [ |- context [ ⊢ ⦃ _ ⦄ (#put ?l := ?x ;; ?a) ≈ ?b ⦃ _ ⦄ ]] =>
-      apply (better_r_put_lhs l x a b)
-  end
+  (* || *)
+  (* match goal with *)
+  (* | [ |- context [ ⊢ ⦃ _ ⦄ (#put ?l := ?x ;; ?a) ≈ ?b ⦃ _ ⦄ ]] => *)
+  (*     apply (better_r_put_lhs l x a b) *)
+  (* end *)
   ||
   (unfold lift_to_code ; apply r_ret)
   ||
@@ -144,21 +144,21 @@ Ltac progress_step_code :=
              ; rewrite bind_ret
              ; subst H
          end)
-        ||
-        (repeat (rewrite bind_assoc)
-        ; match goal with
-          | [ |- context [ bind (ret (?y)) (fun x => _) ] ] =>
-              let H := fresh in
-              set (H := y)
+        (* || *)
+        (* (repeat (rewrite bind_assoc) *)
+        (* ; match goal with *)
+        (*   | [ |- context [ bind (ret (?y)) (fun x => _) ] ] => *)
+        (*       let H := fresh in *)
+        (*       set (H := y) *)
 
-              ; rewrite bind_rewrite
-              ; subst H
-          | [ |- context [ bind (ret ?y) (fun x => _) ] ] =>
-              let H := fresh in
-              set (H := y)
-              ; rewrite bind_rewrite
-              ; subst H
-          end).
+        (*       ; rewrite bind_rewrite *)
+        (*       ; subst H *)
+        (*   | [ |- context [ bind (ret ?y) (fun x => _) ] ] => *)
+        (*       let H := fresh in *)
+        (*       set (H := y) *)
+        (*       ; rewrite bind_rewrite *)
+        (*       ; subst H *)
+        (*   end) *).
 
 Ltac init_both_proof b_state b_pure :=
   intros ;
@@ -183,7 +183,7 @@ Ltac ssprove_valid_step :=
      (
        cbv zeta
        || unfold prog
-       || (match goal with | [ |- context[ @bind ?A ?B (ret ?x) ?f ]] => rewrite bind_rewrite end)
+       (* || (match goal with | [ |- context[ @bind ?A ?B (ret ?x) ?f ]] => rewrite bind_rewrite end) *)
        || match goal with
          | [ |- context[match ?x with | true => _ | false => _ end] ] =>
              destruct x
@@ -245,7 +245,7 @@ Ltac solve_zero :=
 
 Ltac solve_in_mem :=
   normalize_fset ;
-  repeat (rewrite (@in_fsetU loc_ordType) ; rewrite (is_true_split_or_)) ; try rewrite <- !fset1E ; try rewrite (ssrbool.introT (fset1P _ _) eq_refl) ; repeat (reflexivity || (left ; reflexivity) || right).
+  repeat (rewrite (@in_fsetU _ (* loc_ordType *)) ; rewrite (is_true_split_or_)) ; try rewrite <- !fset1E ; try rewrite (ssrbool.introT (fset1P _ _) eq_refl) ; repeat (reflexivity || (left ; reflexivity) || right).
 
 Ltac solve_ssprove_obligations :=
   repeat (

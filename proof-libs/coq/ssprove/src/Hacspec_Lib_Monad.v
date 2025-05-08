@@ -10,7 +10,7 @@ Require Import Sumbool.
 
 From mathcomp Require Import fintype.
 
-From Crypt Require Import choice_type Package Prelude.
+From SSProve Require Import choice_type Package Prelude.
 Import PackageNotation.
 From extructures Require Import ord fset fmap.
 

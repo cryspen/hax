@@ -1,5 +1,5 @@
 From Coq Require Import ZArith List.
-From Crypt Require Import Package.
+From SSProve Require Import Package.
 
 (************************************************)
 (*   Implementation of comparision functions    *)

@@ -1,7 +1,7 @@
 From Coq Require Import ZArith List.
-From Crypt Require Import choice_type Package.
+From SSProve Require Import choice_type Package.
 Import PackageNotation.
-From Crypt Require Import pkg_interpreter.
+From SSProve Require Import pkg_interpreter.
 From extructures Require Import ord fset fmap.
 From Hacspec Require Import Hacspec_Lib_Comparable.
 
@@ -12,8 +12,8 @@ Import RulesStateProb.
 Import RulesStateProb.RSemanticNotation.
 Open Scope rsemantic_scope.
 
-From Crypt Require Import choice_type Package Prelude.
-From Crypt Require Import Axioms. (* proof_irrelevance *)
+From SSProve Require Import choice_type Package Prelude.
+From SSProve Require Import Axioms. (* proof_irrelevance *)
 Import PackageNotation.
 From extructures Require Import ord fset fmap.
 
@@ -145,7 +145,7 @@ Section Both.
     forall x, valid_both {| is_pure := x ; is_state := ret x |}.
 
   Class ValidBoth (p : raw_both) :=
-    { is_valid_code : ValidCode fset0 fset0 (@is_state p) ;
+    { is_valid_code : ValidCode emptym emptym (@is_state p) ;
       is_valid_both : @valid_both p ;
     }.
   Arguments is_valid_code {_} ValidBoth.
@@ -244,7 +244,7 @@ Program Definition ret_both {A : choice_type} (x : A) : both A :=
   {|
     both_prog := {| is_pure := x ; is_state := ret x |} ;
     both_prog_valid := {|
-                        is_valid_code := valid_ret fset0 fset0 x ;
+                        is_valid_code := valid_ret emptym emptym x ;
                         is_valid_both := both_valid_ret x ;
                       |} ;
     p_eq := fun P => r_ret _ _ _ _ _ ;
@@ -344,12 +344,11 @@ Ltac r_subst_both a :=
   r_bind_both a ;
   subst x y z ; hnf.
 
-Program Definition bind_both {A B} (c : both A) (k : A -> both B) : both B :=
-  {|
-    both_prog := bind_raw_both (both_prog c) (fun x => both_prog (k x)) ;
-    both_prog_valid := valid_bind_both A B c k (both_prog_valid c) (fun x => both_prog_valid (k x)) ;
-  |}.
-Next Obligation.
+Theorem bind_both_p_eq :
+  forall (A B : choice_type) (c : both A) (k : A -> both B) (P : precond), ⊢ ⦃ P ⦄
+     x ← is_state c ;;
+                                                                     is_state (k x) ≈ ret (is_pure (k (is_pure c))) ⦃ pre_to_post_ret P (is_pure (k (is_pure c))) ⦄.
+Proof.
   intros.
   let x := fresh in
   let y := fresh in
@@ -370,6 +369,13 @@ Next Obligation.
   subst a₀ a₁ ; hnf.
   apply (k (is_pure c)).
 Qed.
+
+Definition bind_both {A B} (c : both A) (k : A -> both B) : both B :=
+  {|
+    both_prog := bind_raw_both (both_prog c) (fun x => both_prog (k x)) ;
+    both_prog_valid := valid_bind_both A B c k (both_prog_valid c) (fun x => both_prog_valid (k x)) ;
+    p_eq := bind_both_p_eq A B c k
+  |}.
 
 Lemma both_eq : forall {A : choice_type} (a b : both A),
     both_prog a = both_prog b ->
@@ -506,90 +512,90 @@ Ltac destruct_choice_type_prod :=
          end ;
   cbv zeta.
 
-Theorem tag_leq_simplify :
-  forall (a b : Location),
-    is_true (ssrfun.tag a <= ssrfun.tag b)%ord ->
-    is_true (ssrfun.tagged a <= ssrfun.tagged b)%ord ->
-    is_true (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord) a b).
-Proof.
-  intros [] [].
+(* Theorem tag_leq_simplify : *)
+(*   forall (a b : Location), *)
+(*     is_true (ssrfun.tag a <= ssrfun.tag b)%ord -> *)
+(*     is_true (ssrfun.tagged a <= ssrfun.tagged b)%ord -> *)
+(*     is_true (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord) a b). *)
+(* Proof. *)
+(*   intros [] []. *)
 
-  unfold tag_leq.
-  unfold eqtype.tagged_as, ssrfun.tagged , ssrfun.tag , projT1 , projT2.
+(*   unfold tag_leq. *)
+(*   unfold eqtype.tagged_as, ssrfun.tagged , ssrfun.tag , projT1 , projT2. *)
 
-  intro.
-  rewrite Ord.leq_eqVlt in H.
-  rewrite is_true_split_or in H.
-  destruct H.
-  - apply Couplings.reflection_nonsense in H ; subst.
+(*   intro. *)
+(*   rewrite Ord.leq_eqVlt in H. *)
+(*   rewrite is_true_split_or in H. *)
+(*   destruct H. *)
+(*   - apply Couplings.reflection_nonsense in H ; subst. *)
 
-    rewrite Ord.ltxx.
-    rewrite Bool.orb_false_l.
-    rewrite eqtype.eq_refl.
-    rewrite Bool.andb_true_l.
+(*     rewrite Ord.ltxx. *)
+(*     rewrite Bool.orb_false_l. *)
+(*     rewrite eqtype.eq_refl. *)
+(*     rewrite Bool.andb_true_l. *)
 
-    destruct eqtype.eqP.
-    + unfold eq_rect_r , eq_rect ; destruct eq_sym.
-      trivial.
-    + contradiction.
-  - rewrite H ; clear H.
-    reflexivity.
-Qed.
+(*     destruct eqtype.eqP. *)
+(*     + unfold eq_rect_r , eq_rect ; destruct eq_sym. *)
+(*       trivial. *)
+(*     + contradiction. *)
+(*   - rewrite H ; clear H. *)
+(*     reflexivity. *)
+(* Qed. *)
 
-Theorem tag_leq_inverse :
-  forall a b,
-    tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord) a b
-    =
-      (negb (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord)
-                    b a) ||
-           eqtype.eq_op (ssrfun.tag a) (ssrfun.tag b) &&
-        eqtype.eq_op (ssrfun.tagged a) (ssrfun.tagged b))%bool.
-Proof.
-  intros [a b] [c d].
-  unfold tag_leq.
+(* Theorem tag_leq_inverse : *)
+(*   forall a b, *)
+(*     tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord) a b *)
+(*     = *)
+(*       (negb (tag_leq (I:=choice_type_choice_type__canonical__Ord_Ord) (T_:=fun _ : choice_type => Datatypes_nat__canonical__Ord_Ord) *)
+(*                     b a) || *)
+(*            eqtype.eq_op (ssrfun.tag a) (ssrfun.tag b) && *)
+(*         eqtype.eq_op (ssrfun.tagged a) (ssrfun.tagged b))%bool. *)
+(* Proof. *)
+(*   intros [a b] [c d]. *)
+(*   unfold tag_leq. *)
 
-  rewrite Bool.negb_orb.
-  rewrite Bool.negb_andb.
-  rewrite Bool.andb_orb_distrib_r.
+(*   rewrite Bool.negb_orb. *)
+(*   rewrite Bool.negb_andb. *)
+(*   rewrite Bool.andb_orb_distrib_r. *)
 
-  unfold eqtype.tagged_as.
-  unfold ssrfun.tagged , ssrfun.tag , projT1 , projT2.
-  rewrite <- Bool.orb_assoc.
+(*   unfold eqtype.tagged_as. *)
+(*   unfold ssrfun.tagged , ssrfun.tag , projT1 , projT2. *)
+(*   rewrite <- Bool.orb_assoc. *)
 
-  f_equal.
-  - rewrite <- Bool.negb_orb.
-    rewrite <- Bool.orb_comm.
-    rewrite <- Ord.leq_eqVlt.
-    rewrite <- Ord.ltNge.
-    reflexivity.
-  - destruct (eqtype.eq_op a c) eqn:a_eq_c.
-    + apply Couplings.reflection_nonsense in a_eq_c.
-      subst.
-      do 2 rewrite Bool.andb_true_l.
+(*   f_equal. *)
+(*   - rewrite <- Bool.negb_orb. *)
+(*     rewrite <- Bool.orb_comm. *)
+(*     rewrite <- Ord.leq_eqVlt. *)
+(*     rewrite <- Ord.ltNge. *)
+(*     reflexivity. *)
+(*   - destruct (eqtype.eq_op a c) eqn:a_eq_c. *)
+(*     + apply Couplings.reflection_nonsense in a_eq_c. *)
+(*       subst. *)
+(*       do 2 rewrite Bool.andb_true_l. *)
 
-      destruct eqtype.eqP. 2: contradiction.
+(*       destruct eqtype.eqP. 2: contradiction. *)
 
-      unfold eq_rect_r , eq_rect.
-      destruct eq_sym.
+(*       unfold eq_rect_r , eq_rect. *)
+(*       destruct eq_sym. *)
 
-      rewrite Ord.leq_eqVlt.
-      rewrite Bool.orb_comm.
+(*       rewrite Ord.leq_eqVlt. *)
+(*       rewrite Bool.orb_comm. *)
 
-      f_equal.
-      rewrite <- Ord.ltNge.
-      rewrite Ord.ltxx.
-      reflexivity.
-    + do 2 rewrite Bool.andb_false_l.
-      rewrite Bool.orb_false_r.
-      symmetry.
+(*       f_equal. *)
+(*       rewrite <- Ord.ltNge. *)
+(*       rewrite Ord.ltxx. *)
+(*       reflexivity. *)
+(*     + do 2 rewrite Bool.andb_false_l. *)
+(*       rewrite Bool.orb_false_r. *)
+(*       symmetry. *)
 
-      destruct eqtype.eqP.
-      { subst. rewrite eqtype.eq_refl in a_eq_c. discriminate a_eq_c. }
+(*       destruct eqtype.eqP. *)
+(*       { subst. rewrite eqtype.eq_refl in a_eq_c. discriminate a_eq_c. } *)
 
-      rewrite Ord.eq_leq by reflexivity.
-      rewrite Bool.andb_false_r.
-      reflexivity.
-Qed.
+(*       rewrite Ord.eq_leq by reflexivity. *)
+(*       rewrite Bool.andb_false_r. *)
+(*       reflexivity. *)
+(* Qed. *)
 
 Ltac valid_program :=
   apply prog_valid
@@ -614,66 +620,66 @@ Proof.
   apply heap_ignore_refl.
 Qed.
 
-Lemma heap_ignore_weaken :
-  forall fset fset', is_true (fsubset fset fset') ->
-  forall x, heap_ignore fset x -> heap_ignore fset' x.
-Proof.
-  intros.
-  destruct x as [h h0].
-  pose (INV'_heap_ignore fset fset' fset0).
-  rewrite fsetU0 in i.
-  unfold INV' in i.
-  specialize (i H h h0).
-  destruct i as [? _].
-  intros l ?.
-  specialize (H1 H0 l H2 ltac:(easy)).
-  rewrite H1.
-  reflexivity.
-Qed.
+(* Lemma heap_ignore_weaken : *)
+(*   forall fset fset', is_true (fsubset fset fset') -> *)
+(*   forall x, heap_ignore fset x -> heap_ignore fset' x. *)
+(* Proof. *)
+(*   intros. *)
+(*   destruct x as [h h0]. *)
+(*   pose (INV'_heap_ignore fset fset' fset0). *)
+(*   rewrite fsetU0 in i. *)
+(*   unfold INV' in i. *)
+(*   specialize (i H h h0). *)
+(*   destruct i as [? _]. *)
+(*   intros l ?. *)
+(*   specialize (H1 H0 l H2 ltac:(easy)). *)
+(*   rewrite H1. *)
+(*   reflexivity. *)
+(* Qed. *)
 
-Lemma rpost_heap_ignore_weaken :
-  forall {A} fset fset', is_true (fsubset fset fset') ->
-  forall (x y : raw_code A),
-    ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset (h0, h1)) ⦄
-        x ≈ y
-      ⦃ heap_ignore_post fset ⦄ ->
-    ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset (h0, h1)) ⦄
-        x ≈ y
-        ⦃ heap_ignore_post fset' ⦄.
-Proof.
-  intros.
-  eapply rpost_weaken_rule.
-  apply H0.
+(* Lemma rpost_heap_ignore_weaken : *)
+(*   forall {A} fset fset', is_true (fsubset fset fset') -> *)
+(*   forall (x y : raw_code A), *)
+(*     ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset (h0, h1)) ⦄ *)
+(*         x ≈ y *)
+(*       ⦃ heap_ignore_post fset ⦄ -> *)
+(*     ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset (h0, h1)) ⦄ *)
+(*         x ≈ y *)
+(*         ⦃ heap_ignore_post fset' ⦄. *)
+(* Proof. *)
+(*   intros. *)
+(*   eapply rpost_weaken_rule. *)
+(*   apply H0. *)
 
-  intros [] [] []. subst.
-  split. reflexivity.
-  apply (heap_ignore_weaken fset) ; assumption.
-Qed.
+(*   intros [] [] []. subst. *)
+(*   split. reflexivity. *)
+(*   apply (heap_ignore_weaken fset) ; assumption. *)
+(* Qed. *)
 
 
-Lemma rpre_heap_ignore_weaken :
-  forall {A} fset fset', is_true (fsubset fset fset') ->
-  forall (x y : raw_code A),
-    ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset' (h0, h1)) ⦄
-        x ≈ y
-      ⦃ heap_ignore_post fset ⦄ ->
-    ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset (h0, h1)) ⦄
-        x ≈ y
-        ⦃ heap_ignore_post fset ⦄.
-Proof.
-  intros.
-  eapply rpre_weaken_rule.
-  apply H0.
-  intros. cbn.
-  apply (heap_ignore_weaken fset fset') ; assumption.
-Qed.
+(* Lemma rpre_heap_ignore_weaken : *)
+(*   forall {A} fset fset', is_true (fsubset fset fset') -> *)
+(*   forall (x y : raw_code A), *)
+(*     ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset' (h0, h1)) ⦄ *)
+(*         x ≈ y *)
+(*       ⦃ heap_ignore_post fset ⦄ -> *)
+(*     ⊢ ⦃ (fun '(h0, h1) => heap_ignore fset (h0, h1)) ⦄ *)
+(*         x ≈ y *)
+(*         ⦃ heap_ignore_post fset ⦄. *)
+(* Proof. *)
+(*   intros. *)
+(*   eapply rpre_weaken_rule. *)
+(*   apply H0. *)
+(*   intros. cbn. *)
+(*   apply (heap_ignore_weaken fset fset') ; assumption. *)
+(* Qed. *)
 
-Theorem bind_rewrite : forall A B x f, @bind A B (ret x) f = f x.
-Proof.
-  intros.
-  unfold bind.
-  reflexivity.
-Qed.
+(* Theorem bind_rewrite : forall A B x f, @bind A B (ret x) f = f x. *)
+(* Proof. *)
+(*   intros. *)
+(*   unfold bind. *)
+(*   reflexivity. *)
+(* Qed. *)
 
 Theorem r_bind_eq : forall {B C : choice_type} (y : choice.Choice.sort B) (g : choice.Choice.sort B  -> raw_code C), (temp ← ret y ;; g temp) = g y.
 Proof. reflexivity. Qed.
@@ -747,25 +753,25 @@ Proof.
   split ; intros ; (eapply rpre_hypothesis_rule ; intros ; eapply rpre_weaken_rule ; [ apply H | intros ? ? [] ; subst ; easy ]).
 Qed.
 
-Corollary better_r_put_lhs : forall {A B : choice.Choice.type} (ℓ : Location)
-       (v : choice.Choice.sort (Value (projT1 ℓ))) (r₀ : raw_code A)
-       (r₁ : raw_code B) (pre : precond)
-       (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)),
-     ⊢ ⦃ set_lhs ℓ v pre ⦄ r₀ ≈ r₁ ⦃ post ⦄ ->
-     ⊢ ⦃ pre ⦄ #put ℓ := v ;; r₀ ≈ r₁ ⦃ post ⦄.
-Proof.
-  intros ; now apply better_r, r_put_lhs, better_r.
-Qed.
+(* Corollary better_r_put_lhs : forall {A B : choice.Choice.type} (ℓ : Location) *)
+(*        (v : choice.Choice.sort (Value (projT1 ℓ))) (r₀ : raw_code A) *)
+(*        (r₁ : raw_code B) (pre : precond) *)
+(*        (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)), *)
+(*      ⊢ ⦃ set_lhs ℓ v pre ⦄ r₀ ≈ r₁ ⦃ post ⦄ -> *)
+(*      ⊢ ⦃ pre ⦄ #put ℓ := v ;; r₀ ≈ r₁ ⦃ post ⦄. *)
+(* Proof. *)
+(*   intros ; now apply better_r, r_put_lhs, better_r. *)
+(* Qed. *)
 
-Corollary better_r_put_rhs : forall {A B : choice.Choice.type} (ℓ : Location)
-                               (v : choice.Choice.sort (Value (projT1 ℓ))) (r₀ : raw_code A)
-                               (r₁ : raw_code B) (pre : precond)
-                               (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)),
-    ⊢ ⦃ set_rhs ℓ v pre ⦄ r₀ ≈ r₁ ⦃ post ⦄ ->
-    ⊢ ⦃ pre ⦄ r₀ ≈ #put ℓ := v ;; r₁ ⦃ post ⦄.
-Proof.
-  intros ; now apply better_r, r_put_rhs, better_r.
-Qed.
+(* Corollary better_r_put_rhs : forall {A B : choice.Choice.type} (ℓ : Location) *)
+(*                                (v : choice.Choice.sort (Value (projT1 ℓ))) (r₀ : raw_code A) *)
+(*                                (r₁ : raw_code B) (pre : precond) *)
+(*                                (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)), *)
+(*     ⊢ ⦃ set_rhs ℓ v pre ⦄ r₀ ≈ r₁ ⦃ post ⦄ -> *)
+(*     ⊢ ⦃ pre ⦄ r₀ ≈ #put ℓ := v ;; r₁ ⦃ post ⦄. *)
+(* Proof. *)
+(*   intros ; now apply better_r, r_put_rhs, better_r. *)
+(* Qed. *)
 
 Corollary better_r_put_get_lhs : forall (A : choice.Choice.type) (B : choice.Choice.type) (ℓ : Location) (v : choice.Choice.sort ℓ) (r : choice.Choice.sort ℓ -> raw_code A) rhs (pre : precond) (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)),
     ⊢ ⦃ pre ⦄
@@ -799,47 +805,47 @@ Proof.
   apply H.
 Qed.
 
-Corollary better_r_get_remind_lhs : forall {A B : choice.Choice.type} (ℓ : Location)
-       (v : choice.Choice.sort (Value (projT1 ℓ)))
-       (r₀ : choice.Choice.sort (Value (projT1 ℓ)) -> raw_code A) (r₁ : raw_code B)
-       (pre : precond) (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)),
-     Remembers_lhs ℓ v pre ->
-     ⊢ ⦃ pre ⦄ r₀ v ≈ r₁ ⦃ post ⦄ ->
-     ⊢ ⦃ pre ⦄ x ← get ℓ ;; r₀ x ≈ r₁ ⦃ post ⦄.
-Proof.
-  intros.
-  apply better_r.
-  eapply r_get_remind_lhs.
-  apply H.
-  apply better_r.
-  apply H0.
-Qed.
+(* Corollary better_r_get_remind_lhs : forall {A B : choice.Choice.type} (ℓ : Location) *)
+(*        (v : choice.Choice.sort (Value (projT1 ℓ))) *)
+(*        (r₀ : choice.Choice.sort (Value (projT1 ℓ)) -> raw_code A) (r₁ : raw_code B) *)
+(*        (pre : precond) (post : postcond (choice.Choice.sort A) (choice.Choice.sort B)), *)
+(*      Remembers_lhs ℓ v pre -> *)
+(*      ⊢ ⦃ pre ⦄ r₀ v ≈ r₁ ⦃ post ⦄ -> *)
+(*      ⊢ ⦃ pre ⦄ x ← get ℓ ;; r₀ x ≈ r₁ ⦃ post ⦄. *)
+(* Proof. *)
+(*   intros. *)
+(*   apply better_r. *)
+(*   eapply r_get_remind_lhs. *)
+(*   apply H. *)
+(*   apply better_r. *)
+(*   apply H0. *)
+(* Qed. *)
 
-Lemma getr_set_lhs :
-  forall {A B} ℓ v pre post (a : _ -> raw_code A) (b : raw_code B),
-  ⊢ ⦃ set_lhs ℓ v pre ⦄
-     a v
-  ≈
-     b
-  ⦃ post ⦄ ->
-  ⊢ ⦃ set_lhs ℓ v pre ⦄
-     x ← get ℓ ;;
-     a x
-  ≈
-     b
-  ⦃ post ⦄.
-Proof.
-  clear.
-  intros.
+(* Lemma getr_set_lhs : *)
+(*   forall {A B} ℓ v pre post (a : _ -> raw_code A) (b : raw_code B), *)
+(*   ⊢ ⦃ set_lhs ℓ v pre ⦄ *)
+(*      a v *)
+(*   ≈ *)
+(*      b *)
+(*   ⦃ post ⦄ -> *)
+(*   ⊢ ⦃ set_lhs ℓ v pre ⦄ *)
+(*      x ← get ℓ ;; *)
+(*      a x *)
+(*   ≈ *)
+(*      b *)
+(*   ⦃ post ⦄. *)
+(* Proof. *)
+(*   clear. *)
+(*   intros. *)
 
-  eapply better_r_get_remind_lhs.
-  unfold Remembers_lhs.
-  intros ? ? [? []]. subst.
-  unfold rem_lhs.
-  rewrite get_set_heap_eq.
-  reflexivity.
-  apply H.
-Qed.
+(*   eapply better_r_get_remind_lhs. *)
+(*   unfold Remembers_lhs. *)
+(*   intros ? ? [? []]. subst. *)
+(*   unfold rem_lhs. *)
+(*   rewrite get_set_heap_eq. *)
+(*   reflexivity. *)
+(*   apply H. *)
+(* Qed. *)
 
 Equations prod_to_prod {A B} (x : both (A × B)) : (both A * both B) :=
   prod_to_prod x :=
