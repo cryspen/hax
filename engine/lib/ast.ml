@@ -465,6 +465,7 @@ functor
           items : impl_item list;
           parent_bounds : (impl_expr * impl_ident) list;
           safety : safety_kind;
+          witness : F.trait_impls;
         }
       | Alias of { name : concrete_ident; item : concrete_ident }
           (** `Alias {name; item}` is basically a `use

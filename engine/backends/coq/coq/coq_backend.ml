@@ -12,6 +12,7 @@ include
       include On.Monadic_binding
       include On.Macro
       include On.Construct_base
+      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.Coq
@@ -59,6 +60,7 @@ struct
         include Features.SUBTYPE.On.Construct_base
         include Features.SUBTYPE.On.Slice
         include Features.SUBTYPE.On.Macro
+        include Features.SUBTYPE.On.Trait_impls
       end)
 
   let metadata = Phase_utils.Metadata.make (Reject (NotInBackendLang backend))
@@ -406,7 +408,7 @@ struct
         default_document_for "item'_IMacroInvokation"
 
       method item'_Impl ~super ~generics ~self_ty ~of_trait ~items
-          ~parent_bounds:_ ~safety:_ =
+          ~parent_bounds:_ ~safety:_ ~witness:_ =
         let name, args = of_trait#v in
         if Attrs.is_erased super.attrs then empty
         else

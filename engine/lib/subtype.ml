@@ -527,6 +527,7 @@ struct
             items;
             parent_bounds;
             safety;
+            witness;
           } ->
           B.Impl
             {
@@ -538,6 +539,7 @@ struct
               parent_bounds =
                 List.map ~f:(dimpl_expr span *** dimpl_ident span) parent_bounds;
               safety = dsafety_kind span safety;
+              witness = S.trait_impls span witness;
             }
       | Alias { name; item } -> B.Alias { name; item }
       | Use { path; is_external; rename } -> B.Use { path; is_external; rename }

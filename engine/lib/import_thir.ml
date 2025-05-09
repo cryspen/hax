@@ -1803,6 +1803,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                    | _ -> None)
                  parent_bounds;
              safety = csafety safety;
+             witness = W.trait_impls;
            }
   | Use ({ span = _; res; segments; rename }, _) ->
       let v =

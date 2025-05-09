@@ -220,7 +220,7 @@ struct
         default_document_for "item'_IMacroInvokation"
 
       method item'_Impl ~super:_ ~generics:_ ~self_ty:_ ~of_trait:_ ~items:_
-          ~parent_bounds:_ ~safety:_ =
+          ~parent_bounds:_ ~safety:_ ~witness:_ =
         default_document_for "item'_Impl"
 
       method item'_NotImplementedYet =

@@ -576,8 +576,16 @@ module Raw = struct
             & !"{"
             & List.map ~f:ptrait_item items |> concat ~sep:!"\n"
             & !"}"
-        | Impl { generics; self_ty; of_trait; items; parent_bounds = _; safety }
-          ->
+        | Impl
+            {
+              generics;
+              self_ty;
+              of_trait;
+              items;
+              parent_bounds = _;
+              safety;
+              witness = _;
+            } ->
             let trait =
               pglobal_ident e.span (`Concrete (fst of_trait))
               & !"<"

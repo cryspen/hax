@@ -14,6 +14,7 @@ include
       include On.Quote
       include On.Dyn
       include On.Unsafe
+      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.FStar
@@ -61,6 +62,7 @@ struct
         include Features.SUBTYPE.On.Quote
         include Features.SUBTYPE.On.Dyn
         include Features.SUBTYPE.On.Unsafe
+        include Features.SUBTYPE.On.Trait_impls
       end)
 
   let metadata = Phase_utils.Metadata.make (Reject (NotInBackendLang backend))

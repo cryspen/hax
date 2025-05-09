@@ -19,6 +19,7 @@ include
       include On.For_index_loop
       include On.State_passing_loop
       include On.Fold_like_loop
+      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.SSProve
@@ -65,6 +66,7 @@ struct
         include Features.SUBTYPE.On.For_index_loop
         include Features.SUBTYPE.On.State_passing_loop
         include Features.SUBTYPE.On.Fold_like_loop
+        include Features.SUBTYPE.On.Trait_impls
       end)
 
   let metadata = Phase_utils.Metadata.make (Reject (NotInBackendLang backend))

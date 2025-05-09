@@ -14,6 +14,7 @@ include
       include On.Mutable_variable
       include On.Macro
       include On.Construct_base
+      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.EasyCrypt
@@ -66,6 +67,8 @@ module RejectNotEC (FA : Features.T) = struct
         let unsafe = reject
         let construct_base _ _ = Features.On.construct_base
         let for_index_loop _ _ = Features.On.for_index_loop
+
+        include Features.SUBTYPE.On.Trait_impls
 
         let metadata =
           Phase_utils.Metadata.make (Reject (NotInBackendLang EasyCrypt))

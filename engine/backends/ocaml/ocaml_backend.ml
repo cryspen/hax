@@ -11,6 +11,7 @@ include
       include On.Monadic_binding
       include On.Macro
       include On.Construct_base
+      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.Ocaml
@@ -58,6 +59,7 @@ struct
         include Features.SUBTYPE.On.Construct_base
         include Features.SUBTYPE.On.Slice
         include Features.SUBTYPE.On.Macro
+        include Features.SUBTYPE.On.Trait_impls
       end)
 
   let metadata = Phase_utils.Metadata.make (Reject (NotInBackendLang backend))
@@ -70,7 +72,6 @@ module OCamlNamePolicy = Concrete_ident.DefaultNamePolicy
 module U = Ast_utils.Make (InputLanguage)
 module RenderId = Concrete_ident.MakeRenderAPI (OCamlNamePolicy)
 open AST
-
 module BasePrinter = Generic_printer.Make (InputLanguage)
 
 module Make
@@ -291,7 +292,7 @@ struct
         default_document_for "item'_IMacroInvokation"
 
       method item'_Impl ~super:_ ~generics:_ ~self_ty:_ ~of_trait:_ ~items:_
-          ~parent_bounds:_ ~safety:_ =
+          ~parent_bounds:_ ~safety:_ ~witness:_ =
         default_document_for "item'_Impl"
 
       method item'_NotImplementedYet =

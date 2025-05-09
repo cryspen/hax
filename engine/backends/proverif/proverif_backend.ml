@@ -13,6 +13,7 @@ include
       include On.Slice
       include On.Quote
       include On.Construct_base
+      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.ProVerif
@@ -82,6 +83,8 @@ struct
         let trait_item_default = reject
         let unsafe = reject
         let metadata = Phase_reject.make_metadata (NotInBackendLang ProVerif)
+
+        include Features.SUBTYPE.On.Trait_impls
       end)
 
   let metadata = Phase_utils.Metadata.make (Reject (NotInBackendLang backend))

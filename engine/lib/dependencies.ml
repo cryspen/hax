@@ -95,8 +95,16 @@ module Make (F : Features.T) = struct
         | Trait { name = _; generics; items; safety = _ } ->
             v#visit_generics () generics
             @ concat_map (v#visit_trait_item ()) items
-        | Impl { generics; self_ty; of_trait; items; parent_bounds; safety = _ }
-          ->
+        | Impl
+            {
+              generics;
+              self_ty;
+              of_trait;
+              items;
+              parent_bounds;
+              safety = _;
+              witness = _;
+            } ->
             v#visit_generics () generics
             @ v#visit_ty () self_ty
             @ v#visit_concrete_ident () (fst of_trait)

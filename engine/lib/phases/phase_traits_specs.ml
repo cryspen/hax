@@ -82,8 +82,16 @@ module Make (F : Features.T) =
                     items
                 in
                 Trait { name; generics; items; safety }
-            | Impl { generics; self_ty; of_trait; items; parent_bounds; safety }
-              ->
+            | Impl
+                {
+                  generics;
+                  self_ty;
+                  of_trait;
+                  items;
+                  parent_bounds;
+                  safety;
+                  witness;
+                } ->
                 let f (item : impl_item) =
                   let mk kind =
                     let ii_ident = mk_name item.ii_ident kind in
@@ -143,7 +151,15 @@ module Make (F : Features.T) =
                   List.concat_map ~f:(fun item -> f item @ [ item ]) items
                 in
                 Impl
-                  { generics; self_ty; of_trait; items; parent_bounds; safety }
+                  {
+                    generics;
+                    self_ty;
+                    of_trait;
+                    items;
+                    parent_bounds;
+                    safety;
+                    witness;
+                  }
             | v -> v
           in
           { item with v }

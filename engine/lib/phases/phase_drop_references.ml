@@ -182,6 +182,7 @@ struct
             items;
             parent_bounds;
             safety;
+            witness;
           } ->
           B.Impl
             {
@@ -194,6 +195,7 @@ struct
               parent_bounds =
                 List.map ~f:(dimpl_expr span *** dimpl_ident span) parent_bounds;
               safety = dsafety_kind span safety;
+              witness;
             }
 
     [%%inline_defs ditems]
