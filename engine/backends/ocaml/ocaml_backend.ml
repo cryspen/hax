@@ -11,7 +11,6 @@ include
       include On.Monadic_binding
       include On.Macro
       include On.Construct_base
-      include On.Trait_impls
     end)
     (struct
       let backend = Diagnostics.Backend.Ocaml
@@ -40,6 +39,7 @@ module SubtypeToInputLanguage
              and type match_guard = Features.Off.match_guard
              and type trait_item_default = Features.Off.trait_item_default
              and type unsafe = Features.Off.unsafe
+             and type trait_impls = Features.Off.trait_impls
              and type loop = Features.Off.loop
              and type for_loop = Features.Off.for_loop
              and type while_loop = Features.Off.while_loop
@@ -59,7 +59,6 @@ struct
         include Features.SUBTYPE.On.Construct_base
         include Features.SUBTYPE.On.Slice
         include Features.SUBTYPE.On.Macro
-        include Features.SUBTYPE.On.Trait_impls
       end)
 
   let metadata = Phase_utils.Metadata.make (Reject (NotInBackendLang backend))
@@ -502,6 +501,7 @@ module TransformToInputLanguage =
   |> Phases.Trivialize_assign_lhs
   |> Phases.Reconstruct_question_marks
   |> Side_effect_utils.Hoist
+  |> Phases.Monomorphize
   |> Phases.Local_mutation
   |> Phases.Reject.Continue
   |> Phases.Cf_into_monads
