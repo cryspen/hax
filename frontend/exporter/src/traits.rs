@@ -173,7 +173,13 @@ pub fn solve_trait<'tcx, S: BaseState<'tcx> + HasOwnerId>(
     let resolved = s.with_cache(|cache| {
         cache
             .predicate_searcher
-            .get_or_insert_with(|| PredicateSearcher::new_for_owner(s.base().tcx, s.owner_id()))
+            .get_or_insert_with(|| {
+                PredicateSearcher::new_for_owner(
+                    s.base().tcx,
+                    s.owner_id(),
+                    s.base().options.resolve_drop_bounds,
+                )
+            })
             .resolve(&trait_ref, &warn)
     });
     let impl_expr = match resolved {
@@ -209,7 +215,7 @@ pub fn solve_item_required_traits<'tcx, S: UnderOwnerState<'tcx>>(
             }
             _ => {}
         }
-        let predicates = required_predicates(tcx, def_id);
+        let predicates = required_predicates(tcx, def_id, s.base().options.resolve_drop_bounds);
         impl_exprs.extend(solve_item_traits_inner(s, generics, predicates));
     }
     let mut impl_exprs = vec![];
@@ -226,7 +232,7 @@ pub fn solve_item_implied_traits<'tcx, S: UnderOwnerState<'tcx>>(
     def_id: RDefId,
     generics: ty::GenericArgsRef<'tcx>,
 ) -> Vec<ImplExpr> {
-    let predicates = implied_predicates(s.base().tcx, def_id);
+    let predicates = implied_predicates(s.base().tcx, def_id, s.base().options.resolve_drop_bounds);
     solve_item_traits_inner(s, generics, predicates)
 }
 

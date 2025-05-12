@@ -121,10 +121,12 @@ pub struct AnnotatedTraitPred<'tcx> {
 fn initial_search_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: rustc_span::def_id::DefId,
+    add_drop: bool,
 ) -> Vec<AnnotatedTraitPred<'tcx>> {
     fn acc_predicates<'tcx>(
         tcx: TyCtxt<'tcx>,
         def_id: rustc_span::def_id::DefId,
+        add_drop: bool,
         predicates: &mut Vec<AnnotatedTraitPred<'tcx>>,
         pred_id: &mut usize,
     ) {
@@ -138,7 +140,7 @@ fn initial_search_predicates<'tcx>(
             // These inherit some predicates from their parent.
             AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant => {
                 let parent = tcx.parent(def_id);
-                acc_predicates(tcx, parent, predicates, pred_id);
+                acc_predicates(tcx, parent, add_drop, predicates, pred_id);
             }
             Trait => {
                 let self_pred = self_predicate(tcx, def_id).upcast(tcx);
@@ -150,7 +152,7 @@ fn initial_search_predicates<'tcx>(
             _ => {}
         }
         predicates.extend(
-            required_predicates(tcx, def_id)
+            required_predicates(tcx, def_id, add_drop)
                 .predicates
                 .iter()
                 .map(|(clause, _span)| *clause)
@@ -164,7 +166,7 @@ fn initial_search_predicates<'tcx>(
     }
 
     let mut predicates = vec![];
-    acc_predicates(tcx, def_id, &mut predicates, &mut 0);
+    acc_predicates(tcx, def_id, add_drop, &mut predicates, &mut 0);
     predicates
 }
 
@@ -172,9 +174,10 @@ fn initial_search_predicates<'tcx>(
 fn parents_trait_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     pred: PolyTraitPredicate<'tcx>,
+    add_drop: bool,
 ) -> Vec<PolyTraitPredicate<'tcx>> {
     let self_trait_ref = pred.to_poly_trait_ref();
-    implied_predicates(tcx, pred.def_id())
+    implied_predicates(tcx, pred.def_id(), add_drop)
         .predicates
         .iter()
         .map(|(clause, _span)| *clause)
@@ -200,11 +203,13 @@ pub struct PredicateSearcher<'tcx> {
     typing_env: rustc_middle::ty::TypingEnv<'tcx>,
     /// Local clauses available in the current context.
     candidates: HashMap<PolyTraitPredicate<'tcx>, Candidate<'tcx>>,
+    /// Whether to add `T: Drop` bounds for every type generic and associated item.
+    add_drop: bool,
 }
 
 impl<'tcx> PredicateSearcher<'tcx> {
     /// Initialize the elaborator with the predicates accessible within this item.
-    pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId) -> Self {
+    pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId, add_drop: bool) -> Self {
         let mut out = Self {
             tcx,
             typing_env: TypingEnv {
@@ -212,9 +217,10 @@ impl<'tcx> PredicateSearcher<'tcx> {
                 typing_mode: TypingMode::PostAnalysis,
             },
             candidates: Default::default(),
+            add_drop,
         };
         out.extend(
-            initial_search_predicates(tcx, owner_id)
+            initial_search_predicates(tcx, owner_id, add_drop)
                 .into_iter()
                 .map(|clause| Candidate {
                     path: vec![],
@@ -251,8 +257,9 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let tcx = self.tcx;
         // Then recursively add their parents. This way ensures a breadth-first order,
         // which means we select the shortest path when looking up predicates.
+        let add_drop = self.add_drop;
         self.extend(new_candidates.into_iter().flat_map(|candidate| {
-            parents_trait_predicates(tcx, candidate.pred)
+            parents_trait_predicates(tcx, candidate.pred, add_drop)
                 .into_iter()
                 .enumerate()
                 .map(move |(index, parent_pred)| {
@@ -292,7 +299,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         };
 
         // The bounds that hold on the associated type.
-        let item_bounds = implied_predicates(tcx, alias_ty.def_id)
+        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop)
             .predicates
             .iter()
             .map(|(clause, _span)| *clause)
@@ -480,7 +487,11 @@ impl<'tcx> PredicateSearcher<'tcx> {
         warn: &impl Fn(&str),
     ) -> Result<Vec<ImplExpr<'tcx>>, String> {
         let tcx = self.tcx;
-        self.resolve_predicates(generics, required_predicates(tcx, def_id), warn)
+        self.resolve_predicates(
+            generics,
+            required_predicates(tcx, def_id, self.add_drop),
+            warn,
+        )
     }
 
     /// Resolve the predicates implied by the given item.
@@ -492,7 +503,11 @@ impl<'tcx> PredicateSearcher<'tcx> {
         warn: &impl Fn(&str),
     ) -> Result<Vec<ImplExpr<'tcx>>, String> {
         let tcx = self.tcx;
-        self.resolve_predicates(generics, implied_predicates(tcx, def_id), warn)
+        self.resolve_predicates(
+            generics,
+            implied_predicates(tcx, def_id, self.add_drop),
+            warn,
+        )
     }
 
     /// Apply the given generics to the provided clauses and resolve the trait references in the
