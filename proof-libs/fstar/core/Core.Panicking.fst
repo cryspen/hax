@@ -7,6 +7,9 @@ type t_AssertKind = | AssertKind_Eq
 
 let panic (message: string {False}): t_Never
   = match () with
+
+let panic_explicit (_: unit {False}): t_Never
+  = match () with
   
 let assert_failed (k: t_AssertKind) x y (z: Core.Option.t_Option unit {False}): t_Never
   = match () with
