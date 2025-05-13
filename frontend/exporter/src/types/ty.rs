@@ -1004,13 +1004,17 @@ pub type PolyFnSig = Binder<TyFnSig>;
 /// Reflects [`ty::TraitRef`]
 #[derive_group(Serializers)]
 #[derive(AdtInto)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::TraitRef<'tcx>, state: S as tcx)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::TraitRef<'tcx>, state: S as s)]
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TraitRef {
     pub def_id: DefId,
     #[from(args)]
-    /// reflects the `args` field
+    /// Generic arguments to the trait. The first type argument is the type on which the trait is
+    /// implemented.
     pub generic_args: Vec<GenericArg>,
+    /// Implementations of the predicates required by the trait.
+    #[value(solve_item_required_traits(s, self.def_id, self.args))]
+    pub impl_exprs: Vec<ImplExpr>,
 }
 
 /// Reflects [`ty::TraitPredicate`]

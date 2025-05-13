@@ -347,7 +347,7 @@ pub(crate) fn get_function_from_def_id_and_generics<'tcx, S: UnderOwnerState<'tc
     generics: rustc_middle::ty::GenericArgsRef<'tcx>,
 ) -> (DefId, Vec<GenericArg>, Vec<ImplExpr>, Option<ImplExpr>) {
     // Retrieve the trait requirements for the item.
-    let trait_refs = solve_item_required_traits(s, def_id, generics);
+    let mut trait_refs = solve_item_required_traits(s, def_id, generics);
 
     // If this is a trait method call, retreive the impl expr information for that trait.
     // Check if this is a trait method call: retrieve the trait source if
@@ -369,8 +369,10 @@ pub(crate) fn get_function_from_def_id_and_generics<'tcx, S: UnderOwnerState<'tc
         // The generics for the call to `baz` will be the concatenation: `<T, u32, U>`, which we
         // split into `<T, u32>` and `<U>`.
         let num_trait_generics = tinfo.r#trait.hax_skip_binder_ref().generic_args.len();
+        let num_trait_trait_clauses = tinfo.r#trait.hax_skip_binder_ref().impl_exprs.len();
         // Return only the method generics; the trait generics are included in `trait_impl_expr`.
         let method_generics = &generics[num_trait_generics..];
+        trait_refs.drain(0..num_trait_trait_clauses);
         (method_generics.sinto(s), Some(tinfo))
     } else {
         // Regular function call
