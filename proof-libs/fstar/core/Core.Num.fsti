@@ -26,6 +26,19 @@ let impl_i128__MIN: i128 = mk_i128 (minint i128_inttype)
 let impl_isize__MAX: isize = mk_isize (maxint isize_inttype)
 let impl_isize__MIN: isize = mk_isize (minint isize_inttype)
 
+let impl_u8__rem_euclid (x: u8) (y: u8): u8 = x %! y
+let impl_u16__rem_euclid (x: u16) (y: u16): u16 = x %! y
+let impl_u32__rem_euclid (x: u32) (y: u32): u32 = x %! y
+let impl_u64__rem_euclid (x: u64) (y: u64): u64 = x %! y
+let impl_u128__rem_euclid (x: u128) (y: u128): u128 = x %! y
+let impl_usize__rem_euclid (x: usize) (y: usize): usize = x %! y
+let impl_i8__rem_euclid (x: i8) (y: i8): i8 = x %! y
+let impl_i16__rem_euclid (x: i16) (y: i16): i16 = x %! y
+let impl_i32__rem_euclid (x: i32) (y: i32): i32 = x %! y
+let impl_i64__rem_euclid (x: i64) (y: i64): i64 = x %! y
+let impl_i128__rem_euclid (x: i128) (y: i128): i128 = x %! y
+let impl_isize__rem_euclid (x: isize) (y: isize): isize = x %! y
+
 let impl_u8__wrapping_add: u8 -> u8 -> u8 = add_mod
 let impl_u8__wrapping_sub: u8 -> u8 -> u8 = sub_mod
 let impl_u16__wrapping_add: u16 -> u16 ->  u16 = add_mod
