@@ -53,9 +53,9 @@ let bit_vec_of_refined_int_t_array (#n: inttype) (#len: usize)
 let bit_vec_of_nat_array (#len: usize)
                        (arr: t_Array nat len)
                        (d: nat)
-                       : bit_vec (v len * d)
+  : bit_vec (v len * d)
   = on (i: nat {i < v len * d})
-       (fun i -> get_bit_nat (index arr (sz (i / d))) (i % d))
+       (fun i -> assert (i / d < v len); get_bit_nat (index arr (sz (i / d))) (i % d))
 #pop-options
 
 /// Transforms a bit vector to an integer
