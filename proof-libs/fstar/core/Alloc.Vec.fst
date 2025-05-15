@@ -26,7 +26,7 @@ let impl_1__len #t (#[(Tactics.exact (`()))]alloc:unit) (v: t_Vec t alloc) =
 
 let impl_1__as_slice #t (#[(Tactics.exact (`()))]alloc:unit) (v: t_Vec t alloc) : t_Slice t = v
 
-let from_elem #a (item: a) (len: usize) = Seq.create (v len) item
+let from_elem #a (item: a) (len: usize) = create len item
 
 open Rust_primitives.Hax
 open Core.Ops.Index
