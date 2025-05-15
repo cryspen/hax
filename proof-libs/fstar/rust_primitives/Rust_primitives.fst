@@ -47,7 +47,7 @@ class unsize_tc source = {
 }
 
 instance array_to_slice_unsize t n: unsize_tc (t_Array t n) = {
-  output = (x:t_Slice t{Seq.length x == v n});
+  output = (x:t_Slice t{length x == n});
   unsize = (fun (arr: t_Array t n) -> 
             arr <: t_Slice t);
 }

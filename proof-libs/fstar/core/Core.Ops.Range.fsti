@@ -50,18 +50,22 @@ instance impl_index_range_slice t n : t_Index (t_Slice t) (t_Range (int_t n))
   = { f_Output = t_Slice t
     ; f_index_post = (fun _ _ _ -> true)
     ; f_index_pre = (fun (s: t_Slice t) {f_start; f_end} -> 
-         let len = Rust_primitives.length s in
+         let len = length s in
          v f_start >= 0 /\ v f_start <= v len /\ v f_end <= v len)
-    ; f_index = (fun s {f_start; f_end} -> 
-          if f_start <. f_end then Seq.slice s (v f_start) (v f_end)
-                              else Seq.empty)}
+    ; f_index = (fun s (r: t_Range (int_t n)) -> 
+          let {f_start; f_end} = r in
+          if v f_start < v f_end 
+          then slice s (sz (v f_start)) (sz (v f_end))
+          else empty)}
 
 instance impl_index_range_to_slice t n : t_Index (t_Slice t) (t_RangeTo (int_t n)) 
   = { f_Output = t_Slice t
     ; f_index_post = (fun _ _ _ -> true)
     ; f_index_pre = (fun (s: t_Slice t) ({f_end}: t_RangeTo (int_t n)) -> 
          let len = Rust_primitives.length s in v f_end <= v len)
-    ; f_index = (fun s {f_end} -> if 0 < v f_end then Seq.slice s 0 (v f_end) else Seq.empty)}
+    ; f_index = (fun s (r:t_RangeTo (int_t n)) -> 
+         let {f_end} = r in 
+         if 0 < v f_end then slice s (sz 0) (sz (v f_end)) else empty)}
 
 instance impl_index_range_from_slice t n : t_Index (t_Slice t) (t_RangeFrom (int_t n)) 
   = { f_Output = t_Slice t
@@ -70,7 +74,7 @@ instance impl_index_range_from_slice t n : t_Index (t_Slice t) (t_RangeFrom (int
          let len = Rust_primitives.length s in v f_start >= 0 /\ v f_start <= v len)
     ; f_index = (fun s {f_start} -> 
          let len = Rust_primitives.length s in
-         if v f_start = v len then Seq.empty else Seq.slice s (v f_start) (v len))}
+         if v f_start = v len then empty else slice s (sz (v f_start)) len)}
          
 instance impl_index_range_full_slice t : t_Index (t_Slice t) t_RangeFull
   = { f_Output = t_Slice t

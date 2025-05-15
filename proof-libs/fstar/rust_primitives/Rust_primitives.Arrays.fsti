@@ -3,65 +3,86 @@ module Rust_primitives.Arrays
 open Rust_primitives.Integers
 open FStar.Mul
 
-/// Rust slices and arrays are represented as sequences
-type t_Slice t = s:Seq.seq t{Seq.length s <= max_usize}
-type t_Array t (l:usize) = s: Seq.seq t { Seq.length s == v l }
+open FStar.FunctionalExtensionality    
+
+type t_Slice (t: Type0) = (n:usize & (i:usize {i <. n} ^-> t))
+type t_Array t (l:usize) = s: t_Slice t { let (| n, f |) = s in n == l }
+
+/// Create a slice
+let createi (#t:Type0) (n:usize) (f: (i: usize {i <. n}) -> t)
+    : t_Slice t = (| n, on (i: usize {i <. n}) f |)
+
+/// Create a slice
+let create (#t:Type0) (n:usize) (v:t) : t_Slice t = 
+  createi #t n (fun i -> v)
+
+/// Empty slice
+let empty #t : t_Slice t = createi (sz 0) (fun i -> false_elim #t ())
+
 
 /// Length of a slice
-let length (#a: Type) (s: t_Slice a): usize = sz (Seq.length s)
+let length (#a: Type) (s: t_Slice a): usize = let (| n, f |) = s in n
+
+
+/// Indexing into a slice
+let index #t (f: t_Slice t) (i:usize{i <. length f}) : t = 
+    let (| n, f |) = f in
+    f i
+
+
+/// Updating a slice
+let upd #t (f: t_Slice t) (i:usize{i <. length f}) (v:t) : t_Slice t = 
+    createi (length f) (fun k -> if k = i then v else index f k)
+
+
+/// Membership in a slice
+val mem #t (x:t) (f: t_Slice t) : 
+    b:bool {b <==> (exists i. index f i == x)}
 
 /// Check whether a slice contains an item
-let contains (#t: eqtype) (s: t_Slice t) (x: t): bool = Seq.mem x s
+let contains (#t: eqtype) (s: t_Slice t) (x: t): bool = 
+  mem x s
 
-/// Converts an F* list into an array
-val of_list (#t:Type) (l: list t {FStar.List.Tot.length l < maxint U16}):
-    t_Array t (sz (FStar.List.Tot.length l))
-/// Converts an slice into a F* list
-val to_list (#t:Type) (s: t_Slice t): list t
+/// Map a function 
+let map #a #b (f:(x:a -> b)) (s: t_Slice a): t_Slice b
+  = createi (length s) (fun i -> f (index s i))
 
-val map_array (#a #b: Type) #n (arr: t_Array a n) (f: a -> b): t_Array b n
+let map_array #a #b #n (arr: t_Array a n) (f: a -> b): t_Array b n =
+    map #a #b f arr
 
-/// Creates an array of size `l` using a function `f`
-val createi #t (l:usize) (f:(u:usize{u <. l} -> t))
-    : Pure (t_Array t l)
-      (requires True)
-      (ensures (fun res -> (forall i. Seq.index res (v i) == f i)))
+/// Introduce bitwise equality principle for sequences
+let equal #t (a: t_Slice t) (b: t_Slice t) = a == b
 
-unfold let map #a #b #p
-  (f:(x:a{p x} -> b))
-  (s: t_Slice a {forall (i:nat). i < Seq.length s ==> p (Seq.index s i)}): t_Slice b
-  = createi (length s) (fun i -> f (Seq.index s (v i)))
+val eq_intro #t (a : t_Slice t) (b:t_Slice t{length a == length b}):
+       Lemma
+       (requires forall i. {:pattern index a i; index b i}
+                      i <. length a ==>
+                      index a i == index b i)
+       (ensures equal a b)
+       [SMTPat (equal a b)]
+  
+
+/// Cons and Snoc
+let cons #t (v:t) (x:t_Slice t{length x <. sz max_usize}):
+            r:t_Slice t {length r == length x +! sz 1} = 
+    createi (length x +! sz 1) (fun i -> if i = sz 0 then v else index x (i -! sz 1))
+
+let snoc #t (x:t_Slice t{length x <. sz max_usize}) (v:t) :
+            r:t_Slice t {length r == length x +! sz 1} = 
+    createi (length x +! sz 1) (fun i -> if i <. length x then index x i else v)
+
 
 /// Concatenates two slices
-let concat #t (x:t_Slice t) (y:t_Slice t{range (v (length x) + v (length y)) usize_inttype}) :
-           r:t_Array t (length x +! length y) = Seq.append x y
+let concat #t (x:t_Slice t) (y:t_Slice t{v (length x) + v (length y) <= max_usize}) :
+           r:t_Slice t {length r == length x +! length y} = 
+    createi (length x +! length y) (fun i -> if i <. length x then index x i else index y (i -! length x))
 
-/// Translate indexes of `concat x y` into indexes of `x` or of `y`
-val lemma_index_concat #t (x:t_Slice t) (y:t_Slice t{range (v (length x) + v (length y)) usize_inttype}) (i:usize{i <. length x +! length y}):
-           Lemma (if i <. length x then
-                    Seq.index (concat x y) (v i) == Seq.index x (v i)
-                  else 
-                    Seq.index (concat x y) (v i) == Seq.index y (v (i -! length x)))
-           [SMTPat (Seq.index (concat #t x y) (v i))]
 
 /// Take a subslice given `x` a slice and `i` and `j` two indexes
 let slice #t (x:t_Slice t) (i:usize{i <=. length x}) (j:usize{i <=. j /\ j <=. length x}):
-           r:t_Array t (j -! i) = Seq.slice x (v i) (v j)
+           r:t_Slice t {length r == j -! i} = 
+    createi (j -! i) (fun k -> index x (i +! k))
 
-/// Translate indexes for subslices
-val lemma_index_slice #t (x:t_Slice t) (i:usize{i <=. length x}) (j:usize{i <=. j /\ j <=. length x})
-                                (k:usize{k <. j -! i}):
-           Lemma (Seq.index (slice x i j) (v k) == Seq.index x (v (i +! k)))
-           [SMTPat (Seq.index (slice x i j) (v k))]
-
-/// Introduce bitwise equality principle for sequences
-val eq_intro #t (a : Seq.seq t) (b:Seq.seq t{Seq.length a == Seq.length b}):
-       Lemma
-       (requires forall i. {:pattern Seq.index a i; Seq.index b i}
-                      i < Seq.length a ==>
-                      Seq.index a i == Seq.index b i)
-       (ensures Seq.equal a b)
-       [SMTPat (Seq.equal a b)]
 
 /// Split a slice in two at index `m`
 let split #t (a:t_Slice t) (m:usize{m <=. length a}):
@@ -69,10 +90,10 @@ let split #t (a:t_Slice t) (m:usize{m <=. length a}):
        True (ensures (fun (x,y) ->
          x == slice a (sz 0) m /\
          y == slice a m (length a) /\
-         concat #t x y == a)) = 
-         let x = Seq.slice a 0 (v m) in
-         let y = Seq.slice a (v m) (Seq.length a) in
-         assert (Seq.equal a (concat x y));
+         concat #t x y == a) )= 
+         let x = slice a (sz 0) m in
+         let y = slice a m (length a) in
+         assert (equal a (concat x y));
          (x,y)
 
 let lemma_slice_append #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t):
@@ -81,7 +102,7 @@ let lemma_slice_append #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t):
                    y == slice x (sz 0) (length y) /\ 
                    z == slice x (length y) (length x)))
         (ensures (x == concat y z)) = 
-        assert (Seq.equal x (concat y z))
+        assert (equal x (concat y z))
 
 let lemma_slice_append_3 #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t) (w:t_Slice t):
   Lemma (requires (range (v (length y) + v (length z) + v (length w)) usize_inttype /\
@@ -90,7 +111,7 @@ let lemma_slice_append_3 #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t) (w:t_Slice
                    z == slice x (length y) (length y +! length z) /\
                    w == slice x (length y +! length z) (length x)))
         (ensures (x == concat y (concat z w))) =
-         assert (Seq.equal x (Seq.append y (Seq.append z w)))
+         assert (equal x (concat y (concat z w)))
 
 let lemma_slice_append_4 #t (x y z w u:t_Slice t) :
   Lemma (requires (range (v (length y) + v (length z) + v (length w) + v (length u)) usize_inttype /\
@@ -100,6 +121,19 @@ let lemma_slice_append_4 #t (x y z w u:t_Slice t) :
                    w == slice x (length y +! length z) (length y +! length z +! length w) /\
                    u == slice x (length y +! length z +! length w) (length x)))
         (ensures (x == concat y (concat z (concat w u)))) =
-         assert (Seq.equal x (Seq.append y (Seq.append z (Seq.append w u))))
+         assert (equal x (concat y (concat z (concat w u))))
 
+/// Conversions to and from sequences
+let of_seq #t (s: Seq.seq t{Seq.length s < max_usize}) : t_Slice t = 
+    createi (sz (Seq.length s)) (fun i -> Seq.index s (v i))
 
+let to_seq #t (f: t_Slice t) : Seq.seq t =
+    let (| n, fa |) = f in
+    FStar.Seq.init (v n) (fun i -> fa (sz i))
+
+/// Converts an F* list into an array
+val of_list (#t:Type) (l: list t {FStar.List.Tot.length l < max_usize}):
+    t_Array t (sz (FStar.List.Tot.length l))
+
+/// Converts an slice into a F* list
+val to_list (#t:Type) (s: t_Slice t): list t
