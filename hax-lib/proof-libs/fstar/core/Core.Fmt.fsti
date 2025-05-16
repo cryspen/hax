@@ -32,6 +32,12 @@ val impl_4__new_v1_formatted :
 
 val impl_11__write_fmt : Core.Fmt.t_Formatter -> Core.Fmt.t_Arguments -> Core.Fmt.t_Formatter & Core.Result_Option_bundle.t_Result unit Core.Fmt.t_Error
 
+[@FStar.Tactics.Typeclasses.tcinstance]
+val impl_t_debug_string : t_Debug Prims.string
+
+[@FStar.Tactics.Typeclasses.tcinstance]
+val impl_t_display_string : t_Display Prims.string
+
 instance debuggable_bool : t_Debug Prims.bool =
 {
   f_dbg_fmt_pre = (fun (b: Prims.bool) (fmt: Core.Fmt.t_Formatter) -> true);
