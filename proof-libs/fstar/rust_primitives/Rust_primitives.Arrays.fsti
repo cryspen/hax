@@ -35,6 +35,27 @@ let upd #t (f: t_Slice t) (i:nat{i < length f}) (v:t) : t_Slice t =
     createi (length f) (fun k -> if k = i then v else index f k)
 
 
+/// Conversions to and from sequences
+let of_seq #t (s: Seq.seq t{Seq.length s < max_usize}) : t_Slice t = 
+    createi (Seq.length s) (fun i -> Seq.index s i)
+
+let to_seq #t (f: t_Slice t) : Seq.seq t =
+    let (| n, fa |) = f in
+    FStar.Seq.init n (fun i -> fa i)
+
+/// Converts an F* list into an array
+let of_list (#t:Type) (l: list t {FStar.List.Tot.length l < max_usize}):
+    t_Array t (sz (FStar.List.Tot.length l)) =
+    createi (List.Tot.length l) (fun i -> List.Tot.index l i)
+
+/// Converts an slice into a F* list
+val to_list (#t:Type) (s: t_Slice t): list t
+
+/// Equality
+
+val eq #t (a b: t_Slice t) : r:bool{if r then a == b else a =!= b}
+
+
 /// Membership in a slice
 val mem #t (x:t) (f: t_Slice t) : 
     b:bool {b <==> (exists i. index f i == x)}
@@ -120,17 +141,4 @@ let lemma_slice_append_4 #t (x y z w u:t_Slice t) :
         (ensures (x == concat y (concat z (concat w u)))) =
          assert (equal x (concat y (concat z (concat w u))))
 
-/// Conversions to and from sequences
-let of_seq #t (s: Seq.seq t{Seq.length s < max_usize}) : t_Slice t = 
-    createi (Seq.length s) (fun i -> Seq.index s i)
 
-let to_seq #t (f: t_Slice t) : Seq.seq t =
-    let (| n, fa |) = f in
-    FStar.Seq.init n (fun i -> fa i)
-
-/// Converts an F* list into an array
-val of_list (#t:Type) (l: list t {FStar.List.Tot.length l < max_usize}):
-    t_Array t (sz (FStar.List.Tot.length l))
-
-/// Converts an slice into a F* list
-val to_list (#t:Type) (s: t_Slice t): list t
