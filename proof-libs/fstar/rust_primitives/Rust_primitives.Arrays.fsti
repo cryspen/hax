@@ -73,8 +73,8 @@ let map_array #a #b #n (arr: t_Array a n) (f: a -> b): t_Array b n =
 val eq_s #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
 let ne_s #t (a b: t_Slice t) : bool = not (a `eq_s` b)
 
-let ( |=| ) #t (a b: t_Slice t) = a `eq_s` b
-let ( |<>| ) #t (a b: t_Slice t) = a `ne_s` b
+unfold let ( |=| ) #t (a b: t_Slice t) = a `eq_s` b
+unfold let ( |<>| ) #t (a b: t_Slice t) = a `ne_s` b
 
 val eq_intro #t (a : t_Slice t) (b:t_Slice t{length a == length b}):
        Lemma
