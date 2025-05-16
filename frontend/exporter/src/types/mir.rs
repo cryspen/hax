@@ -750,144 +750,87 @@ impl<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>> SInto<S, Place>
 {
     #[tracing::instrument(level = "info", skip(s))]
     fn sinto(&self, s: &S) -> Place {
-        let local_decl = &s.mir().local_decls[self.local];
-        let mut current_ty: rustc_middle::ty::Ty = local_decl.ty;
-        let mut current_kind = PlaceKind::Local(self.local.sinto(s));
-        let mut elems: &[rustc_middle::mir::PlaceElem] = self.projection.as_slice();
+        let tcx = s.base().tcx;
+        let local_decls = &s.mir().local_decls;
 
-        loop {
+        let mut place_ty: mir::PlaceTy = mir::Place::from(self.local).ty(local_decls, tcx);
+        let mut place = Place {
+            ty: place_ty.ty.sinto(s),
+            kind: PlaceKind::Local(self.local.sinto(s)),
+        };
+        for elem in self.projection.as_slice() {
             use rustc_middle::mir::ProjectionElem::*;
-            let cur_ty = current_ty;
-            let cur_kind = current_kind.clone();
-            use rustc_middle::ty::TyKind;
-            let mk_field = |index: &rustc_abi::FieldIdx,
-                            variant_idx: Option<rustc_abi::VariantIdx>| {
-                ProjectionElem::Field(match cur_ty.kind() {
-                    TyKind::Adt(adt_def, _) => {
-                        assert!(
-                            ((adt_def.is_struct() || adt_def.is_union()) && variant_idx.is_none())
-                                || (adt_def.is_enum() && variant_idx.is_some())
-                        );
-                        ProjectionElemFieldKind::Adt {
-                            typ: adt_def.did().sinto(s),
-                            variant: variant_idx.map(|id| id.sinto(s)),
-                            index: index.sinto(s),
-                        }
-                    }
-                    TyKind::Tuple(_types) => ProjectionElemFieldKind::Tuple(index.sinto(s)),
-                    ty_kind => {
-                        supposely_unreachable_fatal!(
-                            s, "ProjectionElemFieldBadType";
-                            {index, ty_kind, variant_idx, &cur_ty, &cur_kind}
-                        );
-                    }
-                })
-            };
-            let elem_kind: ProjectionElem = match elems {
-                [Downcast(_, variant_idx), Field(index, ty), rest @ ..] => {
-                    elems = rest;
-                    let r = mk_field(index, Some(*variant_idx));
-                    current_ty = *ty;
-                    r
-                }
-                [elem, rest @ ..] => {
-                    elems = rest;
-                    use rustc_middle::ty::TyKind;
-                    match elem {
-                        Deref => {
-                            current_ty = match current_ty.kind() {
-                                TyKind::Ref(_, ty, _) | TyKind::RawPtr(ty, _) => *ty,
-                                TyKind::Adt(def, generics) if def.is_box() => generics.type_at(0),
-                                _ => supposely_unreachable_fatal!(
-                                    s, "PlaceDerefNotRefNorPtrNorBox";
-                                    {current_ty, current_kind, elem}
-                                ),
-                            };
-                            ProjectionElem::Deref
-                        }
-                        Field(index, ty) => {
-                            if let TyKind::Closure(_, generics) = cur_ty.kind() {
-                                // We get there when we access one of the fields
-                                // of the the state captured by a closure.
-                                use crate::rustc_index::Idx;
-                                let generics = generics.as_closure();
-                                let upvar_tys = generics.upvar_tys();
-                                current_ty = upvar_tys[index.sinto(s).index()];
-                                ProjectionElem::Field(ProjectionElemFieldKind::ClosureState(
-                                    index.sinto(s),
-                                ))
-                            } else {
-                                let r = mk_field(index, None);
-                                current_ty = *ty;
-                                r
-                            }
-                        }
-                        Index(local) => {
-                            let (TyKind::Slice(ty) | TyKind::Array(ty, _)) = current_ty.kind()
-                            else {
-                                supposely_unreachable_fatal!(
-                                    s,
-                                    "PlaceIndexNotSlice";
-                                    {current_ty, current_kind, elem}
+            let projected_place_ty = place_ty.projection_ty(tcx, *elem);
+            if matches!(elem, Downcast { .. }) {
+                // We keep the same `Place`, the variant is tracked in the `PlaceTy` and we can
+                // access it next loop iteration.
+            } else {
+                let elem_kind = match elem {
+                    Deref => ProjectionElem::Deref,
+                    Field(index, _) => {
+                        let field_pj = match place_ty.ty.kind() {
+                            ty::Adt(adt_def, _) => {
+                                let variant = place_ty.variant_index;
+                                assert!(
+                                    ((adt_def.is_struct() || adt_def.is_union())
+                                        && variant.is_none())
+                                        || (adt_def.is_enum() && variant.is_some())
                                 );
-                            };
-                            current_ty = *ty;
-                            ProjectionElem::Index(local.sinto(s))
-                        }
-                        ConstantIndex {
-                            offset,
-                            min_length,
-                            from_end,
-                        } => {
-                            let (TyKind::Slice(ty) | TyKind::Array(ty, _)) = current_ty.kind()
-                            else {
+                                ProjectionElemFieldKind::Adt {
+                                    typ: adt_def.did().sinto(s),
+                                    variant: variant.map(|id| id.sinto(s)),
+                                    index: index.sinto(s),
+                                }
+                            }
+                            ty::Tuple(_types) => ProjectionElemFieldKind::Tuple(index.sinto(s)),
+                            // We get there when we access one of the fields of the the state
+                            // captured by a closure.
+                            ty::Closure(..) => {
+                                ProjectionElemFieldKind::ClosureState(index.sinto(s))
+                            }
+                            ty_kind => {
                                 supposely_unreachable_fatal!(
-                                    s, "PlaceConstantIndexNotSlice";
-                                    {current_ty, current_kind, elem}
-                                )
-                            };
-                            current_ty = *ty;
-                            ProjectionElem::ConstantIndex {
-                                offset: *offset,
-                                min_length: *min_length,
-                                from_end: *from_end,
+                                    s, "ProjectionElemFieldBadType";
+                                    {index, ty_kind, &place_ty, &place}
+                                );
                             }
-                        }
-                        Subslice { from, to, from_end } =>
-                        // TODO: We assume subslice preserves the type
-                        {
-                            ProjectionElem::Subslice {
-                                from: *from,
-                                to: *to,
-                                from_end: *from_end,
-                            }
-                        }
-                        OpaqueCast(ty) => {
-                            current_ty = *ty;
-                            ProjectionElem::OpaqueCast
-                        }
-                        // This is used for casts to a subtype, e.g. between `for<‘a> fn(&’a ())`
-                        // and `fn(‘static ())` (according to @compiler-errors on Zulip).
-                        Subtype { .. } => panic!("unexpected Subtype"),
-                        Downcast { .. } => panic!("unexpected Downcast"),
-                        UnwrapUnsafeBinder { .. } => panic!("unsupported feature: unsafe binders"),
+                        };
+                        ProjectionElem::Field(field_pj)
                     }
-                }
-                [] => break,
-            };
+                    Index(local) => ProjectionElem::Index(local.sinto(s)),
+                    ConstantIndex {
+                        offset,
+                        min_length,
+                        from_end,
+                    } => ProjectionElem::ConstantIndex {
+                        offset: *offset,
+                        min_length: *min_length,
+                        from_end: *from_end,
+                    },
+                    Subslice { from, to, from_end } => ProjectionElem::Subslice {
+                        from: *from,
+                        to: *to,
+                        from_end: *from_end,
+                    },
+                    OpaqueCast(..) => ProjectionElem::OpaqueCast,
+                    // This is used for casts to a subtype, e.g. between `for<‘a> fn(&’a ())`
+                    // and `fn(‘static ())` (according to @compiler-errors on Zulip).
+                    Subtype { .. } => panic!("unexpected Subtype"),
+                    Downcast { .. } => unreachable!(),
+                    UnwrapUnsafeBinder { .. } => panic!("unsupported feature: unsafe binders"),
+                };
 
-            current_kind = PlaceKind::Projection {
-                place: Box::new(Place {
-                    ty: cur_ty.sinto(s),
-                    kind: current_kind.clone(),
-                }),
-                kind: elem_kind,
-            };
+                place = Place {
+                    ty: projected_place_ty.ty.sinto(s),
+                    kind: PlaceKind::Projection {
+                        place: Box::new(place),
+                        kind: elem_kind,
+                    },
+                };
+            }
+            place_ty = projected_place_ty;
         }
-        Place {
-            ty: current_ty.sinto(s),
-            kind: current_kind.clone(),
-        }
+        place
     }
 }
 
