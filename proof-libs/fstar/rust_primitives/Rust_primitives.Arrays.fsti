@@ -51,10 +51,6 @@ let of_list (#t:Type) (l: list t {FStar.List.Tot.length l < max_usize}):
 /// Converts an slice into a F* list
 val to_list (#t:Type) (s: t_Slice t): list t
 
-/// Equality
-
-val eq #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
-
 /// Membership in a slice
 val mem #t (x:t) (f: t_Slice t) : 
     b:bool {b <==> (exists i. index f i == x)}
@@ -81,6 +77,9 @@ val eq_intro #t (a : t_Slice t) (b:t_Slice t{length a == length b}):
        (ensures equal a b)
        [SMTPat (equal a b)]
   
+
+val eq #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
+val ne #t (a b: t_Slice t) : r:bool{r <==> (a =!= b)}
 
 /// Cons and Snoc
 let cons #t (v:t) (x:t_Slice t{length x < max_usize}):
