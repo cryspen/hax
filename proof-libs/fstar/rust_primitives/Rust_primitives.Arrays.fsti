@@ -39,7 +39,7 @@ let op_String_Assignment #t (f: t_Slice t) (i:nat{i < length f}) (v:t) : t_Slice
 
 
 /// Conversions to and from sequences
-let of_seq #t (s: Seq.seq t{Seq.length s < max_usize}) : t_Slice t = 
+let of_seq #t (s: Seq.seq t{Seq.length s <= max_usize}) : t_Slice t = 
     createi (Seq.length s) (fun i -> Seq.index s i)
 
 let to_seq #t (f: t_Slice t) : Seq.seq t =
@@ -47,7 +47,7 @@ let to_seq #t (f: t_Slice t) : Seq.seq t =
     FStar.Seq.init n (fun i -> fa i)
 
 /// Converts an F* list into an array
-let of_list (#t:Type) (l: list t {FStar.List.Tot.length l < max_usize}):
+let of_list (#t:Type) (l: list t {FStar.List.Tot.length l <= max_usize}):
     t_Array t (sz (FStar.List.Tot.length l)) =
     createi (List.Tot.length l) (fun i -> List.Tot.index l i)
 
@@ -105,6 +105,14 @@ let slice #t (x:t_Slice t) (i:nat{i <= length x}) (j:nat{i <= j /\ j <= length x
            r:t_Slice t {length r == j - i} = 
     createi (j - i) (fun k -> index x (i + k))
 
+let eq_slice_empty #t (x:t_Slice t) 
+  : Lemma (slice x 0 0 |=| empty) 
+    [SMTPat (slice #t x 0 0)]
+  = ()
+let eq_slice_full #t (x:t_Slice t) 
+  : Lemma (slice x 0 (length x) |=| x) 
+    [SMTPat (slice #t x 0 (length x))]
+  = ()
 
 /// Split a slice in two at index `m`
 let split #t (a:t_Slice t) (m:nat{m <= length a}):
