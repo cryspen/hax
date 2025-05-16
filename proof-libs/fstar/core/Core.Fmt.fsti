@@ -56,3 +56,6 @@ instance debuggable_pair (#a:Type) (#b:Type) (x: t_Debug a) (y: t_Debug b): t_De
      | Core.Result.Result_Ok v -> f_dbg_fmt pair._2 fmt_a
      | Core.Result.Result_Err e -> (fmt_a, result_a));
 }
+
+[@FStar.Tactics.Typeclasses.tcinstance]
+val derive_debug (#t: Type) : t_Debug t
