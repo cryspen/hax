@@ -15,3 +15,7 @@ let impl__String__pop (self: t_String): (Alloc.String.t_String & Core.Option.t_O
     if l > 0 then 
         (FStar.String.sub self 0 (l - 1), Core.Option.Option_Some (FStar.String.index self (l - 1)))
     else (self, Core.Option.Option_None)
+
+/// Placeholder for the to_string typeclass
+assume
+val f_to_string (#t: Type) {| Core.TypeClassPlaceHolder.t_Placeholder |} (x:t) : Alloc.String.t_String
