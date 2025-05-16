@@ -5,33 +5,33 @@ open FStar.Mul
 
 open FStar.FunctionalExtensionality    
 
-type t_Slice (t: Type0) = (n:usize & (i:usize {i <. n} ^-> t))
-type t_Array t (l:usize) = s: t_Slice t { let (| n, f |) = s in n == l }
+type t_Slice (t: Type0) = (n:nat{n <= max_usize} & (i:nat {i < n} ^-> t))
+type t_Array t (l:usize) = s: t_Slice t { let (| n, f |) = s in n == v l }
 
 /// Create a slice
-let createi (#t:Type0) (n:usize) (f: (i: usize {i <. n}) -> t)
-    : t_Slice t = (| n, on (i: usize {i <. n}) f |)
+let createi (#t:Type0) (n:nat{n  <= max_usize}) (f: (i: nat {i < n}) -> t)
+    : t_Slice t = (| n, on (i: nat {i < n}) f |)
 
 /// Create a slice
-let create (#t:Type0) (n:usize) (v:t) : t_Slice t = 
+let create (#t:Type0) (n:nat{n <= max_usize}) (v:t) : t_Slice t = 
   createi #t n (fun i -> v)
 
 /// Empty slice
-let empty #t : t_Slice t = createi (sz 0) (fun i -> false_elim #t ())
+let empty #t : t_Slice t = createi 0 (fun i -> false_elim #t ())
 
 
 /// Length of a slice
-let length (#a: Type) (s: t_Slice a): usize = let (| n, f |) = s in n
+let length (#a: Type) (s: t_Slice a): n:nat{n <= max_usize} = let (| n, f |) = s in n
 
 
 /// Indexing into a slice
-let index #t (f: t_Slice t) (i:usize{i <. length f}) : t = 
+let index #t (f: t_Slice t) (i:nat{i < length f}) : t = 
     let (| n, f |) = f in
     f i
 
 
 /// Updating a slice
-let upd #t (f: t_Slice t) (i:usize{i <. length f}) (v:t) : t_Slice t = 
+let upd #t (f: t_Slice t) (i:nat{i < length f}) (v:t) : t_Slice t = 
     createi (length f) (fun k -> if k = i then v else index f k)
 
 
@@ -56,80 +56,77 @@ let equal #t (a: t_Slice t) (b: t_Slice t) = a == b
 val eq_intro #t (a : t_Slice t) (b:t_Slice t{length a == length b}):
        Lemma
        (requires forall i. {:pattern index a i; index b i}
-                      i <. length a ==>
+                      i < length a ==>
                       index a i == index b i)
        (ensures equal a b)
        [SMTPat (equal a b)]
   
 
 /// Cons and Snoc
-let cons #t (v:t) (x:t_Slice t{length x <. sz max_usize}):
-            r:t_Slice t {length r == length x +! sz 1} = 
-    createi (length x +! sz 1) (fun i -> if i = sz 0 then v else index x (i -! sz 1))
+let cons #t (v:t) (x:t_Slice t{length x < max_usize}):
+            r:t_Slice t {length r == length x + 1} = 
+    createi (length x + 1) (fun i -> if i = 0 then v else index x (i - 1))
 
-let snoc #t (x:t_Slice t{length x <. sz max_usize}) (v:t) :
-            r:t_Slice t {length r == length x +! sz 1} = 
-    createi (length x +! sz 1) (fun i -> if i <. length x then index x i else v)
+let snoc #t (x:t_Slice t{length x < max_usize}) (v:t) :
+            r:t_Slice t {length r == length x + 1} = 
+    createi (length x + 1) (fun i -> if i < length x then index x i else v)
 
 
 /// Concatenates two slices
-let concat #t (x:t_Slice t) (y:t_Slice t{v (length x) + v (length y) <= max_usize}) :
-           r:t_Slice t {length r == length x +! length y} = 
-    createi (length x +! length y) (fun i -> if i <. length x then index x i else index y (i -! length x))
+let concat #t (x:t_Slice t) (y:t_Slice t{length x + length y <= max_usize}) :
+           r:t_Slice t {length r == length x + length y} = 
+    createi (length x + length y) (fun i -> if i < length x then index x i else index y (i - length x))
 
 
 /// Take a subslice given `x` a slice and `i` and `j` two indexes
-let slice #t (x:t_Slice t) (i:usize{i <=. length x}) (j:usize{i <=. j /\ j <=. length x}):
-           r:t_Slice t {length r == j -! i} = 
-    createi (j -! i) (fun k -> index x (i +! k))
+let slice #t (x:t_Slice t) (i:nat{i <= length x}) (j:nat{i <= j /\ j <= length x}):
+           r:t_Slice t {length r == j - i} = 
+    createi (j - i) (fun k -> index x (i + k))
 
 
 /// Split a slice in two at index `m`
-let split #t (a:t_Slice t) (m:usize{m <=. length a}):
-       Pure (t_Array t m & t_Array t (length a -! m))
+let split #t (a:t_Slice t) (m:nat{m <= length a}):
+       Pure (t_Array t (sz m) & t_Array t (sz (length a - m)))
        True (ensures (fun (x,y) ->
-         x == slice a (sz 0) m /\
+         x == slice a 0 m /\
          y == slice a m (length a) /\
          concat #t x y == a) )= 
-         let x = slice a (sz 0) m in
+         let x = slice a 0 m in
          let y = slice a m (length a) in
          assert (equal a (concat x y));
          (x,y)
 
 let lemma_slice_append #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t):
-  Lemma (requires (range (v (length y) + v (length z)) usize_inttype /\
-                   length y +! length z == length x /\
-                   y == slice x (sz 0) (length y) /\ 
+  Lemma (requires (length y + length z == length x /\
+                   y == slice x 0 (length y) /\ 
                    z == slice x (length y) (length x)))
         (ensures (x == concat y z)) = 
         assert (equal x (concat y z))
 
 let lemma_slice_append_3 #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t) (w:t_Slice t):
-  Lemma (requires (range (v (length y) + v (length z) + v (length w)) usize_inttype /\
-                   length y +! length z +! length w == length x /\
-                   y == slice x (sz 0) (length y) /\ 
-                   z == slice x (length y) (length y +! length z) /\
-                   w == slice x (length y +! length z) (length x)))
+  Lemma (requires (length y + length z + length w == length x /\
+                   y == slice x 0 (length y) /\ 
+                   z == slice x (length y) (length y + length z) /\
+                   w == slice x (length y + length z) (length x)))
         (ensures (x == concat y (concat z w))) =
          assert (equal x (concat y (concat z w)))
 
 let lemma_slice_append_4 #t (x y z w u:t_Slice t) :
-  Lemma (requires (range (v (length y) + v (length z) + v (length w) + v (length u)) usize_inttype /\
-                   length y +! length z +! length w +! length u == length x /\
-                   y == slice x (sz 0) (length y) /\ 
-                   z == slice x (length y) (length y +! length z) /\
-                   w == slice x (length y +! length z) (length y +! length z +! length w) /\
-                   u == slice x (length y +! length z +! length w) (length x)))
+  Lemma (requires (length y + length z + length w + length u == length x /\
+                   y == slice x 0 (length y) /\ 
+                   z == slice x (length y) (length y + length z) /\
+                   w == slice x (length y + length z) (length y + length z + length w) /\
+                   u == slice x (length y + length z + length w) (length x)))
         (ensures (x == concat y (concat z (concat w u)))) =
          assert (equal x (concat y (concat z (concat w u))))
 
 /// Conversions to and from sequences
 let of_seq #t (s: Seq.seq t{Seq.length s < max_usize}) : t_Slice t = 
-    createi (sz (Seq.length s)) (fun i -> Seq.index s (v i))
+    createi (Seq.length s) (fun i -> Seq.index s i)
 
 let to_seq #t (f: t_Slice t) : Seq.seq t =
     let (| n, fa |) = f in
-    FStar.Seq.init (v n) (fun i -> fa (sz i))
+    FStar.Seq.init n (fun i -> fa i)
 
 /// Converts an F* list into an array
 val of_list (#t:Type) (l: list t {FStar.List.Tot.length l < max_usize}):
