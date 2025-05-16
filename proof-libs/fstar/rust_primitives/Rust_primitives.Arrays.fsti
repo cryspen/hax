@@ -67,19 +67,16 @@ let map_array #a #b #n (arr: t_Array a n) (f: a -> b): t_Array b n =
     map #a #b f arr
 
 /// Introduce bitwise equality principle for sequences
-let equal #t (a: t_Slice t) (b: t_Slice t) = a == b
+val eq #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
+let ne #t (a b: t_Slice t) : bool = not (a `eq` b)
 
 val eq_intro #t (a : t_Slice t) (b:t_Slice t{length a == length b}):
        Lemma
        (requires forall i. {:pattern index a i; index b i}
                       i < length a ==>
                       index a i == index b i)
-       (ensures equal a b)
-       [SMTPat (equal a b)]
-  
-
-val eq #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
-val ne #t (a b: t_Slice t) : r:bool{r <==> (a =!= b)}
+       (ensures (eq a b))
+       [SMTPat (eq a b)]
 
 /// Cons and Snoc
 let cons #t (v:t) (x:t_Slice t{length x < max_usize}):
