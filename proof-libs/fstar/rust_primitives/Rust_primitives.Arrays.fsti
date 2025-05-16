@@ -53,8 +53,7 @@ val to_list (#t:Type) (s: t_Slice t): list t
 
 /// Equality
 
-val eq #t (a b: t_Slice t) : r:bool{if r then a == b else a =!= b}
-
+val eq #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
 
 /// Membership in a slice
 val mem #t (x:t) (f: t_Slice t) : 
