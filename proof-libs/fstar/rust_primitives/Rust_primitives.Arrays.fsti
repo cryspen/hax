@@ -29,10 +29,13 @@ let index #t (f: t_Slice t) (i:nat{i < length f}) : t =
     let (| n, f |) = f in
     f i
 
+let op_String_Access #t (f: t_Slice t) (i:nat{i < length f}) : t = index f i
 
 /// Updating a slice
 let upd #t (f: t_Slice t) (i:nat{i < length f}) (v:t) : t_Slice t = 
     createi (length f) (fun k -> if k = i then v else index f k)
+
+let op_String_Assignment #t (f: t_Slice t) (i:nat{i < length f}) (v:t) : t_Slice t = upd f i v
 
 
 /// Conversions to and from sequences
@@ -67,16 +70,19 @@ let map_array #a #b #n (arr: t_Array a n) (f: a -> b): t_Array b n =
     map #a #b f arr
 
 /// Introduce bitwise equality principle for sequences
-val eq #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
-let ne #t (a b: t_Slice t) : bool = not (a `eq` b)
+val eq_s #t (a b: t_Slice t) : r:bool{r <==> (a == b)}
+let ne_s #t (a b: t_Slice t) : bool = not (a `eq_s` b)
+
+let ( |=| ) #t (a b: t_Slice t) = a `eq_s` b
+let ( |<>| ) #t (a b: t_Slice t) = a `ne_s` b
 
 val eq_intro #t (a : t_Slice t) (b:t_Slice t{length a == length b}):
        Lemma
        (requires forall i. {:pattern index a i; index b i}
                       i < length a ==>
                       index a i == index b i)
-       (ensures (eq a b))
-       [SMTPat (eq a b)]
+       (ensures (eq_s a b))
+       [SMTPat (eq_s a b)]
 
 /// Cons and Snoc
 let cons #t (v:t) (x:t_Slice t{length x < max_usize}):
@@ -109,7 +115,7 @@ let split #t (a:t_Slice t) (m:nat{m <= length a}):
          concat #t x y == a) )= 
          let x = slice a 0 m in
          let y = slice a m (length a) in
-         assert (equal a (concat x y));
+         assert (eq_s a (concat x y));
          (x,y)
 
 let lemma_slice_append #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t):
@@ -117,7 +123,7 @@ let lemma_slice_append #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t):
                    y == slice x 0 (length y) /\ 
                    z == slice x (length y) (length x)))
         (ensures (x == concat y z)) = 
-        assert (equal x (concat y z))
+        assert (eq_s x (concat y z))
 
 let lemma_slice_append_3 #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t) (w:t_Slice t):
   Lemma (requires (length y + length z + length w == length x /\
@@ -125,7 +131,7 @@ let lemma_slice_append_3 #t (x:t_Slice t) (y:t_Slice t) (z:t_Slice t) (w:t_Slice
                    z == slice x (length y) (length y + length z) /\
                    w == slice x (length y + length z) (length x)))
         (ensures (x == concat y (concat z w))) =
-         assert (equal x (concat y (concat z w)))
+         assert (eq_s x (concat y (concat z w)))
 
 let lemma_slice_append_4 #t (x y z w u:t_Slice t) :
   Lemma (requires (length y + length z + length w + length u == length x /\
@@ -134,6 +140,6 @@ let lemma_slice_append_4 #t (x y z w u:t_Slice t) :
                    w == slice x (length y + length z) (length y + length z + length w) /\
                    u == slice x (length y + length z + length w) (length x)))
         (ensures (x == concat y (concat z (concat w u)))) =
-         assert (equal x (concat y (concat z (concat w u))))
+         assert (eq_s x (concat y (concat z (concat w u))))
 
 
