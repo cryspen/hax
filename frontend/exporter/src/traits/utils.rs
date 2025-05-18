@@ -29,6 +29,7 @@
 use rustc_hir::def::DefKind;
 use rustc_middle::ty::*;
 use rustc_span::def_id::DefId;
+use rustc_span::DUMMY_SP;
 
 /// Returns a list of type predicates for the definition with ID `def_id`, including inferred
 /// lifetime constraints. This is the basic list of predicates we use for essentially all items.
@@ -59,9 +60,16 @@ pub fn predicates_defined_on(tcx: TyCtxt<'_>, def_id: DefId) -> GenericPredicate
 ///     type Type<T: Clone>: Debug;
 /// }
 /// ```
-pub fn required_predicates<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> GenericPredicates<'tcx> {
+///
+/// If `add_drop` is true, we add a `T: Drop` bound for every type generic.
+pub fn required_predicates<'tcx>(
+    tcx: TyCtxt<'tcx>,
+    def_id: DefId,
+    add_drop: bool,
+) -> GenericPredicates<'tcx> {
     use DefKind::*;
-    match tcx.def_kind(def_id) {
+    let def_kind = tcx.def_kind(def_id);
+    let mut predicates = match def_kind {
         AssocConst
         | AssocFn
         | AssocTy
@@ -80,7 +88,28 @@ pub fn required_predicates<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> GenericPre
         Trait => Default::default(),
         // `predicates_defined_on` ICEs on other def kinds.
         _ => Default::default(),
+    };
+    if add_drop {
+        // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or
+        // `Sized`.
+        let drop_trait = tcx.lang_items().drop_trait().unwrap();
+        let sized_trait = tcx.lang_items().sized_trait().unwrap();
+        if def_id != drop_trait && def_id != sized_trait {
+            let extra_bounds = tcx
+                .generics_of(def_id)
+                .own_params
+                .iter()
+                .filter(|param| matches!(param.kind, GenericParamDefKind::Type { .. }))
+                .map(|param| tcx.mk_param_from_def(param))
+                .map(|ty| Binder::dummy(TraitRef::new(tcx, drop_trait, [ty])))
+                .map(|tref| tref.upcast(tcx))
+                .map(|clause| (clause, DUMMY_SP));
+            predicates.predicates = tcx
+                .arena
+                .alloc_from_iter(predicates.predicates.iter().copied().chain(extra_bounds));
+        }
     }
+    predicates
 }
 
 /// The special "self" predicate on a trait.
@@ -100,19 +129,40 @@ pub fn self_predicate<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> PolyTraitRef<'t
 ///     type Type<T: Clone>: Debug;
 /// }
 /// ```
-pub fn implied_predicates<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> GenericPredicates<'tcx> {
+///
+/// If `add_drop` is true, we add a `T: Drop` bound for every type generic and associated type.
+pub fn implied_predicates<'tcx>(
+    tcx: TyCtxt<'tcx>,
+    def_id: DefId,
+    add_drop: bool,
+) -> GenericPredicates<'tcx> {
     use DefKind::*;
     let parent = tcx.opt_parent(def_id);
     match tcx.def_kind(def_id) {
         // We consider all predicates on traits to be outputs
         Trait => predicates_defined_on(tcx, def_id),
         AssocTy if matches!(tcx.def_kind(parent.unwrap()), Trait) => {
-            GenericPredicates {
+            let mut predicates = GenericPredicates {
                 parent,
-                // `skip_binder` is for an `EarlyBinder`
+                // `skip_binder` is for the GAT `EarlyBinder`
                 predicates: tcx.explicit_item_bounds(def_id).skip_binder(),
                 ..GenericPredicates::default()
+            };
+            if add_drop {
+                // Add a `Drop` bound to the assoc item.
+                let drop_trait = tcx.lang_items().drop_trait().unwrap();
+                let ty =
+                    Ty::new_projection(tcx, def_id, GenericArgs::identity_for_item(tcx, def_id));
+                let tref = Binder::dummy(TraitRef::new(tcx, drop_trait, [ty]));
+                predicates.predicates = tcx.arena.alloc_from_iter(
+                    predicates
+                        .predicates
+                        .iter()
+                        .copied()
+                        .chain([(tref.upcast(tcx), DUMMY_SP)]),
+                );
             }
+            predicates
         }
         _ => GenericPredicates::default(),
     }

@@ -101,4 +101,7 @@ pub struct Options {
     /// blocks or advanced constant expressions as in `[T; N+1]`), or refer to them as
     /// `GlobalName`s.
     pub inline_anon_consts: bool,
+    /// Add `T: Drop` bounds to every type generic, so that we can build `ImplExpr`s to know what
+    /// code is run on drop.
+    pub resolve_drop_bounds: bool,
 }
