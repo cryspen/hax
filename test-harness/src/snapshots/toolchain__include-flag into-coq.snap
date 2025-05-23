@@ -47,7 +47,7 @@ From Core Require Import Core.
 Record Foo_record : Type :=
   {
   }.
-Arguments Build_Foo_record.
+
 #[export]
 Notation "'Foo_Foo_record'" := Build_Foo_record.
 
@@ -106,7 +106,7 @@ Definition main_c '(_ : unit) : unit :=
   tt.
 
 Definition main '(_ : unit) : unit :=
-  let _ := main_a (Build_Foo_record) in
+  let _ := main_a (Foo) in
   let _ := main_b (tt) in
   let _ := main_c (tt) in
   tt.
