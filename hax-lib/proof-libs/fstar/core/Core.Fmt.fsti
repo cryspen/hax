@@ -63,5 +63,6 @@ instance debuggable_pair (#a:Type) (#b:Type) (x: t_Debug a) (y: t_Debug b): t_De
      | Core.Result.Result_Err e -> (fmt_a, result_a));
 }
 
+/// Default empty implementation, used for lax-checking
 [@FStar.Tactics.Typeclasses.tcinstance]
 val derive_debug (#t: Type) : t_Debug t
