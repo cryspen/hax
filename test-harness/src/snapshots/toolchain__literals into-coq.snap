@@ -79,8 +79,8 @@ Record Foo_record : Type :=
   {
     Foo_f_field : t_u8;
   }.
-Arguments Build_Foo_record.
-Arguments Foo_f_field.
+
+
 #[export] Instance settable_Foo_record : Settable _ :=
   settable! (Build_Foo_record) <Foo_f_field>.
 
@@ -91,7 +91,7 @@ Arguments Foo_f_field.
 
 
 Definition v_CONSTANT : t_Foo :=
-   {| Foo_f_field := (3 : t_u8) |}.
+  Foo ((3 : t_u8)).
 
 Definition numeric '(_ : unit) : unit :=
   let _ : t_usize := (123 : t_usize) in
@@ -114,7 +114,7 @@ Definition patterns '(_ : unit) : unit :=
   | _ =>
     tt
   end in
-  let _ := match  {| Foo_f_field := (4 : t_u8) |} with
+  let _ := match Foo ((4 : t_u8)) with
   | Foo (3) =>
     tt
   | _ =>

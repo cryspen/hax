@@ -53,24 +53,24 @@ Definition no_dependency_2_ '(_ : unit) : unit :=
 Inductive t_Foo : Type :=
 | Foo_A
 | Foo_B.
-Arguments Foo_A.
-Arguments Foo_B.
+
+
 
 Definition f '(_ : t_u32) : t_Foo :=
-  Build_Foo_A_record.
+  Foo_A.
 
 Record Bar_record : Type :=
   {
     Bar_0 : t_Foo;
   }.
-Arguments Build_Bar_record.
-Arguments Bar_0.
+
+
 #[export] Instance settable_Bar_record : Settable _ :=
   settable! (Build_Bar_record) <Bar_0>.
 Notation "'Bar_Bar_record'" := Build_Bar_record.
 
 Definition g '(_ : unit) : t_Bar :=
-   {| Bar_0 := f ((32 : t_u32)) |}.
+  Bar (f ((32 : t_u32))).
 
 Definition t_Foo_cast_to_repr (x : t_Foo) : t_isize :=
   match x with

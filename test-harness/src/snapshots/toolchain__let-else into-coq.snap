@@ -47,19 +47,19 @@ From Core Require Import Core.
 Definition let_else (opt : t_Option ((t_u32))) : bool :=
   run (match opt with
   | Option_Some (x) =>
-     {| ControlFlow_Continue_tuple_field 1 0 := (true : bool) |}
+    ControlFlow_Continue ((true : bool))
   | _ =>
-     {| ControlFlow_Break_tuple_field 1 0 := (false : bool) |}
+    ControlFlow_Break ((false : bool))
   end).
 
 Definition let_else_different_type (opt : t_Option ((t_u32))) : bool :=
   run (let hoist1 := match opt with
   | Option_Some (x) =>
-     {| ControlFlow_Continue_tuple_field 1 0 :=  {| Option_Some_0 := f_add (x) ((1 : t_u32)) |} |}
+    ControlFlow_Continue (Option_Some (f_add (x) ((1 : t_u32))))
   | _ =>
-     {| ControlFlow_Break_tuple_field 1 0 := (false : bool) |}
+    ControlFlow_Break ((false : bool))
   end in
-   {| ControlFlow_Continue_tuple_field 1 0 := let_else (hoist1) |}).
+  ControlFlow_Continue (let_else (hoist1))).
 '''
 _CoqProject = '''
 -R ./ TODO
