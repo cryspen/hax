@@ -485,7 +485,7 @@ module MakeRenderAPI (NP : NAME_POLICY) : RENDER_API = struct
       let*? _no_generics = List.is_empty impl_infos.generics.params in
       match impl_infos.trait_ref with
       | None -> Some ty
-      | Some { def_id = trait; generic_args = [ _self ] } ->
+      | Some { def_id = trait; generic_args = [ _self ]; _ } ->
           let* trait = Explicit_def_id.of_def_id trait in
           let trait = View.of_def_id trait in
           let*? _same_ns = [%eq: View.ModPath.t] namespace trait.mod_path in
