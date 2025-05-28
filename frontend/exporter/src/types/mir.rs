@@ -981,7 +981,7 @@ make_idx_wrapper!(rustc_abi, FieldIdx);
 /// Reflects [`rustc_middle::mir::UnOp`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Copy, Clone, Debug, JsonSchema)]
-#[args(<'slt, S: UnderOwnerState<'slt>>, from: rustc_middle::mir::UnOp, state: S as _s)]
+#[args(<'slt, S: UnderOwnerState<'slt>>, from: mir::UnOp, state: S as _s)]
 pub enum UnOp {
     Not,
     Neg,
@@ -991,7 +991,7 @@ pub enum UnOp {
 /// Reflects [`rustc_middle::mir::BinOp`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Copy, Clone, Debug, JsonSchema)]
-#[args(<'slt, S: UnderOwnerState<'slt>>, from: rustc_middle::mir::BinOp, state: S as _s)]
+#[args(<'slt, S: UnderOwnerState<'slt>>, from: mir::BinOp, state: S as _s)]
 pub enum BinOp {
     // We merge the checked and unchecked variants because in either case overflow is failure.
     #[custom_arm(
@@ -1032,9 +1032,26 @@ pub enum BinOp {
     Offset,
 }
 
+/// Reflects [`rustc_middle::mir::AssignOp`]
+#[derive_group(Serializers)]
+#[derive(AdtInto, Copy, Clone, Debug, JsonSchema)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: mir::AssignOp, state: S as _s)]
+pub enum AssignOp {
+    AddAssign,
+    SubAssign,
+    MulAssign,
+    DivAssign,
+    RemAssign,
+    BitXorAssign,
+    BitAndAssign,
+    BitOrAssign,
+    ShlAssign,
+    ShrAssign,
+}
+
 /// Reflects [`rustc_middle::mir::BorrowKind`]
 #[derive(AdtInto)]
-#[args(<S>, from: rustc_middle::mir::BorrowKind, state: S as gstate)]
+#[args(<S>, from: mir::BorrowKind, state: S as gstate)]
 #[derive_group(Serializers)]
 #[derive(Copy, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum BorrowKind {

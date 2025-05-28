@@ -181,7 +181,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Canonical<U>>
     fn sinto(&self, s: &S) -> Canonical<U> {
         Canonical {
             max_universe: self.max_universe.sinto(s),
-            variables: self.variables.iter().map(|v| v.kind.sinto(s)).collect(),
+            variables: self.variables.sinto(s),
             value: self.value.sinto(s),
         }
     }
@@ -190,7 +190,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Canonical<U>>
 /// Reflects [`rustc_middle::infer::canonical::CanonicalVarKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalVarKind<ty::TyCtxt<'tcx>>, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalVarKind<'tcx>, state: S as gstate)]
 pub enum CanonicalVarInfo {
     Ty(CanonicalTyVarKind),
     PlaceholderTy(PlaceholderType),
@@ -683,7 +683,7 @@ pub enum AliasKind {
         hidden_ty: Ty,
     },
     /// A type alias that references opaque types. Likely to always be normalized away.
-    Weak,
+    Free,
 }
 
 #[cfg(feature = "rustc")]
@@ -725,7 +725,7 @@ impl Alias {
                     hidden_ty: ty.sinto(s),
                 }
             }
-            RustAliasKind::Weak => AliasKind::Weak,
+            RustAliasKind::Free => AliasKind::Free,
         };
         TyKind::Alias(Alias {
             kind,
@@ -1123,7 +1123,7 @@ pub enum ClauseKind {
     TypeOutlives(TypeOutlivesPredicate),
     Projection(ProjectionPredicate),
     ConstArgHasType(ConstantExpr, Ty),
-    WellFormed(GenericArg),
+    WellFormed(Term),
     ConstEvaluatable(ConstantExpr),
     HostEffect(HostEffectPredicate),
 }
@@ -1374,7 +1374,9 @@ pub enum PredicateKind {
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct AssocItem {
     pub def_id: DefId,
-    pub name: Symbol,
+    /// This is `None` for RPTITs.
+    #[value(self.opt_name().sinto(s))]
+    pub name: Option<Symbol>,
     pub kind: AssocKind,
     #[value(get_container_for_assoc_item(s, self))]
     pub container: AssocItemContainer,
@@ -1382,19 +1384,27 @@ pub struct AssocItem {
     /// implementations).
     #[value(self.defaultness(s.base().tcx).has_value())]
     pub has_value: bool,
-    pub fn_has_self_parameter: bool,
-    pub opt_rpitit_info: Option<ImplTraitInTraitData>,
 }
 
 /// Reflects [`ty::AssocKind`]
 #[derive(AdtInto)]
-#[args(<S>, from: ty::AssocKind, state: S as _tcx)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: ty::AssocKind, state: S as _tcx)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AssocKind {
-    Const,
-    Fn,
-    Type,
+    Const { name: Symbol },
+    Fn { name: Symbol, has_self: bool },
+    Type { data: AssocTypeData },
+}
+
+/// Reflects [`ty::AssocTypeData`]
+#[derive(AdtInto)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: ty::AssocTypeData, state: S as _tcx)]
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AssocTypeData {
+    Normal(Symbol),
+    Rpitit(ImplTraitInTraitData),
 }
 
 #[derive_group(Serializers)]

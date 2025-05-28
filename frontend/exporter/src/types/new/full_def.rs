@@ -476,7 +476,8 @@ pub enum FullDefKind<Body> {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct ImplAssocItem<Body> {
-    pub name: Symbol,
+    /// This is `None` for RPTITs.
+    pub name: Option<Symbol>,
     /// The definition of the item from the trait declaration. This is `AssocTy`, `AssocFn` or
     /// `AssocConst`.
     pub decl_def: Arc<FullDef<Body>>,
@@ -571,11 +572,11 @@ impl<Body> FullDef<Body> {
                 .collect(),
             FullDefKind::InherentImpl { items, .. } | FullDefKind::Trait { items, .. } => items
                 .iter()
-                .map(|(item, _)| (item.name.clone(), item.def_id.clone()))
+                .filter_map(|(item, _)| Some((item.name.clone()?, item.def_id.clone())))
                 .collect(),
             FullDefKind::TraitImpl { items, .. } => items
                 .iter()
-                .map(|item| (item.name.clone(), item.def().def_id.clone()))
+                .filter_map(|item| Some((item.name.clone()?, item.def().def_id.clone())))
                 .collect(),
             _ => vec![],
         };
@@ -586,7 +587,7 @@ impl<Body> FullDef<Body> {
                 children.extend(
                     tcx.associated_items(impl_def_id)
                         .in_definition_order()
-                        .map(|assoc| (assoc.name, assoc.def_id).sinto(s)),
+                        .filter_map(|assoc| Some((assoc.opt_name()?, assoc.def_id).sinto(s))),
                 );
             }
         }
@@ -605,11 +606,17 @@ impl<Body> ImplAssocItem<Body> {
     }
 
     /// The kind of item this is.
-    pub fn assoc_kind(&self) -> AssocKind {
+    pub fn assoc_kind(&self) -> &AssocKind {
         match self.def().kind() {
-            FullDefKind::AssocTy { .. } => AssocKind::Type,
-            FullDefKind::AssocFn { .. } => AssocKind::Fn,
-            FullDefKind::AssocConst { .. } => AssocKind::Const,
+            FullDefKind::AssocTy {
+                associated_item, ..
+            }
+            | FullDefKind::AssocFn {
+                associated_item, ..
+            }
+            | FullDefKind::AssocConst {
+                associated_item, ..
+            } => &associated_item.kind,
             _ => unreachable!(),
         }
     }
@@ -804,21 +811,23 @@ where
                                 vec![]
                             };
                             match decl_assoc.kind {
-                                ty::AssocKind::Type => {
+                                ty::AssocKind::Type { .. } => {
                                     let ty = tcx
                                         .type_of(decl_def_id)
                                         .instantiate(tcx, trait_ref.args)
                                         .sinto(s);
                                     ImplAssocItemValue::DefaultedTy { ty }
                                 }
-                                ty::AssocKind::Fn => ImplAssocItemValue::DefaultedFn {},
-                                ty::AssocKind::Const => ImplAssocItemValue::DefaultedConst {},
+                                ty::AssocKind::Fn { .. } => ImplAssocItemValue::DefaultedFn {},
+                                ty::AssocKind::Const { .. } => {
+                                    ImplAssocItemValue::DefaultedConst {}
+                                }
                             }
                         }
                     };
 
                     ImplAssocItem {
-                        name: decl_assoc.name.sinto(s),
+                        name: decl_assoc.opt_name().sinto(s),
                         value,
                         required_impl_exprs,
                         decl_def,

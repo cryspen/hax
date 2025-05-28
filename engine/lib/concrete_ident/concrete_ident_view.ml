@@ -21,7 +21,7 @@ module Assert = struct
   let type_ns (did : Explicit_def_id.t) =
     match List.last (Explicit_def_id.to_def_id did).path with
     (* This can be `None` for the anonymous types generated for `-> impl Trait` in traits. *)
-    | Some { data = TypeNs (Some data); disambiguator } ->
+    | Some { data = TypeNs data; disambiguator } ->
         DisambiguatedString.{ data; disambiguator }
     | _ -> broken_invariant "last path chunk to exist and be of type TypeNs" did
 
@@ -191,7 +191,7 @@ let of_def_id (did : Explicit_def_id.t) : t =
     :: List.map
          ~f:(fun (m : Explicit_def_id.t) ->
            match (Explicit_def_id.to_def_id m).path |> List.last_exn with
-           | Types.{ disambiguator; data = TypeNs (Some data) } ->
+           | Types.{ disambiguator; data = TypeNs data } ->
                DisambiguatedString.{ data; disambiguator }
            | _ ->
                broken_invariant

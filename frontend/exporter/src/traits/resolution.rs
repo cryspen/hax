@@ -429,7 +429,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
                 let types = tcx
                     .associated_items(trait_def_id)
                     .in_definition_order()
-                    .filter(|assoc| matches!(assoc.kind, AssocKind::Type))
+                    .filter(|assoc| matches!(assoc.kind, AssocKind::Type { .. }))
                     .filter_map(|assoc| {
                         let ty =
                             Ty::new_projection(tcx, assoc.def_id, erased_tref.skip_binder().args);
