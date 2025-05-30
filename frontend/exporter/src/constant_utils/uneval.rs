@@ -111,8 +111,8 @@ pub fn translate_constant_reference<'tcx>(
         .try_normalize_erasing_regions(typing_env, ty)
         .unwrap_or(ty);
     let kind = if let Some(assoc) = s.base().tcx.opt_associated_item(ucv.def) {
-        if assoc.trait_item_def_id.is_some() {
-            // This must be a trait declaration constant
+        if assoc.trait_item_def_id.is_some() || assoc.container == ty::AssocItemContainer::Trait {
+            // This is an associated constant in a trait.
             let name = assoc.name.to_string();
             let impl_expr = self_clause_for_item(s, ucv.def, ucv.args).unwrap();
             ConstantExprKind::TraitConst { impl_expr, name }
