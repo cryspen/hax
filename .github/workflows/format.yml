@@ -28,5 +28,5 @@ jobs:
     - name: Run Rust formatter
       run: |
         nix shell .#rustfmt -c \
-          rustfmt --check $(find . -name '*.rs')
+          rustfmt --edition 2021 --check $(find . -name '*.rs')
 

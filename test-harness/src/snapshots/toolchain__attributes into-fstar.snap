@@ -173,6 +173,16 @@ let impl_S__f (self: t_S) (self_ self_0_ self_1_ self_2_: u8)
       (requires self._0 =. mk_u8 0 && self_ =. self_1_ && self_2_ =. mk_u8 9)
       (fun _ -> Prims.l_True) = ()
 '''
+"Attributes.Issue_evit_57_.fst" = '''
+module Attributes.Issue_evit_57_
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open Core
+open FStar.Mul
+
+type t_Foo = | Foo : t_Foo
+
+let impl_Foo__f (self: t_Foo) : Prims.Pure Prims.unit (requires true) (fun _ -> Prims.l_True) = ()
+'''
 "Attributes.Nested_refinement_elim.fst" = '''
 module Attributes.Nested_refinement_elim
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
@@ -525,6 +535,31 @@ let double_abs_i16 (v_N v_M: usize) (x: t_BoundedAbsI16 v_N)
   Core.Ops.Arith.f_mul #(t_BoundedAbsI16 v_N) #i16 #FStar.Tactics.Typeclasses.solve x (mk_i16 2)
   <:
   t_BoundedAbsI16 v_M
+'''
+"Attributes.Reorder.fst" = '''
+module Attributes.Reorder
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open Core
+open FStar.Mul
+
+type t_Foo = {
+  f_field_3_:u8;
+  f_field_4_:u8;
+  f_field_2_:u8;
+  f_field_1_:u8
+}
+
+type t_Bar =
+  | Bar_A {
+    f_a_field_3_:u8;
+    f_a_field_1_:u8;
+    f_a_field_2_:u8
+  }: t_Bar
+  | Bar_B {
+    f_b_field_1_:u8;
+    f_b_field_3_:u8;
+    f_b_field_2_:u8
+  }: t_Bar
 '''
 "Attributes.Replace_body.fst" = '''
 module Attributes.Replace_body

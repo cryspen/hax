@@ -900,6 +900,7 @@ module TransformToInputLanguage =
   |> Phases.Local_mutation
   |> Phases.Reject.Continue
   |> Phases.Reject.Dyn
+  |> Phases.Reorder_fields
   |> Phases.Bundle_cycles
   |> Phases.Sort_items
   |> SubtypeToInputLanguage

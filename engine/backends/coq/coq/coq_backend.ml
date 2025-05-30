@@ -1155,6 +1155,7 @@ module TransformToInputLanguage =
   |> Phases.Reject.As_pattern
   |> Phases.Reject.Dyn
   |> Phases.Reject.Trait_item_default
+  |> Phases.Reorder_fields
   |> Phases.Bundle_cycles
   |> Phases.Sort_items
   |> SubtypeToInputLanguage

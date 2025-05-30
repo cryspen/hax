@@ -20,7 +20,6 @@ impl CommandHaxExt for Command {
         use assert_cmd::cargo::cargo_bin;
         use std::path::PathBuf;
         struct Paths {
-            driver: PathBuf,
             engine: PathBuf,
             cargo_hax: PathBuf,
         }
@@ -44,13 +43,11 @@ impl CommandHaxExt for Command {
                             .unwrap()
                             .success());
                 let cargo_hax = cargo_bin(CARGO_HAX);
-                let driver = cargo_bin("driver-hax-frontend-exporter");
                 // Now the driver & CLI are installed, call `cargo
                 // build` injecting their paths
                 assert!(Command::new("cargo")
                         .args(&["build", "--workspace", "--bin", "hax-engine-names-extract"])
                         .env("HAX_CARGO_COMMAND_PATH", &cargo_hax)
-                        .env("HAX_RUSTC_DRIVER_BINARY", &driver)
                         .current_dir(&root)
                         .status()
                         .unwrap()
@@ -65,7 +62,6 @@ impl CommandHaxExt for Command {
                         .unwrap()
                         .success());
                 Some(Paths {
-                    driver,
                     cargo_hax,
                     engine: engine_dir.join("_build/install/default/bin/hax-engine"),
                 })
@@ -74,7 +70,6 @@ impl CommandHaxExt for Command {
         let mut cmd = match PATHS.deref() {
             Some(paths) => {
                 let mut cmd = Command::new(paths.cargo_hax.clone());
-                cmd.env("HAX_RUSTC_DRIVER_BINARY", paths.driver.clone());
                 cmd.env("HAX_ENGINE_BINARY", paths.engine.clone());
                 cmd
             }

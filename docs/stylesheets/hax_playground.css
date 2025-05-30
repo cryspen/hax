@@ -23,3 +23,17 @@ pre.md-hax-playground-pre {
     display: block;
     margin: 0 auto;
 }
+
+/* Center Markdown Tables (requires md_in_html extension) */
+.center-table {
+    text-align: center;
+}
+
+.md-typeset .center-table :is(td, th):not([align]) {
+    /* Reset alignment for table cells */
+    text-align: initial;
+}
+
+.mermaid {
+    text-align: center;
+}

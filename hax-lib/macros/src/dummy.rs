@@ -109,9 +109,10 @@ fn not_hax_attribute(attr: &syn::Attribute) -> bool {
     }
 }
 
-fn not_refine_attribute(attr: &syn::Attribute) -> bool {
+fn not_field_attribute(attr: &syn::Attribute) -> bool {
     if let Meta::List(ml) = &attr.meta {
-        !matches!(expects_refine(&ml.path), Ok(Some(_)))
+        !(matches!(expects_refine(&ml.path), Ok(Some(_)))
+            || matches!(expects_order(&ml.path), Ok(Some(_))))
     } else {
         true
     }
@@ -148,7 +149,7 @@ pub fn attributes(_attr: TokenStream, item: TokenStream) -> TokenStream {
             match item {
                 Item::Struct(s) => {
                     for field in s.fields.iter_mut() {
-                        field.attrs.retain(not_refine_attribute)
+                        field.attrs.retain(not_field_attribute)
                     }
                 }
                 _ => (),

@@ -33,6 +33,11 @@ pub fn expects_refine(path: &Path) -> Result<Option<String>> {
     expects_hax_path(&["refine"], path)
 }
 
+/// Expects a path to be `[[::]hax_lib]::order`
+pub fn expects_order(path: &Path) -> Result<Option<String>> {
+    expects_hax_path(&["order"], path)
+}
+
 /// Expects a `Path` to be a hax path: `::hax_lib::<KW>`,
 /// `hax_lib::<KW>` or `<KW>` in (with `KW` in `allowlist`).
 pub fn expects_hax_path(allowlist: &[&str], path: &Path) -> Result<Option<String>> {

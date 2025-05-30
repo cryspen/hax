@@ -462,6 +462,18 @@ fn get_hax_version() -> String {
     version
 }
 
+/// Returns the path to the custom rustc driver used by cargo-hax.
+///
+/// This function retrieves the path of the current executable (i.e. `cargo-hax`), determines its
+/// parent directory, and then appends the driver executable name `"driver-hax-frontend-exporter"` to it.
+/// This path is used to locate the custom rustc driver that computes `haxmeta` files.
+fn get_hax_rustc_driver_path() -> PathBuf {
+    std::env::current_exe()
+        .expect("Could not get the current executable path for `cargo-hax`.")
+        .parent().expect("The executable `cargo-hax` is supposed to be a file, which is supposed to have a parent folder.")
+        .join("driver-hax-frontend-exporter")
+}
+
 /// Calls `cargo` with a custom driver which computes `haxmeta` files
 /// in `TARGET`. One `haxmeta` file is produced by crate. Each
 /// `haxmeta` file contains the full AST of one crate.
@@ -486,19 +498,15 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
         if !options.no_custom_target_directory {
             cmd.env("CARGO_TARGET_DIR", target_dir("hax"));
         };
-        cmd.env(
-            "RUSTC_WORKSPACE_WRAPPER",
-            std::env::var("HAX_RUSTC_DRIVER_BINARY")
-                .unwrap_or("driver-hax-frontend-exporter".into()),
-        )
-        .env(RUST_LOG_STYLE, rust_log_style())
-        .env(RUSTFLAGS, rustflags())
-        .env("HAX_CARGO_CACHE_KEY", get_hax_version())
-        .env(
-            ENV_VAR_OPTIONS_FRONTEND,
-            serde_json::to_string(&options)
-                .expect("Options could not be converted to a JSON string"),
-        );
+        cmd.env("RUSTC_WORKSPACE_WRAPPER", get_hax_rustc_driver_path())
+            .env(RUST_LOG_STYLE, rust_log_style())
+            .env(RUSTFLAGS, rustflags())
+            .env("HAX_CARGO_CACHE_KEY", get_hax_version())
+            .env(
+                ENV_VAR_OPTIONS_FRONTEND,
+                serde_json::to_string(&options)
+                    .expect("Options could not be converted to a JSON string"),
+            );
         cmd
     };
 
