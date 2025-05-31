@@ -797,6 +797,16 @@ pub enum TyKind {
     Float(FloatTy),
 
     #[custom_arm(
+        ty::TyKind::FnDef(def_id, generics) => {
+            let tcx = s.base().tcx;
+            let sig = tcx.fn_sig(*def_id).instantiate(tcx, generics);
+            TyKind::FnDef(def_id.sinto(s), Box::new(sig.sinto(s)))
+        },
+    )]
+    /// Reflects [`ty::TyKind::FnDef`]
+    FnDef(DefId, Box<PolyFnSig>),
+
+    #[custom_arm(
         ty::TyKind::FnPtr(tys, header) => {
             let sig = tys.map_bound(|tys| ty::FnSig {
                 inputs_and_output: tys.inputs_and_output,
@@ -806,13 +816,8 @@ pub enum TyKind {
             });
             TyKind::Arrow(Box::new(sig.sinto(s)))
         },
-        ty::TyKind::FnDef(def, generics) => {
-            let tcx = s.base().tcx;
-            let sig = tcx.fn_sig(*def).instantiate(tcx, generics);
-            TyKind::Arrow(Box::new(sig.sinto(s)))
-        },
     )]
-    /// Reflects [`ty::TyKind::FnPtr`] and [`ty::TyKind::FnDef`]
+    /// Reflects [`ty::TyKind::FnPtr`]
     Arrow(Box<PolyFnSig>),
 
     #[custom_arm(

@@ -422,6 +422,7 @@ fn translate_terminator_kind_call<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasO
     let hax_ty: crate::Ty = ty.sinto(s);
     let sig = match hax_ty.kind() {
         TyKind::Arrow(sig) => sig,
+        TyKind::FnDef(_, sig) => sig,
         TyKind::Closure(_, args) => &args.untupled_sig,
         _ => supposely_unreachable_fatal!(
             s,
