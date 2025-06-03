@@ -162,7 +162,7 @@ dependencies = [
  "path-clean",
  "prettyplease",
  "rustup-toolchain",
- "schemars",
+ "schemars 0.8.21",
  "serde",
  "serde-jsonlines",
  "serde_json",
@@ -510,7 +510,7 @@ dependencies = [
  "itertools",
  "lazy_static",
  "paste",
- "schemars",
+ "schemars 0.8.21",
  "serde",
  "serde_json",
  "tracing",
@@ -521,7 +521,7 @@ name = "hax-frontend-exporter-options"
 version = "0.3.0"
 dependencies = [
  "hax-adt-into",
- "schemars",
+ "schemars 0.8.21",
  "serde",
  "serde_json",
 ]
@@ -553,7 +553,7 @@ version = "0.3.0"
 dependencies = [
  "proc-macro2",
  "quote",
- "schemars",
+ "schemars 0.8.21",
  "serde",
  "serde_json",
  "uuid",
@@ -605,7 +605,7 @@ dependencies = [
  "itertools",
  "miette",
  "path-clean",
- "schemars",
+ "schemars 0.8.21",
  "serde",
  "serde-brief",
  "serde_json",
@@ -835,6 +835,15 @@ name = "log"
 version = "0.4.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
+
+[[package]]
+name = "macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
 
 [[package]]
 name = "matchers"
@@ -1161,6 +1170,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "ref-cast"
+version = "1.0.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4a0ae411dbe946a674d89546582cea4ba2bb8defac896622d6496f14c23ba5cf"
+dependencies = [
+ "ref-cast-impl",
+]
+
+[[package]]
+name = "ref-cast-impl"
+version = "1.0.24"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1165225c21bff1f3bbce98f5a1f889949bc902d3575308cc7b0de30b4f6d27c7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.79",
+]
+
+[[package]]
 name = "regex"
 version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1210,8 +1239,13 @@ version = "0.3.0"
 dependencies = [
  "hax-frontend-exporter",
  "hax-types",
+ "macros",
+ "prettyplease",
+ "quote",
+ "schemars 0.9.0",
  "serde",
  "serde_json",
+ "syn 2.0.79",
 ]
 
 [[package]]
@@ -1249,7 +1283,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "09c024468a378b7e36765cd36702b7a90cc3cba11654f6685c8f233408e89e92"
 dependencies = [
  "dyn-clone",
- "schemars_derive",
+ "schemars_derive 0.8.21",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "schemars"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4cd191f9397d57d581cddd31014772520aa448f65ef991055d7f61582c65165f"
+dependencies = [
+ "dyn-clone",
+ "ref-cast",
+ "schemars_derive 0.9.0",
  "serde",
  "serde_json",
 ]
@@ -1259,6 +1306,18 @@ name = "schemars_derive"
 version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1eee588578aff73f856ab961cd2f79e36bc45d7ded33a7562adba4667aecc0e"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "serde_derive_internals",
+ "syn 2.0.79",
+]
+
+[[package]]
+name = "schemars_derive"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5016d94c77c6d32f0b8e08b781f7dc8a90c2007d4e77472cc2807bc10a8438fe"
 dependencies = [
  "proc-macro2",
  "quote",

@@ -15,6 +15,7 @@ members = [
      "engine/names/extract",
      "hax-types",
      "rust-printer",
+     "rust-printer/macros",
 ]
 exclude = ["tests", "rustc-coverage-tests", "rust-printer/tests"]
 default-members = [

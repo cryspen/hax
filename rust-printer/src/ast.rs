@@ -11,11 +11,13 @@
 //!  5. This AST should be suitable for AST transformations.
 
 pub mod diagnostics;
-pub mod helper;
+// pub mod helper;
 pub mod identifiers;
 pub mod literals;
 pub mod node;
 pub mod span;
+
+use std::marker::PhantomData;
 
 pub use diagnostics::Diagnostic;
 pub use identifiers::*;
@@ -23,58 +25,224 @@ pub use literals::*;
 pub use node::Node;
 pub use span::Span;
 
+pub trait AstBounds:
+    std::fmt::Debug + Clone + std::hash::Hash + Eq + PartialEq + PartialOrd + Ord
+{
+}
+impl<T: std::fmt::Debug + Clone + std::hash::Hash + Eq + PartialEq + PartialOrd + Ord> AstBounds
+    for T
+{
+}
+
+#[macros::ast_derives]
+pub enum Empty {}
+
+pub trait AstTypes: AstBounds {
+    type Wrapper<T: AstBounds>: AstBounds;
+    type ExtExpr: AstBounds;
+    type ExtPat: AstBounds;
+    type ExtTy: AstBounds;
+}
+
+impl AstTypes for () {
+    type Wrapper<T: AstBounds> = T;
+    type ExtExpr = Empty;
+    type ExtPat = Empty;
+    type ExtTy = Empty;
+}
+
+type AstPosition = &'static str;
+trait AstRetyper {
+    type A: AstTypes;
+    type B: AstTypes;
+    fn retype_wrapper<T: AstBounds, U: AstBounds>(
+        ast_position: AstPosition,
+        node: &<Self::A as AstTypes>::Wrapper<T>,
+        map: impl Fn(&T) -> U,
+    ) -> <Self::B as AstTypes>::Wrapper<U>;
+    fn retype_ext_expr(expr: <Self::A as AstTypes>::ExtExpr) -> <Self::B as AstTypes>::ExtExpr;
+    fn retype_ext_pat(pat: <Self::A as AstTypes>::ExtPat) -> <Self::B as AstTypes>::ExtPat;
+    fn retype_ext_ty(ty: <Self::A as AstTypes>::ExtTy) -> <Self::B as AstTypes>::ExtTy;
+}
+
+trait Retypable<RT: AstRetyper> {
+    type Out;
+    fn retype(&self, rt: &RT) -> Self::Out;
+}
+
+impl<RT: AstRetyper, T: Retypable<RT>, U: Retypable<RT>> Retypable<RT> for (T, U) {
+    type Out = (T::Out, U::Out);
+    fn retype(&self, rt: &RT) -> Self::Out {
+        let (t, u) = self;
+        (t.retype(rt), u.retype(rt))
+    }
+}
+
+impl<RT: AstRetyper, T: Retypable<RT>> Retypable<RT> for Vec<T> {
+    type Out = Vec<T::Out>;
+    fn retype(&self, rt: &RT) -> Self::Out {
+        self.iter().map(|item| item.retype(rt)).collect()
+    }
+}
+
+impl<RT: AstRetyper, T: Retypable<RT>> Retypable<RT> for Box<T> {
+    type Out = Box<T::Out>;
+    fn retype(&self, rt: &RT) -> Self::Out {
+        let value: &T = &*self;
+        Box::new(value.retype(rt))
+    }
+}
+
+macro_rules! identity_retypable_for {
+    ($($ty:ty),*) => {
+        $(impl<RT: AstRetyper> Retypable<RT> for $ty {
+            type Out = $ty;
+            fn retype(&self, _rt: &RT) -> Self::Out {
+                self.clone()
+            }
+        })*
+    };
+}
+
+identity_retypable_for!(GlobalId, bool, String, Diagnostic, LocalId);
+
+// #[derive(macros::Retyper)]
+pub enum Test<T: AstTypes = ()> {
+    Hi(T::Wrapper<ExprKind<T>>),
+}
+
+impl < RT : AstRetyper > Retypable < RT > for GenericValue < RT :: A > where <
+RT :: A as AstTypes > :: Wrapper < Ty < RT :: A > > : Retypable < RT, Out
+= < RT :: B as AstTypes > :: Wrapper < Ty < < RT :: B > > >> , < RT :: A as
+AstTypes > :: Wrapper < Expr < < RT :: A > > > : Retypable < RT, Out = < RT ::
+B as AstTypes > :: Wrapper < Expr < < RT :: B > > >>
+{
+    type Out = GenericValue < RT :: B > ; fn
+    retype(& self, retyper_instance : & RT) -> Self :: Out
+    {
+        match self
+        {
+            Self :: Ty(x0) =>
+            { let x0 = x0.retype(retyper_instance); GenericValue :: Ty(x0) },
+            Self :: Expr(x0) =>
+            {
+                let x0 = x0.retype(retyper_instance); GenericValue :: Expr(x0)
+            }, Self :: Lifetime => { GenericValue :: Lifetime }
+        }
+    }
+}
+
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum GenericValue {
+#[macros::ast_derives]
+pub enum GenericValue<T: AstTypes = ()> {
     /// A type-level generic value.
     /// Example: `i32` in `Vec<i32>`
-    Ty(Ty),
+    Ty(T::Wrapper<Ty<T>>),
     /// A const-level generic value.
     /// Example: `12` in `Foo<12>`
-    Expr(Expr),
+    Expr(T::Wrapper<Expr<T>>),
     /// A lifetime.
     /// Example: `'a` in `foo<'a>`
     Lifetime,
 }
 
 /// Built-in primitive types.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum PrimitiveTy {
+#[macros::ast_derives]
+pub enum PrimitiveTy<T: AstTypes = ()> {
     /// The `bool` type.
     Bool,
     /// An integer type (e.g., `i32`, `u8`).
-    Int(IntKind),
+    Int(T::Wrapper<IntKind>),
+}
+
+impl<RT: AstRetyper> Retypable<RT> for TyKind<RT::A>
+where
+    <RT::A as AstTypes>::Wrapper<PrimitiveTy<RT::A>>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<PrimitiveTy<RT::B>>>,
+    <RT::A as AstTypes>::Wrapper<Ty<RT::A>>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<Ty<RT::B>>>,
+    <RT::A as AstTypes>::Wrapper<GenericValue<RT::A>>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<GenericValue<RT::B>>>,
+    <RT::A as AstTypes>::Wrapper<Ty<RT::A>>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<Ty<RT::B>>>,
+    <RT::A as AstTypes>::Wrapper<Ty<RT::A>>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<Ty<RT::B>>>,
+    <RT::A as AstTypes>::Wrapper<Ty<RT::A>>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<Ty<RT::B>>>,
+    <RT::A as AstTypes>::Wrapper<<RT::A as AstTypes>::ExtTy>:
+        Retypable<RT, Out = <RT::B as AstTypes>::Wrapper<<RT::B as AstTypes>::ExtTy>>,
+{
+    type Out = TyKind<RT::B>;
+    fn retype(&self, retyper_instance: &RT) -> Self::Out {
+        match self {
+            Self::Primitive(x0) => {
+                let x0 = x0.retype(retyper_instance);
+                TyKind::Primitive(x0)
+            }
+            Self::Tuple(x0) => {
+                let x0 = x0.retype(retyper_instance);
+                TyKind::Tuple(x0)
+            }
+            Self::App { head, args } => {
+                let head = head.retype(retyper_instance);
+                let args = args.retype(retyper_instance);
+                TyKind::App { head, args }
+            }
+            Self::Arrow { inputs, output } => {
+                let inputs = inputs.retype(retyper_instance);
+                let output = output.retype(retyper_instance);
+                TyKind::Arrow { inputs, output }
+            }
+            Self::Ref { inner, mutable } => {
+                let inner = inner.retype(retyper_instance);
+                let mutable = mutable.retype(retyper_instance);
+                TyKind::Ref { inner, mutable }
+            }
+            Self::Error(x0) => {
+                let x0 = x0.retype(retyper_instance);
+                TyKind::Error(x0)
+            }
+            Self::Param(x0) => {
+                let x0 = x0.retype(retyper_instance);
+                TyKind::Param(x0)
+            }
+            Self::Ext(x0) => {
+                let x0 = x0.retype(retyper_instance);
+                TyKind::Ext(x0)
+            }
+        }
+    }
 }
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum Ty {
+#[macros::ast_derives]
+pub enum TyKind<T: AstTypes = ()> {
     /// A primitive type.
     /// Example: `i32`, `bool`
-    Primitive(PrimitiveTy),
+    Primitive(T::Wrapper<PrimitiveTy<T>>),
 
     /// A tuple type.
     /// Example: `(i32, bool)`
-    Tuple(Vec<Ty>),
+    Tuple(Vec<T::Wrapper<Ty<T>>>),
 
     /// A type application (generic type).
     /// Example: `Vec<i32>`
     App {
         head: GlobalId,
-        args: Vec<GenericValue>,
+        args: Vec<T::Wrapper<GenericValue<T>>>,
     },
 
     /// A function or closure type.
     /// Example: `fn(i32) -> bool` or `Fn(i32) -> bool`
     Arrow {
-        inputs: Vec<Ty>,
-        output: Box<Ty>,
+        inputs: Vec<T::Wrapper<Ty<T>>>,
+        output: Box<T::Wrapper<Ty<T>>>,
     },
 
     /// A reference type.
     /// Example: `&i32`, `&mut i32`
     Ref {
-        inner: Box<Ty>,
+        inner: Box<T::Wrapper<Ty<T>>>,
         mutable: bool,
     },
 
@@ -83,64 +251,71 @@ pub enum Ty {
 
     // A parameter type
     Param(LocalId),
+
+    Ext(T::Wrapper<T::ExtTy>),
+}
+
+#[macros::ast_derives]
+pub struct Ty<T: AstTypes = ()> {
+    ty: TyKind<T>,
 }
 
 /// Extra information attached to syntax nodes.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Metadata {
+#[macros::ast_derives]
+pub struct Metadata<T: AstTypes = ()> {
     /// The location in the source code.
     pub span: Span,
     /// Rust attributes.
-    pub attrs: Attributes,
+    pub attrs: Attributes<T>,
     // TODO: add phase/desugar informations
 }
 
 /// A typed expression with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Expr {
+#[macros::ast_derives]
+pub struct Expr<T: AstTypes = ()> {
     /// The kind of expression.
-    pub kind: Box<ExprKind>,
+    pub kind: Box<ExprKind<T>>,
     /// The type of this expression.
-    pub ty: Ty,
+    pub ty: T::Wrapper<Ty<T>>,
     /// Source span and attributes.
-    pub meta: Metadata,
+    pub meta: T::Wrapper<Metadata<T>>,
 }
 
 /// A typed pattern with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Pat {
+#[macros::ast_derives]
+pub struct Pat<T: AstTypes = ()> {
     /// The kind of pattern.
-    pub kind: Box<PatKind>,
+    pub kind: Box<PatKind<T>>,
     /// The type of this pattern.
-    pub ty: Ty,
+    pub ty: T::Wrapper<Ty<T>>,
     /// Source span and attributes.
-    pub meta: Metadata,
+    pub meta: T::Wrapper<Metadata<T>>,
 }
 
 /// A pattern matching arm with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Arm {
+#[macros::ast_derives]
+pub struct Arm<T: AstTypes = ()> {
     /// The pattern of the arm.
-    pub pat: Pat,
+    pub pat: T::Wrapper<Pat<T>>,
     /// The body of the arm.
-    pub body: Expr,
+    pub body: T::Wrapper<Expr<T>>,
     /// The optional guard of the arm.
-    pub guard: Option<Guard>,
+    pub guard: Option<T::Wrapper<Guard<T>>>,
     /// Source span and attributes.
-    pub meta: Metadata,
+    pub meta: T::Wrapper<Metadata<T>>,
 }
 
 /// A pattern matching arm guard with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Guard {
+#[macros::ast_derives]
+pub struct Guard<T: AstTypes = ()> {
     /// The kind of guard.
-    pub kind: GuardKind,
+    pub kind: T::Wrapper<GuardKind<T>>,
     /// Source span and attributes.
-    pub meta: Metadata,
+    pub meta: T::Wrapper<Metadata<T>>,
 }
 
 /// Represents different levels of borrowing.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[macros::ast_derives]
 pub enum BorrowKind {
     /// Shared reference: `&x`
     Shared,
@@ -151,17 +326,17 @@ pub enum BorrowKind {
 }
 
 /// Binding modes used in patterns.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum BindingMode {
+#[macros::ast_derives]
+pub enum BindingMode<T: AstTypes = ()> {
     /// Binding by value: `x`
     ByValue,
     /// Binding by reference: `ref x`, `ref mut x`
-    ByRef(BorrowKind),
+    ByRef(T::Wrapper<BorrowKind>),
 }
 
 /// Represents the various kinds of patterns.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum PatKind {
+#[macros::ast_derives]
+pub enum PatKind<T: AstTypes = ()> {
     /// Wildcard pattern: `_`
     Wild,
 
@@ -173,7 +348,7 @@ pub enum PatKind {
     Binding {
         mutable: bool,
         var: LocalId,
-        mode: BindingMode,
+        mode: T::Wrapper<BindingMode<T>>,
     },
 
     /// A constructor pattern
@@ -181,43 +356,48 @@ pub enum PatKind {
         constructor: GlobalId,
         is_record: bool,
         is_struct: bool,
-        fields: Vec<(GlobalId, Pat)>,
+        fields: Vec<(GlobalId, T::Wrapper<Pat<T>>)>,
     },
 
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
+
+    Ext(T::Wrapper<T::ExtPat>),
 }
 
 /// Represents the various kinds of pattern guards.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum GuardKind {
+#[macros::ast_derives]
+pub enum GuardKind<T: AstTypes = ()> {
     /// An `if let` guard
-    IfLet { lhs: Pat, rhs: Expr },
+    IfLet {
+        lhs: T::Wrapper<Pat<T>>,
+        rhs: T::Wrapper<Expr<T>>,
+    },
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct ImplExpr;
+#[macros::ast_derives]
+pub struct ImplExpr<T: AstTypes>(PhantomData<T>);
 
 /// Describes the shape of an expression.
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum ExprKind {
+#[macros::ast_derives]
+pub enum ExprKind<T: AstTypes = ()> {
     /// If expression.
     /// Example: `if x > 0 { 1 } else { 2 }`
     If {
-        condition: Expr,
-        then: Expr,
-        else_: Option<Expr>,
+        condition: T::Wrapper<Expr<T>>,
+        then: T::Wrapper<Expr<T>>,
+        else_: Option<T::Wrapper<Expr<T>>>,
     },
 
     /// Function application.
     /// Example: `f(x, y)`
     App {
-        head: Expr,
-        args: Vec<Expr>,
-        generic_args: Vec<GenericValue>,
-        bounds_impls: Vec<ImplExpr>,
-        trait_: Option<(ImplExpr, Vec<GenericValue>)>,
+        head: T::Wrapper<Expr<T>>,
+        args: Vec<T::Wrapper<Expr<T>>>,
+        generic_args: Vec<T::Wrapper<GenericValue<T>>>,
+        bounds_impls: Vec<T::Wrapper<ImplExpr<T>>>,
+        trait_: Option<(T::Wrapper<ImplExpr<T>>, Vec<T::Wrapper<GenericValue<T>>>)>,
     },
 
     /// A literal value.
@@ -226,7 +406,7 @@ pub enum ExprKind {
 
     /// An array literal.
     /// Example: `[1, 2, 3]`
-    Array(Vec<Expr>),
+    Array(Vec<T::Wrapper<Expr<T>>>),
 
     /// A constructor application
     /// Example: A(x)
@@ -234,18 +414,18 @@ pub enum ExprKind {
         constructor: GlobalId,
         is_record: bool,
         is_struct: bool,
-        fields: Vec<(GlobalId, Expr)>,
-        base: Option<Expr>,
+        fields: Vec<(GlobalId, T::Wrapper<Expr<T>>)>,
+        base: Option<T::Wrapper<Expr<T>>>,
     },
 
     Match {
-        scrutinee: Expr,
-        arms: Vec<Arm>,
+        scrutinee: T::Wrapper<Expr<T>>,
+        arms: Vec<T::Wrapper<Arm<T>>>,
     },
 
     /// A tuple literal.
     /// Example: `(a, b)`
-    Tuple(Vec<Expr>),
+    Tuple(Vec<T::Wrapper<Expr<T>>>),
 
     /// A reference expression.
     /// Examples:
@@ -253,18 +433,18 @@ pub enum ExprKind {
     /// - `&mut x` → `mutable: true`
     Borrow {
         mutable: bool,
-        inner: Expr,
+        inner: T::Wrapper<Expr<T>>,
     },
 
     /// A dereference: `*x`
-    Deref(Expr),
+    Deref(T::Wrapper<Expr<T>>),
 
     /// A `let` expression used in expressions.
     /// Example: `let x = 1; x + 1`
     Let {
-        lhs: Pat,
-        rhs: Expr,
-        body: Expr,
+        lhs: T::Wrapper<Pat<T>>,
+        rhs: T::Wrapper<Expr<T>>,
+        body: T::Wrapper<Expr<T>>,
     },
 
     /// A global identifier.
@@ -280,35 +460,35 @@ pub enum ExprKind {
 
     /// Type ascription
     Ascription {
-        e: Expr,
-        ty: Ty,
+        e: T::Wrapper<Expr<T>>,
+        ty: T::Wrapper<Ty<T>>,
     },
 
     /// Variable mutation
     /// Example: `x = 1`
     Assign {
-        lhs: Expr,
-        value: Expr,
+        lhs: T::Wrapper<Expr<T>>,
+        value: T::Wrapper<Expr<T>>,
     },
 
     /// Loop
     /// Example: `loop{}`
     Loop {
-        body: Expr,
+        body: T::Wrapper<Expr<T>>,
         label: Option<String>,
     },
 
     /// Break out of a loop
     /// Example: `break`
     Break {
-        value: Expr,
+        value: T::Wrapper<Expr<T>>,
         label: Option<String>,
     },
 
     /// Return from a function
     /// Example: `return 1`
     Return {
-        value: Expr,
+        value: T::Wrapper<Expr<T>>,
     },
 
     /// Continue (go to next loop iteration)
@@ -320,62 +500,64 @@ pub enum ExprKind {
     /// Closure (anonymous function)
     /// Example: `|x| x`
     Closure {
-        params: Vec<Pat>,
-        body: Expr,
-        captures: Vec<Expr>,
+        params: Vec<T::Wrapper<Pat<T>>>,
+        body: T::Wrapper<Expr<T>>,
+        captures: Vec<T::Wrapper<Expr<T>>>,
     },
+
+    Ext(T::Wrapper<T::ExtExpr>),
 }
 
 /// Represents the kinds of generic parameters
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum GenericParamKind {
+#[macros::ast_derives]
+pub enum GenericParamKind<T: AstTypes = ()> {
     Lifetime,
     Type,
-    Const { ty: Ty },
+    Const { ty: T::Wrapper<Ty<T>> },
 }
 
 /// Represents an instantiated trait that needs to be implemented
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct TraitGoal {
+#[macros::ast_derives]
+pub struct TraitGoal<T: AstTypes = ()> {
     trait_: GlobalId,
-    args: Vec<GenericValue>,
+    args: Vec<T::Wrapper<GenericValue<T>>>,
 }
 
 /// Represents a trait bound in a generic constraint
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct ImplIdent {
-    goal: TraitGoal,
+#[macros::ast_derives]
+pub struct ImplIdent<T: AstTypes = ()> {
+    goal: T::Wrapper<TraitGoal<T>>,
     name: String,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct ProjectionPredicate;
+#[macros::ast_derives]
+pub struct ProjectionPredicate<T>(PhantomData<T>);
 
 /// A generic constraint (lifetime, type or projection)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum GenericConstraint {
+#[macros::ast_derives]
+pub enum GenericConstraint<T: AstTypes = ()> {
     Lifetime(String),
-    Type(ImplIdent),
-    Projection(ProjectionPredicate),
+    Type(T::Wrapper<ImplIdent<T>>),
+    Projection(T::Wrapper<ProjectionPredicate<T>>),
 }
 
 /// A generic parameter (lifetime, type parameter or const parameter)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct GenericParam {
+#[macros::ast_derives]
+pub struct GenericParam<T: AstTypes = ()> {
     pub ident: LocalId,
-    pub meta: Metadata,
-    pub kind: GenericParamKind,
+    pub meta: T::Wrapper<Metadata<T>>,
+    pub kind: T::Wrapper<GenericParamKind<T>>,
 }
 
 /// Generic parameters and constraints (contained between `<>` in function declarations)
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Generics {
-    pub params: Vec<GenericParam>,
-    pub constraints: Vec<GenericConstraint>,
+#[macros::ast_derives]
+pub struct Generics<T: AstTypes = ()> {
+    pub params: Vec<T::Wrapper<GenericParam<T>>>,
+    pub constraints: Vec<T::Wrapper<GenericConstraint<T>>>,
 }
 
 /// Safety level of a function.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[macros::ast_derives]
 pub enum SafetyKind {
     /// Safe function (default).
     Safe,
@@ -385,33 +567,33 @@ pub enum SafetyKind {
 
 /// Represents a single attribute.
 // TODO: implement
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Attribute;
+#[macros::ast_derives]
+pub struct Attribute<T: AstTypes = ()>(PhantomData<T>);
 
 /// A list of attributes.
-pub type Attributes = Vec<Attribute>;
+pub type Attributes<T> = Vec<Attribute<T>>;
 
 /// A type with its associated span.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct SpannedTy {
+#[macros::ast_derives]
+pub struct SpannedTy<T: AstTypes = ()> {
     pub span: Span,
-    pub ty: Ty,
+    pub ty: T::Wrapper<Ty<T>>,
 }
 
 /// A function parameter (pattern + type, e.g. `x: u8`).
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Param {
+#[macros::ast_derives]
+pub struct Param<T: AstTypes = ()> {
     /// Pattern part: `x`, `mut y`, etc.
-    pub pat: Pat,
+    pub pat: T::Wrapper<Pat<T>>,
     /// Type part with span.
-    pub ty: SpannedTy,
+    pub ty: T::Wrapper<SpannedTy<T>>,
     /// Attributes
-    pub attributes: Attributes,
+    pub attributes: Attributes<T>,
 }
 
 /// A top-level item in the module.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub enum ItemKind {
+#[macros::ast_derives]
+pub enum ItemKind<T: AstTypes = ()> {
     /// A function or constant item.
     /// Example:
     /// ```rust
@@ -426,15 +608,15 @@ pub enum ItemKind {
         name: GlobalId,
         /// The generic arguments and constraints of the function.
         /// Example: the generic type `T` and the constraint `T: Clone`
-        generics: Generics,
+        generics: T::Wrapper<Generics<T>>,
         /// The body of the function
         /// Example: `x + y`
-        body: Expr,
+        body: T::Wrapper<Expr<T>>,
         /// The parameters of the function.
         /// Example: `x: i32, y: i32`
-        params: Vec<Param>,
+        params: Vec<T::Wrapper<Param<T>>>,
         /// The safety of the function.
-        safety: SafetyKind,
+        safety: T::Wrapper<SafetyKind>,
     },
 
     /// Fallback constructor to carry errors.
@@ -442,90 +624,91 @@ pub enum ItemKind {
 }
 
 /// A top-level item with metadata.
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Item {
+#[macros::ast_derives]
+pub struct Item<T: AstTypes = ()> {
     /// The global identifier of the item.
     pub ident: GlobalId,
     /// The kind of the item.
-    pub kind: ItemKind,
+    pub kind: ItemKind<T>,
     /// Source span and attributes.
-    pub meta: Metadata,
+    pub meta: T::Wrapper<Metadata<T>>,
 }
 
-pub mod traits {
-    use super::*;
-    pub trait HasMetadata {
-        fn metadata(&self) -> &Metadata;
-    }
-    pub trait HasSpan {
-        fn span(&self) -> Span;
-    }
-    pub trait Typed {
-        fn ty(&self) -> &Ty;
-    }
-    impl<T: HasMetadata> HasSpan for T {
-        fn span(&self) -> Span {
-            self.metadata().span
-        }
-    }
-    pub trait HasKind {
-        type Kind;
-        fn kind(&self) -> &Self::Kind;
-    }
+// pub mod traits {
+//     use super::*;
+//     pub trait HasMetadata {
+//         fn metadata(&self) -> &Metadata;
+//     }
+//     pub trait HasSpan {
+//         fn span(&self) -> Span;
+//     }
+//     pub trait Typed {
+//         fn ty(&self) -> &Ty;
+//     }
+//     impl<T: HasMetadata> HasSpan for T {
+//         fn span(&self) -> Span {
+//             self.metadata().span
+//         }
+//     }
+//     pub trait HasKind {
+//         type Kind;
+//         fn kind(&self) -> &Self::Kind;
+//     }
 
-    macro_rules! derive_has_metadata {
-        ($($ty:ty),*) => {
-            $(impl HasMetadata for $ty {
-                fn metadata(&self) -> &Metadata {
-                    &self.meta
-                }
-            })*
-        };
-    }
-    macro_rules! derive_has_kind {
-        ($($ty:ty => $kind:ty),*) => {
-            $(impl HasKind for $ty {
-                type Kind = $kind;
-                fn kind(&self) -> &Self::Kind {
-                    &self.kind
-                }
-            })*
-        };
-    }
+//     macro_rules! derive_has_metadata {
+//         ($($ty:ty),*) => {
+//             $(impl HasMetadata for $ty {
+//                 fn metadata(&self) -> &Metadata {
+//                     &self.meta
+//                 }
+//             })*
+//         };
+//     }
+//     macro_rules! derive_has_kind {
+//         ($($ty:ty => $kind:ty),*) => {
+//             $(impl HasKind for $ty {
+//                 type Kind = $kind;
+//                 fn kind(&self) -> &Self::Kind {
+//                     &self.kind
+//                 }
+//             })*
+//         };
+//     }
 
-    derive_has_metadata!(Item, Expr, Pat);
-    derive_has_kind!(Item => ItemKind, Expr => ExprKind, Pat => PatKind);
+//     derive_has_metadata!(Item, Expr, Pat);
+//     derive_has_kind!(Item => ItemKind, Expr => ExprKind, Pat => PatKind);
 
-    impl Typed for Expr {
-        fn ty(&self) -> &Ty {
-            &self.ty
-        }
-    }
-    impl Typed for Pat {
-        fn ty(&self) -> &Ty {
-            &self.ty
-        }
-    }
-    impl Typed for SpannedTy {
-        fn ty(&self) -> &Ty {
-            &self.ty
-        }
-    }
+//     impl Typed for Expr {
+//         fn ty(&self) -> &Ty {
+//             &self.ty
+//         }
+//     }
+//     impl Typed for Pat {
+//         fn ty(&self) -> &Ty {
+//             &self.ty
+//         }
+//     }
+//     impl Typed for SpannedTy {
+//         fn ty(&self) -> &Ty {
+//             &self.ty
+//         }
+//     }
 
-    impl HasSpan for SpannedTy {
-        fn span(&self) -> Span {
-            self.span
-        }
-    }
+//     impl HasSpan for SpannedTy {
+//         fn span(&self) -> Span {
+//             self.span
+//         }
+//     }
 
-    impl ExprKind {
-        pub fn into_expr(self, span: Span, ty: Ty, attrs: Vec<Attribute>) -> Expr {
-            Expr {
-                kind: Box::new(self),
-                ty,
-                meta: Metadata { span, attrs },
-            }
-        }
-    }
-}
-pub use traits::*;
+//     impl ExprKind {
+//         pub fn into_expr(self, span: Span, ty: Ty, attrs: Vec<Attribute>) -> Expr {
+//             Expr {
+//                 kind: Box::new(self),
+//                 ty,
+//                 meta: Metadata { span, attrs },
+//             }
+//         }
+//     }
+// }
+// pub use traits::*;
+//
