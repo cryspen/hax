@@ -50,6 +50,7 @@ pub struct IntKind {
     pub signedness: Signedness,
 }
 
+// TODO: Implement
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum FloatKind {}
 
