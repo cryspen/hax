@@ -165,9 +165,71 @@ let f_hash_to_digest (hash: t_Hash) : t_Sha256Digest =
         word_bytes.[ mk_usize byte_index ])
 
 
+// FIPS PUB 180-4, Section 6.2.2, Main Hash Function
 
-// TOOD
+let hash (msg: t_Slice u8) : t_Sha256Digest =
+  let h:t_Hash = v_HASH_INIT in
+  let bit_len:usize = Rust_primitives.Arrays.length msg *. (mk_usize 8) in
+  let _msg_len = Rust_primitives.Arrays.length msg in
+  let full_block_len = _msg_len -! (_msg_len %! v_BLOCK_SIZE) in
 
-let hash (msg: t_Slice u8) : t_Sha256Digest = admit ()
+  // Compress all full blocks
+  let h =
+    Rust_primitives.Hax.Folds.fold_chunked_slice v_BLOCK_SIZE
+      (Rust_primitives.Arrays.slice msg (mk_usize 0) full_block_len)
+      (fun _ _ -> true)
+      h
+      (fun (h: t_Hash) block -> f_compress block h)
+  in
+  
+  // Get the remainder of the message
+  let _rem = Rust_primitives.Arrays.slice msg full_block_len _msg_len in
+  let _rem_len = _msg_len -! full_block_len in
+  
+  // Calculate padding parameters
+  let total_len = _rem_len +! (mk_usize 1) in  // + 1 for the 0x80 byte
+  let pad_start = 
+    if total_len +! (mk_usize 8) >. v_BLOCK_SIZE then
+      (v_BLOCK_SIZE *. (mk_usize 2)) -! (mk_usize 8)  // BLOCK_SIZE * 2 - LEN_SIZE
+    else
+      v_BLOCK_SIZE -! (mk_usize 8)  // BLOCK_SIZE - LEN_SIZE
+  in
+  
+  // Convert bit_len to big-endian bytes
+  let len_bytes = Core.Num.impl_u64__to_be_bytes (cast bit_len <: u64) in
+  
+  // Create final_blocks array (128 bytes = 2 * BLOCK_SIZE) with padding logic
+  let final_blocks = Rust_primitives.Arrays.createi (v_BLOCK_SIZE *. (mk_usize 2)) (fun i ->
+    if i <. _rem_len then
+      // Copy remainder bytes
+      Seq.index _rem (v i)
+    else if i =. _rem_len then
+      // Add the 0x80 byte
+      mk_u8 0x80
+    else if i >=. pad_start && i <. (pad_start +! (mk_usize 8)) then
+      // Set length bytes at the end of the last block
+      Seq.index len_bytes (v (i -! pad_start))
+    else
+      // Zero padding
+      mk_u8 0
+  ) in
+
+  // Determine how many final blocks to process
+  let final_len = 
+    if pad_start =. (v_BLOCK_SIZE -! (mk_usize 8)) then
+      v_BLOCK_SIZE  // One block
+    else
+      v_BLOCK_SIZE *. (mk_usize 2)  // Two blocks
+  in
+  
+  // Process the final block(s)
+  let h = Rust_primitives.Hax.Folds.fold_chunked_slice v_BLOCK_SIZE 
+    (Rust_primitives.Arrays.slice final_blocks (mk_usize 0) final_len)
+    (fun _ _ -> true)
+    h
+    (fun (h: t_Hash) block -> f_compress block h)
+  in
+  
+  f_hash_to_digest h
 
 let sha256 msg = hash msg
