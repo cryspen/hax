@@ -188,18 +188,27 @@ pub enum FullDefKind<Body> {
         param_env: ParamEnv,
         #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
         def: AdtDef,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
     Union {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
         #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
         def: AdtDef,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
     Enum {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
         #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
         def: AdtDef,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
     /// Type alias: `type Foo = Bar;`
     TyAlias {
@@ -223,7 +232,7 @@ pub enum FullDefKind<Body> {
         parent: DefId,
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id()).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
         implied_predicates: GenericPredicates,
         #[value(s.base().tcx.associated_item(s.owner_id()).sinto(s))]
         associated_item: AssocItem,
@@ -244,7 +253,7 @@ pub enum FullDefKind<Body> {
     Trait {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id()).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
         #[value({
@@ -359,6 +368,9 @@ pub enum FullDefKind<Body> {
             opt_body.and_then(|body| Body::from_mir(s, body))
         })]
         once_shim: Option<Body>,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
 
     // Constants
@@ -948,11 +960,25 @@ fn closure_once_shim<'tcx>(
 }
 
 #[cfg(feature = "rustc")]
+fn drop_glue_shim<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Option<mir::Body<'tcx>> {
+    let drop_in_place = tcx.require_lang_item(rustc_hir::LangItem::DropInPlace, None);
+    if !tcx.generics_of(def_id).is_empty() {
+        // Hack: layout code panics if it can't fully normalize types, which can happen e.g. with a
+        // trait associated type. For now we only translate the glue for monomorphic types.
+        return None;
+    }
+    let ty = tcx.type_of(def_id).instantiate_identity();
+    let instance_kind = ty::InstanceKind::DropGlue(drop_in_place, Some(ty));
+    let mir = tcx.instance_mir(instance_kind).clone();
+    Some(mir)
+}
+
+#[cfg(feature = "rustc")]
 fn get_param_env<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> ParamEnv {
     let tcx = s.base().tcx;
     let s = &with_owner_id(s.base(), (), (), def_id);
     ParamEnv {
         generics: tcx.generics_of(def_id).sinto(s),
-        predicates: required_predicates(tcx, def_id).sinto(s),
+        predicates: required_predicates(tcx, def_id, s.base().options.resolve_drop_bounds).sinto(s),
     }
 }

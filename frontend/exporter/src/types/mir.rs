@@ -366,7 +366,7 @@ pub(crate) fn get_function_from_def_id_and_generics<'tcx, S: UnderOwnerState<'tc
     generics: rustc_middle::ty::GenericArgsRef<'tcx>,
 ) -> (DefId, Vec<GenericArg>, Vec<ImplExpr>, Option<ImplExpr>) {
     // Retrieve the trait requirements for the item.
-    let trait_refs = solve_item_required_traits(s, def_id, generics);
+    let mut trait_refs = solve_item_required_traits(s, def_id, generics);
 
     // If this is a trait method call, retreive the impl expr information for that trait.
     // Check if this is a trait method call: retrieve the trait source if
@@ -388,8 +388,10 @@ pub(crate) fn get_function_from_def_id_and_generics<'tcx, S: UnderOwnerState<'tc
         // The generics for the call to `baz` will be the concatenation: `<T, u32, U>`, which we
         // split into `<T, u32>` and `<U>`.
         let num_trait_generics = tinfo.r#trait.hax_skip_binder_ref().generic_args.len();
+        let num_trait_trait_clauses = tinfo.r#trait.hax_skip_binder_ref().impl_exprs.len();
         // Return only the method generics; the trait generics are included in `trait_impl_expr`.
         let method_generics = &generics[num_trait_generics..];
+        trait_refs.drain(0..num_trait_trait_clauses);
         (method_generics.sinto(s), Some(tinfo))
     } else {
         // Regular function call
@@ -484,6 +486,38 @@ fn translate_terminator_kind_call<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasO
         target: target.sinto(s),
         unwind: unwind.sinto(s),
         fn_span: fn_span.sinto(s),
+    }
+}
+
+#[cfg(feature = "rustc")]
+fn translate_terminator_kind_drop<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasOwnerId>(
+    s: &S,
+    terminator: &rustc_middle::mir::TerminatorKind<'tcx>,
+) -> TerminatorKind {
+    let tcx = s.base().tcx;
+    let mir::TerminatorKind::Drop {
+        place,
+        target,
+        unwind,
+        ..
+    } = terminator
+    else {
+        unreachable!()
+    };
+
+    let local_decls = &s.mir().local_decls;
+    let place_ty = place.ty(local_decls, tcx).ty;
+    let drop_trait = tcx.lang_items().drop_trait().unwrap();
+    let impl_expr = solve_trait(
+        s,
+        ty::Binder::dummy(ty::TraitRef::new(tcx, drop_trait, [place_ty])),
+    );
+
+    TerminatorKind::Drop {
+        place: place.sinto(s),
+        impl_expr,
+        target: target.sinto(s),
+        unwind: unwind.sinto(s),
     }
 }
 
@@ -597,11 +631,17 @@ pub enum TerminatorKind {
     },
     Return,
     Unreachable,
+    #[custom_arm(
+        x @ rustc_middle::mir::TerminatorKind::Drop { .. } => {
+          translate_terminator_kind_drop(s, x)
+        }
+    )]
     Drop {
         place: Place,
+        /// Implementation of `place.ty(): Drop`.
+        impl_expr: ImplExpr,
         target: BasicBlock,
         unwind: UnwindAction,
-        replace: bool,
     },
     #[custom_arm(
         x @ rustc_middle::mir::TerminatorKind::Call { .. } => {
