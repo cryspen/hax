@@ -198,6 +198,7 @@ pub mod rust {
                     )
                 }
                 ItemKind::Error(_) => "<item error>".to_string(),
+                _ => todo!(),
             }
         }
         fn attribute(&self, _item: &Attribute) -> Doc {
@@ -457,7 +458,8 @@ pub mod rust {
                 }
                 ExprKind::Ascription { .. } => todo!(),
                 ExprKind::Assign { lhs, value } => {
-                    format!("{} = {}", lhs.to_doc(self), value.to_doc(self))
+                    todo!()
+                    /* format!("{} = {}", lhs.to_doc(self), value.to_doc(self)) */
                 }
                 ExprKind::Loop { body, .. } => format!("loop {{ {} }}", body.to_doc(self)), // TODO label
                 ExprKind::Break { value, .. } => format!("break {}", value.to_doc(self)), // TODO label
@@ -476,6 +478,7 @@ pub mod rust {
                         .join(", "),
                     body.to_doc(self)
                 ),
+                _ => todo!(),
             }
         }
         fn literal(&self, lit: &Literal) -> Doc {
@@ -489,6 +492,7 @@ pub mod rust {
                     kind,
                 } => format!("{}{value}{}", if *negative { "-" } else { "" }, kind),
                 Literal::String(s) => s.to_string(),
+                _ => todo!(),
             }
         }
         fn generic_value(&self, generic_value: &GenericValue) -> Doc {
@@ -558,6 +562,7 @@ pub mod rust {
                 }
                 Ty::Param(id) => id.to_doc(self),
                 Ty::Error(_) => "<type error>".to_string(),
+                _ => todo!(),
             }
         }
         fn pat_kind(&self, pat: &PatKind) -> Doc {
@@ -591,6 +596,7 @@ pub mod rust {
                 }
                 PatKind::Construct { .. } => todo!(),
                 PatKind::Error(_) => "<pattern error>".to_string(),
+                _ => todo!(),
             }
         }
         fn param(&self, param: &Param) -> Doc {

@@ -18,6 +18,7 @@ pub mod node;
 pub mod span;
 
 pub use diagnostics::Diagnostic;
+use hax_frontend_exporter::{Impl, Mutability};
 pub use identifiers::*;
 pub use literals::*;
 pub use node::Node;
@@ -44,6 +45,12 @@ pub enum PrimitiveTy {
     Bool,
     /// An integer type (e.g., `i32`, `u8`).
     Int(IntKind),
+    /// A float type (e.g. `f32`)
+    Float(FloatKind),
+    /// The `char` type
+    Char,
+    /// The `str` type
+    Str,
 }
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
@@ -66,23 +73,45 @@ pub enum Ty {
 
     /// A function or closure type.
     /// Example: `fn(i32) -> bool` or `Fn(i32) -> bool`
-    Arrow {
-        inputs: Vec<Ty>,
-        output: Box<Ty>,
-    },
+    Arrow { inputs: Vec<Ty>, output: Box<Ty> },
 
     /// A reference type.
     /// Example: `&i32`, `&mut i32`
-    Ref {
-        inner: Box<Ty>,
-        mutable: bool,
-    },
+    Ref { inner: Box<Ty>, mutable: bool },
 
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
 
-    // A parameter type
+    /// A parameter type
     Param(LocalId),
+
+    /// A slice type.
+    /// Example `&[i32]`
+    Slice(Box<Ty>),
+
+    /// An array type.
+    /// Example `&[i32; 10]`
+    Array { ty: Box<Ty>, length: Box<Expr> },
+
+    /// A raw pointer type
+    RawPointer,
+
+    /// An associated type
+    AssociatedType { impl_: ImplExpr, item: GlobalId },
+
+    /// An opaque type
+    Opaque(GlobalId),
+
+    /// A dyn type
+    Dyn(Vec<DynTraitGoal>),
+}
+
+/// A dyn trait. The generic arguments are known but the actual type
+/// implementing the trait is known dynamically.
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct DynTraitGoal {
+    trait_: GlobalId,
+    non_self_args: Vec<GenericValue>,
 }
 
 /// Extra information attached to syntax nodes.
@@ -91,7 +120,7 @@ pub struct Metadata {
     /// The location in the source code.
     pub span: Span,
     /// Rust attributes.
-    pub attrs: Attributes,
+    pub attributes: Attributes,
     // TODO: add phase/desugar informations
 }
 
@@ -165,6 +194,22 @@ pub enum PatKind {
     /// Wildcard pattern: `_`
     Wild,
 
+    /// An ascription pattern: p : ty
+    Ascription { ty: Ty, typ_span: Span, pat: Pat },
+
+    /// An or pattern: p | q
+    /// Always contains at least 2 sub-patterns
+    Or { subpats: Vec<Pat> },
+
+    /// An array pattern: [p, q]
+    Array { args: Vec<Pat> },
+
+    /// A dereference pattern: &p
+    Deref { subpat: Pat },
+
+    /// A constant pattern: 1
+    Constant { lit: Literal },
+
     /// A variable binding.
     /// Examples:
     /// - `x` → `mutable: false`
@@ -195,8 +240,158 @@ pub enum GuardKind {
     IfLet { lhs: Pat, rhs: Expr },
 }
 
+/// The left-hand side of an assignment.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct ImplExpr;
+pub enum Lhs {
+    LocalVar {
+        var: LocalId,
+        ty: Ty,
+    },
+    ArbitraryExpr(Box<Expr>),
+    FieldAccessor {
+        e: Box<Lhs>,
+        ty: Ty,
+        field: GlobalId,
+    },
+    ArrayAccessor {
+        e: Box<Lhs>,
+        ty: Ty,
+        index: Expr,
+    },
+}
+
+/// Represents a witness of trait implementation
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct ImplExpr {
+    kind: Box<ImplExprKind>,
+    goal: TraitGoal,
+}
+
+/// Represents all the kinds of impl expr
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum ImplExprKind {
+    Self_,
+    Concrete(TraitGoal),
+    LocalBound {
+        id: String,
+    },
+    Parent {
+        impl_: ImplExpr,
+        item: GlobalId,
+    },
+    Projection {
+        impl_: ImplExpr,
+        item: GlobalId,
+        ident: ImplIdent,
+    },
+    ImplApp {
+        impl_: ImplExpr,
+        args: Vec<ImplExpr>,
+    },
+    Dyn,
+    Builtin(TraitGoal),
+}
+
+/// Represents an impl item (associated type or fn)
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct ImplItem {
+    meta: Metadata,
+    generics: Generics,
+    kind: ImplItemKind,
+    ident: GlobalId,
+}
+
+/// Represents the kinds of impl items
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+enum ImplItemKind {
+    Type {
+        ty: Ty,
+        parent_bounds: Vec<(ImplExpr, ImplIdent)>,
+    },
+    Fn {
+        body: Expr,
+        params: Vec<Param>,
+    },
+}
+
+/// Represents a trait item (associated type, fn, or default)
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct TraitItem {
+    kind: TraitItemKind,
+    generics: Generics,
+    ident: GlobalId,
+    meta: Metadata,
+}
+
+/// Represents the kinds of trait items
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum TraitItemKind {
+    Type(Vec<ImplIdent>),
+    Fn(Ty),
+    Default { params: Vec<Param>, body: Expr },
+}
+
+// Represents an inlined piece of backend code
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum QuoteContent {
+    Verbatim(String),
+    Expr(Expr),
+    Pattern(Pat),
+    Typ(Ty),
+}
+
+pub type Quote = Vec<QuoteContent>;
+
+/// The origin of a quote item
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct ItemQuoteOrigin {
+    item_kind: Box<ItemKind>,
+    item_ident: GlobalId,
+    position: ItemQuoteOriginPosition,
+}
+
+/// The position of a quote item relative to its origin
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum ItemQuoteOriginPosition {
+    Before,
+    After,
+    Replace,
+}
+
+/// The kind of a loop (resugared).
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum LoopKind {
+    UnconditionalLoop,
+    WhileLoop {
+        condition: Expr,
+    },
+    ForLoop {
+        pat: Pat,
+        it: Expr,
+    },
+    ForIndexLoop {
+        start: Expr,
+        end: Expr,
+        var: LocalId,
+        var_typ: Ty,
+    },
+}
+
+/// This is a marker to describe what control flow is present in a loop.
+/// It is added by phase `DropReturnBreakContinue` and the information is used in
+/// `FunctionalizeLoops`. We need it to replace the control flow nodes of the AST
+/// by an encoding in the `ControlFlow` enum.
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum ControlFlowKind {
+    BreakOnly,
+    BreakOrReturn,
+}
+
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct LoopState {
+    init: Expr,
+    bpat: Pat,
+}
 
 /// Describes the shape of an expression.
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
@@ -256,6 +451,12 @@ pub enum ExprKind {
         inner: Expr,
     },
 
+    /// Raw borrow
+    AddressOf {
+        mutability: Mutability,
+        inner: Expr,
+    },
+
     /// A dereference: `*x`
     Deref(Expr),
 
@@ -287,7 +488,7 @@ pub enum ExprKind {
     /// Variable mutation
     /// Example: `x = 1`
     Assign {
-        lhs: Expr,
+        lhs: Lhs,
         value: Expr,
     },
 
@@ -295,6 +496,9 @@ pub enum ExprKind {
     /// Example: `loop{}`
     Loop {
         body: Expr,
+        kind: LoopKind,
+        state: Option<LoopState>,
+        contrl_flow: Option<ControlFlowKind>,
         label: Option<String>,
     },
 
@@ -324,6 +528,11 @@ pub enum ExprKind {
         body: Expr,
         captures: Vec<Expr>,
     },
+
+    /// A quote is an inlined piece of backend code
+    Quote {
+        contents: Quote,
+    },
 }
 
 /// Represents the kinds of generic parameters
@@ -348,8 +557,17 @@ pub struct ImplIdent {
     pub name: String,
 }
 
+/// A projection predicate expresses a constraint over an associated type:
+/// ```rust
+/// fn f<T: Foo<S = String>>(...)
+/// ```
+/// In this example `Foo` has an associated type `S`.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct ProjectionPredicate;
+pub struct ProjectionPredicate {
+    impl_: ImplExpr,
+    assoc_item: GlobalId,
+    ty: Ty,
+}
 
 /// A generic constraint (lifetime, type or projection)
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
@@ -384,9 +602,25 @@ pub enum SafetyKind {
 }
 
 /// Represents a single attribute.
-// TODO: implement
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-pub struct Attribute;
+pub struct Attribute {
+    kind: AttributeKind,
+    span: Span,
+}
+
+/// Represents the kind of an attribute.
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum AttributeKind {
+    Tool { path: String, tokens: String },
+    DocComment { kind: DocCommentKind, body: String },
+}
+
+/// Represents the kind of a doc comment.
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub enum DocCommentKind {
+    Line,
+    Block,
+}
 
 /// A list of attributes.
 pub type Attributes = Vec<Attribute>;
@@ -407,6 +641,16 @@ pub struct Param {
     pub ty: SpannedTy,
     /// Attributes
     pub attributes: Attributes,
+}
+
+/// A variant of an enum or struct.
+/// In our representation structs always have one variant with an argument for each field.
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct Variant {
+    name: GlobalId,
+    arguments: Vec<(GlobalId, Ty, Attributes)>,
+    is_record: bool,
+    attributes: Attributes,
 }
 
 /// A top-level item in the module.
@@ -437,8 +681,91 @@ pub enum ItemKind {
         safety: SafetyKind,
     },
 
+    /// A type alias.
+    /// Example:
+    /// ```rust
+    /// type A = u8;
+    /// ```
+    TyAlias {
+        name: GlobalId,
+        generics: Generics,
+        ty: Ty,
+    },
+
+    /// A type definition (struct or enum)
+    /// Example:
+    /// ```rust
+    /// enum A {B, C}
+    /// struct S {f: u8}
+    /// ```
+    Type {
+        name: GlobalId,
+        generics: Generics,
+        variants: Vec<Variant>,
+        is_struct: bool,
+    },
+
+    /// A trait definition. Example:
+    /// ```rust
+    /// trait T<A> {
+    ///     type Assoc;
+    ///     fn m(x: Self::Assoc, y: Self) -> A;
+    /// }
+    /// ```
+    Trait {
+        name: GlobalId,
+        generics: Generics,
+        items: Vec<TraitItem>,
+    },
+
+    /// A trait implementation. Example:
+    /// ```rust
+    /// impl T<u8> for u16 {
+    ///     type Assoc = u32;
+    ///     fn m(x: u32, y: u16) -> u8 {
+    ///         (x as u8) + (y as u8)
+    ///     }
+    /// }
+    /// ```
+    Impl {
+        generics: Generics,
+        self_ty: Ty,
+        of_trait: Vec<(GlobalId, GenericValue)>,
+        items: Vec<ImplItem>,
+        parent_bounds: Vec<(ImplExpr, ImplIdent)>,
+        safety: SafetyKind,
+    },
+
+    /// ` use item as name; `
+    Alias {
+        name: GlobalId,
+        item: GlobalId,
+    },
+
+    /// A `use` statement
+    Use {
+        path: Vec<String>,
+        is_external: bool,
+        rename: Option<String>,
+    },
+
+    /// A `Quote` node is inserted by phase TransformHaxLibInline to deal with some `hax_lib` features.
+    /// For example insertion of verbatim backend code.
+    Quote {
+        quote: Quote,
+        origin: ItemQuoteOrigin,
+    },
+
+    IMacroInvocation {
+        macro_name: GlobalId,
+        argument: String,
+        spam: Span,
+    },
+
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
+
+    NotImplementedYet,
 }
 
 /// A top-level item with metadata.
@@ -519,11 +846,11 @@ pub mod traits {
     }
 
     impl ExprKind {
-        pub fn into_expr(self, span: Span, ty: Ty, attrs: Vec<Attribute>) -> Expr {
+        pub fn into_expr(self, span: Span, ty: Ty, attributes: Vec<Attribute>) -> Expr {
             Expr {
                 kind: Box::new(self),
                 ty,
-                meta: Metadata { span, attrs },
+                meta: Metadata { span, attributes },
             }
         }
     }
