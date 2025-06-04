@@ -86,11 +86,11 @@ pub enum Ty {
     Param(LocalId),
 
     /// A slice type.
-    /// Example `&[i32]`
+    /// Example: `&[i32]`
     Slice(Box<Ty>),
 
     /// An array type.
-    /// Example `&[i32; 10]`
+    /// Example: `&[i32; 10]`
     Array { ty: Box<Ty>, length: Box<Expr> },
 
     /// A raw pointer type
@@ -292,7 +292,7 @@ pub enum ImplExprKind {
     Builtin(TraitGoal),
 }
 
-/// Represents an impl item (associated type or fn)
+/// Represents an impl item (associated type or function)
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ImplItem {
     meta: Metadata,
@@ -498,7 +498,7 @@ pub enum ExprKind {
         body: Expr,
         kind: LoopKind,
         state: Option<LoopState>,
-        contrl_flow: Option<ControlFlowKind>,
+        control_flow: Option<ControlFlowKind>,
         label: Option<String>,
     },
 
