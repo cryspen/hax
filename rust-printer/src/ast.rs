@@ -97,20 +97,43 @@ pub enum Ty {
     RawPointer,
 
     /// An associated type
-    AssociatedType { impl_: ImplExpr, item: GlobalId },
+    /// Example:
+    /// ```rust
+    ///     fn f<T: Tr>() -> T::A {...}
+    /// ```
+    AssociatedType {
+        /// Impl expr for `Tr<T>` in the example
+        impl_: ImplExpr,
+        /// `Tr::A` in the example
+        item: GlobalId,
+    },
 
     /// An opaque type
+    /// Example:
+    /// ```rust
+    /// type Foo = impl Bar;
+    /// ```
     Opaque(GlobalId),
 
-    /// A dyn type
+    /// A `dyn` type
+    /// Example:
+    /// ```rust
+    /// dyn Tr
+    /// ```
     Dyn(Vec<DynTraitGoal>),
 }
 
-/// A dyn trait. The generic arguments are known but the actual type
+/// A `dyn`` trait. The generic arguments are known but the actual type
 /// implementing the trait is known dynamically.
+/// Example:
+/// ```rust
+/// dyn Tr<A, B>
+/// ```
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct DynTraitGoal {
+    /// `Tr` in the example above
     trait_: GlobalId,
+    /// `A, B` in the example above
     non_self_args: Vec<GenericValue>,
 }
 
@@ -171,43 +194,53 @@ pub struct Guard {
 /// Represents different levels of borrowing.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum BorrowKind {
-    /// Shared reference: `&x`
+    /// Shared reference
+    /// Example: `&x`
     Shared,
     /// Unique reference: this is internal to rustc
     Unique,
-    /// Mutable reference: `&mut x`
+    /// Mutable reference
+    /// Example: `&mut x`
     Mut,
 }
 
 /// Binding modes used in patterns.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum BindingMode {
-    /// Binding by value: `x`
+    /// Binding by value
+    /// Example: `x`
     ByValue,
-    /// Binding by reference: `ref x`, `ref mut x`
+    /// Binding by reference
+    /// Example: `ref x`, `ref mut x`
     ByRef(BorrowKind),
 }
 
 /// Represents the various kinds of patterns.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum PatKind {
-    /// Wildcard pattern: `_`
+    /// Wildcard pattern
+    /// Example: `_`
     Wild,
 
-    /// An ascription pattern: p : ty
+    /// An ascription pattern
+    /// Example: `p : ty`
     Ascription { ty: Ty, typ_span: Span, pat: Pat },
 
-    /// An or pattern: p | q
+    /// An or pattern
+    /// Example: `p | q`
     /// Always contains at least 2 sub-patterns
     Or { subpats: Vec<Pat> },
 
-    /// An array pattern: [p, q]
+    /// An array pattern
+    /// Example: `[p, q]`
     Array { args: Vec<Pat> },
 
-    /// A dereference pattern: &p
+    /// A dereference pattern
+    /// Example: `&p`
     Deref { subpat: Pat },
 
-    /// A constant pattern: 1
+    /// A constant pattern
+    /// Example: `1`
     Constant { lit: Literal },
 
     /// A variable binding.
@@ -240,6 +273,7 @@ pub enum GuardKind {
     IfLet { lhs: Pat, rhs: Expr },
 }
 
+// TODO: Replace by places, or just expressions
 /// The left-hand side of an assignment.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum Lhs {
@@ -303,15 +337,14 @@ pub struct ImplItem {
 
 /// Represents the kinds of impl items
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-enum ImplItemKind {
+pub enum ImplItemKind {
+    /// An instantiation of associated type
     Type {
         ty: Ty,
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
     },
-    Fn {
-        body: Expr,
-        params: Vec<Param>,
-    },
+    /// A definition for a trait function
+    Fn { body: Expr, params: Vec<Param> },
 }
 
 /// Represents a trait item (associated type, fn, or default)
@@ -331,7 +364,12 @@ pub enum TraitItemKind {
     Default { params: Vec<Param>, body: Expr },
 }
 
-// Represents an inlined piece of backend code
+/// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
+/// Example:
+/// ```rust
+/// fstar!("f ${x + 3} + 10")
+/// ```
+/// results in `[Verbatim("f"), Expr([[x + 3]]), Verbatim(" + 10")]`
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum QuoteContent {
     Verbatim(String),
@@ -340,6 +378,7 @@ pub enum QuoteContent {
     Typ(Ty),
 }
 
+/// Represents an inlined piece of backend code
 pub type Quote = Vec<QuoteContent>;
 
 /// The origin of a quote item
@@ -358,7 +397,8 @@ pub enum ItemQuoteOriginPosition {
     Replace,
 }
 
-/// The kind of a loop (resugared).
+/// The kind of a loop (resugared by respective `Reconstruct...Loops` phases).
+/// Useful for `FunctionalizeLoops`.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum LoopKind {
     UnconditionalLoop,
@@ -457,7 +497,8 @@ pub enum ExprKind {
         inner: Expr,
     },
 
-    /// A dereference: `*x`
+    /// A dereference
+    /// Example: `*x`
     Deref(Expr),
 
     /// A `let` expression used in expressions.
@@ -635,7 +676,8 @@ pub struct SpannedTy {
 /// A function parameter (pattern + type, e.g. `x: u8`).
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Param {
-    /// Pattern part: `x`, `mut y`, etc.
+    /// Pattern part
+    /// Examples: `x`, `mut y`, etc.
     pub pat: Pat,
     /// Type part with span.
     pub ty: SpannedTy,
@@ -657,8 +699,7 @@ pub struct Variant {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ItemKind {
     /// A function or constant item.
-    /// Example:
-    /// ```rust
+    /// Example:```rust
     /// fn add<T: Clone>(x: i32, y: i32) -> i32 {
     ///     x + y
     /// }
@@ -705,7 +746,8 @@ pub enum ItemKind {
         is_struct: bool,
     },
 
-    /// A trait definition. Example:
+    /// A trait definition.
+    /// Example:
     /// ```rust
     /// trait T<A> {
     ///     type Assoc;
@@ -718,7 +760,8 @@ pub enum ItemKind {
         items: Vec<TraitItem>,
     },
 
-    /// A trait implementation. Example:
+    /// A trait implementation.
+    /// Example:
     /// ```rust
     /// impl T<u8> for u16 {
     ///     type Assoc = u32;
@@ -754,12 +797,6 @@ pub enum ItemKind {
     Quote {
         quote: Quote,
         origin: ItemQuoteOrigin,
-    },
-
-    IMacroInvocation {
-        macro_name: GlobalId,
-        argument: String,
-        spam: Span,
     },
 
     /// Fallback constructor to carry errors.
