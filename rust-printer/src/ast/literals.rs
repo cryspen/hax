@@ -2,8 +2,6 @@
 
 use super::derives::*;
 use crate::symbol::Symbol;
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
 
 #[apply(derive_AST)]
 pub enum IntSize {

@@ -10,6 +10,7 @@ pub mod origin {
 
     pub use super::super::resugar::*;
     pub use diagnostics::Diagnostic;
+    pub use hax_frontend_exporter::{Impl, Mutability};
     pub use node::Node;
     pub use span::Span;
 }
