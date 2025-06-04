@@ -1,5 +1,6 @@
 [package]
 name = "hax-rust-printer-print-json-types"
+description = "Binary that exports the datatypes of the Rust engine (called `rust-printer` currently)"
 version = "0.1.0"
 edition = "2021"
 
