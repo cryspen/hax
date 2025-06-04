@@ -5,9 +5,7 @@ use crate::symbol::Symbol;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-#[derive(
-    Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, JsonSchema, Serialize, Deserialize,
-)]
+#[apply(derive_AST)]
 pub enum IntSize {
     S8,
     S16,
