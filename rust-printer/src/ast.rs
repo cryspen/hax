@@ -20,7 +20,7 @@ pub mod span;
 
 pub use derives::*;
 pub use diagnostics::Diagnostic;
-use hax_frontend_exporter::{Impl, Mutability};
+use hax_frontend_exporter::Mutability;
 pub use identifiers::*;
 pub use literals::*;
 pub use node::Node;
