@@ -17,7 +17,12 @@ members = [
      "rust-printer",
      "rust-printer/macros",
 ]
-exclude = ["tests", "rustc-coverage-tests", "rust-printer/tests"]
+exclude = [
+     "tests",
+     "rustc-coverage-tests",
+     "rust-printer/tests",
+     "rust-printer/codegen",
+]
 default-members = [
      "frontend/exporter",
      "frontend/exporter/options",
