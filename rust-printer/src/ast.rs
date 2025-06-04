@@ -337,15 +337,15 @@ pub enum GenericParamKind {
 /// Represents an instantiated trait that needs to be implemented
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct TraitGoal {
-    trait_: GlobalId,
-    args: Vec<GenericValue>,
+    pub trait_: GlobalId,
+    pub args: Vec<GenericValue>,
 }
 
 /// Represents a trait bound in a generic constraint
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ImplIdent {
-    goal: TraitGoal,
-    name: String,
+    pub goal: TraitGoal,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
