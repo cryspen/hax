@@ -1,4 +1,4 @@
-module Sha256
+module Spec.Sha256
 
 open Core
 
@@ -65,7 +65,7 @@ let v_HASH_INIT:t_Hash =
 
 // FIPS PUB 180-4, Section 4.1.2
 
-let f_ch (x y z: u32) : u32 = (x &. y) ^. (~.x &. z)
+let f_ch (x y z: u32) : u32 = (x &. y) ^. ((~.x) &. z)
 
 let f_maj (x y z: u32) : u32 = (x &. y) ^. (x &. z) ^. (y &. z)
 
@@ -167,9 +167,11 @@ let f_hash_to_digest (hash: t_Hash) : t_Sha256Digest =
 
 // FIPS PUB 180-4, Section 6.2.2, Main Hash Function
 
+#set-options "--split_queries always"
+
 let hash (msg: t_Slice u8) : t_Sha256Digest =
   let h:t_Hash = v_HASH_INIT in
-  let bit_len:usize = Rust_primitives.Arrays.length msg *. (mk_usize 8) in
+  let bit_len:usize = Rust_primitives.Arrays.length msg *. v_LEN_SIZE in
   let _msg_len = Rust_primitives.Arrays.length msg in
   let full_block_len = _msg_len -! (_msg_len %! v_BLOCK_SIZE) in
 
@@ -189,10 +191,10 @@ let hash (msg: t_Slice u8) : t_Sha256Digest =
   // Calculate padding parameters
   let total_len = _rem_len +! (mk_usize 1) in  // + 1 for the 0x80 byte
   let pad_start = 
-    if total_len +! (mk_usize 8) >. v_BLOCK_SIZE then
-      (v_BLOCK_SIZE *. (mk_usize 2)) -! (mk_usize 8)  // BLOCK_SIZE * 2 - LEN_SIZE
+    if total_len +! v_LEN_SIZE >. v_BLOCK_SIZE then
+      (v_BLOCK_SIZE *. (mk_usize 2)) -! v_LEN_SIZE  // BLOCK_SIZE * 2 - LEN_SIZE
     else
-      v_BLOCK_SIZE -! (mk_usize 8)  // BLOCK_SIZE - LEN_SIZE
+      v_BLOCK_SIZE -! v_LEN_SIZE  // BLOCK_SIZE - LEN_SIZE
   in
   
   // Convert bit_len to big-endian bytes
@@ -206,7 +208,7 @@ let hash (msg: t_Slice u8) : t_Sha256Digest =
     else if i =. _rem_len then
       // Add the 0x80 byte
       mk_u8 0x80
-    else if i >=. pad_start && i <. (pad_start +! (mk_usize 8)) then
+    else if i >=. pad_start && i <. (pad_start +! v_LEN_SIZE) then
       // Set length bytes at the end of the last block
       Seq.index len_bytes (v (i -! pad_start))
     else
@@ -216,7 +218,7 @@ let hash (msg: t_Slice u8) : t_Sha256Digest =
 
   // Determine how many final blocks to process
   let final_len = 
-    if pad_start =. (v_BLOCK_SIZE -! (mk_usize 8)) then
+    if pad_start =. (v_BLOCK_SIZE -! v_LEN_SIZE) then
       v_BLOCK_SIZE  // One block
     else
       v_BLOCK_SIZE *. (mk_usize 2)  // Two blocks
