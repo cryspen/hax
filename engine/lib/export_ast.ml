@@ -17,7 +17,7 @@ module Make (FA : Features.T) (FB : Features.T) = struct
       : b mutability =
     match mutability with Mutable _ -> todo () | Immutable -> todo ()
 
-  let rec dty (ty : A.ty) : B.ty =
+  let dty (ty : A.ty) : B.ty =
     match ty with
     | TBool -> todo ()
     | TChar -> todo ()
@@ -173,7 +173,7 @@ module Make (FA : Features.T) (FB : Features.T) = struct
   let dparam (p : A.param) : B.param = todo ()
   let dvariant (v : A.variant) : B.variant = todo ()
 
-  let rec dtrait_item' (ti : A.trait_item') : B.trait_item_kind =
+  let dtrait_item' (ti : A.trait_item') : B.trait_item_kind =
     match ti with
     | TIType idents -> todo ()
     | TIFn t -> todo ()
@@ -181,14 +181,14 @@ module Make (FA : Features.T) (FB : Features.T) = struct
 
   and dtrait_item (ti : A.trait_item) : B.trait_item = todo ()
 
-  let rec dimpl_item' (ii : A.impl_item') : B.impl_item_kind =
+  let dimpl_item' (ii : A.impl_item') : B.impl_item_kind =
     match ii with
     | IIType { typ; parent_bounds } -> todo ()
     | IIFn { body; params } -> todo ()
 
   and dimpl_item (ii : A.impl_item) : B.impl_item = todo ()
 
-  let rec ditem (i : A.item) : B.item list = todo ()
+  let ditem (i : A.item) : B.item list = todo ()
 
   and ditem' (item : A.item') : B.item_kind =
     match item with
@@ -212,4 +212,4 @@ module Make (FA : Features.T) (FB : Features.T) = struct
     | Quote { quote; origin } -> todo ()
     | HaxError e -> todo ()
     | NotImplementedYet -> todo ()
-end
+end [@warnerror "-27-26"]
