@@ -13,6 +13,11 @@ impl From<Ty> for Node {
         Self::Ty(item)
     }
 }
+impl From<DynTraitGoal> for Node {
+    fn from(item: DynTraitGoal) -> Self {
+        Self::DynTraitGoal(item)
+    }
+}
 impl From<Metadata> for Node {
     fn from(item: Metadata) -> Self {
         Self::Metadata(item)
@@ -58,9 +63,74 @@ impl From<GuardKind> for Node {
         Self::GuardKind(item)
     }
 }
+impl From<Lhs> for Node {
+    fn from(item: Lhs) -> Self {
+        Self::Lhs(item)
+    }
+}
 impl From<ImplExpr> for Node {
     fn from(item: ImplExpr) -> Self {
         Self::ImplExpr(item)
+    }
+}
+impl From<ImplExprKind> for Node {
+    fn from(item: ImplExprKind) -> Self {
+        Self::ImplExprKind(item)
+    }
+}
+impl From<ImplItem> for Node {
+    fn from(item: ImplItem) -> Self {
+        Self::ImplItem(item)
+    }
+}
+impl From<ImplItemKind> for Node {
+    fn from(item: ImplItemKind) -> Self {
+        Self::ImplItemKind(item)
+    }
+}
+impl From<TraitItem> for Node {
+    fn from(item: TraitItem) -> Self {
+        Self::TraitItem(item)
+    }
+}
+impl From<TraitItemKind> for Node {
+    fn from(item: TraitItemKind) -> Self {
+        Self::TraitItemKind(item)
+    }
+}
+impl From<QuoteContent> for Node {
+    fn from(item: QuoteContent) -> Self {
+        Self::QuoteContent(item)
+    }
+}
+impl From<Quote> for Node {
+    fn from(item: Quote) -> Self {
+        Self::Quote(item)
+    }
+}
+impl From<ItemQuoteOrigin> for Node {
+    fn from(item: ItemQuoteOrigin) -> Self {
+        Self::ItemQuoteOrigin(item)
+    }
+}
+impl From<ItemQuoteOriginPosition> for Node {
+    fn from(item: ItemQuoteOriginPosition) -> Self {
+        Self::ItemQuoteOriginPosition(item)
+    }
+}
+impl From<LoopKind> for Node {
+    fn from(item: LoopKind) -> Self {
+        Self::LoopKind(item)
+    }
+}
+impl From<ControlFlowKind> for Node {
+    fn from(item: ControlFlowKind) -> Self {
+        Self::ControlFlowKind(item)
+    }
+}
+impl From<LoopState> for Node {
+    fn from(item: LoopState) -> Self {
+        Self::LoopState(item)
     }
 }
 impl From<ExprKind> for Node {
@@ -113,6 +183,16 @@ impl From<Attribute> for Node {
         Self::Attribute(item)
     }
 }
+impl From<AttributeKind> for Node {
+    fn from(item: AttributeKind) -> Self {
+        Self::AttributeKind(item)
+    }
+}
+impl From<DocCommentKind> for Node {
+    fn from(item: DocCommentKind) -> Self {
+        Self::DocCommentKind(item)
+    }
+}
 impl From<SpannedTy> for Node {
     fn from(item: SpannedTy) -> Self {
         Self::SpannedTy(item)
@@ -121,6 +201,11 @@ impl From<SpannedTy> for Node {
 impl From<Param> for Node {
     fn from(item: Param) -> Self {
         Self::Param(item)
+    }
+}
+impl From<Variant> for Node {
+    fn from(item: Variant) -> Self {
+        Self::Variant(item)
     }
 }
 impl From<ItemKind> for Node {
@@ -138,6 +223,7 @@ pub enum Node {
     GenericValue(GenericValue),
     PrimitiveTy(PrimitiveTy),
     Ty(Ty),
+    DynTraitGoal(DynTraitGoal),
     Metadata(Metadata),
     Expr(Expr),
     Pat(Pat),
@@ -147,7 +233,20 @@ pub enum Node {
     BindingMode(BindingMode),
     PatKind(PatKind),
     GuardKind(GuardKind),
+    Lhs(Lhs),
     ImplExpr(ImplExpr),
+    ImplExprKind(ImplExprKind),
+    ImplItem(ImplItem),
+    ImplItemKind(ImplItemKind),
+    TraitItem(TraitItem),
+    TraitItemKind(TraitItemKind),
+    QuoteContent(QuoteContent),
+    Quote(Quote),
+    ItemQuoteOrigin(ItemQuoteOrigin),
+    ItemQuoteOriginPosition(ItemQuoteOriginPosition),
+    LoopKind(LoopKind),
+    ControlFlowKind(ControlFlowKind),
+    LoopState(LoopState),
     ExprKind(ExprKind),
     GenericParamKind(GenericParamKind),
     TraitGoal(TraitGoal),
@@ -158,8 +257,11 @@ pub enum Node {
     Generics(Generics),
     SafetyKind(SafetyKind),
     Attribute(Attribute),
+    AttributeKind(AttributeKind),
+    DocCommentKind(DocCommentKind),
     SpannedTy(SpannedTy),
     Param(Param),
+    Variant(Variant),
     ItemKind(ItemKind),
     Item(Item),
     Unknown(String),
@@ -177,6 +279,11 @@ impl<'lt> From<&'lt PrimitiveTy> for NodeRef<'lt> {
 impl<'lt> From<&'lt Ty> for NodeRef<'lt> {
     fn from(item: &'lt Ty) -> Self {
         Self::Ty(item)
+    }
+}
+impl<'lt> From<&'lt DynTraitGoal> for NodeRef<'lt> {
+    fn from(item: &'lt DynTraitGoal) -> Self {
+        Self::DynTraitGoal(item)
     }
 }
 impl<'lt> From<&'lt Metadata> for NodeRef<'lt> {
@@ -224,9 +331,74 @@ impl<'lt> From<&'lt GuardKind> for NodeRef<'lt> {
         Self::GuardKind(item)
     }
 }
+impl<'lt> From<&'lt Lhs> for NodeRef<'lt> {
+    fn from(item: &'lt Lhs) -> Self {
+        Self::Lhs(item)
+    }
+}
 impl<'lt> From<&'lt ImplExpr> for NodeRef<'lt> {
     fn from(item: &'lt ImplExpr) -> Self {
         Self::ImplExpr(item)
+    }
+}
+impl<'lt> From<&'lt ImplExprKind> for NodeRef<'lt> {
+    fn from(item: &'lt ImplExprKind) -> Self {
+        Self::ImplExprKind(item)
+    }
+}
+impl<'lt> From<&'lt ImplItem> for NodeRef<'lt> {
+    fn from(item: &'lt ImplItem) -> Self {
+        Self::ImplItem(item)
+    }
+}
+impl<'lt> From<&'lt ImplItemKind> for NodeRef<'lt> {
+    fn from(item: &'lt ImplItemKind) -> Self {
+        Self::ImplItemKind(item)
+    }
+}
+impl<'lt> From<&'lt TraitItem> for NodeRef<'lt> {
+    fn from(item: &'lt TraitItem) -> Self {
+        Self::TraitItem(item)
+    }
+}
+impl<'lt> From<&'lt TraitItemKind> for NodeRef<'lt> {
+    fn from(item: &'lt TraitItemKind) -> Self {
+        Self::TraitItemKind(item)
+    }
+}
+impl<'lt> From<&'lt QuoteContent> for NodeRef<'lt> {
+    fn from(item: &'lt QuoteContent) -> Self {
+        Self::QuoteContent(item)
+    }
+}
+impl<'lt> From<&'lt Quote> for NodeRef<'lt> {
+    fn from(item: &'lt Quote) -> Self {
+        Self::Quote(item)
+    }
+}
+impl<'lt> From<&'lt ItemQuoteOrigin> for NodeRef<'lt> {
+    fn from(item: &'lt ItemQuoteOrigin) -> Self {
+        Self::ItemQuoteOrigin(item)
+    }
+}
+impl<'lt> From<&'lt ItemQuoteOriginPosition> for NodeRef<'lt> {
+    fn from(item: &'lt ItemQuoteOriginPosition) -> Self {
+        Self::ItemQuoteOriginPosition(item)
+    }
+}
+impl<'lt> From<&'lt LoopKind> for NodeRef<'lt> {
+    fn from(item: &'lt LoopKind) -> Self {
+        Self::LoopKind(item)
+    }
+}
+impl<'lt> From<&'lt ControlFlowKind> for NodeRef<'lt> {
+    fn from(item: &'lt ControlFlowKind) -> Self {
+        Self::ControlFlowKind(item)
+    }
+}
+impl<'lt> From<&'lt LoopState> for NodeRef<'lt> {
+    fn from(item: &'lt LoopState) -> Self {
+        Self::LoopState(item)
     }
 }
 impl<'lt> From<&'lt ExprKind> for NodeRef<'lt> {
@@ -279,6 +451,16 @@ impl<'lt> From<&'lt Attribute> for NodeRef<'lt> {
         Self::Attribute(item)
     }
 }
+impl<'lt> From<&'lt AttributeKind> for NodeRef<'lt> {
+    fn from(item: &'lt AttributeKind) -> Self {
+        Self::AttributeKind(item)
+    }
+}
+impl<'lt> From<&'lt DocCommentKind> for NodeRef<'lt> {
+    fn from(item: &'lt DocCommentKind) -> Self {
+        Self::DocCommentKind(item)
+    }
+}
 impl<'lt> From<&'lt SpannedTy> for NodeRef<'lt> {
     fn from(item: &'lt SpannedTy) -> Self {
         Self::SpannedTy(item)
@@ -287,6 +469,11 @@ impl<'lt> From<&'lt SpannedTy> for NodeRef<'lt> {
 impl<'lt> From<&'lt Param> for NodeRef<'lt> {
     fn from(item: &'lt Param) -> Self {
         Self::Param(item)
+    }
+}
+impl<'lt> From<&'lt Variant> for NodeRef<'lt> {
+    fn from(item: &'lt Variant) -> Self {
+        Self::Variant(item)
     }
 }
 impl<'lt> From<&'lt ItemKind> for NodeRef<'lt> {
@@ -304,6 +491,7 @@ pub enum NodeRef<'lt> {
     GenericValue(&'lt GenericValue),
     PrimitiveTy(&'lt PrimitiveTy),
     Ty(&'lt Ty),
+    DynTraitGoal(&'lt DynTraitGoal),
     Metadata(&'lt Metadata),
     Expr(&'lt Expr),
     Pat(&'lt Pat),
@@ -313,7 +501,20 @@ pub enum NodeRef<'lt> {
     BindingMode(&'lt BindingMode),
     PatKind(&'lt PatKind),
     GuardKind(&'lt GuardKind),
+    Lhs(&'lt Lhs),
     ImplExpr(&'lt ImplExpr),
+    ImplExprKind(&'lt ImplExprKind),
+    ImplItem(&'lt ImplItem),
+    ImplItemKind(&'lt ImplItemKind),
+    TraitItem(&'lt TraitItem),
+    TraitItemKind(&'lt TraitItemKind),
+    QuoteContent(&'lt QuoteContent),
+    Quote(&'lt Quote),
+    ItemQuoteOrigin(&'lt ItemQuoteOrigin),
+    ItemQuoteOriginPosition(&'lt ItemQuoteOriginPosition),
+    LoopKind(&'lt LoopKind),
+    ControlFlowKind(&'lt ControlFlowKind),
+    LoopState(&'lt LoopState),
     ExprKind(&'lt ExprKind),
     GenericParamKind(&'lt GenericParamKind),
     TraitGoal(&'lt TraitGoal),
@@ -324,8 +525,11 @@ pub enum NodeRef<'lt> {
     Generics(&'lt Generics),
     SafetyKind(&'lt SafetyKind),
     Attribute(&'lt Attribute),
+    AttributeKind(&'lt AttributeKind),
+    DocCommentKind(&'lt DocCommentKind),
     SpannedTy(&'lt SpannedTy),
     Param(&'lt Param),
+    Variant(&'lt Variant),
     ItemKind(&'lt ItemKind),
     Item(&'lt Item),
 }

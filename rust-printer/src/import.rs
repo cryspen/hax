@@ -2,6 +2,9 @@
 //!
 //! It handles fallbacks for unsupported constructs by emitting `Diagnostic` errors.
 
+// TODO: this file is stale. We keep it just to keep typecheckable by Rust. We will reuse most of this file later.
+#![allow(unused)]
+
 use crate::ast::{self as dst, GenericValue, GlobalId, LocalId};
 use crate::ast::{diagnostics::*, GenericParamKind};
 use hax_frontend_exporter::{
@@ -64,21 +67,21 @@ fn translate_pat(pat: &src::Pat) -> dst::Pat {
     let span = (&pat.span).into();
     let kind = Box::new(match pat.contents.as_ref() {
         src::PatKind::Wild => dst::PatKind::Wild,
-        src::PatKind::Binding { var, .. } => dst::PatKind::Binding {
+        src::PatKind::Binding { var, .. } => todo!()/* dst::PatKind::Binding {
             mutable: false,
             var: var.into(),
             mode: dst::BindingMode::ByValue,
-        },
-        src::PatKind::Tuple { subpatterns } => dst::PatKind::Construct {
+        } */,
+        src::PatKind::Tuple { .. } => todo!()/* dst::PatKind::Construct {
             constructor: GlobalId::tuple_pat(),
             is_record: false,
             is_struct: true,
-            fields: subpatterns
+            fields: sub_patterns
                 .iter()
                 .enumerate()
                 .map(|(i, p)| (GlobalId::tuple_field(i), translate_pat(p)))
                 .collect(),
-        },
+        } */,
         pat => dst::PatKind::Error(Diagnostic::new(
             dst::Node::Unknown(format!("Rust THIR: pat: {pat:?}")),
             DiagnosticInfo {
@@ -91,7 +94,7 @@ fn translate_pat(pat: &src::Pat) -> dst::Pat {
     let ty = translate_ty(&pat.ty, span);
     let meta = dst::Metadata {
         span,
-        attrs: translate_attributes(&pat.attributes),
+        attributes: translate_attributes(&pat.attributes),
     };
     dst::Pat { kind, ty, meta }
 }
@@ -161,7 +164,7 @@ fn translate_constant_expr(c_expr: &Decorated<ConstantExprKind>) -> dst::Expr {
         ty,
         meta: dst::Metadata {
             span,
-            attrs: vec![],
+            attributes: vec![],
         },
     }
 }
@@ -171,7 +174,7 @@ fn unit_expr(span: dst::Span) -> dst::Expr {
         ty: dst::Ty::Tuple(Vec::new()),
         meta: dst::Metadata {
             span,
-            attrs: vec![],
+            attributes: vec![],
         },
     }
 }
@@ -212,9 +215,10 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
             let args = args.iter().map(translate_expr).collect::<Vec<_>>();
             let generic_args = translate_generic_args(generic_args, span);
 
-            let trait_ = r#trait
+            let trait_ = /* r#trait
                 .as_ref()
-                .map(|(impl_expr, g_args)| (dst::ImplExpr, translate_generic_args(&g_args, span)));
+                .map(|(impl_expr, g_args)| (dst::ImplExpr, translate_generic_args(&g_args, span))) */
+                None;
             dst::ExprKind::App {
                 head,
                 args,
@@ -251,10 +255,10 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
             span.clone(),
         ),
         src::ExprKind::PointerCoercion { cast, source } => return translate_expr(source),
-        src::ExprKind::Loop { body } => dst::ExprKind::Loop {
+        src::ExprKind::Loop { body } => todo!()/* dst::ExprKind::Loop {
             body: translate_expr(body),
             label: None,
-        },
+        } */,
         src::ExprKind::Match { scrutinee, arms } => {
             let scrutinee = translate_expr(scrutinee);
             let arms: Vec<dst::Arm> = arms
@@ -265,7 +269,7 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
                     let guard = None; // TODO
                     let meta = dst::Metadata {
                         span: (&arm.span).into(),
-                        attrs: vec![],
+                        attributes: vec![],
                     };
                     dst::Arm {
                         pat,
@@ -288,7 +292,7 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
                     ty,
                     meta: dst::Metadata {
                         span,
-                        attrs: vec![],
+                        attributes: vec![],
                     },
                 }
             });
@@ -306,7 +310,7 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
                                 kind: Box::new(dst::PatKind::Wild),
                                 ty: rhs.ty.clone(),
                                 meta: dst::Metadata {
-                                    attrs: vec![],
+                                    attributes: vec![],
                                     ..rhs.meta
                                 },
                             },
@@ -326,17 +330,17 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
                     ty,
                     meta: dst::Metadata {
                         span,
-                        attrs: vec![],
+                        attributes: vec![],
                     },
                 }
             }
             return terminator;
         }
-        src::ExprKind::Assign { lhs, rhs } => dst::ExprKind::Assign {
+        src::ExprKind::Assign { lhs, rhs } => todo!()/* dst::ExprKind::Assign {
             lhs: translate_expr(lhs),
             value: translate_expr(rhs),
-        },
-        src::ExprKind::AssignOp { op, lhs, rhs } => dst::ExprKind::Assign {
+        } */,
+        src::ExprKind::AssignOp { op, lhs, rhs } => todo!()/* dst::ExprKind::Assign {
             lhs: translate_expr(lhs),
             value: dst::Expr {
                 kind: Box::new(dst::helper::simple_app(
@@ -348,10 +352,10 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
                 ty: ty.clone(),
                 meta: dst::Metadata {
                     span,
-                    attrs: vec![],
+                    attributes: vec![],
                 },
             },
-        },
+        } */,
         src::ExprKind::Field { field, lhs } => todo!(),
         src::ExprKind::TupleField { field, lhs } => dst::helper::simple_app(
             dst::GlobalId::tuple_field(*field),
@@ -489,7 +493,7 @@ fn translate_expr(expr: &src::Expr) -> dst::Expr {
         ty,
         meta: dst::Metadata {
             span,
-            attrs: vec![],
+            attributes: vec![],
         },
     }
 }
@@ -505,7 +509,7 @@ fn translate_generic_param(generic_param: &src::GenericParam<Body>) -> dst::Gene
     let span = (&generic_param.span).into();
     let meta = dst::Metadata {
         span,
-        attrs: vec![],
+        attributes: vec![],
     };
     let kind: GenericParamKind = match &generic_param.kind {
         src::GenericParamKind::Lifetime { .. } => dst::GenericParamKind::Lifetime,
@@ -590,7 +594,7 @@ pub fn translate_item(item: &src::Item<Body>) -> dst::Item {
         kind,
         meta: dst::Metadata {
             span,
-            attrs: translate_attributes(&item.attributes.attributes[..]),
+            attributes: translate_attributes(&item.attributes.attributes[..]),
         },
     }
 }

@@ -11,7 +11,7 @@ pub fn simple_app(
         ty,
         meta: dst::Metadata {
             span,
-            attrs: vec![],
+            attributes: vec![],
         },
     };
     dst::ExprKind::App {
