@@ -1,4 +1,4 @@
-use crate::ast::Literal;
+use crate::ast::{node::NodeRef, Literal};
 
 use super::{doc_printer::*, print_context::*, print_view::*, to_print_view::*};
 use pretty::{BoxDoc, RcDoc};
@@ -14,11 +14,11 @@ impl super::doc_printer::Printer for LeanPrinter {
     }
 }
 
-impl<'a> ToDoc<'a, PrimitiveTy<'a>> for LeanPrinter {
+impl<'a: 'p, 'p> ToDoc<'a, 'p, PrimitiveTy<'a>> for LeanPrinter {
     fn to_doc(
-        &self,
+        &'p self,
         x: PrimitiveTy<'a>,
-        p: super::print_context::PrintContextPayload<'a>,
+        _context: super::print_context::PrintContextPayload<'a>,
     ) -> RcDoc<()> {
         match x {
             PrimitiveTy::Bool => todo!(),
@@ -32,23 +32,12 @@ impl<'a> ToDoc<'a, PrimitiveTy<'a>> for LeanPrinter {
 
 // impl<'a> ToDoc<'a, Box<T>>
 
-impl<'a> ToDoc<'a, Expr<'a>> for LeanPrinter {
-    //
-    // impl<'a, T: OpenPrintContext<'a>> OpenPrintContext<'a> for Box<T> {
-    //     type Inner = Box<T::Inner>;
-    //     fn open(ctx: PrintContext<'a, Self>) -> Self::Inner {
-    //         let value: &'a T = &*ctx.value;
-    //         Box::new(
-    //             PrintContext {
-    //                 value,
-    //                 payload: ctx.payload.clone(),
-    //             }
-    //             .open(),
-    //         )
-    //     }
-    // }
-
-    fn to_doc(&self, x: Expr<'a>, p: super::print_context::PrintContextPayload<'a>) -> RcDoc<()> {
+impl<'a: 'p, 'p> ToDoc<'a, 'p, Expr<'a>> for LeanPrinter {
+    fn to_doc(
+        &'p self,
+        x: Expr<'a>,
+        _context: super::print_context::PrintContextPayload<'a>,
+    ) -> RcDoc<'p, ()> {
         let value: &ast::ExprKind = &*x.kind.value;
         super::doc_printer::print(
             PrintContext {
@@ -60,18 +49,37 @@ impl<'a> ToDoc<'a, Expr<'a>> for LeanPrinter {
     }
 }
 
-impl<'a> ToDoc<'a, ExprKind<'a>> for LeanPrinter {
+impl<'a> ToPrintView<'a> for Literal {
+    type Out = Self;
+    fn to_print_view(
+        &'a self,
+        _parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        self.clone()
+    }
+}
+
+impl<'a> Into<NodeRef<'a>> for &Literal {
+    fn into(self) -> NodeRef<'a> {
+        NodeRef::Literal
+    }
+}
+
+impl<'a: 'p, 'p> ToDoc<'a, 'p, ExprKind<'a>> for LeanPrinter {
     fn to_doc(
-        &self,
+        &'p self,
         x: ExprKind<'a>,
         p: super::print_context::PrintContextPayload<'a>,
-    ) -> RcDoc<()> {
+    ) -> RcDoc<'p, ()> {
         match x {
             ExprKind::If {
                 condition,
                 then,
                 else_,
-            } => super::doc_printer::print(then, self),
+            } => RcDoc::text("if ")
+                .append(super::doc_printer::print(condition, self))
+                .append(RcDoc::text(" then "))
+                .append(super::doc_printer::print(then, self)),
             ExprKind::App {
                 head,
                 args,
@@ -79,7 +87,7 @@ impl<'a> ToDoc<'a, ExprKind<'a>> for LeanPrinter {
                 bounds_impls,
                 trait_,
             } => todo!(),
-            ExprKind::Literal(print_context) => todo!(),
+            ExprKind::Literal(lit) => super::doc_printer::print(lit, self),
             ExprKind::Array(print_context) => todo!(),
             ExprKind::Construct {
                 constructor,
@@ -119,7 +127,7 @@ impl<'a> ToDoc<'a, ExprKind<'a>> for LeanPrinter {
     }
 }
 
-impl<'a> ToDoc<'a, Literal> for LeanPrinter {
+impl<'a: 'p, 'p> ToDoc<'a, 'p, Literal> for LeanPrinter {
     fn to_doc(&self, x: Literal, p: super::print_context::PrintContextPayload<'a>) -> RcDoc<()> {
         match x {
             Literal::String(symbol) => todo!(),
@@ -142,9 +150,31 @@ impl<'a> ToDoc<'a, Literal> for LeanPrinter {
 
 #[test]
 fn lit_test() {
-    let ast = Literal::Bool(true);
+    let ty = ast::Ty::RawPointer;
+    let span = ast::Span(());
+    let meta = ast::Metadata {
+        span,
+        attributes: vec![],
+    };
+    let expr_true = ast::Expr {
+        ty: ty.clone(),
+        kind: Box::new(ast::ExprKind::Literal(Literal::Bool(true))),
+        meta: meta.clone(),
+    };
+
+    let expr_if = ast::Expr {
+        ty,
+        kind: Box::new(ast::ExprKind::If {
+            condition: expr_true.clone(),
+            then: expr_true.clone(),
+            else_: None,
+        }),
+        meta: meta.clone(),
+    };
+
+    let ast = expr_if;
     let doc = LeanPrinter.to_doc(
-        ast,
+        ast.to_print_view(None),
         PrintContextPayload {
             position: "root".into(),
             parent: None,
