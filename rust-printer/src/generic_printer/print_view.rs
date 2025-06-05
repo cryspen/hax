@@ -9,7 +9,9 @@ pub mod origin {
     pub use {bool, Box, Option, String, Vec};
 
     pub use super::super::resugar::*;
+    pub use crate::symbol::*;
     pub use diagnostics::Diagnostic;
+    pub use hax_frontend_exporter::Mutability;
     pub use node::Node;
     pub use span::Span;
 }
