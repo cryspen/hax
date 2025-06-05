@@ -63,9 +63,14 @@ module Make (FA : Features.T) (FB : Features.T) = struct
   and dfloat_kind (fk : float_kind) : B.float_kind =
     match fk with F16 -> F16 | F32 -> F32 | F64 -> F64 | F128 -> F128
 
-  and dglobal_ident (gi : global_ident) : B.global_id = todo ()
-  and dlocal_ident (li : local_ident) : B.local_id = todo ()
-  and dconcrete_ident (gi : concrete_ident) : B.global_id = todo ()
+  and dglobal_ident (gi : global_ident) : B.global_id =
+    { name = [%show: global_ident] gi }
+
+  and dlocal_ident (li : local_ident) : B.local_id =
+    Newtypelocal_id (Newtypesymbol li.name)
+
+  and dconcrete_ident (gi : concrete_ident) : B.global_id =
+    dglobal_ident (`Concrete gi)
 
   and ddyn_trait_goal (r : A.dyn_trait_goal) : B.dyn_trait_goal =
     {
