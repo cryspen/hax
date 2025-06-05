@@ -12,7 +12,7 @@ let load_configuration_files (_: Prims.unit)
 
 let main (_: Prims.unit) : Core.Result.t_Result Prims.unit Alloc.String.t_String =
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
           (let list = ["Starting service\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
@@ -29,36 +29,38 @@ let main (_: Prims.unit) : Core.Result.t_Result Prims.unit Alloc.String.t_String
         Core.Result.t_Result Alloc.String.t_String Alloc.String.t_String)
       (fun e ->
           let e:Alloc.String.t_String = e in
-          let res:Alloc.String.t_String =
-            Alloc.Fmt.format (Core.Fmt.impl_4__new_v1 (mk_usize 1)
-                  (mk_usize 1)
-                  (let list = ["Error loading configs: "] in
-                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
-                    Rust_primitives.Hax.array_of_list 1 list)
-                  (let list =
-                      [
-                        Core.Fmt.Rt.impl_1__new_display #Alloc.String.t_String e
-                        <:
-                        Core.Fmt.Rt.t_Argument
-                      ]
-                    in
-                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
-                    Rust_primitives.Hax.array_of_list 1 list)
+          let message:Alloc.String.t_String =
+            Core.Hint.must_use #Alloc.String.t_String
+              (Alloc.Fmt.format (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 1)
+                      (mk_usize 1)
+                      (let list = ["Error loading configs: "] in
+                        FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                        Rust_primitives.Hax.array_of_list 1 list)
+                      (let list =
+                          [
+                            Core.Fmt.Rt.impl__new_display #Alloc.String.t_String e
+                            <:
+                            Core.Fmt.Rt.t_Argument
+                          ]
+                        in
+                        FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                        Rust_primitives.Hax.array_of_list 1 list)
+                    <:
+                    Core.Fmt.t_Arguments)
                 <:
-                Core.Fmt.t_Arguments)
+                Alloc.String.t_String)
           in
-          let message:Alloc.String.t_String = Core.Hint.must_use #Alloc.String.t_String res in
           if (Alloc.String.impl_String__len message <: usize) >. mk_usize 0
           then
             let _:Prims.unit =
-              Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+              Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
                     (mk_usize 1)
                     (let list = [""; "\n"] in
                       FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
                       Rust_primitives.Hax.array_of_list 2 list)
                     (let list =
                         [
-                          Core.Fmt.Rt.impl_1__new_display #Alloc.String.t_String message
+                          Core.Fmt.Rt.impl__new_display #Alloc.String.t_String message
                           <:
                           Core.Fmt.Rt.t_Argument
                         ]
@@ -81,7 +83,7 @@ let main (_: Prims.unit) : Core.Result.t_Result Prims.unit Alloc.String.t_String
               if (Core.Str.impl_str__len "error" <: usize) >. mk_usize 0
               then
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                         (let list = ["no msg\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
@@ -92,7 +94,7 @@ let main (_: Prims.unit) : Core.Result.t_Result Prims.unit Alloc.String.t_String
                 ()
               else
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                         (let list = ["error\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)

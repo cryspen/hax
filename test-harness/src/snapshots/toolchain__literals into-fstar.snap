@@ -64,8 +64,8 @@ let math_integers (x: Hax_lib.Int.t_Int)
   Hax_lib.Int.impl_Int__to_u8 (x + (x * x <: Hax_lib.Int.t_Int) <: Hax_lib.Int.t_Int)
 
 let panic_with_msg (_: Prims.unit) : Prims.unit =
-  Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.impl_4__new_const (mk_usize 1
-            )
+  Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.Rt.impl_2__new_const (mk_usize
+              1)
             (let list = ["with msg"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)

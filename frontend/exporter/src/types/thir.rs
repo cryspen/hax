@@ -466,6 +466,7 @@ pub type Pat = Decorated<PatKind>;
 #[append(thir::PatKind::Leaf {..} => fatal!(gstate, "PatKind::Leaf: should never come up"),)]
 pub enum PatKind {
     Wild,
+    Missing,
     AscribeUserType {
         ascription: Ascription,
         subpattern: Pat,
@@ -774,7 +775,7 @@ pub enum ExprKind {
         rhs: Expr,
     },
     AssignOp {
-        op: BinOp,
+        op: AssignOp,
         lhs: Expr,
         rhs: Expr,
     },
@@ -930,5 +931,18 @@ impl<'tcx> ExprKindExt<'tcx> for thir::Expr<'tcx> {
             thir::ExprKind::Scope { value, .. } => s.thir().exprs[value].unroll_scope(s),
             _ => self.clone(),
         }
+    }
+}
+
+#[cfg(feature = "rustc")]
+pub trait HirIdExt {
+    fn index(&self) -> (usize, usize);
+}
+
+#[cfg(feature = "rustc")]
+impl HirIdExt for rustc_hir::HirId {
+    fn index(&self) -> (usize, usize) {
+        use crate::rustc_index::Idx;
+        (self.owner.def_id.index(), self.local_id.index())
     }
 }

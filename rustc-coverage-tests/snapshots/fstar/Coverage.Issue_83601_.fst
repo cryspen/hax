@@ -45,14 +45,14 @@ let main (_: Prims.unit) : Prims.unit =
     | left_val, right_val -> Hax_lib.v_assert (~.(left_val =. right_val <: bool) <: bool)
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           (let list =
               [
-                Core.Fmt.Rt.impl_1__new_debug #t_Foo (Foo (mk_u32 1) <: t_Foo)
+                Core.Fmt.Rt.impl__new_debug #t_Foo (Foo (mk_u32 1) <: t_Foo)
                 <:
                 Core.Fmt.Rt.t_Argument
               ]
@@ -64,12 +64,12 @@ let main (_: Prims.unit) : Prims.unit =
   in
   let _:Prims.unit = () in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
-          (let list = [Core.Fmt.Rt.impl_1__new_debug #t_Foo bar <: Core.Fmt.Rt.t_Argument] in
+          (let list = [Core.Fmt.Rt.impl__new_debug #t_Foo bar <: Core.Fmt.Rt.t_Argument] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
@@ -77,12 +77,12 @@ let main (_: Prims.unit) : Prims.unit =
   in
   let _:Prims.unit = () in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
-          (let list = [Core.Fmt.Rt.impl_1__new_debug #t_Foo baz <: Core.Fmt.Rt.t_Argument] in
+          (let list = [Core.Fmt.Rt.impl__new_debug #t_Foo baz <: Core.Fmt.Rt.t_Argument] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:

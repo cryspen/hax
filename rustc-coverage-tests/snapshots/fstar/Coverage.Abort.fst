@@ -7,7 +7,7 @@ let might_abort (should_abort: bool) : Prims.unit =
   if should_abort
   then
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["aborting...\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -15,7 +15,7 @@ let might_abort (should_abort: bool) : Prims.unit =
           Core.Fmt.t_Arguments)
     in
     let _:Prims.unit = () in
-    Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.impl_4__new_const (mk_usize
+    Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.Rt.impl_2__new_const (mk_usize
                 1)
               (let list = ["panics and aborts"] in
                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
@@ -26,7 +26,7 @@ let might_abort (should_abort: bool) : Prims.unit =
         Rust_primitives.Hax.t_Never)
   else
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["Don't Panic\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)

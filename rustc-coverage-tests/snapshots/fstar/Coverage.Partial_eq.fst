@@ -60,16 +60,16 @@ let main (_: Prims.unit) : Prims.unit =
   let version_3_2_1_:t_Version = impl_Version__new (mk_usize 3) (mk_usize 2) (mk_usize 1) in
   let version_3_3_0_:t_Version = impl_Version__new (mk_usize 3) (mk_usize 3) (mk_usize 0) in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 4)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 4)
           (mk_usize 3)
           (let list = [""; " < "; " = "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 4);
             Rust_primitives.Hax.array_of_list 4 list)
           (let list =
               [
-                Core.Fmt.Rt.impl_1__new_debug #t_Version version_3_2_1_ <: Core.Fmt.Rt.t_Argument;
-                Core.Fmt.Rt.impl_1__new_debug #t_Version version_3_3_0_ <: Core.Fmt.Rt.t_Argument;
-                Core.Fmt.Rt.impl_1__new_display #bool
+                Core.Fmt.Rt.impl__new_debug #t_Version version_3_2_1_ <: Core.Fmt.Rt.t_Argument;
+                Core.Fmt.Rt.impl__new_debug #t_Version version_3_3_0_ <: Core.Fmt.Rt.t_Argument;
+                Core.Fmt.Rt.impl__new_display #bool
                   (Core.Cmp.f_lt #t_Version
                       #t_Version
                       #FStar.Tactics.Typeclasses.solve

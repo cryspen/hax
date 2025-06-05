@@ -30,7 +30,7 @@ let impl: Core.Fmt.t_Debug t_DebugTest =
         in
         let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
           Core.Fmt.impl_11__write_fmt f
-            (Core.Fmt.impl_4__new_const (mk_usize 1)
+            (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                 (let list = ["cool"] in
                   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                   Rust_primitives.Hax.array_of_list 1 list)
@@ -62,7 +62,7 @@ let impl: Core.Fmt.t_Debug t_DebugTest =
                       let tmp0, out:(Core.Fmt.t_Formatter &
                         Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                         Core.Fmt.impl_11__write_fmt f
-                          (Core.Fmt.impl_4__new_const (mk_usize 1)
+                          (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                               (let list = ["cool"] in
                                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                                 Rust_primitives.Hax.array_of_list 1 list)
@@ -148,7 +148,7 @@ let impl: Core.Fmt.t_Debug t_DebugTest =
                   let tmp0, out:(Core.Fmt.t_Formatter &
                     Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                     Core.Fmt.impl_11__write_fmt f
-                      (Core.Fmt.impl_4__new_const (mk_usize 1)
+                      (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                           (let list = ["cool"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
@@ -254,7 +254,7 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
                   let tmp0, out:(Core.Fmt.t_Formatter &
                     Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                     Core.Fmt.impl_11__write_fmt f
-                      (Core.Fmt.impl_4__new_const (mk_usize 1)
+                      (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                           (let list = ["cool"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
@@ -312,7 +312,7 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
         in
         let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
           Core.Fmt.impl_11__write_fmt f
-            (Core.Fmt.impl_4__new_const (mk_usize 1)
+            (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                 (let list = ["cool"] in
                   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                   Rust_primitives.Hax.array_of_list 1 list)
@@ -351,7 +351,7 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
                       let tmp0, out:(Core.Fmt.t_Formatter &
                         Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                         Core.Fmt.impl_11__write_fmt f
-                          (Core.Fmt.impl_4__new_const (mk_usize 1)
+                          (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
                               (let list = ["cool"] in
                                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                                 Rust_primitives.Hax.array_of_list 1 list)
@@ -412,13 +412,13 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
 let main (_: Prims.unit) : Prims.unit =
   let debug_test:t_DebugTest = DebugTest <: t_DebugTest in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           (let list =
-              [Core.Fmt.Rt.impl_1__new_debug #t_DebugTest debug_test <: Core.Fmt.Rt.t_Argument]
+              [Core.Fmt.Rt.impl__new_debug #t_DebugTest debug_test <: Core.Fmt.Rt.t_Argument]
             in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
@@ -428,17 +428,13 @@ let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = () in
   let display_test:t_DisplayTest = DisplayTest <: t_DisplayTest in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           (let list =
-              [
-                Core.Fmt.Rt.impl_1__new_display #t_DisplayTest display_test
-                <:
-                Core.Fmt.Rt.t_Argument
-              ]
+              [Core.Fmt.Rt.impl__new_display #t_DisplayTest display_test <: Core.Fmt.Rt.t_Argument]
             in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)

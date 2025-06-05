@@ -25,7 +25,7 @@ mod global_id {
             let mut chunks = vec![def_id.krate.as_str()];
             for chunk in &def_id.path {
                 let chunk = match &chunk.data {
-                    DefPathItem::TypeNs(Some(s))
+                    DefPathItem::TypeNs(s)
                     | DefPathItem::ValueNs(s)
                     | DefPathItem::MacroNs(s)
                     | DefPathItem::LifetimeNs(s) => s.as_str(),

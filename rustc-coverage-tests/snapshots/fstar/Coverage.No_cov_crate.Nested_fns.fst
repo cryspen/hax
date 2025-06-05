@@ -7,7 +7,7 @@ let outer_not_covered__inner (is_true: bool) : Prims.unit =
   if is_true
   then
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["called and covered\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -18,7 +18,7 @@ let outer_not_covered__inner (is_true: bool) : Prims.unit =
     ()
   else
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["absolutely not covered\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -30,7 +30,7 @@ let outer_not_covered__inner (is_true: bool) : Prims.unit =
 
 let outer_not_covered (is_true: bool) : Prims.unit =
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
           (let list = ["called but not covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
@@ -45,7 +45,7 @@ let outer__inner_not_covered (is_true: bool) : Prims.unit =
   if is_true
   then
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["called but not covered\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -56,7 +56,7 @@ let outer__inner_not_covered (is_true: bool) : Prims.unit =
     ()
   else
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["absolutely not covered\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -68,7 +68,7 @@ let outer__inner_not_covered (is_true: bool) : Prims.unit =
 
 let outer (is_true: bool) : Prims.unit =
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
           (let list = ["called and covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
@@ -83,7 +83,7 @@ let outer_both_covered__inner (is_true: bool) : Prims.unit =
   if is_true
   then
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["called and covered\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -94,7 +94,7 @@ let outer_both_covered__inner (is_true: bool) : Prims.unit =
     ()
   else
     let _:Prims.unit =
-      Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
             (let list = ["absolutely not covered\n"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
@@ -106,7 +106,7 @@ let outer_both_covered__inner (is_true: bool) : Prims.unit =
 
 let outer_both_covered (is_true: bool) : Prims.unit =
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
           (let list = ["called and covered\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)

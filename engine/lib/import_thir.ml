@@ -353,6 +353,18 @@ end) : EXPR = struct
     in
     U.call' (`Concrete name) [ lhs; rhs ] span typ
 
+  let binop_of_assignop : Thir.assign_op -> Thir.bin_op = function
+    | AddAssign -> Add
+    | SubAssign -> Sub
+    | MulAssign -> Mul
+    | DivAssign -> Div
+    | RemAssign -> Rem
+    | BitXorAssign -> BitXor
+    | BitAndAssign -> BitAnd
+    | BitOrAssign -> BitOr
+    | ShlAssign -> Shl
+    | ShrAssign -> Shr
+
   let rec c_expr (e : Thir.decorated_for__expr_kind) : expr =
     try c_expr_unwrapped e
     with Diagnostics.SpanFreeError.Exn (Data (ctx, kind)) ->
@@ -596,7 +608,8 @@ end) : EXPR = struct
           c_expr_assign lhs rhs
       | AssignOp { lhs; op; rhs } ->
           let lhs = c_expr lhs in
-          c_expr_assign lhs @@ c_binop op lhs (c_expr rhs) span lhs.typ
+          c_expr_assign lhs
+          @@ c_binop (binop_of_assignop op) lhs (c_expr rhs) span lhs.typ
       | VarRef { id } -> LocalVar (local_ident Expr id)
       | Field { lhs; field } ->
           let lhs = c_expr lhs in
@@ -876,7 +889,7 @@ end) : EXPR = struct
     let typ = c_ty pat.span pat.ty in
     let v =
       match pat.contents with
-      | Wild -> PWild
+      | Wild | Missing -> PWild
       | AscribeUserType { ascription = { annotation; _ }; subpattern } ->
           let typ, typ_span = c_canonical_user_type_annotation annotation in
           let pat = c_pat subpattern in
@@ -1045,8 +1058,8 @@ end) : EXPR = struct
         TOpaque (Concrete_ident.of_def_id ~value:false def_id)
     | Alias { kind = Inherent; _ } ->
         assertion_failure [ span ] "Ty::Alias with AliasTyKind::Inherent"
-    | Alias { kind = Weak; _ } ->
-        assertion_failure [ span ] "Ty::Alias with AliasTyKind::Weak"
+    | Alias { kind = Free; _ } ->
+        assertion_failure [ span ] "Ty::Alias with AliasTyKind::Free"
     | Param { index; name } ->
         (* TODO: [id] might not unique *)
         TParam

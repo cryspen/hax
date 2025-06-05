@@ -8,7 +8,7 @@ let might_overflow (to_add: u32) : u32 =
     if to_add >. mk_u32 5
     then
       let _:Prims.unit =
-        Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+        Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
               (let list = ["this will probably overflow\n"] in
                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                 Rust_primitives.Hax.array_of_list 1 list)
@@ -20,15 +20,15 @@ let might_overflow (to_add: u32) : u32 =
   in
   let add_to:u32 = Core.Num.impl_u32__MAX -! mk_u32 5 in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 3)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 3)
           (mk_usize 2)
           (let list = ["does "; " + "; " overflow?\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
             Rust_primitives.Hax.array_of_list 3 list)
           (let list =
               [
-                Core.Fmt.Rt.impl_1__new_display #u32 add_to <: Core.Fmt.Rt.t_Argument;
-                Core.Fmt.Rt.impl_1__new_display #u32 to_add <: Core.Fmt.Rt.t_Argument
+                Core.Fmt.Rt.impl__new_display #u32 add_to <: Core.Fmt.Rt.t_Argument;
+                Core.Fmt.Rt.impl__new_display #u32 to_add <: Core.Fmt.Rt.t_Argument
               ]
             in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
@@ -39,7 +39,7 @@ let might_overflow (to_add: u32) : u32 =
   let _:Prims.unit = () in
   let result:u32 = to_add +! add_to in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
           (let list = ["continuing after overflow check\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
@@ -69,13 +69,13 @@ let main (_: Prims.unit) : Core.Result.t_Result Prims.unit u8 =
             then
               let result:u32 = might_overflow (mk_u32 10) in
               let _:Prims.unit =
-                Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+                Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
                       (mk_usize 1)
                       (let list = ["Result: "; "\n"] in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
                         Rust_primitives.Hax.array_of_list 2 list)
                       (let list =
-                          [Core.Fmt.Rt.impl_1__new_display #u32 result <: Core.Fmt.Rt.t_Argument]
+                          [Core.Fmt.Rt.impl__new_display #u32 result <: Core.Fmt.Rt.t_Argument]
                         in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                         Rust_primitives.Hax.array_of_list 1 list)
@@ -89,13 +89,13 @@ let main (_: Prims.unit) : Core.Result.t_Result Prims.unit u8 =
               then
                 let result:u32 = might_overflow (mk_u32 1) in
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.impl_4__new_v1 (mk_usize 2)
+                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
                         (mk_usize 1)
                         (let list = ["Result: "; "\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
                           Rust_primitives.Hax.array_of_list 2 list)
                         (let list =
-                            [Core.Fmt.Rt.impl_1__new_display #u32 result <: Core.Fmt.Rt.t_Argument]
+                            [Core.Fmt.Rt.impl__new_display #u32 result <: Core.Fmt.Rt.t_Argument]
                           in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
