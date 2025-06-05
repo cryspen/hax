@@ -68,6 +68,25 @@ impl<'a> ToPrintView<'a> for origin::PrimitiveTy {
                 };
                 destination::PrimitiveTy::Int(anon_field_0)
             }
+            origin::PrimitiveTy::Float(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PrimitiveTy::Float), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::PrimitiveTy::Float(anon_field_0)
+            }
+            origin::PrimitiveTy::Char => destination::PrimitiveTy::Char,
+            origin::PrimitiveTy::Str => destination::PrimitiveTy::Str,
         }
     }
 }
@@ -204,22 +223,6 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     mutable,
                 }
             }
-            origin::Ty::Error(anon_field_0) => {
-                let anon_field_0 = {
-                    let context = PrintContext {
-                        value: anon_field_0,
-                        payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Error), "::", stringify!(anon_field_0)
-                            )
-                                .into(),
-                            parent: parent_context.clone(),
-                        },
-                    };
-                    context
-                };
-                destination::Ty::Error(anon_field_0)
-            }
             origin::Ty::Param(anon_field_0) => {
                 let anon_field_0 = {
                     let context = PrintContext {
@@ -236,6 +239,178 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                 };
                 destination::Ty::Param(anon_field_0)
             }
+            origin::Ty::Slice(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Slice), "::", stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Ty::Slice(anon_field_0)
+            }
+            origin::Ty::Array { ty, length } => {
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Array), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let length = {
+                    let context = PrintContext {
+                        value: length,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Array), "::", stringify!(length)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Ty::Array {
+                    ty,
+                    length,
+                }
+            }
+            origin::Ty::RawPointer => destination::Ty::RawPointer,
+            origin::Ty::AssociatedType { impl_, item } => {
+                let impl_ = {
+                    let context = PrintContext {
+                        value: impl_,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::AssociatedType), "::", stringify!(impl_)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let item = {
+                    let context = PrintContext {
+                        value: item,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::AssociatedType), "::", stringify!(item)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Ty::AssociatedType {
+                    impl_,
+                    item,
+                }
+            }
+            origin::Ty::Opaque(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Opaque), "::", stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Ty::Opaque(anon_field_0)
+            }
+            origin::Ty::Dyn(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Dyn), "::", stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Ty::Dyn(anon_field_0)
+            }
+            origin::Ty::Error(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Error), "::", stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Ty::Error(anon_field_0)
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::DynTraitGoal {
+    type Out = destination::DynTraitGoal<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::DynTraitGoal { trait_, non_self_args } => {
+                let trait_ = {
+                    let context = PrintContext {
+                        value: trait_,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(DynTraitGoal), "::", stringify!(trait_)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let non_self_args = {
+                    let context = PrintContext {
+                        value: non_self_args,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(DynTraitGoal), "::", stringify!(non_self_args)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::DynTraitGoal {
+                    trait_,
+                    non_self_args,
+                }
+            }
         }
     }
 }
@@ -247,7 +422,7 @@ impl<'a> ToPrintView<'a> for origin::Metadata {
         parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::Metadata { span, attrs } => {
+            origin::Metadata { span, attributes } => {
                 let span = {
                     let context = PrintContext {
                         value: span,
@@ -261,12 +436,12 @@ impl<'a> ToPrintView<'a> for origin::Metadata {
                     };
                     context
                 };
-                let attrs = {
+                let attributes = {
                     let context = PrintContext {
-                        value: attrs,
+                        value: attributes,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Metadata), "::", stringify!(attrs)
+                                stringify!(Metadata), "::", stringify!(attributes)
                             )
                                 .into(),
                             parent: parent_context.clone(),
@@ -276,7 +451,7 @@ impl<'a> ToPrintView<'a> for origin::Metadata {
                 };
                 destination::Metadata {
                     span,
-                    attrs,
+                    attributes,
                 }
             }
         }
@@ -531,7 +706,125 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
     ) -> Self::Out {
         match self {
             origin::PatKind::Wild => destination::PatKind::Wild,
-            origin::PatKind::Binding { mutable, var, mode } => {
+            origin::PatKind::Ascription { ty, typ_span, pat } => {
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Ascription), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let typ_span = {
+                    let context = PrintContext {
+                        value: typ_span,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Ascription), "::", stringify!(typ_span)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let pat = {
+                    let context = PrintContext {
+                        value: pat,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Ascription), "::", stringify!(pat)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::PatKind::Ascription {
+                    ty,
+                    typ_span,
+                    pat,
+                }
+            }
+            origin::PatKind::Or { sub_pats } => {
+                let sub_pats = {
+                    let context = PrintContext {
+                        value: sub_pats,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Or), "::", stringify!(sub_pats)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::PatKind::Or {
+                    sub_pats,
+                }
+            }
+            origin::PatKind::Array { args } => {
+                let args = {
+                    let context = PrintContext {
+                        value: args,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Array), "::", stringify!(args)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::PatKind::Array {
+                    args,
+                }
+            }
+            origin::PatKind::Deref { sub_pat } => {
+                let sub_pat = {
+                    let context = PrintContext {
+                        value: sub_pat,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Deref), "::", stringify!(sub_pat)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::PatKind::Deref {
+                    sub_pat,
+                }
+            }
+            origin::PatKind::Constant { lit } => {
+                let lit = {
+                    let context = PrintContext {
+                        value: lit,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Constant), "::", stringify!(lit)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::PatKind::Constant {
+                    lit,
+                }
+            }
+            origin::PatKind::Binding { mutable, var, mode, sub_pat } => {
                 let mutable = {
                     let context = PrintContext {
                         value: mutable,
@@ -571,10 +864,24 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                     };
                     context
                 };
+                let sub_pat = {
+                    let context = PrintContext {
+                        value: sub_pat,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(PatKind::Binding), "::", stringify!(sub_pat)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
                 destination::PatKind::Binding {
                     mutable,
                     var,
                     mode,
+                    sub_pat,
                 }
             }
             origin::PatKind::Construct { constructor, is_record, is_struct, fields } => {
@@ -700,15 +1007,1035 @@ impl<'a> ToPrintView<'a> for origin::GuardKind {
         }
     }
 }
-impl<'a> ToPrintView<'a> for origin::ImplExpr {
-    type Out = destination::ImplExpr;
+impl<'a> ToPrintView<'a> for origin::Lhs {
+    type Out = destination::Lhs<'a>;
     fn to_print_view(
         &'a self,
         #[allow(unused_variables)]
         parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ImplExpr => destination::ImplExpr,
+            origin::Lhs::LocalVar { var, ty } => {
+                let var = {
+                    let context = PrintContext {
+                        value: var,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::LocalVar), "::", stringify!(var)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::LocalVar), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Lhs::LocalVar {
+                    var,
+                    ty,
+                }
+            }
+            origin::Lhs::ArbitraryExpr(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::ArbitraryExpr), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Lhs::ArbitraryExpr(anon_field_0)
+            }
+            origin::Lhs::FieldAccessor { e, ty, field } => {
+                let e = {
+                    let context = PrintContext {
+                        value: e,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::FieldAccessor), "::", stringify!(e)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::FieldAccessor), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let field = {
+                    let context = PrintContext {
+                        value: field,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::FieldAccessor), "::", stringify!(field)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Lhs::FieldAccessor {
+                    e,
+                    ty,
+                    field,
+                }
+            }
+            origin::Lhs::ArrayAccessor { e, ty, index } => {
+                let e = {
+                    let context = PrintContext {
+                        value: e,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::ArrayAccessor), "::", stringify!(e)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::ArrayAccessor), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let index = {
+                    let context = PrintContext {
+                        value: index,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Lhs::ArrayAccessor), "::", stringify!(index)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Lhs::ArrayAccessor {
+                    e,
+                    ty,
+                    index,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ImplExpr {
+    type Out = destination::ImplExpr<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ImplExpr { kind, goal } => {
+                let kind = {
+                    let context = PrintContext {
+                        value: kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExpr), "::", stringify!(kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let goal = {
+                    let context = PrintContext {
+                        value: goal,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExpr), "::", stringify!(goal)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExpr {
+                    kind,
+                    goal,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ImplExprKind {
+    type Out = destination::ImplExprKind<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ImplExprKind::Self_ => destination::ImplExprKind::Self_,
+            origin::ImplExprKind::Concrete(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Concrete), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExprKind::Concrete(anon_field_0)
+            }
+            origin::ImplExprKind::LocalBound { id } => {
+                let id = {
+                    let context = PrintContext {
+                        value: id,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::LocalBound), "::", stringify!(id)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExprKind::LocalBound {
+                    id,
+                }
+            }
+            origin::ImplExprKind::Parent { impl_, item } => {
+                let impl_ = {
+                    let context = PrintContext {
+                        value: impl_,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Parent), "::", stringify!(impl_)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let item = {
+                    let context = PrintContext {
+                        value: item,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Parent), "::", stringify!(item)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExprKind::Parent {
+                    impl_,
+                    item,
+                }
+            }
+            origin::ImplExprKind::Projection { impl_, item, ident } => {
+                let impl_ = {
+                    let context = PrintContext {
+                        value: impl_,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Projection), "::",
+                                stringify!(impl_)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let item = {
+                    let context = PrintContext {
+                        value: item,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Projection), "::", stringify!(item)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ident = {
+                    let context = PrintContext {
+                        value: ident,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Projection), "::",
+                                stringify!(ident)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExprKind::Projection {
+                    impl_,
+                    item,
+                    ident,
+                }
+            }
+            origin::ImplExprKind::ImplApp { impl_, args } => {
+                let impl_ = {
+                    let context = PrintContext {
+                        value: impl_,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::ImplApp), "::", stringify!(impl_)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let args = {
+                    let context = PrintContext {
+                        value: args,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::ImplApp), "::", stringify!(args)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExprKind::ImplApp {
+                    impl_,
+                    args,
+                }
+            }
+            origin::ImplExprKind::Dyn => destination::ImplExprKind::Dyn,
+            origin::ImplExprKind::Builtin(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplExprKind::Builtin), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplExprKind::Builtin(anon_field_0)
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ImplItem {
+    type Out = destination::ImplItem<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ImplItem { meta, generics, kind, ident } => {
+                let meta = {
+                    let context = PrintContext {
+                        value: meta,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItem), "::", stringify!(meta)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let generics = {
+                    let context = PrintContext {
+                        value: generics,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItem), "::", stringify!(generics)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let kind = {
+                    let context = PrintContext {
+                        value: kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItem), "::", stringify!(kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ident = {
+                    let context = PrintContext {
+                        value: ident,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItem), "::", stringify!(ident)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplItem {
+                    meta,
+                    generics,
+                    kind,
+                    ident,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ImplItemKind {
+    type Out = destination::ImplItemKind<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ImplItemKind::Type { ty, parent_bounds } => {
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItemKind::Type), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let parent_bounds = {
+                    let context = PrintContext {
+                        value: parent_bounds,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItemKind::Type), "::",
+                                stringify!(parent_bounds)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplItemKind::Type {
+                    ty,
+                    parent_bounds,
+                }
+            }
+            origin::ImplItemKind::Fn { body, params } => {
+                let body = {
+                    let context = PrintContext {
+                        value: body,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItemKind::Fn), "::", stringify!(body)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let params = {
+                    let context = PrintContext {
+                        value: params,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ImplItemKind::Fn), "::", stringify!(params)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ImplItemKind::Fn {
+                    body,
+                    params,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::TraitItem {
+    type Out = destination::TraitItem<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::TraitItem { kind, generics, ident, meta } => {
+                let kind = {
+                    let context = PrintContext {
+                        value: kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItem), "::", stringify!(kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let generics = {
+                    let context = PrintContext {
+                        value: generics,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItem), "::", stringify!(generics)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ident = {
+                    let context = PrintContext {
+                        value: ident,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItem), "::", stringify!(ident)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let meta = {
+                    let context = PrintContext {
+                        value: meta,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItem), "::", stringify!(meta)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::TraitItem {
+                    kind,
+                    generics,
+                    ident,
+                    meta,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::TraitItemKind {
+    type Out = destination::TraitItemKind<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::TraitItemKind::Type(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItemKind::Type), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::TraitItemKind::Type(anon_field_0)
+            }
+            origin::TraitItemKind::Fn(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItemKind::Fn), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::TraitItemKind::Fn(anon_field_0)
+            }
+            origin::TraitItemKind::Default { params, body } => {
+                let params = {
+                    let context = PrintContext {
+                        value: params,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItemKind::Default), "::", stringify!(params)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let body = {
+                    let context = PrintContext {
+                        value: body,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(TraitItemKind::Default), "::", stringify!(body)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::TraitItemKind::Default {
+                    params,
+                    body,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::QuoteContent {
+    type Out = destination::QuoteContent<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::QuoteContent::Verbatim(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(QuoteContent::Verbatim), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::QuoteContent::Verbatim(anon_field_0)
+            }
+            origin::QuoteContent::Expr(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(QuoteContent::Expr), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::QuoteContent::Expr(anon_field_0)
+            }
+            origin::QuoteContent::Pattern(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(QuoteContent::Pattern), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::QuoteContent::Pattern(anon_field_0)
+            }
+            origin::QuoteContent::Typ(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(QuoteContent::Typ), "::",
+                                stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::QuoteContent::Typ(anon_field_0)
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::Quote {
+    type Out = destination::Quote<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::Quote(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Quote), "::", stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Quote(anon_field_0)
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ItemQuoteOrigin {
+    type Out = destination::ItemQuoteOrigin<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ItemQuoteOrigin { item_kind, item_ident, position } => {
+                let item_kind = {
+                    let context = PrintContext {
+                        value: item_kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemQuoteOrigin), "::", stringify!(item_kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let item_ident = {
+                    let context = PrintContext {
+                        value: item_ident,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemQuoteOrigin), "::", stringify!(item_ident)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let position = {
+                    let context = PrintContext {
+                        value: position,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemQuoteOrigin), "::", stringify!(position)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemQuoteOrigin {
+                    item_kind,
+                    item_ident,
+                    position,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ItemQuoteOriginPosition {
+    type Out = destination::ItemQuoteOriginPosition;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ItemQuoteOriginPosition::Before => {
+                destination::ItemQuoteOriginPosition::Before
+            }
+            origin::ItemQuoteOriginPosition::After => {
+                destination::ItemQuoteOriginPosition::After
+            }
+            origin::ItemQuoteOriginPosition::Replace => {
+                destination::ItemQuoteOriginPosition::Replace
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::LoopKind {
+    type Out = destination::LoopKind<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::LoopKind::UnconditionalLoop => {
+                destination::LoopKind::UnconditionalLoop
+            }
+            origin::LoopKind::WhileLoop { condition } => {
+                let condition = {
+                    let context = PrintContext {
+                        value: condition,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::WhileLoop), "::", stringify!(condition)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::LoopKind::WhileLoop {
+                    condition,
+                }
+            }
+            origin::LoopKind::ForLoop { pat, it } => {
+                let pat = {
+                    let context = PrintContext {
+                        value: pat,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::ForLoop), "::", stringify!(pat)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let it = {
+                    let context = PrintContext {
+                        value: it,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::ForLoop), "::", stringify!(it)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::LoopKind::ForLoop {
+                    pat,
+                    it,
+                }
+            }
+            origin::LoopKind::ForIndexLoop { start, end, var, var_ty } => {
+                let start = {
+                    let context = PrintContext {
+                        value: start,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(start)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let end = {
+                    let context = PrintContext {
+                        value: end,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(end)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let var = {
+                    let context = PrintContext {
+                        value: var,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(var)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let var_ty = {
+                    let context = PrintContext {
+                        value: var_ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(var_ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::LoopKind::ForIndexLoop {
+                    start,
+                    end,
+                    var,
+                    var_ty,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ControlFlowKind {
+    type Out = destination::ControlFlowKind;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ControlFlowKind::BreakOnly => destination::ControlFlowKind::BreakOnly,
+            origin::ControlFlowKind::BreakOrReturn => {
+                destination::ControlFlowKind::BreakOrReturn
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::LoopState {
+    type Out = destination::LoopState<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::LoopState { init, body_pat } => {
+                let init = {
+                    let context = PrintContext {
+                        value: init,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopState), "::", stringify!(init)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let body_pat = {
+                    let context = PrintContext {
+                        value: body_pat,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(LoopState), "::", stringify!(body_pat)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::LoopState {
+                    init,
+                    body_pat,
+                }
+            }
         }
     }
 }
@@ -1034,6 +2361,39 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     inner,
                 }
             }
+            origin::ExprKind::AddressOf { mutability, inner } => {
+                let mutability = {
+                    let context = PrintContext {
+                        value: mutability,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::AddressOf), "::",
+                                stringify!(mutability)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let inner = {
+                    let context = PrintContext {
+                        value: inner,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::AddressOf), "::", stringify!(inner)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ExprKind::AddressOf {
+                    mutability,
+                    inner,
+                }
+            }
             origin::ExprKind::Deref(anon_field_0) => {
                 let anon_field_0 = {
                     let context = PrintContext {
@@ -1130,22 +2490,6 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                 };
                 destination::ExprKind::LocalId(anon_field_0)
             }
-            origin::ExprKind::Error(anon_field_0) => {
-                let anon_field_0 = {
-                    let context = PrintContext {
-                        value: anon_field_0,
-                        payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Error), "::", stringify!(anon_field_0)
-                            )
-                                .into(),
-                            parent: parent_context.clone(),
-                        },
-                    };
-                    context
-                };
-                destination::ExprKind::Error(anon_field_0)
-            }
             origin::ExprKind::Ascription { e, ty } => {
                 let e = {
                     let context = PrintContext {
@@ -1210,13 +2554,52 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     value,
                 }
             }
-            origin::ExprKind::Loop { body, label } => {
+            origin::ExprKind::Loop { body, kind, state, control_flow, label } => {
                 let body = {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
                             position: concat!(
                                 stringify!(ExprKind::Loop), "::", stringify!(body)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let kind = {
+                    let context = PrintContext {
+                        value: kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Loop), "::", stringify!(kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let state = {
+                    let context = PrintContext {
+                        value: state,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Loop), "::", stringify!(state)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let control_flow = {
+                    let context = PrintContext {
+                        value: control_flow,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Loop), "::", stringify!(control_flow)
                             )
                                 .into(),
                             parent: parent_context.clone(),
@@ -1239,6 +2622,9 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                 };
                 destination::ExprKind::Loop {
                     body,
+                    kind,
+                    state,
+                    control_flow,
                     label,
                 }
             }
@@ -1355,6 +2741,40 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     body,
                     captures,
                 }
+            }
+            origin::ExprKind::Quote { contents } => {
+                let contents = {
+                    let context = PrintContext {
+                        value: contents,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Quote), "::", stringify!(contents)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ExprKind::Quote {
+                    contents,
+                }
+            }
+            origin::ExprKind::Error(anon_field_0) => {
+                let anon_field_0 = {
+                    let context = PrintContext {
+                        value: anon_field_0,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Error), "::", stringify!(anon_field_0)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ExprKind::Error(anon_field_0)
             }
         }
     }
@@ -1477,14 +2897,60 @@ impl<'a> ToPrintView<'a> for origin::ImplIdent {
     }
 }
 impl<'a> ToPrintView<'a> for origin::ProjectionPredicate {
-    type Out = destination::ProjectionPredicate;
+    type Out = destination::ProjectionPredicate<'a>;
     fn to_print_view(
         &'a self,
         #[allow(unused_variables)]
         parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ProjectionPredicate => destination::ProjectionPredicate,
+            origin::ProjectionPredicate { impl_, assoc_item, ty } => {
+                let impl_ = {
+                    let context = PrintContext {
+                        value: impl_,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ProjectionPredicate), "::", stringify!(impl_)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let assoc_item = {
+                    let context = PrintContext {
+                        value: assoc_item,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ProjectionPredicate), "::",
+                                stringify!(assoc_item)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ProjectionPredicate), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ProjectionPredicate {
+                    impl_,
+                    assoc_item,
+                    ty,
+                }
+            }
         }
     }
 }
@@ -1664,14 +3130,135 @@ impl<'a> ToPrintView<'a> for origin::SafetyKind {
     }
 }
 impl<'a> ToPrintView<'a> for origin::Attribute {
-    type Out = destination::Attribute;
+    type Out = destination::Attribute<'a>;
     fn to_print_view(
         &'a self,
         #[allow(unused_variables)]
         parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::Attribute => destination::Attribute,
+            origin::Attribute { kind, span } => {
+                let kind = {
+                    let context = PrintContext {
+                        value: kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Attribute), "::", stringify!(kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let span = {
+                    let context = PrintContext {
+                        value: span,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Attribute), "::", stringify!(span)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Attribute {
+                    kind,
+                    span,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::AttributeKind {
+    type Out = destination::AttributeKind<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::AttributeKind::Tool { path, tokens } => {
+                let path = {
+                    let context = PrintContext {
+                        value: path,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(AttributeKind::Tool), "::", stringify!(path)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let tokens = {
+                    let context = PrintContext {
+                        value: tokens,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(AttributeKind::Tool), "::", stringify!(tokens)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::AttributeKind::Tool {
+                    path,
+                    tokens,
+                }
+            }
+            origin::AttributeKind::DocComment { kind, body } => {
+                let kind = {
+                    let context = PrintContext {
+                        value: kind,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(AttributeKind::DocComment), "::",
+                                stringify!(kind)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let body = {
+                    let context = PrintContext {
+                        value: body,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(AttributeKind::DocComment), "::",
+                                stringify!(body)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::AttributeKind::DocComment {
+                    kind,
+                    body,
+                }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::DocCommentKind {
+    type Out = destination::DocCommentKind;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::DocCommentKind::Line => destination::DocCommentKind::Line,
+            origin::DocCommentKind::Block => destination::DocCommentKind::Block,
         }
     }
 }
@@ -1770,6 +3357,77 @@ impl<'a> ToPrintView<'a> for origin::Param {
         }
     }
 }
+impl<'a> ToPrintView<'a> for origin::Variant {
+    type Out = destination::Variant<'a>;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::Variant { name, arguments, is_record, attributes } => {
+                let name = {
+                    let context = PrintContext {
+                        value: name,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Variant), "::", stringify!(name)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let arguments = {
+                    let context = PrintContext {
+                        value: arguments,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Variant), "::", stringify!(arguments)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let is_record = {
+                    let context = PrintContext {
+                        value: is_record,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Variant), "::", stringify!(is_record)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let attributes = {
+                    let context = PrintContext {
+                        value: attributes,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Variant), "::", stringify!(attributes)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::Variant {
+                    name,
+                    arguments,
+                    is_record,
+                    attributes,
+                }
+            }
+        }
+    }
+}
 impl<'a> ToPrintView<'a> for origin::ItemKind {
     type Out = destination::ItemKind<'a>;
     fn to_print_view(
@@ -1852,6 +3510,363 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     safety,
                 }
             }
+            origin::ItemKind::TyAlias { name, generics, ty } => {
+                let name = {
+                    let context = PrintContext {
+                        value: name,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::TyAlias), "::", stringify!(name)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let generics = {
+                    let context = PrintContext {
+                        value: generics,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::TyAlias), "::", stringify!(generics)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let ty = {
+                    let context = PrintContext {
+                        value: ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::TyAlias), "::", stringify!(ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::TyAlias {
+                    name,
+                    generics,
+                    ty,
+                }
+            }
+            origin::ItemKind::Type { name, generics, variants, is_struct } => {
+                let name = {
+                    let context = PrintContext {
+                        value: name,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Type), "::", stringify!(name)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let generics = {
+                    let context = PrintContext {
+                        value: generics,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Type), "::", stringify!(generics)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let variants = {
+                    let context = PrintContext {
+                        value: variants,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Type), "::", stringify!(variants)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let is_struct = {
+                    let context = PrintContext {
+                        value: is_struct,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Type), "::", stringify!(is_struct)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::Type {
+                    name,
+                    generics,
+                    variants,
+                    is_struct,
+                }
+            }
+            origin::ItemKind::Trait { name, generics, items } => {
+                let name = {
+                    let context = PrintContext {
+                        value: name,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Trait), "::", stringify!(name)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let generics = {
+                    let context = PrintContext {
+                        value: generics,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Trait), "::", stringify!(generics)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let items = {
+                    let context = PrintContext {
+                        value: items,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Trait), "::", stringify!(items)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::Trait {
+                    name,
+                    generics,
+                    items,
+                }
+            }
+            origin::ItemKind::Impl {
+                generics,
+                self_ty,
+                of_trait,
+                items,
+                parent_bounds,
+                safety,
+            } => {
+                let generics = {
+                    let context = PrintContext {
+                        value: generics,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Impl), "::", stringify!(generics)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let self_ty = {
+                    let context = PrintContext {
+                        value: self_ty,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Impl), "::", stringify!(self_ty)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let of_trait = {
+                    let context = PrintContext {
+                        value: of_trait,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Impl), "::", stringify!(of_trait)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let items = {
+                    let context = PrintContext {
+                        value: items,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Impl), "::", stringify!(items)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let parent_bounds = {
+                    let context = PrintContext {
+                        value: parent_bounds,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Impl), "::", stringify!(parent_bounds)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let safety = {
+                    let context = PrintContext {
+                        value: safety,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Impl), "::", stringify!(safety)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::Impl {
+                    generics,
+                    self_ty,
+                    of_trait,
+                    items,
+                    parent_bounds,
+                    safety,
+                }
+            }
+            origin::ItemKind::Alias { name, item } => {
+                let name = {
+                    let context = PrintContext {
+                        value: name,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Alias), "::", stringify!(name)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let item = {
+                    let context = PrintContext {
+                        value: item,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Alias), "::", stringify!(item)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::Alias {
+                    name,
+                    item,
+                }
+            }
+            origin::ItemKind::Use { path, is_external, rename } => {
+                let path = {
+                    let context = PrintContext {
+                        value: path,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Use), "::", stringify!(path)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let is_external = {
+                    let context = PrintContext {
+                        value: is_external,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Use), "::", stringify!(is_external)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let rename = {
+                    let context = PrintContext {
+                        value: rename,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Use), "::", stringify!(rename)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::Use {
+                    path,
+                    is_external,
+                    rename,
+                }
+            }
+            origin::ItemKind::Quote { quote, origin } => {
+                let quote = {
+                    let context = PrintContext {
+                        value: quote,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Quote), "::", stringify!(quote)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let origin = {
+                    let context = PrintContext {
+                        value: origin,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ItemKind::Quote), "::", stringify!(origin)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ItemKind::Quote {
+                    quote,
+                    origin,
+                }
+            }
             origin::ItemKind::Error(anon_field_0) => {
                 let anon_field_0 = {
                     let context = PrintContext {
@@ -1867,6 +3882,9 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     context
                 };
                 destination::ItemKind::Error(anon_field_0)
+            }
+            origin::ItemKind::NotImplementedYet => {
+                destination::ItemKind::NotImplementedYet
             }
         }
     }
