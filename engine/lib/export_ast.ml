@@ -6,7 +6,7 @@ type missing_type = unit
 
 module B = Rust_printer_types
 
-module Make (FA : Features.T) (FB : Features.T) = struct
+module Make (FA : Features.T) = struct
   open Ast
   module A = Ast.Make (FA)
 
@@ -370,7 +370,8 @@ module Make (FA : Features.T) (FB : Features.T) = struct
       | GPType -> Type
       | GPConst { typ } -> Const { ty = dty typ }
     in
-    (* { ident = local_ident; span; attrs; kind = A.generic_param_kind } *) ()
+    (* { ident = local_ident; span; attrs; kind = A.generic_param_kind } *)
+    todo ()
 
   let dgeneric_constraint (generic_constraint : A.generic_constraint) :
       B.generic_constraint =
