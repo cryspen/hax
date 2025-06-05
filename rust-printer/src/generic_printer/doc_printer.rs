@@ -17,15 +17,15 @@ pub trait Printer {
 }
 
 // A represent the type of annotations
-pub trait ToDoc<'a, T> {
-    fn to_doc(&self, x: T, p: PrintContextPayload<'a>) -> RcDoc<()>;
+pub trait ToDoc<'a: 'p, 'p, T> {
+    fn to_doc(&'p self, x: T, p: PrintContextPayload<'a>) -> RcDoc<'p, ()>;
 }
 
-pub fn print<'a, T, P>(x: PrintContext<'a, T>, p: &'a P) -> RcDoc<'a, ()>
+pub fn print<'a: 'p, 'p, T, P>(x: PrintContext<'a, T>, p: &'p P) -> RcDoc<'p, ()>
 where
     T: ToPrintView<'a>,
     &'a T: Into<ast::node::NodeRef<'a>>,
-    P: ToDoc<'a, <T as ToPrintView<'a>>::Out>,
+    P: ToDoc<'a, 'p, <T as ToPrintView<'a>>::Out>,
 {
     let payload = x.payload.clone();
     p.to_doc(x.value.to_print_view(Some(Rc::new(x.into()))), payload)

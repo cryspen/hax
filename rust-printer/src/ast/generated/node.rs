@@ -532,4 +532,5 @@ pub enum NodeRef<'lt> {
     Variant(&'lt Variant),
     ItemKind(&'lt ItemKind),
     Item(&'lt Item),
+    Literal,
 }
