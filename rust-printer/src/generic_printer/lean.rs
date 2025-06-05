@@ -1,5 +1,5 @@
 use super::{
-    doc_print::ToDoc, print_context::PrintContext, print_view::*, to_print_view::ToPrintAst,
+    doc_printer::*, print_context::PrintContext, print_view::*, to_print_view::ToPrintAst,
 };
 use pretty::{BoxDoc, Doc};
 use std::any::Any;
