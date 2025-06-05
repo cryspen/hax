@@ -18,6 +18,7 @@ schemars.workspace = true
 serde-jsonlines = "0.5.0"
 serde_stacker = "0.1.12"
 itertools.workspace = true
+pretty = "0.12"
 
 [build-dependencies]
 syn = { version = "2", features = ["full", "visit", "visit-mut"] }
