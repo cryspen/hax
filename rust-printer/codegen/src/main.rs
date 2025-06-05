@@ -107,6 +107,9 @@ fn generate_enum(name: &str, file: &File, reference: bool, add_variant_unknown: 
 }
 
 fn main() {
+    // Move to the main directory of the rust engine
+    std::env::set_current_dir("..").unwrap();
+
     let mut ast = read("src/ast.rs");
     // Generate `node.rs`, for the regular AST
     generate_node(&ast);
