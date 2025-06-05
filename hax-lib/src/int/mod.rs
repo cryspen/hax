@@ -23,10 +23,10 @@ impl fmt::Display for Int {
 }
 
 impl Int {
-    fn new(x: impl Into<num_bigint::BigInt>) -> Self {
+    pub fn new(x: impl Into<num_bigint::BigInt>) -> Self {
         Int(BigInt::new(&x.into()))
     }
-    fn get(self) -> num_bigint::BigInt {
+    pub fn get(self) -> num_bigint::BigInt {
         self.0.get()
     }
 }

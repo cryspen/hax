@@ -1,0 +1,24 @@
+[package]
+name = "bip-340"
+version = "0.1.0"
+authors = ["Jonas Nick <jonasd.nick@gmail.com>", "Fabian Jahr <fjahr@protonmail.com>"]
+edition = "2021"
+description = "A BIP 340 implementation compatible with https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki."
+
+[lib]
+path = "src/bip-340.rs"
+
+[dependencies]
+hax-lib.workspace = true
+sha256 = { path = "../sha256" }
+num-bigint = "0.4"
+num-traits = "0.2"
+
+[dev-dependencies]
+quickcheck = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hex = "0.4"
+
+[package.metadata.hax]
+include = ["*"]
