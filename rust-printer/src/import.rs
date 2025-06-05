@@ -2,6 +2,9 @@
 //!
 //! It handles fallbacks for unsupported constructs by emitting `Diagnostic` errors.
 
+// TODO: this file is stale. We keep it just to keep typecheckable by Rust. We will reuse most of this file later.
+#![allow(unused)]
+
 use crate::ast::{self as dst, GenericValue, GlobalId, LocalId};
 use crate::ast::{diagnostics::*, GenericParamKind};
 use hax_frontend_exporter::{
