@@ -362,7 +362,7 @@ module Make (FA : Features.T) = struct
     | A.LhsArrayAccessor { e; index; typ; witness = _ } ->
         B.ArrayAccessor { e = dlhs e; index = dexpr index; ty = dty typ }
 
-  let dgeneric_param _span ({ ident; span; attrs; kind } : A.generic_param) :
+  let dgeneric_param ({ ident; span; attrs; kind } : A.generic_param) :
       B.generic_param =
     let kind : B.generic_param_kind =
       match kind with
@@ -370,38 +370,81 @@ module Make (FA : Features.T) = struct
       | GPType -> Type
       | GPConst { typ } -> Const { ty = dty typ }
     in
-    (* { ident = local_ident; span; attrs; kind = A.generic_param_kind } *)
-    todo ()
+    { ident = dlocal_ident ident; meta = dmetadata ~attrs span; kind }
 
   let dgeneric_constraint (generic_constraint : A.generic_constraint) :
       B.generic_constraint =
     match generic_constraint with
-    | GCLifetime (lf, _witness) -> todo ()
-    | GCType impl_ident -> todo ()
-    | GCProjection projection -> todo ()
+    | GCLifetime (lf, _witness) -> Lifetime lf
+    | GCType impl_ident -> Type (dimpl_ident impl_ident)
+    | GCProjection projection -> Projection (dprojection_predicate projection)
 
-  let dgenerics (g : A.generics) : B.generics = todo ()
-  let dparam (p : A.param) : B.param = todo ()
-  let dvariant (v : A.variant) : B.variant = todo ()
+  let dgenerics (g : A.generics) : B.generics =
+    {
+      constraints = List.map ~f:dgeneric_constraint g.constraints;
+      params = List.map ~f:dgeneric_param g.params;
+    }
+
+  let dparam (p : A.param) : B.param =
+    {
+      attributes = List.map ~f:dattr p.attrs;
+      pat = dpat p.pat;
+      ty =
+        {
+          ty = dty p.typ;
+          span =
+            EmptyStructspan (* Should use dspan, but what if option is None*);
+        };
+    }
+
+  let dvariant (v : A.variant) : B.variant =
+    let dattrs = List.map ~f:dattr in
+    {
+      arguments =
+        List.map
+          ~f:(fun (id, t, a) -> (dconcrete_ident id, dty t, dattrs a))
+          v.arguments;
+      attributes = dattrs v.attrs;
+      is_record = v.is_record;
+      name = dconcrete_ident v.name;
+    }
 
   let dtrait_item' (ti : A.trait_item') : B.trait_item_kind =
     match ti with
-    | TIType idents -> todo ()
-    | TIFn t -> todo ()
-    | TIDefault { params; body; witness = _ } -> todo ()
+    | TIType idents -> Type (List.map ~f:dimpl_ident idents)
+    | TIFn t -> Fn (dty t)
+    | TIDefault { params; body; witness = _ } ->
+        Default { params = List.map ~f:dparam params; body = dexpr body }
 
-  and dtrait_item (ti : A.trait_item) : B.trait_item = todo ()
+  let dtrait_item (ti : A.trait_item) : B.trait_item =
+    {
+      generics = dgenerics ti.ti_generics;
+      ident = dconcrete_ident ti.ti_ident;
+      kind = dtrait_item' ti.ti_v;
+      meta = dmetadata ~attrs:ti.ti_attrs ti.ti_span;
+    }
 
   let dimpl_item' (ii : A.impl_item') : B.impl_item_kind =
     match ii with
-    | IIType { typ; parent_bounds } -> todo ()
-    | IIFn { body; params } -> todo ()
+    | IIType { typ; parent_bounds } ->
+        Type
+          {
+            ty = dty typ;
+            parent_bounds =
+              List.map ~f:(dimpl_expr *** dimpl_ident) parent_bounds;
+          }
+    | IIFn { body; params } ->
+        Fn { body = dexpr body; params = List.map ~f:dparam params }
 
-  and dimpl_item (ii : A.impl_item) : B.impl_item = todo ()
+  let dimpl_item (ii : A.impl_item) : B.impl_item =
+    {
+      generics = dgenerics ii.ii_generics;
+      ident = dconcrete_ident ii.ii_ident;
+      kind = dimpl_item' ii.ii_v;
+      meta = dmetadata ~attrs:ii.ii_attrs ii.ii_span;
+    }
 
-  let ditem (i : A.item) : B.item list = todo ()
-
-  and ditem' (item : A.item') : B.item_kind =
+  let ditem' (item : A.item') : B.item_kind =
     match item with
     | A.Fn { name; generics; body; params; safety } ->
         B.Fn
@@ -469,4 +512,13 @@ module Make (FA : Features.T) = struct
         B.Quote { quote = dquote quote; origin = ditem_quote_origin origin }
     | A.HaxError _ -> todo ()
     | A.NotImplementedYet -> B.NotImplementedYet
+
+  let ditem (i : A.item) : B.item list =
+    [
+      {
+        ident = dconcrete_ident i.ident;
+        kind = ditem' i.v;
+        meta = dmetadata ~attrs:i.attrs i.span;
+      };
+    ]
 end [@warnerror "-27-26"]
