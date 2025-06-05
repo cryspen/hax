@@ -1,6 +1,7 @@
 use core::fmt;
 use core::ops::*;
 use num_traits::cast::ToPrimitive;
+use num_traits::Num;
 
 mod bigint;
 use bigint::*;
@@ -23,10 +24,10 @@ impl fmt::Display for Int {
 }
 
 impl Int {
-    fn new(x: impl Into<num_bigint::BigInt>) -> Self {
+    pub fn new(x: impl Into<num_bigint::BigInt>) -> Self {
         Int(BigInt::new(&x.into()))
     }
-    fn get(self) -> num_bigint::BigInt {
+    pub fn get(self) -> num_bigint::BigInt {
         self.0.get()
     }
 }
@@ -84,6 +85,10 @@ impl Int {
     pub fn _unsafe_from_str(s: &str) -> Self {
         use core::str::FromStr;
         Self::new(num_bigint::BigInt::from_str(s).unwrap())
+    }
+
+    pub fn _unsafe_from_hex(s: &str) -> Self {
+        Self::new(num_bigint::BigInt::from_str_radix(s, 16).unwrap())
     }
 
     pub fn rem_euclid(&self, v: Self) -> Self {
