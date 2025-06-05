@@ -64,21 +64,21 @@ fn translate_pat(pat: &src::Pat) -> dst::Pat {
     let span = (&pat.span).into();
     let kind = Box::new(match pat.contents.as_ref() {
         src::PatKind::Wild => dst::PatKind::Wild,
-        src::PatKind::Binding { var, .. } => dst::PatKind::Binding {
+        src::PatKind::Binding { var, .. } => todo!()/* dst::PatKind::Binding {
             mutable: false,
             var: var.into(),
             mode: dst::BindingMode::ByValue,
-        },
-        src::PatKind::Tuple { subpatterns } => dst::PatKind::Construct {
+        } */,
+        src::PatKind::Tuple { .. } => todo!()/* dst::PatKind::Construct {
             constructor: GlobalId::tuple_pat(),
             is_record: false,
             is_struct: true,
-            fields: subpatterns
+            fields: sub_patterns
                 .iter()
                 .enumerate()
                 .map(|(i, p)| (GlobalId::tuple_field(i), translate_pat(p)))
                 .collect(),
-        },
+        } */,
         pat => dst::PatKind::Error(Diagnostic::new(
             dst::Node::Unknown(format!("Rust THIR: pat: {pat:?}")),
             DiagnosticInfo {
