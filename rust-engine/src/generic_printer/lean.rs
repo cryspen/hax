@@ -76,10 +76,21 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, ExprKind<'a>> for LeanPrinter {
                 condition,
                 then,
                 else_,
-            } => RcDoc::text("if ")
-                .append(super::doc_printer::print(condition, self))
-                .append(RcDoc::text(" then "))
-                .append(super::doc_printer::print(then, self)),
+            } => match else_.value {
+                Some(else_branch) => RcDoc::text("if ")
+                    .append(super::doc_printer::print(condition, self))
+                    .append(RcDoc::text(" then "))
+                    .append(super::doc_printer::print(then, self))
+                    .append(RcDoc::text(" else "))
+                    .append(super::doc_printer::print(
+                        PrintContext {
+                            value: else_branch,
+                            payload: else_.payload,
+                        },
+                        self,
+                    )),
+                None => todo!(),
+            },
             ExprKind::App {
                 head,
                 args,
@@ -156,6 +167,11 @@ fn lit_test() {
         span,
         attributes: vec![],
     };
+    let expr_false = ast::Expr {
+        ty: ty.clone(),
+        kind: Box::new(ast::ExprKind::Literal(Literal::Bool(false))),
+        meta: meta.clone(),
+    };
     let expr_true = ast::Expr {
         ty: ty.clone(),
         kind: Box::new(ast::ExprKind::Literal(Literal::Bool(true))),
@@ -167,7 +183,7 @@ fn lit_test() {
         kind: Box::new(ast::ExprKind::If {
             condition: expr_true.clone(),
             then: expr_true.clone(),
-            else_: None,
+            else_: Some(expr_false.clone()),
         }),
         meta: meta.clone(),
     };
