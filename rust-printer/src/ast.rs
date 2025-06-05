@@ -17,8 +17,9 @@ pub mod literals;
 pub mod node;
 pub mod span;
 
+use crate::symbol::Symbol;
 pub use diagnostics::Diagnostic;
-use hax_frontend_exporter::{Impl, Mutability};
+use hax_frontend_exporter::Mutability;
 pub use identifiers::*;
 pub use literals::*;
 pub use node::Node;
@@ -28,13 +29,19 @@ pub use span::Span;
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum GenericValue {
     /// A type-level generic value.
-    /// Example: `i32` in `Vec<i32>`
+    ///
+    /// # Example:
+    /// `i32` in `Vec<i32>`
     Ty(Ty),
     /// A const-level generic value.
-    /// Example: `12` in `Foo<12>`
+    ///
+    /// # Example:
+    /// `12` in `Foo<12>`
     Expr(Expr),
     /// A lifetime.
-    /// Example: `'a` in `foo<'a>`
+    ///
+    /// # Example:
+    /// `'a` in `foo<'a>`
     Lifetime,
 }
 
@@ -57,47 +64,61 @@ pub enum PrimitiveTy {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum Ty {
     /// A primitive type.
-    /// Example: `i32`, `bool`
+    ///
+    /// # Example:
+    /// `i32`, `bool`
     Primitive(PrimitiveTy),
 
     /// A tuple type.
-    /// Example: `(i32, bool)`
+    ///
+    /// # Example:
+    /// `(i32, bool)`
     Tuple(Vec<Ty>),
 
     /// A type application (generic type).
-    /// Example: `Vec<i32>`
+    ///
+    /// # Example:
+    /// `Vec<i32>`
     App {
         head: GlobalId,
         args: Vec<GenericValue>,
     },
 
     /// A function or closure type.
-    /// Example: `fn(i32) -> bool` or `Fn(i32) -> bool`
+    ///
+    /// # Example:
+    /// `fn(i32) -> bool` or `Fn(i32) -> bool`
     Arrow { inputs: Vec<Ty>, output: Box<Ty> },
 
+    // TODO: Should we keep this type?
     /// A reference type.
-    /// Example: `&i32`, `&mut i32`
+    ///
+    /// # Example:
+    /// `&i32`, `&mut i32`
     Ref { inner: Box<Ty>, mutable: bool },
-
-    /// Fallback constructor to carry errors.
-    Error(Diagnostic),
 
     /// A parameter type
     Param(LocalId),
 
+    // TODO: Should we keep this type?
     /// A slice type.
-    /// Example: `&[i32]`
+    ///
+    /// # Example:
+    /// `&[i32]`
     Slice(Box<Ty>),
 
     /// An array type.
-    /// Example: `&[i32; 10]`
+    ///
+    /// # Example:
+    /// `&[i32; 10]`
     Array { ty: Box<Ty>, length: Box<Expr> },
 
     /// A raw pointer type
     RawPointer,
 
     /// An associated type
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     ///     fn f<T: Tr>() -> T::A {...}
     /// ```
@@ -109,23 +130,29 @@ pub enum Ty {
     },
 
     /// An opaque type
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     /// type Foo = impl Bar;
     /// ```
     Opaque(GlobalId),
 
     /// A `dyn` type
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     /// dyn Tr
     /// ```
     Dyn(Vec<DynTraitGoal>),
+
+    /// Fallback constructor to carry errors.
+    Error(Diagnostic),
 }
 
-/// A `dyn`` trait. The generic arguments are known but the actual type
+/// A `dyn` trait. The generic arguments are known but the actual type
 /// implementing the trait is known dynamically.
-/// Example:
+///
+/// # Example:
 /// ```rust
 /// dyn Tr<A, B>
 /// ```
@@ -195,12 +222,16 @@ pub struct Guard {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum BorrowKind {
     /// Shared reference
-    /// Example: `&x`
+    ///
+    /// # Example:
+    /// `&x`
     Shared,
     /// Unique reference: this is internal to rustc
     Unique,
     /// Mutable reference
-    /// Example: `&mut x`
+    ///
+    /// # Example:
+    /// `&mut x`
     Mut,
 }
 
@@ -208,10 +239,14 @@ pub enum BorrowKind {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum BindingMode {
     /// Binding by value
-    /// Example: `x`
+    ///
+    /// # Example:
+    /// `x`
     ByValue,
     /// Binding by reference
-    /// Example: `ref x`, `ref mut x`
+    ///
+    /// # Example:
+    /// `ref x`, `ref mut x`
     ByRef(BorrowKind),
 }
 
@@ -219,32 +254,45 @@ pub enum BindingMode {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum PatKind {
     /// Wildcard pattern
-    /// Example: `_`
+    ///
+    /// # Example:
+    /// `_`
     Wild,
 
     /// An ascription pattern
-    /// Example: `p : ty`
+    ///
+    /// # Example:
+    /// `p : ty`
     Ascription { ty: Ty, typ_span: Span, pat: Pat },
 
     /// An or pattern
-    /// Example: `p | q`
+    ///
+    /// # Example:
+    /// `p | q`
     /// Always contains at least 2 sub-patterns
-    Or { subpats: Vec<Pat> },
+    Or { sub_pats: Vec<Pat> },
 
     /// An array pattern
-    /// Example: `[p, q]`
+    ///
+    /// # Example:
+    /// `[p, q]`
     Array { args: Vec<Pat> },
 
     /// A dereference pattern
-    /// Example: `&p`
-    Deref { subpat: Pat },
+    ///
+    /// # Example:
+    /// `&p`
+    Deref { sub_pat: Pat },
 
     /// A constant pattern
-    /// Example: `1`
+    ///
+    /// # Example:
+    /// `1`
     Constant { lit: Literal },
 
     /// A variable binding.
-    /// Examples:
+    ///
+    /// # Examples:
     /// - `x` → `mutable: false`
     /// - `mut x` → `mutable: true`
     /// - `ref x` → `mode: ByRef(Shared)`
@@ -252,9 +300,15 @@ pub enum PatKind {
         mutable: bool,
         var: LocalId,
         mode: BindingMode,
+        sub_pat: Option<Pat>,
     },
 
     /// A constructor pattern
+    ///
+    /// # Example:
+    /// ```rust
+    /// Foo(x)
+    /// ```
     Construct {
         constructor: GlobalId,
         is_record: bool,
@@ -301,28 +355,90 @@ pub struct ImplExpr {
     goal: TraitGoal,
 }
 
-/// Represents all the kinds of impl expr
+/// Represents all the kinds of impl expr.
+///
+/// # Example:
+/// In the snippet below, the `clone` method on `x` corresponds to the implementation
+/// of `Clone` derived for `Vec<T>` (`ImplApp`) given the `LocalBound` on `T`.
+/// ```rust
+/// fn f<T: Clone>(x: Vec<T>) -> Vec<T> {
+///   x.clone()
+/// }
+/// ```
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ImplExprKind {
+    /// The trait implementation being defined.
+    ///
+    /// # Example:
+    /// The impl expr for `Type: Trait` used in `self.f()` is `Self_`.
+    /// ```rust
+    /// impl Trait for Type {
+    ///     fn f(&self) {...}
+    ///     fn g(&self) {self.f()}
+    /// }
+    /// ```
     Self_,
+    /// A concrete `impl` block.
+    ///
+    /// # Example
+    /// ```rust
+    /// impl Clone for Type { // Consider this `impl` is called `impl0`
+    ///     ...
+    /// }
+    /// fn f(x: Type) {
+    ///     x.clone() // Here `clone` comes from `Concrete(impl0)`
+    /// }
+    /// ```
     Concrete(TraitGoal),
-    LocalBound {
-        id: String,
-    },
-    Parent {
-        impl_: ImplExpr,
-        item: GlobalId,
-    },
+    /// A bound introduced by a generic clause.
+    ///
+    /// # Example:
+    /// ```rust
+    /// fn f<T: Clone>(x: T) -> T {
+    ///   x.clone() // Here the method comes from the bound `T: Clone`
+    /// }
+    /// ```
+    LocalBound { id: Symbol },
+    /// A parent implementation.
+    ///
+    /// # Example:
+    /// ```rust
+    /// trait SubTrait: Clone {}
+    /// fn f<T: SubTrait>(x: T) -> T {
+    ///   x.clone() // Here the method comes from the parent of the bound `T: SubTrait`
+    /// }
+    /// ```
+    Parent { impl_: ImplExpr, item: GlobalId },
+    /// A projected associated implementation.
+    ///
+    /// # Example:
+    /// In this snippet, `T::Item` is an `AssociatedType` where the subsequent `ImplExpr`
+    /// is a type projection of `ITerator`.
+    /// ```rust
+    /// fn f<T: Iterator>(x: T) -> Option<T::Item> {
+    ///     x.next()
+    /// }
+    /// ```
     Projection {
         impl_: ImplExpr,
         item: GlobalId,
         ident: ImplIdent,
     },
+    /// An instantiation of a generic implementation.
+    ///
+    /// # Example:
+    /// ```rust
+    /// fn f<T: Clone>(x: Vec<T>) -> Vec<T> {
+    ///   x.clone() // The `Clone` implementation for `Vec` is instantiated with the local bound `T: Clone`
+    /// }
+    /// ```
     ImplApp {
         impl_: ImplExpr,
         args: Vec<ImplExpr>,
     },
+    /// The implementation provided by a dyn.
     Dyn,
+    /// A trait implemented natively by rust.
     Builtin(TraitGoal),
 }
 
@@ -365,7 +481,8 @@ pub enum TraitItemKind {
 }
 
 /// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
-/// Example:
+///
+/// # Example:
 /// ```rust
 /// fstar!("f ${x + 3} + 10")
 /// ```
@@ -413,7 +530,7 @@ pub enum LoopKind {
         start: Expr,
         end: Expr,
         var: LocalId,
-        var_typ: Ty,
+        var_ty: Ty,
     },
 }
 
@@ -427,18 +544,21 @@ pub enum ControlFlowKind {
     BreakOrReturn,
 }
 
+// TODO: Revisit?
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct LoopState {
     init: Expr,
-    bpat: Pat,
+    body_pat: Pat,
 }
 
-/// Describes the shape of an expression.
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
+/// Describes the shape of an expression.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ExprKind {
     /// If expression.
-    /// Example: `if x > 0 { 1 } else { 2 }`
+    ///
+    /// # Example:
+    /// `if x > 0 { 1 } else { 2 }`
     If {
         condition: Expr,
         then: Expr,
@@ -446,7 +566,9 @@ pub enum ExprKind {
     },
 
     /// Function application.
-    /// Example: `f(x, y)`
+    ///
+    /// # Example:
+    /// `f(x, y)`
     App {
         head: Expr,
         args: Vec<Expr>,
@@ -456,15 +578,21 @@ pub enum ExprKind {
     },
 
     /// A literal value.
-    /// Example: `42`, `"hello"`
+    ///
+    /// # Example:
+    /// `42`, `"hello"`
     Literal(Literal),
 
     /// An array literal.
-    /// Example: `[1, 2, 3]`
+    ///
+    /// # Example:
+    /// `[1, 2, 3]`
     Array(Vec<Expr>),
 
     /// A constructor application
-    /// Example: A(x)
+    ///
+    /// # Example:
+    /// A(x)
     Construct {
         constructor: GlobalId,
         is_record: bool,
@@ -479,11 +607,14 @@ pub enum ExprKind {
     },
 
     /// A tuple literal.
-    /// Example: `(a, b)`
+    ///
+    /// # Example:
+    /// `(a, b)`
     Tuple(Vec<Expr>),
 
     /// A reference expression.
-    /// Examples:
+    ///
+    /// # Examples:
     /// - `&x` → `mutable: false`
     /// - `&mut x` → `mutable: true`
     Borrow {
@@ -492,17 +623,24 @@ pub enum ExprKind {
     },
 
     /// Raw borrow
+    ///
+    /// # Example:
+    /// `*const u8`
     AddressOf {
         mutability: Mutability,
         inner: Expr,
     },
 
     /// A dereference
-    /// Example: `*x`
+    ///
+    /// # Example:
+    /// `*x`
     Deref(Expr),
 
     /// A `let` expression used in expressions.
-    /// Example: `let x = 1; x + 1`
+    ///
+    /// # Example:
+    /// `let x = 1; x + 1`
     Let {
         lhs: Pat,
         rhs: Expr,
@@ -510,15 +648,16 @@ pub enum ExprKind {
     },
 
     /// A global identifier.
-    /// Example: `std::mem::drop`
+    ///
+    /// # Example:
+    /// `std::mem::drop`
     GlobalId(GlobalId),
 
     /// A local variable.
-    /// Example: `x`
+    ///
+    /// # Example:
+    /// `x`
     LocalId(LocalId),
-
-    /// Fallback constructor to carry errors.
-    Error(Diagnostic),
 
     /// Type ascription
     Ascription {
@@ -527,43 +666,55 @@ pub enum ExprKind {
     },
 
     /// Variable mutation
-    /// Example: `x = 1`
+    ///
+    /// # Example:
+    /// `x = 1`
     Assign {
         lhs: Lhs,
         value: Expr,
     },
 
     /// Loop
-    /// Example: `loop{}`
+    ///
+    /// # Example:
+    /// `loop{}`
     Loop {
         body: Expr,
         kind: LoopKind,
         state: Option<LoopState>,
         control_flow: Option<ControlFlowKind>,
-        label: Option<String>,
+        label: Option<Symbol>,
     },
 
     /// Break out of a loop
-    /// Example: `break`
+    ///
+    /// # Example:
+    /// `break`
     Break {
         value: Expr,
-        label: Option<String>,
+        label: Option<Symbol>,
     },
 
     /// Return from a function
-    /// Example: `return 1`
+    ///
+    /// # Example:
+    /// `return 1`
     Return {
         value: Expr,
     },
 
     /// Continue (go to next loop iteration)
-    /// Example: `continue`
+    ///
+    /// # Example:
+    /// `continue`
     Continue {
-        label: Option<String>,
+        label: Option<Symbol>,
     },
 
     /// Closure (anonymous function)
-    /// Example: `|x| x`
+    ///
+    /// # Example:
+    /// `|x| x`
     Closure {
         params: Vec<Pat>,
         body: Expr,
@@ -574,6 +725,9 @@ pub enum ExprKind {
     Quote {
         contents: Quote,
     },
+
+    /// Fallback constructor to carry errors.
+    Error(Diagnostic),
 }
 
 /// Represents the kinds of generic parameters
@@ -584,10 +738,15 @@ pub enum GenericParamKind {
     Const { ty: Ty },
 }
 
-/// Represents an instantiated trait that needs to be implemented
+/// Represents an instantiated trait that needs to be implemented.
+///
+/// # Example:
+/// A bound `_: std::ops::Add<u8>`
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct TraitGoal {
+    /// `std::ops::Add` in the example.
     pub trait_: GlobalId,
+    /// `[u8]` in the example.
     pub args: Vec<GenericValue>,
 }
 
@@ -595,7 +754,7 @@ pub struct TraitGoal {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ImplIdent {
     pub goal: TraitGoal,
-    pub name: String,
+    pub name: Symbol,
 }
 
 /// A projection predicate expresses a constraint over an associated type:
@@ -613,7 +772,7 @@ pub struct ProjectionPredicate {
 /// A generic constraint (lifetime, type or projection)
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum GenericConstraint {
-    Lifetime(String),
+    Lifetime(String), // TODO: Remove `String`
     Type(ImplIdent),
     Projection(ProjectionPredicate),
 }
@@ -699,7 +858,8 @@ pub struct Variant {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub enum ItemKind {
     /// A function or constant item.
-    /// Example:```rust
+    ///
+    /// # Example:```rust
     /// fn add<T: Clone>(x: i32, y: i32) -> i32 {
     ///     x + y
     /// }
@@ -707,23 +867,32 @@ pub enum ItemKind {
     /// Constants are represented as functions of arity zero, while functions always have a non-zero arity.
     Fn {
         /// The identifier of the function.
-        /// Example: `add`
+        ///
+        /// # Example:
+        /// `add`
         name: GlobalId,
         /// The generic arguments and constraints of the function.
-        /// Example: the generic type `T` and the constraint `T: Clone`
+        ///
+        /// # Example:
+        /// the generic type `T` and the constraint `T: Clone`
         generics: Generics,
         /// The body of the function
-        /// Example: `x + y`
+        ///
+        /// # Example:
+        /// `x + y`
         body: Expr,
         /// The parameters of the function.
-        /// Example: `x: i32, y: i32`
+        ///
+        /// # Example:
+        /// `x: i32, y: i32`
         params: Vec<Param>,
         /// The safety of the function.
         safety: SafetyKind,
     },
 
     /// A type alias.
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     /// type A = u8;
     /// ```
@@ -734,7 +903,8 @@ pub enum ItemKind {
     },
 
     /// A type definition (struct or enum)
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     /// enum A {B, C}
     /// struct S {f: u8}
@@ -747,7 +917,8 @@ pub enum ItemKind {
     },
 
     /// A trait definition.
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     /// trait T<A> {
     ///     type Assoc;
@@ -761,7 +932,8 @@ pub enum ItemKind {
     },
 
     /// A trait implementation.
-    /// Example:
+    ///
+    /// # Example:
     /// ```rust
     /// impl T<u8> for u16 {
     ///     type Assoc = u32;
@@ -779,12 +951,13 @@ pub enum ItemKind {
         safety: SafetyKind,
     },
 
-    /// ` use item as name; `
+    /// Internal node introduced by phases, corresponds to an alias to any item.
     Alias {
         name: GlobalId,
         item: GlobalId,
     },
 
+    // TODO: Should we keep `Use`?
     /// A `use` statement
     Use {
         path: Vec<String>,
