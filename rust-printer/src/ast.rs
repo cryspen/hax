@@ -159,9 +159,9 @@ pub enum Ty {
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct DynTraitGoal {
     /// `Tr` in the example above
-    trait_: GlobalId,
+    pub trait_: GlobalId,
     /// `A, B` in the example above
-    non_self_args: Vec<GenericValue>,
+    pub non_self_args: Vec<GenericValue>,
 }
 
 /// Extra information attached to syntax nodes.
@@ -351,8 +351,8 @@ pub enum Lhs {
 /// Represents a witness of trait implementation
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ImplExpr {
-    kind: Box<ImplExprKind>,
-    goal: TraitGoal,
+    pub kind: Box<ImplExprKind>,
+    pub goal: TraitGoal,
 }
 
 /// Represents all the kinds of impl expr.
@@ -445,10 +445,10 @@ pub enum ImplExprKind {
 /// Represents an impl item (associated type or function)
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ImplItem {
-    meta: Metadata,
-    generics: Generics,
-    kind: ImplItemKind,
-    ident: GlobalId,
+    pub meta: Metadata,
+    pub generics: Generics,
+    pub kind: ImplItemKind,
+    pub ident: GlobalId,
 }
 
 /// Represents the kinds of impl items
@@ -466,10 +466,10 @@ pub enum ImplItemKind {
 /// Represents a trait item (associated type, fn, or default)
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct TraitItem {
-    kind: TraitItemKind,
-    generics: Generics,
-    ident: GlobalId,
-    meta: Metadata,
+    pub kind: TraitItemKind,
+    pub generics: Generics,
+    pub ident: GlobalId,
+    pub meta: Metadata,
 }
 
 /// Represents the kinds of trait items
@@ -496,14 +496,15 @@ pub enum QuoteContent {
 }
 
 /// Represents an inlined piece of backend code
-pub type Quote = Vec<QuoteContent>;
+#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+pub struct Quote(pub Vec<QuoteContent>);
 
 /// The origin of a quote item
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ItemQuoteOrigin {
-    item_kind: Box<ItemKind>,
-    item_ident: GlobalId,
-    position: ItemQuoteOriginPosition,
+    pub item_kind: Box<ItemKind>,
+    pub item_ident: GlobalId,
+    pub position: ItemQuoteOriginPosition,
 }
 
 /// The position of a quote item relative to its origin
@@ -547,8 +548,8 @@ pub enum ControlFlowKind {
 // TODO: Revisit?
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct LoopState {
-    init: Expr,
-    body_pat: Pat,
+    pub init: Expr,
+    pub body_pat: Pat,
 }
 
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
@@ -764,9 +765,9 @@ pub struct ImplIdent {
 /// In this example `Foo` has an associated type `S`.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct ProjectionPredicate {
-    impl_: ImplExpr,
-    assoc_item: GlobalId,
-    ty: Ty,
+    pub impl_: ImplExpr,
+    pub assoc_item: GlobalId,
+    pub ty: Ty,
 }
 
 /// A generic constraint (lifetime, type or projection)
@@ -804,8 +805,8 @@ pub enum SafetyKind {
 /// Represents a single attribute.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Attribute {
-    kind: AttributeKind,
-    span: Span,
+    pub kind: AttributeKind,
+    pub span: Span,
 }
 
 /// Represents the kind of an attribute.
@@ -848,10 +849,10 @@ pub struct Param {
 /// In our representation structs always have one variant with an argument for each field.
 #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
 pub struct Variant {
-    name: GlobalId,
-    arguments: Vec<(GlobalId, Ty, Attributes)>,
-    is_record: bool,
-    attributes: Attributes,
+    pub name: GlobalId,
+    pub arguments: Vec<(GlobalId, Ty, Attributes)>,
+    pub is_record: bool,
+    pub attributes: Attributes,
 }
 
 /// A top-level item in the module.
