@@ -247,16 +247,7 @@ pub enum FullDefKind<Body> {
         #[value(implied_predicates(s.base().tcx, s.owner_id()).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
-        #[value({
-            use ty::Upcast;
-            let tcx = s.base().tcx;
-            let pred: ty::TraitPredicate =
-                crate::traits::self_predicate(tcx, s.owner_id())
-                    .no_bound_vars()
-                    .unwrap()
-                    .upcast(tcx);
-            pred.sinto(s)
-        })]
+        #[value(get_self_predicate(s))]
         self_predicate: TraitPredicate,
         /// Associated items, in definition order.
         #[value(
@@ -274,7 +265,15 @@ pub enum FullDefKind<Body> {
         items: Vec<(AssocItem, Arc<FullDef<Body>>)>,
     },
     /// Trait alias: `trait IntIterator = Iterator<Item = i32>;`
-    TraitAlias,
+    TraitAlias {
+        #[value(get_param_env(s, s.owner_id()))]
+        param_env: ParamEnv,
+        #[value(implied_predicates(s.base().tcx, s.owner_id()).sinto(s))]
+        implied_predicates: GenericPredicates,
+        /// The special `Self: Trait` clause.
+        #[value(get_self_predicate(s))]
+        self_predicate: TraitPredicate,
+    },
     #[custom_arm(
         // Returns `TraitImpl` or `InherentImpl`.
         RDefKind::Impl { .. } => get_impl_contents(s),
@@ -537,6 +536,7 @@ impl<Body> FullDef<Body> {
             | Union { param_env, .. }
             | Enum { param_env, .. }
             | Trait { param_env, .. }
+            | TraitAlias { param_env, .. }
             | TyAlias { param_env, .. }
             | AssocTy { param_env, .. }
             | Fn { param_env, .. }
@@ -720,6 +720,17 @@ fn get_foreign_mod_children<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Vec<
             .collect(),
         None => vec![],
     }
+}
+
+#[cfg(feature = "rustc")]
+fn get_self_predicate<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> TraitPredicate {
+    use ty::Upcast;
+    let tcx = s.base().tcx;
+    let pred: ty::TraitPredicate = crate::traits::self_predicate(tcx, s.owner_id())
+        .no_bound_vars()
+        .unwrap()
+        .upcast(tcx);
+    pred.sinto(s)
 }
 
 #[cfg(feature = "rustc")]

@@ -73,11 +73,10 @@ pub fn required_predicates<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> GenericPre
         | OpaqueTy
         | Static { .. }
         | Struct
-        | TraitAlias
         | TyAlias
         | Union => predicates_defined_on(tcx, def_id),
         // We consider all predicates on traits to be outputs
-        Trait => Default::default(),
+        Trait | TraitAlias => Default::default(),
         // `predicates_defined_on` ICEs on other def kinds.
         _ => Default::default(),
     }
@@ -105,7 +104,7 @@ pub fn implied_predicates<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> GenericPred
     let parent = tcx.opt_parent(def_id);
     match tcx.def_kind(def_id) {
         // We consider all predicates on traits to be outputs
-        Trait => predicates_defined_on(tcx, def_id),
+        Trait | TraitAlias => predicates_defined_on(tcx, def_id),
         AssocTy if matches!(tcx.def_kind(parent.unwrap()), Trait) => {
             GenericPredicates {
                 parent,
