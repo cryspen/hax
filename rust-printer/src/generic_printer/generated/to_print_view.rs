@@ -90,6 +90,18 @@ impl<'a> ToPrintView<'a> for origin::PrimitiveTy {
         }
     }
 }
+impl<'a> ToPrintView<'a> for origin::Region {
+    type Out = destination::Region;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::Region => destination::Region,
+        }
+    }
+}
 impl<'a> ToPrintView<'a> for origin::Ty {
     type Out = destination::Ty<'a>;
     fn to_print_view(
@@ -191,7 +203,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     output,
                 }
             }
-            origin::Ty::Ref { inner, mutable } => {
+            origin::Ty::Ref { inner, mutable, region } => {
                 let inner = {
                     let context = PrintContext {
                         value: inner,
@@ -218,9 +230,23 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     };
                     context
                 };
+                let region = {
+                    let context = PrintContext {
+                        value: region,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(Ty::Ref), "::", stringify!(region)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
                 destination::Ty::Ref {
                     inner,
                     mutable,
+                    region,
                 }
             }
             origin::Ty::Param(anon_field_0) => {

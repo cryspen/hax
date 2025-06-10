@@ -8,6 +8,11 @@ impl From<PrimitiveTy> for Node {
         Self::PrimitiveTy(item)
     }
 }
+impl From<Region> for Node {
+    fn from(item: Region) -> Self {
+        Self::Region(item)
+    }
+}
 impl From<Ty> for Node {
     fn from(item: Ty) -> Self {
         Self::Ty(item)
@@ -223,6 +228,7 @@ impl From<Item> for Node {
 pub enum Node {
     GenericValue(GenericValue),
     PrimitiveTy(PrimitiveTy),
+    Region(Region),
     Ty(Ty),
     DynTraitGoal(DynTraitGoal),
     Metadata(Metadata),
@@ -275,6 +281,11 @@ impl<'lt> From<&'lt GenericValue> for NodeRef<'lt> {
 impl<'lt> From<&'lt PrimitiveTy> for NodeRef<'lt> {
     fn from(item: &'lt PrimitiveTy) -> Self {
         Self::PrimitiveTy(item)
+    }
+}
+impl<'lt> From<&'lt Region> for NodeRef<'lt> {
+    fn from(item: &'lt Region) -> Self {
+        Self::Region(item)
     }
 }
 impl<'lt> From<&'lt Ty> for NodeRef<'lt> {
@@ -492,6 +503,7 @@ impl<'lt> From<&'lt Item> for NodeRef<'lt> {
 pub enum NodeRef<'lt> {
     GenericValue(&'lt GenericValue),
     PrimitiveTy(&'lt PrimitiveTy),
+    Region(&'lt Region),
     Ty(&'lt Ty),
     DynTraitGoal(&'lt DynTraitGoal),
     Metadata(&'lt Metadata),

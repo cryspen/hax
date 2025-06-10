@@ -31,6 +31,8 @@ pub enum PrimitiveTy<'a> {
     /// The `str` type
     Str,
 }
+#[apply(derive_AST)]
+pub struct Region;
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[apply(derive_AST)]
 pub enum Ty<'a> {
@@ -67,6 +69,7 @@ pub enum Ty<'a> {
     Ref {
         inner: PrintContext<'a, origin::Box<origin::Ty>>,
         mutable: PrintContext<'a, origin::bool>,
+        region: PrintContext<'a, origin::Region>,
     },
     /// A parameter type
     Param(PrintContext<'a, origin::LocalId>),
@@ -908,6 +911,11 @@ impl<'a> From<PrimitiveTy<'a>> for Node<'a> {
         Self::PrimitiveTy(item)
     }
 }
+impl<'a> From<Region> for Node<'a> {
+    fn from(item: Region) -> Self {
+        Self::Region(item)
+    }
+}
 impl<'a> From<Ty<'a>> for Node<'a> {
     fn from(item: Ty<'a>) -> Self {
         Self::Ty(item)
@@ -1138,6 +1146,7 @@ impl<'a> From<ResugaredTy> for Node<'a> {
 pub enum Node<'a> {
     GenericValue(GenericValue<'a>),
     PrimitiveTy(PrimitiveTy<'a>),
+    Region(Region),
     Ty(Ty<'a>),
     DynTraitGoal(DynTraitGoal<'a>),
     Metadata(Metadata<'a>),
