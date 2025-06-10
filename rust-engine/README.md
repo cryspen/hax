@@ -6,10 +6,10 @@ This crate should implement an AST for which:
  5. This AST should be suitable for AST transformations.
 
 ## Usage
-`rust-engine` expects it's stdin to be the output of `cargo hax json`, e.g.:
+The following command will run hax with the rust engine instead of the ocaml one.
+For now, this will create a dummy lean file, regardless the backend provided.
+
 ```bash
-cargo hax json -o - | rust-engine > output.rs
+HAX_ENGINE_BINARY=hax-rust-engine cargo hax into fstar
 ```
 
-## Test
-`cd tests && ./print.sh` will move `src/main.rs` to `main.rs.bak`, parse and pretty print that main file as `main.rs`, and format it.

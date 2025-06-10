@@ -15,6 +15,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 macro_rules_attribute = "0.2.2"
 schemars.workspace = true
+serde-jsonlines = "0.5.0"
 
 [build-dependencies]
 syn = { version = "2", features = ["full", "visit", "visit-mut"] }
