@@ -12,4 +12,8 @@ readme.workspace = true
 hax-frontend-exporter = { path = "../frontend/exporter", default-features = false }
 serde = { workspace = true, features = ["derive"] }
 hax-rust-engine-macros = { path = "macros" }
+hax-types.workspace = true
+serde_json = { workspace = true, features = ["unbounded_depth"] }
 schemars.workspace = true
+serde-jsonlines = "0.5.0"
+serde_stacker = "0.1.12"

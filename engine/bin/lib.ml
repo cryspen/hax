@@ -181,34 +181,39 @@ let parse_id_table_node (json : Yojson.Safe.t) :
   in
   (table, value)
 
-let parse_options () =
+let load_table (check_version : bool) : Yojson.Safe.t =
   let table, json =
     Hax_io.read_json () |> Option.value_exn |> parse_id_table_node
   in
-  let version =
-    try Yojson.Safe.Util.(member "hax_version" json |> to_string)
-    with _ -> "unknown"
-  in
-  if String.equal version Types.hax_version |> not then (
-    prerr_endline
-      [%string
-        {|
+  (if check_version then
+     let version =
+       try Yojson.Safe.Util.(member "hax_version" json |> to_string)
+       with _ -> "unknown"
+     in
+     if String.equal version Types.hax_version |> not then (
+       prerr_endline
+         [%string
+           {|
 The versions of `hax-engine` and of `cargo-hax` are different:
   - `hax-engine` version: %{Types.hax_version}
   - `cargo-hax`  version: %{version}
 
 Please reinstall hax.
 |}];
-    Stdlib.exit 1);
+       Stdlib.exit 1));
   table
   |> List.iter ~f:(fun (id, json) ->
          Hashtbl.add_exn Types.cache_map ~key:id ~data:(`JSON json));
+  json
+
+let parse_options () =
+  let json = load_table true in
   let options = [%of_yojson: Types.engine_options] json in
   Profiling.enabled := options.backend.profile;
   options
 
 (** Entrypoint of the engine. Assumes `Hax_io.init` was called. *)
-let main () =
+let engine () =
   let options = Profiling.profile (Other "parse_options") 1 parse_options in
   Printexc.record_backtrace true;
   let result =
@@ -240,3 +245,23 @@ let main () =
   | Error (exn, bt) ->
       Logs.info (fun m -> m "Exiting Hax engine (with an unexpected failure)");
       Printexc.raise_with_backtrace exn bt
+
+module ExportRustAst = Export_ast.Make (Features.Rust)
+
+(** Entry point for interacting with the Rust hax engine *)
+let driver_for_rust_engine () : unit =
+  let query : Rust_engine_types.query =
+    (* TODO: support for table *)
+    (* let json = load_table false in *)
+    let json = Hax_io.read_json () |> Option.value_exn in
+    [%of_yojson: Rust_engine_types.query] json
+  in
+  match query.kind with
+  | Types.ImportThir { input } ->
+      let imported_items = import_thir_items [] input in
+      let rust_ast_items =
+        List.concat_map ~f:(fun item -> ExportRustAst.ditem item) imported_items
+      in
+      let response = Rust_engine_types.ImportThir { output = rust_ast_items } in
+      Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
+      Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
