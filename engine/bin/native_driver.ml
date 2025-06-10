@@ -20,4 +20,6 @@ let _ =
         output_char stdout '\n';
         flush stdout
     end);
-  Lib.main ()
+  match Sys.get_argv () with
+  | [| _; "driver_rust_engine" |] -> Lib.driver_for_rust_engine ()
+  | _ -> Lib.engine ()
