@@ -421,8 +421,9 @@ fn run_engine(
                 eprintln!("----------------------------------------------");
                 engine_debug_webapp::run(|| debug_json.clone())
             }
-            Some(DebugEngineMode::File(_file)) if !backend.dry_run => {
-                println!("{}", debug_json)
+            Some(DebugEngineMode::File(file)) if !backend.dry_run => {
+                let mut writer = file.open_or_stdout();
+                writer.write(debug_json.as_bytes()).unwrap();
             }
             _ => (),
         }
