@@ -7,6 +7,7 @@
 
 use crate::ast::{self as dst, GenericValue, GlobalId, LocalId};
 use crate::ast::{diagnostics::*, GenericParamKind};
+use crate::symbol::Symbol;
 use hax_frontend_exporter::{
     self as src, ConstantExprKind, ConstantInt, ConstantLiteral, Decorated, GenericArg,
 };
@@ -129,7 +130,7 @@ fn translate_generic_args(generic_args: &Vec<GenericArg>, span: dst::Span) -> Ve
 fn translate_int_literal(ty: &dst::Ty, value: u128, negative: bool) -> dst::Literal {
     match ty {
         dst::Ty::Primitive(dst::PrimitiveTy::Int(kind)) => dst::Literal::Int {
-            value,
+            value: Symbol::new(&format!("{value}")),
             negative,
             kind: kind.clone(),
         },

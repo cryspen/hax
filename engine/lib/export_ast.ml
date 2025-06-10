@@ -73,7 +73,7 @@ module Make (FA : Features.T) = struct
           {
             inner = dty typ;
             mutable' = (match mut with Mutable _ -> true | _ -> false);
-            region = B.EmptyStructregion;
+            region = B.EmptyStructregion2;
           }
     | TParam local_ident -> Param (dlocal_ident local_ident)
     | TArrow (inputs, output) ->
@@ -188,7 +188,7 @@ module Make (FA : Features.T) = struct
     { attributes = List.map ~f:dattr attrs; span = dspan span }
 
   and dattr (a : attr) : B.attribute =
-    let kind =
+    let kind : B.attribute_kind =
       match a.kind with
       | Tool { path; tokens } -> B.Tool { path; tokens }
       | DocComment { kind; body } ->
@@ -230,7 +230,7 @@ module Make (FA : Features.T) = struct
             sub_pat = Option.map ~f:(fun (p, _) -> dpat p) subpat;
           }
 
-  and dspan (_span : span) : B.span = EmptyStructspan
+  and dspan (_span : span) : B.span = EmptyStructspan2
 
   and dbinding_mode (binding_mode : A.binding_mode) : B.binding_mode =
     match binding_mode with
@@ -336,7 +336,7 @@ module Make (FA : Features.T) = struct
     | String s -> B.String (Newtypesymbol s)
     | Char c -> B.Char c
     | Int { value; negative; kind } ->
-        B.Int { value; negative; kind = dint_kind kind }
+        B.Int { value = Newtypesymbol value; negative; kind = dint_kind kind }
     | Float { value; negative; kind } ->
         B.Float
           { value = Newtypesymbol value; negative; kind = dfloat_kind kind }
@@ -451,7 +451,7 @@ module Make (FA : Features.T) = struct
         {
           ty = dty p.typ;
           span =
-            EmptyStructspan (* Should use dspan, but what if option is None*);
+            EmptyStructspan2 (* Should use dspan, but what if option is None*);
         };
     }
 
@@ -567,7 +567,7 @@ module Make (FA : Features.T) = struct
     | A.HaxError s ->
         let node : B.node = Unknown "HaxError" in
         let info : B.diagnostic_info =
-          { context = Import; kind = Custom s; span = EmptyStructspan }
+          { context = Import; kind = Custom s; span = EmptyStructspan2 }
         in
         Error { node; info }
     | A.NotImplementedYet -> B.NotImplementedYet

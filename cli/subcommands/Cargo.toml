@@ -51,6 +51,7 @@ hax-types.workspace = true
 schemars.workspace = true
 hax-frontend-exporter.workspace = true
 hax-lib-macros-types = {workspace = true, features = ["schemars"]}
+hax-rust-engine = {path = "../../rust-engine"}
 version_check = "0.9"
 toml = "0.8"
 

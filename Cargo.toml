@@ -15,7 +15,6 @@ members = [
      "engine/names/extract",
      "hax-types",
      "rust-engine",
-     "rust-engine/json-types",
 ]
 exclude = [
      "tests",
