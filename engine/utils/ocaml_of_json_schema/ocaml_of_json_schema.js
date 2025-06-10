@@ -454,10 +454,11 @@ let exporters = {
             let te = is_type.expr(o, path);
             let ocaml_type = ocaml_of_type_expr(te, path);
             let arms = ocaml_arms_of_type_expr(te, path);
+            let to_json = ocaml_yojson_of_type_expr(te, `(let Newtype${name} inner = o in inner)`, path);
             return {
                 type: `Newtype${name} of ${ocaml_type}`,
                 parse: `Newtype${name}(${mk_match('o', arms, path)})`,
-                to_json: '`Null',
+                to_json,
             };
         },
     },
