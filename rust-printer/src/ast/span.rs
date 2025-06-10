@@ -1,5 +1,8 @@
+use crate::ast::derives::*;
+
 // TODO: implement, interned (statically -- bumpalo or something)
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
+#[derive(Copy)]
 pub struct Span(());
 
 impl From<hax_frontend_exporter::Span> for Span {

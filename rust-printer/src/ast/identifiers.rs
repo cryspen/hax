@@ -4,54 +4,75 @@
 //! - `GlobalId`: fully-qualified paths like `std::mem::drop`
 //! - `LocalId`: local variable identifiers
 
+// TODO: Revisit once we stop relying on the OCaml importer.
+
+use crate::ast::derives::*;
 use crate::symbol::Symbol;
 use std::fmt;
 
 mod global_id {
-    use hax_frontend_exporter::{DefId, DefPathItem};
+    use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
 
-    // TODO: this should be interned, so that it's copiable
-    #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-    pub struct GlobalId {
-        name: String,
-        // rust_def_id: hax_frontend_exporter::DefIdContents,
-        // moved_to_module: Option<FreshModule>,
-        // overlay: Option<ConcreteSuffix>,
+    #[apply(derive_AST)]
+    pub struct DefId {
+        pub krate: String,
+        pub path: Vec<DisambiguatedDefPathItem>,
+        pub parent: Option<Box<DefId>>,
+        /// The kind of definition this `DefId` points to.
+        pub kind: DefKind,
     }
-    impl From<DefId> for GlobalId {
-        fn from(rust_def_id: DefId) -> Self {
-            use std::ops::Deref;
-            let def_id = rust_def_id.deref();
-            let mut chunks = vec![def_id.krate.as_str()];
-            for chunk in &def_id.path {
-                let chunk = match &chunk.data {
-                    DefPathItem::TypeNs(Some(s))
-                    | DefPathItem::ValueNs(s)
-                    | DefPathItem::MacroNs(s)
-                    | DefPathItem::LifetimeNs(s) => s.as_str(),
-                    _ => "<unk>",
-                };
-                chunks.push(chunk);
-            }
-            Self {
-                name: chunks.join("::"),
-            }
+
+    use crate::ast::derives::*;
+
+    #[apply(derive_AST)]
+    struct ExplicitDefId {
+        is_constructor: bool,
+        def_id: DefId,
+    }
+
+    #[apply(derive_AST)]
+    struct FreshModule {
+        id: usize,
+        hints: Vec<ExplicitDefId>,
+        label: String,
+    }
+
+    #[apply(derive_AST)]
+    enum ReservedSuffix {
+        Pre,
+        Post,
+        Cast,
+    }
+    #[apply(derive_AST)]
+    pub struct ConcreteId {
+        def_id: ExplicitDefId,
+        moved: Option<FreshModule>,
+        suffix: Option<ReservedSuffix>,
+    }
+
+    #[apply(derive_AST)]
+    pub enum GlobalId {
+        Concrete(ConcreteId),
+        Projector(ConcreteId),
+    }
+
+    impl From<hax_frontend_exporter::DefId> for GlobalId {
+        fn from(_rust_def_id: hax_frontend_exporter::DefId) -> Self {
+            todo!()
         }
     }
 
     impl GlobalId {
         // TODO: drop me
-        fn from_string(name: &str) -> Self {
-            Self {
-                name: name.to_string(),
-            }
+        fn from_string(_name: &str) -> Self {
+            todo!()
         }
         // TODO: drop me
         pub fn to_string(&self) -> String {
-            self.name.to_string()
+            todo!()
         }
         pub fn name(&self) -> String {
-            self.name.split("::").last().unwrap().to_string()
+            todo!()
         }
     }
 
@@ -117,20 +138,9 @@ mod global_id {
             Self::from_string("never_to_any")
         }
     }
-
-    // #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-    // pub enum ConcreteSuffix {
-    //     Cast,
-    //     Precondition,
-    //     Postcondition,
-    // }
-
-    // /// TODO: implement
-    // #[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
-    // struct FreshModule;
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct LocalId(pub Symbol);
 
 impl fmt::Display for LocalId {

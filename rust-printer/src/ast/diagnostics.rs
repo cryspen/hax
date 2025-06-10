@@ -3,22 +3,23 @@
 //!
 //! This module is used to attach semantic or translation errors to AST nodes.
 
+use crate::ast::derives::*;
 use crate::ast::*;
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct Diagnostic {
     node: Box<Node>,
     info: DiagnosticInfo,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub struct DiagnosticInfo {
     pub context: Context,
     pub span: Span,
     pub kind: DiagnosticInfoKind,
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum DiagnosticInfoKind {
     Custom(String),
     ImportParamWithoutPattern,
@@ -42,7 +43,7 @@ impl Diagnostic {
     }
 }
 
-#[derive(Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord)]
+#[apply(derive_AST)]
 pub enum Context {
     Import,
 }
