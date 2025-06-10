@@ -2,8 +2,6 @@ open! Prelude
 
 let deprecated_node s = failwith ("Deprecated AST node:" ^ s)
 
-type missing_type = unit
-
 module B = Rust_printer_types
 
 module SpecialNames = struct
