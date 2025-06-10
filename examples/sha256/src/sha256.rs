@@ -1,4 +1,5 @@
 use std::convert::TryInto;
+use hax_lib as hax;
 
 const BLOCK_SIZE: usize = 64;
 const LEN_SIZE: usize = 8;
@@ -11,10 +12,14 @@ pub type Sha256Digest = [u8; HASH_SIZE];
 pub type RoundConstantsTable = [u32; K_SIZE];
 pub type Hash = [u32; LEN_SIZE];
 
+#[hax::fstar::before("open Spec_Sha256")]
+
+#[hax::ensures(|result| fstar!("f_ch x y z = result"))]
 pub fn ch(x: u32, y: u32, z: u32) -> u32 {
     (x & y) ^ ((!x) & z)
 }
 
+#[hax::ensures(|result| fstar!("f_maj x y z = result"))]
 pub fn maj(x: u32, y: u32, z: u32) -> u32 {
     (x & y) ^ ((x & z) ^ (y & z))
 }
@@ -49,7 +54,10 @@ const HASH_INIT: Hash = [
     0x5be0cd19u32,
 ];
 
-#[hax_lib::requires(i < 4)]
+// #[hax_lib::requires(i < 4)]
+#[hax_lib::fstar::options("--query_stats --z3rlimit 60")]
+#[hax_lib::requires((i == 0 && op == 1) || (i == 1 && op == 1) || (i == 2 && op == 0) || (i == 3 && op == 0))]
+// #[hax_lib::ensures(|result| fstar!("f_sigma x i op = result"))]
 pub fn sigma(x: u32, i: usize, op: usize) -> u32 {
     let mut tmp: u32 = x.rotate_right(OP_TABLE[3 * i + 2].into());
     if op == 0 {
@@ -60,7 +68,7 @@ pub fn sigma(x: u32, i: usize, op: usize) -> u32 {
     x.rotate_right(rot_val_1) ^ x.rotate_right(rot_val_2) ^ tmp
 }
 
-#[hax_lib::ensures(|result| result.len() == 16)]
+// #[hax_lib::ensures(|result| fstar!("f_parse_message_block block = result"))]
 fn to_be_u32s(block: Block) -> [u32; 16] {
     let mut out = [0u32; 16];
     for i in 0..16 {

@@ -109,10 +109,10 @@ define FINDLIBS
 endef
 export FINDLIBS
 
-FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(shell bash -c "$$FINDLIBS")
+FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(shell bash -c "$$FINDLIBS") ../spec
 
 FSTAR_FLAGS = --cmi \
-  --warn_error -331 \
+  --warn_error -331-321-274 \
   --cache_checked_modules --cache_dir $(CACHE_DIR) \
   --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
   $(addprefix --include ,$(FSTAR_INCLUDE_DIRS))
@@ -121,7 +121,7 @@ FSTAR = $(FSTAR_BIN) $(FSTAR_FLAGS)
 
 .depend: $(HINT_DIR) $(CACHE_DIR) $(ROOTS)
 	$(info $(ROOTS))
-	$(FSTAR) --cmi --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
+	@$(FSTAR) --cmi --dep full $(ROOTS) --extract '* -Prims -LowStar -FStar' > $@
 
 include .depend
 
@@ -132,7 +132,7 @@ $(CACHE_DIR):
 	mkdir -p $@
 
 $(CACHE_DIR)/%.checked: | .depend $(HINT_DIR) $(CACHE_DIR)
-	$(FSTAR) $(OTHERFLAGS) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints
+	@$(FSTAR) $(OTHERFLAGS) $< $(ENABLE_HINTS) --hint_file $(HINT_DIR)/$(notdir $*).hints
 
 verify: $(addsuffix .checked, $(addprefix $(CACHE_DIR)/,$(ROOTS)))
 
