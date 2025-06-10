@@ -1,0 +1,12 @@
+[package]
+name = "hax-rust-engine-print-json-types"
+description = "Binary that exports the datatypes of the Rust engine (called `rust-engine` currently)"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hax-rust-engine = {path = ".."}
+schemars.workspace = true
+serde_json.workspace = true
+
+[build-dependencies]

@@ -6,9 +6,9 @@ This crate should implement an AST for which:
  5. This AST should be suitable for AST transformations.
 
 ## Usage
-`rust-printer` expects it's stdin to be the output of `cargo hax json`, e.g.:
+`rust-engine` expects it's stdin to be the output of `cargo hax json`, e.g.:
 ```bash
-cargo hax json -o - | rust-printer > output.rs
+cargo hax json -o - | rust-engine > output.rs
 ```
 
 ## Test

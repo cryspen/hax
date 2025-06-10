@@ -14,14 +14,14 @@ members = [
      "engine/names",
      "engine/names/extract",
      "hax-types",
-     "rust-printer",
-     "rust-printer/json-types",
+     "rust-engine",
+     "rust-engine/json-types",
 ]
 exclude = [
      "tests",
      "rustc-coverage-tests",
-     "rust-printer/tests",
-     "rust-printer/codegen",
+     "rust-engine/tests",
+     "rust-engine/codegen",
 ]
 default-members = [
      "frontend/exporter",

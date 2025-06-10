@@ -236,7 +236,7 @@ end = struct
                    ( "rustish",
                      [%yojson_of: Print_rust.AnnotatedString.Output.t] rustish
                    );
-                   ("ritems", [%yojson_of: Rust_printer_types.item list] ritems);
+                   ("ritems", [%yojson_of: Rust_engine_types.item list] ritems);
                  ]
              in
              json)

@@ -28,8 +28,8 @@ module Fresh_module : sig
   val to_mod_path : t -> View.ModPath.t
   (** Compute a module path for a fresh module. *)
 
-  val to_rust_ast : t -> Rust_printer_types.fresh_module
-  val from_rust_ast : Rust_printer_types.fresh_module -> t
+  val to_rust_ast : t -> Rust_engine_types.fresh_module
+  val from_rust_ast : Rust_engine_types.fresh_module -> t
 end = struct
   open View
 
@@ -115,14 +115,14 @@ end = struct
 
   let get_path_hints { hints; _ } = hints
 
-  let to_rust_ast ({ id; hints; label } : t) : Rust_printer_types.fresh_module =
+  let to_rust_ast ({ id; hints; label } : t) : Rust_engine_types.fresh_module =
     {
       id = Int.to_string id;
       hints = List.map ~f:Explicit_def_id.to_rust_ast hints;
       label;
     }
 
-  let from_rust_ast ({ id; hints; label } : Rust_printer_types.fresh_module) : t
+  let from_rust_ast ({ id; hints; label } : Rust_engine_types.fresh_module) : t
       =
     {
       id = Int.of_string id;
@@ -759,21 +759,21 @@ let matches_namespace (ns : Types.namespace) (did : t) : bool =
   in
   aux ns.chunks path
 
-let to_rust_ast ({ def_id; moved; suffix } : t) : Rust_printer_types.concrete_id
+let to_rust_ast ({ def_id; moved; suffix } : t) : Rust_engine_types.concrete_id
     =
   let moved = Option.map ~f:Fresh_module.to_rust_ast moved in
   let suffix =
     Option.map
       ~f:(fun s ->
         match s with
-        | `Cast -> Rust_printer_types.Cast
-        | `Pre -> Rust_printer_types.Pre
-        | `Post -> Rust_printer_types.Post)
+        | `Cast -> Rust_engine_types.Cast
+        | `Pre -> Rust_engine_types.Pre
+        | `Post -> Rust_engine_types.Post)
       suffix
   in
   { def_id = Explicit_def_id.to_rust_ast def_id; moved; suffix }
 
-let from_rust_ast ({ def_id; moved; suffix } : Rust_printer_types.concrete_id) :
+let from_rust_ast ({ def_id; moved; suffix } : Rust_engine_types.concrete_id) :
     t =
   let moved = Option.map ~f:Fresh_module.from_rust_ast moved in
   let suffix =

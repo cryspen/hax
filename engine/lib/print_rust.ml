@@ -710,7 +710,7 @@ module Traditional : T = struct
 end
 
 (* module Experimental : T = struct *)
-(*   module GenericRustPrinter = Generic_rust_printer.Make (Features.Full) *)
+(*   module GenericRustPrinter = Generic_rust_engine.Make (Features.Full) *)
 
 (*   let pitem : item -> AnnotatedString.Output.t = *)
 (*     GenericRustPrinter.item () *)

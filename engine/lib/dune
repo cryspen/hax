@@ -130,7 +130,7 @@
     (run node %{ocaml_of_json_schema} - -)))))
 
 (rule
- (target rust_printer_types.ml)
+ (target rust_engine_types.ml)
  (deps
   (alias universe-hash)
   (env_var HAX_JSON_SCHEMA_EXPORTER_BINARY)
@@ -138,10 +138,10 @@
    ../utils/ocaml_of_json_schema/ocaml_of_json_schema.js))
  (action
   (with-stdout-to
-   rust_printer_types.ml
+   rust_engine_types.ml
    (pipe-stdout
     (run
-     %{env:HAX_JSON_SCHEMA_EXPORTER_BINARY=hax-rust-printer-print-json-types})
+     %{env:HAX_JSON_SCHEMA_EXPORTER_BINARY=hax-rust-engine-print-json-types})
     (run node %{ocaml_of_json_schema} - -)))))
 
 (env

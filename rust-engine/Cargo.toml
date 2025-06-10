@@ -1,5 +1,5 @@
 [package]
-name = "rust-printer"
+name = "hax-rust-engine"
 version.workspace = true
 authors.workspace = true
 license.workspace = true

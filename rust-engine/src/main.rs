@@ -1,5 +1,5 @@
 use hax_frontend_exporter as frontend;
-use rust_printer::ast::*;
+use hax_rust_engine::ast::*;
 use serde::Deserialize;
 
 fn module_path(global_id: &GlobalId) -> Vec<String> {
@@ -82,7 +82,7 @@ fn print_items(items: Vec<Item>) {
 #[serde(untagged)]
 enum Input {
     Thir(Vec<frontend::Item<frontend::ThirBody>>),
-    Ast(Vec<rust_printer::ast::Item>),
+    Ast(Vec<hax_rust_engine::ast::Item>),
 }
 
 fn main() {
@@ -90,7 +90,7 @@ fn main() {
         match serde_json::from_reader(std::io::stdin()).expect("Valid JSON on stdin") {
             Input::Thir(items) => items
                 .iter()
-                .map(rust_printer::import::translate_item)
+                .map(hax_rust_engine::import::translate_item)
                 .collect(),
             Input::Ast(items) => items,
         },

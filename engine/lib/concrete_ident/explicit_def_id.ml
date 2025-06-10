@@ -128,7 +128,7 @@ end
 
 module ToRustAST = struct
   module A = Types
-  module B = Rust_printer_types
+  module B = Rust_engine_types
 
   let disambiguated_def_path_item
       ({ data; disambiguator } : A.disambiguated_def_path_item) :
@@ -214,7 +214,7 @@ module ToRustAST = struct
 end
 
 module FromRustAST = struct
-  module A = Rust_printer_types
+  module A = Rust_engine_types
   module B = Types
 
   let disambiguated_def_path_item

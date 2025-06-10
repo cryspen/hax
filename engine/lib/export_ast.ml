@@ -4,7 +4,7 @@ let deprecated_node s = failwith ("Deprecated AST node:" ^ s)
 
 type missing_type = unit
 
-module B = Rust_printer_types
+module B = Rust_engine_types
 
 module SpecialNames = struct
   let rec map_strings (f : string -> string)
