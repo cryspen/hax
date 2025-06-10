@@ -231,22 +231,30 @@ pub enum PatKind<'a> {
     /// # Example:
     /// `p | q`
     /// Always contains at least 2 sub-patterns
-    Or { sub_pats: PrintContext<'a, origin::Vec<origin::Pat>> },
+    Or {
+        sub_pats: PrintContext<'a, origin::Vec<origin::Pat>>,
+    },
     /// An array pattern
     ///
     /// # Example:
     /// `[p, q]`
-    Array { args: PrintContext<'a, origin::Vec<origin::Pat>> },
+    Array {
+        args: PrintContext<'a, origin::Vec<origin::Pat>>,
+    },
     /// A dereference pattern
     ///
     /// # Example:
     /// `&p`
-    Deref { sub_pat: PrintContext<'a, origin::Pat> },
+    Deref {
+        sub_pat: PrintContext<'a, origin::Pat>,
+    },
     /// A constant pattern
     ///
     /// # Example:
     /// `1`
-    Constant { lit: PrintContext<'a, origin::Literal> },
+    Constant {
+        lit: PrintContext<'a, origin::Literal>,
+    },
     /// A variable binding.
     ///
     /// # Examples:
@@ -278,7 +286,10 @@ pub enum PatKind<'a> {
 #[apply(derive_AST)]
 pub enum GuardKind<'a> {
     /// An `if let` guard
-    IfLet { lhs: PrintContext<'a, origin::Pat>, rhs: PrintContext<'a, origin::Expr> },
+    IfLet {
+        lhs: PrintContext<'a, origin::Pat>,
+        rhs: PrintContext<'a, origin::Expr>,
+    },
 }
 /// The left-hand side of an assignment.
 #[apply(derive_AST)]
@@ -348,7 +359,9 @@ pub enum ImplExprKind<'a> {
     ///   x.clone() // Here the method comes from the bound `T: Clone`
     /// }
     /// ```
-    LocalBound { id: PrintContext<'a, origin::Symbol> },
+    LocalBound {
+        id: PrintContext<'a, origin::Symbol>,
+    },
     /// A parent implementation.
     ///
     /// # Example:
@@ -408,10 +421,7 @@ pub enum ImplItemKind<'a> {
     /// An instantiation of associated type
     Type {
         ty: PrintContext<'a, origin::Ty>,
-        parent_bounds: PrintContext<
-            'a,
-            origin::Vec<(origin::ImplExpr, origin::ImplIdent)>,
-        >,
+        parent_bounds: PrintContext<'a, origin::Vec<(origin::ImplExpr, origin::ImplIdent)>>,
     },
     /// A definition for a trait function
     Fn {
@@ -488,8 +498,13 @@ pub enum ItemQuoteOriginPosition {
 #[apply(derive_AST)]
 pub enum LoopKind<'a> {
     UnconditionalLoop,
-    WhileLoop { condition: PrintContext<'a, origin::Expr> },
-    ForLoop { pat: PrintContext<'a, origin::Pat>, it: PrintContext<'a, origin::Expr> },
+    WhileLoop {
+        condition: PrintContext<'a, origin::Expr>,
+    },
+    ForLoop {
+        pat: PrintContext<'a, origin::Pat>,
+        it: PrintContext<'a, origin::Expr>,
+    },
     ForIndexLoop {
         start: PrintContext<'a, origin::Expr>,
         end: PrintContext<'a, origin::Expr>,
@@ -532,10 +547,8 @@ pub enum ExprKind<'a> {
         args: PrintContext<'a, origin::Vec<origin::Expr>>,
         generic_args: PrintContext<'a, origin::Vec<origin::GenericValue>>,
         bounds_impls: PrintContext<'a, origin::Vec<origin::ImplExpr>>,
-        trait_: PrintContext<
-            'a,
-            origin::Option<(origin::ImplExpr, origin::Vec<origin::GenericValue>)>,
-        >,
+        trait_:
+            PrintContext<'a, origin::Option<(origin::ImplExpr, origin::Vec<origin::GenericValue>)>>,
     },
     /// A literal value.
     ///
@@ -609,12 +622,18 @@ pub enum ExprKind<'a> {
     /// `x`
     LocalId(PrintContext<'a, origin::LocalId>),
     /// Type ascription
-    Ascription { e: PrintContext<'a, origin::Expr>, ty: PrintContext<'a, origin::Ty> },
+    Ascription {
+        e: PrintContext<'a, origin::Expr>,
+        ty: PrintContext<'a, origin::Ty>,
+    },
     /// Variable mutation
     ///
     /// # Example:
     /// `x = 1`
-    Assign { lhs: PrintContext<'a, origin::Lhs>, value: PrintContext<'a, origin::Expr> },
+    Assign {
+        lhs: PrintContext<'a, origin::Lhs>,
+        value: PrintContext<'a, origin::Expr>,
+    },
     /// Loop
     ///
     /// # Example:
@@ -638,12 +657,16 @@ pub enum ExprKind<'a> {
     ///
     /// # Example:
     /// `return 1`
-    Return { value: PrintContext<'a, origin::Expr> },
+    Return {
+        value: PrintContext<'a, origin::Expr>,
+    },
     /// Continue (go to next loop iteration)
     ///
     /// # Example:
     /// `continue`
-    Continue { label: PrintContext<'a, origin::Option<origin::Symbol>> },
+    Continue {
+        label: PrintContext<'a, origin::Option<origin::Symbol>>,
+    },
     /// Closure (anonymous function)
     ///
     /// # Example:
@@ -662,7 +685,9 @@ pub enum ExprKind<'a> {
         safety_mode: PrintContext<'a, origin::SafetyKind>,
     },
     /// A quote is an inlined piece of backend code
-    Quote { contents: PrintContext<'a, origin::Quote> },
+    Quote {
+        contents: PrintContext<'a, origin::Quote>,
+    },
     /// Fallback constructor to carry errors.
     Error(PrintContext<'a, origin::Diagnostic>),
 }
@@ -777,10 +802,8 @@ pub struct Param<'a> {
 #[apply(derive_AST)]
 pub struct Variant<'a> {
     pub name: PrintContext<'a, origin::GlobalId>,
-    pub arguments: PrintContext<
-        'a,
-        origin::Vec<(origin::GlobalId, origin::Ty, origin::Attributes)>,
-    >,
+    pub arguments:
+        PrintContext<'a, origin::Vec<(origin::GlobalId, origin::Ty, origin::Attributes)>>,
     pub is_record: PrintContext<'a, origin::bool>,
     pub attributes: PrintContext<'a, origin::Attributes>,
 }
@@ -871,15 +894,9 @@ pub enum ItemKind<'a> {
     Impl {
         generics: PrintContext<'a, origin::Generics>,
         self_ty: PrintContext<'a, origin::Ty>,
-        of_trait: PrintContext<
-            'a,
-            (origin::GlobalId, origin::Vec<origin::GenericValue>),
-        >,
+        of_trait: PrintContext<'a, (origin::GlobalId, origin::Vec<origin::GenericValue>)>,
         items: PrintContext<'a, origin::Vec<origin::ImplItem>>,
-        parent_bounds: PrintContext<
-            'a,
-            origin::Vec<(origin::ImplExpr, origin::ImplIdent)>,
-        >,
+        parent_bounds: PrintContext<'a, origin::Vec<(origin::ImplExpr, origin::ImplIdent)>>,
         safety: PrintContext<'a, origin::SafetyKind>,
     },
     /// Internal node introduced by phases, corresponds to an alias to any item.

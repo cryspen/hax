@@ -2,8 +2,7 @@ impl<'a> ToPrintView<'a> for origin::GenericValue {
     type Out = destination::GenericValue<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::GenericValue::Ty(anon_field_0) => {
@@ -12,9 +11,11 @@ impl<'a> ToPrintView<'a> for origin::GenericValue {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(GenericValue::Ty), "::", stringify!(anon_field_0)
+                                stringify!(GenericValue::Ty),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -28,10 +29,11 @@ impl<'a> ToPrintView<'a> for origin::GenericValue {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(GenericValue::Expr), "::",
+                                stringify!(GenericValue::Expr),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -47,8 +49,7 @@ impl<'a> ToPrintView<'a> for origin::PrimitiveTy {
     type Out = destination::PrimitiveTy<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::PrimitiveTy::Bool => destination::PrimitiveTy::Bool,
@@ -58,9 +59,11 @@ impl<'a> ToPrintView<'a> for origin::PrimitiveTy {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PrimitiveTy::Int), "::", stringify!(anon_field_0)
+                                stringify!(PrimitiveTy::Int),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -74,10 +77,11 @@ impl<'a> ToPrintView<'a> for origin::PrimitiveTy {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PrimitiveTy::Float), "::",
+                                stringify!(PrimitiveTy::Float),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -94,8 +98,7 @@ impl<'a> ToPrintView<'a> for origin::Region {
     type Out = destination::Region;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Region => destination::Region,
@@ -106,8 +109,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
     type Out = destination::Ty<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Ty::Primitive(anon_field_0) => {
@@ -116,9 +118,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::Primitive), "::", stringify!(anon_field_0)
+                                stringify!(Ty::Primitive),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -132,9 +136,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::Tuple), "::", stringify!(anon_field_0)
+                                stringify!(Ty::Tuple),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -147,10 +153,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: head,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::App), "::", stringify!(head)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Ty::App), "::", stringify!(head)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -160,10 +163,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: args,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::App), "::", stringify!(args)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Ty::App), "::", stringify!(args)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -176,9 +176,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: inputs,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Arrow), "::", stringify!(inputs)
-                            )
+                            position: concat!(stringify!(Ty::Arrow), "::", stringify!(inputs))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -189,29 +187,25 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: output,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Arrow), "::", stringify!(output)
-                            )
+                            position: concat!(stringify!(Ty::Arrow), "::", stringify!(output))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Ty::Arrow {
-                    inputs,
-                    output,
-                }
+                destination::Ty::Arrow { inputs, output }
             }
-            origin::Ty::Ref { inner, mutable, region } => {
+            origin::Ty::Ref {
+                inner,
+                mutable,
+                region,
+            } => {
                 let inner = {
                     let context = PrintContext {
                         value: inner,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Ref), "::", stringify!(inner)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Ty::Ref), "::", stringify!(inner)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -221,9 +215,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: mutable,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Ref), "::", stringify!(mutable)
-                            )
+                            position: concat!(stringify!(Ty::Ref), "::", stringify!(mutable))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -234,10 +226,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: region,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Ref), "::", stringify!(region)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Ty::Ref), "::", stringify!(region)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -255,9 +244,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::Param), "::", stringify!(anon_field_0)
+                                stringify!(Ty::Param),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -271,9 +262,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::Slice), "::", stringify!(anon_field_0)
+                                stringify!(Ty::Slice),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -286,10 +279,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Array), "::", stringify!(ty)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Ty::Array), "::", stringify!(ty)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -299,19 +289,14 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: length,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Array), "::", stringify!(length)
-                            )
+                            position: concat!(stringify!(Ty::Array), "::", stringify!(length))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Ty::Array {
-                    ty,
-                    length,
-                }
+                destination::Ty::Array { ty, length }
             }
             origin::Ty::RawPointer => destination::Ty::RawPointer,
             origin::Ty::AssociatedType { impl_, item } => {
@@ -320,9 +305,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: impl_,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::AssociatedType), "::", stringify!(impl_)
+                                stringify!(Ty::AssociatedType),
+                                "::",
+                                stringify!(impl_)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -333,18 +320,17 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: item,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::AssociatedType), "::", stringify!(item)
+                                stringify!(Ty::AssociatedType),
+                                "::",
+                                stringify!(item)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Ty::AssociatedType {
-                    impl_,
-                    item,
-                }
+                destination::Ty::AssociatedType { impl_, item }
             }
             origin::Ty::Opaque(anon_field_0) => {
                 let anon_field_0 = {
@@ -352,9 +338,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::Opaque), "::", stringify!(anon_field_0)
+                                stringify!(Ty::Opaque),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -367,9 +355,7 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                     let context = PrintContext {
                         value: anon_field_0,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Ty::Dyn), "::", stringify!(anon_field_0)
-                            )
+                            position: concat!(stringify!(Ty::Dyn), "::", stringify!(anon_field_0))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -384,9 +370,11 @@ impl<'a> ToPrintView<'a> for origin::Ty {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Ty::Error), "::", stringify!(anon_field_0)
+                                stringify!(Ty::Error),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -401,18 +389,18 @@ impl<'a> ToPrintView<'a> for origin::DynTraitGoal {
     type Out = destination::DynTraitGoal<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::DynTraitGoal { trait_, non_self_args } => {
+            origin::DynTraitGoal {
+                trait_,
+                non_self_args,
+            } => {
                 let trait_ = {
                     let context = PrintContext {
                         value: trait_,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(DynTraitGoal), "::", stringify!(trait_)
-                            )
+                            position: concat!(stringify!(DynTraitGoal), "::", stringify!(trait_))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -424,9 +412,11 @@ impl<'a> ToPrintView<'a> for origin::DynTraitGoal {
                         value: non_self_args,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(DynTraitGoal), "::", stringify!(non_self_args)
+                                stringify!(DynTraitGoal),
+                                "::",
+                                stringify!(non_self_args)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -444,8 +434,7 @@ impl<'a> ToPrintView<'a> for origin::Metadata {
     type Out = destination::Metadata<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Metadata { span, attributes } => {
@@ -453,10 +442,7 @@ impl<'a> ToPrintView<'a> for origin::Metadata {
                     let context = PrintContext {
                         value: span,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Metadata), "::", stringify!(span)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Metadata), "::", stringify!(span)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -466,19 +452,14 @@ impl<'a> ToPrintView<'a> for origin::Metadata {
                     let context = PrintContext {
                         value: attributes,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Metadata), "::", stringify!(attributes)
-                            )
+                            position: concat!(stringify!(Metadata), "::", stringify!(attributes))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Metadata {
-                    span,
-                    attributes,
-                }
+                destination::Metadata { span, attributes }
             }
         }
     }
@@ -487,8 +468,7 @@ impl<'a> ToPrintView<'a> for origin::Expr {
     type Out = destination::Expr<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Expr { kind, ty, meta } => {
@@ -496,8 +476,7 @@ impl<'a> ToPrintView<'a> for origin::Expr {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Expr), "::", stringify!(kind))
-                                .into(),
+                            position: concat!(stringify!(Expr), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -507,8 +486,7 @@ impl<'a> ToPrintView<'a> for origin::Expr {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Expr), "::", stringify!(ty))
-                                .into(),
+                            position: concat!(stringify!(Expr), "::", stringify!(ty)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -518,18 +496,13 @@ impl<'a> ToPrintView<'a> for origin::Expr {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Expr), "::", stringify!(meta))
-                                .into(),
+                            position: concat!(stringify!(Expr), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Expr {
-                    kind,
-                    ty,
-                    meta,
-                }
+                destination::Expr { kind, ty, meta }
             }
         }
     }
@@ -538,8 +511,7 @@ impl<'a> ToPrintView<'a> for origin::Pat {
     type Out = destination::Pat<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Pat { kind, ty, meta } => {
@@ -547,8 +519,7 @@ impl<'a> ToPrintView<'a> for origin::Pat {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Pat), "::", stringify!(kind))
-                                .into(),
+                            position: concat!(stringify!(Pat), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -558,8 +529,7 @@ impl<'a> ToPrintView<'a> for origin::Pat {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Pat), "::", stringify!(ty))
-                                .into(),
+                            position: concat!(stringify!(Pat), "::", stringify!(ty)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -569,8 +539,7 @@ impl<'a> ToPrintView<'a> for origin::Pat {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Pat), "::", stringify!(meta))
-                                .into(),
+                            position: concat!(stringify!(Pat), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -585,17 +554,20 @@ impl<'a> ToPrintView<'a> for origin::Arm {
     type Out = destination::Arm<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::Arm { pat, body, guard, meta } => {
+            origin::Arm {
+                pat,
+                body,
+                guard,
+                meta,
+            } => {
                 let pat = {
                     let context = PrintContext {
                         value: pat,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Arm), "::", stringify!(pat))
-                                .into(),
+                            position: concat!(stringify!(Arm), "::", stringify!(pat)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -605,8 +577,7 @@ impl<'a> ToPrintView<'a> for origin::Arm {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Arm), "::", stringify!(body))
-                                .into(),
+                            position: concat!(stringify!(Arm), "::", stringify!(body)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -616,8 +587,7 @@ impl<'a> ToPrintView<'a> for origin::Arm {
                     let context = PrintContext {
                         value: guard,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Arm), "::", stringify!(guard))
-                                .into(),
+                            position: concat!(stringify!(Arm), "::", stringify!(guard)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -627,8 +597,7 @@ impl<'a> ToPrintView<'a> for origin::Arm {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Arm), "::", stringify!(meta))
-                                .into(),
+                            position: concat!(stringify!(Arm), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -648,8 +617,7 @@ impl<'a> ToPrintView<'a> for origin::Guard {
     type Out = destination::Guard<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Guard { kind, meta } => {
@@ -657,8 +625,7 @@ impl<'a> ToPrintView<'a> for origin::Guard {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Guard), "::", stringify!(kind))
-                                .into(),
+                            position: concat!(stringify!(Guard), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -668,8 +635,7 @@ impl<'a> ToPrintView<'a> for origin::Guard {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Guard), "::", stringify!(meta))
-                                .into(),
+                            position: concat!(stringify!(Guard), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -684,8 +650,7 @@ impl<'a> ToPrintView<'a> for origin::BorrowKind {
     type Out = destination::BorrowKind;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::BorrowKind::Shared => destination::BorrowKind::Shared,
@@ -698,8 +663,7 @@ impl<'a> ToPrintView<'a> for origin::BindingMode {
     type Out = destination::BindingMode<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::BindingMode::ByValue => destination::BindingMode::ByValue,
@@ -709,10 +673,11 @@ impl<'a> ToPrintView<'a> for origin::BindingMode {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(BindingMode::ByRef), "::",
+                                stringify!(BindingMode::ByRef),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -727,8 +692,7 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
     type Out = destination::PatKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::PatKind::Wild => destination::PatKind::Wild,
@@ -738,9 +702,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: ty,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Ascription), "::", stringify!(ty)
+                                stringify!(PatKind::Ascription),
+                                "::",
+                                stringify!(ty)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -751,9 +717,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: typ_span,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Ascription), "::", stringify!(typ_span)
+                                stringify!(PatKind::Ascription),
+                                "::",
+                                stringify!(typ_span)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -764,55 +732,45 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: pat,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Ascription), "::", stringify!(pat)
+                                stringify!(PatKind::Ascription),
+                                "::",
+                                stringify!(pat)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::PatKind::Ascription {
-                    ty,
-                    typ_span,
-                    pat,
-                }
+                destination::PatKind::Ascription { ty, typ_span, pat }
             }
             origin::PatKind::Or { sub_pats } => {
                 let sub_pats = {
                     let context = PrintContext {
                         value: sub_pats,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(PatKind::Or), "::", stringify!(sub_pats)
-                            )
+                            position: concat!(stringify!(PatKind::Or), "::", stringify!(sub_pats))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::PatKind::Or {
-                    sub_pats,
-                }
+                destination::PatKind::Or { sub_pats }
             }
             origin::PatKind::Array { args } => {
                 let args = {
                     let context = PrintContext {
                         value: args,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(PatKind::Array), "::", stringify!(args)
-                            )
+                            position: concat!(stringify!(PatKind::Array), "::", stringify!(args))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::PatKind::Array {
-                    args,
-                }
+                destination::PatKind::Array { args }
             }
             origin::PatKind::Deref { sub_pat } => {
                 let sub_pat = {
@@ -820,45 +778,48 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: sub_pat,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Deref), "::", stringify!(sub_pat)
+                                stringify!(PatKind::Deref),
+                                "::",
+                                stringify!(sub_pat)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::PatKind::Deref {
-                    sub_pat,
-                }
+                destination::PatKind::Deref { sub_pat }
             }
             origin::PatKind::Constant { lit } => {
                 let lit = {
                     let context = PrintContext {
                         value: lit,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(PatKind::Constant), "::", stringify!(lit)
-                            )
+                            position: concat!(stringify!(PatKind::Constant), "::", stringify!(lit))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::PatKind::Constant {
-                    lit,
-                }
+                destination::PatKind::Constant { lit }
             }
-            origin::PatKind::Binding { mutable, var, mode, sub_pat } => {
+            origin::PatKind::Binding {
+                mutable,
+                var,
+                mode,
+                sub_pat,
+            } => {
                 let mutable = {
                     let context = PrintContext {
                         value: mutable,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Binding), "::", stringify!(mutable)
+                                stringify!(PatKind::Binding),
+                                "::",
+                                stringify!(mutable)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -868,9 +829,7 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                     let context = PrintContext {
                         value: var,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(PatKind::Binding), "::", stringify!(var)
-                            )
+                            position: concat!(stringify!(PatKind::Binding), "::", stringify!(var))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -881,9 +840,7 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                     let context = PrintContext {
                         value: mode,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(PatKind::Binding), "::", stringify!(mode)
-                            )
+                            position: concat!(stringify!(PatKind::Binding), "::", stringify!(mode))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -895,9 +852,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: sub_pat,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Binding), "::", stringify!(sub_pat)
+                                stringify!(PatKind::Binding),
+                                "::",
+                                stringify!(sub_pat)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -910,16 +869,22 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                     sub_pat,
                 }
             }
-            origin::PatKind::Construct { constructor, is_record, is_struct, fields } => {
+            origin::PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
                 let constructor = {
                     let context = PrintContext {
                         value: constructor,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Construct), "::",
+                                stringify!(PatKind::Construct),
+                                "::",
                                 stringify!(constructor)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -930,9 +895,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: is_record,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Construct), "::", stringify!(is_record)
+                                stringify!(PatKind::Construct),
+                                "::",
+                                stringify!(is_record)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -943,9 +910,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: is_struct,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Construct), "::", stringify!(is_struct)
+                                stringify!(PatKind::Construct),
+                                "::",
+                                stringify!(is_struct)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -956,9 +925,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: fields,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Construct), "::", stringify!(fields)
+                                stringify!(PatKind::Construct),
+                                "::",
+                                stringify!(fields)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -977,9 +948,11 @@ impl<'a> ToPrintView<'a> for origin::PatKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(PatKind::Error), "::", stringify!(anon_field_0)
+                                stringify!(PatKind::Error),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -994,8 +967,7 @@ impl<'a> ToPrintView<'a> for origin::GuardKind {
     type Out = destination::GuardKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::GuardKind::IfLet { lhs, rhs } => {
@@ -1003,9 +975,7 @@ impl<'a> ToPrintView<'a> for origin::GuardKind {
                     let context = PrintContext {
                         value: lhs,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(GuardKind::IfLet), "::", stringify!(lhs)
-                            )
+                            position: concat!(stringify!(GuardKind::IfLet), "::", stringify!(lhs))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1016,19 +986,14 @@ impl<'a> ToPrintView<'a> for origin::GuardKind {
                     let context = PrintContext {
                         value: rhs,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(GuardKind::IfLet), "::", stringify!(rhs)
-                            )
+                            position: concat!(stringify!(GuardKind::IfLet), "::", stringify!(rhs))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::GuardKind::IfLet {
-                    lhs,
-                    rhs,
-                }
+                destination::GuardKind::IfLet { lhs, rhs }
             }
         }
     }
@@ -1037,8 +1002,7 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
     type Out = destination::Lhs<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Lhs::LocalVar { var, ty } => {
@@ -1046,9 +1010,7 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                     let context = PrintContext {
                         value: var,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Lhs::LocalVar), "::", stringify!(var)
-                            )
+                            position: concat!(stringify!(Lhs::LocalVar), "::", stringify!(var))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1059,19 +1021,14 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Lhs::LocalVar), "::", stringify!(ty)
-                            )
+                            position: concat!(stringify!(Lhs::LocalVar), "::", stringify!(ty))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Lhs::LocalVar {
-                    var,
-                    ty,
-                }
+                destination::Lhs::LocalVar { var, ty }
             }
             origin::Lhs::ArbitraryExpr(anon_field_0) => {
                 let anon_field_0 = {
@@ -1079,10 +1036,11 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Lhs::ArbitraryExpr), "::",
+                                stringify!(Lhs::ArbitraryExpr),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1095,9 +1053,7 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                     let context = PrintContext {
                         value: e,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Lhs::FieldAccessor), "::", stringify!(e)
-                            )
+                            position: concat!(stringify!(Lhs::FieldAccessor), "::", stringify!(e))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1108,9 +1064,7 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Lhs::FieldAccessor), "::", stringify!(ty)
-                            )
+                            position: concat!(stringify!(Lhs::FieldAccessor), "::", stringify!(ty))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1122,28 +1076,24 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                         value: field,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Lhs::FieldAccessor), "::", stringify!(field)
+                                stringify!(Lhs::FieldAccessor),
+                                "::",
+                                stringify!(field)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Lhs::FieldAccessor {
-                    e,
-                    ty,
-                    field,
-                }
+                destination::Lhs::FieldAccessor { e, ty, field }
             }
             origin::Lhs::ArrayAccessor { e, ty, index } => {
                 let e = {
                     let context = PrintContext {
                         value: e,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Lhs::ArrayAccessor), "::", stringify!(e)
-                            )
+                            position: concat!(stringify!(Lhs::ArrayAccessor), "::", stringify!(e))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1154,9 +1104,7 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Lhs::ArrayAccessor), "::", stringify!(ty)
-                            )
+                            position: concat!(stringify!(Lhs::ArrayAccessor), "::", stringify!(ty))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1168,19 +1116,17 @@ impl<'a> ToPrintView<'a> for origin::Lhs {
                         value: index,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(Lhs::ArrayAccessor), "::", stringify!(index)
+                                stringify!(Lhs::ArrayAccessor),
+                                "::",
+                                stringify!(index)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Lhs::ArrayAccessor {
-                    e,
-                    ty,
-                    index,
-                }
+                destination::Lhs::ArrayAccessor { e, ty, index }
             }
         }
     }
@@ -1189,8 +1135,7 @@ impl<'a> ToPrintView<'a> for origin::ImplExpr {
     type Out = destination::ImplExpr<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ImplExpr { kind, goal } => {
@@ -1198,10 +1143,7 @@ impl<'a> ToPrintView<'a> for origin::ImplExpr {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplExpr), "::", stringify!(kind)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplExpr), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1211,19 +1153,13 @@ impl<'a> ToPrintView<'a> for origin::ImplExpr {
                     let context = PrintContext {
                         value: goal,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplExpr), "::", stringify!(goal)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplExpr), "::", stringify!(goal)).into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplExpr {
-                    kind,
-                    goal,
-                }
+                destination::ImplExpr { kind, goal }
             }
         }
     }
@@ -1232,8 +1168,7 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
     type Out = destination::ImplExprKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ImplExprKind::Self_ => destination::ImplExprKind::Self_,
@@ -1243,10 +1178,11 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Concrete), "::",
+                                stringify!(ImplExprKind::Concrete),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1260,17 +1196,17 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: id,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::LocalBound), "::", stringify!(id)
+                                stringify!(ImplExprKind::LocalBound),
+                                "::",
+                                stringify!(id)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplExprKind::LocalBound {
-                    id,
-                }
+                destination::ImplExprKind::LocalBound { id }
             }
             origin::ImplExprKind::Parent { impl_, ident } => {
                 let impl_ = {
@@ -1278,9 +1214,11 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: impl_,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Parent), "::", stringify!(impl_)
+                                stringify!(ImplExprKind::Parent),
+                                "::",
+                                stringify!(impl_)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1291,18 +1229,17 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: ident,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Parent), "::", stringify!(ident)
+                                stringify!(ImplExprKind::Parent),
+                                "::",
+                                stringify!(ident)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplExprKind::Parent {
-                    impl_,
-                    ident,
-                }
+                destination::ImplExprKind::Parent { impl_, ident }
             }
             origin::ImplExprKind::Projection { impl_, item, ident } => {
                 let impl_ = {
@@ -1310,10 +1247,11 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: impl_,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Projection), "::",
+                                stringify!(ImplExprKind::Projection),
+                                "::",
                                 stringify!(impl_)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1324,9 +1262,11 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: item,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Projection), "::", stringify!(item)
+                                stringify!(ImplExprKind::Projection),
+                                "::",
+                                stringify!(item)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1337,20 +1277,17 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: ident,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Projection), "::",
+                                stringify!(ImplExprKind::Projection),
+                                "::",
                                 stringify!(ident)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplExprKind::Projection {
-                    impl_,
-                    item,
-                    ident,
-                }
+                destination::ImplExprKind::Projection { impl_, item, ident }
             }
             origin::ImplExprKind::ImplApp { impl_, args } => {
                 let impl_ = {
@@ -1358,9 +1295,11 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: impl_,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::ImplApp), "::", stringify!(impl_)
+                                stringify!(ImplExprKind::ImplApp),
+                                "::",
+                                stringify!(impl_)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1371,18 +1310,17 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: args,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::ImplApp), "::", stringify!(args)
+                                stringify!(ImplExprKind::ImplApp),
+                                "::",
+                                stringify!(args)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplExprKind::ImplApp {
-                    impl_,
-                    args,
-                }
+                destination::ImplExprKind::ImplApp { impl_, args }
             }
             origin::ImplExprKind::Dyn => destination::ImplExprKind::Dyn,
             origin::ImplExprKind::Builtin(anon_field_0) => {
@@ -1391,10 +1329,11 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Builtin), "::",
+                                stringify!(ImplExprKind::Builtin),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1409,19 +1348,20 @@ impl<'a> ToPrintView<'a> for origin::ImplItem {
     type Out = destination::ImplItem<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ImplItem { meta, generics, kind, ident } => {
+            origin::ImplItem {
+                meta,
+                generics,
+                kind,
+                ident,
+            } => {
                 let meta = {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplItem), "::", stringify!(meta)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplItem), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1431,9 +1371,7 @@ impl<'a> ToPrintView<'a> for origin::ImplItem {
                     let context = PrintContext {
                         value: generics,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplItem), "::", stringify!(generics)
-                            )
+                            position: concat!(stringify!(ImplItem), "::", stringify!(generics))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1444,10 +1382,7 @@ impl<'a> ToPrintView<'a> for origin::ImplItem {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplItem), "::", stringify!(kind)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplItem), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1457,10 +1392,7 @@ impl<'a> ToPrintView<'a> for origin::ImplItem {
                     let context = PrintContext {
                         value: ident,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplItem), "::", stringify!(ident)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplItem), "::", stringify!(ident)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1480,8 +1412,7 @@ impl<'a> ToPrintView<'a> for origin::ImplItemKind {
     type Out = destination::ImplItemKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ImplItemKind::Type { ty, parent_bounds } => {
@@ -1489,9 +1420,7 @@ impl<'a> ToPrintView<'a> for origin::ImplItemKind {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplItemKind::Type), "::", stringify!(ty)
-                            )
+                            position: concat!(stringify!(ImplItemKind::Type), "::", stringify!(ty))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1503,28 +1432,24 @@ impl<'a> ToPrintView<'a> for origin::ImplItemKind {
                         value: parent_bounds,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplItemKind::Type), "::",
+                                stringify!(ImplItemKind::Type),
+                                "::",
                                 stringify!(parent_bounds)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplItemKind::Type {
-                    ty,
-                    parent_bounds,
-                }
+                destination::ImplItemKind::Type { ty, parent_bounds }
             }
             origin::ImplItemKind::Fn { body, params } => {
                 let body = {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplItemKind::Fn), "::", stringify!(body)
-                            )
+                            position: concat!(stringify!(ImplItemKind::Fn), "::", stringify!(body))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1536,18 +1461,17 @@ impl<'a> ToPrintView<'a> for origin::ImplItemKind {
                         value: params,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplItemKind::Fn), "::", stringify!(params)
+                                stringify!(ImplItemKind::Fn),
+                                "::",
+                                stringify!(params)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplItemKind::Fn {
-                    body,
-                    params,
-                }
+                destination::ImplItemKind::Fn { body, params }
             }
         }
     }
@@ -1556,19 +1480,20 @@ impl<'a> ToPrintView<'a> for origin::TraitItem {
     type Out = destination::TraitItem<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::TraitItem { kind, generics, ident, meta } => {
+            origin::TraitItem {
+                kind,
+                generics,
+                ident,
+                meta,
+            } => {
                 let kind = {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(TraitItem), "::", stringify!(kind)
-                            )
-                                .into(),
+                            position: concat!(stringify!(TraitItem), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1578,9 +1503,7 @@ impl<'a> ToPrintView<'a> for origin::TraitItem {
                     let context = PrintContext {
                         value: generics,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(TraitItem), "::", stringify!(generics)
-                            )
+                            position: concat!(stringify!(TraitItem), "::", stringify!(generics))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1591,9 +1514,7 @@ impl<'a> ToPrintView<'a> for origin::TraitItem {
                     let context = PrintContext {
                         value: ident,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(TraitItem), "::", stringify!(ident)
-                            )
+                            position: concat!(stringify!(TraitItem), "::", stringify!(ident))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1604,10 +1525,7 @@ impl<'a> ToPrintView<'a> for origin::TraitItem {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(TraitItem), "::", stringify!(meta)
-                            )
-                                .into(),
+                            position: concat!(stringify!(TraitItem), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1627,8 +1545,7 @@ impl<'a> ToPrintView<'a> for origin::TraitItemKind {
     type Out = destination::TraitItemKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::TraitItemKind::Type(anon_field_0) => {
@@ -1637,10 +1554,11 @@ impl<'a> ToPrintView<'a> for origin::TraitItemKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(TraitItemKind::Type), "::",
+                                stringify!(TraitItemKind::Type),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1654,10 +1572,11 @@ impl<'a> ToPrintView<'a> for origin::TraitItemKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(TraitItemKind::Fn), "::",
+                                stringify!(TraitItemKind::Fn),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1671,9 +1590,11 @@ impl<'a> ToPrintView<'a> for origin::TraitItemKind {
                         value: params,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(TraitItemKind::Default), "::", stringify!(params)
+                                stringify!(TraitItemKind::Default),
+                                "::",
+                                stringify!(params)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1684,18 +1605,17 @@ impl<'a> ToPrintView<'a> for origin::TraitItemKind {
                         value: body,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(TraitItemKind::Default), "::", stringify!(body)
+                                stringify!(TraitItemKind::Default),
+                                "::",
+                                stringify!(body)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::TraitItemKind::Default {
-                    params,
-                    body,
-                }
+                destination::TraitItemKind::Default { params, body }
             }
         }
     }
@@ -1704,8 +1624,7 @@ impl<'a> ToPrintView<'a> for origin::QuoteContent {
     type Out = destination::QuoteContent<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::QuoteContent::Verbatim(anon_field_0) => {
@@ -1714,10 +1633,11 @@ impl<'a> ToPrintView<'a> for origin::QuoteContent {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(QuoteContent::Verbatim), "::",
+                                stringify!(QuoteContent::Verbatim),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1731,10 +1651,11 @@ impl<'a> ToPrintView<'a> for origin::QuoteContent {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(QuoteContent::Expr), "::",
+                                stringify!(QuoteContent::Expr),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1748,10 +1669,11 @@ impl<'a> ToPrintView<'a> for origin::QuoteContent {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(QuoteContent::Pattern), "::",
+                                stringify!(QuoteContent::Pattern),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1765,10 +1687,11 @@ impl<'a> ToPrintView<'a> for origin::QuoteContent {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(QuoteContent::Typ), "::",
+                                stringify!(QuoteContent::Typ),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1783,8 +1706,7 @@ impl<'a> ToPrintView<'a> for origin::Quote {
     type Out = destination::Quote<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Quote(anon_field_0) => {
@@ -1792,9 +1714,7 @@ impl<'a> ToPrintView<'a> for origin::Quote {
                     let context = PrintContext {
                         value: anon_field_0,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Quote), "::", stringify!(anon_field_0)
-                            )
+                            position: concat!(stringify!(Quote), "::", stringify!(anon_field_0))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1810,19 +1730,24 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOrigin {
     type Out = destination::ItemQuoteOrigin<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ItemQuoteOrigin { item_kind, item_ident, position } => {
+            origin::ItemQuoteOrigin {
+                item_kind,
+                item_ident,
+                position,
+            } => {
                 let item_kind = {
                     let context = PrintContext {
                         value: item_kind,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemQuoteOrigin), "::", stringify!(item_kind)
+                                stringify!(ItemQuoteOrigin),
+                                "::",
+                                stringify!(item_kind)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1833,9 +1758,11 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOrigin {
                         value: item_ident,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemQuoteOrigin), "::", stringify!(item_ident)
+                                stringify!(ItemQuoteOrigin),
+                                "::",
+                                stringify!(item_ident)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1846,9 +1773,11 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOrigin {
                         value: position,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemQuoteOrigin), "::", stringify!(position)
+                                stringify!(ItemQuoteOrigin),
+                                "::",
+                                stringify!(position)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1867,14 +1796,11 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOriginKind {
     type Out = destination::ItemQuoteOriginKind;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ItemQuoteOriginKind::Fn => destination::ItemQuoteOriginKind::Fn,
-            origin::ItemQuoteOriginKind::TyAlias => {
-                destination::ItemQuoteOriginKind::TyAlias
-            }
+            origin::ItemQuoteOriginKind::TyAlias => destination::ItemQuoteOriginKind::TyAlias,
             origin::ItemQuoteOriginKind::Type => destination::ItemQuoteOriginKind::Type,
             origin::ItemQuoteOriginKind::MacroInvocation => {
                 destination::ItemQuoteOriginKind::MacroInvocation
@@ -1884,9 +1810,7 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOriginKind {
             origin::ItemQuoteOriginKind::Alias => destination::ItemQuoteOriginKind::Alias,
             origin::ItemQuoteOriginKind::Use => destination::ItemQuoteOriginKind::Use,
             origin::ItemQuoteOriginKind::Quote => destination::ItemQuoteOriginKind::Quote,
-            origin::ItemQuoteOriginKind::HaxError => {
-                destination::ItemQuoteOriginKind::HaxError
-            }
+            origin::ItemQuoteOriginKind::HaxError => destination::ItemQuoteOriginKind::HaxError,
             origin::ItemQuoteOriginKind::NotImplementedYet => {
                 destination::ItemQuoteOriginKind::NotImplementedYet
             }
@@ -1897,16 +1821,11 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOriginPosition {
     type Out = destination::ItemQuoteOriginPosition;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ItemQuoteOriginPosition::Before => {
-                destination::ItemQuoteOriginPosition::Before
-            }
-            origin::ItemQuoteOriginPosition::After => {
-                destination::ItemQuoteOriginPosition::After
-            }
+            origin::ItemQuoteOriginPosition::Before => destination::ItemQuoteOriginPosition::Before,
+            origin::ItemQuoteOriginPosition::After => destination::ItemQuoteOriginPosition::After,
             origin::ItemQuoteOriginPosition::Replace => {
                 destination::ItemQuoteOriginPosition::Replace
             }
@@ -1917,39 +1836,34 @@ impl<'a> ToPrintView<'a> for origin::LoopKind {
     type Out = destination::LoopKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::LoopKind::UnconditionalLoop => {
-                destination::LoopKind::UnconditionalLoop
-            }
+            origin::LoopKind::UnconditionalLoop => destination::LoopKind::UnconditionalLoop,
             origin::LoopKind::WhileLoop { condition } => {
                 let condition = {
                     let context = PrintContext {
                         value: condition,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(LoopKind::WhileLoop), "::", stringify!(condition)
+                                stringify!(LoopKind::WhileLoop),
+                                "::",
+                                stringify!(condition)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::LoopKind::WhileLoop {
-                    condition,
-                }
+                destination::LoopKind::WhileLoop { condition }
             }
             origin::LoopKind::ForLoop { pat, it } => {
                 let pat = {
                     let context = PrintContext {
                         value: pat,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(LoopKind::ForLoop), "::", stringify!(pat)
-                            )
+                            position: concat!(stringify!(LoopKind::ForLoop), "::", stringify!(pat))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -1960,29 +1874,31 @@ impl<'a> ToPrintView<'a> for origin::LoopKind {
                     let context = PrintContext {
                         value: it,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(LoopKind::ForLoop), "::", stringify!(it)
-                            )
+                            position: concat!(stringify!(LoopKind::ForLoop), "::", stringify!(it))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::LoopKind::ForLoop {
-                    pat,
-                    it,
-                }
+                destination::LoopKind::ForLoop { pat, it }
             }
-            origin::LoopKind::ForIndexLoop { start, end, var, var_ty } => {
+            origin::LoopKind::ForIndexLoop {
+                start,
+                end,
+                var,
+                var_ty,
+            } => {
                 let start = {
                     let context = PrintContext {
                         value: start,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(start)
+                                stringify!(LoopKind::ForIndexLoop),
+                                "::",
+                                stringify!(start)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -1993,9 +1909,11 @@ impl<'a> ToPrintView<'a> for origin::LoopKind {
                         value: end,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(end)
+                                stringify!(LoopKind::ForIndexLoop),
+                                "::",
+                                stringify!(end)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2006,9 +1924,11 @@ impl<'a> ToPrintView<'a> for origin::LoopKind {
                         value: var,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(var)
+                                stringify!(LoopKind::ForIndexLoop),
+                                "::",
+                                stringify!(var)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2019,9 +1939,11 @@ impl<'a> ToPrintView<'a> for origin::LoopKind {
                         value: var_ty,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(LoopKind::ForIndexLoop), "::", stringify!(var_ty)
+                                stringify!(LoopKind::ForIndexLoop),
+                                "::",
+                                stringify!(var_ty)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2041,14 +1963,11 @@ impl<'a> ToPrintView<'a> for origin::ControlFlowKind {
     type Out = destination::ControlFlowKind;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ControlFlowKind::BreakOnly => destination::ControlFlowKind::BreakOnly,
-            origin::ControlFlowKind::BreakOrReturn => {
-                destination::ControlFlowKind::BreakOrReturn
-            }
+            origin::ControlFlowKind::BreakOrReturn => destination::ControlFlowKind::BreakOrReturn,
         }
     }
 }
@@ -2056,8 +1975,7 @@ impl<'a> ToPrintView<'a> for origin::LoopState {
     type Out = destination::LoopState<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::LoopState { init, body_pat } => {
@@ -2065,10 +1983,7 @@ impl<'a> ToPrintView<'a> for origin::LoopState {
                     let context = PrintContext {
                         value: init,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(LoopState), "::", stringify!(init)
-                            )
-                                .into(),
+                            position: concat!(stringify!(LoopState), "::", stringify!(init)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2078,19 +1993,14 @@ impl<'a> ToPrintView<'a> for origin::LoopState {
                     let context = PrintContext {
                         value: body_pat,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(LoopState), "::", stringify!(body_pat)
-                            )
+                            position: concat!(stringify!(LoopState), "::", stringify!(body_pat))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::LoopState {
-                    init,
-                    body_pat,
-                }
+                destination::LoopState { init, body_pat }
             }
         }
     }
@@ -2099,19 +2009,24 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
     type Out = destination::ExprKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ExprKind::If { condition, then, else_ } => {
+            origin::ExprKind::If {
+                condition,
+                then,
+                else_,
+            } => {
                 let condition = {
                     let context = PrintContext {
                         value: condition,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::If), "::", stringify!(condition)
+                                stringify!(ExprKind::If),
+                                "::",
+                                stringify!(condition)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2121,9 +2036,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: then,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::If), "::", stringify!(then)
-                            )
+                            position: concat!(stringify!(ExprKind::If), "::", stringify!(then))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2134,9 +2047,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: else_,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::If), "::", stringify!(else_)
-                            )
+                            position: concat!(stringify!(ExprKind::If), "::", stringify!(else_))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2149,14 +2060,18 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     else_,
                 }
             }
-            origin::ExprKind::App { head, args, generic_args, bounds_impls, trait_ } => {
+            origin::ExprKind::App {
+                head,
+                args,
+                generic_args,
+                bounds_impls,
+                trait_,
+            } => {
                 let head = {
                     let context = PrintContext {
                         value: head,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::App), "::", stringify!(head)
-                            )
+                            position: concat!(stringify!(ExprKind::App), "::", stringify!(head))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2167,9 +2082,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: args,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::App), "::", stringify!(args)
-                            )
+                            position: concat!(stringify!(ExprKind::App), "::", stringify!(args))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2181,9 +2094,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: generic_args,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::App), "::", stringify!(generic_args)
+                                stringify!(ExprKind::App),
+                                "::",
+                                stringify!(generic_args)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2194,9 +2109,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: bounds_impls,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::App), "::", stringify!(bounds_impls)
+                                stringify!(ExprKind::App),
+                                "::",
+                                stringify!(bounds_impls)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2206,9 +2123,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: trait_,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::App), "::", stringify!(trait_)
-                            )
+                            position: concat!(stringify!(ExprKind::App), "::", stringify!(trait_))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2229,10 +2144,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Literal), "::",
+                                stringify!(ExprKind::Literal),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2246,9 +2162,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Array), "::", stringify!(anon_field_0)
+                                stringify!(ExprKind::Array),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2268,10 +2186,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: constructor,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Construct), "::",
+                                stringify!(ExprKind::Construct),
+                                "::",
                                 stringify!(constructor)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2282,9 +2201,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: is_record,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Construct), "::", stringify!(is_record)
+                                stringify!(ExprKind::Construct),
+                                "::",
+                                stringify!(is_record)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2295,9 +2216,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: is_struct,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Construct), "::", stringify!(is_struct)
+                                stringify!(ExprKind::Construct),
+                                "::",
+                                stringify!(is_struct)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2308,9 +2231,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: fields,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Construct), "::", stringify!(fields)
+                                stringify!(ExprKind::Construct),
+                                "::",
+                                stringify!(fields)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2321,9 +2246,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: base,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Construct), "::", stringify!(base)
+                                stringify!(ExprKind::Construct),
+                                "::",
+                                stringify!(base)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2343,9 +2270,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: scrutinee,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Match), "::", stringify!(scrutinee)
+                                stringify!(ExprKind::Match),
+                                "::",
+                                stringify!(scrutinee)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2355,19 +2284,14 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: arms,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Match), "::", stringify!(arms)
-                            )
+                            position: concat!(stringify!(ExprKind::Match), "::", stringify!(arms))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Match {
-                    scrutinee,
-                    arms,
-                }
+                destination::ExprKind::Match { scrutinee, arms }
             }
             origin::ExprKind::Tuple(anon_field_0) => {
                 let anon_field_0 = {
@@ -2375,9 +2299,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Tuple), "::", stringify!(anon_field_0)
+                                stringify!(ExprKind::Tuple),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2391,9 +2317,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: mutable,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Borrow), "::", stringify!(mutable)
+                                stringify!(ExprKind::Borrow),
+                                "::",
+                                stringify!(mutable)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2404,18 +2332,17 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: inner,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Borrow), "::", stringify!(inner)
+                                stringify!(ExprKind::Borrow),
+                                "::",
+                                stringify!(inner)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Borrow {
-                    mutable,
-                    inner,
-                }
+                destination::ExprKind::Borrow { mutable, inner }
             }
             origin::ExprKind::AddressOf { mutability, inner } => {
                 let mutability = {
@@ -2423,10 +2350,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: mutability,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::AddressOf), "::",
+                                stringify!(ExprKind::AddressOf),
+                                "::",
                                 stringify!(mutability)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2437,18 +2365,17 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: inner,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::AddressOf), "::", stringify!(inner)
+                                stringify!(ExprKind::AddressOf),
+                                "::",
+                                stringify!(inner)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::AddressOf {
-                    mutability,
-                    inner,
-                }
+                destination::ExprKind::AddressOf { mutability, inner }
             }
             origin::ExprKind::Deref(anon_field_0) => {
                 let anon_field_0 = {
@@ -2456,9 +2383,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Deref), "::", stringify!(anon_field_0)
+                                stringify!(ExprKind::Deref),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2471,9 +2400,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: lhs,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Let), "::", stringify!(lhs)
-                            )
+                            position: concat!(stringify!(ExprKind::Let), "::", stringify!(lhs))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2484,9 +2411,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: rhs,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Let), "::", stringify!(rhs)
-                            )
+                            position: concat!(stringify!(ExprKind::Let), "::", stringify!(rhs))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2497,20 +2422,14 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Let), "::", stringify!(body)
-                            )
+                            position: concat!(stringify!(ExprKind::Let), "::", stringify!(body))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Let {
-                    lhs,
-                    rhs,
-                    body,
-                }
+                destination::ExprKind::Let { lhs, rhs, body }
             }
             origin::ExprKind::GlobalId(anon_field_0) => {
                 let anon_field_0 = {
@@ -2518,10 +2437,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::GlobalId), "::",
+                                stringify!(ExprKind::GlobalId),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2535,10 +2455,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::LocalId), "::",
+                                stringify!(ExprKind::LocalId),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2552,9 +2473,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: e,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Ascription), "::", stringify!(e)
+                                stringify!(ExprKind::Ascription),
+                                "::",
+                                stringify!(e)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2565,27 +2488,24 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: ty,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Ascription), "::", stringify!(ty)
+                                stringify!(ExprKind::Ascription),
+                                "::",
+                                stringify!(ty)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Ascription {
-                    e,
-                    ty,
-                }
+                destination::ExprKind::Ascription { e, ty }
             }
             origin::ExprKind::Assign { lhs, value } => {
                 let lhs = {
                     let context = PrintContext {
                         value: lhs,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Assign), "::", stringify!(lhs)
-                            )
+                            position: concat!(stringify!(ExprKind::Assign), "::", stringify!(lhs))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2597,27 +2517,30 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: value,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Assign), "::", stringify!(value)
+                                stringify!(ExprKind::Assign),
+                                "::",
+                                stringify!(value)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Assign {
-                    lhs,
-                    value,
-                }
+                destination::ExprKind::Assign { lhs, value }
             }
-            origin::ExprKind::Loop { body, kind, state, control_flow, label } => {
+            origin::ExprKind::Loop {
+                body,
+                kind,
+                state,
+                control_flow,
+                label,
+            } => {
                 let body = {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Loop), "::", stringify!(body)
-                            )
+                            position: concat!(stringify!(ExprKind::Loop), "::", stringify!(body))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2628,9 +2551,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Loop), "::", stringify!(kind)
-                            )
+                            position: concat!(stringify!(ExprKind::Loop), "::", stringify!(kind))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2641,9 +2562,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: state,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Loop), "::", stringify!(state)
-                            )
+                            position: concat!(stringify!(ExprKind::Loop), "::", stringify!(state))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2655,9 +2574,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: control_flow,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Loop), "::", stringify!(control_flow)
+                                stringify!(ExprKind::Loop),
+                                "::",
+                                stringify!(control_flow)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2667,9 +2588,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: label,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Loop), "::", stringify!(label)
-                            )
+                            position: concat!(stringify!(ExprKind::Loop), "::", stringify!(label))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2689,9 +2608,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: value,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Break), "::", stringify!(value)
-                            )
+                            position: concat!(stringify!(ExprKind::Break), "::", stringify!(value))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2702,19 +2619,14 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: label,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Break), "::", stringify!(label)
-                            )
+                            position: concat!(stringify!(ExprKind::Break), "::", stringify!(label))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Break {
-                    value,
-                    label,
-                }
+                destination::ExprKind::Break { value, label }
             }
             origin::ExprKind::Return { value } => {
                 let value = {
@@ -2722,17 +2634,17 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: value,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Return), "::", stringify!(value)
+                                stringify!(ExprKind::Return),
+                                "::",
+                                stringify!(value)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Return {
-                    value,
-                }
+                destination::ExprKind::Return { value }
             }
             origin::ExprKind::Continue { label } => {
                 let label = {
@@ -2740,27 +2652,33 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: label,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Continue), "::", stringify!(label)
+                                stringify!(ExprKind::Continue),
+                                "::",
+                                stringify!(label)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Continue {
-                    label,
-                }
+                destination::ExprKind::Continue { label }
             }
-            origin::ExprKind::Closure { params, body, captures } => {
+            origin::ExprKind::Closure {
+                params,
+                body,
+                captures,
+            } => {
                 let params = {
                     let context = PrintContext {
                         value: params,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Closure), "::", stringify!(params)
+                                stringify!(ExprKind::Closure),
+                                "::",
+                                stringify!(params)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2771,9 +2689,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: body,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Closure), "::", stringify!(body)
+                                stringify!(ExprKind::Closure),
+                                "::",
+                                stringify!(body)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2784,9 +2704,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: captures,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Closure), "::", stringify!(captures)
+                                stringify!(ExprKind::Closure),
+                                "::",
+                                stringify!(captures)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2803,9 +2725,7 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ExprKind::Block), "::", stringify!(body)
-                            )
+                            position: concat!(stringify!(ExprKind::Block), "::", stringify!(body))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2817,18 +2737,17 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: safety_mode,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Block), "::", stringify!(safety_mode)
+                                stringify!(ExprKind::Block),
+                                "::",
+                                stringify!(safety_mode)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Block {
-                    body,
-                    safety_mode,
-                }
+                destination::ExprKind::Block { body, safety_mode }
             }
             origin::ExprKind::Quote { contents } => {
                 let contents = {
@@ -2836,17 +2755,17 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: contents,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Quote), "::", stringify!(contents)
+                                stringify!(ExprKind::Quote),
+                                "::",
+                                stringify!(contents)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ExprKind::Quote {
-                    contents,
-                }
+                destination::ExprKind::Quote { contents }
             }
             origin::ExprKind::Error(anon_field_0) => {
                 let anon_field_0 = {
@@ -2854,9 +2773,11 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ExprKind::Error), "::", stringify!(anon_field_0)
+                                stringify!(ExprKind::Error),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2871,8 +2792,7 @@ impl<'a> ToPrintView<'a> for origin::GenericParamKind {
     type Out = destination::GenericParamKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::GenericParamKind::Lifetime => destination::GenericParamKind::Lifetime,
@@ -2883,17 +2803,17 @@ impl<'a> ToPrintView<'a> for origin::GenericParamKind {
                         value: ty,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(GenericParamKind::Const), "::", stringify!(ty)
+                                stringify!(GenericParamKind::Const),
+                                "::",
+                                stringify!(ty)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::GenericParamKind::Const {
-                    ty,
-                }
+                destination::GenericParamKind::Const { ty }
             }
         }
     }
@@ -2902,8 +2822,7 @@ impl<'a> ToPrintView<'a> for origin::TraitGoal {
     type Out = destination::TraitGoal<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::TraitGoal { trait_, args } => {
@@ -2911,9 +2830,7 @@ impl<'a> ToPrintView<'a> for origin::TraitGoal {
                     let context = PrintContext {
                         value: trait_,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(TraitGoal), "::", stringify!(trait_)
-                            )
+                            position: concat!(stringify!(TraitGoal), "::", stringify!(trait_))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -2924,19 +2841,13 @@ impl<'a> ToPrintView<'a> for origin::TraitGoal {
                     let context = PrintContext {
                         value: args,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(TraitGoal), "::", stringify!(args)
-                            )
-                                .into(),
+                            position: concat!(stringify!(TraitGoal), "::", stringify!(args)).into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::TraitGoal {
-                    trait_,
-                    args,
-                }
+                destination::TraitGoal { trait_, args }
             }
         }
     }
@@ -2945,8 +2856,7 @@ impl<'a> ToPrintView<'a> for origin::ImplIdent {
     type Out = destination::ImplIdent<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ImplIdent { goal, name } => {
@@ -2954,10 +2864,7 @@ impl<'a> ToPrintView<'a> for origin::ImplIdent {
                     let context = PrintContext {
                         value: goal,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplIdent), "::", stringify!(goal)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplIdent), "::", stringify!(goal)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -2967,19 +2874,13 @@ impl<'a> ToPrintView<'a> for origin::ImplIdent {
                     let context = PrintContext {
                         value: name,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ImplIdent), "::", stringify!(name)
-                            )
-                                .into(),
+                            position: concat!(stringify!(ImplIdent), "::", stringify!(name)).into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ImplIdent {
-                    goal,
-                    name,
-                }
+                destination::ImplIdent { goal, name }
             }
         }
     }
@@ -2988,19 +2889,24 @@ impl<'a> ToPrintView<'a> for origin::ProjectionPredicate {
     type Out = destination::ProjectionPredicate<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ProjectionPredicate { impl_, assoc_item, ty } => {
+            origin::ProjectionPredicate {
+                impl_,
+                assoc_item,
+                ty,
+            } => {
                 let impl_ = {
                     let context = PrintContext {
                         value: impl_,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ProjectionPredicate), "::", stringify!(impl_)
+                                stringify!(ProjectionPredicate),
+                                "::",
+                                stringify!(impl_)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3011,10 +2917,11 @@ impl<'a> ToPrintView<'a> for origin::ProjectionPredicate {
                         value: assoc_item,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ProjectionPredicate), "::",
+                                stringify!(ProjectionPredicate),
+                                "::",
                                 stringify!(assoc_item)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3025,9 +2932,11 @@ impl<'a> ToPrintView<'a> for origin::ProjectionPredicate {
                         value: ty,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ProjectionPredicate), "::", stringify!(ty)
+                                stringify!(ProjectionPredicate),
+                                "::",
+                                stringify!(ty)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3046,8 +2955,7 @@ impl<'a> ToPrintView<'a> for origin::GenericConstraint {
     type Out = destination::GenericConstraint<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::GenericConstraint::Lifetime(anon_field_0) => {
@@ -3056,10 +2964,11 @@ impl<'a> ToPrintView<'a> for origin::GenericConstraint {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(GenericConstraint::Lifetime), "::",
+                                stringify!(GenericConstraint::Lifetime),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3073,10 +2982,11 @@ impl<'a> ToPrintView<'a> for origin::GenericConstraint {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(GenericConstraint::Type), "::",
+                                stringify!(GenericConstraint::Type),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3090,10 +3000,11 @@ impl<'a> ToPrintView<'a> for origin::GenericConstraint {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(GenericConstraint::Projection), "::",
+                                stringify!(GenericConstraint::Projection),
+                                "::",
                                 stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3108,8 +3019,7 @@ impl<'a> ToPrintView<'a> for origin::GenericParam {
     type Out = destination::GenericParam<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::GenericParam { ident, meta, kind } => {
@@ -3117,9 +3027,7 @@ impl<'a> ToPrintView<'a> for origin::GenericParam {
                     let context = PrintContext {
                         value: ident,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(GenericParam), "::", stringify!(ident)
-                            )
+                            position: concat!(stringify!(GenericParam), "::", stringify!(ident))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3130,9 +3038,7 @@ impl<'a> ToPrintView<'a> for origin::GenericParam {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(GenericParam), "::", stringify!(meta)
-                            )
+                            position: concat!(stringify!(GenericParam), "::", stringify!(meta))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3143,20 +3049,14 @@ impl<'a> ToPrintView<'a> for origin::GenericParam {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(GenericParam), "::", stringify!(kind)
-                            )
+                            position: concat!(stringify!(GenericParam), "::", stringify!(kind))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::GenericParam {
-                    ident,
-                    meta,
-                    kind,
-                }
+                destination::GenericParam { ident, meta, kind }
             }
         }
     }
@@ -3165,18 +3065,18 @@ impl<'a> ToPrintView<'a> for origin::Generics {
     type Out = destination::Generics<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::Generics { params, constraints } => {
+            origin::Generics {
+                params,
+                constraints,
+            } => {
                 let params = {
                     let context = PrintContext {
                         value: params,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Generics), "::", stringify!(params)
-                            )
+                            position: concat!(stringify!(Generics), "::", stringify!(params))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3187,9 +3087,7 @@ impl<'a> ToPrintView<'a> for origin::Generics {
                     let context = PrintContext {
                         value: constraints,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Generics), "::", stringify!(constraints)
-                            )
+                            position: concat!(stringify!(Generics), "::", stringify!(constraints))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3208,8 +3106,7 @@ impl<'a> ToPrintView<'a> for origin::SafetyKind {
     type Out = destination::SafetyKind;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::SafetyKind::Safe => destination::SafetyKind::Safe,
@@ -3221,8 +3118,7 @@ impl<'a> ToPrintView<'a> for origin::Attribute {
     type Out = destination::Attribute<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Attribute { kind, span } => {
@@ -3230,10 +3126,7 @@ impl<'a> ToPrintView<'a> for origin::Attribute {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Attribute), "::", stringify!(kind)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Attribute), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3243,19 +3136,13 @@ impl<'a> ToPrintView<'a> for origin::Attribute {
                     let context = PrintContext {
                         value: span,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Attribute), "::", stringify!(span)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Attribute), "::", stringify!(span)).into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Attribute {
-                    kind,
-                    span,
-                }
+                destination::Attribute { kind, span }
             }
         }
     }
@@ -3264,8 +3151,7 @@ impl<'a> ToPrintView<'a> for origin::AttributeKind {
     type Out = destination::AttributeKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::AttributeKind::Tool { path, tokens } => {
@@ -3274,9 +3160,11 @@ impl<'a> ToPrintView<'a> for origin::AttributeKind {
                         value: path,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(AttributeKind::Tool), "::", stringify!(path)
+                                stringify!(AttributeKind::Tool),
+                                "::",
+                                stringify!(path)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3287,18 +3175,17 @@ impl<'a> ToPrintView<'a> for origin::AttributeKind {
                         value: tokens,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(AttributeKind::Tool), "::", stringify!(tokens)
+                                stringify!(AttributeKind::Tool),
+                                "::",
+                                stringify!(tokens)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::AttributeKind::Tool {
-                    path,
-                    tokens,
-                }
+                destination::AttributeKind::Tool { path, tokens }
             }
             origin::AttributeKind::DocComment { kind, body } => {
                 let kind = {
@@ -3306,10 +3193,11 @@ impl<'a> ToPrintView<'a> for origin::AttributeKind {
                         value: kind,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(AttributeKind::DocComment), "::",
+                                stringify!(AttributeKind::DocComment),
+                                "::",
                                 stringify!(kind)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3320,19 +3208,17 @@ impl<'a> ToPrintView<'a> for origin::AttributeKind {
                         value: body,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(AttributeKind::DocComment), "::",
+                                stringify!(AttributeKind::DocComment),
+                                "::",
                                 stringify!(body)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::AttributeKind::DocComment {
-                    kind,
-                    body,
-                }
+                destination::AttributeKind::DocComment { kind, body }
             }
         }
     }
@@ -3341,8 +3227,7 @@ impl<'a> ToPrintView<'a> for origin::DocCommentKind {
     type Out = destination::DocCommentKind;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::DocCommentKind::Line => destination::DocCommentKind::Line,
@@ -3356,8 +3241,7 @@ impl<'a> ToPrintView<'a> for origin::SpannedTy {
     type Out = destination::SpannedTy<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::SpannedTy { span, ty } => {
@@ -3365,10 +3249,7 @@ impl<'a> ToPrintView<'a> for origin::SpannedTy {
                     let context = PrintContext {
                         value: span,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(SpannedTy), "::", stringify!(span)
-                            )
-                                .into(),
+                            position: concat!(stringify!(SpannedTy), "::", stringify!(span)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3378,10 +3259,7 @@ impl<'a> ToPrintView<'a> for origin::SpannedTy {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(SpannedTy), "::", stringify!(ty)
-                            )
-                                .into(),
+                            position: concat!(stringify!(SpannedTy), "::", stringify!(ty)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3396,17 +3274,19 @@ impl<'a> ToPrintView<'a> for origin::Param {
     type Out = destination::Param<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::Param { pat, ty, attributes } => {
+            origin::Param {
+                pat,
+                ty,
+                attributes,
+            } => {
                 let pat = {
                     let context = PrintContext {
                         value: pat,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Param), "::", stringify!(pat))
-                                .into(),
+                            position: concat!(stringify!(Param), "::", stringify!(pat)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3416,8 +3296,7 @@ impl<'a> ToPrintView<'a> for origin::Param {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Param), "::", stringify!(ty))
-                                .into(),
+                            position: concat!(stringify!(Param), "::", stringify!(ty)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3427,9 +3306,7 @@ impl<'a> ToPrintView<'a> for origin::Param {
                     let context = PrintContext {
                         value: attributes,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Param), "::", stringify!(attributes)
-                            )
+                            position: concat!(stringify!(Param), "::", stringify!(attributes))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3449,19 +3326,20 @@ impl<'a> ToPrintView<'a> for origin::Variant {
     type Out = destination::Variant<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::Variant { name, arguments, is_record, attributes } => {
+            origin::Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
                 let name = {
                     let context = PrintContext {
                         value: name,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Variant), "::", stringify!(name)
-                            )
-                                .into(),
+                            position: concat!(stringify!(Variant), "::", stringify!(name)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3471,9 +3349,7 @@ impl<'a> ToPrintView<'a> for origin::Variant {
                     let context = PrintContext {
                         value: arguments,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Variant), "::", stringify!(arguments)
-                            )
+                            position: concat!(stringify!(Variant), "::", stringify!(arguments))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3484,9 +3360,7 @@ impl<'a> ToPrintView<'a> for origin::Variant {
                     let context = PrintContext {
                         value: is_record,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Variant), "::", stringify!(is_record)
-                            )
+                            position: concat!(stringify!(Variant), "::", stringify!(is_record))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3497,9 +3371,7 @@ impl<'a> ToPrintView<'a> for origin::Variant {
                     let context = PrintContext {
                         value: attributes,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(Variant), "::", stringify!(attributes)
-                            )
+                            position: concat!(stringify!(Variant), "::", stringify!(attributes))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3520,18 +3392,21 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
     type Out = destination::ItemKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
-            origin::ItemKind::Fn { name, generics, body, params, safety } => {
+            origin::ItemKind::Fn {
+                name,
+                generics,
+                body,
+                params,
+                safety,
+            } => {
                 let name = {
                     let context = PrintContext {
                         value: name,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Fn), "::", stringify!(name)
-                            )
+                            position: concat!(stringify!(ItemKind::Fn), "::", stringify!(name))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3542,9 +3417,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: generics,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Fn), "::", stringify!(generics)
-                            )
+                            position: concat!(stringify!(ItemKind::Fn), "::", stringify!(generics))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3555,9 +3428,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: body,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Fn), "::", stringify!(body)
-                            )
+                            position: concat!(stringify!(ItemKind::Fn), "::", stringify!(body))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3568,9 +3439,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: params,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Fn), "::", stringify!(params)
-                            )
+                            position: concat!(stringify!(ItemKind::Fn), "::", stringify!(params))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3581,9 +3450,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: safety,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Fn), "::", stringify!(safety)
-                            )
+                            position: concat!(stringify!(ItemKind::Fn), "::", stringify!(safety))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3604,9 +3471,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: name,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::TyAlias), "::", stringify!(name)
+                                stringify!(ItemKind::TyAlias),
+                                "::",
+                                stringify!(name)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3617,9 +3486,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: generics,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::TyAlias), "::", stringify!(generics)
+                                stringify!(ItemKind::TyAlias),
+                                "::",
+                                stringify!(generics)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3629,29 +3500,26 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: ty,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::TyAlias), "::", stringify!(ty)
-                            )
+                            position: concat!(stringify!(ItemKind::TyAlias), "::", stringify!(ty))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ItemKind::TyAlias {
-                    name,
-                    generics,
-                    ty,
-                }
+                destination::ItemKind::TyAlias { name, generics, ty }
             }
-            origin::ItemKind::Type { name, generics, variants, is_struct } => {
+            origin::ItemKind::Type {
+                name,
+                generics,
+                variants,
+                is_struct,
+            } => {
                 let name = {
                     let context = PrintContext {
                         value: name,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Type), "::", stringify!(name)
-                            )
+                            position: concat!(stringify!(ItemKind::Type), "::", stringify!(name))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3663,9 +3531,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: generics,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Type), "::", stringify!(generics)
+                                stringify!(ItemKind::Type),
+                                "::",
+                                stringify!(generics)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3676,9 +3546,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: variants,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Type), "::", stringify!(variants)
+                                stringify!(ItemKind::Type),
+                                "::",
+                                stringify!(variants)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3689,9 +3561,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: is_struct,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Type), "::", stringify!(is_struct)
+                                stringify!(ItemKind::Type),
+                                "::",
+                                stringify!(is_struct)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3704,14 +3578,16 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     is_struct,
                 }
             }
-            origin::ItemKind::Trait { name, generics, items } => {
+            origin::ItemKind::Trait {
+                name,
+                generics,
+                items,
+            } => {
                 let name = {
                     let context = PrintContext {
                         value: name,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Trait), "::", stringify!(name)
-                            )
+                            position: concat!(stringify!(ItemKind::Trait), "::", stringify!(name))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3723,9 +3599,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: generics,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Trait), "::", stringify!(generics)
+                                stringify!(ItemKind::Trait),
+                                "::",
+                                stringify!(generics)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3735,9 +3613,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: items,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Trait), "::", stringify!(items)
-                            )
+                            position: concat!(stringify!(ItemKind::Trait), "::", stringify!(items))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3763,9 +3639,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: generics,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Impl), "::", stringify!(generics)
+                                stringify!(ItemKind::Impl),
+                                "::",
+                                stringify!(generics)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3776,9 +3654,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: self_ty,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Impl), "::", stringify!(self_ty)
+                                stringify!(ItemKind::Impl),
+                                "::",
+                                stringify!(self_ty)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3789,9 +3669,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: of_trait,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Impl), "::", stringify!(of_trait)
+                                stringify!(ItemKind::Impl),
+                                "::",
+                                stringify!(of_trait)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3801,9 +3683,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: items,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Impl), "::", stringify!(items)
-                            )
+                            position: concat!(stringify!(ItemKind::Impl), "::", stringify!(items))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3815,9 +3695,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: parent_bounds,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Impl), "::", stringify!(parent_bounds)
+                                stringify!(ItemKind::Impl),
+                                "::",
+                                stringify!(parent_bounds)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3827,9 +3709,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: safety,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Impl), "::", stringify!(safety)
-                            )
+                            position: concat!(stringify!(ItemKind::Impl), "::", stringify!(safety))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3850,9 +3730,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: name,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Alias), "::", stringify!(name)
-                            )
+                            position: concat!(stringify!(ItemKind::Alias), "::", stringify!(name))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3863,28 +3741,25 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: item,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Alias), "::", stringify!(item)
-                            )
+                            position: concat!(stringify!(ItemKind::Alias), "::", stringify!(item))
                                 .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ItemKind::Alias {
-                    name,
-                    item,
-                }
+                destination::ItemKind::Alias { name, item }
             }
-            origin::ItemKind::Use { path, is_external, rename } => {
+            origin::ItemKind::Use {
+                path,
+                is_external,
+                rename,
+            } => {
                 let path = {
                     let context = PrintContext {
                         value: path,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Use), "::", stringify!(path)
-                            )
+                            position: concat!(stringify!(ItemKind::Use), "::", stringify!(path))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3896,9 +3771,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: is_external,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Use), "::", stringify!(is_external)
+                                stringify!(ItemKind::Use),
+                                "::",
+                                stringify!(is_external)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3908,9 +3785,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: rename,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Use), "::", stringify!(rename)
-                            )
+                            position: concat!(stringify!(ItemKind::Use), "::", stringify!(rename))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3928,9 +3803,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                     let context = PrintContext {
                         value: quote,
                         payload: PrintContextPayload {
-                            position: concat!(
-                                stringify!(ItemKind::Quote), "::", stringify!(quote)
-                            )
+                            position: concat!(stringify!(ItemKind::Quote), "::", stringify!(quote))
                                 .into(),
                             parent: parent_context.clone(),
                         },
@@ -3942,18 +3815,17 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: origin,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Quote), "::", stringify!(origin)
+                                stringify!(ItemKind::Quote),
+                                "::",
+                                stringify!(origin)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ItemKind::Quote {
-                    quote,
-                    origin,
-                }
+                destination::ItemKind::Quote { quote, origin }
             }
             origin::ItemKind::Error(anon_field_0) => {
                 let anon_field_0 = {
@@ -3961,9 +3833,11 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                         value: anon_field_0,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ItemKind::Error), "::", stringify!(anon_field_0)
+                                stringify!(ItemKind::Error),
+                                "::",
+                                stringify!(anon_field_0)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -3971,9 +3845,7 @@ impl<'a> ToPrintView<'a> for origin::ItemKind {
                 };
                 destination::ItemKind::Error(anon_field_0)
             }
-            origin::ItemKind::NotImplementedYet => {
-                destination::ItemKind::NotImplementedYet
-            }
+            origin::ItemKind::NotImplementedYet => destination::ItemKind::NotImplementedYet,
         }
     }
 }
@@ -3981,8 +3853,7 @@ impl<'a> ToPrintView<'a> for origin::Item {
     type Out = destination::Item<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::Item { ident, kind, meta } => {
@@ -3990,8 +3861,7 @@ impl<'a> ToPrintView<'a> for origin::Item {
                     let context = PrintContext {
                         value: ident,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Item), "::", stringify!(ident))
-                                .into(),
+                            position: concat!(stringify!(Item), "::", stringify!(ident)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -4001,8 +3871,7 @@ impl<'a> ToPrintView<'a> for origin::Item {
                     let context = PrintContext {
                         value: kind,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Item), "::", stringify!(kind))
-                                .into(),
+                            position: concat!(stringify!(Item), "::", stringify!(kind)).into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -4012,18 +3881,13 @@ impl<'a> ToPrintView<'a> for origin::Item {
                     let context = PrintContext {
                         value: meta,
                         payload: PrintContextPayload {
-                            position: concat!(stringify!(Item), "::", stringify!(meta))
-                                .into(),
+                            position: concat!(stringify!(Item), "::", stringify!(meta)).into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::Item {
-                    ident,
-                    kind,
-                    meta,
-                }
+                destination::Item { ident, kind, meta }
             }
         }
     }
@@ -4032,8 +3896,7 @@ impl<'a> ToPrintView<'a> for origin::ResugaredExprKind {
     type Out = destination::ResugaredExprKind<'a>;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             origin::ResugaredExprKind::ConstantApp { constant, generics } => {
@@ -4042,10 +3905,11 @@ impl<'a> ToPrintView<'a> for origin::ResugaredExprKind {
                         value: constant,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ResugaredExprKind::ConstantApp), "::",
+                                stringify!(ResugaredExprKind::ConstantApp),
+                                "::",
                                 stringify!(constant)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
@@ -4056,19 +3920,17 @@ impl<'a> ToPrintView<'a> for origin::ResugaredExprKind {
                         value: generics,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ResugaredExprKind::ConstantApp), "::",
+                                stringify!(ResugaredExprKind::ConstantApp),
+                                "::",
                                 stringify!(generics)
                             )
-                                .into(),
+                            .into(),
                             parent: parent_context.clone(),
                         },
                     };
                     context
                 };
-                destination::ResugaredExprKind::ConstantApp {
-                    constant,
-                    generics,
-                }
+                destination::ResugaredExprKind::ConstantApp { constant, generics }
             }
         }
     }
@@ -4077,8 +3939,7 @@ impl<'a> ToPrintView<'a> for origin::ResugaredPatKind {
     type Out = destination::ResugaredPatKind;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             _ => {
@@ -4093,8 +3954,7 @@ impl<'a> ToPrintView<'a> for origin::ResugaredTy {
     type Out = destination::ResugaredTy;
     fn to_print_view(
         &'a self,
-        #[allow(unused_variables)]
-        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+        #[allow(unused_variables)] parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
     ) -> Self::Out {
         match self {
             _ => {
