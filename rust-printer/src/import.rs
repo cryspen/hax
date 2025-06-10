@@ -29,6 +29,7 @@ fn translate_ty(ty: &src::Ty, span: dst::Span) -> dst::Ty {
         src::TyKind::Ref(_, ty, mutability) => dst::Ty::Ref {
             inner: Box::new(translate_ty(ty)),
             mutable: *mutability,
+            region: dst::Region,
         },
         src::TyKind::Tuple(types) => dst::Ty::Tuple(types.iter().map(translate_ty).collect()),
         src::TyKind::Arrow(binder) => dst::Ty::Arrow {

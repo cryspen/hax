@@ -11,8 +11,6 @@ use std::fmt;
 
 mod global_id {
     use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
-    use schemars::JsonSchema;
-    use serde::{Deserialize, Serialize};
 
     #[apply(derive_AST)]
     pub struct DefId {
@@ -58,14 +56,14 @@ mod global_id {
     }
 
     impl From<hax_frontend_exporter::DefId> for GlobalId {
-        fn from(rust_def_id: hax_frontend_exporter::DefId) -> Self {
+        fn from(_rust_def_id: hax_frontend_exporter::DefId) -> Self {
             todo!()
         }
     }
 
     impl GlobalId {
         // TODO: drop me
-        fn from_string(name: &str) -> Self {
+        fn from_string(_name: &str) -> Self {
             todo!()
         }
         // TODO: drop me
