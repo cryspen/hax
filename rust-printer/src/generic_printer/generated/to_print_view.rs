@@ -1272,7 +1272,7 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                     id,
                 }
             }
-            origin::ImplExprKind::Parent { impl_, item } => {
+            origin::ImplExprKind::Parent { impl_, ident } => {
                 let impl_ = {
                     let context = PrintContext {
                         value: impl_,
@@ -1286,12 +1286,12 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                     };
                     context
                 };
-                let item = {
+                let ident = {
                     let context = PrintContext {
-                        value: item,
+                        value: ident,
                         payload: PrintContextPayload {
                             position: concat!(
-                                stringify!(ImplExprKind::Parent), "::", stringify!(item)
+                                stringify!(ImplExprKind::Parent), "::", stringify!(ident)
                             )
                                 .into(),
                             parent: parent_context.clone(),
@@ -1301,7 +1301,7 @@ impl<'a> ToPrintView<'a> for origin::ImplExprKind {
                 };
                 destination::ImplExprKind::Parent {
                     impl_,
-                    item,
+                    ident,
                 }
             }
             origin::ImplExprKind::Projection { impl_, item, ident } => {
@@ -1859,6 +1859,36 @@ impl<'a> ToPrintView<'a> for origin::ItemQuoteOrigin {
                     item_ident,
                     position,
                 }
+            }
+        }
+    }
+}
+impl<'a> ToPrintView<'a> for origin::ItemQuoteOriginKind {
+    type Out = destination::ItemQuoteOriginKind;
+    fn to_print_view(
+        &'a self,
+        #[allow(unused_variables)]
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        match self {
+            origin::ItemQuoteOriginKind::Fn => destination::ItemQuoteOriginKind::Fn,
+            origin::ItemQuoteOriginKind::TyAlias => {
+                destination::ItemQuoteOriginKind::TyAlias
+            }
+            origin::ItemQuoteOriginKind::Type => destination::ItemQuoteOriginKind::Type,
+            origin::ItemQuoteOriginKind::MacroInvocation => {
+                destination::ItemQuoteOriginKind::MacroInvocation
+            }
+            origin::ItemQuoteOriginKind::Trait => destination::ItemQuoteOriginKind::Trait,
+            origin::ItemQuoteOriginKind::Impl => destination::ItemQuoteOriginKind::Impl,
+            origin::ItemQuoteOriginKind::Alias => destination::ItemQuoteOriginKind::Alias,
+            origin::ItemQuoteOriginKind::Use => destination::ItemQuoteOriginKind::Use,
+            origin::ItemQuoteOriginKind::Quote => destination::ItemQuoteOriginKind::Quote,
+            origin::ItemQuoteOriginKind::HaxError => {
+                destination::ItemQuoteOriginKind::HaxError
+            }
+            origin::ItemQuoteOriginKind::NotImplementedYet => {
+                destination::ItemQuoteOriginKind::NotImplementedYet
             }
         }
     }
@@ -2766,6 +2796,38 @@ impl<'a> ToPrintView<'a> for origin::ExprKind {
                     params,
                     body,
                     captures,
+                }
+            }
+            origin::ExprKind::Block { body, safety_mode } => {
+                let body = {
+                    let context = PrintContext {
+                        value: body,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Block), "::", stringify!(body)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                let safety_mode = {
+                    let context = PrintContext {
+                        value: safety_mode,
+                        payload: PrintContextPayload {
+                            position: concat!(
+                                stringify!(ExprKind::Block), "::", stringify!(safety_mode)
+                            )
+                                .into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
+                destination::ExprKind::Block {
+                    body,
+                    safety_mode,
                 }
             }
             origin::ExprKind::Quote { contents } => {

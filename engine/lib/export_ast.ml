@@ -162,8 +162,7 @@ module Make (FA : Features.T) = struct
     | A.Concrete tr -> B.Concrete (dtrait_goal tr)
     | A.LocalBound { id } -> B.LocalBound { id = B.Newtypesymbol id }
     | A.Parent { impl; ident } ->
-        B.Parent
-          { impl_ = dimpl_expr impl; item = todo () (* Rust AST needs fixing*) }
+        B.Parent { impl_ = dimpl_expr impl; ident = dimpl_ident ident }
     | A.Projection { impl; item; ident } ->
         B.Projection
           {
@@ -287,8 +286,8 @@ module Make (FA : Features.T) = struct
         Match { scrutinee = dexpr scrutinee; arms = List.map ~f:darm arms }
     | Let { monadic = _; lhs; rhs; body } ->
         Let { lhs = dpat lhs; rhs = dexpr rhs; body = dexpr body }
-    | Block { e; safety_mode = _; witness = _ } ->
-        todo () (* Rust AST needs fixing *)
+    | Block { e; safety_mode; witness = _ } ->
+        Block { body = dexpr e; safety_mode = dsafety_kind safety_mode }
     | LocalVar id -> LocalId (dlocal_ident id)
     | GlobalVar id -> GlobalId (dglobal_ident id)
     | Ascription { e; typ } -> Ascription { e = dexpr e; ty = dty typ }
@@ -313,8 +312,7 @@ module Make (FA : Features.T) = struct
           }
     | Return { e; witness = _ } -> Return { value = dexpr e }
     | QuestionMark { e; return_typ = _; witness = _ } ->
-        (* Rust AST needs fixing *)
-        todo ()
+        failwith "Question marks are deprecated and should not be found here."
     | Continue { acc = _; label; witness = _ } ->
         Continue { label = Option.map ~f:(fun s -> B.Newtypesymbol s) label }
     | Borrow { kind; e; witness = _ } ->
@@ -365,8 +363,19 @@ module Make (FA : Features.T) = struct
   and ditem_quote_origin (iqo : item_quote_origin) : B.item_quote_origin =
     {
       item_ident = dconcrete_ident iqo.item_ident;
-      item_kind = todo ();
-      (*Rust AST needs fixing*)
+      item_kind =
+        (match iqo.item_kind with
+        | `Fn -> B.Fn
+        | `TyAlias -> B.TyAlias
+        | `Type -> B.Type
+        | `IMacroInvokation -> B.MacroInvocation
+        | `Trait -> B.Trait
+        | `Impl -> B.Impl
+        | `Alias -> B.Alias
+        | `Use -> B.Use
+        | `Quote -> B.Quote
+        | `HaxError -> B.HaxError
+        | `NotImplementedYet -> B.NotImplementedYet);
       position =
         (match iqo.position with
         | `Before -> B.Before
@@ -551,11 +560,8 @@ module Make (FA : Features.T) = struct
             generics = dgenerics generics;
             self_ty = dty self_ty;
             of_trait =
-              [
-                ( dconcrete_ident trait_id,
-                  todo () (* List.map ~f:dgeneric_value trait_generics *) );
-              ];
-            (* Rust AST needs fixing*)
+              ( dconcrete_ident trait_id,
+                List.map ~f:dgeneric_value trait_generics );
             items = List.map ~f:dimpl_item items;
             parent_bounds =
               List.map

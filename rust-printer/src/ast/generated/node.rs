@@ -118,6 +118,11 @@ impl From<ItemQuoteOrigin> for Node {
         Self::ItemQuoteOrigin(item)
     }
 }
+impl From<ItemQuoteOriginKind> for Node {
+    fn from(item: ItemQuoteOriginKind) -> Self {
+        Self::ItemQuoteOriginKind(item)
+    }
+}
 impl From<ItemQuoteOriginPosition> for Node {
     fn from(item: ItemQuoteOriginPosition) -> Self {
         Self::ItemQuoteOriginPosition(item)
@@ -250,6 +255,7 @@ pub enum Node {
     QuoteContent(QuoteContent),
     Quote(Quote),
     ItemQuoteOrigin(ItemQuoteOrigin),
+    ItemQuoteOriginKind(ItemQuoteOriginKind),
     ItemQuoteOriginPosition(ItemQuoteOriginPosition),
     LoopKind(LoopKind),
     ControlFlowKind(ControlFlowKind),
@@ -393,6 +399,11 @@ impl<'lt> From<&'lt ItemQuoteOrigin> for NodeRef<'lt> {
         Self::ItemQuoteOrigin(item)
     }
 }
+impl<'lt> From<&'lt ItemQuoteOriginKind> for NodeRef<'lt> {
+    fn from(item: &'lt ItemQuoteOriginKind) -> Self {
+        Self::ItemQuoteOriginKind(item)
+    }
+}
 impl<'lt> From<&'lt ItemQuoteOriginPosition> for NodeRef<'lt> {
     fn from(item: &'lt ItemQuoteOriginPosition) -> Self {
         Self::ItemQuoteOriginPosition(item)
@@ -525,6 +536,7 @@ pub enum NodeRef<'lt> {
     QuoteContent(&'lt QuoteContent),
     Quote(&'lt Quote),
     ItemQuoteOrigin(&'lt ItemQuoteOrigin),
+    ItemQuoteOriginKind(&'lt ItemQuoteOriginKind),
     ItemQuoteOriginPosition(&'lt ItemQuoteOriginPosition),
     LoopKind(&'lt LoopKind),
     ControlFlowKind(&'lt ControlFlowKind),

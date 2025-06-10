@@ -416,7 +416,7 @@ pub enum ImplExprKind {
     ///   x.clone() // Here the method comes from the parent of the bound `T: SubTrait`
     /// }
     /// ```
-    Parent { impl_: ImplExpr, item: GlobalId },
+    Parent { impl_: ImplExpr, ident: ImplIdent },
     /// A projected associated implementation.
     ///
     /// # Example:
@@ -510,9 +510,25 @@ pub struct Quote(pub Vec<QuoteContent>);
 /// The origin of a quote item
 #[apply(derive_AST)]
 pub struct ItemQuoteOrigin {
-    pub item_kind: Box<ItemKind>,
+    pub item_kind: ItemQuoteOriginKind,
     pub item_ident: GlobalId,
     pub position: ItemQuoteOriginPosition,
+}
+
+/// The kind of a quote item's origin
+#[apply(derive_AST)]
+pub enum ItemQuoteOriginKind {
+    Fn,
+    TyAlias,
+    Type,
+    MacroInvocation,
+    Trait,
+    Impl,
+    Alias,
+    Use,
+    Quote,
+    HaxError,
+    NotImplementedYet,
 }
 
 /// The position of a quote item relative to its origin
@@ -728,6 +744,15 @@ pub enum ExprKind {
         params: Vec<Pat>,
         body: Expr,
         captures: Vec<Expr>,
+    },
+
+    /// Block of safe or unsafe expression
+    ///
+    /// # Example:
+    /// `unsafe {...}`
+    Block {
+        body: Expr,
+        safety_mode: SafetyKind,
     },
 
     /// A quote is an inlined piece of backend code
@@ -954,7 +979,7 @@ pub enum ItemKind {
     Impl {
         generics: Generics,
         self_ty: Ty,
-        of_trait: Vec<(GlobalId, GenericValue)>,
+        of_trait: (GlobalId, Vec<GenericValue>),
         items: Vec<ImplItem>,
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
         safety: SafetyKind,

@@ -360,7 +360,7 @@ pub enum ImplExprKind<'a> {
     /// ```
     Parent {
         impl_: PrintContext<'a, origin::ImplExpr>,
-        item: PrintContext<'a, origin::GlobalId>,
+        ident: PrintContext<'a, origin::ImplIdent>,
     },
     /// A projected associated implementation.
     ///
@@ -457,9 +457,24 @@ pub struct Quote<'a>(pub PrintContext<'a, origin::Vec<origin::QuoteContent>>);
 /// The origin of a quote item
 #[apply(derive_AST)]
 pub struct ItemQuoteOrigin<'a> {
-    pub item_kind: PrintContext<'a, origin::Box<origin::ItemKind>>,
+    pub item_kind: PrintContext<'a, origin::ItemQuoteOriginKind>,
     pub item_ident: PrintContext<'a, origin::GlobalId>,
     pub position: PrintContext<'a, origin::ItemQuoteOriginPosition>,
+}
+/// The kind of a quote item's origin
+#[apply(derive_AST)]
+pub enum ItemQuoteOriginKind {
+    Fn,
+    TyAlias,
+    Type,
+    MacroInvocation,
+    Trait,
+    Impl,
+    Alias,
+    Use,
+    Quote,
+    HaxError,
+    NotImplementedYet,
 }
 /// The position of a quote item relative to its origin
 #[apply(derive_AST)]
@@ -637,6 +652,14 @@ pub enum ExprKind<'a> {
         params: PrintContext<'a, origin::Vec<origin::Pat>>,
         body: PrintContext<'a, origin::Expr>,
         captures: PrintContext<'a, origin::Vec<origin::Expr>>,
+    },
+    /// Block of safe or unsafe expression
+    ///
+    /// # Example:
+    /// `unsafe {...}`
+    Block {
+        body: PrintContext<'a, origin::Expr>,
+        safety_mode: PrintContext<'a, origin::SafetyKind>,
     },
     /// A quote is an inlined piece of backend code
     Quote { contents: PrintContext<'a, origin::Quote> },
@@ -850,7 +873,7 @@ pub enum ItemKind<'a> {
         self_ty: PrintContext<'a, origin::Ty>,
         of_trait: PrintContext<
             'a,
-            origin::Vec<(origin::GlobalId, origin::GenericValue)>,
+            (origin::GlobalId, origin::Vec<origin::GenericValue>),
         >,
         items: PrintContext<'a, origin::Vec<origin::ImplItem>>,
         parent_bounds: PrintContext<
@@ -1021,6 +1044,11 @@ impl<'a> From<ItemQuoteOrigin<'a>> for Node<'a> {
         Self::ItemQuoteOrigin(item)
     }
 }
+impl<'a> From<ItemQuoteOriginKind> for Node<'a> {
+    fn from(item: ItemQuoteOriginKind) -> Self {
+        Self::ItemQuoteOriginKind(item)
+    }
+}
 impl<'a> From<ItemQuoteOriginPosition> for Node<'a> {
     fn from(item: ItemQuoteOriginPosition) -> Self {
         Self::ItemQuoteOriginPosition(item)
@@ -1168,6 +1196,7 @@ pub enum Node<'a> {
     QuoteContent(QuoteContent<'a>),
     Quote(Quote<'a>),
     ItemQuoteOrigin(ItemQuoteOrigin<'a>),
+    ItemQuoteOriginKind(ItemQuoteOriginKind),
     ItemQuoteOriginPosition(ItemQuoteOriginPosition),
     LoopKind(LoopKind<'a>),
     ControlFlowKind(ControlFlowKind),
