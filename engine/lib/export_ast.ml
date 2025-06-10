@@ -72,11 +72,12 @@ module Make (FA : Features.T) = struct
           { head = dglobal_ident ident; args = List.map ~f:dgeneric_value args }
     | TArray { typ; length } -> Array { ty = dty typ; length = dexpr length }
     | TSlice { witness = _; ty } -> Slice (dty ty)
-    | TRef { witness = _; typ; mut; region } ->
+    | TRef { witness = _; typ; mut; region = _ } ->
         Ref
           {
             inner = dty typ;
             mutable' = (match mut with Mutable _ -> true | _ -> false);
+            region = B.EmptyStructregion;
           }
     | TParam local_ident -> Param (dlocal_ident local_ident)
     | TArrow (inputs, output) ->
