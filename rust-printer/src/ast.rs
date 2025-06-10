@@ -61,6 +61,8 @@ pub enum PrimitiveTy {
     /// The `str` type
     Str,
 }
+#[apply(derive_AST)]
+pub struct Region;
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[apply(derive_AST)]
@@ -97,7 +99,11 @@ pub enum Ty {
     ///
     /// # Example:
     /// `&i32`, `&mut i32`
-    Ref { inner: Box<Ty>, mutable: bool },
+    Ref {
+        inner: Box<Ty>,
+        mutable: bool,
+        region: Region,
+    },
 
     /// A parameter type
     Param(LocalId),
