@@ -1,6 +1,6 @@
 open! Prelude
 
-let todo () = failwith "todo"
+let deprecated_node s = failwith ("Deprecated AST node:" ^ s)
 
 type missing_type = unit
 
@@ -55,10 +55,6 @@ module Make (FA : Features.T) = struct
 
   let dsafety_kind (safety : A.safety_kind) : B.safety_kind =
     match safety with Safe -> B.Safe | Unsafe _ -> B.Unsafe
-
-  let dmutability (type a b) (s : Span.t -> a -> b) (mutability : a mutability)
-      : b mutability =
-    match mutability with Mutable _ -> todo () | Immutable -> todo ()
 
   let rec dty (ty : A.ty) : B.ty =
     match ty with
@@ -178,7 +174,7 @@ module Make (FA : Features.T) = struct
 
   and dgeneric_value (generic_value : A.generic_value) : B.generic_value =
     match generic_value with
-    | GLifetime { lt; witness = _ } -> B.Lifetime
+    | GLifetime _ -> B.Lifetime
     | GType t -> B.Ty (dty t)
     | GConst e -> B.Expr (dexpr e)
 
@@ -234,16 +230,12 @@ module Make (FA : Features.T) = struct
             sub_pat = Option.map ~f:(fun (p, _) -> dpat p) subpat;
           }
 
-  and dspan (span : span) : B.span = EmptyStructspan
-  and dfield_pat (_span : span) (p : A.field_pat) : missing_type = ()
+  and dspan (_span : span) : B.span = EmptyStructspan
 
   and dbinding_mode (binding_mode : A.binding_mode) : B.binding_mode =
     match binding_mode with
     | ByValue -> B.ByValue
     | ByRef (kind, _witness) -> B.ByRef (dborrow_kind kind)
-
-  and dsupported_monads (m : A.supported_monads) : missing_type =
-    match m with MException t -> () | MResult t -> () | MOption -> ()
 
   and dexpr (e : A.expr) : B.expr =
     { kind = dexpr' e.e; ty = dty e.typ; meta = dmetadata e.span }
@@ -291,7 +283,7 @@ module Make (FA : Features.T) = struct
     | LocalVar id -> LocalId (dlocal_ident id)
     | GlobalVar id -> GlobalId (dglobal_ident id)
     | Ascription { e; typ } -> Ascription { e = dexpr e; ty = dty typ }
-    | MacroInvokation _ -> todo ()
+    | MacroInvokation _ -> deprecated_node "MacroInvokation"
     | Assign { lhs; e; witness = _ } ->
         Assign { lhs = dlhs lhs; value = dexpr e }
     | Loop { body; kind; state; control_flow; label; witness = _ } ->
@@ -311,8 +303,7 @@ module Make (FA : Features.T) = struct
             label = Option.map ~f:(fun s -> B.Newtypesymbol s) label;
           }
     | Return { e; witness = _ } -> Return { value = dexpr e }
-    | QuestionMark { e; return_typ = _; witness = _ } ->
-        failwith "Question marks are deprecated and should not be found here."
+    | QuestionMark _ -> deprecated_node "QuestionMark"
     | Continue { acc = _; label; witness = _ } ->
         Continue { label = Option.map ~f:(fun s -> B.Newtypesymbol s) label }
     | Borrow { kind; e; witness = _ } ->
@@ -334,7 +325,7 @@ module Make (FA : Features.T) = struct
             body = dexpr body;
             captures = List.map ~f:dexpr captures;
           }
-    | EffectAction { action = _; argument } -> todo ()
+    | EffectAction _ -> deprecated_node "EffectAction"
     | Quote q -> Quote { contents = dquote q }
 
   and dcontrol_flow_kind (cfk : A.cf_kind) : B.control_flow_kind =
@@ -351,7 +342,7 @@ module Make (FA : Features.T) = struct
           { value = Newtypesymbol value; negative; kind = dfloat_kind kind }
     | Bool b -> B.Bool b
 
-  and dquote ({ contents; witness } : A.quote) : B.quote =
+  and dquote ({ contents; _ } : A.quote) : B.quote =
     let f = function
       | A.Verbatim code -> B.Verbatim code
       | A.Expr e -> B.Expr (dexpr e)
@@ -537,8 +528,7 @@ module Make (FA : Features.T) = struct
             generics = dgenerics generics;
             ty = dty ty;
           }
-    | A.IMacroInvokation { macro; argument = _; span = _; witness = _ } ->
-        todo ()
+    | A.IMacroInvokation _ -> deprecated_node "IMacroInvokation"
     | A.Trait { name; generics; items; safety = _ } ->
         B.Trait
           {
@@ -574,7 +564,12 @@ module Make (FA : Features.T) = struct
     | A.Use { path; is_external; rename } -> B.Use { path; is_external; rename }
     | A.Quote { quote; origin } ->
         B.Quote { quote = dquote quote; origin = ditem_quote_origin origin }
-    | A.HaxError _ -> todo ()
+    | A.HaxError s ->
+        let node : B.node = Unknown "HaxError" in
+        let info : B.diagnostic_info =
+          { context = Import; kind = Custom s; span = EmptyStructspan }
+        in
+        Error { node; info }
     | A.NotImplementedYet -> B.NotImplementedYet
 
   let ditem (i : A.item) : B.item list =
@@ -585,4 +580,4 @@ module Make (FA : Features.T) = struct
         meta = dmetadata ~attrs:i.attrs i.span;
       };
     ]
-end [@warnerror "-27-26"]
+end
