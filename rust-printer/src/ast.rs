@@ -12,7 +12,6 @@
 
 pub mod diagnostics;
 pub mod fragment;
-pub mod helper;
 pub mod identifiers;
 pub mod literals;
 pub mod span;
