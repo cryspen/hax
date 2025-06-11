@@ -1026,13 +1026,19 @@ pub struct Item {
 
 pub mod traits {
     use super::*;
+    /// Marks AST data types that carry metadata (span + attributes)
     pub trait HasMetadata {
+        /// Get metadata
         fn metadata(&self) -> &Metadata;
     }
+    /// Marks AST data types that carry a span
     pub trait HasSpan {
+        /// Get span
         fn span(&self) -> Span;
     }
+    /// Marks AST data types that carry a Type
     pub trait Typed {
+        /// Get type
         fn ty(&self) -> &Ty;
     }
     impl<T: HasMetadata> HasSpan for T {
@@ -1040,8 +1046,12 @@ pub mod traits {
             self.metadata().span
         }
     }
+
+    /// Marks types of the AST that carry a kind (an enum for the actual content)
     pub trait HasKind {
+        /// Type carrying the kind, should be named `<Self>Kind`
         type Kind;
+        /// Get kind
         fn kind(&self) -> &Self::Kind;
     }
 
@@ -1091,6 +1101,7 @@ pub mod traits {
     }
 
     impl ExprKind {
+        /// Convert to full `Expr` with type, span and attributes
         pub fn into_expr(self, span: Span, ty: Ty, attributes: Vec<Attribute>) -> Expr {
             Expr {
                 kind: Box::new(self),

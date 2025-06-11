@@ -1,0 +1,20 @@
+name: Linting for the Rust engine
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  clippy:
+    name: clippy
+    runs-on: linux
+    steps:
+    - name: Run Rust formatter
+      run: |
+        cargo clippy -p rust-printer -- \
+            --no-deps -Dwarnings -Dmissing_docs -Dbroken_intra_doc_links \
+            -Dunused_qualifications -Dunused_crate_dependencies
+      working-directory: rust-printer

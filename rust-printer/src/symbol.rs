@@ -5,10 +5,12 @@
 
 use hax_rust_engine_macros::*;
 
+/// Interned string identifier for the AST
 #[derive_group_for_ast]
 pub struct Symbol(String);
 
 impl Symbol {
+    /// Create a new symbol
     pub fn new(s: &str) -> Self {
         Self(s.to_string())
     }
