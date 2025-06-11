@@ -14,11 +14,3 @@ hax-frontend-exporter = { path = "../frontend/exporter", default-features = fals
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 hax-rust-engine-macros = { path = "macros" }
-
-[build-dependencies]
-syn = { version = "2", features = ["full", "visit", "visit-mut"] }
-proc-macro2.workspace = true
-prettyplease = "0.2.33"
-quote.workspace = true
-itertools.workspace = true
-schemars.workspace = true
