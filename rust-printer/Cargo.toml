@@ -13,8 +13,7 @@ hax-types = { path = "../hax-types", default-features = false }
 hax-frontend-exporter = { path = "../frontend/exporter", default-features = false }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-schemars.workspace = true
-hax-rust-engine-macros = {path = "macros"}
+hax-rust-engine-macros = { path = "macros" }
 
 [build-dependencies]
 syn = { version = "2", features = ["full", "visit", "visit-mut"] }
