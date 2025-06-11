@@ -77,14 +77,12 @@ let f_sigma_0 x : u32 = (x >>>. mk_u32 7) ^. (x >>>. mk_u32 18) ^. (x >>! mk_u32
 
 let f_sigma_1 x : u32 = (x >>>. mk_u32 17) ^. (x >>>. mk_u32 19) ^. (x >>! mk_u32 10)
 
-
-let f_sigma (x: u32) (i: usize) (op: usize) : u32 =
-  match v i, v op with
-  | 0, 1 -> f_SIGMA_0 x
-  | 1, 1 -> f_SIGMA_1 x
-  | 2, 0 -> f_sigma_0 x
-  | 3, 0 -> f_sigma_1 x
-  | _, _ -> assume false; mk_u32 0
+let f_sigma (x: u32) (i: usize{i <. mk_usize 4}) : u32 =
+  match v i with
+  | 0 -> f_SIGMA_0 x
+  | 1 -> f_SIGMA_1 x
+  | 2 -> f_sigma_0 x
+  | 3 -> f_sigma_1 x
 
 // FIPS PUB 180-4, Section 5.2.1
 

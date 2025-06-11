@@ -76,7 +76,7 @@ let v_HASH_INIT: t_Array u32 (mk_usize 8) =
   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 8);
   Rust_primitives.Hax.array_of_list 8 list
 
-#push-options "--query_stats --z3rlimit 60"
+#push-options "--query_stats --z3rlimit 600 --split_queries always"
 
 let sigma (x: u32) (i op: usize)
     : Prims.Pure u32
@@ -84,7 +84,97 @@ let sigma (x: u32) (i op: usize)
         i =. mk_usize 0 && op =. mk_usize 1 || i =. mk_usize 1 && op =. mk_usize 1 ||
         i =. mk_usize 2 && op =. mk_usize 0 ||
         i =. mk_usize 3 && op =. mk_usize 0)
-      (fun _ -> Prims.l_True) =
+      (ensures
+        fun result ->
+          let result:u32 = result in
+          if i =. (mk_usize 0)
+          then (x >>>. mk_u32 2) ^. (x >>>. mk_u32 13) ^. (x >>>. mk_u32 22) =. result
+          else true) =
+  let _:Prims.unit =
+    if i =. mk_usize 0
+    then
+      let _:Prims.unit =
+        Hax_lib.v_assert ((v_OP_TABLE.[ mk_usize 3 *! i <: usize ] <: u8) =. mk_u8 2 <: bool)
+      in
+      let _:Prims.unit =
+        Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 1 <: usize ] <: u8) =.
+            mk_u8 13
+            <:
+            bool)
+      in
+      let _:Prims.unit =
+        Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 2 <: usize ] <: u8) =.
+            mk_u8 22
+            <:
+            bool)
+      in
+      ()
+    else
+      if i =. mk_usize 1
+      then
+        let _:Prims.unit =
+          Hax_lib.v_assert ((v_OP_TABLE.[ mk_usize 3 *! i <: usize ] <: u8) =. mk_u8 6 <: bool)
+        in
+        let _:Prims.unit =
+          Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 1 <: usize ] <: u8) =.
+              mk_u8 11
+              <:
+              bool)
+        in
+        let _:Prims.unit =
+          Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 2 <: usize ] <: u8) =.
+              mk_u8 25
+              <:
+              bool)
+        in
+        ()
+      else
+        if i =. mk_usize 2
+        then
+          let _:Prims.unit =
+            Hax_lib.v_assert ((v_OP_TABLE.[ mk_usize 3 *! i <: usize ] <: u8) =. mk_u8 7 <: bool)
+          in
+          let _:Prims.unit =
+            Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 1 <: usize ]
+                  <:
+                  u8) =.
+                mk_u8 18
+                <:
+                bool)
+          in
+          let _:Prims.unit =
+            Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 2 <: usize ]
+                  <:
+                  u8) =.
+                mk_u8 3
+                <:
+                bool)
+          in
+          ()
+        else
+          if i =. mk_usize 3
+          then
+            let _:Prims.unit =
+              Hax_lib.v_assert ((v_OP_TABLE.[ mk_usize 3 *! i <: usize ] <: u8) =. mk_u8 17 <: bool)
+            in
+            let _:Prims.unit =
+              Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 1 <: usize ]
+                    <:
+                    u8) =.
+                  mk_u8 19
+                  <:
+                  bool)
+            in
+            let _:Prims.unit =
+              Hax_lib.v_assert ((v_OP_TABLE.[ (mk_usize 3 *! i <: usize) +! mk_usize 2 <: usize ]
+                    <:
+                    u8) =.
+                  mk_u8 10
+                  <:
+                  bool)
+            in
+            ()
+  in
   let (tmp: u32):u32 =
     Core.Num.impl_u32__rotate_right x
       (Core.Convert.f_into #u8
@@ -119,7 +209,13 @@ let sigma (x: u32) (i op: usize)
 
 #pop-options
 
-let to_be_u32s (block: t_Array u8 (mk_usize 64)) : t_Array u32 (mk_usize 16) =
+let to_be_u32s (block: t_Array u8 (mk_usize 64))
+    : Prims.Pure (t_Array u32 (mk_usize 16))
+      Prims.l_True
+      (ensures
+        fun result ->
+          let result:t_Array u32 (mk_usize 16) = result in
+          (Core.Slice.impl__len #u32 (result <: t_Slice u32) <: usize) =. mk_usize 16) =
   let out:t_Array u32 (mk_usize 16) = Rust_primitives.Hax.repeat (mk_u32 0) (mk_usize 16) in
   let out:t_Array u32 (mk_usize 16) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)

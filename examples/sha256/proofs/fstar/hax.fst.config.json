@@ -2,6 +2,7 @@
   "fstar_exe": "fstar.exe",
   "include_dirs": [
     "${HAX_HOME}/examples/sha256/proofs/fstar/extraction",
+    "${HAX_HOME}/examples/sha256/proofs/fstar/spec",
     "${HAX_HOME}/hax-bounded-integers/proofs/fstar/extraction",
     "${HAX_HOME}/hax-lib/proof-libs/fstar/core",
     "${HAX_HOME}/hax-lib/proof-libs/fstar/rust_primitives",

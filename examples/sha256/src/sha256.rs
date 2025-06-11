@@ -24,7 +24,7 @@ pub fn maj(x: u32, y: u32, z: u32) -> u32 {
     (x & y) ^ ((x & z) ^ (y & z))
 }
 
-const OP_TABLE: OpTableType = [2, 13, 22, 6, 11, 25, 7, 18, 3, 17, 19, 10];
+const OP_TABLE: OpTableType = [2u8, 13u8, 22u8, 6u8, 11u8, 25u8, 7u8, 18u8, 3u8, 17u8, 19u8, 10u8];
 
 #[rustfmt::skip]
 const K_TABLE: RoundConstantsTable = [
@@ -54,11 +54,35 @@ const HASH_INIT: Hash = [
     0x5be0cd19u32,
 ];
 
-// #[hax_lib::requires(i < 4)]
-#[hax_lib::fstar::options("--query_stats --z3rlimit 60")]
+#[hax_lib::fstar::options("--query_stats --z3rlimit 600 --split_queries always")]
 #[hax_lib::requires((i == 0 && op == 1) || (i == 1 && op == 1) || (i == 2 && op == 0) || (i == 3 && op == 0))]
-// #[hax_lib::ensures(|result| fstar!("f_sigma x i op = result"))]
+// #[hax_lib::ensures(|result| fstar!("f_sigma x i = result"))]
+#[hax_lib::ensures(|result| fstar!("
+    if i =. (mk_usize 0) 
+    then 
+      (x >>>. mk_u32 2) ^. (x >>>. mk_u32 13) ^. (x >>>. mk_u32 22) =. result
+    else 
+      true
+"))]
 pub fn sigma(x: u32, i: usize, op: usize) -> u32 {
+    if i == 0 { 
+        hax_lib::assert!(OP_TABLE[3 * i] == 2u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 1] == 13u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 2] == 22u8);
+    } else if i == 1 {
+        hax_lib::assert!(OP_TABLE[3 * i] == 6u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 1] == 11u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 2] == 25u8);
+    } else if i == 2 {
+        hax_lib::assert!(OP_TABLE[3 * i] == 7u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 1] == 18u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 2] == 3u8);
+    } else if i == 3 {
+        hax_lib::assert!(OP_TABLE[3 * i] == 17u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 1] == 19u8);
+        hax_lib::assert!(OP_TABLE[3 * i + 2] == 10u8);
+    }
+
     let mut tmp: u32 = x.rotate_right(OP_TABLE[3 * i + 2].into());
     if op == 0 {
         tmp = x >> OP_TABLE[3 * i + 2]
@@ -68,7 +92,28 @@ pub fn sigma(x: u32, i: usize, op: usize) -> u32 {
     x.rotate_right(rot_val_1) ^ x.rotate_right(rot_val_2) ^ tmp
 }
 
+// #[hax_lib::requires(i < 4)]
+// #[hax_lib::ensures(|result| fstar!("f_sigma x i = result"))]
+// pub fn sigma(x: u32, i: usize) -> u32 {
+//     match i {
+//         0 => {
+//             x.rotate_right(2) ^ x.rotate_right(13) ^ x.rotate_right(22)
+//         }
+//         1 => {
+//             x.rotate_right(6) ^ x.rotate_right(11) ^ x.rotate_right(25)
+//         }
+//         2 => {
+//             x.rotate_right(7) ^ x.rotate_right(18) ^ (x >> 3)
+//         }
+//         3 => {
+//             x.rotate_right(17) ^ x.rotate_right(19) ^ (x >> 10)
+//         }
+//         _ => unreachable!()
+//     }
+// }
+
 // #[hax_lib::ensures(|result| fstar!("f_parse_message_block block = result"))]
+#[hax_lib::ensures(|result| result.len() == 16)]
 fn to_be_u32s(block: Block) -> [u32; 16] {
     let mut out = [0u32; 16];
     for i in 0..16 {
