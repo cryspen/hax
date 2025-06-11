@@ -144,7 +144,7 @@ pub enum TyKind {
     /// An associated type
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     ///     fn f<T: Tr>() -> T::A {...}
     /// ```
     AssociatedType {
@@ -157,7 +157,7 @@ pub enum TyKind {
     /// An opaque type
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// type Foo = impl Bar;
     /// ```
     Opaque(GlobalId),
@@ -165,7 +165,7 @@ pub enum TyKind {
     /// A `dyn` type
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// dyn Tr
     /// ```
     Dyn(Vec<DynTraitGoal>),
@@ -178,7 +178,7 @@ pub enum TyKind {
 /// implementing the trait is known dynamically.
 ///
 /// # Example:
-/// ```rust
+/// ```rust,ignore
 /// dyn Tr<A, B>
 /// ```
 #[derive_group_for_ast]
@@ -353,7 +353,7 @@ pub enum PatKind {
     /// A constructor pattern
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// Foo(x)
     /// ```
     Construct {
@@ -377,7 +377,7 @@ pub enum GuardKind {
     /// An `if let` guard.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// match x {
     ///   Some(value) if let Some(x) = f(value) => x,
     ///   _ => ...,
@@ -431,7 +431,7 @@ pub struct ImplExpr {
 /// # Example:
 /// In the snippet below, the `clone` method on `x` corresponds to the implementation
 /// of `Clone` derived for `Vec<T>` (`ImplApp`) given the `LocalBound` on `T`.
-/// ```rust
+/// ```rust,ignore
 /// fn f<T: Clone>(x: Vec<T>) -> Vec<T> {
 ///   x.clone()
 /// }
@@ -442,7 +442,7 @@ pub enum ImplExprKind {
     ///
     /// # Example:
     /// The impl expr for `Type: Trait` used in `self.f()` is `Self_`.
-    /// ```rust
+    /// ```rust,ignore
     /// impl Trait for Type {
     ///     fn f(&self) {...}
     ///     fn g(&self) {self.f()}
@@ -452,7 +452,7 @@ pub enum ImplExprKind {
     /// A concrete `impl` block.
     ///
     /// # Example
-    /// ```rust
+    /// ```rust,ignore
     /// impl Clone for Type { // Consider this `impl` is called `impl0`
     ///     ...
     /// }
@@ -464,7 +464,7 @@ pub enum ImplExprKind {
     /// A bound introduced by a generic clause.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// fn f<T: Clone>(x: T) -> T {
     ///   x.clone() // Here the method comes from the bound `T: Clone`
     /// }
@@ -476,7 +476,7 @@ pub enum ImplExprKind {
     /// A parent implementation.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// trait SubTrait: Clone {}
     /// fn f<T: SubTrait>(x: T) -> T {
     ///   x.clone() // Here the method comes from the parent of the bound `T: SubTrait`
@@ -493,7 +493,7 @@ pub enum ImplExprKind {
     /// # Example:
     /// In this snippet, `T::Item` is an `AssociatedType` where the subsequent `ImplExpr`
     /// is a type projection of `ITerator`.
-    /// ```rust
+    /// ```rust,ignore
     /// fn f<T: Iterator>(x: T) -> Option<T::Item> {
     ///     x.next()
     /// }
@@ -509,7 +509,7 @@ pub enum ImplExprKind {
     /// An instantiation of a generic implementation.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// fn f<T: Clone>(x: Vec<T>) -> Vec<T> {
     ///   x.clone() // The `Clone` implementation for `Vec` is instantiated with the local bound `T: Clone`
     /// }
@@ -529,7 +529,7 @@ pub enum ImplExprKind {
 /// Represents an impl item (associated type or function)
 ///
 /// # Example:
-/// ```rust
+/// ```rust,ignore
 /// impl ... {
 ///   fn assoc_fn<T>(...) {...}
 /// }
@@ -553,7 +553,7 @@ pub enum ImplItemKind {
     ///
     /// # Example:
     /// The associated type `Error` in the following example.
-    /// ```rust
+    /// ```rust,ignore
     /// impl TryInto for ... {
     ///   type Error = u8;
     /// }
@@ -570,7 +570,7 @@ pub enum ImplItemKind {
     ///
     /// # Example:
     /// The associated function `into` in the following example.
-    /// ```rust
+    /// ```rust,ignore
     /// impl Into for T {
     ///   fn into(&self) -> T {...}
     /// }
@@ -594,7 +594,7 @@ pub struct TraitItem {
     ///
     /// # Example:
     /// The generics `<B>` on `f`, **not** `<A>`.
-    /// ```rust
+    /// ```rust,ignore
     /// trait<A> ... {
     ///    fn f<B>(){}
     /// }
@@ -616,7 +616,7 @@ pub enum TraitItemKind {
     /// reconstructed using the types of the parameters and of the body.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// impl ... {
     ///   fn f(x: u8) -> u8 { x + 2 }
     /// }
@@ -632,7 +632,7 @@ pub enum TraitItemKind {
 /// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
 ///
 /// # Example:
-/// ```rust
+/// ```rust,ignore
 /// fstar!("f ${x + 3} + 10")
 /// ```
 /// results in `[Verbatim("f"), Expr([[x + 3]]), Verbatim(" + 10")]`
@@ -714,7 +714,7 @@ pub enum LoopKind {
     /// A while loop.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// while(condition) { ... }
     /// ```
     WhileLoop {
@@ -724,7 +724,7 @@ pub enum LoopKind {
     /// A for loop.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// for i in iterator { ... }
     /// ```
     ForLoop {
@@ -736,7 +736,7 @@ pub enum LoopKind {
     /// A specialized for loop on a range.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// for i in start..end {
     ///   ...
     /// }
@@ -825,7 +825,7 @@ pub enum ExprKind {
     /// A constructor application
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// MyEnum::MyVariant { x : 1, ...base }
     /// ``````
     Construct {
@@ -844,7 +844,7 @@ pub enum ExprKind {
     /// A `match`` expression.
     ///
     /// # Example:
-    /// ```
+    /// ```rust,ignore
     /// match x {
     ///     pat1 => expr1,
     ///     pat2 => expr2,
@@ -962,7 +962,7 @@ pub enum ExprKind {
         /// The value we break with. By default, this is `()`.
         ///
         /// # Example:
-        /// ```rust
+        /// ```rust,ignore
         /// loop { break 3; } + 3
         /// ```
         value: Expr,
@@ -1058,7 +1058,7 @@ pub struct ImplIdent {
 }
 
 /// A projection predicate expresses a constraint over an associated type:
-/// ```rust
+/// ```rust,ignore
 /// fn f<T: Foo<S = String>>(...)
 /// ```
 /// In this example `Foo` has an associated type `S`.
@@ -1164,7 +1164,7 @@ pub struct SpannedTy {
 /// A function or closure parameter.
 ///
 /// # Example:
-/// ```rust
+/// ```rust,ignore
 /// (mut x, y): (T, u8)
 /// ```
 #[derive_group_for_ast]
@@ -1196,7 +1196,8 @@ pub struct Variant {
 pub enum ItemKind {
     /// A function or constant item.
     ///
-    /// # Example:```rust
+    /// # Example:
+    /// ```rust,ignore
     /// fn add<T: Clone>(x: i32, y: i32) -> i32 {
     ///     x + y
     /// }
@@ -1234,7 +1235,7 @@ pub enum ItemKind {
     /// A type alias.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// type A = u8;
     /// ```
     TyAlias {
@@ -1257,7 +1258,7 @@ pub enum ItemKind {
     /// A type definition (struct or enum)
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// enum A {B, C}
     /// struct S {f: u8}
     /// ```
@@ -1284,7 +1285,7 @@ pub enum ItemKind {
     /// A trait definition.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// trait T<A> {
     ///     type Assoc;
     ///     fn m(x: Self::Assoc, y: Self) -> A;
@@ -1313,7 +1314,7 @@ pub enum ItemKind {
     /// A trait implementation.
     ///
     /// # Example:
-    /// ```rust
+    /// ```rust,ignore
     /// impl T<u8> for u16 {
     ///     type Assoc = u32;
     ///     fn m(x: u32, y: u16) -> u8 {
