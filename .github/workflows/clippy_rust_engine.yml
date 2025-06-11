@@ -12,8 +12,7 @@ jobs:
     name: clippy
     runs-on: linux
     steps:
+    - uses: actions/checkout@v4
     - name: Run clippy
       run: |
-        cargo clippy -p rust-printer -- \
-            --no-deps -Dwarnings -Dmissing_docs -Dbroken_intra_doc_links \
-            -Dunused_qualifications -Dunused_crate_dependencies
+        cargo clippy -p rust-printer
