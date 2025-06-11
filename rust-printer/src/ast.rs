@@ -59,9 +59,12 @@ pub enum PrimitiveTy {
     /// The `str` type
     Str,
 }
+
+/// Represent a Rust lifetime region.
 #[derive_group_for_ast]
 pub struct Region;
 
+/// A indirection for the representation of types.
 pub type Ty = Box<TyKind>;
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
@@ -84,7 +87,9 @@ pub enum TyKind {
     /// # Example:
     /// `Vec<i32>`
     App {
+        /// The type being applied (`Vec` in the example).
         head: GlobalId,
+        /// The arguments (`[i32]` in the example).
         args: Vec<GenericValue>,
     },
 
@@ -92,7 +97,12 @@ pub enum TyKind {
     ///
     /// # Example:
     /// `fn(i32) -> bool` or `Fn(i32) -> bool`
-    Arrow { inputs: Vec<Ty>, output: Ty },
+    Arrow {
+        /// `i32` in the example
+        inputs: Vec<Ty>,
+        /// `bool` in the example
+        output: Ty,
+    },
 
     // TODO: Should we keep this type?
     /// A reference type.
@@ -100,8 +110,11 @@ pub enum TyKind {
     /// # Example:
     /// `&i32`, `&mut i32`
     Ref {
+        /// The type inside the reference
         inner: Ty,
+        /// Is the reference mutable?
         mutable: bool,
+        /// The region of this reference
         region: Region,
     },
 
@@ -119,7 +132,12 @@ pub enum TyKind {
     ///
     /// # Example:
     /// `&[i32; 10]`
-    Array { ty: Ty, length: Box<Expr> },
+    Array {
+        /// The type of the items of the array
+        ty: Ty,
+        /// The length of the array
+        length: Box<Expr>,
+    },
 
     /// A raw pointer type
     RawPointer,
@@ -271,32 +289,49 @@ pub enum PatKind {
     ///
     /// # Example:
     /// `p : ty`
-    Ascription { pat: Pat, ty: SpannedTy },
+    Ascription {
+        /// The inner pattern (`p` in the example)
+        pat: Pat,
+        /// The (spanned) type ascription (`ty` in the example)
+        ty: SpannedTy,
+    },
 
     /// An or pattern
     ///
     /// # Example:
     /// `p | q`
     /// Always contains at least 2 sub-patterns
-    Or { sub_pats: Vec<Pat> },
+    Or {
+        /// A vector of sub-patterns
+        sub_pats: Vec<Pat>,
+    },
 
     /// An array pattern
     ///
     /// # Example:
     /// `[p, q]`
-    Array { args: Vec<Pat> },
+    Array {
+        /// A vector of patterns
+        args: Vec<Pat>,
+    },
 
     /// A dereference pattern
     ///
     /// # Example:
     /// `&p`
-    Deref { sub_pat: Pat },
+    Deref {
+        /// The inner pattern
+        sub_pat: Pat,
+    },
 
     /// A constant pattern
     ///
     /// # Example:
     /// `1`
-    Constant { lit: Literal },
+    Constant {
+        /// The literal
+        lit: Literal,
+    },
 
     /// A variable binding.
     ///
@@ -305,9 +340,14 @@ pub enum PatKind {
     /// - `mut x` → `mutable: true`
     /// - `ref x` → `mode: ByRef(Shared)`
     Binding {
+        /// Is the binding mutable? E.g. `x` is not mutable, `mut x` is.
         mutable: bool,
+        /// The variable introduced by the binding pattern.
         var: LocalId,
+        /// The binding mode, e.g. [`BindingMode::Shared`] for `ref x`.
         mode: BindingMode,
+        /// The sub-pattern, if any.
+        /// For example, this is `Some(inner_pat)` for the pattern `variable @ inner_pat`.
         sub_pat: Option<Pat>,
     },
 
@@ -318,9 +358,13 @@ pub enum PatKind {
     /// Foo(x)
     /// ```
     Construct {
+        /// The identifier of the constructor we are matching
         constructor: GlobalId,
+        /// Are we constructing a record? E.g. a struct or a variant with named fields.
         is_record: bool,
+        /// Is this a struct? (meaning, *not* a variant from an enum)
         is_struct: bool,
+        /// A list of fields.
         fields: Vec<(GlobalId, Pat)>,
     },
 
@@ -331,13 +375,27 @@ pub enum PatKind {
 /// Represents the various kinds of pattern guards.
 #[derive_group_for_ast]
 pub enum GuardKind {
-    /// An `if let` guard
-    IfLet { lhs: Pat, rhs: Expr },
+    /// An `if let` guard.
+    ///
+    /// # Example:
+    /// ```rust
+    /// match x {
+    ///   Some(value) if let Some(x) = f(value) => x,
+    ///   _ => ...,
+    /// }
+    /// ```
+    IfLet {
+        /// The left-hand side of the guard. `Some(x)` in the example.
+        lhs: Pat,
+        /// The right-hand side of the guard. `f(value)` in the example.
+        rhs: Expr,
+    },
 }
 
 // TODO: Replace by places, or just expressions
 /// The left-hand side of an assignment.
 #[derive_group_for_ast]
+#[allow(missing_docs)]
 pub enum Lhs {
     LocalVar {
         var: LocalId,
@@ -356,10 +414,16 @@ pub enum Lhs {
     },
 }
 
-/// Represents a witness of trait implementation
+/// An `ImplExpr` describes the full data of a trait implementation. Because of
+/// generics, this may need to combine several concrete trait implementation
+/// items. For example, `((1u8, 2u8), "hello").clone()` combines the generic
+/// implementation of `Clone` for `(A, B)` with the concrete implementations for
+/// `u8` and `&str`, represented as a tree.
 #[derive_group_for_ast]
 pub struct ImplExpr {
+    /// The impl. expression itself.
     pub kind: Box<ImplExprKind>,
+    /// The trait being implemented.
     pub goal: TraitGoal,
 }
 
@@ -406,7 +470,10 @@ pub enum ImplExprKind {
     ///   x.clone() // Here the method comes from the bound `T: Clone`
     /// }
     /// ```
-    LocalBound { id: Symbol },
+    LocalBound {
+        /// Local identifier to a bound.
+        id: Symbol,
+    },
     /// A parent implementation.
     ///
     /// # Example:
@@ -416,7 +483,12 @@ pub enum ImplExprKind {
     ///   x.clone() // Here the method comes from the parent of the bound `T: SubTrait`
     /// }
     /// ```
-    Parent { impl_: ImplExpr, ident: ImplIdent },
+    Parent {
+        /// Parent implementation
+        impl_: ImplExpr,
+        /// Which implementation to pick in the parent
+        ident: ImplIdent,
+    },
     /// A projected associated implementation.
     ///
     /// # Example:
@@ -428,8 +500,11 @@ pub enum ImplExprKind {
     /// }
     /// ```
     Projection {
+        /// The base implementation from which we project
         impl_: ImplExpr,
+        /// The item in the trait implemented by `impl_`
         item: GlobalId,
+        /// Which implementation to pick on the item
         ident: ImplIdent,
     },
     /// An instantiation of a generic implementation.
@@ -441,7 +516,9 @@ pub enum ImplExprKind {
     /// }
     /// ```
     ImplApp {
+        /// The head of the application
         impl_: ImplExpr,
+        /// The arguments of the application
         args: Vec<ImplExpr>,
     },
     /// The implementation provided by a dyn.
@@ -451,11 +528,22 @@ pub enum ImplExprKind {
 }
 
 /// Represents an impl item (associated type or function)
+///
+/// # Example:
+/// ```rust
+/// impl ... {
+///   fn assoc_fn<T>(...) {...}
+/// }
+/// ```
 #[derive_group_for_ast]
 pub struct ImplItem {
+    /// Metadata (span and attributes) for the impl item.
     pub meta: Metadata,
+    /// Generics for this associated item. `T` in the example.
     pub generics: Generics,
+    /// The associated item itself.
     pub kind: ImplItemKind,
+    /// The unique identifier for this associated item.
     pub ident: GlobalId,
 }
 
@@ -463,29 +551,83 @@ pub struct ImplItem {
 #[derive_group_for_ast]
 pub enum ImplItemKind {
     /// An instantiation of associated type
+    ///
+    /// # Example:
+    /// The associated type `Error` in the following example.
+    /// ```rust
+    /// impl TryInto for ... {
+    ///   type Error = u8;
+    /// }
+    /// ```
     Type {
+        /// The type expression, `u8` in the example.
         ty: Ty,
+        /// The parent bounds. In the example, there are none (in the definition
+        /// of `TryInto`, there is no `Error: Something` in the associated type
+        /// definition).
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
     },
     /// A definition for a trait function
-    Fn { body: Expr, params: Vec<Param> },
+    ///
+    /// # Example:
+    /// The associated function `into` in the following example.
+    /// ```rust
+    /// impl Into for T {
+    ///   fn into(&self) -> T {...}
+    /// }
+    /// ```
+    Fn {
+        /// The body of the associated function (`...` in the example)
+        body: Expr,
+        /// The list of the argument for the associated function (`&self` in the example).
+        params: Vec<Param>,
+    },
 }
 
 /// Represents a trait item (associated type, fn, or default)
 #[derive_group_for_ast]
 pub struct TraitItem {
-    pub kind: TraitItemKind,
-    pub generics: Generics,
-    pub ident: GlobalId,
+    /// Source span and attributes.
     pub meta: Metadata,
+    /// The kind of trait item we are dealing with (an associated type or function).
+    pub kind: TraitItemKind,
+    /// The generics this associated item carries.
+    ///
+    /// # Example:
+    /// The generics `<B>` on `f`, **not** `<A>`.
+    /// ```rust
+    /// trait<A> ... {
+    ///    fn f<B>(){}
+    /// }
+    /// ```
+    pub generics: Generics,
+    /// The identifier of the associateed item.
+    pub ident: GlobalId,
 }
 
 /// Represents the kinds of trait items
 #[derive_group_for_ast]
 pub enum TraitItemKind {
+    /// An associated type
     Type(Vec<ImplIdent>),
+    /// An associated function
     Fn(Ty),
-    Default { params: Vec<Param>, body: Expr },
+    /// An associated function with a default body.
+    /// A arrow type (like what is given in `TraitItemKind::Ty`) can be
+    /// reconstructed using the types of the parameters and of the body.
+    ///
+    /// # Example:
+    /// ```rust
+    /// impl ... {
+    ///   fn f(x: u8) -> u8 { x + 2 }
+    /// }
+    /// ```
+    Default {
+        /// The parameters of the associated function (`[x: u8]` in the example).
+        params: Vec<Param>,
+        /// The default body of the associated function (`x + 2` in the example).
+        body: Expr,
+    },
 }
 
 /// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
@@ -497,9 +639,13 @@ pub enum TraitItemKind {
 /// results in `[Verbatim("f"), Expr([[x + 3]]), Verbatim(" + 10")]`
 #[derive_group_for_ast]
 pub enum QuoteContent {
+    /// A verbatim chunk of backend code.
     Verbatim(String),
+    /// A Rust expression to inject in the quote.
     Expr(Expr),
+    /// A Rust pattern to inject in the quote.
     Pattern(Pat),
+    /// A Rust type to inject in the quote.
     Ty(Ty),
 }
 
@@ -507,35 +653,53 @@ pub enum QuoteContent {
 #[derive_group_for_ast]
 pub struct Quote(pub Vec<QuoteContent>);
 
-/// The origin of a quote item
+/// The origin of a quote item.
 #[derive_group_for_ast]
 pub struct ItemQuoteOrigin {
+    /// From which kind of item this quote was placed on?
     pub item_kind: ItemQuoteOriginKind,
+    /// From what item this quote was placed on?
     pub item_ident: GlobalId,
+    /// What was the position of the quote?
     pub position: ItemQuoteOriginPosition,
 }
 
 /// The kind of a quote item's origin
 #[derive_group_for_ast]
 pub enum ItemQuoteOriginKind {
+    /// A function
     Fn,
+    /// A type alias
     TyAlias,
+    /// A type definition (`enum`, `union`, `struct`)
     Type,
+    /// A macro invocation
+    /// TODO: drop
     MacroInvocation,
+    /// A trait definition
     Trait,
+    /// An `impl` block
     Impl,
+    /// An alias
     Alias,
+    /// A `use`
     Use,
+    /// A quote
     Quote,
+    /// An error
     HaxError,
+    /// Something unknown
     NotImplementedYet,
 }
 
 /// The position of a quote item relative to its origin
 #[derive_group_for_ast]
 pub enum ItemQuoteOriginPosition {
+    /// The quote was placed before an item
     Before,
+    /// The quote was placed after an item
     After,
+    /// The quote replaces an item
     Replace,
 }
 
@@ -543,18 +707,49 @@ pub enum ItemQuoteOriginPosition {
 /// Useful for `FunctionalizeLoops`.
 #[derive_group_for_ast]
 pub enum LoopKind {
+    /// An unconditional loop.
+    ///
+    /// # Example:
+    /// `loop { ... }`
     UnconditionalLoop,
+    /// A while loop.
+    ///
+    /// # Example:
+    /// ```rust
+    /// while(condition) { ... }
+    /// ```
     WhileLoop {
+        /// The boolean condition
         condition: Expr,
     },
+    /// A for loop.
+    ///
+    /// # Example:
+    /// ```rust
+    /// for i in iterator { ... }
+    /// ```
     ForLoop {
+        /// The pattern of the for loop (`i` in the example).
         pat: Pat,
-        it: Expr,
+        /// The iterator we're looping on (`iterator` in the example).
+        iterator: Expr,
     },
+    /// A specialized for loop on a range.
+    ///
+    /// # Example:
+    /// ```rust
+    /// for i in start..end {
+    ///   ...
+    /// }
+    /// ```
     ForIndexLoop {
+        /// Where the range begins (`start` in the example).
         start: Expr,
+        /// Where the range ends (`end` in the example).
         end: Expr,
+        /// The binding used for the iteration.
         var: LocalId,
+        /// The type of the binding `var`.
         var_ty: Ty,
     },
 }
@@ -565,14 +760,19 @@ pub enum LoopKind {
 /// by an encoding in the `ControlFlow` enum.
 #[derive_group_for_ast]
 pub enum ControlFlowKind {
+    /// Contains no `return`, maybe some `break`s
     BreakOnly,
+    /// Contains both at least one `return` and maybe some `break`s
     BreakOrReturn,
 }
 
-// TODO: Revisit?
+/// Represent explicit mutation context for a loop.
+/// This is useful to make loops pure.
 #[derive_group_for_ast]
 pub struct LoopState {
+    /// The initial state of the loop.
     pub init: Expr,
+    /// The pattern that destructures the state of the loop.
     pub body_pat: Pat,
 }
 
@@ -585,8 +785,11 @@ pub enum ExprKind {
     /// # Example:
     /// `if x > 0 { 1 } else { 2 }`
     If {
+        /// The boolean condition (`x > 0` in the example).
         condition: Expr,
+        /// The then branch (`1` in the example).
         then: Expr,
+        /// An optional else branch (`Some(2)`in the example).
         else_: Option<Expr>,
     },
 
@@ -595,10 +798,16 @@ pub enum ExprKind {
     /// # Example:
     /// `f(x, y)`
     App {
+        /// The head of the function application (or, which function do we apply?).
         head: Expr,
+        /// The arguments applied to the function.
         args: Vec<Expr>,
+        /// The generic arguments applied to the function.
         generic_args: Vec<GenericValue>,
+        /// If the function requires generic bounds to be called, `bounds_impls`
+        /// is a vector of impl. expressions for those bounds.
         bounds_impls: Vec<ImplExpr>,
+        /// If we apply an associated function, contains the impl. expr used.
         trait_: Option<(ImplExpr, Vec<GenericValue>)>,
     },
 
@@ -617,17 +826,35 @@ pub enum ExprKind {
     /// A constructor application
     ///
     /// # Example:
-    /// A(x)
+    /// ```rust
+    /// MyEnum::MyVariant { x : 1, ...base }
+    /// ``````
     Construct {
+        /// The identifier of the constructor we are building (`MyEnum::MyVariant` in the example).
         constructor: GlobalId,
+        /// Are we constructing a record? E.g. a struct or a variant with named fields. (`true` in the example)
         is_record: bool,
+        /// Is this a struct? Neaning, *not* a variant from an enum. (`false` in the example)
         is_struct: bool,
+        /// A list of fields (`[(x, 1)]` in the example).
         fields: Vec<(GlobalId, Expr)>,
+        /// The base expression, if any. (`Some(base)` in the example)
         base: Option<Expr>,
     },
 
+    /// A `match`` expression.
+    ///
+    /// # Example:
+    /// ```
+    /// match x {
+    ///     pat1 => expr1,
+    ///     pat2 => expr2,
+    /// }
+    /// ```
     Match {
+        /// The expression on which we are matching. (`x` in the example)
         scrutinee: Expr,
+        /// The arms of the match. (`pat1 => expr1` and `pat2 => expr2` in the example)
         arms: Vec<Arm>,
     },
 
@@ -643,7 +870,9 @@ pub enum ExprKind {
     /// - `&x` → `mutable: false`
     /// - `&mut x` → `mutable: true`
     Borrow {
+        /// Is the borrow mutable?
         mutable: bool,
+        /// The expression we are borrowing
         inner: Expr,
     },
 
@@ -652,7 +881,9 @@ pub enum ExprKind {
     /// # Example:
     /// `*const u8`
     AddressOf {
+        /// Is the raw pointer mutable?
         mutability: Mutability,
+        /// The expression on which we take a pointer
         inner: Expr,
     },
 
@@ -667,8 +898,11 @@ pub enum ExprKind {
     /// # Example:
     /// `let x = 1; x + 1`
     Let {
+        /// The left-hand side of the `let` expression. (`x` in the example)
         lhs: Pat,
+        /// The right-hand side of the `let` expression. (`1` in the example)
         rhs: Expr,
+        /// The body of the `let`. (`x + 1` in the example)
         body: Expr,
     },
 
@@ -686,7 +920,9 @@ pub enum ExprKind {
 
     /// Type ascription
     Ascription {
+        /// The expression being ascribed.
         e: Expr,
+        /// The type
         ty: Ty,
     },
 
@@ -695,44 +931,61 @@ pub enum ExprKind {
     /// # Example:
     /// `x = 1`
     Assign {
+        /// the left-hand side (place) of the assign
         lhs: Lhs,
+        /// The value we are assigning
         value: Expr,
     },
 
     /// Loop
     ///
     /// # Example:
-    /// `loop{}`
+    /// `'label: loop { body }`
     Loop {
+        /// The body of the loop.
         body: Expr,
+        /// The kind of loop (e.g. `while`, `loop`, `for`...).
         kind: LoopKind,
+        /// An optional loop state, that makes explicit the state mutated by the
+        /// loop.
         state: Option<LoopState>,
+        /// What kind of control flow is performed by this loop?
         control_flow: Option<ControlFlowKind>,
+        /// Optional loop label.
         label: Option<Symbol>,
     },
 
-    /// Break out of a loop
+    /// The `break` exppression, that breaks out of a loop.
     ///
     /// # Example:
-    /// `break`
+    /// `break 'label 3`
     Break {
+        /// The value we break with. By default, this is `()`.
+        ///
+        /// # Example:
+        /// ```rust
+        /// loop { break 3; } + 3
+        /// ```
         value: Expr,
+        /// What loop shall we break? By default, the parent enclosing loop.
         label: Option<Symbol>,
     },
 
-    /// Return from a function
+    /// Return from a function.
     ///
     /// # Example:
     /// `return 1`
     Return {
+        /// The expression we return (`1` in the example).
         value: Expr,
     },
 
     /// Continue (go to next loop iteration)
     ///
     /// # Example:
-    /// `continue`
+    /// `continue 'label`
     Continue {
+        /// The loop we continue.
         label: Option<Symbol>,
     },
 
@@ -741,22 +994,28 @@ pub enum ExprKind {
     /// # Example:
     /// `|x| x`
     Closure {
+        /// The parameters of the closure
         params: Vec<Pat>,
+        /// The body of the closure
         body: Expr,
+        /// The captured expressions
         captures: Vec<Expr>,
     },
 
     /// Block of safe or unsafe expression
     ///
     /// # Example:
-    /// `unsafe {...}`
+    /// `unsafe { ... }`
     Block {
+        /// The body of the block.
         body: Expr,
+        /// The safety of the block.
         safety_mode: SafetyKind,
     },
 
-    /// A quote is an inlined piece of backend code
+    /// A quote is an inlined piece of backend code.
     Quote {
+        /// The contents of the quote.
         contents: Quote,
     },
 
@@ -767,9 +1026,15 @@ pub enum ExprKind {
 /// Represents the kinds of generic parameters
 #[derive_group_for_ast]
 pub enum GenericParamKind {
+    /// A generic lifetime
     Lifetime,
+    /// A generic type
     Type,
-    Const { ty: Ty },
+    /// A generic constant
+    Const {
+        /// The type of the generic constant
+        ty: Ty,
+    },
 }
 
 /// Represents an instantiated trait that needs to be implemented.
@@ -787,7 +1052,9 @@ pub struct TraitGoal {
 /// Represents a trait bound in a generic constraint
 #[derive_group_for_ast]
 pub struct ImplIdent {
+    /// The trait goal of this impl identifier
     pub goal: TraitGoal,
+    /// The name itself
     pub name: Symbol,
 }
 
@@ -798,31 +1065,42 @@ pub struct ImplIdent {
 /// In this example `Foo` has an associated type `S`.
 #[derive_group_for_ast]
 pub struct ProjectionPredicate {
+    /// The impl expression we project from
     pub impl_: ImplExpr,
+    /// The associated type being projected
     pub assoc_item: GlobalId,
+    /// The equality constraint on the associated type
     pub ty: Ty,
 }
 
 /// A generic constraint (lifetime, type or projection)
 #[derive_group_for_ast]
 pub enum GenericConstraint {
+    /// A lifetime
     Lifetime(String), // TODO: Remove `String`
+    /// A type
     Type(ImplIdent),
+    /// A projection
     Projection(ProjectionPredicate),
 }
 
 /// A generic parameter (lifetime, type parameter or const parameter)
 #[derive_group_for_ast]
 pub struct GenericParam {
+    /// The local identifier for the generic parameter
     pub ident: LocalId,
+    /// Metadata (span and attributes) for the generic parameter.
     pub meta: Metadata,
+    /// The kind of generic parameter.
     pub kind: GenericParamKind,
 }
 
 /// Generic parameters and constraints (contained between `<>` in function declarations)
 #[derive_group_for_ast]
 pub struct Generics {
+    /// A vector of genreric parameters.
     pub params: Vec<GenericParam>,
+    /// A vector of genreric constraints.
     pub constraints: Vec<GenericConstraint>,
 }
 
@@ -838,14 +1116,18 @@ pub enum SafetyKind {
 /// Represents a single attribute.
 #[derive_group_for_ast]
 pub struct Attribute {
+    /// The kind of attribute (a comment, a tool attribute?).
     pub kind: AttributeKind,
+    /// The span of the attribute.
     pub span: Span,
 }
 
 /// Represents the kind of an attribute.
 #[derive_group_for_ast]
 pub enum AttributeKind {
+    /// A tool attribute `#[path(tokens)]`
     Tool { path: String, tokens: String },
+    /// A doc comment
     DocComment { kind: DocCommentKind, body: String },
 }
 
@@ -864,21 +1146,25 @@ pub type Attributes = Vec<Attribute>;
 /// A type with its associated span.
 #[derive_group_for_ast]
 pub struct SpannedTy {
-    /// Span of origin
+    /// The span of the type
     pub span: Span,
-    /// Type
+    /// The type itself
     pub ty: Ty,
 }
 
-/// A function parameter (pattern + type, e.g. `x: u8`).
+/// A function or closure parameter.
+///
+/// # Example:
+/// ```rust
+/// (mut x, y): (T, u8)
+/// ```
 #[derive_group_for_ast]
 pub struct Param {
-    /// Pattern part
-    /// Examples: `x`, `mut y`, etc.
+    /// The pattern part (left-hand side) of a parameter (`(mut x, y)` in the example).
     pub pat: Pat,
-    /// Type part with span.
+    /// The type part (right-rand side) of a parameter (`(T, u8)` in the example).
     pub ty: SpannedTy,
-    /// Attributes
+    /// Optionally, some attributes present on the parameter.
     pub attributes: Attributes,
 }
 

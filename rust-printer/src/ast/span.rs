@@ -1,3 +1,5 @@
+//! Source positions.
+
 use hax_rust_engine_macros::*;
 
 // TODO: implement, interned (statically -- bumpalo or something)
