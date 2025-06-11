@@ -3,9 +3,9 @@
 //! Symbols are lightweight wrappers around `String` for use in identifiers.
 //! Eventually, this could be backed by a real interner or arena.
 
-use crate::ast::derives::*;
+use hax_rust_engine_macros::*;
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Symbol(String);
 
 impl Symbol {

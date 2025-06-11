@@ -1,7 +1,7 @@
-use crate::ast::derives::*;
+use hax_rust_engine_macros::*;
 
 // TODO: implement, interned (statically -- bumpalo or something)
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 #[derive(Copy)]
 pub struct Span(());
 

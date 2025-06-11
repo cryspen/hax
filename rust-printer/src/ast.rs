@@ -10,7 +10,6 @@
 //!  4. This AST can be exported to the OCaml engine.
 //!  5. This AST should be suitable for AST transformations.
 
-pub mod derives;
 pub mod diagnostics;
 pub mod helper;
 pub mod identifiers;
@@ -19,16 +18,16 @@ pub mod node;
 pub mod span;
 
 use crate::symbol::Symbol;
-pub use derives::*;
 pub use diagnostics::Diagnostic;
 use hax_frontend_exporter::Mutability;
+pub use hax_rust_engine_macros::*;
 pub use identifiers::*;
 pub use literals::*;
 pub use node::Node;
 pub use span::Span;
 
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum GenericValue {
     /// A type-level generic value.
     ///
@@ -48,7 +47,7 @@ pub enum GenericValue {
 }
 
 /// Built-in primitive types.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum PrimitiveTy {
     /// The `bool` type.
     Bool,
@@ -61,11 +60,11 @@ pub enum PrimitiveTy {
     /// The `str` type
     Str,
 }
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Region;
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum Ty {
     /// A primitive type.
     ///
@@ -164,7 +163,7 @@ pub enum Ty {
 /// ```rust
 /// dyn Tr<A, B>
 /// ```
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct DynTraitGoal {
     /// `Tr` in the example above
     pub trait_: GlobalId,
@@ -173,7 +172,7 @@ pub struct DynTraitGoal {
 }
 
 /// Extra information attached to syntax nodes.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Metadata {
     /// The location in the source code.
     pub span: Span,
@@ -183,7 +182,7 @@ pub struct Metadata {
 }
 
 /// A typed expression with metadata.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Expr {
     /// The kind of expression.
     pub kind: Box<ExprKind>,
@@ -194,7 +193,7 @@ pub struct Expr {
 }
 
 /// A typed pattern with metadata.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Pat {
     /// The kind of pattern.
     pub kind: Box<PatKind>,
@@ -205,7 +204,7 @@ pub struct Pat {
 }
 
 /// A pattern matching arm with metadata.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Arm {
     /// The pattern of the arm.
     pub pat: Pat,
@@ -218,7 +217,7 @@ pub struct Arm {
 }
 
 /// A pattern matching arm guard with metadata.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Guard {
     /// The kind of guard.
     pub kind: GuardKind,
@@ -227,7 +226,7 @@ pub struct Guard {
 }
 
 /// Represents different levels of borrowing.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum BorrowKind {
     /// Shared reference
     ///
@@ -244,7 +243,7 @@ pub enum BorrowKind {
 }
 
 /// Binding modes used in patterns.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum BindingMode {
     /// Binding by value
     ///
@@ -259,7 +258,7 @@ pub enum BindingMode {
 }
 
 /// Represents the various kinds of patterns.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum PatKind {
     /// Wildcard pattern
     ///
@@ -329,7 +328,7 @@ pub enum PatKind {
 }
 
 /// Represents the various kinds of pattern guards.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum GuardKind {
     /// An `if let` guard
     IfLet { lhs: Pat, rhs: Expr },
@@ -337,7 +336,7 @@ pub enum GuardKind {
 
 // TODO: Replace by places, or just expressions
 /// The left-hand side of an assignment.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum Lhs {
     LocalVar {
         var: LocalId,
@@ -357,7 +356,7 @@ pub enum Lhs {
 }
 
 /// Represents a witness of trait implementation
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct ImplExpr {
     pub kind: Box<ImplExprKind>,
     pub goal: TraitGoal,
@@ -373,7 +372,7 @@ pub struct ImplExpr {
 ///   x.clone()
 /// }
 /// ```
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ImplExprKind {
     /// The trait implementation being defined.
     ///
@@ -451,7 +450,7 @@ pub enum ImplExprKind {
 }
 
 /// Represents an impl item (associated type or function)
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct ImplItem {
     pub meta: Metadata,
     pub generics: Generics,
@@ -460,7 +459,7 @@ pub struct ImplItem {
 }
 
 /// Represents the kinds of impl items
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ImplItemKind {
     /// An instantiation of associated type
     Type {
@@ -472,7 +471,7 @@ pub enum ImplItemKind {
 }
 
 /// Represents a trait item (associated type, fn, or default)
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct TraitItem {
     pub kind: TraitItemKind,
     pub generics: Generics,
@@ -481,7 +480,7 @@ pub struct TraitItem {
 }
 
 /// Represents the kinds of trait items
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum TraitItemKind {
     Type(Vec<ImplIdent>),
     Fn(Ty),
@@ -495,7 +494,7 @@ pub enum TraitItemKind {
 /// fstar!("f ${x + 3} + 10")
 /// ```
 /// results in `[Verbatim("f"), Expr([[x + 3]]), Verbatim(" + 10")]`
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum QuoteContent {
     Verbatim(String),
     Expr(Expr),
@@ -504,11 +503,11 @@ pub enum QuoteContent {
 }
 
 /// Represents an inlined piece of backend code
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Quote(pub Vec<QuoteContent>);
 
 /// The origin of a quote item
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct ItemQuoteOrigin {
     pub item_kind: ItemQuoteOriginKind,
     pub item_ident: GlobalId,
@@ -516,7 +515,7 @@ pub struct ItemQuoteOrigin {
 }
 
 /// The kind of a quote item's origin
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ItemQuoteOriginKind {
     Fn,
     TyAlias,
@@ -532,7 +531,7 @@ pub enum ItemQuoteOriginKind {
 }
 
 /// The position of a quote item relative to its origin
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ItemQuoteOriginPosition {
     Before,
     After,
@@ -541,7 +540,7 @@ pub enum ItemQuoteOriginPosition {
 
 /// The kind of a loop (resugared by respective `Reconstruct...Loops` phases).
 /// Useful for `FunctionalizeLoops`.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum LoopKind {
     UnconditionalLoop,
     WhileLoop {
@@ -563,14 +562,14 @@ pub enum LoopKind {
 /// It is added by phase `DropReturnBreakContinue` and the information is used in
 /// `FunctionalizeLoops`. We need it to replace the control flow nodes of the AST
 /// by an encoding in the `ControlFlow` enum.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ControlFlowKind {
     BreakOnly,
     BreakOrReturn,
 }
 
 // TODO: Revisit?
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct LoopState {
     pub init: Expr,
     pub body_pat: Pat,
@@ -578,7 +577,7 @@ pub struct LoopState {
 
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
 /// Describes the shape of an expression.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ExprKind {
     /// If expression.
     ///
@@ -765,7 +764,7 @@ pub enum ExprKind {
 }
 
 /// Represents the kinds of generic parameters
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum GenericParamKind {
     Lifetime,
     Type,
@@ -776,7 +775,7 @@ pub enum GenericParamKind {
 ///
 /// # Example:
 /// A bound `_: std::ops::Add<u8>`
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct TraitGoal {
     /// `std::ops::Add` in the example.
     pub trait_: GlobalId,
@@ -785,7 +784,7 @@ pub struct TraitGoal {
 }
 
 /// Represents a trait bound in a generic constraint
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct ImplIdent {
     pub goal: TraitGoal,
     pub name: Symbol,
@@ -796,7 +795,7 @@ pub struct ImplIdent {
 /// fn f<T: Foo<S = String>>(...)
 /// ```
 /// In this example `Foo` has an associated type `S`.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct ProjectionPredicate {
     pub impl_: ImplExpr,
     pub assoc_item: GlobalId,
@@ -804,7 +803,7 @@ pub struct ProjectionPredicate {
 }
 
 /// A generic constraint (lifetime, type or projection)
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum GenericConstraint {
     Lifetime(String), // TODO: Remove `String`
     Type(ImplIdent),
@@ -812,7 +811,7 @@ pub enum GenericConstraint {
 }
 
 /// A generic parameter (lifetime, type parameter or const parameter)
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct GenericParam {
     pub ident: LocalId,
     pub meta: Metadata,
@@ -820,14 +819,14 @@ pub struct GenericParam {
 }
 
 /// Generic parameters and constraints (contained between `<>` in function declarations)
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Generics {
     pub params: Vec<GenericParam>,
     pub constraints: Vec<GenericConstraint>,
 }
 
 /// Safety level of a function.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum SafetyKind {
     /// Safe function (default).
     Safe,
@@ -836,21 +835,21 @@ pub enum SafetyKind {
 }
 
 /// Represents a single attribute.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Attribute {
     pub kind: AttributeKind,
     pub span: Span,
 }
 
 /// Represents the kind of an attribute.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum AttributeKind {
     Tool { path: String, tokens: String },
     DocComment { kind: DocCommentKind, body: String },
 }
 
 /// Represents the kind of a doc comment.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum DocCommentKind {
     Line,
     Block,
@@ -860,14 +859,14 @@ pub enum DocCommentKind {
 pub type Attributes = Vec<Attribute>;
 
 /// A type with its associated span.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct SpannedTy {
     pub span: Span,
     pub ty: Ty,
 }
 
 /// A function parameter (pattern + type, e.g. `x: u8`).
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Param {
     /// Pattern part
     /// Examples: `x`, `mut y`, etc.
@@ -880,7 +879,7 @@ pub struct Param {
 
 /// A variant of an enum or struct.
 /// In our representation structs always have one variant with an argument for each field.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Variant {
     pub name: GlobalId,
     pub arguments: Vec<(GlobalId, Ty, Attributes)>,
@@ -889,7 +888,7 @@ pub struct Variant {
 }
 
 /// A top-level item in the module.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum ItemKind {
     /// A function or constant item.
     ///
@@ -1013,7 +1012,7 @@ pub enum ItemKind {
 }
 
 /// A top-level item with metadata.
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Item {
     /// The global identifier of the item.
     pub ident: GlobalId,

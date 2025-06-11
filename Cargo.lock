@@ -577,6 +577,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "hax-rust-engine-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "hax-test-harness"
 version = "0.3.1"
 dependencies = [
@@ -1225,6 +1234,7 @@ name = "rust-printer"
 version = "0.3.1"
 dependencies = [
  "hax-frontend-exporter",
+ "hax-rust-engine-macros",
  "hax-types",
  "itertools",
  "macro_rules_attribute",

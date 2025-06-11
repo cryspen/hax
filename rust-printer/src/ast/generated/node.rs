@@ -228,8 +228,7 @@ impl From<Item> for Node {
         Self::Item(item)
     }
 }
-#[derive()]
-#[macro_rules_attribute::apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum Node {
     GenericValue(GenericValue),
     PrimitiveTy(PrimitiveTy),
@@ -510,7 +509,7 @@ impl<'lt> From<&'lt Item> for NodeRef<'lt> {
     }
 }
 #[derive(Copy)]
-#[macro_rules_attribute::apply(derive_AST_base)]
+#[derive_group_for_ast_base]
 pub enum NodeRef<'lt> {
     GenericValue(&'lt GenericValue),
     PrimitiveTy(&'lt PrimitiveTy),

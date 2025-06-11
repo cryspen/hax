@@ -6,14 +6,14 @@
 
 // TODO: Revisit once we stop relying on the OCaml importer.
 
-use crate::ast::derives::*;
 use crate::symbol::Symbol;
+use hax_rust_engine_macros::*;
 use std::fmt;
 
 mod global_id {
     use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
 
-    #[apply(derive_AST)]
+    #[derive_group_for_ast]
     pub struct DefId {
         pub krate: String,
         pub path: Vec<DisambiguatedDefPathItem>,
@@ -22,35 +22,35 @@ mod global_id {
         pub kind: DefKind,
     }
 
-    use crate::ast::derives::*;
+    use hax_rust_engine_macros::*;
 
-    #[apply(derive_AST)]
+    #[derive_group_for_ast]
     struct ExplicitDefId {
         is_constructor: bool,
         def_id: DefId,
     }
 
-    #[apply(derive_AST)]
+    #[derive_group_for_ast]
     struct FreshModule {
         id: usize,
         hints: Vec<ExplicitDefId>,
         label: String,
     }
 
-    #[apply(derive_AST)]
+    #[derive_group_for_ast]
     enum ReservedSuffix {
         Pre,
         Post,
         Cast,
     }
-    #[apply(derive_AST)]
+    #[derive_group_for_ast]
     pub struct ConcreteId {
         def_id: ExplicitDefId,
         moved: Option<FreshModule>,
         suffix: Option<ReservedSuffix>,
     }
 
-    #[apply(derive_AST)]
+    #[derive_group_for_ast]
     pub enum GlobalId {
         Concrete(ConcreteId),
         Projector(ConcreteId),
@@ -140,7 +140,7 @@ mod global_id {
     }
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct LocalId(pub Symbol);
 
 impl fmt::Display for LocalId {

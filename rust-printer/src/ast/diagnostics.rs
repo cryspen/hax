@@ -3,23 +3,23 @@
 //!
 //! This module is used to attach semantic or translation errors to AST nodes.
 
-use crate::ast::derives::*;
+use hax_rust_engine_macros::*;
 use crate::ast::*;
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct Diagnostic {
     node: Box<Node>,
     info: DiagnosticInfo,
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct DiagnosticInfo {
     pub context: Context,
     pub span: Span,
     pub kind: DiagnosticInfoKind,
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum DiagnosticInfoKind {
     Custom(String),
     ImportParamWithoutPattern,
@@ -43,7 +43,7 @@ impl Diagnostic {
     }
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum Context {
     Import,
 }

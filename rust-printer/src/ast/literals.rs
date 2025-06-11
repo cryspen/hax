@@ -1,9 +1,9 @@
 //! Literal and numeric type kinds used in constant expressions.
 
-use super::derives::*;
 use crate::symbol::Symbol;
+use hax_rust_engine_macros::*;
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum IntSize {
     S8,
     S16,
@@ -39,19 +39,19 @@ impl From<UintTy> for IntSize {
     }
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum Signedness {
     Signed,
     Unsigned,
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub struct IntKind {
     pub size: IntSize,
     pub signedness: Signedness,
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum FloatKind {
     F16,
     F32,
@@ -59,7 +59,7 @@ pub enum FloatKind {
     F128,
 }
 
-#[apply(derive_AST)]
+#[derive_group_for_ast]
 pub enum Literal {
     String(Symbol),
     Char(char),
