@@ -102,6 +102,7 @@ mod global_id {
         fn from_string(_name: &str) -> Self {
             todo!()
         }
+        /// Render this global identifier as a name
         pub fn name(&self) -> String {
             todo!()
         }
@@ -109,24 +110,31 @@ mod global_id {
 
     // TODO: should be consts
     impl GlobalId {
+        /// Name for slice constructor
         pub fn slice() -> Self {
             Self::from_string("Slice")
         }
+        /// Name for array constructor
         pub fn array() -> Self {
             Self::from_string("Array")
         }
+        /// Name for array index function
         pub fn index() -> Self {
             Self::from_string("index")
         }
+        /// Name for a tuple field
         pub fn tuple_field(field: usize) -> Self {
             Self::from_string(&format!("tuple_field_{field}"))
         }
+        /// Name for a tuple pattern
         pub fn tuple_pat() -> Self {
             Self::from_string("tuple_pat")
         }
+        /// Name for `Box::new`
         pub fn box_new() -> Self {
             Self::from_string("Box::new")
         }
+        /// Name for a binary operator
         pub fn bin_op(bin_op: &hax_frontend_exporter::BinOp) -> Self {
             Self::from_string(match bin_op {
                 hax_frontend_exporter::BinOp::Add => "add",
@@ -152,6 +160,7 @@ mod global_id {
                 hax_frontend_exporter::BinOp::SubWithOverflow => "sub_with_overflow",
             })
         }
+        /// Name for a unary operator
         pub fn un_op(un_op: &hax_frontend_exporter::UnOp) -> Self {
             Self::from_string(match un_op {
                 hax_frontend_exporter::UnOp::Neg => "neg",
@@ -159,18 +168,21 @@ mod global_id {
                 _ => unimplemented!(),
             })
         }
+        /// Name for a logic operator
         pub fn logical_op(logical_op: &hax_frontend_exporter::LogicalOp) -> Self {
             Self::from_string(match logical_op {
                 hax_frontend_exporter::LogicalOp::And => "and",
                 hax_frontend_exporter::LogicalOp::Or => "or",
             })
         }
+        /// Name for `never_to_any`
         pub fn never_to_any() -> Self {
             Self::from_string("never_to_any")
         }
     }
 }
 
+/// Local identifier
 #[derive_group_for_ast]
 pub struct LocalId(pub Symbol);
 

@@ -230,6 +230,7 @@ impl From<Item> for Fragment {
 }
 
 /// An owned fragment of the AST: this enumeration can represent any node in the AST.
+#[allow(missing_docs)]
 #[derive_group_for_ast]
 pub enum Fragment {
     GenericValue(GenericValue),
@@ -514,6 +515,7 @@ impl<'lt> From<&'lt Item> for FragmentRef<'lt> {
 /// A borrowed fragment of the AST: this enumeration can represent any node in the AST.
 #[derive(Copy)]
 #[derive_group_for_ast_base]
+#[allow(missing_docs)]
 pub enum FragmentRef<'lt> {
     GenericValue(&'lt GenericValue),
     PrimitiveTy(&'lt PrimitiveTy),

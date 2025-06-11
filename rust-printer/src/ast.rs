@@ -852,7 +852,9 @@ pub enum AttributeKind {
 /// Represents the kind of a doc comment.
 #[derive_group_for_ast]
 pub enum DocCommentKind {
+    /// Single line comment (`//...`)
     Line,
+    /// Block comment (`/*...*/`)
     Block,
 }
 
@@ -862,7 +864,9 @@ pub type Attributes = Vec<Attribute>;
 /// A type with its associated span.
 #[derive_group_for_ast]
 pub struct SpannedTy {
+    /// Span of origin
     pub span: Span,
+    /// Type
     pub ty: Ty,
 }
 
@@ -882,9 +886,13 @@ pub struct Param {
 /// In our representation structs always have one variant with an argument for each field.
 #[derive_group_for_ast]
 pub struct Variant {
+    /// Name of the variant
     pub name: GlobalId,
+    /// Fields of this variant (named or anonymous)
     pub arguments: Vec<(GlobalId, Ty, Attributes)>,
+    /// True if fields are named
     pub is_record: bool,
+    /// Attributes of the variant
     pub attributes: Attributes,
 }
 
@@ -931,8 +939,17 @@ pub enum ItemKind {
     /// type A = u8;
     /// ```
     TyAlias {
+        /// Name of the alias
+        ///
+        /// # Example:
+        /// `A`
         name: GlobalId,
+        /// Generic arguments and constraints
         generics: Generics,
+        /// Original type
+        ///
+        /// # Example:
+        /// `u8`
         ty: Ty,
     },
 
@@ -944,9 +961,19 @@ pub enum ItemKind {
     /// struct S {f: u8}
     /// ```
     Type {
+        /// Name of this type
+        ///
+        /// # Example:
+        /// `A`, `S`
         name: GlobalId,
+        /// Generic parameters and constraints
         generics: Generics,
+        /// Variants
+        ///
+        /// # Example:
+        /// `{B, C}`
         variants: Vec<Variant>,
+        /// Is this a struct (or an enum)
         is_struct: bool,
     },
 
@@ -960,8 +987,20 @@ pub enum ItemKind {
     /// }
     /// ```
     Trait {
+        /// Name of this trait
+        ///
+        /// # Example:
+        /// `T`
         name: GlobalId,
+        /// Generic parameters and constraints
+        ///
+        /// # Example:
+        /// `<A>`
         generics: Generics,
+        /// Items required to implement the trait
+        ///
+        /// # Example:
+        /// `type Assoc;`, `fn m ...;`
         items: Vec<TraitItem>,
     },
 
@@ -977,38 +1016,61 @@ pub enum ItemKind {
     /// }
     /// ```
     Impl {
+        /// Generic arguments and constraints
         generics: Generics,
+        /// The type we implement the trait for
+        ///
+        /// # Example:
+        /// `u16`
         self_ty: Ty,
+        /// Instantiated trait that is being implemented
+        ///
+        /// # Example:
+        /// `T<u8>`
         of_trait: (GlobalId, Vec<GenericValue>),
+        /// Items in this impl
+        ///
+        /// # Example:
+        /// `fn m ...`, `type Assoc ...`
         items: Vec<ImplItem>,
+        /// Implementations of traits required for this impl
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
+        /// Safe or unsafe
         safety: SafetyKind,
     },
 
     /// Internal node introduced by phases, corresponds to an alias to any item.
     Alias {
+        /// New name
         name: GlobalId,
+        /// Original name
         item: GlobalId,
     },
 
     // TODO: Should we keep `Use`?
     /// A `use` statement
     Use {
+        /// Path to used item(s)
         path: Vec<String>,
+        /// Comes from external crate
         is_external: bool,
+        /// Optional `as`
         rename: Option<String>,
     },
 
     /// A `Quote` node is inserted by phase TransformHaxLibInline to deal with some `hax_lib` features.
     /// For example insertion of verbatim backend code.
     Quote {
+        /// Content of the quote
         quote: Quote,
+        /// Description of the quote target position
         origin: ItemQuoteOrigin,
     },
 
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
 
+    /// Item that is not implemented yet
     NotImplementedYet,
 }
 
@@ -1023,6 +1085,7 @@ pub struct Item {
     pub meta: Metadata,
 }
 
+/// Traits for utilities on AST data types
 pub mod traits {
     use super::*;
     /// Marks AST data types that carry metadata (span + attributes)
