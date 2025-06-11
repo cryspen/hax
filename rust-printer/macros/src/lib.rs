@@ -1,4 +1,4 @@
-//! Helper crate providing procedular macros for the Rust engine of hax.
+//! Helper crate providing procedural macros for the Rust engine of hax.
 //!
 //! Currently it provides the following.
 //!  - Macros for deriving groups of traits.
