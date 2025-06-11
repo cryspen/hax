@@ -500,7 +500,7 @@ pub enum QuoteContent {
     Verbatim(String),
     Expr(Expr),
     Pattern(Pat),
-    Typ(Ty),
+    Ty(Ty),
 }
 
 /// Represents an inlined piece of backend code
