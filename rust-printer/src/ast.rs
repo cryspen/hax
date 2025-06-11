@@ -1208,21 +1208,25 @@ pub enum ItemKind {
         /// # Example:
         /// `add`
         name: GlobalId,
+
         /// The generic arguments and constraints of the function.
         ///
         /// # Example:
         /// the generic type `T` and the constraint `T: Clone`
         generics: Generics,
+
         /// The body of the function
         ///
         /// # Example:
         /// `x + y`
         body: Expr,
+
         /// The parameters of the function.
         ///
         /// # Example:
         /// `x: i32, y: i32`
         params: Vec<Param>,
+
         /// The safety of the function.
         safety: SafetyKind,
     },
@@ -1239,8 +1243,10 @@ pub enum ItemKind {
         /// # Example:
         /// `A`
         name: GlobalId,
+
         /// Generic arguments and constraints
         generics: Generics,
+
         /// Original type
         ///
         /// # Example:
@@ -1261,13 +1267,16 @@ pub enum ItemKind {
         /// # Example:
         /// `A`, `S`
         name: GlobalId,
+
         /// Generic parameters and constraints
         generics: Generics,
+
         /// Variants
         ///
         /// # Example:
         /// `{B, C}`
         variants: Vec<Variant>,
+
         /// Is this a struct (or an enum)
         is_struct: bool,
     },
@@ -1287,11 +1296,13 @@ pub enum ItemKind {
         /// # Example:
         /// `T`
         name: GlobalId,
+
         /// Generic parameters and constraints
         ///
         /// # Example:
         /// `<A>`
         generics: Generics,
+
         /// Items required to implement the trait
         ///
         /// # Example:
@@ -1313,23 +1324,28 @@ pub enum ItemKind {
     Impl {
         /// Generic arguments and constraints
         generics: Generics,
+
         /// The type we implement the trait for
         ///
         /// # Example:
         /// `u16`
         self_ty: Ty,
+
         /// Instantiated trait that is being implemented
         ///
         /// # Example:
         /// `T<u8>`
         of_trait: (GlobalId, Vec<GenericValue>),
+
         /// Items in this impl
         ///
         /// # Example:
         /// `fn m ...`, `type Assoc ...`
         items: Vec<ImplItem>,
+
         /// Implementations of traits required for this impl
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
+
         /// Safe or unsafe
         safety: SafetyKind,
     },
@@ -1347,8 +1363,10 @@ pub enum ItemKind {
     Use {
         /// Path to used item(s)
         path: Vec<String>,
+
         /// Comes from external crate
         is_external: bool,
+
         /// Optional `as`
         rename: Option<String>,
     },
@@ -1358,6 +1376,7 @@ pub enum ItemKind {
     Quote {
         /// Content of the quote
         quote: Quote,
+
         /// Description of the quote target position
         origin: ItemQuoteOrigin,
     },
