@@ -19,7 +19,6 @@ pub mod span;
 use crate::symbol::Symbol;
 pub use diagnostics::Diagnostic;
 pub use fragment::Fragment;
-use hax_frontend_exporter::Mutability;
 pub use hax_rust_engine_macros::*;
 pub use identifiers::*;
 pub use literals::*;
@@ -882,7 +881,7 @@ pub enum ExprKind {
     /// `*const u8`
     AddressOf {
         /// Is the raw pointer mutable?
-        mutability: Mutability,
+        mutable: bool,
         /// The expression on which we take a pointer
         inner: Expr,
     },
