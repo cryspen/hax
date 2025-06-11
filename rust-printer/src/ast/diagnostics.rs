@@ -8,7 +8,7 @@ use hax_rust_engine_macros::*;
 
 #[derive_group_for_ast]
 pub struct Diagnostic {
-    node: Box<Node>,
+    node: Box<Fragment>,
     info: DiagnosticInfo,
 }
 
@@ -29,10 +29,10 @@ impl Diagnostic {
     pub fn info(&self) -> &DiagnosticInfo {
         &self.info
     }
-    pub fn node(&self) -> &Node {
+    pub fn node(&self) -> &Fragment {
         &self.node
     }
-    pub fn new(node: Node, info: DiagnosticInfo) -> Self {
+    pub fn new(node: Fragment, info: DiagnosticInfo) -> Self {
         eprintln!("Todo, error reporting");
         eprintln!("node={node:#?}");
         eprintln!("info={info:#?}");

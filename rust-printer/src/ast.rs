@@ -11,19 +11,19 @@
 //!  5. This AST should be suitable for AST transformations.
 
 pub mod diagnostics;
+pub mod fragment;
 pub mod helper;
 pub mod identifiers;
 pub mod literals;
-pub mod node;
 pub mod span;
 
 use crate::symbol::Symbol;
 pub use diagnostics::Diagnostic;
+pub use fragment::Fragment;
 use hax_frontend_exporter::Mutability;
 pub use hax_rust_engine_macros::*;
 pub use identifiers::*;
 pub use literals::*;
-pub use node::Node;
 pub use span::Span;
 
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).

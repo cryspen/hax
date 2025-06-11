@@ -55,7 +55,7 @@ fn translate_ty(ty: &src::Ty, span: dst::Span) -> dst::Ty {
             args: translate_generic_args(generic_args, span),
         },
         ty => dst::Ty::Error(Diagnostic::new(
-            dst::Node::Unknown(format!("Rust THIR: ty: {ty:?}")),
+            dst::Fragment::Unknown(format!("Rust THIR: ty: {ty:?}")),
             DiagnosticInfo {
                 context: Context::Import,
                 span,
@@ -84,7 +84,7 @@ fn translate_pat(pat: &src::Pat) -> dst::Pat {
                 .collect(),
         } */,
         pat => dst::PatKind::Error(Diagnostic::new(
-            dst::Node::Unknown(format!("Rust THIR: pat: {pat:?}")),
+            dst::Fragment::Unknown(format!("Rust THIR: pat: {pat:?}")),
             DiagnosticInfo {
                 context: Context::Import,
                 span,
@@ -557,7 +557,7 @@ pub fn translate_item_kind(
                 Ok(params) => params,
                 Err(diag_info) => {
                     return dst::ItemKind::Error(Diagnostic::new(
-                        dst::Node::Unknown(format!("Rust THIR: param in function <{name:?}>")),
+                        dst::Fragment::Unknown(format!("Rust THIR: param in function <{name:?}>")),
                         diag_info,
                     ))
                 }
@@ -572,7 +572,7 @@ pub fn translate_item_kind(
             }
         }
         _ => dst::ItemKind::Error(Diagnostic::new(
-            dst::Node::Unknown(format!("Rust THIR: item: {item_kind:?}")),
+            dst::Fragment::Unknown(format!("Rust THIR: item: {item_kind:?}")),
             DiagnosticInfo {
                 context: Context::Import,
                 span,
