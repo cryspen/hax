@@ -1125,9 +1125,19 @@ pub struct Attribute {
 #[derive_group_for_ast]
 pub enum AttributeKind {
     /// A tool attribute `#[path(tokens)]`
-    Tool { path: String, tokens: String },
+    Tool {
+        /// The path to the tool
+        path: String,
+        /// The payload        
+        tokens: String,
+    },
     /// A doc comment
-    DocComment { kind: DocCommentKind, body: String },
+    DocComment {
+        /// What kind of comment? (single lines, block)
+        kind: DocCommentKind,
+        /// The contents of the comment
+        body: String,
+    },
 }
 
 /// Represents the kind of a doc comment.
