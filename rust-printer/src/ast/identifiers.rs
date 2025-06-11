@@ -102,10 +102,6 @@ mod global_id {
         fn from_string(_name: &str) -> Self {
             todo!()
         }
-        // TODO: drop me
-        pub fn to_string(&self) -> String {
-            todo!()
-        }
         pub fn name(&self) -> String {
             todo!()
         }

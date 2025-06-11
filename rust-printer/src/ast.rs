@@ -63,9 +63,11 @@ pub enum PrimitiveTy {
 #[derive_group_for_ast]
 pub struct Region;
 
+pub type Ty = Box<TyKind>;
+
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
-pub enum Ty {
+pub enum TyKind {
     /// A primitive type.
     ///
     /// # Example:
@@ -91,7 +93,7 @@ pub enum Ty {
     ///
     /// # Example:
     /// `fn(i32) -> bool` or `Fn(i32) -> bool`
-    Arrow { inputs: Vec<Ty>, output: Box<Ty> },
+    Arrow { inputs: Vec<Ty>, output: Ty },
 
     // TODO: Should we keep this type?
     /// A reference type.
@@ -99,7 +101,7 @@ pub enum Ty {
     /// # Example:
     /// `&i32`, `&mut i32`
     Ref {
-        inner: Box<Ty>,
+        inner: Ty,
         mutable: bool,
         region: Region,
     },
@@ -112,13 +114,13 @@ pub enum Ty {
     ///
     /// # Example:
     /// `&[i32]`
-    Slice(Box<Ty>),
+    Slice(Ty),
 
     /// An array type.
     ///
     /// # Example:
     /// `&[i32; 10]`
-    Array { ty: Box<Ty>, length: Box<Expr> },
+    Array { ty: Ty, length: Box<Expr> },
 
     /// A raw pointer type
     RawPointer,
