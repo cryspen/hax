@@ -1219,9 +1219,7 @@ version = "0.3.1"
 dependencies = [
  "hax-frontend-exporter",
  "hax-rust-engine-macros",
- "hax-types",
  "serde",
- "serde_json",
 ]
 
 [[package]]
