@@ -128,170 +128,24 @@ end
 
 module ToRustAST = struct
   module A = Types
-  module B = Rust_printer_types
-
-  let disambiguated_def_path_item
-      ({ data; disambiguator } : A.disambiguated_def_path_item) :
-      B.disambiguated_def_path_item =
-    let data : B.def_path_item =
-      match data with
-      | Impl -> Impl
-      | ForeignMod -> ForeignMod
-      | Use -> Use
-      | GlobalAsm -> GlobalAsm
-      | Closure -> Closure
-      | Ctor -> Ctor
-      | AnonConst -> AnonConst
-      | PromotedConst -> PromotedConst
-      | OpaqueTy -> OpaqueTy
-      | CrateRoot { name } -> CrateRoot { name }
-      | TypeNs s -> TypeNs s
-      | ValueNs s -> ValueNs s
-      | MacroNs s -> MacroNs s
-      | LifetimeNs s -> LifetimeNs s
-    in
-    { data; disambiguator }
-
-  let safety : A.safety -> B.safety = function Unsafe -> Unsafe | Safe -> Safe
-
-  let macro_kind : A.macro_kind -> B.macro_kind = function
-    | Bang -> Bang
-    | Attr -> Attr
-    | Derive -> Derive
-
-  let ctor_of : A.ctor_of -> B.ctor_of = function
-    | Struct -> Struct
-    | Variant -> Variant
-
-  let ctor_kind : A.ctor_kind -> B.ctor_kind = function
-    | Fn -> Fn
-    | Const -> Const
-
-  let def_kind : A.def_kind -> B.def_kind = function
-    | Mod -> Mod
-    | Struct -> Struct
-    | Union -> Union
-    | Enum -> Enum
-    | Variant -> Variant
-    | Trait -> Trait
-    | TyAlias -> TyAlias
-    | ForeignTy -> ForeignTy
-    | TraitAlias -> TraitAlias
-    | AssocTy -> AssocTy
-    | TyParam -> TyParam
-    | Fn -> Fn
-    | Const -> Const
-    | ConstParam -> ConstParam
-    | AssocFn -> AssocFn
-    | AssocConst -> AssocConst
-    | ExternCrate -> ExternCrate
-    | Use -> Use
-    | ForeignMod -> ForeignMod
-    | AnonConst -> AnonConst
-    | InlineConst -> InlineConst
-    | OpaqueTy -> OpaqueTy
-    | Field -> Field
-    | LifetimeParam -> LifetimeParam
-    | GlobalAsm -> GlobalAsm
-    | Closure -> Closure
-    | SyntheticCoroutineBody -> SyntheticCoroutineBody
-    | Static { mutability; nested; safety = s } ->
-        Static { mutability; nested; safety = safety s }
-    | Ctor (o, k) -> Ctor (ctor_of o, ctor_kind k)
-    | Macro k -> Macro (macro_kind k)
-    | PromotedConst -> PromotedConst
-    | Impl { of_trait } -> Impl { of_trait }
+  module B = Rust_engine_types
 
   let rec def_id_contents_to_rust_ast
       ({ krate; path; parent; kind; _ } : A.def_id_contents) : B.def_id =
-    let path = List.map ~f:disambiguated_def_path_item path in
     let f (o : A.def_id) = def_id_contents_to_rust_ast o.contents.value in
     let parent = Option.map ~f parent in
-    { krate; path; parent; kind = def_kind kind }
+    { krate; path; parent; kind }
 
   let to_rust_ast ({ is_constructor; def_id } : t) : B.explicit_def_id =
     { is_constructor; def_id = def_id_contents_to_rust_ast def_id }
 end
 
 module FromRustAST = struct
-  module A = Rust_printer_types
+  module A = Rust_engine_types
   module B = Types
-
-  let disambiguated_def_path_item
-      ({ data; disambiguator } : A.disambiguated_def_path_item) :
-      B.disambiguated_def_path_item =
-    let data : B.def_path_item =
-      match data with
-      | Impl -> Impl
-      | ForeignMod -> ForeignMod
-      | Use -> Use
-      | GlobalAsm -> GlobalAsm
-      | Closure -> Closure
-      | Ctor -> Ctor
-      | AnonConst -> AnonConst
-      | PromotedConst -> PromotedConst
-      | OpaqueTy -> OpaqueTy
-      | CrateRoot { name } -> CrateRoot { name }
-      | TypeNs s -> TypeNs s
-      | ValueNs s -> ValueNs s
-      | MacroNs s -> MacroNs s
-      | LifetimeNs s -> LifetimeNs s
-    in
-    { data; disambiguator }
-
-  let safety : A.safety -> B.safety = function Unsafe -> Unsafe | Safe -> Safe
-
-  let macro_kind : A.macro_kind -> B.macro_kind = function
-    | Bang -> Bang
-    | Attr -> Attr
-    | Derive -> Derive
-
-  let ctor_of : A.ctor_of -> B.ctor_of = function
-    | Struct -> Struct
-    | Variant -> Variant
-
-  let ctor_kind : A.ctor_kind -> B.ctor_kind = function
-    | Fn -> Fn
-    | Const -> Const
-
-  let def_kind : A.def_kind -> B.def_kind = function
-    | Mod -> Mod
-    | Struct -> Struct
-    | Union -> Union
-    | Enum -> Enum
-    | Variant -> Variant
-    | Trait -> Trait
-    | TyAlias -> TyAlias
-    | ForeignTy -> ForeignTy
-    | TraitAlias -> TraitAlias
-    | AssocTy -> AssocTy
-    | TyParam -> TyParam
-    | Fn -> Fn
-    | Const -> Const
-    | ConstParam -> ConstParam
-    | AssocFn -> AssocFn
-    | AssocConst -> AssocConst
-    | ExternCrate -> ExternCrate
-    | Use -> Use
-    | ForeignMod -> ForeignMod
-    | AnonConst -> AnonConst
-    | InlineConst -> InlineConst
-    | OpaqueTy -> OpaqueTy
-    | Field -> Field
-    | LifetimeParam -> LifetimeParam
-    | GlobalAsm -> GlobalAsm
-    | Closure -> Closure
-    | SyntheticCoroutineBody -> SyntheticCoroutineBody
-    | Static { mutability; nested; safety = s } ->
-        Static { mutability; nested; safety = safety s }
-    | Ctor (o, k) -> Ctor (ctor_of o, ctor_kind k)
-    | Macro k -> Macro (macro_kind k)
-    | PromotedConst -> PromotedConst
-    | Impl { of_trait } -> Impl { of_trait }
 
   let rec def_id_contents_to_rust_ast
       ({ krate; path; parent; kind; _ } : A.def_id) : B.def_id_contents =
-    let path = List.map ~f:disambiguated_def_path_item path in
     let f (o : A.def_id) : B.def_id =
       let contents : B.node_for__def_id_contents =
         { value = def_id_contents_to_rust_ast o; id = Int64.of_int (-1) }
@@ -303,7 +157,7 @@ module FromRustAST = struct
       krate;
       path;
       parent;
-      kind = def_kind kind;
+      kind;
       index = (Int64.of_int (-1), Int64.of_int (-1), None);
       is_local = false;
     }
