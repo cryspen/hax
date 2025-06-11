@@ -3,8 +3,8 @@
 //!
 //! This module is used to attach semantic or translation errors to AST nodes.
 
-use hax_rust_engine_macros::*;
 use crate::ast::*;
+use hax_rust_engine_macros::*;
 
 #[derive_group_for_ast]
 pub struct Diagnostic {
