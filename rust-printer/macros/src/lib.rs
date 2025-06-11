@@ -52,7 +52,10 @@ pub fn derive_group_for_ast(_attr: TokenStream, item: TokenStream) -> TokenStrea
 /// Derive the necessary [de]serialization related traits for nodes in the AST.
 #[proc_macro_attribute]
 pub fn derive_group_for_ast_serialization(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    add_derive(item, quote! {::serde::Deserialize, ::serde::Serialize})
+    add_derive(
+        item,
+        quote! {::serde::Deserialize, ::serde::Serialize, ::schemars::JsonSchema},
+    )
 }
 
 /// Derive the basic necessary traits for nodes in the AST.
