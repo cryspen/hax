@@ -161,6 +161,7 @@ dependencies = [
  "paste",
  "path-clean",
  "prettyplease",
+ "rust-printer",
  "rustup-toolchain",
  "schemars",
  "serde",
@@ -1220,6 +1221,7 @@ dependencies = [
  "hax-frontend-exporter",
  "hax-rust-engine-macros",
  "hax-types",
+ "schemars",
  "serde",
  "serde_json",
 ]

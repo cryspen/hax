@@ -65,7 +65,7 @@ pub enum Literal {
     Char(char),
     Bool(bool),
     Int {
-        value: u128,
+        value: Symbol,
         negative: bool,
         kind: IntKind,
     },
