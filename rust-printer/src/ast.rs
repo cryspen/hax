@@ -17,12 +17,12 @@ pub mod literals;
 pub mod span;
 
 use crate::symbol::Symbol;
-pub use diagnostics::Diagnostic;
-pub use fragment::Fragment;
-pub use hax_rust_engine_macros::*;
-pub use identifiers::*;
-pub use literals::*;
-pub use span::Span;
+use diagnostics::Diagnostic;
+use fragment::Fragment;
+use hax_rust_engine_macros::*;
+use identifiers::*;
+use literals::*;
+use span::Span;
 
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
 #[derive_group_for_ast]
