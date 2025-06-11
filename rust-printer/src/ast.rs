@@ -271,7 +271,7 @@ pub enum PatKind {
     ///
     /// # Example:
     /// `p : ty`
-    Ascription { ty: Ty, typ_span: Span, pat: Pat },
+    Ascription { pat: Pat, ty: SpannedTy },
 
     /// An or pattern
     ///
