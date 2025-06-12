@@ -27,6 +27,9 @@ module Fresh_module : sig
 
   val to_mod_path : t -> View.ModPath.t
   (** Compute a module path for a fresh module. *)
+
+  val to_rust_ast : t -> Rust_engine_types.fresh_module
+  val from_rust_ast : Rust_engine_types.fresh_module -> t
 end = struct
   open View
 
@@ -111,6 +114,21 @@ end = struct
     |> snd |> Option.value_exn
 
   let get_path_hints { hints; _ } = hints
+
+  let to_rust_ast ({ id; hints; label } : t) : Rust_engine_types.fresh_module =
+    {
+      id = Int.to_string id;
+      hints = List.map ~f:Explicit_def_id.to_rust_ast hints;
+      label;
+    }
+
+  let from_rust_ast ({ id; hints; label } : Rust_engine_types.fresh_module) : t
+      =
+    {
+      id = Int.of_string id;
+      hints = List.map ~f:Explicit_def_id.from_rust_ast hints;
+      label;
+    }
 end
 
 type reserved_suffix = [ `Cast | `Pre | `Post ]
@@ -743,3 +761,27 @@ let matches_namespace (ns : Types.namespace) (did : t) : bool =
     | _ -> false
   in
   aux ns.chunks path
+
+let to_rust_ast ({ def_id; moved; suffix } : t) : Rust_engine_types.concrete_id
+    =
+  let moved = Option.map ~f:Fresh_module.to_rust_ast moved in
+  let suffix =
+    Option.map
+      ~f:(fun s ->
+        match s with
+        | `Cast -> Rust_engine_types.Cast
+        | `Pre -> Rust_engine_types.Pre
+        | `Post -> Rust_engine_types.Post)
+      suffix
+  in
+  { def_id = Explicit_def_id.to_rust_ast def_id; moved; suffix }
+
+let from_rust_ast ({ def_id; moved; suffix } : Rust_engine_types.concrete_id) :
+    t =
+  let moved = Option.map ~f:Fresh_module.from_rust_ast moved in
+  let suffix =
+    Option.map
+      ~f:(fun s -> match s with Cast -> `Cast | Pre -> `Pre | Post -> `Post)
+      suffix
+  in
+  { def_id = Explicit_def_id.from_rust_ast def_id; moved; suffix }

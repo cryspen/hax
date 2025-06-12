@@ -125,3 +125,46 @@ module ImplInfoStore = struct
   let lookup_raw (impl_def_id : t) : Types.impl_infos option =
     find (to_def_id impl_def_id)
 end
+
+module ToRustAST = struct
+  module A = Types
+  module B = Rust_engine_types
+
+  let rec def_id_contents_to_rust_ast
+      ({ krate; path; parent; kind; _ } : A.def_id_contents) : B.def_id =
+    let f (o : A.def_id) = def_id_contents_to_rust_ast o.contents.value in
+    let parent = Option.map ~f parent in
+    { krate; path; parent; kind }
+
+  let to_rust_ast ({ is_constructor; def_id } : t) : B.explicit_def_id =
+    { is_constructor; def_id = def_id_contents_to_rust_ast def_id }
+end
+
+module FromRustAST = struct
+  module A = Rust_engine_types
+  module B = Types
+
+  let rec def_id_contents_to_rust_ast
+      ({ krate; path; parent; kind; _ } : A.def_id) : B.def_id_contents =
+    let f (o : A.def_id) : B.def_id =
+      let contents : B.node_for__def_id_contents =
+        { value = def_id_contents_to_rust_ast o; id = Int64.of_int (-1) }
+      in
+      { contents }
+    in
+    let parent = Option.map ~f parent in
+    {
+      krate;
+      path;
+      parent;
+      kind;
+      index = (Int64.of_int (-1), Int64.of_int (-1), None);
+      is_local = false;
+    }
+
+  let to_rust_ast ({ is_constructor; def_id } : A.explicit_def_id) : t =
+    { is_constructor; def_id = def_id_contents_to_rust_ast def_id }
+end
+
+let to_rust_ast = ToRustAST.to_rust_ast
+let from_rust_ast = FromRustAST.to_rust_ast

@@ -64,7 +64,8 @@ pub enum PrimitiveTy {
 pub struct Region;
 
 /// A indirection for the representation of types.
-pub type Ty = Box<TyKind>;
+#[derive_group_for_ast]
+pub struct Ty(pub Box<TyKind>);
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
@@ -1172,7 +1173,9 @@ pub struct Param {
     /// The pattern part (left-hand side) of a parameter (`(mut x, y)` in the example).
     pub pat: Pat,
     /// The type part (right-rand side) of a parameter (`(T, u8)` in the example).
-    pub ty: SpannedTy,
+    pub ty: Ty,
+    /// The span of the type part (if available).
+    pub ty_span: Option<Span>,
     /// Optionally, some attributes present on the parameter.
     pub attributes: Attributes,
 }
@@ -1420,7 +1423,7 @@ pub mod traits {
     }
     impl<T: HasMetadata> HasSpan for T {
         fn span(&self) -> Span {
-            self.metadata().span
+            self.metadata().span.clone()
         }
     }
 
@@ -1473,7 +1476,7 @@ pub mod traits {
 
     impl HasSpan for SpannedTy {
         fn span(&self) -> Span {
-            self.span
+            self.span.clone()
         }
     }
 
