@@ -2,11 +2,15 @@
 //! interface, the rust engine can communicate with the OCaml engine, and reuse
 //! some of its components.
 
+use std::io::BufRead;
+
 use hax_frontend_exporter::ThirBody;
 use hax_types::engine_api::{
     protocol::{FromEngine, ToEngine},
     EngineOptions,
 };
+use serde::Deserialize;
+use serde_json::Deserializer;
 
 /// A query for the OCaml engine
 #[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
@@ -54,7 +58,6 @@ pub enum ExtendedToEngine {
 impl Query {
     /// Execute the query synchronously.
     pub fn execute(&self) -> Option<Response> {
-        use serde_jsonlines::BufReadExt;
         use std::io::Write;
         use std::process::Command;
 
@@ -85,12 +88,22 @@ impl Query {
 
         let mut response = None;
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());
-        for msg in stdout.json_lines() {
-            let msg = msg.expect(
+        // TODO: this should be streaming (i.e. use a `LineAsEOF` reader wrapper that consumes a reader until `\n` occurs)
+        for slice in stdout.split(b'\n') {
+            let msg = (|| {
+                let slice = slice.ok()?;
+                let mut de = Deserializer::from_slice(&slice);
+                de.disable_recursion_limit();
+                let de = serde_stacker::Deserializer::new(&mut de);
+                let msg = ExtendedFromEngine::deserialize(de);
+                msg.ok()
+            })()
+            .expect(
                 "Hax engine sent an invalid json value. \
-                            This might be caused by debug messages on stdout, \
-                            which is reserved for JSON communication with cargo-hax",
+                                This might be caused by debug messages on stdout, \
+                                which is reserved for JSON communication with cargo-hax",
             );
+
             match msg {
                 ExtendedFromEngine::Response(res) => response = Some(res),
                 ExtendedFromEngine::FromEngine(FromEngine::Exit) => break,
@@ -110,7 +123,7 @@ impl Query {
 
         let exit_status = engine_subprocess.wait().unwrap();
         if !exit_status.success() {
-            panic!("ocaml engine crashed");
+            eprintln!("ocaml engine crashed, {:#?}", exit_status);
         }
 
         response

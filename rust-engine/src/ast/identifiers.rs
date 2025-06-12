@@ -9,7 +9,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
-mod global_id {
+pub mod global_id {
     use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
 
     #[apply(derive_AST)]

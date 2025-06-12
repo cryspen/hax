@@ -1,10 +1,9 @@
 [package]
-name = "hax_engine_codegen"
-description = "Internal crate which is used to generate the file sin the `generated` directories of `hax`."
+name = "hax-rust-engine-codegen"
+description = "Internal crate which is used to generate the files in the `generated` directories of `hax`."
 version = "0.1.0"
 edition = "2024"
-
-[workspace]
+publish = false
 
 [dependencies]
 itertools = "0.14.0"
@@ -12,12 +11,12 @@ prettyplease = "0.2.33"
 proc-macro2 = "1.0.95"
 quote = "1.0.40"
 syn = { version = "2", features = [
-            "full",
-            "visit",
-            "visit-mut",
-            "derive",
-            "printing",
-            "extra-traits",
-            "parsing",
-            "full",
-        ] }
+    "full",
+    "visit",
+    "visit-mut",
+    "derive",
+    "printing",
+    "extra-traits",
+    "parsing",
+    "full",
+] }
