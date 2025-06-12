@@ -123,3 +123,19 @@ _pager:
 @book:
   echo "We moved out from mdbook: please run 'just docs'"
   exit 1
+
+# Rust engine code generation
+codegen:
+  #!/usr/bin/env bash
+  echo 'Run `rust-engine/codegen`'
+  cd rust-engine/codegen
+  cargo run --quiet
+  cd -
+  echo ''
+  echo 'Regenerate names'
+  cd engine/names
+  NAMES_MODULE=../../rust-engine/src/generated/names.rs
+  export HAX_RUST_ENGINE_GENERATE_NAMES="$NAMES_MODULE"
+  export HAX_ENGINE_BINARY=hax-rust-engine
+  cargo hax into -d i fstar
+  rustfmt "$NAMES_MODULE"

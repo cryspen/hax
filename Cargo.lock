@@ -158,7 +158,7 @@ dependencies = [
  "hax-types",
  "inquire",
  "is-terminal",
- "itertools",
+ "itertools 0.11.0",
  "paste",
  "path-clean",
  "prettyplease",
@@ -448,7 +448,7 @@ checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
 name = "hax-adt-into"
 version = "0.3.0"
 dependencies = [
- "itertools",
+ "itertools 0.11.0",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -474,7 +474,7 @@ dependencies = [
  "hax-frontend-exporter-options",
  "hax-lib-macros-types",
  "hax-types",
- "itertools",
+ "itertools 0.11.0",
  "serde",
  "serde_json",
  "tracing",
@@ -508,7 +508,7 @@ dependencies = [
  "extension-traits",
  "hax-adt-into",
  "hax-frontend-exporter-options",
- "itertools",
+ "itertools 0.11.0",
  "lazy_static",
  "paste",
  "schemars",
@@ -583,7 +583,7 @@ version = "0.3.0"
 dependencies = [
  "hax-frontend-exporter",
  "hax-types",
- "itertools",
+ "itertools 0.11.0",
  "macro_rules_attribute",
  "prettyplease",
  "proc-macro2",
@@ -592,6 +592,18 @@ dependencies = [
  "serde",
  "serde-jsonlines",
  "serde_json",
+ "serde_stacker",
+ "syn 2.0.101",
+]
+
+[[package]]
+name = "hax-rust-engine-codegen"
+version = "0.1.0"
+dependencies = [
+ "itertools 0.14.0",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
  "syn 2.0.101",
 ]
 
@@ -621,7 +633,7 @@ dependencies = [
  "hax-adt-into",
  "hax-frontend-exporter",
  "hax-frontend-exporter-options",
- "itertools",
+ "itertools 0.11.0",
  "miette",
  "path-clean",
  "schemars",
@@ -734,6 +746,15 @@ name = "itertools"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
 dependencies = [
  "either",
 ]
@@ -1148,10 +1169,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "quote"
-version = "1.0.37"
+name = "psm"
+version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5b9d34b8991d19d98081b46eacdd8eb58c6f2b201139f7c5f643cc155a633af"
+checksum = "6e944464ec8536cd1beb0bbfd96987eb5e3b72f2ecdafdc5c769a37f1fa2ae1f"
+dependencies = [
+ "cc",
+]
+
+[[package]]
+name = "quote"
+version = "1.0.40"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1885c039570dc00dcb4ff087a89e185fd56bae234ddc7f056a945bf36467248d"
 dependencies = [
  "proc-macro2",
 ]
@@ -1379,6 +1409,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_stacker"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "69c8defe6c780725cce4ec6ad3bd91e321baf6fa4e255df1f31e345d507ef01a"
+dependencies = [
+ "serde",
+ "stacker",
+]
+
+[[package]]
 name = "sharded-slab"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1434,6 +1474,19 @@ name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
+
+[[package]]
+name = "stacker"
+version = "0.1.21"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cddb07e32ddb770749da91081d8d0ac3a16f1a569a18b20348cd371f5dead06b"
+dependencies = [
+ "cc",
+ "cfg-if",
+ "libc",
+ "psm",
+ "windows-sys 0.59.0",
+]
 
 [[package]]
 name = "strsim"
