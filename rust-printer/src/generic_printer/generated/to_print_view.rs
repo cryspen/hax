@@ -3302,6 +3302,7 @@ impl<'a> ToPrintView<'a> for origin::Param {
             origin::Param {
                 pat,
                 ty,
+                ty_span,
                 attributes,
             } => {
                 let pat = {
@@ -3324,6 +3325,16 @@ impl<'a> ToPrintView<'a> for origin::Param {
                     };
                     context
                 };
+                let ty_span = {
+                    let context = PrintContext {
+                        value: ty_span,
+                        payload: PrintContextPayload {
+                            position: concat!(stringify!(Param), "::", stringify!(ty_span)).into(),
+                            parent: parent_context.clone(),
+                        },
+                    };
+                    context
+                };
                 let attributes = {
                     let context = PrintContext {
                         value: attributes,
@@ -3338,6 +3349,7 @@ impl<'a> ToPrintView<'a> for origin::Param {
                 destination::Param {
                     pat,
                     ty,
+                    ty_span,
                     attributes,
                 }
             }

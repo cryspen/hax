@@ -2,7 +2,7 @@ use super::ast_with_contextes::WrapTypesWithCtx;
 use super::utils;
 
 use quote::quote;
-use syn::{parse_quote, visit_mut::VisitMut, Fields, Item};
+use syn::{Fields, Item, parse_quote, visit_mut::VisitMut};
 
 pub struct GenerateBridges;
 

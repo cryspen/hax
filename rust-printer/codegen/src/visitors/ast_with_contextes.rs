@@ -1,6 +1,6 @@
 use syn::{
-    visit_mut::{self, VisitMut},
     File, GenericParam, ItemEnum, ItemStruct, LifetimeParam, Type,
+    visit_mut::{self, VisitMut},
 };
 
 use super::utils;

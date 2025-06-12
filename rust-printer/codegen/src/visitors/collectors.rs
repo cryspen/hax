@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use syn::{
-    visit::{self, Visit},
     Lifetime, Type,
+    visit::{self, Visit},
 };
 
 #[derive(Default)]
