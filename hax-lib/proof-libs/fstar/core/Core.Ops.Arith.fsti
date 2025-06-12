@@ -59,3 +59,9 @@ class t_DivAssign self rhs = {
 }
 
 let f_neg #t x = zero #t -! x
+
+/// Type class implementations
+[@FStar.Tactics.Typeclasses.tcinstance]
+val impl_float_f_mul : t_Mul float float
+[@FStar.Tactics.Typeclasses.tcinstance]
+val impl_float_f_add : t_Add float float
