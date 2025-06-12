@@ -39,7 +39,7 @@ pub struct PrintContextPayload<'a> {
     ///
     /// # Example:
     /// Consider the following:
-    /// ```rust
+    /// ```rust,ignore
     /// f x y z
     /// ```
     /// The position of `y` is "Second argument of a function application"
