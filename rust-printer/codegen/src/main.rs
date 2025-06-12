@@ -1,9 +1,9 @@
 mod generate_enum;
 mod visitors;
 
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use std::{fs, path::Path};
-use syn::{parse_file, visit_mut::VisitMut, File};
+use syn::{File, parse_file, visit_mut::VisitMut};
 
 use crate::visitors::{
     ast_with_contextes::transform_ast_with_contextes, generate_to_print_view::GenerateBridges,

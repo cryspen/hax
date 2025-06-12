@@ -241,7 +241,7 @@ module Make (FA : Features.T) = struct
             sub_pat = Option.map ~f:(fun (p, _) -> dpat p) subpat;
           }
 
-  and dspan (_span : span) : B.span = EmptyStructspan2
+  and dspan : span -> B.span = Span.to_span2
 
   and dbinding_mode (binding_mode : A.binding_mode) : B.binding_mode =
     match binding_mode with
@@ -458,12 +458,8 @@ module Make (FA : Features.T) = struct
     {
       attributes = List.map ~f:dattr p.attrs;
       pat = dpat p.pat;
-      ty =
-        {
-          ty = dty p.typ;
-          span =
-            EmptyStructspan2 (* Should use dspan, but what if option is None*);
-        };
+      ty = dty p.typ;
+      ty_span = Option.map ~f:dspan p.typ_span;
     }
 
   let dvariant (v : A.variant) : B.variant =
@@ -513,7 +509,7 @@ module Make (FA : Features.T) = struct
       meta = dmetadata ~attrs:ii.ii_attrs ii.ii_span;
     }
 
-  let ditem' (item : A.item') : B.item_kind =
+  let ditem' (item : A.item') (span : Types.span2) : B.item_kind =
     match item with
     | A.Fn { name; generics; body; params; safety } ->
         B.Fn
@@ -578,7 +574,7 @@ module Make (FA : Features.T) = struct
     | A.HaxError s ->
         let node : Types.fragment = Unknown "HaxError" in
         let info : B.diagnostic_info =
-          { context = Import; kind = Custom s; span = EmptyStructspan2 }
+          { context = Import; kind = Custom s; span }
         in
         Error { node; info }
     | A.NotImplementedYet -> B.NotImplementedYet
@@ -587,7 +583,7 @@ module Make (FA : Features.T) = struct
     [
       {
         ident = dconcrete_ident i.ident;
-        kind = ditem' i.v;
+        kind = ditem' i.v (dspan i.span);
         meta = dmetadata ~attrs:i.attrs i.span;
       };
     ]

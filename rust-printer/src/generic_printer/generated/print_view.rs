@@ -1057,7 +1057,9 @@ pub struct Param<'a> {
     #[doc = " The pattern part (left-hand side) of a parameter (`(mut x, y)` in the example)."]
     pub pat: PrintContext<'a, origin::Pat>,
     #[doc = " The type part (right-rand side) of a parameter (`(T, u8)` in the example)."]
-    pub ty: PrintContext<'a, origin::SpannedTy>,
+    pub ty: PrintContext<'a, origin::Ty>,
+    #[doc = " The span of the type part (if available)."]
+    pub ty_span: PrintContext<'a, origin::Option<origin::Span>>,
     #[doc = " Optionally, some attributes present on the parameter."]
     pub attributes: PrintContext<'a, origin::Attributes>,
 }

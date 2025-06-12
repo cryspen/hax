@@ -3,7 +3,7 @@
 use crate::visitors;
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{parse_quote, File, Generics, Ident, Item};
+use syn::{File, Generics, Ident, Item, parse_quote};
 
 /// Helper struct to generate enums out of datatypes.
 ///
