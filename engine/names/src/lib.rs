@@ -195,6 +195,12 @@ mod hax {
     // Only useful when HAX_CORE_EXTRACTION_MODE in `on`
     enum MutRef {}
 
+    struct Tuple2(u8, u8);
+    fn deref_op() {}
+    fn cast_op() {}
+    fn logical_op_and() {}
+    fn logical_op_or() {}
+
     fn while_loop() {}
     fn while_loop_cf() {}
     fn while_loop_return() {}
