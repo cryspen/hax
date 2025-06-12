@@ -16,6 +16,7 @@ members = [
      "hax-types",
      "rust-printer",
      "rust-printer/macros",
+     "rust-printer/codegen",
 ]
 exclude = ["tests", "rustc-coverage-tests", "rust-printer/tests"]
 default-members = [
