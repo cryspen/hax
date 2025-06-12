@@ -54,7 +54,6 @@ pub enum ExtendedToEngine {
 impl Query {
     /// Execute the query synchronously.
     pub fn execute(&self) -> Option<Response> {
-        use serde_jsonlines::BufReadExt;
         use std::io::Write;
         use std::process::Command;
 
@@ -85,7 +84,14 @@ impl Query {
 
         let mut response = None;
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());
-        for msg in stdout.json_lines() {
+        for msg in stdout.lines() {
+            let msg = msg.unwrap();
+
+            let mut de = Deserializer::from_str(&msg);
+            de.disable_recursion_limit();
+            let de = serde_stacker::Deserializer::new(&mut de);
+            let msg = ExtendedFromEngine::deserialize(de);
+            // for msg in json_lines(stdout) {
             let msg = msg.expect(
                 "Hax engine sent an invalid json value. \
                             This might be caused by debug messages on stdout, \
@@ -110,9 +116,111 @@ impl Query {
 
         let exit_status = engine_subprocess.wait().unwrap();
         if !exit_status.success() {
-            panic!("ocaml engine crashed");
+            eprintln!("ocaml engine crashed, {:#?}", exit_status);
         }
 
         response
     }
+}
+
+// use json_lines_stupid as json_lines;
+
+// pub fn json_lines_stupid<'a, R, T: 'static>(
+//     reader: R,
+// ) -> impl Iterator<Item = Result<T, serde_json::Error>> + 'a
+// where
+//     R: BufRead + 'a,
+//     T: Deserialize<'a>,
+// {
+//     reader.lines().flat_map(|line| line).map(|line| {
+//         let mut de = Deserializer::from_str(&line);
+//         de.disable_recursion_limit();
+//         let de = serde_stacker::Deserializer::new(&mut de);
+//         let v = T::deserialize(de).unwrap();
+//         todo!()
+//     })
+//     // let it: Vec<_> = reader
+//     //     .split(b'\n')
+//     //     .filter_map(|res| match res {
+//     //         Ok(bytes) if !bytes.is_empty() => Some(bytes),
+//     //         _ => None, // skip empty or failed lines
+//     //     })
+//     //     .collect();
+//     // it.iter().map(|bytes| {
+//     //     let mut de = Deserializer::from_slice(bytes);
+//     //     de.disable_recursion_limit();
+//     //     let de = serde_stacker::Deserializer::new(&mut de);
+//     //     Ok(T::deserialize(de).unwrap())
+//     // }).collect::Vec<_>()
+// }
+
+use serde::de::Deserialize;
+use serde_json::de::Deserializer;
+use serde_stacker;
+use std::io::{self, BufRead, Read};
+
+/// Returns an iterator over JSON values parsed one line at a time,
+/// without buffering the whole line or allocating unnecessary memory.
+pub fn json_lines_opt<'a, R, T>(
+    mut reader: R,
+) -> impl Iterator<Item = Result<T, serde_json::Error>> + 'a
+where
+    R: BufRead + 'a,
+    T: Deserialize<'a>,
+{
+    /// A reader adapter that injects an artificial EOF after the first newline.
+    pub struct LineAsEOF<'a, R: BufRead> {
+        reader: &'a mut R,
+        done: bool,
+    }
+
+    impl<'a, R: BufRead> LineAsEOF<'a, R> {
+        pub fn new(reader: &'a mut R) -> Self {
+            Self {
+                reader,
+                done: false,
+            }
+        }
+    }
+
+    impl<'a, R: BufRead> Read for LineAsEOF<'a, R> {
+        fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+            if self.done {
+                return Ok(0); // Simulate EOF
+            }
+
+            let available = self.reader.fill_buf()?;
+
+            if available.is_empty() {
+                return Ok(0); // Upstream EOF
+            }
+
+            let newline_pos = available.iter().position(|&b| b == b'\n');
+            let to_read = match newline_pos {
+                Some(pos) => {
+                    self.done = true;
+                    pos + 1 // include newline
+                }
+                None => available.len(),
+            };
+
+            let to_copy = to_read.min(buf.len());
+            buf[..to_copy].copy_from_slice(&available[..to_copy]);
+            self.reader.consume(to_copy);
+            Ok(to_copy)
+        }
+    }
+    std::iter::from_fn(move || {
+        let mut sub_reader = LineAsEOF::new(&mut reader);
+        let mut de = Deserializer::from_reader(&mut sub_reader);
+        de.disable_recursion_limit();
+
+        let de = serde_stacker::Deserializer::new(&mut de);
+
+        match T::deserialize(de) {
+            Ok(val) => Some(Ok(val)),
+            Err(err) if err.is_eof() => None, // Proper end
+            Err(err) => Some(Err(err)),
+        }
+    })
 }

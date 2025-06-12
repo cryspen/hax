@@ -220,11 +220,12 @@ end = struct
              (* we regenerate spans IDs, so that we have more precise regions *)
              let l = List.map ~f:regenerate_span_ids !l in
              let ritems =
-               List.filter_map
-                 ~f:(fun item ->
-                   try Some (ToRustAST.ditem item) with _ -> None)
-                 l
-               |> List.concat
+               []
+               (* List.filter_map
+                    ~f:(fun item ->
+                      try Some (ToRustAST.ditem item) with _ -> None)
+                    l
+                  |> List.concat *)
              in
              let rustish = Print_rust.pitems l in
              let json =
