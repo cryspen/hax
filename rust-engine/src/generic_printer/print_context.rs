@@ -48,15 +48,18 @@ where
     }
 }
 
-/// Open a context: get the value inside a [`PrintContext`].
+/// Open a print context. This pushes more in depth the context.
+/// For example, this transforms a `PrintContext<'_, Vec<T>>` in `PrintContext<'_, Vec<T>>`.
 pub trait OpenPrintContext<'a>: Sized {
-    type Inner;
-    fn open(ctx: PrintContext<'a, Self>) -> Self::Inner;
+    /// The type after opening.
+    type Out;
+    /// Opens a context.
+    fn open(ctx: PrintContext<'a, Self>) -> Self::Out;
 }
 
-impl<'a, T: OpenPrintContext<'a>> OpenPrintContext<'a> for Vec<T> {
-    type Inner = Vec<T::Inner>;
-    fn open(ctx: PrintContext<'a, Self>) -> Self::Inner {
+impl<'a, T: 'a> OpenPrintContext<'a> for Vec<T> {
+    type Out = Vec<PrintContext<'a, T>>;
+    fn open(ctx: PrintContext<'a, Self>) -> Self::Out {
         ctx.value
             .iter()
             .enumerate()
@@ -67,40 +70,34 @@ impl<'a, T: OpenPrintContext<'a>> OpenPrintContext<'a> for Vec<T> {
                     ..ctx.payload.clone()
                 },
             })
-            .map(|value| T::open(value))
             .collect()
     }
 }
-impl<'a, T: OpenPrintContext<'a>> OpenPrintContext<'a> for Box<T> {
-    type Inner = Box<T::Inner>;
-    fn open(ctx: PrintContext<'a, Self>) -> Self::Inner {
-        let value: &'a T = &*ctx.value;
-        Box::new(
-            PrintContext {
-                value,
-                payload: ctx.payload.clone(),
-            }
-            .open(),
-        )
-    }
-}
 
-impl<'a, T: OpenPrintContext<'a>> OpenPrintContext<'a> for Option<T> {
-    type Inner = Option<T::Inner>;
-    fn open(ctx: PrintContext<'a, Self>) -> Self::Inner {
-        ctx.value.as_ref().map(|value| {
-            PrintContext {
-                value,
-                payload: ctx.payload.clone(),
-            }
-            .open()
+impl<'a, T: 'a> OpenPrintContext<'a> for Box<T> {
+    type Out = Box<PrintContext<'a, T>>;
+    fn open(ctx: PrintContext<'a, Self>) -> Self::Out {
+        let value: &'a T = &*ctx.value;
+        Box::new(PrintContext {
+            value,
+            payload: ctx.payload.clone(),
         })
     }
 }
 
-impl<'a, T1: OpenPrintContext<'a>, T2: OpenPrintContext<'a>> OpenPrintContext<'a> for (T1, T2) {
-    type Inner = (T1::Inner, T2::Inner);
-    fn open(ctx: PrintContext<'a, Self>) -> Self::Inner {
+impl<'a, T: 'a> OpenPrintContext<'a> for Option<T> {
+    type Out = Option<PrintContext<'a, T>>;
+    fn open(ctx: PrintContext<'a, Self>) -> Self::Out {
+        ctx.value.as_ref().map(|value| PrintContext {
+            value,
+            payload: ctx.payload.clone(),
+        })
+    }
+}
+
+impl<'a, T1: 'a, T2: 'a> OpenPrintContext<'a> for (T1, T2) {
+    type Out = (PrintContext<'a, T1>, PrintContext<'a, T2>);
+    fn open(ctx: PrintContext<'a, Self>) -> Self::Out {
         let (v1, v2) = ctx.value;
         (
             PrintContext {
@@ -109,16 +106,14 @@ impl<'a, T1: OpenPrintContext<'a>, T2: OpenPrintContext<'a>> OpenPrintContext<'a
                     position: format!("{}._0", ctx.payload.position),
                     ..ctx.payload.clone()
                 },
-            }
-            .open(),
+            },
             PrintContext {
                 value: v2,
                 payload: PrintContextPayload {
                     position: format!("{}._1", ctx.payload.position),
                     ..ctx.payload.clone()
                 },
-            }
-            .open(),
+            },
         )
     }
 }
@@ -128,7 +123,7 @@ where
     T: OpenPrintContext<'a>,
 {
     /// Helper `open` method on contextes: this enables `c.open()` where `c` is an `PrintContext`.
-    pub fn open(self) -> T::Inner {
+    pub fn open(self) -> T::Out {
         T::open(self)
     }
 }
