@@ -49,7 +49,7 @@ fn main() {
 
     let header = "-- start \n".to_string();
     let footer = "\n -- eof \n".to_string();
-    let contents: String = header + &strings.join("\n") + &footer;
+    let contents: String = header + &strings.join("\n\n") + &footer;
 
     hax_rust_engine::hax_io::write(&hax_types::engine_api::protocol::FromEngine::File(File {
         path: "empty_module.lean".into(),

@@ -68,7 +68,25 @@ pub mod global_id {
         }
         // TODO: drop me
         pub fn to_string(&self) -> String {
-            todo!()
+            match self {
+                GlobalId::Concrete(concrete_id) => {
+                    let id = &concrete_id.def_id.def_id;
+                    let components: Vec<String> = id
+                        .clone()
+                        .path
+                        .into_iter()
+                        .map(|def| match def.clone().data {
+                            // Temporary output
+                            hax_frontend_exporter::DefPathItem::TypeNs(Some(s))
+                            | hax_frontend_exporter::DefPathItem::ValueNs(s)
+                            | hax_frontend_exporter::DefPathItem::MacroNs(s) => s.clone(),
+                            _ => panic!(),
+                        })
+                        .collect();
+                    components.join("_")
+                }
+                GlobalId::Projector(concrete_id) => todo!(),
+            }
         }
         pub fn name(&self) -> String {
             todo!()
