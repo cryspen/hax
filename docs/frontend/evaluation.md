@@ -149,7 +149,7 @@ These tests aim at increasing the confidence in the ability of hax frontend to h
 
 ### Rust printer testing
 
-This method aims at testing the quality of hax frontend's output. It uses a tool that is under development that we call the Rust printer.
+This method aims at testing the quality of hax frontend's output. It uses the Rust hax engine.
 
 This tool (written in Rust) takes the output of hax frontend (a json file describing the content of a Rust crate), it imports it as an AST (similar to the hax engine AST), and then prints this AST in Rust syntax. 
 
@@ -157,4 +157,4 @@ If the Rust code we get out of this tool is equivalent to the Rust code it was g
 
 There is no easy way of testing the full input/output equivalence so the methodology here is to test that the resulting code behaves the same as the input code with respect to relevant test cases.
 
-This work is available in the `rust-printer` folder. In the `tests` subfolder, an input file is available with tests for all Rust constructs supported by the printer (currently functions and expressions). For now these tests pass after extracting and printing the file with hax frontend and the Rust printer. This means that for the Rust constructs covered by the printer and the test file, hax frontend's extraction is correct. However this still needs to be extended to test more Rust constructs.
+This work is available in the `hax-rust-engine` folder. In the `tests` subfolder, an input file is available with tests for all Rust constructs supported by the printer (currently functions and expressions). For now these tests pass after extracting and printing the file with hax frontend and the Rust printer. This means that for the Rust constructs covered by the printer and the test file, hax frontend's extraction is correct. However this still needs to be extended to test more Rust constructs.
