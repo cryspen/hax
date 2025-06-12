@@ -30,17 +30,3 @@ where
     let payload = x.payload.clone();
     p.to_doc(x.value.to_print_view(Some(Rc::new(x.into()))), payload)
 }
-
-// impl<'a, P: Printer + ToDoc<'a, print_view::Expr<'a>>> ToDoc<'a, ast::Expr> for P {
-//     fn to_doc(&self, x: ast::Expr, p: PrintContextPayload<'a>) -> RcDoc<()> {
-//         // TODO Apply resugaring
-//         let v: print_view::Expr = (x.to_print_view(Some(Rc::new(x.into()))));
-//         self.to_doc(
-//             v,
-//             PrintContextPayload {
-//                 position: "root".to_string(),
-//                 parent: None,
-//             },
-//         )
-//     }
-// }

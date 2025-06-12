@@ -1,5 +1,7 @@
 //! Provides the trait [`ToPrintView`] and implementations for this trait.
 
+use std::ops::Deref;
+
 use super::{
     print_context::{ParentPrintContext, PrintContext, PrintContextPayload},
     print_view::origin,
@@ -22,3 +24,17 @@ pub trait ToPrintView<'a> {
 }
 
 include!("generated/to_print_view.rs");
+
+impl<'a, T> ToPrintView<'a> for Box<T>
+where
+    T: ToPrintView<'a>,
+{
+    type Out = T::Out;
+
+    fn to_print_view(
+        &'a self,
+        parent_context: Option<std::rc::Rc<ParentPrintContext<'a>>>,
+    ) -> Self::Out {
+        self.deref().to_print_view(parent_context)
+    }
+}
