@@ -1,4 +1,10 @@
-use hax_rust_engine::ocaml_engine::{ExtendedToEngine, Response};
+use hax_rust_engine::{
+    generic_printer::{
+        doc_printer::ToDoc, lean::LeanPrinter, print_context::PrintContextPayload,
+        to_print_view::ToPrintView,
+    },
+    ocaml_engine::{ExtendedToEngine, Response},
+};
 use hax_types::engine_api::File;
 
 fn main() {
@@ -23,12 +29,31 @@ fn main() {
         return;
     }
 
-    // TOOD: print items
-    let _todo = items;
+    let docs = items.iter().map(|item| {
+        LeanPrinter.to_doc(
+            item.to_print_view(None),
+            PrintContextPayload {
+                position: "root".into(),
+                parent: None,
+            },
+        )
+    });
+
+    let strings: Vec<_> = docs
+        .map(|doc| {
+            let mut w = Vec::new();
+            doc.render(80, &mut w).unwrap();
+            String::from_utf8(w).unwrap()
+        })
+        .collect();
+
+    let header = "-- start \n".to_string();
+    let footer = "\n -- eof \n".to_string();
+    let contents: String = header + &strings.join("\n") + &footer;
 
     hax_rust_engine::hax_io::write(&hax_types::engine_api::protocol::FromEngine::File(File {
         path: "empty_module.lean".into(),
-        contents: "Hello world!".into(),
+        contents: contents,
         sourcemap: None,
     }));
 }
