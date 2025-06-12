@@ -6,7 +6,7 @@ use pretty::*;
 
 use crate::ast;
 
-pub(crate) const indent: isize = 2;
+pub(crate) const INDENT: isize = 2;
 
 macro_rules! todo {
     () => {
@@ -21,39 +21,35 @@ impl Printer for LeanPrinter {
         None
     }
 }
+impl<'a: 'p, 'p> ToDoc<'a, 'p, GenericValue<'a>> for LeanPrinter {
+    fn to_doc(&'p self, x: GenericValue<'a>, p: PrintContextPayload<'a>) -> RcDoc<'p, ()> {
+        match x {
+            GenericValue::Ty(ty) => print(ty, self),
+            GenericValue::Expr(e) => print(e, self),
+            GenericValue::Lifetime => panic!(),
+        }
+    }
+}
+
+impl<'a: 'p, 'p> ToDoc<'a, 'p, SpannedTy<'a>> for LeanPrinter {
+    fn to_doc(&'p self, x: SpannedTy<'a>, p: PrintContextPayload<'a>) -> RcDoc<'p, ()> {
+        print(x.ty, self)
+    }
+}
 
 impl<'a: 'p, 'p> ToDoc<'a, 'p, Ty<'a>> for LeanPrinter {
     fn to_doc(&'p self, ty: Ty<'a>, p: PrintContextPayload<'a>) -> RcDoc<'p, ()> {
         match ty {
             Ty::Primitive(prim) => print(prim, self),
             Ty::Tuple(print_context) => panic!(),
-            Ty::App { head, args } => panic!(),
-            Ty::Arrow { inputs, output } => panic!(), // {
-            //     let inputs_docs: Vec<RcDoc<_>> = inputs
-            //         .value
-            //         .iter()
-            //         .map(|input| -> RcDoc<'_> {
-            //             print(
-            //                 PrintContext {
-            //                     value: &input.clone(),
-            //                     payload: inputs.payload.clone(),
-            //                 },
-            //                 self,
-            //             )
-            //         })
-            //         .collect();
-            //     let output_ty: ast::Ty = (**output.value).clone();
-            //     let output_doc = print(
-            //         PrintContext {
-            //             value: &output_ty,
-            //             payload: output.payload,
-            //         },
-            //         self,
-            //     );
-            //     inputs_docs.iter().rfold(output_doc, |acc, doc| {
-            //         (doc.append(RcDoc::text(" -> ")).append(acc))
-            //     })
-            // }
+            Ty::App { head, args } => RcDoc::text(head.to_string())
+                .append(" ")
+                .append(RcDoc::intersperse(
+                    args.open().into_iter().map(|arg| print(arg, self)),
+                    RcDoc::softline(),
+                ))
+                .group(),
+            Ty::Arrow { inputs, output } => panic!(),
             Ty::Ref {
                 inner,
                 mutable,
@@ -99,7 +95,7 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, IntKind> for LeanPrinter {
             (ast::IntSize::S16, ast::Signedness::Unsigned) => panic!(),
             (ast::IntSize::S32, ast::Signedness::Signed) => RcDoc::text("i32"),
             (ast::IntSize::S32, ast::Signedness::Unsigned) => panic!(),
-            (ast::IntSize::S64, ast::Signedness::Signed) => panic!(),
+            (ast::IntSize::S64, ast::Signedness::Signed) => RcDoc::text("i64"),
             (ast::IntSize::S64, ast::Signedness::Unsigned) => panic!(),
             (ast::IntSize::S128, ast::Signedness::Signed) => panic!(),
             (ast::IntSize::S128, ast::Signedness::Unsigned) => panic!(),
@@ -183,9 +179,16 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, ExprKind<'a>> for LeanPrinter {
                 generic_args,
                 bounds_impls,
                 trait_,
-            } => {
-                todo!()
-            }
+            } => RcDoc::text("(")
+                .append(print(head, self))
+                .append(RcDoc::softline())
+                .append(RcDoc::intersperse(
+                    args.open().into_iter().map(|arg| print(arg, self)),
+                    RcDoc::softline(),
+                ))
+                .append(")")
+                .nest(INDENT)
+                .group(),
             ExprKind::Literal(print_context) => print(print_context, self),
             ExprKind::Array(print_context) => panic!(),
             ExprKind::Construct {
@@ -209,8 +212,8 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, ExprKind<'a>> for LeanPrinter {
                     .append(RcDoc::hardline())
                     .append(print(body, self)),
             ),
-            ExprKind::GlobalId(print_context) => panic!(),
-            ExprKind::LocalId(print_context) => panic!(),
+            ExprKind::GlobalId(gid) => RcDoc::text(gid.value.to_string()),
+            ExprKind::LocalId(lid) => RcDoc::text(lid.value.to_string()),
             ExprKind::Ascription { e, ty } => panic!(),
             ExprKind::Assign { lhs, value } => panic!(),
             ExprKind::Loop {
@@ -257,19 +260,19 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, Pat<'a>> for LeanPrinter {
 impl<'a: 'p, 'p> ToDoc<'a, 'p, PatKind<'a>> for LeanPrinter {
     fn to_doc(&'p self, x: PatKind<'a>, p: PrintContextPayload<'a>) -> RcDoc<'p, ()> {
         match x {
-            PatKind::Wild => todo!(),
-            PatKind::Ascription { ty, typ_span, pat } => todo!(),
-            PatKind::Or { sub_pats } => todo!(),
-            PatKind::Array { args } => todo!(),
-            PatKind::Deref { sub_pat } => todo!(),
-            PatKind::Constant { lit } => todo!(),
+            PatKind::Wild => panic!(),
+            PatKind::Ascription { ty, typ_span, pat } => panic!(),
+            PatKind::Or { sub_pats } => panic!(),
+            PatKind::Array { args } => panic!(),
+            PatKind::Deref { sub_pat } => panic!(),
+            PatKind::Constant { lit } => panic!(),
             PatKind::Binding {
                 mutable,
                 var,
                 mode,
                 sub_pat,
             } => match (mutable.value, mode.value, sub_pat.value) {
-                (false, ast::BindingMode::ByValue, None) => RcDoc::text("[ident]"),
+                (false, ast::BindingMode::ByValue, None) => RcDoc::text(var.value.to_string()),
                 _ => panic!(),
             },
             PatKind::Construct {
@@ -277,8 +280,8 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, PatKind<'a>> for LeanPrinter {
                 is_record,
                 is_struct,
                 fields,
-            } => todo!(),
-            PatKind::Error(print_context) => todo!(),
+            } => panic!(),
+            PatKind::Error(print_context) => panic!(),
         }
     }
 }
@@ -312,16 +315,19 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, Item<'a>> for LeanPrinter {
 
 impl<'a: 'p, 'p> ToDoc<'a, 'p, GlobalId> for LeanPrinter {
     fn to_doc(&'p self, x: GlobalId, p: PrintContextPayload<'a>) -> RcDoc<'p, ()> {
-        match x {
-            GlobalId::Concrete(concrete_id) => RcDoc::text(format!("{:?}", concrete_id)),
-            GlobalId::Projector(concrete_id) => panic!(),
-        }
+        RcDoc::text(x.to_string())
     }
 }
 
 impl<'a: 'p, 'p> ToDoc<'a, 'p, Param<'a>> for LeanPrinter {
     fn to_doc(&'p self, x: Param<'a>, p: PrintContextPayload<'a>) -> RcDoc<'p, ()> {
-        print(x.pat, self)
+        RcDoc::text("(")
+            .append(print(x.pat, self))
+            .append(RcDoc::softline())
+            .append(":")
+            .append(RcDoc::softline())
+            .append(print(x.ty, self))
+            .append(")")
     }
 }
 
@@ -335,37 +341,36 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, ItemKind<'a>> for LeanPrinter {
                 params,
                 safety,
             } => {
-                let args = match params.value[..] {
+                let name = self.to_doc(name.value.clone(), name.payload);
+                let params: Vec<PrintContext<_>> = params.open();
+                let args = match params[..] {
                     [] => RcDoc::text(""),
-                    _ => {
-                        let docs: Vec<_> = params
-                            .value
-                            .iter()
-                            .map(|param| {
-                                print(
-                                    PrintContext {
-                                        value: param,
-                                        payload: p.clone(),
-                                    },
-                                    self,
-                                )
-                                .append(RcDoc::softline())
-                            })
-                            .collect();
-                        RcDoc::group(RcDoc::concat(docs)).append(RcDoc::hardline())
-                    }
+                    _ => RcDoc::softline().append(
+                        RcDoc::intersperse(
+                            params.into_iter().map(|param| print(param, self)),
+                            RcDoc::line(),
+                        )
+                        .nest(INDENT)
+                        .group(),
+                    ),
                 };
                 RcDoc::concat([
                     RcDoc::text("def "),
-                    RcDoc::text("[ident]"),
+                    name,
                     args,
-                    RcDoc::text(":="),
                     RcDoc::softline(),
-                    RcDoc::nest(print(body, self), indent),
+                    RcDoc::text(":"),
+                    RcDoc::softline(),
+                    print(body.value.to_print_view(None).ty, self),
+                    RcDoc::text(":="),
+                    RcDoc::line(),
+                    print(body, self),
                 ])
+                .nest(INDENT)
+                .group()
             }
             ItemKind::TyAlias { name, generics, ty } => RcDoc::text("def ")
-                .append(RcDoc::text("[type ident]"))
+                .append(RcDoc::text(name.value.to_string()))
                 .append(RcDoc::text(" : Type := "))
                 .append(print(ty, self)),
             ItemKind::Type {
@@ -399,45 +404,3 @@ impl<'a: 'p, 'p> ToDoc<'a, 'p, ItemKind<'a>> for LeanPrinter {
         }
     }
 }
-
-// #[test]
-// fn lit_test() {
-//     let ty = ast::Ty::RawPointer;
-//     let span = ast::Span(());
-//     let meta = ast::Metadata {
-//         span,
-//         attributes: vec![],
-//     };
-//     let expr_false = ast::Expr {
-//         ty: ty.clone(),
-//         kind: Box::new(ast::ExprKind::Literal(Literal::Bool(false))),
-//         meta: meta.clone(),
-//     };
-//     let expr_true = ast::Expr {
-//         ty: ty.clone(),
-//         kind: Box::new(ast::ExprKind::Literal(Literal::Bool(true))),
-//         meta: meta.clone(),
-//     };
-
-//     let expr_if = ast::Expr {
-//         ty,
-//         kind: Box::new(ast::ExprKind::If {
-//             condition: expr_true.clone(),
-//             then: expr_true.clone(),
-//             else_: Some(expr_false.clone()),
-//         }),
-//         meta: meta.clone(),
-//     };
-
-//     let ast = expr_if;
-//     let doc = LeanPrinter.to_doc(
-//         ast.to_print_view(None),
-//         PrintContextPayload {
-//             position: "root".into(),
-//             parent: None,
-//         },
-//     );
-//     let mut w = Vec::new();
-//     doc.render(80, &mut w).unwrap();
-//     println!("{}", String::from_utf8(w).unwrap());
-// }
