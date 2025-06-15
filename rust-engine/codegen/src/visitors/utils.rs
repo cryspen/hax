@@ -24,6 +24,23 @@ pub fn field_idents<'a>(fields: impl Iterator<Item = &'a Field>) -> Vec<Ident> {
         .collect()
 }
 
+/// Given an iterator of fields, this produces a vector of all its field idents.
+/// When a field is not named, we produce a proper name.
+pub fn field_typed_idents<'a>(fields: impl Iterator<Item = &'a Field>) -> Vec<(Ident, syn::Type)> {
+    fields
+        .enumerate()
+        .map(|(i, field)| {
+            (
+                field.ident.clone().unwrap_or(Ident::new(
+                    &format!("anon_field_{i}"),
+                    proc_macro2::Span::call_site(),
+                )),
+                field.ty.clone(),
+            )
+        })
+        .collect()
+}
+
 /// Produces enum or struct payloads given a value `Fields`.
 /// For instance, given the fields `[x:T, y:U]` (e.g. a struct `S {x: T, y: U}`),
 /// we produce `{x, y}`, and given [<anon>:T, <anon>:U] (e.g. a struct `S(T, U)`),

@@ -19,3 +19,4 @@ syn = { version = "2", features = [
     "parsing",
     "full",
 ] }
+walkdir = "2.3"

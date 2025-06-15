@@ -66,3 +66,9 @@ pub fn derive_group_for_ast_base(_attr: TokenStream, item: TokenStream) -> Token
         quote! {Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord},
     )
 }
+
+/// Marker.
+#[proc_macro_attribute]
+pub fn visitable(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    item
+}

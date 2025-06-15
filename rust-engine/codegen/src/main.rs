@@ -1,16 +1,17 @@
 mod generate_enum;
-mod visitors;
+mod generate_visitors;
+pub(crate) mod visitors;
 
-use quote::{ToTokens, quote};
+use quote::{quote, ToTokens};
 use std::{fs, path::Path};
-use syn::{File, parse_file, visit_mut::VisitMut};
+use syn::{parse_file, visit_mut::VisitMut, File};
 
 use crate::visitors::{
     ast_with_contextes::transform_ast_with_contextes, generate_to_print_view::GenerateBridges,
     utils::KeepStructsEnumsTyAliases,
 };
 
-fn write(file: &File, path: &str) {
+pub(crate) fn write(file: &impl ToTokens, path: &str) {
     let out_path = Path::new(path);
     fs::write(&out_path, format!("{}", file.to_token_stream()))
         .expect(&format!("Failed to write `{}`", path));
@@ -19,32 +20,10 @@ fn write(file: &File, path: &str) {
         .status()
         .expect("failed to run rustfmt");
 }
-fn read(path: &str) -> File {
+pub(crate) fn read(path: &str) -> File {
     let src_path = Path::new(path);
     let contents = fs::read_to_string(&src_path).expect(&format!("Failed to read `{}`", path));
     parse_file(&contents).expect(&format!("Failed to parse `{}` as a Rust file", path))
-}
-
-fn generate_to_print_view(mut ast: File) {
-    GenerateBridges.visit_file_mut(&mut ast);
-    write(&ast, "src/generic_printer/generated/to_print_view.rs")
-}
-
-fn generate_print_view(mut ast: File) {
-    transform_ast_with_contextes(&mut ast);
-    let fragment = (generate_enum::FragmentEnumGenerator {
-        enum_name: "Fragment",
-        file: &ast,
-        owned: true,
-        extra_variants: &quote! {},
-        extra_attributes: &quote! {
-            /// An owned fragment of the print view: this `enum` can represent any node in the AST.
-            #[derive_group_for_ast]
-        },
-    })
-    .to_file();
-    ast.items.extend_from_slice(&fragment.items);
-    write(&ast, "src/generic_printer/generated/print_view.rs");
 }
 
 /// Generate the `fragment.rs` file
@@ -91,14 +70,15 @@ fn main() {
     generate_fragment(&ast);
 
     // Now we can add the types for resugared AST fragments
-    ast.items
-        .extend_from_slice(&read("src/generic_printer/resugar.rs").items);
+    // ast.items
+    //     .extend_from_slice(&read("src/generic_printer/resugar.rs").items);
 
     KeepStructsEnumsTyAliases.visit_file_mut(&mut ast);
 
-    // Drop file attributes (e.g. `//!` comments)
-    ast.attrs = vec![];
+    generate_visitors::main();
 
-    generate_print_view(ast.clone());
-    generate_to_print_view(ast.clone());
+    // Drop file attributes (e.g. `//!` comments)
+    // ast.attrs = vec![];
+    // generate_print_view(ast.clone());
+    // generate_to_print_view(ast.clone());
 }

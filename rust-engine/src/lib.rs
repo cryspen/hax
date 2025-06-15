@@ -9,5 +9,4 @@
 )]
 
 pub mod ast;
-pub mod generic_printer;
 pub mod symbol;

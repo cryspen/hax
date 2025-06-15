@@ -15,6 +15,7 @@ pub mod fragment;
 pub mod identifiers;
 pub mod literals;
 pub mod span;
+pub mod visitor;
 
 use crate::symbol::Symbol;
 use diagnostics::Diagnostic;
@@ -26,6 +27,7 @@ use span::Span;
 
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
 #[derive_group_for_ast]
+#[visitable]
 pub enum GenericValue {
     /// A type-level generic value.
     ///
@@ -46,6 +48,7 @@ pub enum GenericValue {
 
 /// Built-in primitive types.
 #[derive_group_for_ast]
+#[visitable]
 pub enum PrimitiveTy {
     /// The `bool` type.
     Bool,
@@ -61,14 +64,17 @@ pub enum PrimitiveTy {
 
 /// Represent a Rust lifetime region.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Region;
 
 /// A indirection for the representation of types.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Ty(pub Box<TyKind>);
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
+#[visitable]
 pub enum TyKind {
     /// A primitive type.
     ///
@@ -183,6 +189,7 @@ pub enum TyKind {
 /// dyn Tr<A, B>
 /// ```
 #[derive_group_for_ast]
+#[visitable]
 pub struct DynTraitGoal {
     /// `Tr` in the example above
     pub trait_: GlobalId,
@@ -192,6 +199,7 @@ pub struct DynTraitGoal {
 
 /// Extra information attached to syntax nodes.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Metadata {
     /// The location in the source code.
     pub span: Span,
@@ -202,6 +210,7 @@ pub struct Metadata {
 
 /// A typed expression with metadata.
 #[derive_group_for_ast]
+#[visitable(manual_driver)]
 pub struct Expr {
     /// The kind of expression.
     pub kind: Box<ExprKind>,
@@ -213,6 +222,7 @@ pub struct Expr {
 
 /// A typed pattern with metadata.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Pat {
     /// The kind of pattern.
     pub kind: Box<PatKind>,
@@ -224,6 +234,7 @@ pub struct Pat {
 
 /// A pattern matching arm with metadata.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Arm {
     /// The pattern of the arm.
     pub pat: Pat,
@@ -237,6 +248,7 @@ pub struct Arm {
 
 /// A pattern matching arm guard with metadata.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Guard {
     /// The kind of guard.
     pub kind: GuardKind,
@@ -246,6 +258,7 @@ pub struct Guard {
 
 /// Represents different levels of borrowing.
 #[derive_group_for_ast]
+#[visitable]
 pub enum BorrowKind {
     /// Shared reference
     ///
@@ -263,6 +276,7 @@ pub enum BorrowKind {
 
 /// Binding modes used in patterns.
 #[derive_group_for_ast]
+#[visitable]
 pub enum BindingMode {
     /// Binding by value
     ///
@@ -278,6 +292,7 @@ pub enum BindingMode {
 
 /// Represents the various kinds of patterns.
 #[derive_group_for_ast]
+#[visitable]
 pub enum PatKind {
     /// Wildcard pattern
     ///
@@ -374,6 +389,7 @@ pub enum PatKind {
 
 /// Represents the various kinds of pattern guards.
 #[derive_group_for_ast]
+#[visitable]
 pub enum GuardKind {
     /// An `if let` guard.
     ///
@@ -395,6 +411,7 @@ pub enum GuardKind {
 // TODO: Replace by places, or just expressions
 /// The left-hand side of an assignment.
 #[derive_group_for_ast]
+#[visitable]
 #[allow(missing_docs)]
 pub enum Lhs {
     LocalVar {
@@ -420,6 +437,7 @@ pub enum Lhs {
 /// implementation of `Clone` for `(A, B)` with the concrete implementations for
 /// `u8` and `&str`, represented as a tree.
 #[derive_group_for_ast]
+#[visitable]
 pub struct ImplExpr {
     /// The impl. expression itself.
     pub kind: Box<ImplExprKind>,
@@ -438,6 +456,7 @@ pub struct ImplExpr {
 /// }
 /// ```
 #[derive_group_for_ast]
+#[visitable]
 pub enum ImplExprKind {
     /// The trait implementation being defined.
     ///
@@ -536,6 +555,7 @@ pub enum ImplExprKind {
 /// }
 /// ```
 #[derive_group_for_ast]
+#[visitable]
 pub struct ImplItem {
     /// Metadata (span and attributes) for the impl item.
     pub meta: Metadata,
@@ -549,6 +569,7 @@ pub struct ImplItem {
 
 /// Represents the kinds of impl items
 #[derive_group_for_ast]
+#[visitable]
 pub enum ImplItemKind {
     /// An instantiation of associated type
     ///
@@ -586,6 +607,7 @@ pub enum ImplItemKind {
 
 /// Represents a trait item (associated type, fn, or default)
 #[derive_group_for_ast]
+#[visitable]
 pub struct TraitItem {
     /// Source span and attributes.
     pub meta: Metadata,
@@ -607,6 +629,7 @@ pub struct TraitItem {
 
 /// Represents the kinds of trait items
 #[derive_group_for_ast]
+#[visitable]
 pub enum TraitItemKind {
     /// An associated type
     Type(Vec<ImplIdent>),
@@ -638,6 +661,7 @@ pub enum TraitItemKind {
 /// ```
 /// results in `[Verbatim("f"), Expr([[x + 3]]), Verbatim(" + 10")]`
 #[derive_group_for_ast]
+#[visitable]
 pub enum QuoteContent {
     /// A verbatim chunk of backend code.
     Verbatim(String),
@@ -651,10 +675,12 @@ pub enum QuoteContent {
 
 /// Represents an inlined piece of backend code
 #[derive_group_for_ast]
+#[visitable]
 pub struct Quote(pub Vec<QuoteContent>);
 
 /// The origin of a quote item.
 #[derive_group_for_ast]
+#[visitable]
 pub struct ItemQuoteOrigin {
     /// From which kind of item this quote was placed on?
     pub item_kind: ItemQuoteOriginKind,
@@ -666,6 +692,7 @@ pub struct ItemQuoteOrigin {
 
 /// The kind of a quote item's origin
 #[derive_group_for_ast]
+#[visitable]
 pub enum ItemQuoteOriginKind {
     /// A function
     Fn,
@@ -694,6 +721,7 @@ pub enum ItemQuoteOriginKind {
 
 /// The position of a quote item relative to its origin
 #[derive_group_for_ast]
+#[visitable]
 pub enum ItemQuoteOriginPosition {
     /// The quote was placed before an item
     Before,
@@ -706,6 +734,7 @@ pub enum ItemQuoteOriginPosition {
 /// The kind of a loop (resugared by respective `Reconstruct...Loops` phases).
 /// Useful for `FunctionalizeLoops`.
 #[derive_group_for_ast]
+#[visitable]
 pub enum LoopKind {
     /// An unconditional loop.
     ///
@@ -759,6 +788,7 @@ pub enum LoopKind {
 /// `FunctionalizeLoops`. We need it to replace the control flow nodes of the AST
 /// by an encoding in the `ControlFlow` enum.
 #[derive_group_for_ast]
+#[visitable]
 pub enum ControlFlowKind {
     /// Contains no `return`, maybe some `break`s
     BreakOnly,
@@ -769,6 +799,7 @@ pub enum ControlFlowKind {
 /// Represent explicit mutation context for a loop.
 /// This is useful to make loops pure.
 #[derive_group_for_ast]
+#[visitable]
 pub struct LoopState {
     /// The initial state of the loop.
     pub init: Expr,
@@ -779,6 +810,7 @@ pub struct LoopState {
 // TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
 /// Describes the shape of an expression.
 #[derive_group_for_ast]
+#[visitable]
 pub enum ExprKind {
     /// If expression.
     ///
@@ -1025,6 +1057,7 @@ pub enum ExprKind {
 
 /// Represents the kinds of generic parameters
 #[derive_group_for_ast]
+#[visitable]
 pub enum GenericParamKind {
     /// A generic lifetime
     Lifetime,
@@ -1042,6 +1075,7 @@ pub enum GenericParamKind {
 /// # Example:
 /// A bound `_: std::ops::Add<u8>`
 #[derive_group_for_ast]
+#[visitable]
 pub struct TraitGoal {
     /// `std::ops::Add` in the example.
     pub trait_: GlobalId,
@@ -1051,6 +1085,7 @@ pub struct TraitGoal {
 
 /// Represents a trait bound in a generic constraint
 #[derive_group_for_ast]
+#[visitable]
 pub struct ImplIdent {
     /// The trait goal of this impl identifier
     pub goal: TraitGoal,
@@ -1064,6 +1099,7 @@ pub struct ImplIdent {
 /// ```
 /// In this example `Foo` has an associated type `S`.
 #[derive_group_for_ast]
+#[visitable]
 pub struct ProjectionPredicate {
     /// The impl expression we project from
     pub impl_: ImplExpr,
@@ -1075,6 +1111,7 @@ pub struct ProjectionPredicate {
 
 /// A generic constraint (lifetime, type or projection)
 #[derive_group_for_ast]
+#[visitable]
 pub enum GenericConstraint {
     /// A lifetime
     Lifetime(String), // TODO: Remove `String`
@@ -1086,6 +1123,7 @@ pub enum GenericConstraint {
 
 /// A generic parameter (lifetime, type parameter or const parameter)
 #[derive_group_for_ast]
+#[visitable]
 pub struct GenericParam {
     /// The local identifier for the generic parameter
     pub ident: LocalId,
@@ -1097,6 +1135,7 @@ pub struct GenericParam {
 
 /// Generic parameters and constraints (contained between `<>` in function declarations)
 #[derive_group_for_ast]
+#[visitable]
 pub struct Generics {
     /// A vector of genreric parameters.
     pub params: Vec<GenericParam>,
@@ -1106,6 +1145,7 @@ pub struct Generics {
 
 /// Safety level of a function.
 #[derive_group_for_ast]
+#[visitable]
 pub enum SafetyKind {
     /// Safe function (default).
     Safe,
@@ -1115,6 +1155,7 @@ pub enum SafetyKind {
 
 /// Represents a single attribute.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Attribute {
     /// The kind of attribute (a comment, a tool attribute?).
     pub kind: AttributeKind,
@@ -1124,6 +1165,7 @@ pub struct Attribute {
 
 /// Represents the kind of an attribute.
 #[derive_group_for_ast]
+#[visitable]
 pub enum AttributeKind {
     /// A tool attribute `#[path(tokens)]`
     Tool {
@@ -1143,6 +1185,7 @@ pub enum AttributeKind {
 
 /// Represents the kind of a doc comment.
 #[derive_group_for_ast]
+#[visitable]
 pub enum DocCommentKind {
     /// Single line comment (`//...`)
     Line,
@@ -1155,6 +1198,7 @@ pub type Attributes = Vec<Attribute>;
 
 /// A type with its associated span.
 #[derive_group_for_ast]
+#[visitable]
 pub struct SpannedTy {
     /// The span of the type
     pub span: Span,
@@ -1169,6 +1213,7 @@ pub struct SpannedTy {
 /// (mut x, y): (T, u8)
 /// ```
 #[derive_group_for_ast]
+#[visitable]
 pub struct Param {
     /// The pattern part (left-hand side) of a parameter (`(mut x, y)` in the example).
     pub pat: Pat,
@@ -1183,6 +1228,7 @@ pub struct Param {
 /// A variant of an enum or struct.
 /// In our representation structs always have one variant with an argument for each field.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Variant {
     /// Name of the variant
     pub name: GlobalId,
@@ -1196,6 +1242,7 @@ pub struct Variant {
 
 /// A top-level item in the module.
 #[derive_group_for_ast]
+#[visitable]
 pub enum ItemKind {
     /// A function or constant item.
     ///
@@ -1394,6 +1441,7 @@ pub enum ItemKind {
 
 /// A top-level item with metadata.
 #[derive_group_for_ast]
+#[visitable]
 pub struct Item {
     /// The global identifier of the item.
     pub ident: GlobalId,
