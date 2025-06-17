@@ -8,6 +8,10 @@ edition = "2024"
 proc-macro = true
 
 [dependencies]
+nom = "8.0.0"
 proc-macro2.workspace = true
 quote.workspace = true
-syn.workspace = true
+syn = { workspace = true, features = ["fold", "visit", "visit-mut"] }
+
+[dev-dependencies]
+pretty = "0.12.4"

@@ -11,6 +11,7 @@ use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
 
+mod pretty;
 mod utils {
     use super::*;
     pub(crate) fn crate_name() -> Ident {
@@ -71,4 +72,14 @@ pub fn derive_group_for_ast_base(_attr: TokenStream, item: TokenStream) -> Token
 #[proc_macro_attribute]
 pub fn visitable(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
+}
+
+#[proc_macro_attribute]
+pub fn pretty_tmpl(attr: TokenStream, item: TokenStream) -> TokenStream {
+    pretty::pretty_tmpl(attr, item)
+}
+
+#[proc_macro]
+pub fn pretty_s(input: TokenStream) -> TokenStream {
+    pretty::pretty_s(input)
 }
