@@ -14,10 +14,10 @@ members = [
      "engine/names",
      "engine/names/extract",
      "hax-types",
-     "rust-printer",
-     "rust-printer/macros",
+     "rust-engine",
+     "rust-engine/macros",
 ]
-exclude = ["tests", "rustc-coverage-tests", "rust-printer/tests"]
+exclude = ["tests", "rustc-coverage-tests", "rust-engine/tests"]
 default-members = [
      "frontend/exporter",
      "frontend/exporter/options",
@@ -81,7 +81,7 @@ hax-lib-macros-types = { path = "hax-lib/macros/types", version = "=0.3.1" }
 hax-lib = { path = "hax-lib", version = "=0.3.1" }
 hax-engine-names = { path = "engine/names", version = "=0.3.1" }
 hax-types = { path = "hax-types", version = "=0.3.1" }
-rust-printer = { path = "rust-printer" }
+hax-rust-engine = { path = "rust-engine" }
 
 [workspace.metadata.release]
 owners = ["github:cryspen:tools"]

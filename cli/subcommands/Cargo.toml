@@ -48,7 +48,7 @@ extension-traits = "1.0.1"
 serde.workspace = true
 serde_json.workspace = true
 hax-types.workspace = true
-rust-printer.workspace = true
+hax-rust-engine.workspace = true
 schemars.workspace = true
 hax-frontend-exporter.workspace = true
 hax-lib-macros-types = { workspace = true, features = ["schemars"] }

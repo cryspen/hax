@@ -154,6 +154,7 @@ dependencies = [
  "hax-frontend-exporter",
  "hax-frontend-exporter-options",
  "hax-lib-macros-types",
+ "hax-rust-engine",
  "hax-types",
  "inquire",
  "is-terminal",
@@ -161,7 +162,6 @@ dependencies = [
  "paste",
  "path-clean",
  "prettyplease",
- "rust-printer",
  "rustup-toolchain",
  "schemars",
  "serde",
@@ -575,6 +575,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.102",
+]
+
+[[package]]
+name = "hax-rust-engine"
+version = "0.3.1"
+dependencies = [
+ "hax-frontend-exporter",
+ "hax-rust-engine-macros",
+ "schemars",
+ "serde",
 ]
 
 [[package]]
@@ -1213,16 +1223,6 @@ name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
-
-[[package]]
-name = "rust-printer"
-version = "0.3.1"
-dependencies = [
- "hax-frontend-exporter",
- "hax-rust-engine-macros",
- "schemars",
- "serde",
-]
 
 [[package]]
 name = "rustix"
