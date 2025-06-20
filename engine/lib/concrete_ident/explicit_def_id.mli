@@ -81,3 +81,6 @@ module ImplInfoStore : sig
   engine, this function may return [None] even though the supplied
   identifier points to an [Impl] block. *)
 end
+
+val to_rust_ast : t -> Rust_engine_types.explicit_def_id
+val from_rust_ast : Rust_engine_types.explicit_def_id -> t

@@ -64,7 +64,8 @@ pub enum PrimitiveTy {
 pub struct Region;
 
 /// A indirection for the representation of types.
-pub type Ty = Box<TyKind>;
+#[derive_group_for_ast]
+pub struct Ty(Box<TyKind>);
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
