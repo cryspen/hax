@@ -140,7 +140,12 @@ let run (options : Types.engine_options) : Types.output =
         | Fstar opts -> run (module Fstar_backend) opts
         | Coq -> run (module Coq_backend) ()
         | Ssprove -> run (module Ssprove_backend) ()
-        | Easycrypt -> run (module Easycrypt_backend) ())
+        | Easycrypt -> run (module Easycrypt_backend) ()
+        | Lean ->
+            failwith
+              "The OCaml hax engine should never be called for lean. The Lean \
+               backend uses the newer rust engine. Please report this issue on \
+               our GitHub repository: https://github.com/cryspen/hax.")
   in
   {
     diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;
