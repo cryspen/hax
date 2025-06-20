@@ -53,7 +53,7 @@ pub enum ExtendedToEngine {
     /// A standard `ToEngine` message
     ToEngine(ToEngine),
     /// A `Query`
-    Query(hax_frontend_exporter::id_table::WithTable<EngineOptions>),
+    Query(Box<hax_frontend_exporter::id_table::WithTable<EngineOptions>>),
 }
 
 /// Extends the common `FromEngine` messages with one extra case: `Response`.
