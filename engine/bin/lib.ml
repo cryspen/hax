@@ -252,6 +252,7 @@ let engine () =
       Printexc.raise_with_backtrace exn bt
 
 module ExportRustAst = Export_ast.Make (Features.Rust)
+module ExportFStarAst = Export_ast.Make (Fstar_backend.InputLanguage)
 
 (** Entry point for interacting with the Rust hax engine *)
 let driver_for_rust_engine () : unit =
@@ -261,11 +262,28 @@ let driver_for_rust_engine () : unit =
     let json = Hax_io.read_json () |> Option.value_exn in
     [%of_yojson: Rust_engine_types.query] json
   in
+  Concrete_ident.ImplInfoStore.init
+    (Concrete_ident_generated.impl_infos @ query.impl_infos);
   match query.kind with
   | Types.ImportThir { input } ->
       let imported_items = import_thir_items [] input in
+      let imported_items =
+        (* TODO: this let binding is applying the phases from the F* backend *)
+        Fstar_backend.apply_phases
+          {
+            cli_extension = EmptyStructempty_args_extension;
+            fuel = Int64.zero;
+            ifuel = Int64.zero;
+            interfaces = [];
+            line_width = 80;
+            z3rlimit = Int64.zero;
+          }
+          imported_items
+      in
       let rust_ast_items =
-        List.concat_map ~f:(fun item -> ExportRustAst.ditem item) imported_items
+        List.concat_map
+          ~f:(fun item -> ExportFStarAst.ditem item)
+          imported_items
       in
       let response = Rust_engine_types.ImportThir { output = rust_ast_items } in
       Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
