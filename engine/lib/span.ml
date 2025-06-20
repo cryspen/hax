@@ -151,3 +151,13 @@ let default = { id = 0; data = []; owner_hint = None }
 let owner_hint span =
   span.owner_hint
   |> Option.bind ~f:(fun (OwnerId id) -> List.nth !owner_id_list id)
+
+let to_span2 span : Types.span2 =
+  {
+    data = List.map ~f:Imported.span_to_thir span.data;
+    id = Int.to_string span.id;
+    owner_hint =
+      Option.map
+        ~f:(fun (OwnerId n) -> Types.Newtypeowner_id (Int.to_string n))
+        span.owner_hint;
+  }

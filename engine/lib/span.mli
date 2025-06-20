@@ -34,3 +34,6 @@ enhance user reporting, not for any logic within the engine. *)
 val owner_hint : t -> Types.def_id option
 (** Looks up the owner hint for a span. This should be used for user
 reports only. *)
+
+val to_span2 : t -> Types.span2
+(** Converts this span to a span2 for export to the Rust engine. *)
