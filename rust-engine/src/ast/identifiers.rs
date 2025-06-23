@@ -90,6 +90,29 @@ mod global_id {
         /// A projector.
         Projector(ConcreteId),
     }
+
+    impl GlobalId {
+        /// Raw printing of identifier separated by underscore. Used for testing
+        pub fn to_debug_string(&self) -> String {
+            match self {
+                GlobalId::Concrete(concrete_id) => concrete_id
+                    .def_id
+                    .def_id
+                    .clone()
+                    .path
+                    .into_iter()
+                    .map(|def| match def.clone().data {
+                        hax_frontend_exporter::DefPathItem::ValueNs(s)
+                        | hax_frontend_exporter::DefPathItem::MacroNs(s)
+                        | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
+                        _ => panic!(),
+                    })
+                    .collect::<Vec<String>>()
+                    .join("_"),
+                GlobalId::Projector(concrete_id) => todo!(),
+            }
+        }
+    }
 }
 
 /// Local identifier

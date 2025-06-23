@@ -5,6 +5,8 @@
 //! source maps).
 
 use crate::printer::Allocator;
+use std::iter::once;
+
 use pretty::{docs, DocAllocator, DocBuilder, Pretty};
 
 use crate::ast::identifiers::*;
@@ -13,7 +15,7 @@ use crate::ast::*;
 
 macro_rules! print_todo {
     ($allocator:ident) => {
-        $allocator.text("Todo")
+        $allocator.text(format!("Todo at {}", line!())).parens()
     };
 }
 
@@ -39,19 +41,46 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for ItemKind {
                 body,
                 params,
                 safety,
-            } => todo!(),
-            ItemKind::TyAlias { name, generics, ty } => todo!(),
+            } => {
+                if !(generics.params.is_empty()
+                    && generics.constraints.is_empty()
+                    && safety == SafetyKind::Safe)
+                {
+                    panic!()
+                };
+                docs![
+                    allocator,
+                    "def",
+                    allocator.softline(),
+                    name,
+                    allocator.softline(),
+                    allocator
+                        .intersperse(params, allocator.softline())
+                        .nest(INDENT)
+                        .group(),
+                    allocator.reflow(" : "),
+                    body.ty,
+                    allocator.reflow(" :="),
+                    allocator.line(),
+                    *body.kind,
+                ]
+                .nest(INDENT)
+                .group()
+            }
+            ItemKind::TyAlias { name, generics, ty } => {
+                docs![allocator, "def ", name, allocator.reflow(" : Type := "), ty].group()
+            }
             ItemKind::Type {
                 name,
                 generics,
                 variants,
                 is_struct,
-            } => todo!(),
+            } => print_todo!(allocator),
             ItemKind::Trait {
                 name,
                 generics,
                 items,
-            } => todo!(),
+            } => print_todo!(allocator),
             ItemKind::Impl {
                 generics,
                 self_ty,
@@ -59,61 +88,76 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for ItemKind {
                 items,
                 parent_bounds,
                 safety,
-            } => todo!(),
-            ItemKind::Alias { name, item } => todo!(),
+            } => print_todo!(allocator),
+            ItemKind::Alias { name, item } => print_todo!(allocator),
             ItemKind::Use {
                 path,
                 is_external,
                 rename,
-            } => todo!(),
-            ItemKind::Quote { quote, origin } => todo!(),
-            ItemKind::Error(diagnostic) => todo!(),
-            ItemKind::Resugared(resugared_ty_kind) => todo!(),
-            ItemKind::NotImplementedYet => todo!(),
+            } => allocator.text("-- use statement [unsupported]"),
+            ItemKind::Quote { quote, origin } => print_todo!(allocator),
+            ItemKind::Error(diagnostic) => print_todo!(allocator),
+            ItemKind::Resugared(resugared_ty_kind) => print_todo!(allocator),
+            ItemKind::NotImplementedYet => allocator.text("-- unimplemented yet"),
         }
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Ty {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        todo!()
+        self.0.pretty(allocator)
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for TyKind {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
         match self {
-            TyKind::Primitive(primitive_ty) => todo!(),
-            TyKind::Tuple(items) => todo!(),
-            TyKind::App { head, args } => todo!(),
-            TyKind::Arrow { inputs, output } => todo!(),
+            TyKind::Primitive(primitive_ty) => primitive_ty.pretty(allocator),
+            TyKind::Tuple(items) => allocator.intersperse(items, allocator.reflow(" * ")),
+            TyKind::App { head, args } => head
+                .pretty(allocator)
+                .append(allocator.softline())
+                .append(allocator.intersperse(args, allocator.softline()))
+                .parens(),
+            TyKind::Arrow { inputs, output } => allocator
+                .intersperse(
+                    inputs.into_iter().chain(once(output)),
+                    allocator.reflow(" -> "),
+                )
+                .parens(),
             TyKind::Ref {
                 inner,
                 mutable,
                 region,
-            } => todo!(),
-            TyKind::Param(local_id) => todo!(),
-            TyKind::Slice(ty) => todo!(),
-            TyKind::Array { ty, length } => todo!(),
-            TyKind::RawPointer => todo!(),
-            TyKind::AssociatedType { impl_, item } => todo!(),
-            TyKind::Opaque(global_id) => todo!(),
-            TyKind::Dyn(dyn_trait_goals) => todo!(),
-            TyKind::Resugared(resugared_ty_kind) => todo!(),
-            TyKind::Error(diagnostic) => todo!(),
+            } => print_todo!(allocator),
+            TyKind::Param(local_id) => print_todo!(allocator),
+            TyKind::Slice(ty) => print_todo!(allocator),
+            TyKind::Array { ty, length } => print_todo!(allocator),
+            TyKind::RawPointer => print_todo!(allocator),
+            TyKind::AssociatedType { impl_, item } => print_todo!(allocator),
+            TyKind::Opaque(global_id) => print_todo!(allocator),
+            TyKind::Dyn(dyn_trait_goals) => print_todo!(allocator),
+            TyKind::Resugared(resugared_ty_kind) => print_todo!(allocator),
+            TyKind::Error(diagnostic) => panic!(),
         }
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for SpannedTy {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        todo!()
+        self.ty.pretty(allocator)
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PrimitiveTy {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        todo!()
+        match self {
+            PrimitiveTy::Bool => allocator.text("Bool"),
+            PrimitiveTy::Int(int_kind) => int_kind.pretty(allocator),
+            PrimitiveTy::Float(float_kind) => float_kind.pretty(allocator),
+            PrimitiveTy::Char => allocator.text("Char"),
+            PrimitiveTy::Str => allocator.text("String"),
+        }
     }
 }
 
@@ -125,19 +169,43 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Expr {
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Pat {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        todo!()
+        self.kind.pretty(allocator)
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PatKind {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        todo!()
+        match self {
+            PatKind::Wild => print_todo!(allocator),
+            PatKind::Ascription { pat, ty } => todo!(),
+            PatKind::Or { sub_pats } => todo!(),
+            PatKind::Array { args } => todo!(),
+            PatKind::Deref { sub_pat } => todo!(),
+            PatKind::Constant { lit } => todo!(),
+            PatKind::Binding {
+                mutable,
+                var,
+                mode,
+                sub_pat,
+            } => match (mutable, mode, sub_pat) {
+                (false, BindingMode::ByValue, None) => var.pretty(allocator),
+                _ => panic!(),
+            },
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => todo!(),
+            PatKind::Resugared(resugared_pat_kind) => todo!(),
+            PatKind::Error(diagnostic) => todo!(),
+        }
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Lhs {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        todo!()
+        print_todo!(allocator)
     }
 }
 
@@ -159,7 +227,7 @@ impl<'a, A: 'a + Clone + Clone> Pretty<'a, Allocator<Lean>, A> for ExprKind {
                         allocator.softline().append(else_branch).nest(INDENT),
                     ])
                     .group(),
-                None => todo!(),
+                None => print_todo!(allocator),
             },
             ExprKind::App {
                 head,
@@ -175,64 +243,81 @@ impl<'a, A: 'a + Clone + Clone> Pretty<'a, Allocator<Lean>, A> for ExprKind {
                     .parens()
             }
             ExprKind::Literal(literal) => literal.pretty(allocator),
-            ExprKind::Array(exprs) => todo!(),
+            ExprKind::Array(exprs) => print_todo!(allocator),
             ExprKind::Construct {
                 constructor,
                 is_record,
                 is_struct,
                 fields,
                 base,
-            } => todo!(),
-            ExprKind::Match { scrutinee, arms } => todo!(),
-            ExprKind::Tuple(exprs) => todo!(),
-            ExprKind::Borrow { mutable, inner } => todo!(),
-            ExprKind::AddressOf { mutable, inner } => todo!(),
-            ExprKind::Deref(expr) => todo!(),
-            ExprKind::Let { lhs, rhs, body } => todo!(),
-            ExprKind::GlobalId(global_id) => todo!(),
-            ExprKind::LocalId(local_id) => todo!(),
-            ExprKind::Ascription { e, ty } => todo!(),
-            ExprKind::Assign { lhs, value } => todo!(),
+            } => print_todo!(allocator),
+            ExprKind::Match { scrutinee, arms } => print_todo!(allocator),
+            ExprKind::Tuple(exprs) => print_todo!(allocator),
+            ExprKind::Borrow { mutable, inner } => print_todo!(allocator),
+            ExprKind::AddressOf { mutable, inner } => print_todo!(allocator),
+            ExprKind::Deref(expr) => print_todo!(allocator),
+            ExprKind::Let { lhs, rhs, body } => {
+                docs![
+                    allocator,
+                    "let ",
+                    lhs,
+                    allocator.reflow(" := "),
+                    docs![allocator, rhs].nest(INDENT).group(),
+                    ";",
+                    allocator.line(),
+                    body,
+                ]
+            }
+            ExprKind::GlobalId(global_id) => global_id.pretty(allocator),
+            ExprKind::LocalId(local_id) => local_id.pretty(allocator),
+            ExprKind::Ascription { e, ty } => docs![allocator, e, allocator.reflow(" : "), ty]
+                .nest(INDENT)
+                .parens()
+                .group(),
+            ExprKind::Assign { lhs, value } => print_todo!(allocator),
             ExprKind::Loop {
                 body,
                 kind,
                 state,
                 control_flow,
                 label,
-            } => todo!(),
-            ExprKind::Break { value, label } => todo!(),
-            ExprKind::Return { value } => todo!(),
-            ExprKind::Continue { label } => todo!(),
+            } => print_todo!(allocator),
+            ExprKind::Break { value, label } => print_todo!(allocator),
+            ExprKind::Return { value } => print_todo!(allocator),
+            ExprKind::Continue { label } => print_todo!(allocator),
             ExprKind::Closure {
                 params,
                 body,
                 captures,
-            } => todo!(),
-            ExprKind::Block { body, safety_mode } => todo!(),
-            ExprKind::Quote { contents } => todo!(),
-            ExprKind::Resugared(resugared_expr_kind) => todo!(),
-            ExprKind::Error(diagnostic) => todo!(),
+            } => print_todo!(allocator),
+            ExprKind::Block { body, safety_mode } => print_todo!(allocator),
+            ExprKind::Quote { contents } => print_todo!(allocator),
+            ExprKind::Resugared(resugared_expr_kind) => print_todo!(allocator),
+            ExprKind::Error(diagnostic) => print_todo!(allocator),
         }
     }
 }
 
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Literal {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        match self {
-            Literal::String(symbol) => todo!(),
-            Literal::Char(_) => todo!(),
-            Literal::Bool(b) => allocator.text(format!("{}", b)),
-            Literal::Int {
-                value,
-                negative,
-                kind,
-            } => allocator.text(format!("{}", value)),
-            Literal::Float {
-                value,
-                negative,
-                kind,
-            } => todo!(),
-        }
+        docs![
+            allocator,
+            match self {
+                Literal::String(symbol) => format!("\"{}\"", symbol.to_string()),
+                Literal::Char(c) => format!("'{}'", c),
+                Literal::Bool(b) => format!("{}", b),
+                Literal::Int {
+                    value,
+                    negative,
+                    kind,
+                } => format!("{}", value),
+                Literal::Float {
+                    value,
+                    negative,
+                    kind,
+                } => todo!(),
+            }
+        ]
     }
 }
 
@@ -255,5 +340,47 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for IntKind {
                 (IntSize::SSize, Signedness::Unsigned) => todo!(),
             }
         ]
+    }
+}
+
+impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for FloatKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+        match self {
+            FloatKind::F16 => print_todo!(allocator),
+            FloatKind::F32 => allocator.text("Float32"),
+            FloatKind::F64 => allocator.text("Float"),
+            FloatKind::F128 => print_todo!(allocator),
+        }
+    }
+}
+
+impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for GenericValue {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+        match self {
+            GenericValue::Ty(ty) => ty.pretty(allocator),
+            GenericValue::Expr(expr) => expr.pretty(allocator),
+            GenericValue::Lifetime => panic!(),
+        }
+    }
+}
+
+impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for LocalId {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+        allocator.text(self.to_string())
+    }
+}
+
+impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for GlobalId {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+        allocator.text(self.to_debug_string())
+    }
+}
+
+impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Params {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+        docs![allocator, self.pat, allocator.reflow(" : "), self.ty]
+            .nest(INDENT)
+            .parens()
+            .group()
     }
 }

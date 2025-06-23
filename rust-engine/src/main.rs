@@ -25,7 +25,8 @@ fn main() {
 
     let allocator = Allocator::new(Lean);
     // TOOD: print items
-    let item_docs: DocBuilder<_, ()> = allocator.intersperse(items, allocator.hardline());
+    let item_docs: DocBuilder<_, ()> =
+        allocator.intersperse(items, allocator.hardline().append(allocator.hardline()));
 
     let mut w = Vec::new();
     let _ = item_docs.render(80, &mut w);
