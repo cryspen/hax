@@ -17,4 +17,4 @@ serde_json = { workspace = true, features = ["unbounded_depth"] }
 schemars.workspace = true
 serde-jsonlines = "0.5.0"
 serde_stacker = "0.1.12"
-pretty = "0.12.4"
+pretty = "0.12"
