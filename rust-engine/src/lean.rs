@@ -221,17 +221,39 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Literal {
         match self {
             Literal::String(symbol) => todo!(),
             Literal::Char(_) => todo!(),
-            Literal::Bool(_) => todo!(),
+            Literal::Bool(b) => allocator.text(format!("{}", b)),
             Literal::Int {
                 value,
                 negative,
                 kind,
-            } => todo!(),
+            } => allocator.text(format!("{}", value)),
             Literal::Float {
                 value,
                 negative,
                 kind,
             } => todo!(),
         }
+    }
+}
+
+impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for IntKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+        docs![
+            allocator,
+            match (self.size, self.signedness) {
+                (IntSize::S8, Signedness::Signed) => "i8",
+                (IntSize::S8, Signedness::Unsigned) => "u8",
+                (IntSize::S16, Signedness::Signed) => "i16",
+                (IntSize::S16, Signedness::Unsigned) => "u16",
+                (IntSize::S32, Signedness::Signed) => "i32",
+                (IntSize::S32, Signedness::Unsigned) => "u32",
+                (IntSize::S64, Signedness::Signed) => "i64",
+                (IntSize::S64, Signedness::Unsigned) => "u64",
+                (IntSize::S128, Signedness::Signed) => "i128",
+                (IntSize::S128, Signedness::Unsigned) => "u128",
+                (IntSize::SSize, Signedness::Signed) => todo!(),
+                (IntSize::SSize, Signedness::Unsigned) => todo!(),
+            }
+        ]
     }
 }
