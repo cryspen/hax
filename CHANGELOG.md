@@ -13,7 +13,7 @@ Changes to the frontend:
  - Provide the `FnOnce` shim for closures (#1477)
  - Update pin of rustc (#1482)
  - Add `Ty::FnDef` (splitting `FnPtr` and `FnDef`) (#1487)
- - Regret generic and trait arguments in a struct `ItemRef` (#1514)
+ - Regroup generic and trait arguments in a struct `ItemRef` (#1514)
  - Support trait aliases in `FullDef` (#1494)
  - Separate `{Add,Sub,Mul}Unchecked` and `{Add,Sub,Mul}` (#1513)
 
