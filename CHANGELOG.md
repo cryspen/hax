@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 0.3.2
+
+Changes to the frontend:
+ - Provide the `FnOnce` shim for closures (#1477)
+ - Update pin of rustc (#1482)
+ - Add `Ty::FnDef` (splitting `FnPtr` and `FnDef`) (#1487)
+ - Regret generic and trait arguments in a struct `ItemRef` (#1514)
+ - Support trait aliases in `FullDef` (#1494)
+ - Separate `{Add,Sub,Mul}Unchecked` and `{Add,Sub,Mul}` (#1513)
+
+Changes to the engine:
+ - introduce an experimental Rust engine (#1501, #1502, #1504, #1505)
+
 ## 0.3.1 (2025-05-26)
 
 Changes to hax-lib:
