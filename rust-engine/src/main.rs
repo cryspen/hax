@@ -1,4 +1,5 @@
 use hax_rust_engine::{
+    ast::span::Span,
     lean::Lean,
     ocaml_engine::{ExtendedToEngine, Response},
     printer::Allocator,
@@ -25,8 +26,10 @@ fn main() {
 
     let allocator = Allocator::new(Lean);
     // TOOD: print items
-    let item_docs: DocBuilder<_, ()> =
-        allocator.intersperse(items, allocator.hardline().append(allocator.hardline()));
+    let item_docs: DocBuilder<_, Span> = allocator.intersperse(
+        items.iter(),
+        allocator.hardline().append(allocator.hardline()),
+    );
 
     let mut w = Vec::new();
     let _ = item_docs.render(80, &mut w);

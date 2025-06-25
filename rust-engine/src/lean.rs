@@ -4,6 +4,7 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
+use crate::ast::span::Span;
 use crate::printer::Allocator;
 use std::iter::once;
 
@@ -26,14 +27,14 @@ pub struct Lean;
 
 /// Implementations for each part of the AST
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Item {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Item {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         self.kind.pretty(allocator)
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for ItemKind {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             ItemKind::Fn {
                 name,
@@ -44,7 +45,7 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for ItemKind {
             } => {
                 if !(generics.params.is_empty()
                     && generics.constraints.is_empty()
-                    && safety == SafetyKind::Safe)
+                    && safety == &SafetyKind::Safe)
                 {
                     panic!()
                 };
@@ -59,10 +60,10 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for ItemKind {
                         .nest(INDENT)
                         .group(),
                     allocator.reflow(" : "),
-                    body.ty,
+                    &body.ty,
                     allocator.reflow(" :="),
                     allocator.line(),
-                    *body.kind,
+                    &*body.kind,
                 ]
                 .nest(INDENT)
                 .group()
@@ -103,14 +104,14 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for ItemKind {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Ty {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Ty {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         self.0.pretty(allocator)
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for TyKind {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             TyKind::Primitive(primitive_ty) => primitive_ty.pretty(allocator),
             TyKind::Tuple(items) => allocator.intersperse(items, allocator.reflow(" * ")),
@@ -148,14 +149,14 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for TyKind {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for SpannedTy {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b SpannedTy {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         self.ty.pretty(allocator)
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PrimitiveTy {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b PrimitiveTy {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             PrimitiveTy::Bool => allocator.text("Bool"),
             PrimitiveTy::Int(int_kind) => int_kind.pretty(allocator),
@@ -166,20 +167,20 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PrimitiveTy {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Expr {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Expr {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         (*self.kind).pretty(allocator)
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Pat {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        self.kind.pretty(allocator)
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Pat {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
+        (self.kind).pretty(allocator)
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PatKind {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b PatKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             PatKind::Wild => allocator.text("_"),
             PatKind::Ascription { pat, ty } => docs![allocator, pat, allocator.reflow(" : "), ty]
@@ -210,14 +211,14 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PatKind {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Lhs {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Lhs {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         print_todo!(allocator)
     }
 }
 
-impl<'a, A: 'a + Clone + Clone> Pretty<'a, Allocator<Lean>, A> for ExprKind {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             ExprKind::If {
                 condition,
@@ -305,8 +306,8 @@ impl<'a, A: 'a + Clone + Clone> Pretty<'a, Allocator<Lean>, A> for ExprKind {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Literal {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Literal {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         docs![
             allocator,
             match self {
@@ -328,11 +329,11 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Literal {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for IntKind {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b IntKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         docs![
             allocator,
-            match (self.size, self.signedness) {
+            match (&self.size, &self.signedness) {
                 (IntSize::S8, Signedness::Signed) => "i8",
                 (IntSize::S8, Signedness::Unsigned) => "u8",
                 (IntSize::S16, Signedness::Signed) => "i16",
@@ -350,8 +351,8 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for IntKind {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for FloatKind {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b FloatKind {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             FloatKind::F16 => print_todo!(allocator),
             FloatKind::F32 => allocator.text("Float32"),
@@ -361,8 +362,8 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for FloatKind {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for GenericValue {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b GenericValue {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             GenericValue::Ty(ty) => ty.pretty(allocator),
             GenericValue::Expr(expr) => expr.pretty(allocator),
@@ -371,21 +372,21 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for GenericValue {
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for LocalId {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b LocalId {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         allocator.text(self.to_string())
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for GlobalId {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b GlobalId {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         allocator.text(self.to_debug_string())
     }
 }
 
-impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Params {
-    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
-        docs![allocator, self.pat, allocator.reflow(" : "), self.ty]
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Param {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
+        docs![allocator, &self.pat, allocator.reflow(" : "), &self.ty]
             .nest(INDENT)
             .parens()
             .group()
