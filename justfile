@@ -45,6 +45,12 @@ expand *FLAGS:
     | ocamlformat --impl - \
     | just _pager
 
+# Regenerate names in the Rust engine. Writes to `rust-engine/src/names/generated.rs`.
+regenerate-names:
+  #!/usr/bin/env bash
+  export HAX_RUST_ENGINE_GENERATE_NAMES=rust-engine/src/names/generated.rs
+  cargo hax -C --manifest-path engine/names/Cargo.toml \; into lean
+  rustfmt $HAX_RUST_ENGINE_GENERATE_NAMES
 
 # Format all the code
 fmt:
