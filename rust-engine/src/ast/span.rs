@@ -15,6 +15,7 @@ pub struct OwnerId(usize);
 
 /// Position of a Rust source
 #[derive_group_for_ast]
+#[visitable(opaque)]
 pub struct Span {
     /// A vector of spans as defined by the frontend.
     /// This is useful for supporting in a trivial way union of spans.
