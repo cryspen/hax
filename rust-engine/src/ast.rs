@@ -1487,8 +1487,26 @@ pub mod traits {
         };
     }
 
-    derive_has_metadata!(Item, Expr, Pat);
-    derive_has_kind!(Item => ItemKind, Expr => ExprKind, Pat => PatKind);
+    derive_has_metadata!(
+        Item,
+        Expr,
+        Pat,
+        Guard,
+        Arm,
+        ImplItem,
+        TraitItem,
+        GenericParam
+    );
+    derive_has_kind!(
+        Item => ItemKind, Expr => ExprKind, Pat => PatKind, Guard => GuardKind,
+        GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind
+    );
+
+    impl HasSpan for Attribute {
+        fn span(&self) -> Span {
+            self.span.clone()
+        }
+    }
 
     impl Typed for Expr {
         fn ty(&self) -> &Ty {
