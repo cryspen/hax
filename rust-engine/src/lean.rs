@@ -114,11 +114,16 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for TyKind {
         match self {
             TyKind::Primitive(primitive_ty) => primitive_ty.pretty(allocator),
             TyKind::Tuple(items) => allocator.intersperse(items, allocator.reflow(" * ")),
-            TyKind::App { head, args } => head
-                .pretty(allocator)
-                .append(allocator.softline())
-                .append(allocator.intersperse(args, allocator.softline()))
-                .parens(),
+            TyKind::App { head, args } => {
+                if args.len() == 0 {
+                    head.pretty(allocator)
+                } else {
+                    head.pretty(allocator)
+                        .append(allocator.softline())
+                        .append(allocator.intersperse(args, allocator.softline()))
+                        .parens()
+                }
+            }
             TyKind::Arrow { inputs, output } => allocator
                 .intersperse(
                     inputs.into_iter().chain(once(output)),
@@ -176,8 +181,10 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for Pat {
 impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for PatKind {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, A> {
         match self {
-            PatKind::Wild => print_todo!(allocator),
-            PatKind::Ascription { pat, ty } => todo!(),
+            PatKind::Wild => allocator.text("_"),
+            PatKind::Ascription { pat, ty } => docs![allocator, pat, allocator.reflow(" : "), ty]
+                .nest(INDENT)
+                .group(),
             PatKind::Or { sub_pats } => todo!(),
             PatKind::Array { args } => todo!(),
             PatKind::Deref { sub_pat } => todo!(),
@@ -336,8 +343,8 @@ impl<'a, A: 'a + Clone> Pretty<'a, Allocator<Lean>, A> for IntKind {
                 (IntSize::S64, Signedness::Unsigned) => "u64",
                 (IntSize::S128, Signedness::Signed) => "i128",
                 (IntSize::S128, Signedness::Unsigned) => "u128",
-                (IntSize::SSize, Signedness::Signed) => todo!(),
-                (IntSize::SSize, Signedness::Unsigned) => todo!(),
+                (IntSize::SSize, Signedness::Signed) => "isize",
+                (IntSize::SSize, Signedness::Unsigned) => "usize",
             }
         ]
     }
