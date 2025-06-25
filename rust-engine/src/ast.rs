@@ -1465,7 +1465,7 @@ pub enum ItemKind {
     /// A resugared item.
     /// This variant is introduced before printing only.
     /// Phases must not produce this variant.
-    Resugared(ResugaredTyKind),
+    Resugared(ResugaredItemKind),
 
     /// Item that is not implemented yet
     NotImplementedYet,
