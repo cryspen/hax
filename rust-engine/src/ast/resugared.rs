@@ -15,24 +15,30 @@ use hax_rust_engine_macros::*;
 
 /// Resugared variants for items. This represent extra printing-only items, see [`super::ItemKind::Resugared`].
 #[derive_group_for_ast]
+#[visitable]
 pub enum ResugaredItemKind {}
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
 #[derive_group_for_ast]
+#[visitable]
 pub enum ResugaredExprKind {}
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
 #[derive_group_for_ast]
+#[visitable]
 pub enum ResugaredPatKind {}
 
 /// Resugared variants for types. This represent extra printing-only types, see [`super::TyKind::Resugared`].
 #[derive_group_for_ast]
+#[visitable]
 pub enum ResugaredTyKind {}
 
 /// Resugared variants for impl. items. This represent extra printing-only impl. items, see [`super::ImplItemKind::Resugared`].
 #[derive_group_for_ast]
+#[visitable]
 pub enum ResugaredImplItemKind {}
 
 /// Resugared variants for trait items. This represent extra printing-only trait items, see [`super::TraitItemKind::Resugared`].
 #[derive_group_for_ast]
+#[visitable]
 pub enum ResugaredTraitItemKind {}
