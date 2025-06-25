@@ -1750,7 +1750,7 @@ pub mod map_reduce_cf {
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
             ItemKind::NotImplementedYet { .. } => {
@@ -3325,7 +3325,7 @@ pub mod map_cf {
             }
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(()),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
             ItemKind::NotImplementedYet { .. } => std::ops::ControlFlow::Continue(()),
@@ -5098,7 +5098,7 @@ pub mod reduce_cf {
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
             ItemKind::NotImplementedYet { .. } => {
@@ -6673,7 +6673,7 @@ pub mod cf {
             }
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(()),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
             ItemKind::NotImplementedYet { .. } => std::ops::ControlFlow::Continue(()),
@@ -8157,7 +8157,7 @@ pub mod map_reduce {
             ItemKind::Error { .. } => V::Out::identity(),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0);
                 visitor_reduce_value
             }
             ItemKind::NotImplementedYet { .. } => V::Out::identity(),
@@ -9483,7 +9483,7 @@ pub mod map {
             }
             ItemKind::Error { .. } => (),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor.visit_resugared_item_kind(anon_field_0);
                 ()
             }
             ItemKind::NotImplementedYet { .. } => (),
@@ -11033,7 +11033,7 @@ pub mod reduce {
             ItemKind::Error { .. } => V::Out::identity(),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0);
                 visitor_reduce_value
             }
             ItemKind::NotImplementedYet { .. } => V::Out::identity(),
@@ -12425,7 +12425,7 @@ pub mod vanilla {
             }
             ItemKind::Error { .. } => (),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor.visit_resugared_item_kind(anon_field_0);
                 ()
             }
             ItemKind::NotImplementedYet { .. } => (),
