@@ -85,6 +85,7 @@ pub mod global_id {
 
     /// A global identifier in hax.
     #[derive_group_for_ast]
+    #[visitable(opaque)]
     pub enum GlobalId {
         /// A concrete identifier that exists in Rust.
         Concrete(ConcreteId),
@@ -142,6 +143,7 @@ pub mod global_id {
 }
 /// Local identifier
 #[derive_group_for_ast]
+#[visitable(opaque)]
 pub struct LocalId(pub Symbol);
 
 impl fmt::Display for LocalId {
