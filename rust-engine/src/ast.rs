@@ -16,6 +16,7 @@ pub mod identifiers;
 pub mod literals;
 pub mod resugared;
 pub mod span;
+pub mod visitors;
 
 use crate::symbol::Symbol;
 use diagnostics::Diagnostic;
