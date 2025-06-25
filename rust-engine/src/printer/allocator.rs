@@ -12,6 +12,16 @@ pub struct Allocator<Printer> {
     pub printer: Printer,
 }
 
+impl<Printer> Allocator<Printer> {
+    /// Creates a new allocator from a printer.
+    pub fn new(printer: Printer) -> Self {
+        Self {
+            allocator: BoxAllocator,
+            printer,
+        }
+    }
+}
+
 impl<'a, P, A: 'a> DocAllocator<'a, A> for Allocator<P> {
     type Doc = <BoxAllocator as DocAllocator<'a, A>>::Doc;
 
