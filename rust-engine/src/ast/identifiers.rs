@@ -105,7 +105,21 @@ mod global_id {
                         hax_frontend_exporter::DefPathItem::ValueNs(s)
                         | hax_frontend_exporter::DefPathItem::MacroNs(s)
                         | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
-                        _ => panic!(),
+                        hax_frontend_exporter::DefPathItem::CrateRoot { name } => todo!(),
+                        hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
+                        hax_frontend_exporter::DefPathItem::ForeignMod => todo!(),
+                        hax_frontend_exporter::DefPathItem::Use => todo!(),
+                        hax_frontend_exporter::DefPathItem::GlobalAsm => todo!(),
+                        hax_frontend_exporter::DefPathItem::LifetimeNs(_) => todo!(),
+                        hax_frontend_exporter::DefPathItem::Closure => todo!(),
+                        hax_frontend_exporter::DefPathItem::Ctor => todo!(),
+                        hax_frontend_exporter::DefPathItem::AnonConst => todo!(),
+                        hax_frontend_exporter::DefPathItem::PromotedConst => todo!(),
+                        hax_frontend_exporter::DefPathItem::OpaqueTy => todo!(),
+                        hax_frontend_exporter::DefPathItem::OpaqueLifetime(_) => todo!(),
+                        hax_frontend_exporter::DefPathItem::AnonAssocTy(_) => todo!(),
+                        hax_frontend_exporter::DefPathItem::SyntheticCoroutineBody => todo!(),
+                        hax_frontend_exporter::DefPathItem::NestedStatic => todo!(),
                     })
                     .collect::<Vec<String>>()
                     .join("_"),
