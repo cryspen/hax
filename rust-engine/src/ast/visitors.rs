@@ -18,4 +18,8 @@ mod generated {
 }
 
 pub use generated::*;
+pub use generated::{
+    cf::Cf, map::Map, map_cf::MapCf, map_reduce::MapReduce, map_reduce_cf::MapReduceCf,
+    reduce::Reduce, reduce_cf::ReduceCf, vanilla::Vanilla,
+};
 pub use monoid::Monoid;

@@ -31,7 +31,12 @@ pub enum ResugaredPatKind {}
 /// Resugared variants for types. This represent extra printing-only types, see [`super::TyKind::Resugared`].
 #[derive_group_for_ast]
 #[visitable]
-pub enum ResugaredTyKind {}
+pub enum ResugaredTyKind {
+    /// The `unit` type.
+    ///
+    /// Without resugaring: a tuple of arity zero.
+    Unit,
+}
 
 /// Resugared variants for impl. items. This represent extra printing-only impl. items, see [`super::ImplItemKind::Resugared`].
 #[derive_group_for_ast]
