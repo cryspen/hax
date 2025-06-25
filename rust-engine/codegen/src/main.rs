@@ -415,7 +415,7 @@ impl<'a> VisitorBuilder<'a> {
         let doc = self.kind.doc();
         quote! {
             #doc
-            pub trait #trait_name #trait_generics: Sized {
+            pub trait #trait_name #trait_generics {
                 #assoc_error_type #assoc_out_type
                 #(#methods)*
             }
@@ -437,7 +437,8 @@ impl<'a> VisitorBuilder<'a> {
         } else {
             let trait_name = self.kind.trait_name();
             let trait_generics = self.kind.trait_generics();
-            let visitor_generics: syn::Generics = parse_quote!(<V: #trait_name #trait_generics>);
+            let visitor_generics: syn::Generics =
+                parse_quote!(<V: #trait_name #trait_generics + ?Sized>);
             let generics = merge_generics(trait_generics, visitor_generics);
             quote! {pub fn #method #generics(visitor: &mut V, v: #borrow #self_ty) -> #ret}
         }
