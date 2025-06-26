@@ -373,7 +373,7 @@ end) : EXPR = struct
     with Diagnostics.SpanFreeError.Exn (Data (ctx, kind)) ->
       let typ : ty =
         try c_ty e.span e.ty
-        with Diagnostics.SpanFreeError.Exn _ -> U.hax_failure_typ
+        with Diagnostics.SpanFreeError.Exn _ -> U.HaxFailure.Build.ty ""
       in
       let span = Span.of_thir e.span in
       U.hax_failure_expr' span typ (ctx, kind) ""
