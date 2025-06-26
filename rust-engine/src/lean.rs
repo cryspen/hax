@@ -53,15 +53,16 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                     allocator,
                     "def",
                     allocator.softline(),
-                    name,
-                    allocator.softline(),
-                    allocator
-                        .intersperse(params, allocator.softline())
-                        .nest(INDENT)
-                        .group(),
-                    allocator.softline(),
-                    ": ",
-                    &body.ty,
+                    docs![
+                        allocator,
+                        name,
+                        allocator.line(),
+                        allocator.intersperse(params, allocator.line())
+                    ]
+                    .align()
+                    .group()
+                    .flat_alt(allocator.intersperse(params, " ")),
+                    docs![allocator, allocator.line(), ": ", &body.ty].group(),
                     " :=",
                     allocator.line(),
                     &*body.kind,
@@ -123,6 +124,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
                     head.pretty(allocator)
                         .append(allocator.softline())
                         .append(allocator.intersperse(args, allocator.softline()))
+                        .group()
                         .parens()
                 }
             }
@@ -251,17 +253,20 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 bounds_impls,
                 trait_,
             } => {
-                let separator = allocator.softline();
+                let separator = allocator.line();
                 head.pretty(allocator)
                     .append(allocator.softline())
-                    .append(allocator.intersperse(args, separator))
+                    .append(allocator.intersperse(args, separator).nest(INDENT))
                     .parens()
+                    .group()
             }
             ExprKind::Literal(literal) => literal.pretty(allocator),
             ExprKind::Array(exprs) => docs![
                 allocator,
                 "#[",
-                allocator.intersperse(exprs, allocator.text(",").append(allocator.softline())),
+                allocator
+                    .intersperse(exprs, allocator.text(",").append(allocator.line()))
+                    .nest(INDENT),
                 "]"
             ]
             .group(),
