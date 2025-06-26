@@ -83,19 +83,51 @@ pub mod global_id {
         suffix: Option<ReservedSuffix>,
     }
 
+    /// A concrete identifier or a tuple.
+    #[derive_group_for_ast]
+    pub enum ConcreteOrTupleId {
+        /// An identifier that denotes something related to tuples.
+        Tuple(TupleIdentifier),
+        /// A concrete identifier that exists in Rust.
+        Concrete(ConcreteId),
+    }
+
+    /// A identifier that denotes something related to tuples.
+    #[derive_group_for_ast]
+    pub enum TupleIdentifier {
+        /// A tuple type
+        Type {
+            /// The length of the tuple
+            length: usize,
+        },
+        /// A tuple constructor
+        Constructor {
+            /// The length of the tuple
+            length: usize,
+        },
+        /// A field of a tuple constructor
+        Field {
+            /// The length of the tuple
+            length: usize,
+            /// What field?
+            /// Invariant: `nth < length`
+            nth: usize,
+        },
+    }
+
     /// A global identifier in hax.
     #[derive_group_for_ast]
     #[visitable(opaque)]
     pub enum GlobalId {
         /// A concrete identifier that exists in Rust.
-        Concrete(ConcreteId),
+        Concrete(ConcreteOrTupleId),
         /// A projector.
-        Projector(ConcreteId),
+        Projector(ConcreteOrTupleId),
     }
 
     impl PartialEq<DefId> for GlobalId {
         fn eq(&self, other: &DefId) -> bool {
-            if let Self::Concrete(concrete) = self {
+            if let Self::Concrete(ConcreteOrTupleId::Concrete(concrete)) = self {
                 &concrete.def_id.def_id == other
             } else {
                 false

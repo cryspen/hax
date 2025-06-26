@@ -6,49 +6,6 @@ type missing_type = unit
 
 module B = Rust_engine_types
 
-module SpecialNames = struct
-  let rec map_strings (f : string -> string)
-      ({ contents = { id; value } } : Types.def_id) =
-    let id = Int64.neg id in
-    let value =
-      match value with
-      | { index; is_local; kind; krate; parent; path } ->
-          let path =
-            List.map
-              ~f:(fun { data; disambiguator } ->
-                let data =
-                  match data with
-                  | Types.CrateRoot { name } ->
-                      Types.CrateRoot { name = f name }
-                  | Types.TypeNs s -> Types.TypeNs (f s)
-                  | Types.ValueNs s -> Types.ValueNs (f s)
-                  | Types.MacroNs s -> Types.MacroNs (f s)
-                  | Types.LifetimeNs s -> Types.LifetimeNs (f s)
-                  | other -> other
-                in
-                Types.{ data; disambiguator })
-              path
-          in
-          let parent = Option.map ~f:(map_strings f) parent in
-          Types.{ index; is_local; kind; krate; parent; path }
-    in
-    let contents : Types.node_for__def_id_contents = { id; value } in
-    { contents }
-
-  let mk value f =
-    Concrete_ident_generated.def_id_of >> map_strings f
-    >> Concrete_ident.of_def_id ~value
-
-  let f len nth = function
-    | "Tuple2" -> "Tuple" ^ Int.to_string len
-    | "1" -> Int.to_string nth
-    | s -> s
-
-  let tuple_type len = mk false (f len 0) Rust_primitives__hax__Tuple2
-  let tuple_cons len = mk true (f len 0) Rust_primitives__hax__Tuple2__Ctor
-  let tuple_field len nth = mk false (f len nth) Rust_primitives__hax__Tuple2__1
-end
-
 let to_diagnostic_payload (span : Ast.span) (payload : string) =
   try [%of_yojson: Types.diagnostic] (Yojson.Safe.from_string payload)
   with _ ->
@@ -131,21 +88,32 @@ module Make (FA : Features.T) = struct
     match fk with F16 -> F16 | F32 -> F32 | F64 -> F64 | F128 -> F128
 
   and dglobal_ident (gi : global_ident) : B.global_id =
-    let concrete c : B.global_id = B.Concrete (Concrete_ident.to_rust_ast c) in
+    let concrete c : B.global_id =
+      B.Concrete (B.Concrete (Concrete_ident.to_rust_ast c))
+    in
     let of_name n = concrete (Concrete_ident.of_name ~value:true n) in
     match gi with
     | `Concrete c -> concrete c
-    | `TupleType len -> SpecialNames.tuple_type len |> concrete
-    | `TupleCons len -> SpecialNames.tuple_cons len |> concrete
-    | `TupleField (nth, len) -> SpecialNames.tuple_field len nth |> concrete
+    | `TupleType length ->
+        let length = Int.to_string length in
+        B.Concrete (B.Tuple (B.Type { length }))
+    | `TupleCons length ->
+        let length = Int.to_string length in
+        B.Concrete (B.Tuple (B.Constructor { length }))
+    | `TupleField (nth, length) ->
+        let nth = Int.to_string nth in
+        let length = Int.to_string length in
+        B.Concrete (B.Tuple (B.Field { length; nth }))
     | `Primitive Deref -> of_name Rust_primitives__hax__deref_op
     | `Primitive Cast -> of_name Rust_primitives__hax__cast_op
     | `Primitive (LogicalOp And) -> of_name Rust_primitives__hax__logical_op_and
     | `Primitive (LogicalOp Or) -> of_name Rust_primitives__hax__logical_op_or
-    | `Projector (`Concrete c) -> Projector (Concrete_ident.to_rust_ast c)
-    | `Projector (`TupleField (nth, len)) ->
-        let c = SpecialNames.tuple_field len nth in
-        Projector (Concrete_ident.to_rust_ast c)
+    | `Projector (`Concrete c) ->
+        Projector (Concrete (Concrete_ident.to_rust_ast c))
+    | `Projector (`TupleField (nth, length)) ->
+        let nth = Int.to_string nth in
+        let length = Int.to_string length in
+        Projector (B.Tuple (B.Field { length; nth }))
 
   and dlocal_ident (li : local_ident) : B.local_id =
     Newtypelocal_id (Newtypesymbol li.name)
