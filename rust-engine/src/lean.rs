@@ -43,12 +43,12 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                 params,
                 safety,
             } => {
-                if !(generics.params.is_empty()
-                    && generics.constraints.is_empty()
-                    && safety == &SafetyKind::Safe)
-                {
-                    panic!()
-                };
+                // if !(generics.params.is_empty()
+                //     && generics.constraints.is_empty()
+                //     && safety == &SafetyKind::Safe)
+                // {
+                //     panic!()
+                // };
                 docs![
                     allocator,
                     "def",
@@ -59,9 +59,10 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                         .intersperse(params, allocator.softline())
                         .nest(INDENT)
                         .group(),
-                    allocator.reflow(" : "),
+                    allocator.softline(),
+                    ": ",
                     &body.ty,
-                    allocator.reflow(" :="),
+                    " :=",
                     allocator.line(),
                     &*body.kind,
                 ]
@@ -128,7 +129,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
             TyKind::Arrow { inputs, output } => allocator
                 .intersperse(
                     inputs.into_iter().chain(once(output)),
-                    allocator.reflow(" -> "),
+                    allocator.softline().append("-> "),
                 )
                 .parens(),
             TyKind::Ref {
@@ -183,9 +184,11 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b PatKind {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             PatKind::Wild => allocator.text("_"),
-            PatKind::Ascription { pat, ty } => docs![allocator, pat, allocator.reflow(" : "), ty]
-                .nest(INDENT)
-                .group(),
+            PatKind::Ascription { pat, ty } => {
+                docs![allocator, pat, allocator.softline(), ": ", ty]
+                    .nest(INDENT)
+                    .group()
+            }
             PatKind::Or { sub_pats } => todo!(),
             PatKind::Array { args } => todo!(),
             PatKind::Deref { sub_pat } => todo!(),
@@ -269,7 +272,8 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                     allocator,
                     "let ",
                     lhs,
-                    allocator.reflow(" := "),
+                    " :=",
+                    allocator.softline(),
                     docs![allocator, rhs].nest(INDENT).group(),
                     ";",
                     allocator.line(),
@@ -386,7 +390,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b GlobalId {
 
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Param {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
-        docs![allocator, &self.pat, allocator.reflow(" : "), &self.ty]
+        docs![allocator, &self.pat, allocator.softline(), ": ", &self.ty]
             .nest(INDENT)
             .parens()
             .group()
