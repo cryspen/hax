@@ -17,6 +17,7 @@ let
     };
     inherit buildInputs doCheck;
     doNotRemoveReferencesToRustToolchain = true;
+    RUSTFLAGS = lib.optionalString stdenv.isDarwin "-C link-arg=-L${libiconv}/lib";
   } // (if doCheck then {
     # [cargo test] builds independent workspaces. Each time another
     # workspace is added, it's corresponding lockfile should be added
