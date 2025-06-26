@@ -35,5 +35,7 @@ val owner_hint : t -> Types.def_id option
 (** Looks up the owner hint for a span. This should be used for user
 reports only. *)
 
-val to_span2 : t -> Types.span2
-(** Converts this span to a span2 for export to the Rust engine. *)
+val to_rust_ast_span : t -> Rust_engine_types.span
+(** Converts this span to a Rust engine span. *)
+
+val from_rust_ast_span : Rust_engine_types.span -> t
