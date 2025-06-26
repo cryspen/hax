@@ -571,14 +571,6 @@ pub mod map_reduce_cf {
                 visitor_reduce_value = visitor.visit_primitive_ty(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            TyKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_ty(visitor_item)?);
-                }
-                std::ops::ControlFlow::Continue(visitor_reduce_value)
-            }
             TyKind::App { head, args } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_global_id(head)?;
@@ -1306,14 +1298,6 @@ pub mod map_reduce_cf {
                 }
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            ExprKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_expr(visitor_item)?);
-                }
-                std::ops::ControlFlow::Continue(visitor_reduce_value)
-            }
             ExprKind::Borrow { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner)?;
@@ -1322,11 +1306,6 @@ pub mod map_reduce_cf {
             ExprKind::AddressOf { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner)?;
-                std::ops::ControlFlow::Continue(visitor_reduce_value)
-            }
-            ExprKind::Deref(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_expr(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -1370,7 +1349,11 @@ pub mod map_reduce_cf {
                 visitor_reduce_value.append(visitor.visit_loop_kind(kind)?);
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(value)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
@@ -2286,12 +2269,6 @@ pub mod map_cf {
                 visitor.visit_primitive_ty(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
-            TyKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_ty(visitor_item)?;
-                }
-                std::ops::ControlFlow::Continue(())
-            }
             TyKind::App { head, args } => {
                 visitor.visit_global_id(head)?;
                 for visitor_item in args {
@@ -2925,22 +2902,12 @@ pub mod map_cf {
                 }
                 std::ops::ControlFlow::Continue(())
             }
-            ExprKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_expr(visitor_item)?;
-                }
-                std::ops::ControlFlow::Continue(())
-            }
             ExprKind::Borrow { mutable, inner } => {
                 visitor.visit_expr(inner)?;
                 std::ops::ControlFlow::Continue(())
             }
             ExprKind::AddressOf { mutable, inner } => {
                 visitor.visit_expr(inner)?;
-                std::ops::ControlFlow::Continue(())
-            }
-            ExprKind::Deref(anon_field_0) => {
-                visitor.visit_expr(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -2978,7 +2945,11 @@ pub mod map_cf {
                 visitor.visit_loop_kind(kind)?;
                 std::ops::ControlFlow::Continue(())
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 visitor.visit_expr(value)?;
                 std::ops::ControlFlow::Continue(())
             }
@@ -3919,14 +3890,6 @@ pub mod reduce_cf {
                 visitor_reduce_value = visitor.visit_primitive_ty(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            TyKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_ty(visitor_item)?);
-                }
-                std::ops::ControlFlow::Continue(visitor_reduce_value)
-            }
             TyKind::App { head, args } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_global_id(head)?;
@@ -4654,14 +4617,6 @@ pub mod reduce_cf {
                 }
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            ExprKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_expr(visitor_item)?);
-                }
-                std::ops::ControlFlow::Continue(visitor_reduce_value)
-            }
             ExprKind::Borrow { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner)?;
@@ -4670,11 +4625,6 @@ pub mod reduce_cf {
             ExprKind::AddressOf { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner)?;
-                std::ops::ControlFlow::Continue(visitor_reduce_value)
-            }
-            ExprKind::Deref(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_expr(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -4718,7 +4668,11 @@ pub mod reduce_cf {
                 visitor_reduce_value.append(visitor.visit_loop_kind(kind)?);
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(value)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
@@ -5634,12 +5588,6 @@ pub mod cf {
                 visitor.visit_primitive_ty(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
-            TyKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_ty(visitor_item)?;
-                }
-                std::ops::ControlFlow::Continue(())
-            }
             TyKind::App { head, args } => {
                 visitor.visit_global_id(head)?;
                 for visitor_item in args {
@@ -6273,22 +6221,12 @@ pub mod cf {
                 }
                 std::ops::ControlFlow::Continue(())
             }
-            ExprKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_expr(visitor_item)?;
-                }
-                std::ops::ControlFlow::Continue(())
-            }
             ExprKind::Borrow { mutable, inner } => {
                 visitor.visit_expr(inner)?;
                 std::ops::ControlFlow::Continue(())
             }
             ExprKind::AddressOf { mutable, inner } => {
                 visitor.visit_expr(inner)?;
-                std::ops::ControlFlow::Continue(())
-            }
-            ExprKind::Deref(anon_field_0) => {
-                visitor.visit_expr(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -6326,7 +6264,11 @@ pub mod cf {
                 visitor.visit_loop_kind(kind)?;
                 std::ops::ControlFlow::Continue(())
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 visitor.visit_expr(value)?;
                 std::ops::ControlFlow::Continue(())
             }
@@ -7083,14 +7025,6 @@ pub mod map_reduce {
                 visitor_reduce_value = visitor.visit_primitive_ty(anon_field_0);
                 visitor_reduce_value
             }
-            TyKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_ty(visitor_item));
-                }
-                visitor_reduce_value
-            }
             TyKind::App { head, args } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_global_id(head);
@@ -7744,14 +7678,6 @@ pub mod map_reduce {
                 }
                 visitor_reduce_value
             }
-            ExprKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_expr(visitor_item));
-                }
-                visitor_reduce_value
-            }
             ExprKind::Borrow { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner);
@@ -7760,11 +7686,6 @@ pub mod map_reduce {
             ExprKind::AddressOf { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner);
-                visitor_reduce_value
-            }
-            ExprKind::Deref(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_expr(anon_field_0);
                 visitor_reduce_value
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -7808,7 +7729,11 @@ pub mod map_reduce {
                 visitor_reduce_value.append(visitor.visit_loop_kind(kind));
                 visitor_reduce_value
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(value);
                 visitor_reduce_value
@@ -8546,12 +8471,6 @@ pub mod map {
                 visitor.visit_primitive_ty(anon_field_0);
                 ()
             }
-            TyKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_ty(visitor_item);
-                }
-                ()
-            }
             TyKind::App { head, args } => {
                 visitor.visit_global_id(head);
                 for visitor_item in args {
@@ -9119,22 +9038,12 @@ pub mod map {
                 }
                 ()
             }
-            ExprKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_expr(visitor_item);
-                }
-                ()
-            }
             ExprKind::Borrow { mutable, inner } => {
                 visitor.visit_expr(inner);
                 ()
             }
             ExprKind::AddressOf { mutable, inner } => {
                 visitor.visit_expr(inner);
-                ()
-            }
-            ExprKind::Deref(anon_field_0) => {
-                visitor.visit_expr(anon_field_0);
                 ()
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -9172,7 +9081,11 @@ pub mod map {
                 visitor.visit_loop_kind(kind);
                 ()
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 visitor.visit_expr(value);
                 ()
             }
@@ -9908,14 +9821,6 @@ pub mod reduce {
                 visitor_reduce_value = visitor.visit_primitive_ty(anon_field_0);
                 visitor_reduce_value
             }
-            TyKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_ty(visitor_item));
-                }
-                visitor_reduce_value
-            }
             TyKind::App { head, args } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_global_id(head);
@@ -10599,14 +10504,6 @@ pub mod reduce {
                 }
                 visitor_reduce_value
             }
-            ExprKind::Tuple(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = V::Out::identity();
-                for visitor_item in anon_field_0 {
-                    visitor_reduce_value.append(visitor.visit_expr(visitor_item));
-                }
-                visitor_reduce_value
-            }
             ExprKind::Borrow { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner);
@@ -10615,11 +10512,6 @@ pub mod reduce {
             ExprKind::AddressOf { mutable, inner } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(inner);
-                visitor_reduce_value
-            }
-            ExprKind::Deref(anon_field_0) => {
-                let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_expr(anon_field_0);
                 visitor_reduce_value
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -10663,7 +10555,11 @@ pub mod reduce {
                 visitor_reduce_value.append(visitor.visit_loop_kind(kind));
                 visitor_reduce_value
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 let mut visitor_reduce_value: V::Out;
                 visitor_reduce_value = visitor.visit_expr(value);
                 visitor_reduce_value
@@ -11434,12 +11330,6 @@ pub mod vanilla {
                 visitor.visit_primitive_ty(anon_field_0);
                 ()
             }
-            TyKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_ty(visitor_item);
-                }
-                ()
-            }
             TyKind::App { head, args } => {
                 visitor.visit_global_id(head);
                 for visitor_item in args {
@@ -12037,22 +11927,12 @@ pub mod vanilla {
                 }
                 ()
             }
-            ExprKind::Tuple(anon_field_0) => {
-                for visitor_item in anon_field_0 {
-                    visitor.visit_expr(visitor_item);
-                }
-                ()
-            }
             ExprKind::Borrow { mutable, inner } => {
                 visitor.visit_expr(inner);
                 ()
             }
             ExprKind::AddressOf { mutable, inner } => {
                 visitor.visit_expr(inner);
-                ()
-            }
-            ExprKind::Deref(anon_field_0) => {
-                visitor.visit_expr(anon_field_0);
                 ()
             }
             ExprKind::Let { lhs, rhs, body } => {
@@ -12090,7 +11970,11 @@ pub mod vanilla {
                 visitor.visit_loop_kind(kind);
                 ()
             }
-            ExprKind::Break { value, label } => {
+            ExprKind::Break {
+                value,
+                label,
+                state,
+            } => {
                 visitor.visit_expr(value);
                 ()
             }
