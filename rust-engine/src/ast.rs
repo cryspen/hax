@@ -84,12 +84,6 @@ pub enum TyKind {
     /// `i32`, `bool`
     Primitive(PrimitiveTy),
 
-    /// A tuple type.
-    ///
-    /// # Example:
-    /// `(i32, bool)`
-    Tuple(Vec<Ty>),
-
     /// A type application (generic type).
     ///
     /// # Example:
@@ -912,12 +906,6 @@ pub enum ExprKind {
         arms: Vec<Arm>,
     },
 
-    /// A tuple literal.
-    ///
-    /// # Example:
-    /// `(a, b)`
-    Tuple(Vec<Expr>),
-
     /// A reference expression.
     ///
     /// # Examples:
@@ -940,12 +928,6 @@ pub enum ExprKind {
         /// The expression on which we take a pointer
         inner: Expr,
     },
-
-    /// A dereference
-    ///
-    /// # Example:
-    /// `*x`
-    Deref(Expr),
 
     /// A `let` expression used in expressions.
     ///
@@ -1023,6 +1005,9 @@ pub enum ExprKind {
         value: Expr,
         /// What loop shall we break? By default, the parent enclosing loop.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Return from a function.
@@ -1041,6 +1026,9 @@ pub enum ExprKind {
     Continue {
         /// The loop we continue.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Closure (anonymous function)
