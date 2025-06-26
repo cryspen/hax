@@ -41,7 +41,7 @@ module SpecialNames = struct
 
   let f len nth = function
     | "Tuple2" -> "Tuple" ^ Int.to_string len
-    | "1" -> "Tuple" ^ Int.to_string nth
+    | "1" -> Int.to_string nth
     | s -> s
 
   let tuple_type len = mk false (f len 0) Rust_primitives__hax__Tuple2
