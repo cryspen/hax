@@ -138,8 +138,12 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
                 region,
             } => print_todo!(allocator),
             TyKind::Param(local_id) => print_todo!(allocator),
-            TyKind::Slice(ty) => print_todo!(allocator),
-            TyKind::Array { ty, length } => print_todo!(allocator),
+            TyKind::Slice(ty) => docs![allocator, "Array ", ty].parens(),
+            TyKind::Array { ty, length } => {
+                docs![allocator, "Vector ", ty, allocator.softline(), &(**length),]
+                    .parens()
+                    .group()
+            }
             TyKind::RawPointer => print_todo!(allocator),
             TyKind::AssociatedType { impl_, item } => print_todo!(allocator),
             TyKind::Opaque(global_id) => print_todo!(allocator),
@@ -254,14 +258,20 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                     .parens()
             }
             ExprKind::Literal(literal) => literal.pretty(allocator),
-            ExprKind::Array(exprs) => print_todo!(allocator),
+            ExprKind::Array(exprs) => docs![
+                allocator,
+                "#[",
+                allocator.intersperse(exprs, allocator.text(",").append(allocator.softline())),
+                "]"
+            ]
+            .group(),
             ExprKind::Construct {
                 constructor,
                 is_record,
                 is_struct,
                 fields,
                 base,
-            } => print_todo!(allocator),
+            } => constructor.pretty(allocator), // Over-simplification
             ExprKind::Match { scrutinee, arms } => print_todo!(allocator),
             ExprKind::Tuple(exprs) => print_todo!(allocator),
             ExprKind::Borrow { mutable, inner } => print_todo!(allocator),
@@ -301,7 +311,14 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 params,
                 body,
                 captures,
-            } => print_todo!(allocator),
+            } => docs![
+                allocator,
+                allocator.reflow("fun "),
+                allocator.intersperse(params, allocator.softline()),
+                allocator.reflow(" => "),
+                body
+            ]
+            .parens(),
             ExprKind::Block { body, safety_mode } => print_todo!(allocator),
             ExprKind::Quote { contents } => print_todo!(allocator),
             ExprKind::Resugared(resugared_expr_kind) => print_todo!(allocator),
