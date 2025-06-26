@@ -6,50 +6,67 @@ type missing_type = unit
 
 module B = Rust_engine_types
 
+let to_diagnostic_payload (span : Ast.span) (payload : string) =
+  try [%of_yojson: Types.diagnostic] (Yojson.Safe.from_string payload)
+  with _ ->
+    let node : Types.fragment = Unknown "OCamlEngineError" in
+    let info : B.diagnostic_info =
+      {
+        context = Import;
+        kind = Custom payload;
+        span = Span.to_rust_ast_span span;
+      }
+    in
+    { node; info }
+
 module Make (FA : Features.T) = struct
   open Ast
   module A = Ast.Make (FA)
+  module U = Ast_utils.Make (FA)
 
   let dsafety_kind (safety : A.safety_kind) : B.safety_kind =
     match safety with Safe -> B.Safe | Unsafe _ -> B.Unsafe
 
-  let rec dty (ty : A.ty) : B.ty =
-    match ty with
-    | TBool -> Newtypety (Primitive Bool)
-    | TChar -> Newtypety (Primitive Char)
-    | TInt k -> Newtypety (Primitive (Int (dint_kind k)))
-    | TFloat k -> Newtypety (Primitive (Float (dfloat_kind k)))
-    | TStr -> Newtypety (Primitive Str)
-    | TApp { ident; args } ->
-        Newtypety
-          (B.App
-             {
-               head = dglobal_ident ident;
-               args = List.map ~f:dgeneric_value args;
-             })
-    | TArray { typ; length } ->
-        Newtypety (Array { ty = dty typ; length = dexpr length })
-    | TSlice { witness = _; ty } -> Newtypety (Slice (dty ty))
-    | TRef { witness = _; typ; mut; region = _ } ->
-        Newtypety
-          (Ref
-             {
-               inner = dty typ;
-               mutable' = (match mut with Mutable _ -> true | _ -> false);
-               region = B.EmptyStructregion2;
-             })
-    | TParam local_ident -> Newtypety (Param (dlocal_ident local_ident))
-    | TArrow (inputs, output) ->
-        Newtypety
-          (Arrow { inputs = List.map ~f:dty inputs; output = dty output })
-    | TAssociatedType { impl; item } ->
-        Newtypety
-          (AssociatedType
-             { impl_ = dimpl_expr impl; item = dconcrete_ident item })
-    | TOpaque ident -> Newtypety (Opaque (dconcrete_ident ident))
-    | TRawPointer { witness = _ } -> Newtypety RawPointer
-    | TDyn { witness = _; goals } ->
-        Newtypety (Dyn (List.map ~f:ddyn_trait_goal goals))
+  let rec dty_no_error (span : Ast.span) (ty : A.ty) : B.ty =
+    Newtypety
+      (match ty with
+      | TBool -> Primitive Bool
+      | TChar -> Primitive Char
+      | TInt k -> Primitive (Int (dint_kind k))
+      | TFloat k -> Primitive (Float (dfloat_kind k))
+      | TStr -> Primitive Str
+      | TApp { ident; args } ->
+          B.App
+            {
+              head = dglobal_ident ident;
+              args = List.map ~f:(dgeneric_value span) args;
+            }
+      | TArray { typ; length } ->
+          Array { ty = dty span typ; length = dexpr length }
+      | TSlice { witness = _; ty } -> Slice (dty span ty)
+      | TRef { witness = _; typ; mut; region = _ } ->
+          Ref
+            {
+              inner = dty span typ;
+              mutable' = (match mut with Mutable _ -> true | _ -> false);
+              region = B.EmptyStructregion2;
+            }
+      | TParam local_ident -> Param (dlocal_ident local_ident)
+      | TArrow (inputs, output) ->
+          Arrow
+            { inputs = List.map ~f:(dty span) inputs; output = dty span output }
+      | TAssociatedType { impl; item } ->
+          AssociatedType
+            { impl_ = dimpl_expr span impl; item = dconcrete_ident item }
+      | TOpaque ident -> Opaque (dconcrete_ident ident)
+      | TRawPointer { witness = _ } -> RawPointer
+      | TDyn { witness = _; goals } ->
+          Dyn (List.map ~f:(ddyn_trait_goal span) goals))
+
+  and dty (span : Ast.span) (ty : A.ty) : B.ty =
+    match U.HaxFailure.Destruct.ty ty with
+    | Some s -> Newtypety (Error (to_diagnostic_payload span s))
+    | None -> dty_no_error span ty
 
   and dint_kind (ik : int_kind) : B.int_kind =
     let size : B.int_size =
@@ -96,56 +113,60 @@ module Make (FA : Features.T) = struct
   and dconcrete_ident (gi : concrete_ident) : B.global_id =
     dglobal_ident (`Concrete gi)
 
-  and ddyn_trait_goal (r : A.dyn_trait_goal) : B.dyn_trait_goal =
+  and ddyn_trait_goal span (r : A.dyn_trait_goal) : B.dyn_trait_goal =
     {
-      non_self_args = List.map ~f:dgeneric_value r.non_self_args;
+      non_self_args = List.map ~f:(dgeneric_value span) r.non_self_args;
       trait_ = dconcrete_ident r.trait;
     }
 
-  and dtrait_goal (r : A.trait_goal) : B.trait_goal =
+  and dtrait_goal span (r : A.trait_goal) : B.trait_goal =
     {
-      args = List.map ~f:dgeneric_value r.args;
+      args = List.map ~f:(dgeneric_value span) r.args;
       trait_ = dconcrete_ident r.trait;
     }
 
-  and dimpl_ident (r : A.impl_ident) : B.impl_ident =
-    { goal = dtrait_goal r.goal; name = Newtypesymbol r.name }
+  and dimpl_ident span (r : A.impl_ident) : B.impl_ident =
+    { goal = dtrait_goal span r.goal; name = Newtypesymbol r.name }
 
-  and dprojection_predicate (r : A.projection_predicate) :
+  and dprojection_predicate span (r : A.projection_predicate) :
       B.projection_predicate =
     {
       assoc_item = dconcrete_ident r.assoc_item;
-      impl_ = dimpl_expr r.impl;
-      ty = dty r.typ;
+      impl_ = dimpl_expr span r.impl;
+      ty = dty span r.typ;
     }
 
-  and dimpl_expr (i : A.impl_expr) : B.impl_expr =
-    { goal = dtrait_goal i.goal; kind = dimpl_expr_kind i.kind }
+  and dimpl_expr span (i : A.impl_expr) : B.impl_expr =
+    { goal = dtrait_goal span i.goal; kind = dimpl_expr_kind span i.kind }
 
-  and dimpl_expr_kind (i : A.impl_expr_kind) : B.impl_expr_kind =
+  and dimpl_expr_kind span (i : A.impl_expr_kind) : B.impl_expr_kind =
     match i with
     | A.Self -> B.Self_
-    | A.Concrete tr -> B.Concrete (dtrait_goal tr)
+    | A.Concrete tr -> B.Concrete (dtrait_goal span tr)
     | A.LocalBound { id } -> B.LocalBound { id = B.Newtypesymbol id }
     | A.Parent { impl; ident } ->
-        B.Parent { impl_ = dimpl_expr impl; ident = dimpl_ident ident }
+        B.Parent
+          { impl_ = dimpl_expr span impl; ident = dimpl_ident span ident }
     | A.Projection { impl; item; ident } ->
         B.Projection
           {
-            impl_ = dimpl_expr impl;
+            impl_ = dimpl_expr span impl;
             item = dconcrete_ident item;
-            ident = dimpl_ident ident;
+            ident = dimpl_ident span ident;
           }
     | A.ImplApp { impl; args } ->
         B.ImplApp
-          { impl_ = dimpl_expr impl; args = List.map ~f:dimpl_expr args }
+          {
+            impl_ = dimpl_expr span impl;
+            args = List.map ~f:(dimpl_expr span) args;
+          }
     | A.Dyn -> B.Dyn
-    | A.Builtin tr -> B.Builtin (dtrait_goal tr)
+    | A.Builtin tr -> B.Builtin (dtrait_goal span tr)
 
-  and dgeneric_value (generic_value : A.generic_value) : B.generic_value =
+  and dgeneric_value span (generic_value : A.generic_value) : B.generic_value =
     match generic_value with
     | GLifetime _ -> B.Lifetime
-    | GType t -> B.Ty (dty t)
+    | GType t -> B.Ty (dty span t)
     | GConst e -> B.Expr (dexpr e)
 
   and dborrow_kind (borrow_kind : A.borrow_kind) : B.borrow_kind =
@@ -168,14 +189,19 @@ module Make (FA : Features.T) = struct
     { kind; span = dspan a.span }
 
   and dpat (p : A.pat) : B.pat =
-    { kind = dpat' p.p; meta = dmetadata p.span; ty = dty p.typ }
+    let kind : B.pat_kind =
+      match U.HaxFailure.Destruct.pat p with
+      | Some s -> Error (to_diagnostic_payload p.span s)
+      | _ -> dpat' p.span p.p
+    in
+    { kind; meta = dmetadata p.span; ty = dty p.span p.typ }
 
-  and dpat' (pat : A.pat') : B.pat_kind =
+  and dpat' span (pat : A.pat') : B.pat_kind =
     match pat with
     | PWild -> Wild
     | PAscription { typ; typ_span; pat } ->
         Ascription
-          { pat = dpat pat; ty = { span = dspan typ_span; ty = dty typ } }
+          { pat = dpat pat; ty = { span = dspan typ_span; ty = dty span typ } }
     | PConstruct { constructor; is_record; is_struct; fields } ->
         Construct
           {
@@ -201,7 +227,7 @@ module Make (FA : Features.T) = struct
             sub_pat = Option.map ~f:(fun (p, _) -> dpat p) subpat;
           }
 
-  and dspan : span -> B.span = Span.to_span2
+  and dspan : span -> B.span = Span.to_rust_ast_span
 
   and dbinding_mode (binding_mode : A.binding_mode) : B.binding_mode =
     match binding_mode with
@@ -209,9 +235,14 @@ module Make (FA : Features.T) = struct
     | ByRef (kind, _witness) -> B.ByRef (dborrow_kind kind)
 
   and dexpr (e : A.expr) : B.expr =
-    { kind = dexpr' e.e; ty = dty e.typ; meta = dmetadata e.span }
+    let kind : B.expr_kind =
+      match U.HaxFailure.Destruct.expr e with
+      | Some (s, _) -> Error (to_diagnostic_payload e.span s)
+      | None -> dexpr' e.span e.e
+    in
+    { kind; ty = dty e.span e.typ; meta = dmetadata e.span }
 
-  and dexpr' (expr : A.expr') : B.expr_kind =
+  and dexpr' span (expr : A.expr') : B.expr_kind =
     match expr with
     | If { cond; then_; else_ } ->
         If
@@ -225,12 +256,12 @@ module Make (FA : Features.T) = struct
           {
             head = dexpr f;
             args = List.map ~f:dexpr args;
-            generic_args = List.map ~f:dgeneric_value generic_args;
-            bounds_impls = List.map ~f:dimpl_expr bounds_impls;
+            generic_args = List.map ~f:(dgeneric_value span) generic_args;
+            bounds_impls = List.map ~f:(dimpl_expr span) bounds_impls;
             trait_ =
               Option.map
                 ~f:(fun (impl, args) ->
-                  (dimpl_expr impl, List.map ~f:dgeneric_value args))
+                  (dimpl_expr span impl, List.map ~f:(dgeneric_value span) args))
                 trait;
           }
     | Literal lit -> Literal (dliteral lit)
@@ -253,15 +284,15 @@ module Make (FA : Features.T) = struct
         Block { body = dexpr e; safety_mode = dsafety_kind safety_mode }
     | LocalVar id -> LocalId (dlocal_ident id)
     | GlobalVar id -> GlobalId (dglobal_ident id)
-    | Ascription { e; typ } -> Ascription { e = dexpr e; ty = dty typ }
+    | Ascription { e; typ } -> Ascription { e = dexpr e; ty = dty span typ }
     | MacroInvokation _ -> deprecated_node "MacroInvokation"
     | Assign { lhs; e; witness = _ } ->
-        Assign { lhs = dlhs lhs; value = dexpr e }
+        Assign { lhs = dlhs span lhs; value = dexpr e }
     | Loop { body; kind; state; control_flow; label; witness = _ } ->
         Loop
           {
             body = dexpr body;
-            kind = dloop_kind kind;
+            kind = dloop_kind span kind;
             state = Option.map ~f:dloop_state state;
             control_flow =
               Option.map ~f:(fun (k, _) -> dcontrol_flow_kind k) control_flow;
@@ -297,7 +328,7 @@ module Make (FA : Features.T) = struct
             captures = List.map ~f:dexpr captures;
           }
     | EffectAction _ -> deprecated_node "EffectAction"
-    | Quote q -> Quote { contents = dquote q }
+    | Quote q -> Quote { contents = dquote span q }
 
   and dcontrol_flow_kind (cfk : A.cf_kind) : B.control_flow_kind =
     match cfk with BreakOnly -> B.BreakOnly | BreakOrReturn -> B.BreakOrReturn
@@ -313,12 +344,12 @@ module Make (FA : Features.T) = struct
           { value = Newtypesymbol value; negative; kind = dfloat_kind kind }
     | Bool b -> B.Bool b
 
-  and dquote ({ contents; _ } : A.quote) : B.quote =
+  and dquote span ({ contents; _ } : A.quote) : B.quote =
     let f = function
       | A.Verbatim code -> B.Verbatim code
       | A.Expr e -> B.Expr (dexpr e)
       | A.Pattern p -> B.Pattern (dpat p)
-      | A.Typ t -> B.Ty (dty t)
+      | A.Typ t -> B.Ty (dty span t)
     in
     Newtypequote (List.map ~f contents)
 
@@ -345,7 +376,7 @@ module Make (FA : Features.T) = struct
         | `Replace -> B.Replace);
     }
 
-  and dloop_kind (k : A.loop_kind) : B.loop_kind =
+  and dloop_kind span (k : A.loop_kind) : B.loop_kind =
     match k with
     | A.UnconditionalLoop -> B.UnconditionalLoop
     | A.WhileLoop { condition; witness = _ } ->
@@ -358,7 +389,7 @@ module Make (FA : Features.T) = struct
             start = dexpr start;
             end' = dexpr end_;
             var = dlocal_ident var;
-            var_ty = dty var_typ;
+            var_ty = dty span var_typ;
           }
 
   and dloop_state (s : A.loop_state) : B.loop_state =
@@ -380,16 +411,17 @@ module Make (FA : Features.T) = struct
     | IfLet { lhs; rhs; witness = _ } ->
         B.IfLet { lhs = dpat lhs; rhs = dexpr rhs }
 
-  and dlhs (lhs : A.lhs) : B.lhs =
+  and dlhs span (lhs : A.lhs) : B.lhs =
     match lhs with
     | A.LhsLocalVar { var; typ } ->
-        B.LocalVar { var = dlocal_ident var; ty = dty typ }
+        B.LocalVar { var = dlocal_ident var; ty = dty span typ }
     | A.LhsArbitraryExpr { e; witness = _ } -> B.ArbitraryExpr (dexpr e)
     | A.LhsFieldAccessor { e; field; typ; witness = _ } ->
         B.FieldAccessor
-          { e = dlhs e; field = dglobal_ident field; ty = dty typ }
+          { e = dlhs span e; field = dglobal_ident field; ty = dty span typ }
     | A.LhsArrayAccessor { e; index; typ; witness = _ } ->
-        B.ArrayAccessor { e = dlhs e; index = dexpr index; ty = dty typ }
+        B.ArrayAccessor
+          { e = dlhs span e; index = dexpr index; ty = dty span typ }
 
   let dgeneric_param ({ ident; span; attrs; kind } : A.generic_param) :
       B.generic_param =
@@ -397,110 +429,111 @@ module Make (FA : Features.T) = struct
       match kind with
       | GPLifetime { witness = _ } -> Lifetime
       | GPType -> Type
-      | GPConst { typ } -> Const { ty = dty typ }
+      | GPConst { typ } -> Const { ty = dty span typ }
     in
     { ident = dlocal_ident ident; meta = dmetadata ~attrs span; kind }
 
-  let dgeneric_constraint (generic_constraint : A.generic_constraint) :
+  let dgeneric_constraint span (generic_constraint : A.generic_constraint) :
       B.generic_constraint =
     match generic_constraint with
     | GCLifetime (lf, _witness) -> Lifetime lf
-    | GCType impl_ident -> Type (dimpl_ident impl_ident)
-    | GCProjection projection -> Projection (dprojection_predicate projection)
+    | GCType impl_ident -> Type (dimpl_ident span impl_ident)
+    | GCProjection projection ->
+        Projection (dprojection_predicate span projection)
 
-  let dgenerics (g : A.generics) : B.generics =
+  let dgenerics span (g : A.generics) : B.generics =
     {
-      constraints = List.map ~f:dgeneric_constraint g.constraints;
+      constraints = List.map ~f:(dgeneric_constraint span) g.constraints;
       params = List.map ~f:dgeneric_param g.params;
     }
 
-  let dparam (p : A.param) : B.param =
+  let dparam span (p : A.param) : B.param =
     {
       attributes = List.map ~f:dattr p.attrs;
       pat = dpat p.pat;
-      ty = dty p.typ;
+      ty = dty span p.typ;
       ty_span = Option.map ~f:dspan p.typ_span;
     }
 
-  let dvariant (v : A.variant) : B.variant =
+  let dvariant span (v : A.variant) : B.variant =
     let dattrs = List.map ~f:dattr in
     {
       arguments =
         List.map
-          ~f:(fun (id, t, a) -> (dconcrete_ident id, dty t, dattrs a))
+          ~f:(fun (id, t, a) -> (dconcrete_ident id, dty span t, dattrs a))
           v.arguments;
       attributes = dattrs v.attrs;
       is_record = v.is_record;
       name = dconcrete_ident v.name;
     }
 
-  let dtrait_item' (ti : A.trait_item') : B.trait_item_kind =
+  let dtrait_item' span (ti : A.trait_item') : B.trait_item_kind =
     match ti with
-    | TIType idents -> Type (List.map ~f:dimpl_ident idents)
-    | TIFn t -> Fn (dty t)
+    | TIType idents -> Type (List.map ~f:(dimpl_ident span) idents)
+    | TIFn t -> Fn (dty span t)
     | TIDefault { params; body; witness = _ } ->
-        Default { params = List.map ~f:dparam params; body = dexpr body }
+        Default { params = List.map ~f:(dparam span) params; body = dexpr body }
 
   let dtrait_item (ti : A.trait_item) : B.trait_item =
     {
-      generics = dgenerics ti.ti_generics;
+      generics = dgenerics ti.ti_span ti.ti_generics;
       ident = dconcrete_ident ti.ti_ident;
-      kind = dtrait_item' ti.ti_v;
+      kind = dtrait_item' ti.ti_span ti.ti_v;
       meta = dmetadata ~attrs:ti.ti_attrs ti.ti_span;
     }
 
-  let dimpl_item' (ii : A.impl_item') : B.impl_item_kind =
+  let dimpl_item' span (ii : A.impl_item') : B.impl_item_kind =
     match ii with
     | IIType { typ; parent_bounds } ->
         Type
           {
-            ty = dty typ;
+            ty = dty span typ;
             parent_bounds =
-              List.map ~f:(dimpl_expr *** dimpl_ident) parent_bounds;
+              List.map ~f:(dimpl_expr span *** dimpl_ident span) parent_bounds;
           }
     | IIFn { body; params } ->
-        Fn { body = dexpr body; params = List.map ~f:dparam params }
+        Fn { body = dexpr body; params = List.map ~f:(dparam span) params }
 
   let dimpl_item (ii : A.impl_item) : B.impl_item =
     {
-      generics = dgenerics ii.ii_generics;
+      generics = dgenerics ii.ii_span ii.ii_generics;
       ident = dconcrete_ident ii.ii_ident;
-      kind = dimpl_item' ii.ii_v;
+      kind = dimpl_item' ii.ii_span ii.ii_v;
       meta = dmetadata ~attrs:ii.ii_attrs ii.ii_span;
     }
 
-  let ditem' (item : A.item') (span : Types.span2) : B.item_kind =
+  let ditem' (span : Ast.span) (item : A.item') : B.item_kind =
     match item with
     | A.Fn { name; generics; body; params; safety } ->
         B.Fn
           {
             name = dconcrete_ident name;
-            generics = dgenerics generics;
+            generics = dgenerics span generics;
             body = dexpr body;
-            params = List.map ~f:dparam params;
+            params = List.map ~f:(dparam span) params;
             safety = dsafety_kind safety;
           }
     | A.Type { name; generics; variants; is_struct } ->
         B.Type
           {
             name = dconcrete_ident name;
-            generics = dgenerics generics;
-            variants = List.map ~f:dvariant variants;
+            generics = dgenerics span generics;
+            variants = List.map ~f:(dvariant span) variants;
             is_struct;
           }
     | A.TyAlias { name; generics; ty } ->
         B.TyAlias
           {
             name = dconcrete_ident name;
-            generics = dgenerics generics;
-            ty = dty ty;
+            generics = dgenerics span generics;
+            ty = dty span ty;
           }
     | A.IMacroInvokation _ -> deprecated_node "IMacroInvokation"
     | A.Trait { name; generics; items; safety = _ } ->
         B.Trait
           {
             name = dconcrete_ident name;
-            generics = dgenerics generics;
+            generics = dgenerics span generics;
             items = List.map ~f:dtrait_item items;
           }
     | A.Impl
@@ -514,15 +547,16 @@ module Make (FA : Features.T) = struct
         } ->
         B.Impl
           {
-            generics = dgenerics generics;
-            self_ty = dty self_ty;
+            generics = dgenerics span generics;
+            self_ty = dty span self_ty;
             of_trait =
               ( dconcrete_ident trait_id,
-                List.map ~f:dgeneric_value trait_generics );
+                List.map ~f:(dgeneric_value span) trait_generics );
             items = List.map ~f:dimpl_item items;
             parent_bounds =
               List.map
-                ~f:(fun (impl, ident) -> (dimpl_expr impl, dimpl_ident ident))
+                ~f:(fun (impl, ident) ->
+                  (dimpl_expr span impl, dimpl_ident span ident))
                 parent_bounds;
             safety = dsafety_kind safety;
           }
@@ -530,20 +564,16 @@ module Make (FA : Features.T) = struct
         B.Alias { name = dconcrete_ident name; item = dconcrete_ident item }
     | A.Use { path; is_external; rename } -> B.Use { path; is_external; rename }
     | A.Quote { quote; origin } ->
-        B.Quote { quote = dquote quote; origin = ditem_quote_origin origin }
-    | A.HaxError details ->
-        let fragment : Types.fragment = Unknown "HaxError" in
-        let info : B.diagnostic_info =
-          { context = Import; kind = AssertionFailure { details }; span }
-        in
-        Error { fragment; diagnostics = [ { node = fragment; info } ] }
+        B.Quote
+          { quote = dquote span quote; origin = ditem_quote_origin origin }
     | A.NotImplementedYet -> B.NotImplementedYet
+    | A.HaxError s -> Error (to_diagnostic_payload span s)
 
   let ditem (i : A.item) : B.item list =
     [
       {
         ident = dconcrete_ident i.ident;
-        kind = ditem' i.v (dspan i.span);
+        kind = ditem' i.span i.v;
         meta = dmetadata ~attrs:i.attrs i.span;
       };
     ]
