@@ -167,14 +167,15 @@ pub fn implied_predicates<'tcx>(
     }
 }
 
-/// Erase all regions. Largely copied from `tcx.erase_regions`.
-pub fn erase_all_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
+/// Erase all regions. Largely copied from `tcx.erase_regions`, but erases more regions.
+fn erase_all_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
 where
     T: TypeFoldable<TyCtxt<'tcx>>,
 {
     use rustc_middle::ty;
     struct RegionEraserVisitor<'tcx> {
         tcx: TyCtxt<'tcx>,
+        depth: u32,
     }
 
     impl<'tcx> TypeFolder<TyCtxt<'tcx>> for RegionEraserVisitor<'tcx> {
@@ -190,22 +191,27 @@ where
         where
             T: TypeFoldable<TyCtxt<'tcx>>,
         {
-            // Empty the binder
-            Binder::dummy(t.skip_binder().fold_with(self))
+            let t = self.tcx.anonymize_bound_vars(t);
+            self.depth += 1;
+            let t = t.super_fold_with(self);
+            self.depth -= 1;
+            t
         }
 
-        fn fold_region(&mut self, _r: ty::Region<'tcx>) -> ty::Region<'tcx> {
-            // We erase bound regions despite it being possibly incorrect. `for<'a> fn(&'a
-            // ())` and `fn(&'free ())` are different types: they may implement different
-            // traits and have a different `TypeId`. It's unclear whether this can cause us
-            // to select the wrong trait reference.
-            self.tcx.lifetimes.re_erased
+        fn fold_region(&mut self, r: ty::Region<'tcx>) -> ty::Region<'tcx> {
+            // We don't erase bound regions that are bound inside the expression we started with,
+            // but we do erase those that point "outside of it".
+            match r.kind() {
+                ty::ReBound(dbid, _) if dbid.as_u32() < self.depth => r,
+                _ => self.tcx.lifetimes.re_erased,
+            }
         }
     }
-    value.fold_with(&mut RegionEraserVisitor { tcx })
+    value.fold_with(&mut RegionEraserVisitor { tcx, depth: 0 })
 }
 
-// Lifetimes are irrelevant when resolving instances.
+// Normalize and erase lifetimes, erasing more lifetimes than normal because we might be already
+// inside a binder and rustc doesn't like that.
 pub fn erase_and_norm<'tcx, T>(tcx: TyCtxt<'tcx>, typing_env: TypingEnv<'tcx>, x: T) -> T
 where
     T: TypeFoldable<TyCtxt<'tcx>> + Copy,
@@ -215,6 +221,21 @@ where
         tcx.try_normalize_erasing_regions(typing_env, x)
             .unwrap_or(x),
     )
+}
+
+/// Given our currently hacky handling of binders, in order for trait resolution to work we must
+/// empty out the binders of trait refs. Specifically it's so that we can reconnect associated type
+/// constraints with the trait ref they come from, given that the projection in question doesn't
+/// track the right binder currently.
+pub fn normalize_bound_val<'tcx, T>(
+    tcx: TyCtxt<'tcx>,
+    typing_env: TypingEnv<'tcx>,
+    x: Binder<'tcx, T>,
+) -> Binder<'tcx, T>
+where
+    T: TypeFoldable<TyCtxt<'tcx>> + Copy,
+{
+    Binder::dummy(erase_and_norm(tcx, typing_env, x.skip_binder()))
 }
 
 pub trait ToPolyTraitRef<'tcx> {
