@@ -92,6 +92,15 @@ mod global_id {
     }
 
     impl GlobalId {
+        /// Extracts the Crate info
+        pub fn get_crate(&self) -> String {
+            match self {
+                GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                    concrete_id.def_id.def_id.krate.clone()
+                }
+            }
+        }
+
         /// Raw printing of identifier separated by underscore. Used for testing
         pub fn to_debug_string(&self) -> String {
             match self {

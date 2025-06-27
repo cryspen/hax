@@ -1,5 +1,5 @@
 use hax_rust_engine::{
-    ast::span::Span,
+    ast::{span::Span, Item},
     lean::Lean,
     ocaml_engine::{ExtendedToEngine, Response},
     printer::Allocator,
@@ -7,6 +7,11 @@ use hax_rust_engine::{
 use hax_types::engine_api::File;
 
 use pretty::{DocAllocator, DocBuilder};
+
+fn get_crate_name(items: &Vec<Item>) -> String {
+    let head_item = items.get(0).unwrap();
+    head_item.ident.get_crate()
+}
 
 fn main() {
     let ExtendedToEngine::Query(input) = hax_rust_engine::hax_io::read() else {
@@ -24,6 +29,8 @@ fn main() {
         panic!()
     };
 
+    let krate = get_crate_name(&items);
+
     let allocator = Allocator::new(Lean);
     // TOOD: print items
     let item_docs: DocBuilder<_, Span> = allocator.intersperse(
@@ -36,7 +43,7 @@ fn main() {
     let content = String::from_utf8(w).unwrap();
 
     hax_rust_engine::hax_io::write(&hax_types::engine_api::protocol::FromEngine::File(File {
-        path: "empty_module.lean".into(),
+        path: krate + ".lean",
         contents: content,
         sourcemap: None,
     }));
