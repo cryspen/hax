@@ -46,7 +46,7 @@ function codeBlocksToModules(code_blocks) {
         /unsafe_asm \d+/
     ];
     let modules = {};
-    
+
     for(let {name, blocks} of code_blocks) {
         let mod_section = `section_${name}`;
         modules[mod_section] = {};
@@ -105,21 +105,27 @@ fs.writeFileSync(OUTPUT_CRATE_SRC + '/lib.rs', root_mod);
 // A list of [<module_name>, [<snippet_number>]] that are known not to be processed by hax
 let cargo_hax_denylist = [
     ['error_iter_result', [3]],
+    ['error_multiple_error_types_boxing_errors', [1]], // uses dyn
+    ['error_multiple_error_types_reenter_question_mark', [2]], // uses dyn
+    ['error_multiple_error_types_wrap_error', [1]], // uses dyn
     ['error_option_unwrap_defaults', [3,4]],
     ['flow_control_for', [1,2,3,5]],
     ['flow_control_if_let', [3]],
+    ['flow_control_let_else', [1,2]], // Let else panics, bug #1460
     ['flow_control_loop_nested', [1]],
     ['flow_control_loop_return', [1]],
     ['flow_control_loop', [1]],
     ['flow_control_match_binding', [1,2]],
     ['flow_control_match_destructuring_destructure_pointers', [1]],
     ['flow_control_match_destructuring_destructure_slice', [1]],
+    ['flow_control_match_destructuring_destructure_tuple', [1]], // .. pattern, bug #1462
     ['flow_control_match', [1]],
     ['flow_control_while_let', [1,2]],
     ['fn_closures_capture', [1]],
     ['fn_closures_input_parameters', [1]],
     ['fn', [1]],
     ['hello_print_fmt', [1]],
+    ['generics_bounds_testcase_empty', [1]], // Marker traits, bug #1221
     ['macros_dry', [1]],
     ['scope_borrow_alias', [1]],
     ['scope_borrow_ref', [1]],
@@ -135,6 +141,8 @@ let cargo_hax_denylist = [
     ['std_str', [1]],
     ['trait_iter', [1]],
     ['trait', [1]],
+    ['trait_dyn', [1]], // uses dyn
+    ['trait_supertraits', [1]], // uses dyn
     ['unsafe', [1,2]],
 ].map(([module, snippets]) => snippets.map(n => `section_${module}::snippet_${n}`)).flat();
 

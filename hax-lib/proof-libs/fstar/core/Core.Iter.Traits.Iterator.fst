@@ -68,3 +68,7 @@ assume val repeat_with_iter (t: Type0) : Core.Iter.Traits.Iterator.t_Iterator
 [@FStar.Tactics.Typeclasses.tcinstance]
 assume val flat_map_iter (t: Type0) (u: Type0) (v: Type0) : Core.Iter.Traits.Iterator.t_Iterator 
   (Core.Iter.Adapters.Flatten.t_FlatMap t u v)
+
+[@FStar.Tactics.Typeclasses.tcinstance]
+assume val t_split_iter (pattern: Type) :
+(Core.Str.Iter.t_Split pattern) -> t_Iterator (Core.Str.Iter.t_Split pattern)
