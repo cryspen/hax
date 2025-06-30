@@ -11,6 +11,8 @@ module Thir = struct
   type generic_param_kind = generic_param_kind_for__decorated_for__expr_kind
   type trait_item = trait_item_for__decorated_for__expr_kind
   type ty = node_for__ty_kind
+  type item_ref = node_for__item_ref_contents
+  type trait_ref = item_ref
 end
 
 open! Prelude
@@ -244,16 +246,16 @@ end) : EXPR = struct
       (typ : ty) =
     let overloaded_names_of_binop : Thir.bin_op -> Concrete_ident.name =
       function
-      | Add -> Core__ops__arith__Add__add
-      | Sub -> Core__ops__arith__Sub__sub
-      | Mul -> Core__ops__arith__Mul__mul
+      | Add | AddUnchecked -> Core__ops__arith__Add__add
+      | Sub | SubUnchecked -> Core__ops__arith__Sub__sub
+      | Mul | MulUnchecked -> Core__ops__arith__Mul__mul
       | Div -> Core__ops__arith__Div__div
       | Rem -> Core__ops__arith__Rem__rem
       | BitXor -> Core__ops__bit__BitXor__bitxor
       | BitAnd -> Core__ops__bit__BitAnd__bitand
       | BitOr -> Core__ops__bit__BitOr__bitor
-      | Shl -> Core__ops__bit__Shl__shl
-      | Shr -> Core__ops__bit__Shr__shr
+      | Shl | ShlUnchecked -> Core__ops__bit__Shl__shl
+      | Shr | ShrUnchecked -> Core__ops__bit__Shr__shr
       | Lt -> Core__cmp__PartialOrd__lt
       | Le -> Core__cmp__PartialOrd__le
       | Ne -> Core__cmp__PartialEq__ne
@@ -269,16 +271,16 @@ end) : EXPR = struct
       | Offset -> Core__ptr__const_ptr__Impl__offset
     in
     let primitive_names_of_binop : Thir.bin_op -> Concrete_ident.name = function
-      | Add -> Rust_primitives__u128__add
-      | Sub -> Rust_primitives__u128__sub
-      | Mul -> Rust_primitives__u128__mul
+      | Add | AddUnchecked -> Rust_primitives__u128__add
+      | Sub | SubUnchecked -> Rust_primitives__u128__sub
+      | Mul | MulUnchecked -> Rust_primitives__u128__mul
       | Div -> Rust_primitives__u128__div
       | Rem -> Rust_primitives__u128__rem
       | BitXor -> Rust_primitives__u128__bit_xor
       | BitAnd -> Rust_primitives__u128__bit_and
       | BitOr -> Rust_primitives__u128__bit_or
-      | Shl -> Rust_primitives__u128__shl
-      | Shr -> Rust_primitives__u128__shr
+      | Shl | ShlUnchecked -> Rust_primitives__u128__shl
+      | Shr | ShrUnchecked -> Rust_primitives__u128__shr
       | Lt -> Rust_primitives__u128__lt
       | Le -> Rust_primitives__u128__le
       | Ne -> Rust_primitives__u128__ne
@@ -330,11 +332,12 @@ end) : EXPR = struct
         let expected, f =
           match op with
           | Add | Sub | Mul | AddWithOverflow | SubWithOverflow
-          | MulWithOverflow | Div ->
+          | MulWithOverflow | AddUnchecked | SubUnchecked | MulUnchecked | Div
+            ->
               both int <|> both float
           | Rem | Cmp -> both int
           | BitXor | BitAnd | BitOr -> both int <|> both bool
-          | Shl | Shr -> int <*> int
+          | Shl | Shr | ShlUnchecked | ShrUnchecked -> int <*> int
           | Lt | Le | Ne | Ge | Gt -> both int <|> both float
           | Eq -> both int <|> both float <|> both bool
           | Offset -> ("", fun _ -> Some "")
@@ -352,6 +355,18 @@ end) : EXPR = struct
       else Concrete_ident.of_name ~value:true @@ overloaded_names_of_binop op
     in
     U.call' (`Concrete name) [ lhs; rhs ] span typ
+
+  let binop_of_assignop : Thir.assign_op -> Thir.bin_op = function
+    | AddAssign -> Add
+    | SubAssign -> Sub
+    | MulAssign -> Mul
+    | DivAssign -> Div
+    | RemAssign -> Rem
+    | BitXorAssign -> BitXor
+    | BitAndAssign -> BitAnd
+    | BitOrAssign -> BitOr
+    | ShlAssign -> Shl
+    | ShrAssign -> Shr
 
   let rec c_expr (e : Thir.decorated_for__expr_kind) : expr =
     try c_expr_unwrapped e
@@ -492,38 +507,35 @@ end) : EXPR = struct
           let then_ = c_expr then' in
           let else_ = Option.map ~f:c_expr else_opt in
           If { cond; else_; then_ }
-      | Call
-          {
-            args;
-            fn_span = _;
-            trait;
-            from_hir_call = _;
-            fun';
-            ty = _;
-            generic_args;
-            bounds_impls;
-          } ->
-          let args = List.map ~f:c_expr args in
-          let bounds_impls = List.map ~f:(c_impl_expr e.span) bounds_impls in
-          let c_generic_values = List.map ~f:(c_generic_value e.span) in
-          let generic_args = c_generic_values generic_args in
-          let f =
-            let f = c_expr fun' in
-            match (trait, fun'.contents) with
-            | Some _, GlobalName { id; _ } ->
-                { f with e = GlobalVar (def_id ~value:true id) }
-            | _ -> f
+      | Call { args; fn_span = _; from_hir_call = _; fun'; ty = _ } -> (
+          let args =
+            if List.is_empty args then [ unit_expr span ]
+            else List.map ~f:c_expr args
           in
-          let args = if List.is_empty args then [ unit_expr span ] else args in
-          App
-            {
-              f;
-              args;
-              generic_args;
-              bounds_impls;
-              trait =
-                Option.map ~f:(c_impl_expr e.span *** c_generic_values) trait;
-            }
+          let f = c_expr fun' in
+          match fun'.contents with
+          | GlobalName
+              {
+                item =
+                  {
+                    value = { def_id = id; generic_args; impl_exprs; in_trait };
+                    _;
+                  };
+                _;
+              } ->
+              let f = { f with e = GlobalVar (def_id ~value:true id) } in
+              let bounds_impls = List.map ~f:(c_impl_expr e.span) impl_exprs in
+              let generic_args =
+                List.map ~f:(c_generic_value e.span) generic_args
+              in
+              let in_trait = Option.map ~f:(c_impl_expr e.span) in_trait in
+              let trait =
+                Option.map ~f:(fun ie -> (ie, ie.goal.args)) in_trait
+              in
+              App { f; args; generic_args; bounds_impls; trait }
+          | _ ->
+              App
+                { f; args; generic_args = []; bounds_impls = []; trait = None })
       | Box { value } ->
           (U.call Rust_primitives__hax__box_new [ c_expr value ] span typ).e
       | Deref { arg } ->
@@ -596,7 +608,8 @@ end) : EXPR = struct
           c_expr_assign lhs rhs
       | AssignOp { lhs; op; rhs } ->
           let lhs = c_expr lhs in
-          c_expr_assign lhs @@ c_binop op lhs (c_expr rhs) span lhs.typ
+          c_expr_assign lhs
+          @@ c_binop (binop_of_assignop op) lhs (c_expr rhs) span lhs.typ
       | VarRef { id } -> LocalVar (local_ident Expr id)
       | Field { lhs; field } ->
           let lhs = c_expr lhs in
@@ -631,7 +644,9 @@ end) : EXPR = struct
               trait = None (* TODO: see issue #328 *);
               bounds_impls = [];
             }
-      | GlobalName { id; constructor = _ } -> GlobalVar (def_id ~value:true id)
+      | GlobalName { item = { value = { def_id = id; _ }; _ }; constructor = _ }
+        ->
+          GlobalVar (def_id ~value:true id)
       | UpvarRef { var_hir_id = id; _ } -> LocalVar (local_ident Expr id)
       | Borrow { arg; borrow_kind = kind } ->
           let e' = c_expr arg in
@@ -718,9 +733,14 @@ end) : EXPR = struct
                        typ = TInt { size = S8; signedness = Unsigned };
                      })
                    l))
-      | NamedConst { def_id = id; impl; args; _ } ->
+      | NamedConst
+          {
+            item =
+              { value = { def_id = id; generic_args; in_trait = impl; _ }; _ };
+            _;
+          } ->
           let f = GlobalVar (def_id ~value:true id) in
-          let args = List.map ~f:(c_generic_value e.span) args in
+          let args = List.map ~f:(c_generic_value e.span) generic_args in
           let const_args =
             List.filter_map args ~f:(function GConst e -> Some e | _ -> None)
           in
@@ -840,7 +860,7 @@ end) : EXPR = struct
           Array { fields = List.map ~f:constant_expr_to_expr fields }
       | Tuple { fields } ->
           Tuple { fields = List.map ~f:constant_expr_to_expr fields }
-      | GlobalName { id; _ } -> GlobalName { id; constructor = None }
+      | GlobalName item -> GlobalName { item; constructor = None }
       | Borrow arg ->
           Borrow { arg = constant_expr_to_expr arg; borrow_kind = Thir.Shared }
       | ConstRef { id } -> ConstRef { id }
@@ -876,7 +896,7 @@ end) : EXPR = struct
     let typ = c_ty pat.span pat.ty in
     let v =
       match pat.contents with
-      | Wild -> PWild
+      | Wild | Missing -> PWild
       | AscribeUserType { ascription = { annotation; _ }; subpattern } ->
           let typ, typ_span = c_canonical_user_type_annotation annotation in
           let pat = c_pat subpattern in
@@ -1010,14 +1030,14 @@ end) : EXPR = struct
     | Float k ->
         TFloat
           (match k with F16 -> F16 | F32 -> F32 | F64 -> F64 | F128 -> F128)
-    | Arrow signature | Closure (_, { untupled_sig = signature; _ }) ->
-        let ({ inputs; output; _ } : Thir.ty_fn_sig) = signature.value in
+    | Arrow fn_sig | Closure { fn_sig; _ } | FnDef { fn_sig; _ } ->
+        let ({ inputs; output; _ } : Thir.ty_fn_sig) = fn_sig.value in
         let inputs =
           if List.is_empty inputs then [ U.unit_typ ]
           else List.map ~f:(c_ty span) inputs
         in
         TArrow (inputs, c_ty span output)
-    | Adt { def_id = id; generic_args; _ } ->
+    | Adt { value = { def_id = id; generic_args; _ }; _ } ->
         let ident = def_id ~value:false id in
         let args = List.map ~f:(c_generic_value span) generic_args in
         TApp { ident; args }
@@ -1045,8 +1065,8 @@ end) : EXPR = struct
         TOpaque (Concrete_ident.of_def_id ~value:false def_id)
     | Alias { kind = Inherent; _ } ->
         assertion_failure [ span ] "Ty::Alias with AliasTyKind::Inherent"
-    | Alias { kind = Weak; _ } ->
-        assertion_failure [ span ] "Ty::Alias with AliasTyKind::Weak"
+    | Alias { kind = Free; _ } ->
+        assertion_failure [ span ] "Ty::Alias with AliasTyKind::Free"
     | Param { index; name } ->
         (* TODO: [id] might not unique *)
         TParam
@@ -1102,15 +1122,15 @@ end) : EXPR = struct
     let goal = c_trait_ref span ie.trait.value in
     let impl = { kind = c_impl_expr_atom span ie.impl; goal } in
     match ie.impl with
-    | Concrete { impl_exprs = []; _ } -> impl
-    | Concrete { impl_exprs; _ } ->
+    | Concrete { value = { impl_exprs = []; _ }; _ } -> impl
+    | Concrete { value = { impl_exprs; _ }; _ } ->
         let args = List.map ~f:(c_impl_expr span) impl_exprs in
         { kind = ImplApp { impl; args }; goal }
     | _ -> impl
 
   and c_trait_ref span (tr : Thir.trait_ref) : trait_goal =
-    let trait = Concrete_ident.of_def_id ~value:false tr.def_id in
-    let args = List.map ~f:(c_generic_value span) tr.generic_args in
+    let trait = Concrete_ident.of_def_id ~value:false tr.value.def_id in
+    let args = List.map ~f:(c_generic_value span) tr.value.generic_args in
     { trait; args }
 
   and c_impl_expr_atom (span : Thir.span) (ie : Thir.impl_expr_atom) :
@@ -1124,7 +1144,7 @@ end) : EXPR = struct
           let ident =
             { goal = c_trait_ref span trait_ref; name = predicate_id }
           in
-          let item = Concrete_ident.of_def_id ~value:false item.def_id in
+          let item = Concrete_ident.of_def_id ~value:false item.value.def_id in
           let trait_ref = c_trait_ref span trait_ref in
           Projection
             { impl = { kind = item_kind; goal = trait_ref }; ident; item }
@@ -1137,9 +1157,9 @@ end) : EXPR = struct
           Parent { impl = { kind = item_kind; goal = trait_ref }; ident }
     in
     match ie with
-    | Concrete { id; generics; _ } ->
-        let trait = Concrete_ident.of_def_id ~value:false id in
-        let args = List.map ~f:(c_generic_value span) generics in
+    | Concrete { value = { def_id; generic_args; _ }; _ } ->
+        let trait = Concrete_ident.of_def_id ~value:false def_id in
+        let args = List.map ~f:(c_generic_value span) generic_args in
         Concrete { trait; args }
     | LocalBound { predicate_id; path; _ } ->
         let init = LocalBound { id = predicate_id } in
@@ -1147,6 +1167,7 @@ end) : EXPR = struct
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
     | Builtin { trait; _ } -> Builtin (c_trait_ref span trait.value)
+    | Drop _ -> failwith @@ "impl_expr_atom: Drop"
     | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value
@@ -1233,8 +1254,12 @@ end) : EXPR = struct
       generic_constraint option =
     match kind with
     | Trait { is_positive = true; trait_ref } ->
-        let args = List.map ~f:(c_generic_value span) trait_ref.generic_args in
-        let trait = Concrete_ident.of_def_id ~value:false trait_ref.def_id in
+        let args =
+          List.map ~f:(c_generic_value span) trait_ref.value.generic_args
+        in
+        let trait =
+          Concrete_ident.of_def_id ~value:false trait_ref.value.def_id
+        in
         Some (GCType { goal = { trait; args }; name = id })
     | Projection { impl_expr; assoc_item; ty } ->
         let impl = c_impl_expr span impl_expr in
@@ -1313,7 +1338,7 @@ include struct
 
   let import_ty : Types.span -> Types.node_for__ty_kind -> Ast.Rust.ty = c_ty
 
-  let import_trait_ref : Types.span -> Types.trait_ref -> Ast.Rust.trait_goal =
+  let import_trait_ref : Types.span -> Thir.trait_ref -> Ast.Rust.trait_goal =
     c_trait_ref
 
   let import_clause :
@@ -1761,9 +1786,10 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              generics = c_generics generics;
              self_ty = c_ty item.span self_ty;
              of_trait =
-               ( Concrete_ident.of_def_id ~value:false of_trait.def_id,
-                 List.map ~f:(c_generic_value item.span) of_trait.generic_args
-               );
+               ( Concrete_ident.of_def_id ~value:false of_trait.value.def_id,
+                 List.map
+                   ~f:(c_generic_value item.span)
+                   of_trait.value.generic_args );
              items;
              parent_bounds =
                List.filter_map

@@ -24,6 +24,7 @@ fn json_schema_static_asset() {
         hax_types::engine_api::protocol::FromEngine,
         hax_types::engine_api::protocol::ToEngine,
         hax_lib_macros_types::AttrPayload,
+        hax_rust_engine::ast::Item,
     ));
     schema.schema.metadata.get_or_insert_default().id = Some(hax_types::HAX_VERSION.into());
     serde_json::to_writer(

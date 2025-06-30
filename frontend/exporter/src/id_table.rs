@@ -48,6 +48,7 @@ impl Session {
 pub enum Value {
     Ty(Arc<TyKind>),
     DefId(Arc<DefIdContents>),
+    ItemRef(Arc<ItemRefContents>),
 }
 
 impl SupportedType<Value> for TyKind {
@@ -69,6 +70,18 @@ impl SupportedType<Value> for DefIdContents {
     fn from_types(t: &Value) -> Option<Arc<Self>> {
         match t {
             Value::DefId(value) => Some(value.clone()),
+            _ => None,
+        }
+    }
+}
+
+impl SupportedType<Value> for ItemRefContents {
+    fn to_types(value: Arc<Self>) -> Value {
+        Value::ItemRef(value)
+    }
+    fn from_types(t: &Value) -> Option<Arc<Self>> {
+        match t {
+            Value::ItemRef(value) => Some(value.clone()),
             _ => None,
         }
     }

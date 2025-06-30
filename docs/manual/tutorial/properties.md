@@ -66,14 +66,14 @@ fn barrett_reduce(value: i32) -> i32 {
 ```
 
 <!-- Note that we call to `cancel_mul_mod`, a lemma: in Rust, this have no
-effect, but in F*, that establishes that `(quotient * 3329) % 3329` is
+effect, but in F\*, that establishes that `(quotient * 3329) % 3329` is
 zero. -->
 
 The proof for the code above uses the Z3 SMT solver to prive the
 post-condition.  Since the SMT solver needs to reason about non-linear
 arithmetic (multiplication, modulus, division) it needs more
 resources, hence we bump up the `rlimit` to 100 in an annotation above
-the function. With this annotation F* and Z3 are able to automatically
+the function. With this annotation F\* and Z3 are able to automatically
 verify this function. However, it is worth noting that the heuristic
 strategies used by Z3 for non-linear arithmetic may sometimes fail to
 complete in the given `rlimit` depending on the solver version or random
@@ -82,7 +82,7 @@ number generator, so we often give Z3 a generous resource limit.
 Conversely, instead of relying on the SMT solver, we can also
 elaborate the proof of this function by hand to make it more
 predictable.  For example, before the final line of the function, 
-we could call a mathematical lemma may have to help F* prove
+we could call a mathematical lemma may have to help F\* prove
 the correctness of the reduction.  The lemma call would be:
 ```
     fstar!("Math.Lemmas.cancel_mul_mod (v quotient) 3329");

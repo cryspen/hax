@@ -153,6 +153,8 @@ mod types {
         pub promoteds: TypeMap<PromotedFullDefsMapper>,
         /// Cache the `Ty` translations.
         pub tys: HashMap<ty::Ty<'tcx>, Ty>,
+        /// Cache the `ItemRef` translations.
+        pub item_refs: HashMap<(RDefId, ty::GenericArgsRef<'tcx>), ItemRef>,
         /// Cache the trait resolution engine for each item.
         pub predicate_searcher: Option<crate::traits::PredicateSearcher<'tcx>>,
         /// Cache of trait refs to resolved impl expressions.

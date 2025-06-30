@@ -133,6 +133,13 @@ pub enum AttrPayload {
     TraitMethodNoPrePost,
     /// Make an item opaque
     Erased,
+    /// In the context of a set of fields (e.g. on a `struct`), overrides its
+    /// order. By default, the order of a field is its index, e.g. the first
+    /// field has order 0, the i-th field has order i+1. Rust fields order
+    /// matters: it rules how bits are represented. Once extracted, the order
+    /// matters, but for different reasons, e.g. a field is refined with
+    /// another, requiring a specific order.
+    Order(i32),
 }
 
 pub const HAX_TOOL: &str = "_hax";

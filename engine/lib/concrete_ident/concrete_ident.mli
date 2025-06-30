@@ -104,3 +104,5 @@ module ImplInfoStore : sig
 end
 
 val matches_namespace : Types.namespace -> t -> bool
+val to_rust_ast : t -> Rust_engine_types.concrete_id
+val from_rust_ast : Rust_engine_types.concrete_id -> t

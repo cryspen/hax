@@ -123,54 +123,6 @@ let hardcoded_coq_headers =
    Import RecordSetNotations.\n\
    From Core Require Import Core.\n\n"
 
-let dummy_lib =
-  "(* TODO: Replace this dummy lib with core lib *)\n\
-   Class t_Sized (T : Type) := { }.\n\
-   Definition t_u8 := Z.\n\
-   Definition t_u16 := Z.\n\
-   Definition t_u32 := Z.\n\
-   Definition t_u64 := Z.\n\
-   Definition t_u128 := Z.\n\
-   Definition t_usize := Z.\n\
-   Definition t_i8 := Z.\n\
-   Definition t_i16 := Z.\n\
-   Definition t_i32 := Z.\n\
-   Definition t_i64 := Z.\n\
-   Definition t_i128 := Z.\n\
-   Definition t_isize := Z.\n\
-   Definition t_Array T (x : t_usize) := list T.\n\
-   Definition t_String := string.\n\
-   Definition ToString_f_to_string (x : string) := x.\n\
-   Instance Sized_any : forall {t_A}, t_Sized t_A := {}.\n\
-   Class t_Clone (T : Type) := { Clone_f_clone : T -> T }.\n\
-   Instance Clone_any : forall {t_A}, t_Clone t_A := {Clone_f_clone := fun x \
-   => x}.\n\
-   Definition t_Slice (T : Type) := list T.\n\
-   Definition unsize {T : Type} : list T -> t_Slice T := id.\n\
-   Definition t_PartialEq_f_eq x y := x =? y.\n\
-   Definition t_Rem_f_rem (x y : Z) := x mod y.\n\
-   Definition assert (b : bool) (* `{H_assert : b = true} *) : unit := tt.\n\
-   Inductive globality := | t_Global.\n\
-   Definition t_Vec T (_ : globality) : Type := list T.\n\
-   Definition impl_1__append {T} l1 l2 : list T * list T := (app l1 l2, l2).\n\
-   Definition impl_1__len {A} (l : list A) := Z.of_nat (List.length l).\n\
-   Definition impl__new {A} (_ : Datatypes.unit) : list A := nil.\n\
-   Definition impl__with_capacity {A} (_ : Z)  : list A := nil.\n\
-   Definition impl_1__push {A} l (x : A) := cons x l.\n\
-   Class t_From (A B : Type) := { From_f_from : B -> A }.\n\
-   Definition impl__to_vec {T} (x : t_Slice T) : t_Vec T t_Global := x.\n\
-   Class t_Into (A B : Type) := { Into_f_into : A -> B }.\n\
-   Instance t_Into_from_t_From {A B : Type} `{H : t_From B A} : t_Into A B := \
-   { Into_f_into x := @From_f_from B A H x }.\n\
-   Definition from_elem {A} (x : A) (l : Z) := repeat x (Z.to_nat l).\n\
-   Definition t_Option := option.\n\
-   Definition impl__map {A B} (x : t_Option A) (f : A -> B) : t_Option B := \
-   match x with | Some x => Some (f x) | None => None end.\n\
-   Definition t_Add_f_add x y := x + y.\n\
-   Class Cast A B := { cast : A -> B }.\n\
-   Instance cast_t_u8_t_u32 : Cast t_u8 t_u32 := {| cast x := x |}.\n\
-   (* / dummy lib *)\n"
-
 module BasePrinter = Generic_printer.Make (InputLanguage)
 
 module Make
@@ -214,13 +166,16 @@ struct
     let instance = definition_struct (string "Instance") 2
     let class_ = definition_struct (string "Class") 2
     let lemma = proof_struct (string "Lemma")
+    let comment v = !^"(*" ^^ space ^^ v ^^ space ^^ !^"*)"
 
     let arguments name (explicivity : bool list) =
-      !^"Arguments" ^^ space ^^ name
-      ^^ concat_map_with ~pre:space
-           (function true -> string "(_)" | false -> string "{_}")
-           explicivity
-      ^^ dot
+      if List.is_empty explicivity then empty
+      else
+        !^"Arguments" ^^ space ^^ name
+        ^^ concat_map_with ~pre:space
+             (function true -> string "(_)" | false -> string "{_}")
+             explicivity
+        ^^ dot
 
     let notation pattern value =
       !^"Notation" ^^ space ^^ string "\"" ^^ pattern ^^ string "\"" ^^ space
@@ -332,20 +287,16 @@ struct
                    ^^ space ^^ (snd x)#p ^^ space ^^ string "|>")
                  fields
         | true, true, None, [] | false, true, _, [] | false, false, _, [] ->
-            empty ^^ !^"Build_" ^^ constructor#p ^^ !^"_record"
+            constructor#p
         | true, true, None, _ | false, true, _, _ | false, false, _, _ ->
-            space ^^ !^"{|" ^^ space
-            ^^ separate_map !^";"
-                 (fun x ->
-                   constructor#p ^^ !^"_" ^^ (fst x)#p ^^ space ^^ !^":="
-                   ^^ space ^^ (snd x)#p)
-                 fields
-            ^^ space ^^ !^"|}"
+            constructor#p ^^ space
+            ^^ separate_map space (fun x -> parens (snd x)#p) fields
         | _ ->
             constructor#p ^^ space ^^ string "{|" ^^ space
             ^^ separate_map (semi ^^ space)
                  (fun (ident, exp) ->
-                   ident#p ^^ space ^^ string ":=" ^^ space ^^ parens exp#p)
+                   constructor#p ^^ !^"_" ^^ ident#p ^^ space ^^ string ":="
+                   ^^ space ^^ parens exp#p)
                  fields
             ^^ space ^^ string "|}"
 
@@ -1048,21 +999,21 @@ struct
       method module_path_separator = "."
 
       method concrete_ident ~local:_ id : document =
-        string
-          (match id.name with
-          | "not" -> "negb"
-          | "eq" -> "PartialEq_f_eq"
-          | "lt" -> "PartialOrd_f_lt"
-          | "gt" -> "PartialOrd_f_gt"
-          | "le" -> "PartialOrd_f_le"
-          | "ge" -> "PartialOrd_f_ge"
-          | "rem" -> "Rem_f_rem"
-          | "add" -> "Add_f_add"
-          | "sub" -> "Sub_f_sub"
-          | "mul" -> "Mul_f_mul"
-          | "div" -> "Div_f_div"
-          | "index" -> "Index_f_index"
-          | x -> x)
+        match id.name with
+        | "not" -> !^"negb"
+        | "eq" -> !^"PartialEq_f_eq"
+        | "lt" -> !^"PartialOrd_f_lt"
+        | "gt" -> !^"PartialOrd_f_gt"
+        | "le" -> !^"PartialOrd_f_le"
+        | "ge" -> !^"PartialOrd_f_ge"
+        | "rem" -> !^"Rem_f_rem"
+        | "add" -> !^"Add_f_add"
+        | "sub" -> !^"Sub_f_sub"
+        | "mul" -> !^"Mul_f_mul"
+        | "div" -> !^"Div_f_div"
+        | "index" -> !^"Index_f_index"
+        | "f_to_string" -> CoqNotation.comment !^"f_to_string"
+        | x -> !^x
     end
 
   let new_printer : BasePrinter.finalized_printer =
@@ -1151,10 +1102,12 @@ module TransformToInputLanguage =
   |> Phases.Reject.Continue
   |> Phases.Cf_into_monads
   |> Phases.Reject.EarlyExit
+  |> Phases.Drop_return_break_continue
   |> Phases.Functionalize_loops
   |> Phases.Reject.As_pattern
   |> Phases.Reject.Dyn
   |> Phases.Reject.Trait_item_default
+  |> Phases.Reorder_fields
   |> Phases.Bundle_cycles
   |> Phases.Sort_items
   |> SubtypeToInputLanguage

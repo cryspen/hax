@@ -60,13 +60,13 @@ pub fn sigma(x: u32, i: usize, op: usize) -> u32 {
     x.rotate_right(rot_val_1) ^ x.rotate_right(rot_val_2) ^ tmp
 }
 
-fn to_be_u32s(block: Block) -> Vec<u32> {
-    let mut out = Vec::with_capacity(BLOCK_SIZE / 4);
-    for block_chunk in block.chunks_exact(4) {
-        let block_chunk_array = u32::from_be_bytes(block_chunk.try_into().unwrap());
-        out.push(block_chunk_array);
+#[hax_lib::ensures(|result| result.len() == 16)]
+fn to_be_u32s(block: Block) -> [u32; 16] {
+    let mut out = [0u32; 16];
+    for i in 0..16 {
+        let block_chunk_array = u32::from_be_bytes(block[i * 4..(i + 1) * 4].try_into().unwrap());
+        out[i] = block_chunk_array;
     }
-
     out
 }
 
@@ -74,6 +74,7 @@ pub fn schedule(block: Block) -> RoundConstantsTable {
     let b = to_be_u32s(block);
     let mut s = [0; K_SIZE];
     for i in 0..K_SIZE {
+        hax_lib::loop_invariant!(|i: usize| b.len() == 16);
         if i < 16 {
             s[i] = b[i];
         } else {
@@ -89,17 +90,16 @@ pub fn schedule(block: Block) -> RoundConstantsTable {
     s
 }
 
-pub fn shuffle(ws: RoundConstantsTable, hashi: Hash) -> Hash {
-    let mut h = hashi;
+pub fn shuffle(ws: RoundConstantsTable, hash: &mut Hash) {
     for i in 0..K_SIZE {
-        let a0 = h[0];
-        let b0 = h[1];
-        let c0 = h[2];
-        let d0 = h[3];
-        let e0 = h[4];
-        let f0 = h[5];
-        let g0 = h[6];
-        let h0: u32 = h[7];
+        let a0 = hash[0];
+        let b0 = hash[1];
+        let c0 = hash[2];
+        let d0 = hash[3];
+        let e0 = hash[4];
+        let f0 = hash[5];
+        let g0 = hash[6];
+        let h0: u32 = hash[7];
 
         let t1 = h0
             .wrapping_add(sigma(e0, 1, 1))
@@ -108,25 +108,24 @@ pub fn shuffle(ws: RoundConstantsTable, hashi: Hash) -> Hash {
             .wrapping_add(ws[i]);
         let t2 = sigma(a0, 0, 1).wrapping_add(maj(a0, b0, c0));
 
-        h[0] = t1.wrapping_add(t2);
-        h[1] = a0;
-        h[2] = b0;
-        h[3] = c0;
-        h[4] = d0.wrapping_add(t1);
-        h[5] = e0;
-        h[6] = f0;
-        h[7] = g0;
+        hash[0] = t1.wrapping_add(t2);
+        hash[1] = a0;
+        hash[2] = b0;
+        hash[3] = c0;
+        hash[4] = d0.wrapping_add(t1);
+        hash[5] = e0;
+        hash[6] = f0;
+        hash[7] = g0;
     }
-    h
 }
 
-pub fn compress(block: Block, h_in: Hash) -> Hash {
+pub fn compress(block: Block, hash: &mut Hash) {
     let s = schedule(block);
-    let mut h = shuffle(s, h_in);
+    let h_in = hash.clone();
+    shuffle(s, hash);
     for i in 0..8 {
-        h[i] = h[i].wrapping_add(h_in[i]);
+        hash[i] = hash[i].wrapping_add(h_in[i]);
     }
-    h
 }
 
 fn u32s_to_be_bytes(state: Hash) -> Sha256Digest {
@@ -141,41 +140,44 @@ fn u32s_to_be_bytes(state: Hash) -> Sha256Digest {
     out
 }
 
+#[hax_lib::requires((msg.len() as u64) < 0x1fffffffffffffff)]
 pub fn hash(msg: &[u8]) -> Sha256Digest {
     let mut h = HASH_INIT;
-    let mut last_block: Block = [0; BLOCK_SIZE];
-    let mut last_block_len = 0;
-    for block in msg.chunks(BLOCK_SIZE) {
-        if block.len() < BLOCK_SIZE {
-            for i in 0..block.len() {
-                last_block[i] = block[i];
-            }
-            last_block_len = block.len();
-        } else {
-            h = compress(block.try_into().unwrap(), h);
-        }
+    let blocks = msg.len() / BLOCK_SIZE;
+    for i in 0..blocks {
+        compress(
+            msg[i * BLOCK_SIZE..(i + 1) * BLOCK_SIZE]
+                .try_into()
+                .unwrap(),
+            &mut h,
+        );
     }
 
+    let last_block_len = msg.len() % BLOCK_SIZE;
+    let mut last_block: Block = [0; BLOCK_SIZE];
+    last_block[0..last_block_len].copy_from_slice(&msg[blocks * BLOCK_SIZE..]);
     last_block[last_block_len] = 0x80;
-    let len_bist = (msg.len() * 8) as u64;
+    hax_lib::fstar!("assert(Seq.length msg * 8 < pow2 64)");
+    let len_bist = msg.len() as u64 * 8;
     let len_bist_bytes = len_bist.to_be_bytes();
     if last_block_len < BLOCK_SIZE - LEN_SIZE {
         for i in 0..LEN_SIZE {
             last_block[BLOCK_SIZE - LEN_SIZE + i] = len_bist_bytes[i];
         }
-        h = compress(last_block, h);
+        compress(last_block, &mut h);
     } else {
         let mut pad_block: Block = [0; BLOCK_SIZE];
         for i in 0..LEN_SIZE {
             pad_block[BLOCK_SIZE - LEN_SIZE + i] = len_bist_bytes[i];
         }
-        h = compress(last_block, h);
-        h = compress(pad_block, h);
+        compress(last_block, &mut h);
+        compress(pad_block, &mut h);
     }
 
     u32s_to_be_bytes(h)
 }
 
+#[hax_lib::requires((msg.len() as u64) < 0x1fffffffffffffff)]
 pub fn sha256(msg: &[u8]) -> Sha256Digest {
     hash(msg)
 }

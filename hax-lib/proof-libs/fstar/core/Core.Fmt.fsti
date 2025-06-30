@@ -19,7 +19,7 @@ class t_Debug t_Self = {
   f_dbg_fmt: t_Self -> Core.Fmt.t_Formatter -> (Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error)
 }
 
-val t_Arguments: Type0
+let t_Arguments = Rt.t_Argument
 val impl_4__new_v1 (sz1: usize) (sz2: usize) (pieces: t_Slice string) (args: t_Slice Core.Fmt.Rt.t_Argument): t_Arguments
 val impl_7__write_fmt (fmt: t_Formatter) (args: t_Arguments): t_Formatter & t_Result
 val impl_4__new_const (u:usize) (args: t_Slice string): t_Arguments

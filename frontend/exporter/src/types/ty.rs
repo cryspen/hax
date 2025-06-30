@@ -181,7 +181,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Canonical<U>>
     fn sinto(&self, s: &S) -> Canonical<U> {
         Canonical {
             max_universe: self.max_universe.sinto(s),
-            variables: self.variables.iter().map(|v| v.kind.sinto(s)).collect(),
+            variables: self.variables.sinto(s),
             value: self.value.sinto(s),
         }
     }
@@ -190,7 +190,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Canonical<U>>
 /// Reflects [`rustc_middle::infer::canonical::CanonicalVarKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalVarKind<ty::TyCtxt<'tcx>>, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalVarKind<'tcx>, state: S as gstate)]
 pub enum CanonicalVarInfo {
     Ty(CanonicalTyVarKind),
     PlaceholderTy(PlaceholderType),
@@ -430,6 +430,115 @@ pub enum GenericArg {
     Lifetime(Region),
     Type(Ty),
     Const(ConstantExpr),
+}
+
+/// Contents of `ItemRef`.
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub struct ItemRefContents {
+    /// The item being refered to.
+    pub def_id: DefId,
+    /// The generics passed to the item. If `in_trait` is `Some`, these are only the generics of
+    /// the method/type/const itself; generics for the traits are available in
+    /// `in_trait.unwrap().trait`.
+    pub generic_args: Vec<GenericArg>,
+    /// Witnesses of the trait clauses required by the item, e.g. `T: Sized` for `Option<T>` or `B:
+    /// ToOwned` for `Cow<'a, B>`. Same as above, for associated items this only includes clauses
+    /// for the item itself.
+    pub impl_exprs: Vec<ImplExpr>,
+    /// If we're referring to a trait associated item, this gives the trait clause/impl we're
+    /// referring to.
+    pub in_trait: Option<ImplExpr>,
+}
+
+/// Reference to an item, with generics. Basically any mention of an item (function, type, etc)
+/// uses this.
+///
+/// This can refer to a top-level item or to a trait associated item. Example:
+/// ```ignore
+/// trait MyTrait<TraitType, const TraitConst: usize> {
+///   fn meth<MethType>(...) {...}
+/// }
+/// fn example_call<TraitType, SelfType: MyTrait<TraitType, 12>>(x: SelfType) {
+///   x.meth::<String>(...)
+/// }
+/// ```
+/// Here, in the call `x.meth::<String>(...)` we will build an `ItemRef` that looks like:
+/// ```ignore
+/// ItemRef {
+///     def_id = MyTrait::meth,
+///     generic_args = [String],
+///     impl_exprs = [<proof of `String: Sized`>],
+///     in_trait = Some(<proof of `SelfType: MyTrait<TraitType, 12>`>,
+/// }
+/// ```
+/// The `in_trait` `ImplExpr` will have in its `trait` field a representation of the `SelfType:
+/// MyTrait<TraitType, 12>` predicate, which looks like:
+/// ```ignore
+/// ItemRef {
+///     def_id = MyTrait,
+///     generic_args = [SelfType, TraitType, 12],
+///     impl_exprs = [],
+///     in_trait = None,
+/// }
+/// ```
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(transparent)]
+pub struct ItemRef {
+    pub(crate) contents: id_table::Node<ItemRefContents>,
+}
+
+impl ItemRefContents {
+    #[cfg(feature = "rustc")]
+    pub fn intern<'tcx, S: BaseState<'tcx>>(self, s: &S) -> ItemRef {
+        s.with_global_cache(|cache| {
+            let table_session = &mut cache.id_table_session;
+            let contents = id_table::Node::new(self, table_session);
+            ItemRef { contents }
+        })
+    }
+}
+
+impl ItemRef {
+    #[cfg(feature = "rustc")]
+    pub fn new<'tcx, S: BaseState<'tcx>>(
+        s: &S,
+        def_id: DefId,
+        generic_args: Vec<GenericArg>,
+        impl_exprs: Vec<ImplExpr>,
+        in_trait: Option<ImplExpr>,
+    ) -> ItemRef {
+        let contents = ItemRefContents {
+            def_id,
+            generic_args,
+            impl_exprs,
+            in_trait,
+        };
+        contents.intern(s)
+    }
+
+    pub fn contents(&self) -> &ItemRefContents {
+        &self.contents
+    }
+
+    #[cfg(feature = "rustc")]
+    pub fn mutate<'tcx, S: BaseState<'tcx>>(
+        &mut self,
+        s: &S,
+        f: impl FnOnce(&mut ItemRefContents),
+    ) {
+        let mut contents = self.contents().clone();
+        f(&mut contents);
+        *self = contents.intern(s);
+    }
+}
+
+impl std::ops::Deref for ItemRef {
+    type Target = ItemRefContents;
+    fn deref(&self) -> &Self::Target {
+        self.contents()
+    }
 }
 
 #[cfg(feature = "rustc")]
@@ -683,7 +792,7 @@ pub enum AliasKind {
         hidden_ty: Ty,
     },
     /// A type alias that references opaque types. Likely to always be normalized away.
-    Weak,
+    Free,
 }
 
 #[cfg(feature = "rustc")]
@@ -725,7 +834,7 @@ impl Alias {
                     hidden_ty: ty.sinto(s),
                 }
             }
-            RustAliasKind::Weak => AliasKind::Weak,
+            RustAliasKind::Free => AliasKind::Free,
         };
         TyKind::Alias(Alias {
             kind,
@@ -797,6 +906,21 @@ pub enum TyKind {
     Float(FloatTy),
 
     #[custom_arm(
+        ty::TyKind::FnDef(fun_id, generics) => {
+            let item = translate_item_ref(s, *fun_id, generics);
+            let tcx = s.base().tcx;
+            let fn_sig = tcx.fn_sig(*fun_id).instantiate(tcx, generics);
+            let fn_sig = Box::new(fn_sig.sinto(s));
+            TyKind::FnDef { item, fn_sig }
+        },
+    )]
+    /// Reflects [`ty::TyKind::FnDef`]
+    FnDef {
+        item: ItemRef,
+        fn_sig: Box<PolyFnSig>,
+    },
+
+    #[custom_arm(
         ty::TyKind::FnPtr(tys, header) => {
             let sig = tys.map_bound(|tys| ty::FnSig {
                 inputs_and_output: tys.inputs_and_output,
@@ -806,63 +930,39 @@ pub enum TyKind {
             });
             TyKind::Arrow(Box::new(sig.sinto(s)))
         },
-        ty::TyKind::FnDef(def, generics) => {
-            let tcx = s.base().tcx;
-            let sig = tcx.fn_sig(*def).instantiate(tcx, generics);
-            TyKind::Arrow(Box::new(sig.sinto(s)))
-        },
     )]
-    /// Reflects [`ty::TyKind::FnPtr`] and [`ty::TyKind::FnDef`]
+    /// Reflects [`ty::TyKind::FnPtr`]
     Arrow(Box<PolyFnSig>),
 
     #[custom_arm(
         ty::TyKind::Closure (def_id, generics) => {
             let closure = generics.as_closure();
-            TyKind::Closure(
-                def_id.sinto(s),
-                ClosureArgs::sfrom(s, *def_id, closure),
-            )
+            TyKind::Closure(ClosureArgs::sfrom(s, *def_id, closure))
         },
     )]
-    Closure(DefId, ClosureArgs),
+    Closure(ClosureArgs),
 
-    #[custom_arm(
-        ty::TyKind::Adt(adt_def, generics) => {
-            let def_id = adt_def.did().sinto(s);
-            let generic_args: Vec<GenericArg> = generics.sinto(s);
-            let trait_refs = solve_item_required_traits(s, adt_def.did(), generics);
-            TyKind::Adt { def_id, generic_args, trait_refs }
-        },
-    )]
-    Adt {
-        /// Reflects [`ty::TyKind::Adt`]'s substitutions
-        generic_args: Vec<GenericArg>,
-        /// Predicates required by the type, e.g. `T: Sized` for `Option<T>` or `B: 'a + ToOwned`
-        /// for `Cow<'a, B>`.
-        trait_refs: Vec<ImplExpr>,
-        def_id: DefId,
-    },
-    Foreign(DefId),
+    #[custom_arm(FROM_TYPE::Adt(adt_def, generics) => TO_TYPE::Adt(translate_item_ref(s, adt_def.did(), generics)),)]
+    Adt(ItemRef),
+    #[custom_arm(FROM_TYPE::Foreign(def_id) => TO_TYPE::Foreign(ItemRef::new(s, def_id.sinto(s), vec![], vec![], None)),)]
+    Foreign(ItemRef),
     Str,
     Array(Box<Ty>, #[map(Box::new(x.sinto(s)))] Box<ConstantExpr>),
     Slice(Box<Ty>),
     RawPtr(Box<Ty>, Mutability),
     Ref(Region, Box<Ty>, Mutability),
     Dynamic(Vec<Binder<ExistentialPredicate>>, Region, DynKind),
-    Coroutine(DefId, Vec<GenericArg>),
+    #[custom_arm(FROM_TYPE::Coroutine(def_id, generics) => TO_TYPE::Coroutine(translate_item_ref(s, *def_id, generics)),)]
+    Coroutine(ItemRef),
     Never,
     Tuple(Vec<Ty>),
-    #[custom_arm(
-        ty::TyKind::Alias(alias_kind, alias_ty) => {
-            Alias::from(s, alias_kind, alias_ty)
-        },
-    )]
+    #[custom_arm(FROM_TYPE::Alias(alias_kind, alias_ty) => Alias::from(s, alias_kind, alias_ty),)]
     Alias(Alias),
     Param(ParamTy),
     Bound(DebruijnIndex, BoundTy),
     Placeholder(PlaceholderType),
     Infer(InferTy),
-    #[custom_arm(ty::TyKind::Error(..) => TyKind::Error,)]
+    #[custom_arm(FROM_TYPE::Error(..) => TO_TYPE::Error,)]
     Error,
     #[todo]
     Todo(String),
@@ -1002,15 +1102,17 @@ pub struct TyFnSig {
 pub type PolyFnSig = Binder<TyFnSig>;
 
 /// Reflects [`ty::TraitRef`]
-#[derive_group(Serializers)]
-#[derive(AdtInto)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::TraitRef<'tcx>, state: S as tcx)]
-#[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-pub struct TraitRef {
-    pub def_id: DefId,
-    #[from(args)]
-    /// reflects the `args` field
-    pub generic_args: Vec<GenericArg>,
+/// Contains the def_id and arguments passed to the trait. The first type argument is the `Self`
+/// type. The `ImplExprs` are the _required_ predicate for this trait; currently they are always
+/// empty because we consider all trait predicates as implied.
+/// `self.in_trait` is always `None` because a trait can't be associated to another one.
+pub type TraitRef = ItemRef;
+
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, TraitRef> for ty::TraitRef<'tcx> {
+    fn sinto(&self, s: &S) -> TraitRef {
+        translate_item_ref(s, self.def_id, self.args)
+    }
 }
 
 /// Reflects [`ty::TraitPredicate`]
@@ -1123,7 +1225,7 @@ pub enum ClauseKind {
     TypeOutlives(TypeOutlivesPredicate),
     Projection(ProjectionPredicate),
     ConstArgHasType(ConstantExpr, Ty),
-    WellFormed(GenericArg),
+    WellFormed(Term),
     ConstEvaluatable(ConstantExpr),
     HostEffect(HostEffectPredicate),
 }
@@ -1291,18 +1393,12 @@ pub enum AliasRelationDirection {
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
 #[derive_group(Serializers)]
 pub struct ClosureArgs {
+    pub item: ItemRef,
     /// The base kind of this closure. The kinds are ordered by inclusion: any `Fn` works as an
     /// `FnMut`, and any `FnMut` works as an `FnOnce`.
     pub kind: ClosureKind,
-    /// The arguments to the parent (i.e., the item which defines the closure).
-    pub parent_args: Vec<GenericArg>,
-    /// The solved predicates from the parent (i.e., the item which defines the closure).
-    pub parent_trait_refs: Vec<ImplExpr>,
-    /// The proper `fn(A, B, C) -> D` signature of the closure.
-    pub untupled_sig: PolyFnSig,
-    /// The signature of the closure as one input and one output, where the input arguments are
-    /// tupled. This is relevant to implementing the `Fn*` traits.
-    pub tupled_sig: PolyFnSig,
+    /// The signature of the function that the closure implements, e.g. `fn(A, B, C) -> D`.
+    pub fn_sig: PolyFnSig,
     /// The set of captured variables. Together they form the state of the closure.
     pub upvar_tys: Vec<Ty>,
 }
@@ -1320,17 +1416,16 @@ impl ClosureArgs {
     {
         let tcx = s.base().tcx;
         let sig = from.sig();
+        let item = {
+            // The closure has no generics of its own: it inherits its parent generics and could
+            // have late-bound args but these are part of the signature.
+            let parent_args = tcx.mk_args(from.parent_args());
+            translate_item_ref(s, def_id, parent_args)
+        };
         ClosureArgs {
+            item,
             kind: from.kind().sinto(s),
-            parent_args: from.parent_args().sinto(s),
-            // The solved predicates from the parent (i.e., the item which defines the closure).
-            parent_trait_refs: {
-                let parent = tcx.generics_of(def_id).parent.unwrap();
-                let parent_generics_ref = tcx.mk_args(from.parent_args());
-                solve_item_required_traits(s, parent, parent_generics_ref)
-            },
-            tupled_sig: sig.sinto(s),
-            untupled_sig: tcx
+            fn_sig: tcx
                 .signature_unclosure(sig, rustc_hir::Safety::Safe)
                 .sinto(s),
             upvar_tys: from.upvar_tys().sinto(s),
@@ -1374,7 +1469,9 @@ pub enum PredicateKind {
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct AssocItem {
     pub def_id: DefId,
-    pub name: Symbol,
+    /// This is `None` for RPTITs.
+    #[value(self.opt_name().sinto(s))]
+    pub name: Option<Symbol>,
     pub kind: AssocKind,
     #[value(get_container_for_assoc_item(s, self))]
     pub container: AssocItemContainer,
@@ -1382,19 +1479,27 @@ pub struct AssocItem {
     /// implementations).
     #[value(self.defaultness(s.base().tcx).has_value())]
     pub has_value: bool,
-    pub fn_has_self_parameter: bool,
-    pub opt_rpitit_info: Option<ImplTraitInTraitData>,
 }
 
 /// Reflects [`ty::AssocKind`]
 #[derive(AdtInto)]
-#[args(<S>, from: ty::AssocKind, state: S as _tcx)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: ty::AssocKind, state: S as _tcx)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AssocKind {
-    Const,
-    Fn,
-    Type,
+    Const { name: Symbol },
+    Fn { name: Symbol, has_self: bool },
+    Type { data: AssocTypeData },
+}
+
+/// Reflects [`ty::AssocTypeData`]
+#[derive(AdtInto)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: ty::AssocTypeData, state: S as _tcx)]
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AssocTypeData {
+    Normal(Symbol),
+    Rpitit(ImplTraitInTraitData),
 }
 
 #[derive_group(Serializers)]
@@ -1404,12 +1509,8 @@ pub enum AssocItemContainer {
         trait_ref: TraitRef,
     },
     TraitImplContainer {
-        /// The def_id of the impl block.
-        impl_id: DefId,
-        /// The generics applied to the impl block (that's just the identity generics).
-        impl_generics: Vec<GenericArg>,
-        /// The impl exprs applied to the impl block (again the identity).
-        impl_required_impl_exprs: Vec<ImplExpr>,
+        /// Reference to the def_id of the impl block.
+        impl_: ItemRef,
         /// The trait ref implemented by the impl block.
         implemented_trait_ref: TraitRef,
         /// The def_id of the associated item (in the trait declaration) that is being implemented.
@@ -1440,16 +1541,13 @@ fn get_container_for_assoc_item<'tcx, S: BaseState<'tcx>>(
         ty::AssocItemContainer::Impl => {
             if let Some(implemented_trait_item) = item.trait_item_def_id {
                 let impl_generics = ty::GenericArgs::identity_for_item(tcx, container_id);
-                let impl_required_impl_exprs =
-                    solve_item_required_traits(state_with_id, container_id, impl_generics);
+                let item = translate_item_ref(state_with_id, container_id, impl_generics);
                 let implemented_trait_ref = tcx
                     .impl_trait_ref(container_id)
                     .unwrap()
                     .instantiate_identity();
                 AssocItemContainer::TraitImplContainer {
-                    impl_id: container_id.sinto(s),
-                    impl_generics: impl_generics.sinto(state_with_id),
-                    impl_required_impl_exprs,
+                    impl_: item,
                     implemented_trait_ref: implemented_trait_ref.sinto(state_with_id),
                     implemented_trait_item: implemented_trait_item.sinto(s),
                     overrides_default: tcx.defaultness(implemented_trait_item).has_value(),

@@ -75,8 +75,50 @@ type t_Reverse t = | Reverse of t
 
 let impl__then x y = x
 
+instance partialEq_int t : t_PartialEq (int_t t) (int_t t) = {
+  f_eq_pre = (fun x y -> True);
+  f_eq_post = (fun x y r -> r = (x = y));
+  f_eq = (fun x y -> x = y);
+}
+
+instance eq_int_t t : t_Eq (int_t t) = {
+  __constraint_t_Eq_t_PartialEq= (FStar.Tactics.Typeclasses.solve) ;
+}
+
+instance partialOrd_int t : (t_PartialOrd (int_t t) (int_t t)) = {
+  _super_7951719793721949255 = (FStar.Tactics.Typeclasses.solve);
+
+  f_partial_cmp_pre = (fun x y -> True);
+  f_partial_cmp_post = (fun x y z -> match z with
+  | Option.Option_None -> False
+  | Option.Option_Some(Ordering_Equal) -> (v x) = (v y)
+  | Option.Option_Some(Ordering_Less) -> (v x) < (v y)
+  | Option.Option_Some(Ordering_Greater) -> (v x) > (v y)
+  );
+  f_partial_cmp = (fun x y -> Option.Option_Some (
+   if (v x) < (v y) then Ordering_Less
+   else if (v x) > (v y) then Ordering_Greater
+   else Ordering_Equal
+  ) );
+ }
+
 [@FStar.Tactics.Typeclasses.tcinstance]
-val ord_int t: t_Ord (int_t t)
+instance ord_int t : t_Ord (int_t t) = {
+  _super_641474646876120386 = (FStar.Tactics.Typeclasses.solve);
+  _super_12012119932897234219 = (FStar.Tactics.Typeclasses.solve);
+  f_cmp_pre = (fun x y -> True) ;
+  f_cmp_post = (fun x y r ->
+    match r with
+    | Ordering_Equal -> (v x) = (v y)
+    | Ordering_Greater -> (v x) > (v y)
+    | Ordering_Less -> (v x) < (v y)
+  );
+  f_cmp = (fun x y ->
+    if (v x) < (v y) then Ordering_Less
+    else if (v x) > (v y) then Ordering_Greater
+    else Ordering_Equal
+  );
+}
 
 [@FStar.Tactics.Typeclasses.tcinstance]
 val ord_reverse t {| t_Ord t |}: t_Ord (t_Reverse t)

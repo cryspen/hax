@@ -48,8 +48,8 @@ From Core Require Import Core.
 Inductive t_E : Type :=
 | E_A
 | E_B.
-Arguments E_A.
-Arguments E_B.
+
+
 
 Definition t_E_cast_to_repr (x : t_E) : t_isize :=
   match x with

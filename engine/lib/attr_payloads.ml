@@ -118,6 +118,11 @@ module MakeBase (Error : Phase_utils.ERROR) = struct
     let default : Types.ha_item_status = Types.Included { late_skip = false } in
     find_unique_attr ~f >> Option.value ~default
 
+  (** Extracts an `Order` attribute if it exists. *)
+  let order : attrs -> int option =
+    let f = function Types.Order n -> Some n | _ -> None in
+    find_unique_attr ~f
+
   let late_skip : attrs -> bool =
     status >> [%matches? Types.Included { late_skip = true }]
 

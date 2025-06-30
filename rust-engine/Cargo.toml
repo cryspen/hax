@@ -1,0 +1,15 @@
+[package]
+name = "hax-rust-engine"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+edition.workspace = true
+repository.workspace = true
+readme.workspace = true
+
+[dependencies]
+hax-frontend-exporter = { path = "../frontend/exporter", default-features = false }
+serde = { workspace = true, features = ["derive"] }
+hax-rust-engine-macros = { path = "macros" }
+schemars.workspace = true

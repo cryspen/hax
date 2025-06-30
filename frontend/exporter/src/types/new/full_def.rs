@@ -4,14 +4,18 @@ use std::sync::Arc;
 #[cfg(feature = "rustc")]
 use rustc_hir::def::DefKind as RDefKind;
 #[cfg(feature = "rustc")]
-use rustc_middle::ty;
+use rustc_middle::{mir, ty};
 #[cfg(feature = "rustc")]
 use rustc_span::def_id::DefId as RDefId;
+
+/// Hack: charon used to rely on the old `()` default everywhere. To avoid big merge conflicts with
+/// in-flight PRs we're changing the default here. Eventually this should be removed.
+type DefaultFullDefBody = MirBody<mir_kinds::Unknown>;
 
 /// Gathers a lot of definition information about a [`rustc_hir::def_id::DefId`].
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
-pub struct FullDef<Body = ()> {
+pub struct FullDef<Body = DefaultFullDefBody> {
     pub def_id: DefId,
     /// The enclosing item.
     pub parent: Option<DefId>,
@@ -83,7 +87,9 @@ where
             let ty: Ty = body.local_decls[rustc_middle::mir::Local::ZERO]
                 .ty
                 .sinto(&state_with_id);
-            let body = Body::from_mir(&state_with_id, body);
+            // Promoted constants only happen within MIR bodies; we can therefore assume that
+            // `Body` is a MIR body and unwrap.
+            let body = Body::from_mir(&state_with_id, body).s_unwrap(s);
             kind = FullDefKind::PromotedConst {
                 param_env,
                 ty,
@@ -182,18 +188,27 @@ pub enum FullDefKind<Body> {
         param_env: ParamEnv,
         #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
         def: AdtDef,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
     Union {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
         #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
         def: AdtDef,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
     Enum {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
         #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
         def: AdtDef,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
     /// Type alias: `type Foo = Bar;`
     TyAlias {
@@ -217,7 +232,7 @@ pub enum FullDefKind<Body> {
         parent: DefId,
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id()).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
         implied_predicates: GenericPredicates,
         #[value(s.base().tcx.associated_item(s.owner_id()).sinto(s))]
         associated_item: AssocItem,
@@ -238,19 +253,10 @@ pub enum FullDefKind<Body> {
     Trait {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id()).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
-        #[value({
-            use ty::Upcast;
-            let tcx = s.base().tcx;
-            let pred: ty::TraitPredicate =
-                crate::traits::self_predicate(tcx, s.owner_id())
-                    .no_bound_vars()
-                    .unwrap()
-                    .upcast(tcx);
-            pred.sinto(s)
-        })]
+        #[value(get_self_predicate(s))]
         self_predicate: TraitPredicate,
         /// Associated items, in definition order.
         #[value(
@@ -268,7 +274,15 @@ pub enum FullDefKind<Body> {
         items: Vec<(AssocItem, Arc<FullDef<Body>>)>,
     },
     /// Trait alias: `trait IntIterator = Iterator<Item = i32>;`
-    TraitAlias,
+    TraitAlias {
+        #[value(get_param_env(s, s.owner_id()))]
+        param_env: ParamEnv,
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
+        implied_predicates: GenericPredicates,
+        /// The special `Self: Trait` clause.
+        #[value(get_self_predicate(s))]
+        self_predicate: TraitPredicate,
+    },
     #[custom_arm(
         // Returns `TraitImpl` or `InherentImpl`.
         RDefKind::Impl { .. } => get_impl_contents(s),
@@ -305,7 +319,7 @@ pub enum FullDefKind<Body> {
         is_const: bool,
         #[value(s.base().tcx.fn_sig(s.owner_id()).instantiate_identity().sinto(s))]
         sig: PolyFnSig,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// Associated function: `impl MyStruct { fn associated() {} }` or `trait Foo { fn associated()
@@ -323,7 +337,7 @@ pub enum FullDefKind<Body> {
         is_const: bool,
         #[value(get_method_sig(s).sinto(s))]
         sig: PolyFnSig,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// A closure, coroutine, or coroutine-closure.
@@ -339,11 +353,23 @@ pub enum FullDefKind<Body> {
         #[value(s.base().tcx.constness(s.owner_id()) == rustc_hir::Constness::Const)]
         is_const: bool,
         #[value({
-            let fun_type = s.base().tcx.type_of(s.owner_id()).instantiate_identity();
-            let ty::TyKind::Closure(_, args) = fun_type.kind() else { unreachable!() };
+            let closure_ty = s.base().tcx.type_of(s.owner_id()).instantiate_identity();
+            let ty::TyKind::Closure(_, args) = closure_ty.kind() else { unreachable!() };
             ClosureArgs::sfrom(s, s.owner_id(), args.as_closure())
         })]
         args: ClosureArgs,
+        /// For `FnMut`&`Fn` closures: the MIR for the `call_once` method; it simply calls
+        /// `call_mut`.
+        #[value({
+            let tcx = s.base().tcx;
+            let closure_ty = tcx.type_of(s.owner_id()).instantiate_identity();
+            let opt_body = closure_once_shim(tcx, closure_ty);
+            opt_body.and_then(|body| Body::from_mir(s, body))
+        })]
+        once_shim: Option<Body>,
+        /// MIR body of the builtin `drop` impl.
+        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
+        drop_glue: Option<Body>,
     },
 
     // Constants
@@ -352,7 +378,7 @@ pub enum FullDefKind<Body> {
         param_env: ParamEnv,
         #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// Associated constant: `trait MyTrait { const ASSOC: usize; }`
@@ -365,7 +391,7 @@ pub enum FullDefKind<Body> {
         associated_item: AssocItem,
         #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// Anonymous constant, e.g. the `1 + 2` in `[u8; 1 + 2]`
@@ -374,7 +400,7 @@ pub enum FullDefKind<Body> {
         param_env: ParamEnv,
         #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// An inline constant, e.g. `const { 1 + 2 }`
@@ -383,7 +409,7 @@ pub enum FullDefKind<Body> {
         param_env: ParamEnv,
         #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// A promoted constant, e.g. `&(1 + 2)`
@@ -404,7 +430,7 @@ pub enum FullDefKind<Body> {
         nested: bool,
         #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(s.owner_id().as_local().map(|ldid| Body::body(ldid, s)))]
+        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
 
@@ -461,7 +487,8 @@ pub enum FullDefKind<Body> {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct ImplAssocItem<Body> {
-    pub name: Symbol,
+    /// This is `None` for RPTITs.
+    pub name: Option<Symbol>,
     /// The definition of the item from the trait declaration. This is `AssocTy`, `AssocFn` or
     /// `AssocConst`.
     pub decl_def: Arc<FullDef<Body>>,
@@ -522,6 +549,7 @@ impl<Body> FullDef<Body> {
             | Union { param_env, .. }
             | Enum { param_env, .. }
             | Trait { param_env, .. }
+            | TraitAlias { param_env, .. }
             | TyAlias { param_env, .. }
             | AssocTy { param_env, .. }
             | Fn { param_env, .. }
@@ -556,11 +584,11 @@ impl<Body> FullDef<Body> {
                 .collect(),
             FullDefKind::InherentImpl { items, .. } | FullDefKind::Trait { items, .. } => items
                 .iter()
-                .map(|(item, _)| (item.name.clone(), item.def_id.clone()))
+                .filter_map(|(item, _)| Some((item.name.clone()?, item.def_id.clone())))
                 .collect(),
             FullDefKind::TraitImpl { items, .. } => items
                 .iter()
-                .map(|item| (item.name.clone(), item.def().def_id.clone()))
+                .filter_map(|item| Some((item.name.clone()?, item.def().def_id.clone())))
                 .collect(),
             _ => vec![],
         };
@@ -571,7 +599,7 @@ impl<Body> FullDef<Body> {
                 children.extend(
                     tcx.associated_items(impl_def_id)
                         .in_definition_order()
-                        .map(|assoc| (assoc.name, assoc.def_id).sinto(s)),
+                        .filter_map(|assoc| Some((assoc.opt_name()?, assoc.def_id).sinto(s))),
                 );
             }
         }
@@ -590,11 +618,17 @@ impl<Body> ImplAssocItem<Body> {
     }
 
     /// The kind of item this is.
-    pub fn assoc_kind(&self) -> AssocKind {
+    pub fn assoc_kind(&self) -> &AssocKind {
         match self.def().kind() {
-            FullDefKind::AssocTy { .. } => AssocKind::Type,
-            FullDefKind::AssocFn { .. } => AssocKind::Fn,
-            FullDefKind::AssocConst { .. } => AssocKind::Const,
+            FullDefKind::AssocTy {
+                associated_item, ..
+            }
+            | FullDefKind::AssocFn {
+                associated_item, ..
+            }
+            | FullDefKind::AssocConst {
+                associated_item, ..
+            } => &associated_item.kind,
             _ => unreachable!(),
         }
     }
@@ -708,6 +742,17 @@ fn get_foreign_mod_children<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Vec<
 }
 
 #[cfg(feature = "rustc")]
+fn get_self_predicate<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> TraitPredicate {
+    use ty::Upcast;
+    let tcx = s.base().tcx;
+    let pred: ty::TraitPredicate = crate::traits::self_predicate(tcx, s.owner_id())
+        .no_bound_vars()
+        .unwrap()
+        .upcast(tcx);
+    pred.sinto(s)
+}
+
+#[cfg(feature = "rustc")]
 fn get_impl_contents<'tcx, S, Body>(s: &S) -> FullDefKind<Body>
 where
     S: UnderOwnerState<'tcx>,
@@ -789,21 +834,23 @@ where
                                 vec![]
                             };
                             match decl_assoc.kind {
-                                ty::AssocKind::Type => {
+                                ty::AssocKind::Type { .. } => {
                                     let ty = tcx
                                         .type_of(decl_def_id)
                                         .instantiate(tcx, trait_ref.args)
                                         .sinto(s);
                                     ImplAssocItemValue::DefaultedTy { ty }
                                 }
-                                ty::AssocKind::Fn => ImplAssocItemValue::DefaultedFn {},
-                                ty::AssocKind::Const => ImplAssocItemValue::DefaultedConst {},
+                                ty::AssocKind::Fn { .. } => ImplAssocItemValue::DefaultedFn {},
+                                ty::AssocKind::Const { .. } => {
+                                    ImplAssocItemValue::DefaultedConst {}
+                                }
                             }
                         }
                     };
 
                     ImplAssocItem {
-                        name: decl_assoc.name.sinto(s),
+                        name: decl_assoc.opt_name().sinto(s),
                         value,
                         required_impl_exprs,
                         decl_def,
@@ -914,11 +961,44 @@ where
 }
 
 #[cfg(feature = "rustc")]
+fn closure_once_shim<'tcx>(
+    tcx: ty::TyCtxt<'tcx>,
+    closure_ty: ty::Ty<'tcx>,
+) -> Option<mir::Body<'tcx>> {
+    let ty::Closure(def_id, args) = closure_ty.kind() else {
+        unreachable!()
+    };
+    let instance = match args.as_closure().kind() {
+        ty::ClosureKind::Fn | ty::ClosureKind::FnMut => {
+            ty::Instance::fn_once_adapter_instance(tcx, *def_id, args)
+        }
+        ty::ClosureKind::FnOnce => return None,
+    };
+    let mir = tcx.instance_mir(instance.def).clone();
+    let mir = ty::EarlyBinder::bind(mir).instantiate(tcx, instance.args);
+    Some(mir)
+}
+
+#[cfg(feature = "rustc")]
+fn drop_glue_shim<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Option<mir::Body<'tcx>> {
+    let drop_in_place = tcx.require_lang_item(rustc_hir::LangItem::DropInPlace, None);
+    if !tcx.generics_of(def_id).is_empty() {
+        // Hack: layout code panics if it can't fully normalize types, which can happen e.g. with a
+        // trait associated type. For now we only translate the glue for monomorphic types.
+        return None;
+    }
+    let ty = tcx.type_of(def_id).instantiate_identity();
+    let instance_kind = ty::InstanceKind::DropGlue(drop_in_place, Some(ty));
+    let mir = tcx.instance_mir(instance_kind).clone();
+    Some(mir)
+}
+
+#[cfg(feature = "rustc")]
 fn get_param_env<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> ParamEnv {
     let tcx = s.base().tcx;
     let s = &with_owner_id(s.base(), (), (), def_id);
     ParamEnv {
         generics: tcx.generics_of(def_id).sinto(s),
-        predicates: required_predicates(tcx, def_id).sinto(s),
+        predicates: required_predicates(tcx, def_id, s.base().options.resolve_drop_bounds).sinto(s),
     }
 }

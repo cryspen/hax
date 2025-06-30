@@ -94,7 +94,7 @@ impl Add for F {
 }
 ```
 
-Here, F* is able to prove automatically that (1) the addition doesn't
+Here, F\* is able to prove automatically that (1) the addition doesn't
 overflow and (2) that the invariant of `F` is preserved. The
-definition of type `F` in F* (named `t_F`) very explicitly requires
+definition of type `F` in F\* (named `t_F`) very explicitly requires
 the invariant as a refinement on `v`.

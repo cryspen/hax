@@ -2,7 +2,7 @@
 weight: 0
 ---
 
-# Quick start with hax and F*
+# Quick start with hax and F\*
 
 Do you want to try hax out on a Rust crate of yours? This chapter is
 what you are looking for!
@@ -11,7 +11,7 @@ what you are looking for!
 
  - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/hacspec/hax?tab=readme-ov-file#installation).  
    <span style="margin-right:30px;"></span>🪄 Running `cargo hax --version` should print some version info.
- - <input type="checkbox" class="user-checkable"/> [Install F*](https://github.com/FStarLang/FStar/blob/master/INSTALL.md) *(optional: only if want to run F\*)*
+ - <input type="checkbox" class="user-checkable"/> [Install F\*](https://github.com/FStarLang/FStar/blob/master/INSTALL.md) *(optional: only if want to run F\*)*
 
 ## Setup the crate you want to verify
 
@@ -34,7 +34,7 @@ what you are looking for!
 specific crate you want to extract.*
 
 Run the command `cargo hax into fstar` to extract every item of your
-crate as F* modules in the subfolder `proofs/fstar/extraction`.
+crate as F\* modules in the subfolder `proofs/fstar/extraction`.
 
 **What is critical? What is worth verifying?**  
 Probably, your Rust crate contains mixed kinds of code: some parts are
@@ -68,22 +68,22 @@ about the `-i` flag [in the FAQ](../faq/include-flags.md).
 
 
 
-## Start F* verification
+## Start F\* verification
 After running the hax toolchain on your Rust code, you will end up
-with various F* modules in the `proofs/fstar/extraction` folder. The
-`Makefile` in `proofs/fstar/extraction` will run F*.
+with various F\* modules in the `proofs/fstar/extraction` folder. The
+`Makefile` in `proofs/fstar/extraction` will run F\*.
 
 1. **Lax check:** the first step is to run `OTHERFLAGS="--lax" make`,
-   which will run F* in "lax" mode. The lax mode just makes sure basic
+   which will run F\* in "lax" mode. The lax mode just makes sure basic
    typechecking works: it is not proving anything. This first step is
-   important because there might be missing libraries. If F* is not
+   important because there might be missing libraries. If F\* is not
    able to find a definition, it is probably a `libcore` issue: you
-   probably need to edit the F* library, which lives in the
+   probably need to edit the F\* library, which lives in the
    `proofs-libs` directory in the root of the hax repo.
-2. **Typecheck:** the second step is to run `make`. This will ask F*
+2. **Typecheck:** the second step is to run `make`. This will ask F\*
    to typecheck fully your crate. This is very likely that you need to
    add preconditions and postconditions at this stage. Indeed, this
-   second step is about panic freedom: if F* can typecheck your crate,
+   second step is about panic freedom: if F\* can typecheck your crate,
    it means your code *never* panics, which already is an important
    property.
 

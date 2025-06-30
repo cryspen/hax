@@ -58,7 +58,8 @@ let to_string ~(namespace : View.ModPath.t) :
     | Float F32 -> Some "f32"
     | Float F64 -> Some "f64"
     | Tuple [] -> Some "unit"
-    | Adt { def_id; generic_args = []; _ } -> Option.map ~f:escape (adt def_id)
+    | Adt { value = { def_id; generic_args = []; _ }; _ } ->
+        Option.map ~f:escape (adt def_id)
     | _ -> None
   in
   let apply left right = left ^ "_of_" ^ right in
@@ -66,7 +67,7 @@ let to_string ~(namespace : View.ModPath.t) :
     match ty.value with
     | Slice sub -> arity1 sub |> Option.map ~f:(apply "slice")
     | Ref (_, sub, _) -> arity1 sub |> Option.map ~f:(apply "ref")
-    | Adt { def_id; generic_args = [ Type arg ]; _ } ->
+    | Adt { value = { def_id; generic_args = [ Type arg ]; _ }; _ } ->
         let* adt = adt def_id in
         let* arg = arity1 arg in
         Some (apply adt arg)

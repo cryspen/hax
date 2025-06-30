@@ -8,7 +8,7 @@ use std::collections::{hash_map::Entry, HashMap};
 use rustc_hir::def::DefKind;
 use rustc_hir::def_id::DefId;
 use rustc_middle::traits::CodegenObligationError;
-use rustc_middle::ty::*;
+use rustc_middle::ty::{self, *};
 use rustc_trait_selection::traits::ImplSource;
 
 use crate::{self_predicate, traits::utils::erase_and_norm};
@@ -20,7 +20,7 @@ pub enum PathChunk<'tcx> {
     AssocItem {
         item: AssocItem,
         /// The arguments provided to the item (for GATs).
-        generic_args: &'tcx [GenericArg<'tcx>],
+        generic_args: GenericArgsRef<'tcx>,
         /// The impl exprs that must be satisfied to apply the given arguments to the item. E.g.
         /// `T: Clone` in the following example:
         /// ```ignore
@@ -73,6 +73,11 @@ pub enum ImplExprAtom<'tcx> {
     /// `dyn Trait` implements `Trait` using a built-in implementation; this refers to that
     /// built-in implementation.
     Dyn,
+    /// A virtual `Drop` implementation.
+    /// `Drop` doesn't work like a real trait but we want to pretend it does. If a type has a
+    /// user-defined `impl Drop for X` we just use the `Concrete` variant, but if it doesn't we use
+    /// this variant to supply the data needed to know what code will run on drop.
+    Drop(DropData<'tcx>),
     /// A built-in trait whose implementation is computed by the compiler, such as `FnMut`. This
     /// morally points to an invisible `impl` block; as such it contains the information we may
     /// need from one.
@@ -87,6 +92,27 @@ pub enum ImplExprAtom<'tcx> {
     },
     /// An error happened while resolving traits.
     Error(String),
+}
+
+#[derive(Debug, Clone)]
+pub enum DropData<'tcx> {
+    /// A drop that does nothing, e.g. for scalars and pointers.
+    Noop,
+    /// An implicit `Drop` local clause, if the `resolve_drop_bounds` option is `false`. If that
+    /// option is `true`, we'll add `Drop` bounds to every type param, and use that to resolve
+    /// `Drop` impls of generics. If it's `false`, we use this variant to indicate that the drop
+    /// clause comes from a generic or associated type.
+    Implicit,
+    /// The implicit `Drop` impl that exists for every type without an explicit `Drop` impl. The
+    /// virtual impl is considered to have one `T: Drop` bound for each generic argument of the
+    /// target type; it then simply drops each field in order.
+    Glue {
+        /// The type we're generating glue for.
+        ty: Ty<'tcx>,
+        /// The `ImplExpr`s for the `T: Drop` bounds of the virtual impl. There is one for each
+        /// generic argument, in order.
+        impl_exprs: Vec<ImplExpr<'tcx>>,
+    },
 }
 
 #[derive(Clone, Debug)]
@@ -121,10 +147,12 @@ pub struct AnnotatedTraitPred<'tcx> {
 fn initial_search_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: rustc_span::def_id::DefId,
+    add_drop: bool,
 ) -> Vec<AnnotatedTraitPred<'tcx>> {
     fn acc_predicates<'tcx>(
         tcx: TyCtxt<'tcx>,
         def_id: rustc_span::def_id::DefId,
+        add_drop: bool,
         predicates: &mut Vec<AnnotatedTraitPred<'tcx>>,
         pred_id: &mut usize,
     ) {
@@ -138,9 +166,9 @@ fn initial_search_predicates<'tcx>(
             // These inherit some predicates from their parent.
             AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant => {
                 let parent = tcx.parent(def_id);
-                acc_predicates(tcx, parent, predicates, pred_id);
+                acc_predicates(tcx, parent, add_drop, predicates, pred_id);
             }
-            Trait => {
+            Trait | TraitAlias => {
                 let self_pred = self_predicate(tcx, def_id).upcast(tcx);
                 predicates.push(AnnotatedTraitPred {
                     origin: BoundPredicateOrigin::SelfPred,
@@ -150,7 +178,7 @@ fn initial_search_predicates<'tcx>(
             _ => {}
         }
         predicates.extend(
-            required_predicates(tcx, def_id)
+            required_predicates(tcx, def_id, add_drop)
                 .predicates
                 .iter()
                 .map(|(clause, _span)| *clause)
@@ -164,7 +192,7 @@ fn initial_search_predicates<'tcx>(
     }
 
     let mut predicates = vec![];
-    acc_predicates(tcx, def_id, &mut predicates, &mut 0);
+    acc_predicates(tcx, def_id, add_drop, &mut predicates, &mut 0);
     predicates
 }
 
@@ -172,9 +200,10 @@ fn initial_search_predicates<'tcx>(
 fn parents_trait_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     pred: PolyTraitPredicate<'tcx>,
+    add_drop: bool,
 ) -> Vec<PolyTraitPredicate<'tcx>> {
     let self_trait_ref = pred.to_poly_trait_ref();
-    implied_predicates(tcx, pred.def_id())
+    implied_predicates(tcx, pred.def_id(), add_drop)
         .predicates
         .iter()
         .map(|(clause, _span)| *clause)
@@ -194,17 +223,35 @@ struct Candidate<'tcx> {
     origin: AnnotatedTraitPred<'tcx>,
 }
 
+impl<'tcx> Candidate<'tcx> {
+    fn into_impl_expr(self, tcx: TyCtxt<'tcx>) -> ImplExprAtom<'tcx> {
+        let path = self.path;
+        let r#trait = self.origin.clause.to_poly_trait_ref();
+        match self.origin.origin {
+            BoundPredicateOrigin::SelfPred => ImplExprAtom::SelfImpl { r#trait, path },
+            BoundPredicateOrigin::Item(index) => ImplExprAtom::LocalBound {
+                predicate: self.origin.clause.upcast(tcx),
+                index,
+                r#trait,
+                path,
+            },
+        }
+    }
+}
+
 /// Stores a set of predicates along with where they came from.
 pub struct PredicateSearcher<'tcx> {
     tcx: TyCtxt<'tcx>,
     typing_env: rustc_middle::ty::TypingEnv<'tcx>,
     /// Local clauses available in the current context.
     candidates: HashMap<PolyTraitPredicate<'tcx>, Candidate<'tcx>>,
+    /// Whether to add `T: Drop` bounds for every type generic and associated item.
+    add_drop: bool,
 }
 
 impl<'tcx> PredicateSearcher<'tcx> {
     /// Initialize the elaborator with the predicates accessible within this item.
-    pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId) -> Self {
+    pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId, add_drop: bool) -> Self {
         let mut out = Self {
             tcx,
             typing_env: TypingEnv {
@@ -212,9 +259,10 @@ impl<'tcx> PredicateSearcher<'tcx> {
                 typing_mode: TypingMode::PostAnalysis,
             },
             candidates: Default::default(),
+            add_drop,
         };
         out.extend(
-            initial_search_predicates(tcx, owner_id)
+            initial_search_predicates(tcx, owner_id, add_drop)
                 .into_iter()
                 .map(|clause| Candidate {
                     path: vec![],
@@ -251,8 +299,9 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let tcx = self.tcx;
         // Then recursively add their parents. This way ensures a breadth-first order,
         // which means we select the shortest path when looking up predicates.
+        let add_drop = self.add_drop;
         self.extend(new_candidates.into_iter().flat_map(|candidate| {
-            parents_trait_predicates(tcx, candidate.pred)
+            parents_trait_predicates(tcx, candidate.pred, add_drop)
                 .into_iter()
                 .enumerate()
                 .map(move |(index, parent_pred)| {
@@ -283,6 +332,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
             return Ok(());
         };
         let (trait_ref, item_args) = alias_ty.trait_ref_and_own_args(tcx);
+        let item_args = tcx.mk_args(item_args);
         let trait_ref = ty.rebind(trait_ref).upcast(tcx);
 
         // The predicate we're looking for is is `<T as Trait>::Type: OtherTrait`. We look up `T as
@@ -292,7 +342,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         };
 
         // The bounds that hold on the associated type.
-        let item_bounds = implied_predicates(tcx, alias_ty.def_id)
+        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop)
             .predicates
             .iter()
             .map(|(clause, _span)| *clause)
@@ -368,10 +418,12 @@ impl<'tcx> PredicateSearcher<'tcx> {
         use rustc_trait_selection::traits::{
             BuiltinImplSource, ImplSource, ImplSourceUserDefinedData,
         };
+        let tcx = self.tcx;
+        let drop_trait = tcx.lang_items().drop_trait().unwrap();
 
         let erased_tref = erase_and_norm(self.tcx, self.typing_env, *tref);
+        let trait_def_id = erased_tref.skip_binder().def_id;
 
-        let tcx = self.tcx;
         let impl_source = shallow_resolve_trait_ref(tcx, self.typing_env.param_env, erased_tref);
         let atom = match impl_source {
             Ok(ImplSource::UserDefined(ImplSourceUserDefinedData {
@@ -390,21 +442,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
             }
             Ok(ImplSource::Param(_)) => {
                 match self.resolve_local(erased_tref.upcast(self.tcx), warn)? {
-                    Some(candidate) => {
-                        let path = candidate.path;
-                        let r#trait = candidate.origin.clause.to_poly_trait_ref();
-                        match candidate.origin.origin {
-                            BoundPredicateOrigin::SelfPred => {
-                                ImplExprAtom::SelfImpl { r#trait, path }
-                            }
-                            BoundPredicateOrigin::Item(index) => ImplExprAtom::LocalBound {
-                                predicate: candidate.origin.clause.upcast(tcx),
-                                index,
-                                r#trait,
-                                path,
-                            },
-                        }
-                    }
+                    Some(candidate) => candidate.into_impl_expr(tcx),
                     None => {
                         let msg = format!(
                             "Could not find a clause for `{tref:?}` in the item parameters"
@@ -417,9 +455,8 @@ impl<'tcx> PredicateSearcher<'tcx> {
             Ok(ImplSource::Builtin(BuiltinImplSource::Object { .. }, _)) => ImplExprAtom::Dyn,
             Ok(ImplSource::Builtin(_, _)) => {
                 // Resolve the predicates implied by the trait.
-                let trait_def_id = erased_tref.skip_binder().def_id;
                 // If we wanted to not skip this binder, we'd have to instantiate the bound
-                // regions, solve, then wrap the result in a binder. And track  higher-kinded
+                // regions, solve, then wrap the result in a binder. And track higher-kinded
                 // clauses better all over.
                 let impl_exprs = self.resolve_item_implied_predicates(
                     trait_def_id,
@@ -429,7 +466,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
                 let types = tcx
                     .associated_items(trait_def_id)
                     .in_definition_order()
-                    .filter(|assoc| matches!(assoc.kind, AssocKind::Type))
+                    .filter(|assoc| matches!(assoc.kind, AssocKind::Type { .. }))
                     .filter_map(|assoc| {
                         let ty =
                             Ty::new_projection(tcx, assoc.def_id, erased_tref.skip_binder().args);
@@ -456,9 +493,106 @@ impl<'tcx> PredicateSearcher<'tcx> {
                     types,
                 }
             }
+            // Resolve `Drop` trait impls by adding virtual impls when a real one can't be found.
+            Err(CodegenObligationError::Unimplemented)
+                if erased_tref.skip_binder().def_id == drop_trait =>
+            {
+                // If we wanted to not skip this binder, we'd have to instantiate the bound
+                // regions, solve, then wrap the result in a binder. And track higher-kinded
+                // clauses better all over.
+                let mut resolve_drop = |ty: Ty<'tcx>| {
+                    let tref = ty::Binder::dummy(ty::TraitRef::new(tcx, drop_trait, [ty]));
+                    self.resolve(&tref, warn)
+                };
+                let find_drop_impl = |ty: Ty<'tcx>| {
+                    let mut dtor = None;
+                    tcx.for_each_relevant_impl(drop_trait, ty, |impl_did| {
+                        dtor = Some(impl_did);
+                    });
+                    dtor
+                };
+                // TODO: how to check if there is a real drop impl?????
+                let ty = erased_tref.skip_binder().args[0].as_type().unwrap();
+                // Source of truth are `ty::needs_drop_components` and `tcx.needs_drop_raw`.
+                match ty.kind() {
+                    // TODO: Does `UnsafeBinder` drop its contents?
+                    ty::Bool
+                    | ty::Char
+                    | ty::Int(..)
+                    | ty::Uint(..)
+                    | ty::Float(..)
+                    | ty::Foreign(..)
+                    | ty::Str
+                    | ty::RawPtr(..)
+                    | ty::Ref(..)
+                    | ty::FnDef(..)
+                    | ty::FnPtr(..)
+                    | ty::UnsafeBinder(..)
+                    | ty::Never => ImplExprAtom::Drop(DropData::Noop),
+                    ty::Array(inner_ty, _) | ty::Pat(inner_ty, _) | ty::Slice(inner_ty) => {
+                        ImplExprAtom::Drop(DropData::Glue {
+                            ty,
+                            impl_exprs: vec![resolve_drop(*inner_ty)?],
+                        })
+                    }
+                    ty::Tuple(tys) => ImplExprAtom::Drop(DropData::Glue {
+                        ty,
+                        impl_exprs: tys.iter().map(resolve_drop).try_collect()?,
+                    }),
+                    ty::Adt(..) if let Some(_) = find_drop_impl(ty) => {
+                        // We should have been able to resolve the `T: Drop` clause above, if we
+                        // get here we don't know how to reconstruct the arguments to the impl.
+                        let msg = format!("Cannot resolve clause `{tref:?}`");
+                        warn(&msg);
+                        ImplExprAtom::Error(msg)
+                    }
+                    ty::Adt(_, args)
+                    | ty::Closure(_, args)
+                    | ty::Coroutine(_, args)
+                    | ty::CoroutineClosure(_, args)
+                    | ty::CoroutineWitness(_, args) => ImplExprAtom::Drop(DropData::Glue {
+                        ty,
+                        impl_exprs: args
+                            .iter()
+                            .filter_map(|arg| arg.as_type())
+                            .map(resolve_drop)
+                            .try_collect()?,
+                    }),
+                    // Every `dyn` has a `Drop` in its vtable, ergo we pretend that every `dyn` has
+                    // `Drop` in its list of traits.
+                    ty::Dynamic(..) => ImplExprAtom::Dyn,
+                    ty::Param(..) | ty::Alias(..) | ty::Bound(..) => {
+                        if self.add_drop {
+                            // We've added `Drop` impls on everything, we should be able to resolve
+                            // it.
+                            match self.resolve_local(erased_tref.upcast(self.tcx), warn)? {
+                                Some(candidate) => candidate.into_impl_expr(tcx),
+                                None => {
+                                    let msg =
+                                        format!("Cannot find virtual `Drop` clause: `{tref:?}`");
+                                    warn(&msg);
+                                    ImplExprAtom::Error(msg)
+                                }
+                            }
+                        } else {
+                            ImplExprAtom::Drop(DropData::Implicit)
+                        }
+                    }
+
+                    ty::Placeholder(..) | ty::Infer(..) | ty::Error(..) => {
+                        let msg = format!(
+                            "Cannot resolve clause `{tref:?}` \
+                                because of a type error"
+                        );
+                        warn(&msg);
+                        ImplExprAtom::Error(msg)
+                    }
+                }
+            }
             Err(e) => {
                 let msg = format!(
-                    "Could not find a clause for `{tref:?}` in the current context: `{e:?}`"
+                    "Could not find a clause for `{tref:?}` \
+                    in the current context: `{e:?}`"
                 );
                 warn(&msg);
                 ImplExprAtom::Error(msg)
@@ -480,7 +614,11 @@ impl<'tcx> PredicateSearcher<'tcx> {
         warn: &impl Fn(&str),
     ) -> Result<Vec<ImplExpr<'tcx>>, String> {
         let tcx = self.tcx;
-        self.resolve_predicates(generics, required_predicates(tcx, def_id), warn)
+        self.resolve_predicates(
+            generics,
+            required_predicates(tcx, def_id, self.add_drop),
+            warn,
+        )
     }
 
     /// Resolve the predicates implied by the given item.
@@ -492,7 +630,11 @@ impl<'tcx> PredicateSearcher<'tcx> {
         warn: &impl Fn(&str),
     ) -> Result<Vec<ImplExpr<'tcx>>, String> {
         let tcx = self.tcx;
-        self.resolve_predicates(generics, implied_predicates(tcx, def_id), warn)
+        self.resolve_predicates(
+            generics,
+            implied_predicates(tcx, def_id, self.add_drop),
+            warn,
+        )
     }
 
     /// Apply the given generics to the provided clauses and resolve the trait references in the

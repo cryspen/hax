@@ -5,7 +5,7 @@ weight: 0
 # Panic freedom
 
 Let's start with a simple example: a function that squares a `u8`
-integer. To extract this function to F* using hax, we simply need to
+integer. To extract this function to F\* using hax, we simply need to
 run the command `cargo hax into fstar` in the directory of the crate
 in which the function `square` is defined.
 
@@ -18,8 +18,8 @@ fn square(x: u8) -> u8 {
 }
 ```
 
-Though, if we try to verify this function, F* is complaining about a
-subtyping issue: F* tells us that it is not able to prove that the
+Though, if we try to verify this function, F\* is complaining about a
+subtyping issue: F\* tells us that it is not able to prove that the
 result of the multiplication `x * x` fits the range of `u8`. The
 multiplication `x * x` might indeed be overflowing!
 
@@ -70,7 +70,7 @@ fn square_option(x: u8) -> Option<u8> {
 }
 ```
 
-Here, F* is able to prove panic-freedom: calling `square` with any
+Here, F\* is able to prove panic-freedom: calling `square` with any
 input is safe. Though, one may argue that `square`'s input being small
 enough should really be an assumption. Having to deal with the
 possible integer overflowing whenever squaring is a huge burden. Can
@@ -102,7 +102,7 @@ fn square_requires(x: u8) -> u8 {
 }
 ```
 
-With this precondition, F* is able to prove panic freedom. From now
+With this precondition, F\* is able to prove panic freedom. From now
 on, it is the responsibility of the clients of `square` to respect the
 contact. The next step is thus be to verify, through hax extraction,
 that `square` is used correctly at every call site.

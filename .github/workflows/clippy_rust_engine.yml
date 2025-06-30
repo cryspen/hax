@@ -1,0 +1,18 @@
+name: Linting for the Rust engine
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  clippy:
+    name: clippy
+    runs-on: linux
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run clippy
+      run: |
+        cargo clippy -p hax-rust-engine -- --no-deps

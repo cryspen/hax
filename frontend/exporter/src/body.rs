@@ -121,15 +121,15 @@ mod module {
         tcx.thir_body_safe(did).as_ref().unwrap_or_else(msg).clone()
     }
 
-    pub trait IsBody: Sized + Clone + 'static {
-        fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RLocalDefId, s: &S) -> Self;
+    pub trait IsBody: Sized + std::fmt::Debug + Clone + 'static {
+        fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RDefId, s: &S) -> Option<Self>;
 
         /// Reuse a MIR body we already got. Panic if that's impossible.
         fn from_mir<'tcx, S: UnderOwnerState<'tcx>>(
             _s: &S,
             _body: rustc_middle::mir::Body<'tcx>,
-        ) -> Self {
-            panic!("Can't convert MIR to the requested body type")
+        ) -> Option<Self> {
+            None
         }
     }
 
@@ -146,7 +146,7 @@ mod module {
         FnDef {
             params: thir.params.raw.sinto(s),
             ret: thir.exprs[expr_entrypoint].ty.sinto(s),
-            body: Body::body(ldid, s),
+            body: Body::body(ldid.to_def_id(), s).s_unwrap(s),
             sig_span: fn_sig.span.sinto(s),
             header: fn_sig.header.sinto(s),
         }
@@ -161,24 +161,27 @@ mod module {
         // be local. It is safe to do so, because if we have access to HIR objects,
         // it necessarily means we are exploring a local item (we don't have
         // access to the HIR of external objects, only their MIR).
-        Body::body(s.base().tcx.hir_body_owner_def_id(id), s)
+        Body::body(s.base().tcx.hir_body_owner_def_id(id).to_def_id(), s).s_unwrap(s)
     }
 
     mod implementations {
         use super::*;
         impl IsBody for () {
-            fn body<'tcx, S: UnderOwnerState<'tcx>>(_did: RLocalDefId, _s: &S) -> Self {}
+            fn body<'tcx, S: UnderOwnerState<'tcx>>(_did: RDefId, _s: &S) -> Option<Self> {
+                Some(())
+            }
             fn from_mir<'tcx, S: UnderOwnerState<'tcx>>(
                 _s: &S,
                 _body: rustc_middle::mir::Body<'tcx>,
-            ) -> Self {
-                ()
+            ) -> Option<Self> {
+                Some(())
             }
         }
         impl IsBody for ThirBody {
-            fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RLocalDefId, s: &S) -> Self {
+            fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RDefId, s: &S) -> Option<Self> {
+                let did = did.as_local()?;
                 let (thir, expr) = get_thir(did, s);
-                if *CORE_EXTRACTION_MODE {
+                Some(if *CORE_EXTRACTION_MODE {
                     let expr = &thir.exprs[expr];
                     Decorated {
                         contents: Box::new(ExprKind::Tuple { fields: vec![] }),
@@ -189,34 +192,27 @@ mod module {
                     }
                 } else {
                     expr.sinto(&with_owner_id(s.base(), thir, (), did.to_def_id()))
-                }
+                })
             }
         }
 
         impl<A: IsBody, B: IsBody> IsBody for (A, B) {
-            fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RLocalDefId, s: &S) -> Self {
-                (A::body(did, s), B::body(did, s))
+            fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RDefId, s: &S) -> Option<Self> {
+                Some((A::body(did, s)?, B::body(did, s)?))
             }
         }
 
         impl<MirKind: IsMirKind + Clone + 'static> IsBody for MirBody<MirKind> {
-            fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RLocalDefId, s: &S) -> Self {
-                let (thir, _) = get_thir(did, s);
-                let mir = MirKind::get_mir(s.base().tcx, did, |body| {
+            fn body<'tcx, S: UnderOwnerState<'tcx>>(did: RDefId, s: &S) -> Option<Self> {
+                MirKind::get_mir(s.base().tcx, did, |body| {
                     let body = Rc::new(body.clone());
-                    body.sinto(&with_owner_id(
-                        s.base(),
-                        thir,
-                        body.clone(),
-                        did.to_def_id(),
-                    ))
-                });
-                mir.s_unwrap(s)
+                    body.sinto(&with_owner_id(s.base(), (), body.clone(), did))
+                })
             }
             fn from_mir<'tcx, S: UnderOwnerState<'tcx>>(
                 s: &S,
                 body: rustc_middle::mir::Body<'tcx>,
-            ) -> Self {
+            ) -> Option<Self> {
                 let body = Rc::new(body.clone());
                 let s = &State {
                     base: s.base(),
@@ -225,7 +221,7 @@ mod module {
                     binder: (),
                     thir: (),
                 };
-                body.sinto(s)
+                Some(body.sinto(s))
             }
         }
     }

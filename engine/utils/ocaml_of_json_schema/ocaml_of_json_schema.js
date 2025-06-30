@@ -438,12 +438,27 @@ let exporters = {
         },
     },
     empty_struct: {
-        guard: def => (eq(keys(def), new Set(["type"])) && def.type == 'object'),
+        guard: def => (eq(keys(def), new Set(["type"])) && (def.type == 'object' || def.type == 'null')),
         f: (name, _) => {
             return {
                 type: `EmptyStruct${name}`,
                 parse: `EmptyStruct${name}`,
                 to_json: '`Null',
+            };
+        },
+    },
+    newtype: {
+        guard: def => !exporters['empty_struct'].guard(def) && is_type.expr(def, ["try-parse"]),
+        f: (name, o) => {
+            let path = [name + '-newtype-ref'];
+            let te = is_type.expr(o, path);
+            let ocaml_type = ocaml_of_type_expr(te, path);
+            let arms = ocaml_arms_of_type_expr(te, path);
+            let to_json = ocaml_yojson_of_type_expr(te, `(let Newtype${name} inner = o in inner)`, path);
+            return {
+                type: `Newtype${name} of ${ocaml_type}`,
+                parse: `Newtype${name}(${mk_match('o', arms, path)})`,
+                to_json,
             };
         },
     },
@@ -576,6 +591,7 @@ end
     let items = Object.entries(definitions)
         .map(([name, def]) => ['Node_for_TyKind' == name ? 'node_for_ty_kind_generated' : name, def])
         .map(([name, def]) => ['Node_for_DefIdContents' == name ? 'node_for_def_id_contents_generated' : name, def])
+        .map(([name, def]) => ['Node_for_ItemRefContents' == name ? 'node_for_item_ref_contents_generated' : name, def])
         .map(
             ([name, def]) => export_definition(name, def)
         ).filter(x => x instanceof Object);
@@ -611,9 +627,10 @@ open ParseError
     impl += `
 and node_for__ty_kind = node_for_ty_kind_generated
 and node_for__def_id_contents = node_for_def_id_contents_generated
+and node_for__item_ref_contents = node_for_item_ref_contents_generated
 
 
-type map_types = ${"[`TyKind of ty_kind | `DefIdContents of def_id_contents]"}
+type map_types = ${"[`TyKind of ty_kind | `DefIdContents of def_id_contents | `ItemRefContents of item_ref_contents]"}
 let cache_map: (int64, ${"[ `Value of map_types | `JSON of Yojson.Safe.t ]"}) Base.Hashtbl.t = Base.Hashtbl.create (module Base.Int64)
 
 module Exn = struct
@@ -667,6 +684,15 @@ and node_for__def_id_contents_of_yojson (o: Yojson.Safe.t): node_for__def_id_con
            o
    in
    {value; id = Base.Int64.zero}
+and node_for__item_ref_contents_of_yojson (o: Yojson.Safe.t): node_for__item_ref_contents =
+   let (value, _id) =
+       table_id_node_of_yojson "ItemRefContents"
+           (fun value -> \`ItemRefContents value)
+           (function | \`ItemRefContents value -> Some value | _ -> None)
+           item_ref_contents_of_yojson
+           o
+   in
+   {value; id = Base.Int64.zero}
 `;
     impl += ('');
     impl += ('let rec ' + items.map(({ name, type, parse, to_json }) =>
@@ -675,6 +701,7 @@ and node_for__def_id_contents_of_yojson (o: Yojson.Safe.t): node_for__def_id_con
     impl += `
 and yojson_of_node_for__ty_kind {value; id} = yojson_of_node_for_ty_kind_generated {value; id}
 and yojson_of_node_for__def_id_contents {value; id} = yojson_of_node_for_def_id_contents_generated {value; id}
+and yojson_of_node_for__item_ref_contents {value; id} = yojson_of_node_for_item_ref_contents_generated {value; id}
 end
 
 open struct

@@ -95,52 +95,61 @@ let sigma (x: u32) (i op: usize) : Prims.Pure u32 (requires i <. mk_usize 4) (fu
     u32) ^.
   tmp
 
-let to_be_u32s (block: t_Array u8 (mk_usize 64)) : Alloc.Vec.t_Vec u32 Alloc.Alloc.t_Global =
-  let out:Alloc.Vec.t_Vec u32 Alloc.Alloc.t_Global =
-    Alloc.Vec.impl__with_capacity #u32 (v_BLOCK_SIZE /! mk_usize 4 <: usize)
-  in
-  let out:Alloc.Vec.t_Vec u32 Alloc.Alloc.t_Global =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_ChunksExact
-            u8)
-          #FStar.Tactics.Typeclasses.solve
-          (Core.Slice.impl__chunks_exact #u8 (block <: t_Slice u8) (mk_usize 4)
-            <:
-            Core.Slice.Iter.t_ChunksExact u8)
-        <:
-        Core.Slice.Iter.t_ChunksExact u8)
+let to_be_u32s (block: t_Array u8 (mk_usize 64))
+    : Prims.Pure (t_Array u32 (mk_usize 16))
+      Prims.l_True
+      (ensures
+        fun result ->
+          let result:t_Array u32 (mk_usize 16) = result in
+          (Core.Slice.impl__len #u32 (result <: t_Slice u32) <: usize) =. mk_usize 16) =
+  let out:t_Array u32 (mk_usize 16) = Rust_primitives.Hax.repeat (mk_u32 0) (mk_usize 16) in
+  let out:t_Array u32 (mk_usize 16) =
+    Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
+      (mk_usize 16)
+      (fun out temp_1_ ->
+          let out:t_Array u32 (mk_usize 16) = out in
+          let _:usize = temp_1_ in
+          true)
       out
-      (fun out block_chunk ->
-          let out:Alloc.Vec.t_Vec u32 Alloc.Alloc.t_Global = out in
-          let block_chunk:t_Slice u8 = block_chunk in
+      (fun out i ->
+          let out:t_Array u32 (mk_usize 16) = out in
+          let i:usize = i in
           let block_chunk_array:u32 =
             Core.Num.impl_u32__from_be_bytes (Core.Result.impl__unwrap #(t_Array u8 (mk_usize 4))
                   #Core.Array.t_TryFromSliceError
                   (Core.Convert.f_try_into #(t_Slice u8)
                       #(t_Array u8 (mk_usize 4))
                       #FStar.Tactics.Typeclasses.solve
-                      block_chunk
+                      (block.[ {
+                            Core.Ops.Range.f_start = i *! mk_usize 4 <: usize;
+                            Core.Ops.Range.f_end = (i +! mk_usize 1 <: usize) *! mk_usize 4 <: usize
+                          }
+                          <:
+                          Core.Ops.Range.t_Range usize ]
+                        <:
+                        t_Slice u8)
                     <:
                     Core.Result.t_Result (t_Array u8 (mk_usize 4)) Core.Array.t_TryFromSliceError)
                 <:
                 t_Array u8 (mk_usize 4))
           in
-          let out:Alloc.Vec.t_Vec u32 Alloc.Alloc.t_Global =
-            Alloc.Vec.impl_1__push #u32 #Alloc.Alloc.t_Global out block_chunk_array
+          let out:t_Array u32 (mk_usize 16) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize out i block_chunk_array
           in
           out)
   in
   out
 
 let schedule (block: t_Array u8 (mk_usize 64)) : t_Array u32 (mk_usize 64) =
-  let b:Alloc.Vec.t_Vec u32 Alloc.Alloc.t_Global = to_be_u32s block in
+  let b:t_Array u32 (mk_usize 16) = to_be_u32s block in
   let s:t_Array u32 (mk_usize 64) = Rust_primitives.Hax.repeat (mk_u32 0) (mk_usize 64) in
   let s:t_Array u32 (mk_usize 64) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
       v_K_SIZE
-      (fun s temp_1_ ->
+      (fun s i ->
           let s:t_Array u32 (mk_usize 64) = s in
-          let _:usize = temp_1_ in
-          true)
+          let i:usize = i in
+          (Core.Slice.impl__len #u32 (b <: t_Slice u32) <: usize) =. mk_usize 16 <: bool)
       s
       (fun s i ->
           let s:t_Array u32 (mk_usize 64) = s in
@@ -177,28 +186,27 @@ let schedule (block: t_Array u8 (mk_usize 64)) : t_Array u32 (mk_usize 64) =
   in
   s
 
-let shuffle (ws: t_Array u32 (mk_usize 64)) (hashi: t_Array u32 (mk_usize 8))
+let shuffle (ws: t_Array u32 (mk_usize 64)) (hash: t_Array u32 (mk_usize 8))
     : t_Array u32 (mk_usize 8) =
-  let h:t_Array u32 (mk_usize 8) = hashi in
-  let h:t_Array u32 (mk_usize 8) =
+  let hash:t_Array u32 (mk_usize 8) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
       v_K_SIZE
-      (fun h temp_1_ ->
-          let h:t_Array u32 (mk_usize 8) = h in
+      (fun hash temp_1_ ->
+          let hash:t_Array u32 (mk_usize 8) = hash in
           let _:usize = temp_1_ in
           true)
-      h
-      (fun h i ->
-          let h:t_Array u32 (mk_usize 8) = h in
+      hash
+      (fun hash i ->
+          let hash:t_Array u32 (mk_usize 8) = hash in
           let i:usize = i in
-          let a0:u32 = h.[ mk_usize 0 ] in
-          let b0:u32 = h.[ mk_usize 1 ] in
-          let c0:u32 = h.[ mk_usize 2 ] in
-          let d0:u32 = h.[ mk_usize 3 ] in
-          let e0:u32 = h.[ mk_usize 4 ] in
-          let f0:u32 = h.[ mk_usize 5 ] in
-          let g0:u32 = h.[ mk_usize 6 ] in
-          let (h0: u32):u32 = h.[ mk_usize 7 ] in
+          let a0:u32 = hash.[ mk_usize 0 ] in
+          let b0:u32 = hash.[ mk_usize 1 ] in
+          let c0:u32 = hash.[ mk_usize 2 ] in
+          let d0:u32 = hash.[ mk_usize 3 ] in
+          let e0:u32 = hash.[ mk_usize 4 ] in
+          let f0:u32 = hash.[ mk_usize 5 ] in
+          let g0:u32 = hash.[ mk_usize 6 ] in
+          let (h0: u32):u32 = hash.[ mk_usize 7 ] in
           let t1:u32 =
             Core.Num.impl_u32__wrapping_add (Core.Num.impl_u32__wrapping_add (Core.Num.impl_u32__wrapping_add
                       (Core.Num.impl_u32__wrapping_add h0
@@ -217,60 +225,63 @@ let shuffle (ws: t_Array u32 (mk_usize 64)) (hashi: t_Array u32 (mk_usize 8))
             Core.Num.impl_u32__wrapping_add (sigma a0 (mk_usize 0) (mk_usize 1) <: u32)
               (maj a0 b0 c0 <: u32)
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash
               (mk_usize 0)
               (Core.Num.impl_u32__wrapping_add t1 t2 <: u32)
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h (mk_usize 1) a0
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash (mk_usize 1) a0
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h (mk_usize 2) b0
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash (mk_usize 2) b0
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h (mk_usize 3) c0
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash (mk_usize 3) c0
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash
               (mk_usize 4)
               (Core.Num.impl_u32__wrapping_add d0 t1 <: u32)
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h (mk_usize 5) e0
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash (mk_usize 5) e0
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h (mk_usize 6) f0
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash (mk_usize 6) f0
           in
-          let h:t_Array u32 (mk_usize 8) =
-            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h (mk_usize 7) g0
+          let hash:t_Array u32 (mk_usize 8) =
+            Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash (mk_usize 7) g0
           in
-          h)
+          hash)
   in
-  h
+  hash
 
-let compress (block: t_Array u8 (mk_usize 64)) (h_in: t_Array u32 (mk_usize 8))
+let compress (block: t_Array u8 (mk_usize 64)) (hash: t_Array u32 (mk_usize 8))
     : t_Array u32 (mk_usize 8) =
   let s:t_Array u32 (mk_usize 64) = schedule block in
-  let h:t_Array u32 (mk_usize 8) = shuffle s h_in in
-  let h:t_Array u32 (mk_usize 8) =
+  let h_in:t_Array u32 (mk_usize 8) =
+    Core.Clone.f_clone #(t_Array u32 (mk_usize 8)) #FStar.Tactics.Typeclasses.solve hash
+  in
+  let hash:t_Array u32 (mk_usize 8) = shuffle s hash in
+  let hash:t_Array u32 (mk_usize 8) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
       (mk_usize 8)
-      (fun h temp_1_ ->
-          let h:t_Array u32 (mk_usize 8) = h in
+      (fun hash temp_1_ ->
+          let hash:t_Array u32 (mk_usize 8) = hash in
           let _:usize = temp_1_ in
           true)
-      h
-      (fun h i ->
-          let h:t_Array u32 (mk_usize 8) = h in
+      hash
+      (fun hash i ->
+          let hash:t_Array u32 (mk_usize 8) = hash in
           let i:usize = i in
-          Rust_primitives.Hax.Monomorphized_update_at.update_at_usize h
+          Rust_primitives.Hax.Monomorphized_update_at.update_at_usize hash
             i
-            (Core.Num.impl_u32__wrapping_add (h.[ i ] <: u32) (h_in.[ i ] <: u32) <: u32)
+            (Core.Num.impl_u32__wrapping_add (hash.[ i ] <: u32) (h_in.[ i ] <: u32) <: u32)
           <:
           t_Array u32 (mk_usize 8))
   in
-  h
+  hash
 
 let u32s_to_be_bytes (state: t_Array u32 (mk_usize 8)) : t_Array u8 (mk_usize 32) =
   let (out: t_Array u8 (mk_usize 32)):t_Array u8 (mk_usize 32) =
@@ -307,76 +318,77 @@ let u32s_to_be_bytes (state: t_Array u32 (mk_usize 8)) : t_Array u8 (mk_usize 32
   in
   out
 
-let hash (msg: t_Slice u8) : t_Array u8 (mk_usize 32) =
+let hash (msg: t_Slice u8)
+    : Prims.Pure (t_Array u8 (mk_usize 32))
+      (requires (cast (Core.Slice.impl__len #u8 msg <: usize) <: u64) <. mk_u64 2305843009213693951)
+      (fun _ -> Prims.l_True) =
   let h:t_Array u32 (mk_usize 8) = v_HASH_INIT in
+  let blocks:usize = (Core.Slice.impl__len #u8 msg <: usize) /! v_BLOCK_SIZE in
+  let h:t_Array u32 (mk_usize 8) =
+    Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
+      blocks
+      (fun h temp_1_ ->
+          let h:t_Array u32 (mk_usize 8) = h in
+          let _:usize = temp_1_ in
+          true)
+      h
+      (fun h i ->
+          let h:t_Array u32 (mk_usize 8) = h in
+          let i:usize = i in
+          compress (Core.Result.impl__unwrap #(t_Array u8 (mk_usize 64))
+                #Core.Array.t_TryFromSliceError
+                (Core.Convert.f_try_into #(t_Slice u8)
+                    #(t_Array u8 (mk_usize 64))
+                    #FStar.Tactics.Typeclasses.solve
+                    (msg.[ {
+                          Core.Ops.Range.f_start = i *! v_BLOCK_SIZE <: usize;
+                          Core.Ops.Range.f_end = (i +! mk_usize 1 <: usize) *! v_BLOCK_SIZE <: usize
+                        }
+                        <:
+                        Core.Ops.Range.t_Range usize ]
+                      <:
+                      t_Slice u8)
+                  <:
+                  Core.Result.t_Result (t_Array u8 (mk_usize 64)) Core.Array.t_TryFromSliceError)
+              <:
+              t_Array u8 (mk_usize 64))
+            h
+          <:
+          t_Array u32 (mk_usize 8))
+  in
+  let last_block_len:usize = (Core.Slice.impl__len #u8 msg <: usize) %! v_BLOCK_SIZE in
   let (last_block: t_Array u8 (mk_usize 64)):t_Array u8 (mk_usize 64) =
     Rust_primitives.Hax.repeat (mk_u8 0) (mk_usize 64)
   in
-  let last_block_len:usize = mk_usize 0 in
-  let h, last_block, last_block_len:(t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64) & usize) =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_Chunks
-            u8)
-          #FStar.Tactics.Typeclasses.solve
-          (Core.Slice.impl__chunks #u8 msg v_BLOCK_SIZE <: Core.Slice.Iter.t_Chunks u8)
+  let last_block:t_Array u8 (mk_usize 64) =
+    Rust_primitives.Hax.Monomorphized_update_at.update_at_range last_block
+      ({ Core.Ops.Range.f_start = mk_usize 0; Core.Ops.Range.f_end = last_block_len }
         <:
-        Core.Slice.Iter.t_Chunks u8)
-      (h, last_block, last_block_len
+        Core.Ops.Range.t_Range usize)
+      (Core.Slice.impl__copy_from_slice #u8
+          (last_block.[ {
+                Core.Ops.Range.f_start = mk_usize 0;
+                Core.Ops.Range.f_end = last_block_len
+              }
+              <:
+              Core.Ops.Range.t_Range usize ]
+            <:
+            t_Slice u8)
+          (msg.[ { Core.Ops.Range.f_start = blocks *! v_BLOCK_SIZE <: usize }
+              <:
+              Core.Ops.Range.t_RangeFrom usize ]
+            <:
+            t_Slice u8)
         <:
-        (t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64) & usize))
-      (fun temp_0_ block ->
-          let h, last_block, last_block_len:(t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64) &
-            usize) =
-            temp_0_
-          in
-          let block:t_Slice u8 = block in
-          if (Core.Slice.impl__len #u8 block <: usize) <. v_BLOCK_SIZE <: bool
-          then
-            let last_block:t_Array u8 (mk_usize 64) =
-              Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
-                (Core.Slice.impl__len #u8 block <: usize)
-                (fun last_block temp_1_ ->
-                    let last_block:t_Array u8 (mk_usize 64) = last_block in
-                    let _:usize = temp_1_ in
-                    true)
-                last_block
-                (fun last_block i ->
-                    let last_block:t_Array u8 (mk_usize 64) = last_block in
-                    let i:usize = i in
-                    Rust_primitives.Hax.Monomorphized_update_at.update_at_usize last_block
-                      i
-                      (block.[ i ] <: u8)
-                    <:
-                    t_Array u8 (mk_usize 64))
-            in
-            let last_block_len:usize = Core.Slice.impl__len #u8 block in
-            h, last_block, last_block_len
-            <:
-            (t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64) & usize)
-          else
-            let h:t_Array u32 (mk_usize 8) =
-              compress (Core.Result.impl__unwrap #(t_Array u8 (mk_usize 64))
-                    #Core.Array.t_TryFromSliceError
-                    (Core.Convert.f_try_into #(t_Slice u8)
-                        #(t_Array u8 (mk_usize 64))
-                        #FStar.Tactics.Typeclasses.solve
-                        block
-                      <:
-                      Core.Result.t_Result (t_Array u8 (mk_usize 64)) Core.Array.t_TryFromSliceError
-                    )
-                  <:
-                  t_Array u8 (mk_usize 64))
-                h
-            in
-            h, last_block, last_block_len
-            <:
-            (t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64) & usize))
+        t_Slice u8)
   in
   let last_block:t_Array u8 (mk_usize 64) =
     Rust_primitives.Hax.Monomorphized_update_at.update_at_usize last_block
       last_block_len
       (mk_u8 128)
   in
-  let len_bist:u64 = cast ((Core.Slice.impl__len #u8 msg <: usize) *! mk_usize 8 <: usize) <: u64 in
+  let _:Prims.unit = assert (Seq.length msg * 8 < pow2 64) in
+  let len_bist:u64 = (cast (Core.Slice.impl__len #u8 msg <: usize) <: u64) *! mk_u64 8 in
   let len_bist_bytes:t_Array u8 (mk_usize 8) = Core.Num.impl_u64__to_be_bytes len_bist in
   let h, last_block:(t_Array u32 (mk_usize 8) & t_Array u8 (mk_usize 64)) =
     if last_block_len <. (v_BLOCK_SIZE -! v_LEN_SIZE <: usize)
@@ -427,4 +439,7 @@ let hash (msg: t_Slice u8) : t_Array u8 (mk_usize 32) =
   in
   u32s_to_be_bytes h
 
-let sha256 (msg: t_Slice u8) : t_Array u8 (mk_usize 32) = hash msg
+let sha256 (msg: t_Slice u8)
+    : Prims.Pure (t_Array u8 (mk_usize 32))
+      (requires (cast (Core.Slice.impl__len #u8 msg <: usize) <: u64) <. mk_u64 2305843009213693951)
+      (fun _ -> Prims.l_True) = hash msg

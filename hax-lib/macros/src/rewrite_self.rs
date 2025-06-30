@@ -119,7 +119,7 @@ impl visit_mut::VisitMut for RewriteSelf {
                         .clone()
                         .map(|(r, lt)| (Some(r), lt))
                         .unwrap_or((None, None));
-                    let mutability = r.mutability.clone();
+                    let mutability = reference.and(r.mutability.clone());
                     parse_quote! {#reference #lt #mutability #ty}
                 }),
             });

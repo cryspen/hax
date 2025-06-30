@@ -110,28 +110,16 @@ pub fn translate_constant_reference<'tcx>(
     let ty = tcx
         .try_normalize_erasing_regions(typing_env, ty)
         .unwrap_or(ty);
-    let kind = if let Some(assoc) = s.base().tcx.opt_associated_item(ucv.def) {
-        if assoc.trait_item_def_id.is_some() {
-            // This must be a trait declaration constant
-            let name = assoc.name.to_string();
-            let impl_expr = self_clause_for_item(s, ucv.def, ucv.args).unwrap();
-            ConstantExprKind::TraitConst { impl_expr, name }
-        } else {
-            // Constant appearing in an inherent impl block.
-            let trait_refs = solve_item_required_traits(s, ucv.def, ucv.args);
-            ConstantExprKind::GlobalName {
-                id: ucv.def.sinto(s),
-                generics: ucv.args.sinto(s),
-                trait_refs,
-            }
-        }
+    let kind = if let Some(assoc) = s.base().tcx.opt_associated_item(ucv.def)
+        && (assoc.trait_item_def_id.is_some() || assoc.container == ty::AssocItemContainer::Trait)
+    {
+        // This is an associated constant in a trait.
+        let name = assoc.name().to_string();
+        let impl_expr = self_clause_for_item(s, ucv.def, ucv.args).unwrap();
+        ConstantExprKind::TraitConst { impl_expr, name }
     } else {
-        // Top-level constant.
-        ConstantExprKind::GlobalName {
-            id: ucv.def.sinto(s),
-            generics: ucv.args.sinto(s),
-            trait_refs: vec![],
-        }
+        let item = translate_item_ref(s, ucv.def, ucv.args);
+        ConstantExprKind::GlobalName(item)
     };
     let cv = kind.decorate(ty.sinto(s), span.sinto(s));
     Some(cv)
@@ -188,7 +176,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
             ty::ConstKind::Expr(e) => fatal!(s[span], "ty::ConstKind::Expr {:#?}", e),
 
             ty::ConstKind::Bound(i, bound) => {
-                supposely_unreachable_fatal!(s[span], "ty::ConstKind::Bound"; {i, bound});
+                supposely_unreachable_fatal!(s[span], "ty::ConstKind::Bound"; {i, bound})
             }
             _ => fatal!(s[span], "unexpected case"),
         }
@@ -302,11 +290,8 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
             && let (alloc_id, _, _) = ecx.ptr_get_alloc_id(ptr, 0)?
             && let interpret::GlobalAlloc::Static(did) = tcx.global_alloc(alloc_id) =>
         {
-            ConstantExprKind::GlobalName {
-                id: did.sinto(s),
-                generics: Vec::new(),
-                trait_refs: Vec::new(),
-            }
+            let item = translate_item_ref(s, did, ty::GenericArgsRef::default());
+            ConstantExprKind::GlobalName(item)
         }
         ty::Char | ty::Bool | ty::Uint(_) | ty::Int(_) | ty::Float(_) => {
             let scalar = ecx.read_scalar(&op)?;
@@ -380,14 +365,8 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
             ConstantExprKind::Literal(ConstantLiteral::Str(str.to_owned()))
         }
         ty::FnDef(def_id, args) => {
-            let (def_id, generics, generics_impls, method_impl) =
-                get_function_from_def_id_and_generics(s, *def_id, args);
-            ConstantExprKind::FnPtr {
-                def_id,
-                generics,
-                generics_impls,
-                method_impl,
-            }
+            let item = translate_item_ref(s, *def_id, args);
+            ConstantExprKind::FnPtr(item)
         }
         ty::RawPtr(..) | ty::Ref(..) => {
             let op = ecx.deref_pointer(&op)?;

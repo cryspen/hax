@@ -60,11 +60,7 @@ pub enum ConstantExprKind {
     ///
     /// If `options.inline_anon_consts` is `false`, this is also used for inline const blocks and
     /// advanced const generics expressions.
-    GlobalName {
-        id: GlobalIdent,
-        generics: Vec<GenericArg>,
-        trait_refs: Vec<ImplExpr>,
-    },
+    GlobalName(ItemRef),
     /// A trait constant
     ///
     /// Ex.:
@@ -94,19 +90,7 @@ pub enum ConstantExprKind {
     ConstRef {
         id: ParamConst,
     },
-    FnPtr {
-        def_id: DefId,
-        generics: Vec<GenericArg>,
-        /// The implementation expressions for every generic bounds
-        /// ```text
-        /// fn foo<T : Bar>(...)
-        ///            ^^^
-        /// ```
-        generics_impls: Vec<ImplExpr>,
-        /// If the function is a method of trait `Foo`, `method_impl`
-        /// is an implementation of `Foo`
-        method_impl: Option<ImplExpr>,
-    },
+    FnPtr(ItemRef),
     /// A blob of memory containing the byte representation of the value. This can occur when
     /// evaluating MIR constants. Interpreting this back to a structured value is left as an
     /// exercice to the consumer.
@@ -175,13 +159,8 @@ impl From<ConstantExpr> for Expr {
                 base: AdtExprBase::None,
                 user_ty: None,
             }),
-            // TODO: propagate the generics and trait refs (see #636)
-            GlobalName {
-                id,
-                generics: _,
-                trait_refs: _,
-            } => ExprKind::GlobalName {
-                id,
+            GlobalName(item) => ExprKind::GlobalName {
+                item,
                 constructor: None,
             },
             Borrow(e) => ExprKind::Borrow {

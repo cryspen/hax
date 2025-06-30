@@ -2,7 +2,7 @@
 default:
 	make -C limited-order-book
 	make -C chacha20
-	OTHERFLAGS="--lax" make -C sha256
+	make -C sha256
 	make -C barrett
 	make -C kyber_compress
 	make -C proverif-psk

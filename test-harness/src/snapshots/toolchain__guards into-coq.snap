@@ -53,12 +53,12 @@ Definition if_let_guard (x : t_Option ((t_Result ((t_i32)) ((t_i32))))) : t_i32 
     | Option_Some (v) =>
       match v with
       | Result_Ok (y) =>
-         {| Option_Some_tuple_field 1 0 := y |}
+        Option_Some (y)
       | _ =>
-        Build_Option_None_record
+        Option_None
       end
     | _ =>
-      Build_Option_None_record
+      Option_None
     end with
     | Option_Some (x) =>
       x
@@ -81,12 +81,12 @@ Definition equivalent (x : t_Option ((t_Result ((t_i32)) ((t_i32))))) : t_i32 :=
     | Option_Some (v) =>
       match v with
       | Result_Ok (y) =>
-         {| Option_Some_0 := y |}
+        Option_Some (y)
       | _ =>
-        Build_Option_None_record
+        Option_None
       end
     | _ =>
-      Build_Option_None_record
+      Option_None
     end with
     | Option_Some (y) =>
       y
@@ -107,14 +107,14 @@ Definition multiple_guards (x : t_Option ((t_Result ((t_i32)) ((t_i32))))) : t_i
   | _ =>
     match match x with
     | Option_Some (Result_Ok (v)) =>
-      match  {| Option_Some_0 := f_add (v) ((1 : t_i32)) |} with
+      match Option_Some (f_add (v) ((1 : t_i32))) with
       | Option_Some (1) =>
-         {| Option_Some_tuple_field 1 0 := (0 : t_i32) |}
+        Option_Some ((0 : t_i32))
       | _ =>
-        Build_Option_None_record
+        Option_None
       end
     | _ =>
-      Build_Option_None_record
+      Option_None
     end with
     | Option_Some (x) =>
       x
@@ -123,12 +123,12 @@ Definition multiple_guards (x : t_Option ((t_Result ((t_i32)) ((t_i32))))) : t_i
       | Option_Some (v) =>
         match v with
         | Result_Ok (y) =>
-           {| Option_Some_tuple_field 1 0 := y |}
+          Option_Some (y)
         | _ =>
-          Build_Option_None_record
+          Option_None
         end
       | _ =>
-        Build_Option_None_record
+        Option_None
       end with
       | Option_Some (x) =>
         x
@@ -148,12 +148,12 @@ Definition if_guard (x : t_Option ((t_i32))) : t_i32 :=
   | Option_Some (v) =>
     match f_gt (v) ((0 : t_i32)) with
     | true =>
-       {| Option_Some_tuple_field 1 0 := v |}
+      Option_Some (v)
     | _ =>
-      Build_Option_None_record
+      Option_None
     end
   | _ =>
-    Build_Option_None_record
+    Option_None
   end with
   | Option_Some (x) =>
     x

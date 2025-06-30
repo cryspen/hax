@@ -50,10 +50,10 @@ Inductive t_EnumWithRepr : Type :=
 | EnumWithRepr_ExplicitDiscr2
 | EnumWithRepr_ImplicitDiscrEmptyTuple
 | EnumWithRepr_ImplicitDiscrEmptyStruct.
-Arguments EnumWithRepr_ExplicitDiscr1.
-Arguments EnumWithRepr_ExplicitDiscr2.
-Arguments EnumWithRepr_ImplicitDiscrEmptyTuple.
-Arguments EnumWithRepr_ImplicitDiscrEmptyStruct.
+
+
+
+
 
 Definition anon_const_EnumWithRepr_ExplicitDiscr1__anon_const_0 : t_u16 :=
   (1 : t_u16).
@@ -83,15 +83,15 @@ Inductive t_ImplicitReprs : Type :=
 | ImplicitReprs_G
 | ImplicitReprs_H
 | ImplicitReprs_I.
-Arguments ImplicitReprs_A.
-Arguments ImplicitReprs_B.
-Arguments ImplicitReprs_C.
-Arguments ImplicitReprs_D.
-Arguments ImplicitReprs_E.
-Arguments ImplicitReprs_F.
-Arguments ImplicitReprs_G.
-Arguments ImplicitReprs_H.
-Arguments ImplicitReprs_I.
+
+
+
+
+
+
+
+
+
 
 Definition anon_const_ImplicitReprs_E__anon_const_0 : t_u64 :=
   (30 : t_u64).
@@ -120,7 +120,7 @@ Definition t_ImplicitReprs_cast_to_repr (x : t_ImplicitReprs) : t_u64 :=
 
 Definition f '(_ : unit) : t_u32 :=
   let e_x := cast (f_add (anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0) ((0 : t_u16))) in
-  f_add (cast (t_EnumWithRepr_cast_to_repr (Build_EnumWithRepr_ImplicitDiscrEmptyTuple_record))) (cast (t_EnumWithRepr_cast_to_repr (Build_EnumWithRepr_ImplicitDiscrEmptyStruct_record))).
+  f_add (cast (t_EnumWithRepr_cast_to_repr (EnumWithRepr_ImplicitDiscrEmptyTuple))) (cast (t_EnumWithRepr_cast_to_repr (EnumWithRepr_ImplicitDiscrEmptyStruct))).
 
 Definition f__v_CONST : t_u16 :=
   cast (f_add (anon_const_EnumWithRepr_ExplicitDiscr1__anon_const_0) ((0 : t_u16))).

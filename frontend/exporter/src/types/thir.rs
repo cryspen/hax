@@ -248,14 +248,14 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Expr> for thir::Expr<'tcx> {
                         attributes,
                     };
                 }
-                let def_id = match ty.kind() {
+                let (def_id, generics) = match ty.kind() {
                     rustc_middle::ty::Adt(adt_def, generics) => {
                         // Here, we should only get `struct Name;` structs.
                         s_assert!(s, adt_def.variants().len() == 1);
                         s_assert!(s, generics.is_empty());
-                        adt_def.did()
+                        (adt_def.did(), generics)
                     }
-                    rustc_middle::ty::TyKind::FnDef(def_id, _generics) => *def_id,
+                    rustc_middle::ty::TyKind::FnDef(def_id, generics) => (*def_id, generics),
                     ty_kind => {
                         let ty_kind = ty_kind.sinto(s);
                         supposely_unreachable_fatal!(
@@ -265,6 +265,7 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Expr> for thir::Expr<'tcx> {
                         );
                     }
                 };
+                let item = translate_item_ref(s, def_id, generics);
                 let tcx = s.base().tcx;
                 let constructor = if tcx.is_constructor(def_id) {
                     let adt_def = tcx.adt_def(rustc_utils::get_closest_parent_type(&tcx, def_id));
@@ -278,10 +279,7 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Expr> for thir::Expr<'tcx> {
                     None
                 };
                 return Expr {
-                    contents: Box::new(ExprKind::GlobalName {
-                        id: def_id.sinto(s),
-                        constructor,
-                    }),
+                    contents: Box::new(ExprKind::GlobalName { item, constructor }),
                     span: self.span.sinto(s),
                     ty: ty.sinto(s),
                     hir_id,
@@ -466,6 +464,7 @@ pub type Pat = Decorated<PatKind>;
 #[append(thir::PatKind::Leaf {..} => fatal!(gstate, "PatKind::Leaf: should never come up"),)]
 pub enum PatKind {
     Wild,
+    Missing,
     AscribeUserType {
         ascription: Ascription,
         subpattern: Pat,
@@ -491,10 +490,13 @@ pub enum PatKind {
         is_primary: bool,
     },
     #[custom_arm(
-        FROM_TYPE::Variant {adt_def, variant_index, args, subpatterns} => {
+        FROM_TYPE::Variant { adt_def, variant_index, args, subpatterns } => {
+            let variant_def_id = adt_def.variant(*variant_index).def_id;
+            let item = translate_item_ref(gstate, variant_def_id, args);
             let variants = adt_def.variants();
             let variant: &rustc_middle::ty::VariantDef = &variants[*variant_index];
             TO_TYPE::Variant {
+                item,
                 info: get_variant_information(adt_def, *variant_index, gstate),
                 subpatterns: subpatterns
                     .iter()
@@ -503,13 +505,14 @@ pub enum PatKind {
                         pattern: f.pattern.sinto(gstate),
                     })
                     .collect(),
-                args: args.sinto(gstate),
             }
         }
     )]
     Variant {
+        /// Reference to variant item definition, with appropriate generics.
+        item: ItemRef,
+        /// Extra info about the variant.
         info: VariantInformations,
-        args: Vec<GenericArg>,
         subpatterns: Vec<FieldPat>,
     },
     #[disable_mapping]
@@ -614,26 +617,15 @@ pub enum ExprKind {
     },
     #[map({
         let e = gstate.thir().exprs[*fun].unroll_scope(gstate);
-        let (generic_args, r#trait, bounds_impls);
         let fun = match e.ty.kind() {
             rustc_middle::ty::TyKind::FnDef(def_id, generics) => {
                 let (hir_id, attributes) = e.hir_id_and_attributes(gstate);
                 let hir_id = hir_id.map(|hir_id| hir_id.index());
+                let item = translate_item_ref(gstate, *def_id, generics);
                 let contents = Box::new(ExprKind::GlobalName {
-                    id: def_id.sinto(gstate),
+                    item,
                     constructor: None
                 });
-                let mut translated_generics = generics.sinto(gstate);
-                let tcx = gstate.base().tcx;
-                r#trait = (|| {
-                    let assoc_item = tcx.opt_associated_item(*def_id)?;
-                    let impl_expr = self_clause_for_item(gstate, assoc_item.def_id, generics)?;
-                    let assoc_generics = tcx.generics_of(assoc_item.def_id);
-                    let assoc_generics = translated_generics.drain(0..assoc_generics.parent_count).collect();
-                    Some((impl_expr, assoc_generics))
-                })();
-                generic_args = translated_generics;
-                bounds_impls = solve_item_required_traits(gstate, *def_id, generics);
                 Expr {
                     contents,
                     span: e.span.sinto(gstate),
@@ -643,9 +635,6 @@ pub enum ExprKind {
                 }
             },
             rustc_middle::ty::TyKind::FnPtr(..) => {
-                generic_args = vec![]; // A function pointer has no generics
-                bounds_impls = vec![]; // A function pointer has no bounds
-                r#trait = None; // A function pointer is not a method
                 e.sinto(gstate)
             },
             ty_kind => {
@@ -661,11 +650,8 @@ pub enum ExprKind {
         TO_TYPE::Call {
             ty: ty.sinto(gstate),
             args: args.sinto(gstate),
-            generic_args,
             from_hir_call: from_hir_call.sinto(gstate),
             fn_span: fn_span.sinto(gstate),
-            bounds_impls,
-            r#trait,
             fun,
         }
     })]
@@ -677,10 +663,13 @@ pub enum ExprKind {
         ///
         /// Example: for the call `f(0i8)`, this is `i8 -> ()`.
         ty: Ty,
-        /// The function itself. This can be something else than a
-        /// name, e.g. a closure.
+        /// The function itself. This can be something else than a name, e.g. a closure.
         ///
         /// Example: for the call `f(0i8)`, this is `f`.
+        ///
+        /// In the case of a call to a function that's not a closure/fn pointer, the expression
+        /// will be a `GlobalName` that contains all the information about generics and whether
+        /// this is a direct call or a method call.
         fun: Expr, // TODO: can [ty] and [fun.ty] be different?
         /// The arguments given to the function.
         ///
@@ -688,41 +677,6 @@ pub enum ExprKind {
         args: Vec<Expr>,
         from_hir_call: bool,
         fn_span: Span,
-        /// The generic arguments given to the function.
-        ///
-        /// Example: for the call `f(0i8)`, this is the type `i8`.
-        #[not_in_source]
-        generic_args: Vec<GenericArg>,
-        /// The implementations for the bounds of the function.
-        ///
-        /// Example: for the call `f(0i8)`, this is two implementation
-        /// expressions, one for the explicit bound `i8: Clone` and
-        /// one for the implicit `i8: Sized`.
-        #[not_in_source]
-        bounds_impls: Vec<ImplExpr>,
-        /// `trait` is `None` if this is a function call or a method
-        /// to an inherent trait. If this is a method call from a
-        /// trait `Trait`, then it contains the concrete
-        /// implementation of `Trait` it is called on, and the generic
-        /// arguments that comes from the trait declaration.
-        ///
-        /// Example: `f(0i8)` is a function call, hence the field
-        /// `impl` is `None`.
-        ///
-        /// Example:
-        /// ```ignore
-        /// trait MyTrait<TraitType, const TraitConst: usize> {
-        ///   fn meth<MethType>(...) {...}
-        /// }
-        /// fn example_call<TraitType, SelfType: MyTrait<TraitType, 12>>(x: SelfType) {
-        ///   x.meth::<String>(...)
-        /// }
-        /// ```
-        /// Here, in the call `x.meth::<String>(...)`, `r#trait` will
-        /// be `Some((..., [SelfType, TraitType, 12]))`, and `generic_args`
-        /// will be `[String]`.
-        #[not_in_source]
-        r#trait: Option<(ImplExpr, Vec<GenericArg>)>,
     },
     Deref {
         arg: Expr,
@@ -774,7 +728,7 @@ pub enum ExprKind {
         rhs: Expr,
     },
     AssignOp {
-        op: BinOp,
+        op: AssignOp,
         lhs: Expr,
         rhs: Expr,
     },
@@ -802,7 +756,7 @@ pub enum ExprKind {
     },
     #[disable_mapping]
     GlobalName {
-        id: GlobalIdent,
+        item: ItemRef,
         constructor: Option<VariantInformations>,
     },
     UpvarRef {
@@ -827,10 +781,8 @@ pub enum ExprKind {
     Return {
         value: Option<Expr>,
     },
-    ConstBlock {
-        did: DefId,
-        args: Vec<GenericArg>,
-    },
+    #[custom_arm(FROM_TYPE::ConstBlock { did, args } => TO_TYPE::ConstBlock(translate_item_ref(gstate, *did, args)),)]
+    ConstBlock(ItemRef),
     Repeat {
         value: Expr,
         count: ConstantExpr,
@@ -876,13 +828,13 @@ pub enum ExprKind {
     ZstLiteral {
         user_ty: Option<CanonicalUserType>,
     },
+    #[custom_arm(FROM_TYPE::NamedConst { def_id, args, user_ty } => TO_TYPE::NamedConst {
+        item: translate_item_ref(gstate, *def_id, args),
+        user_ty: user_ty.sinto(gstate),
+    },)]
     NamedConst {
-        def_id: GlobalIdent,
-        args: Vec<GenericArg>,
+        item: ItemRef,
         user_ty: Option<CanonicalUserType>,
-        #[not_in_source]
-        #[value(self_clause_for_item(gstate, *def_id, args))]
-        r#impl: Option<ImplExpr>,
     },
     ConstParam {
         param: ParamConst,
@@ -930,5 +882,18 @@ impl<'tcx> ExprKindExt<'tcx> for thir::Expr<'tcx> {
             thir::ExprKind::Scope { value, .. } => s.thir().exprs[value].unroll_scope(s),
             _ => self.clone(),
         }
+    }
+}
+
+#[cfg(feature = "rustc")]
+pub trait HirIdExt {
+    fn index(&self) -> (usize, usize);
+}
+
+#[cfg(feature = "rustc")]
+impl HirIdExt for rustc_hir::HirId {
+    fn index(&self) -> (usize, usize) {
+        use crate::rustc_index::Idx;
+        (self.owner.def_id.index(), self.local_id.index())
     }
 }

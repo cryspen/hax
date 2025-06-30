@@ -1,0 +1,261 @@
+tests:
+  attr::impl_:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  attr::module:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  attr::off_on_sandwich:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  attr::trait_impl_inherit:
+    - json
+  auxiliary::discard_all_helper:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  auxiliary::used_crate:
+    - json
+    - coq
+    - fstar
+  auxiliary::used_inline_crate:
+    - json
+    - coq
+    - fstar
+  condition::conditions:
+    - json
+    - coq
+    - fstar 
+    - fstar-lax
+  mcdc::condition_limit:
+    - json
+  mcdc::if_:
+    - json
+    - coq
+    - fstar 
+    - fstar-lax
+  mcdc::inlined_expressions:
+    - json
+    - coq
+    - fstar 
+    - fstar-lax
+  mcdc::nested_if:
+    - json
+    - coq
+    - fstar 
+    - fstar-lax
+  mcdc::non_control_flow:
+    - json
+    - coq
+    - fstar 
+    - fstar-lax
+  abort:
+    - json
+    - fstar
+    - fstar-lax
+  assert:
+    - json
+    - fstar
+    - fstar-lax
+  assert_ne:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  assert_not:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  closure_macro:
+    - json
+    - coq
+    - fstar
+  closure_unit_return:
+    - json
+    - coq
+    - fstar
+  color:
+    - json
+  conditions:
+    - json
+    - coq
+    - fstar
+  continue_:
+    - json
+    - fstar
+  dead_code:
+    - json
+    - coq
+    - fstar
+  drop_trait:
+    - json
+    - coq
+    - fstar
+  fn_sig_into_try:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  generics:
+    - json
+    - coq
+    - fstar
+  if_:
+    - json
+    - coq
+    - fstar
+  if_else:
+    - json
+    - coq
+    - fstar
+  if_not:
+    - json
+  ignore_map:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  ignore_run:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  inline_dead:
+    - json
+    - coq
+    - fstar
+  inline:
+    - json
+  inner_items:
+    - json
+  issue_83601:
+    - json
+    - coq
+    - fstar
+    - fstar-lax
+  lazy_boolean:
+    - json
+    - coq
+    - fstar
+  let_else_loop:
+    - json
+  long_and_wide:
+    - json
+    - fstar
+    - fstar-lax
+    - coq
+
+  loop_break:
+    - json
+
+  loop_break_value:
+    - json
+
+  loops_branches:
+    - json
+
+  macro_in_closure:
+    - json
+    - fstar
+    - fstar-lax
+    - coq
+
+  match_or_pattern:
+    - json
+    - fstar
+    - coq
+
+  nested_loops:
+    - json
+    - fstar
+
+  no_cov_crate:
+    - json
+    - fstar
+    - coq
+
+  no_spans:
+    - json
+    - fstar
+    - coq
+
+  no_spans_if_not:
+    - json
+    - fstar
+    - fstar-lax
+    - coq
+
+  overflow:
+    - json
+    - fstar
+    - fstar-lax
+
+  panic_unwind:
+    - json
+    - fstar
+    - fstar-lax
+
+  partial_eq:
+    - json
+    - fstar
+    - coq
+    - fstar-lax
+
+  simple_loop:
+    - json
+
+  simple_match:
+    - json
+
+  sort_groups:
+    - json
+    - fstar
+    - coq
+
+  test_harness:
+    - json
+    - fstar
+    - fstar-lax
+    - coq
+
+  tight_inf_loop:
+    - json
+
+  trivial:
+    - json
+    - fstar
+    - fstar-lax
+    - coq
+
+  try_error_result:
+    - json
+    - fstar
+    - coq
+
+  unicode:
+    - json
+
+  unused:
+    - json
+    - fstar
+
+  unused_mod:
+    - json
+    - fstar
+    - fstar-lax
+    - coq
+
+  while_:
+    - json
+  
+  while_early_ret:
+    - json
+    - fstar

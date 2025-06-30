@@ -496,11 +496,27 @@ pub fn trait_fn_decoration(attr: pm::TokenStream, item: pm::TokenStream) -> pm::
     quote! {#attr #item}.into()
 }
 
-/// Enable the following attrubutes in the annotated item and sub-items:
-/// - (in a struct) `refine`: refine a type with a logical formula
-/// - (on a `fn` in an `impl`) `decreases`, `ensures`, `requires`:
-///   behave exactly as documented above on the proc attributes of the
-///   same name.
+/// Enable the following attrubutes in the annotated item and sub-items.
+///
+/// ### `refine` (on a field in a struct)
+/// Refine a type with a logical formula.
+///
+/// ### `order` (on a field in a struct or an enum)
+/// Reorders a field in the extracted code.
+///
+/// Rust fields order matters for bit-level representation. Similarly, in some
+/// situations, fields order matters in the backends: for instance in F*, one
+/// may refine a field with a formula referring to a later field.
+///
+/// Those two orders may conflict. Adding `#[hax_lib::order(n)]` on a field with
+/// override its order at extraction time.
+///
+/// By default, the order of a field is its index, e.g. the first field has
+/// order 0, the i-th field has order i+1.
+///
+/// ### `decreases`, `ensures` and `requires` (on a `fn` in an `impl`)
+/// `decreases`, `ensures`, `requires`: behave exactly as documented above on
+/// the proc attributes of the same name.
 ///
 /// # Example
 ///
@@ -604,6 +620,33 @@ pub fn attributes(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStr
                 }
             }
             visit_mut::visit_item_impl_mut(self, item);
+        }
+        fn visit_fields_named_mut(&mut self, fields_named: &mut FieldsNamed) {
+            visit_mut::visit_fields_named_mut(self, fields_named);
+
+            fn handle_reorder_attribute(attrs: &mut [Attribute], errors: &mut Vec<TokenStream>) {
+                let Some((attr, order)) = attrs.iter_mut().find_map(|attr| {
+                    if let Ok(Some(_)) = expects_order(attr.path()) {
+                        let lit: LitInt = attr.parse_args().ok()?;
+                        Some((attr, lit))
+                    } else {
+                        None
+                    }
+                }) else {
+                    return;
+                };
+
+                let Ok(n) = order.base10_parse() else {
+                    errors.push(parse_quote!{const _: () = {compile_error!("Expected a (base 10) i32 literal.")};});
+                    return;
+                };
+                let payload = AttrPayload::Order(n);
+                *attr = parse_quote!(#payload);
+            }
+
+            for field in &mut fields_named.named {
+                handle_reorder_attribute(&mut field.attrs, &mut self.extra_items);
+            }
         }
         fn visit_item_mut(&mut self, item: &mut Item) {
             visit_mut::visit_item_mut(self, item);
