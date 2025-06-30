@@ -166,5 +166,7 @@ module FromRustAST = struct
     { is_constructor; def_id = def_id_contents_to_rust_ast def_id }
 end
 
+let def_id_to_rust_ast = ToRustAST.def_id_contents_to_rust_ast
+let def_id_from_rust_ast = FromRustAST.def_id_contents_to_rust_ast
 let to_rust_ast = ToRustAST.to_rust_ast
 let from_rust_ast = FromRustAST.to_rust_ast

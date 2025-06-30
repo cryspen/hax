@@ -167,7 +167,7 @@ struct
       let typ : B.ty =
         try dty e.span e.typ
         with Diagnostics.SpanFreeError.Exn (Data (_context, _kind)) ->
-          UB.hax_failure_typ
+          UB.HaxFailure.Build.ty ""
       in
       UB.hax_failure_expr e.span typ (context, kind) (UA.LiftToFullAst.expr e)
 
