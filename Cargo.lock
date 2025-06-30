@@ -590,6 +590,7 @@ dependencies = [
  "hax-frontend-exporter",
  "hax-rust-engine-macros",
  "hax-types",
+ "itertools",
  "pretty",
  "schemars",
  "serde",
