@@ -89,7 +89,7 @@ pub enum Literal {
     /// Integer literal
     Int {
         /// Value as u128
-        value: u128,
+        value: Symbol,
         /// True if `-`
         negative: bool,
         /// Rust int type description (size + signedness)

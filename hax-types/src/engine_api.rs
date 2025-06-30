@@ -102,6 +102,17 @@ pub mod protocol {
         PrettyPrintedRust(Result<String, String>),
         Pong,
     }
+
+    impl FromEngine {
+        pub fn requires_response(&self) -> bool {
+            matches!(
+                self,
+                Self::PrettyPrintRust { .. }
+                    | Self::Ping { .. }
+                    | Self::PrettyPrintDiagnostic { .. }
+            )
+        }
+    }
 }
 
 // This is located here for dependency reason, but this is not related

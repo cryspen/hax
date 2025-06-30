@@ -347,7 +347,7 @@ module Make (FA : Features.T) = struct
     | String s -> B.String (Newtypesymbol s)
     | Char c -> B.Char c
     | Int { value; negative; kind } ->
-        B.Int { value; negative; kind = dint_kind kind }
+        B.Int { value = Newtypesymbol value; negative; kind = dint_kind kind }
     | Float { value; negative; kind } ->
         B.Float
           { value = Newtypesymbol value; negative; kind = dfloat_kind kind }

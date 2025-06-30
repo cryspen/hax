@@ -182,16 +182,20 @@ pub enum Backend<E: Extension> {
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
     ProVerif(ProVerifOptions),
+    /// Use the Lean backend (warning: work in progress!)
+    #[clap(hide = true)]
+    Lean,
 }
 
 impl fmt::Display for Backend<()> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Backend::Fstar(..) => write!(f, "fstar"),
-            Backend::Coq => write!(f, "coq"),
-            Backend::Ssprove => write!(f, "ssprove"),
-            Backend::Easycrypt => write!(f, "easycrypt"),
-            Backend::ProVerif(..) => write!(f, "proverif"),
+            Backend::Fstar { .. } => write!(f, "fstar"),
+            Backend::Coq { .. } => write!(f, "coq"),
+            Backend::Ssprove { .. } => write!(f, "ssprove"),
+            Backend::Easycrypt { .. } => write!(f, "easycrypt"),
+            Backend::ProVerif { .. } => write!(f, "proverif"),
+            Backend::Lean { .. } => write!(f, "lean"),
         }
     }
 }
