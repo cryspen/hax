@@ -60,23 +60,55 @@ let v_HASH_INIT:t_Hash =
   in
   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 8);
   Rust_primitives.Hax.array_of_list 8 list
+  
+// Helper functions for working with u32
+
+let from_be_bytes (bytes: t_Array u8 (mk_usize 4)) : u32 =
+  let b0: u32 = cast (Seq.index bytes 0) <: u32 in
+  let b1: u32 = cast (Seq.index bytes 1) <: u32 in
+  let b2: u32 = cast (Seq.index bytes 2) <: u32 in
+  let b3: u32 = cast (Seq.index bytes 3) <: u32 in
+  (b0 <<! (mk_u32 24)) +. (b1 <<! (mk_u32 16)) +. (b2 <<! (mk_u32 8)) +. b3
 
 
+// FIPS PUB 180-4, Section 2.2.2
+
+#set-options "--query_stats"
+
+let f_ROTR (n: u32) (x: u32) = Core.Num.impl_u32__rotate_right x n
+// let f_ROTR (n: u32{mk_u32 0 <. n && n <. mk_u32 32}) (x: u32) :  u32  =
+//   (x >>! n) |. (x <<! (mk_u32 32 -! n))
+
+let f_SHR (n: u32{v n < bits U32}) (x: u32) = shift_right x n
+
+// let test_f_shift_left () =
+//   let x: u32 = mk_u32 8 in
+//   let n: u32 = mk_u32 2 in
+//   let result: u32 = shift_left x n in
+//   assert (v result = 32)
+// 
+// let test_f_ROTR_1 () = 
+//   let x: u32 = mk_u32 8 in
+//   let n: u32 = mk_u32 2 in
+//   let result: u32 = f_ROTR n x in
+//   assert (v result = 3)
 
 // FIPS PUB 180-4, Section 4.1.2
+
+// TODO: Xor associativity with 3 arguments
 
 let f_ch (x y z: u32) : u32 = (x &. y) ^. ((~.x) &. z)
 
 let f_maj (x y z: u32) : u32 = (x &. y) ^. (x &. z) ^. (y &. z)
 
-let f_SIGMA_0 x : u32 = (x >>>. mk_u32 2) ^. (x >>>. mk_u32 13) ^. (x >>>. mk_u32 22)
+let f_SIGMA_0 x : u32 = ((f_ROTR (mk_u32 2) x) ^. (f_ROTR (mk_u32 13) x)) ^. (f_ROTR (mk_u32 22) x)
 
-let f_SIGMA_1 x : u32 = (x >>>. mk_u32 6) ^. (x >>>. mk_u32 11) ^. (x >>>. mk_u32 25)
+let f_SIGMA_1 x : u32 = ((f_ROTR (mk_u32 6) x) ^. (f_ROTR (mk_u32 11) x)) ^. (f_ROTR (mk_u32 25) x) 
 
-let f_sigma_0 x : u32 = (x >>>. mk_u32 7) ^. (x >>>. mk_u32 18) ^. (x >>! mk_u32 3)
+let f_sigma_0 x : u32 = ((f_ROTR (mk_u32 7) x) ^. (f_ROTR (mk_u32 18) x)) ^. (f_SHR (mk_u32 3) x) 
 
-let f_sigma_1 x : u32 = (x >>>. mk_u32 17) ^. (x >>>. mk_u32 19) ^. (x >>! mk_u32 10)
-
+let f_sigma_1 x : u32 = ((f_ROTR (mk_u32 17) x) ^. (f_ROTR (mk_u32 19) x)) ^. (f_SHR (mk_u32 10) x) 
+ 
 let f_sigma (x: u32) (i: usize{i <. mk_usize 4}) : u32 =
   match v i with
   | 0 -> f_SIGMA_0 x
@@ -86,12 +118,27 @@ let f_sigma (x: u32) (i: usize{i <. mk_usize 4}) : u32 =
 
 // FIPS PUB 180-4, Section 5.2.1
 
+let f_parse_message_block_i (block: t_Block) (i: usize{i <. mk_usize 16}) (out: t_Array u32 (mk_usize 16)) : t_Array u32 (mk_usize 16) =
+  let b0 = Seq.index block (4 * v i) in
+  let b1 = Seq.index block (4 * v i + 1) in
+  let b2 = Seq.index block (4 * v i + 2) in
+  let b3 = Seq.index block (4 * v i + 3) in
+  let list = [b0; b1; b2; b3] in
+  FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 4);
+  let word = Core.Num.impl_u32__from_be_bytes (Rust_primitives.Arrays.of_list #u8 list) in
+  Seq.upd out (v i) word
+
+let rec f_parse_message_block_n (block: t_Block) (out: t_Array u32 (mk_usize 16)) (n: usize{v n <= 16}) (i: usize{v i <= v n}) 
+  : Tot (t_Array u32 (mk_usize 16)) (decreases (16 - v i)) =
+  if v i = v n then
+    out
+  else
+    let out' = f_parse_message_block_i block i out in
+    f_parse_message_block_n block out' n (i +! mk_usize 1)
 
 let f_parse_message_block (block: t_Block) : t_Array u32 (mk_usize 16) =
-  createi (mk_usize 16)
-    (fun i ->
-        Core.Num.impl_u32__from_be_bytes (createi (mk_usize 4)
-              (fun j -> Seq.index block (4 * v i + v j))))
+  let w_init = Rust_primitives.Hax.repeat (mk_u32 0) (mk_usize 16) in
+  f_parse_message_block_n block w_init (mk_usize 16) (mk_usize 0)
 
 
 
@@ -118,33 +165,37 @@ let f_schedule (block: t_Block) : t_RoundConstantsTable =
 
 // FIPS PUB 180-4, Section 6.2.2, Step 2, 3 and 4
 
-let f_shuffle (ws: t_RoundConstantsTable) (hashi: t_Hash) : t_Hash =
-  Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
-    v_K_SIZE
-    (fun _ _ -> true)
+let f_shuffle_i (ws: t_RoundConstantsTable) (hashi: t_Hash) (i: usize{i <. v_K_SIZE}): t_Hash =
+  let a = Seq.index hashi 0 in
+  let b = Seq.index hashi 1 in
+  let c = Seq.index hashi 2 in
+  let d = Seq.index hashi 3 in
+  let e = Seq.index hashi 4 in
+  let f = Seq.index hashi 5 in
+  let g = Seq.index hashi 6 in
+  let h = Seq.index hashi 7 in
+  let t1 = h +. (f_SIGMA_1 e) +. (f_ch e f g) +. v_K_TABLE.[ i ] +. ws.[ i ] in
+  let t2 = (f_SIGMA_0 a) +. (f_maj a b c) in
+  let hashi = Seq.upd hashi 0 (t1 +. t2) in
+  let hashi = Seq.upd hashi 1 a in
+  let hashi = Seq.upd hashi 2 b in
+  let hashi = Seq.upd hashi 3 c in
+  let hashi = Seq.upd hashi 4 (d +. t1) in
+  let hashi = Seq.upd hashi 5 e in
+  let hashi = Seq.upd hashi 6 f in
+  let hashi = Seq.upd hashi 7 g in
+  hashi
+
+let rec f_shuffle_rec (ws: t_RoundConstantsTable) (hashi: t_Hash) (i: usize{i <=. v_K_SIZE})
+: Tot t_Hash (decreases v v_K_SIZE - v i) =
+  if i =. v_K_SIZE then
     hashi
-    (fun (hash: t_Hash) (i: usize{i <. v_K_SIZE}) ->
-        let a = Seq.index hash 0 in
-        let b = Seq.index hash 1 in
-        let c = Seq.index hash 2 in
-        let d = Seq.index hash 3 in
-        let e = Seq.index hash 4 in
-        let f = Seq.index hash 5 in
-        let g = Seq.index hash 6 in
-        let h = Seq.index hash 7 in
-        let t1 = h +. (f_SIGMA_1 e) +. (f_ch e f g) +. v_K_TABLE.[ i ] +. ws.[ i ] in
-        let t2 = (f_SIGMA_0 a) +. (f_maj a b c) in
-        let hash = Seq.upd hash 0 (t1 +. t2) in
-        let hash = Seq.upd hash 1 a in
-        let hash = Seq.upd hash 2 b in
-        let hash = Seq.upd hash 3 c in
-        let hash = Seq.upd hash 4 (d +. t1) in
-        let hash = Seq.upd hash 5 e in
-        let hash = Seq.upd hash 6 f in
-        let hash = Seq.upd hash 7 g in
-        hash)
+  else 
+    f_shuffle_rec ws (f_shuffle_i ws hashi i) (i +! (mk_usize 1))
 
-
+let f_shuffle (ws: t_RoundConstantsTable) (hashi: t_Hash) : t_Hash =
+  f_shuffle_rec ws hashi (mk_usize 0)
+  
 
 // FIPS PUB 180-4, Section 6.2.2, Iterations
 
@@ -156,7 +207,6 @@ let f_compress (block: t_Block) (h_in: t_Hash) : t_Hash =
     (fun _ _ -> true)
     h
     (fun (h: t_Hash) i -> Seq.upd h (v i) (h.[ i ] +. h_in.[ i ]))
-
 
 
 // FIPS PUB 180-4, Section 6.2.2, Last Step
@@ -241,3 +291,88 @@ let hash (msg: t_Slice u8) : t_Sha256Digest =
   f_hash_to_digest h
 
 let sha256 msg = hash msg
+
+
+// Tests 
+  
+// #set-options "--z3rlimit 2500 --query_stats"
+
+// let test_from_be_bytes_1 () =
+//   let bytes: t_Array u8 (mk_usize 4) = Rust_primitives.Hax.array_of_list 4 
+//   [ 
+//     mk_u8 0; 
+//     mk_u8 0; 
+//     mk_u8 0; 
+//     mk_u8 42
+//   ] 
+//   in
+//   let result: u32 = from_be_bytes bytes in
+//   assert (v result = 42)
+// 
+// let test_from_be_bytes_2 () =
+//   let bytes: t_Array u8 (mk_usize 4) = Rust_primitives.Hax.array_of_list 4 
+//   [ 
+//     mk_u8 0; 
+//     mk_u8 0;
+//     mk_u8 86;
+//     mk_u8 120
+//   ] 
+//   in
+//   let result: u32 = from_be_bytes bytes in
+//   assert (v result = 22136)
+// 
+// let test_from_be_bytes_3 () =
+//   let bytes: t_Array u8 (mk_usize 4) = Rust_primitives.Hax.array_of_list 4
+//   [ 
+//     mk_u8 0;
+//     mk_u8 167;
+//     mk_u8 86;
+//     mk_u8 120
+//   ] 
+//   in
+//   let result: u32 = from_be_bytes bytes in
+//   assert (v result = 10966648)
+// 
+// let test_from_be_bytes_4 () =
+//   let bytes: t_Array u8 (mk_usize 4) = Rust_primitives.Hax.array_of_list 4
+//   [
+//     mk_u8 214;
+//     mk_u8 167;
+//     mk_u8 86;
+//     mk_u8 120
+//   ] 
+//   in
+//   let result: u32 = from_be_bytes bytes in
+//   assert (v result = 3601290872)
+// 
+// let test_parse_message_block () =
+//   let block: t_Block = 
+//     let list = [
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 42;
+//       mk_u8 0; mk_u8 0; mk_u8 86; mk_u8 120;
+//       mk_u8 0; mk_u8 167; mk_u8 86; mk_u8 120;
+//       mk_u8 214; mk_u8 167; mk_u8 86; mk_u8 120;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//       mk_u8 0; mk_u8 0; mk_u8 0; mk_u8 0;
+//     ] in 
+//   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) (v v_BLOCK_SIZE));
+//   Rust_primitives.Hax.array_of_list (v v_BLOCK_SIZE) list in
+//   let parsed = f_parse_message_block block in
+//   let result1: u32 = Seq.index parsed 0 in
+//   let result2: u32 = Seq.index parsed 1 in
+//   let result3: u32 = Seq.index parsed 2 in
+//   let result4: u32 = Seq.index parsed 3 in
+//   assert (v result1 = 42)

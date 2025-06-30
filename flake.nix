@@ -227,6 +227,7 @@
               HAX_ROOT=$(git rev-parse --show-toplevel)
               export HAX_PROOF_LIBS_HOME="$HAX_ROOT/proof-libs/fstar"
               export HAX_LIBS_HOME="$HAX_ROOT/hax-lib"
+              export HAX_HOME="$HAX_ROOT"
             '';
             packages = packages ++ [ fstar pkgs.proverif ];
           };
