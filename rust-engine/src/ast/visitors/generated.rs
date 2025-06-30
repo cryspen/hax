@@ -469,7 +469,7 @@ pub mod map_reduce_cf {
         v: &mut ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
         }
     }
     #[allow(unused)]
@@ -1750,7 +1750,7 @@ pub mod map_reduce_cf {
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
             ItemKind::NotImplementedYet { .. } => {
@@ -2190,7 +2190,7 @@ pub mod map_cf {
         v: &mut ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
         }
     }
     #[allow(unused)]
@@ -3325,7 +3325,7 @@ pub mod map_cf {
             }
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(()),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
             ItemKind::NotImplementedYet { .. } => std::ops::ControlFlow::Continue(()),
@@ -3817,7 +3817,7 @@ pub mod reduce_cf {
         v: &'lt ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
         }
     }
     #[allow(unused)]
@@ -5098,7 +5098,7 @@ pub mod reduce_cf {
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
             ItemKind::NotImplementedYet { .. } => {
@@ -5538,7 +5538,7 @@ pub mod cf {
         v: &'lt ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
         }
     }
     #[allow(unused)]
@@ -6673,7 +6673,7 @@ pub mod cf {
             }
             ItemKind::Error { .. } => std::ops::ControlFlow::Continue(()),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0)?;
+                visitor.visit_resugared_item_kind(anon_field_0)?;
                 std::ops::ControlFlow::Continue(())
             }
             ItemKind::NotImplementedYet { .. } => std::ops::ControlFlow::Continue(()),
@@ -6993,7 +6993,7 @@ pub mod map_reduce {
         v: &mut ResugaredTyKind,
     ) -> V::Out {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
@@ -8157,7 +8157,7 @@ pub mod map_reduce {
             ItemKind::Error { .. } => V::Out::identity(),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0);
                 visitor_reduce_value
             }
             ItemKind::NotImplementedYet { .. } => V::Out::identity(),
@@ -8468,7 +8468,7 @@ pub mod map {
         v: &mut ResugaredTyKind,
     ) -> () {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => (),
         }
     }
     #[allow(unused)]
@@ -9483,7 +9483,7 @@ pub mod map {
             }
             ItemKind::Error { .. } => (),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor.visit_resugared_item_kind(anon_field_0);
                 ()
             }
             ItemKind::NotImplementedYet { .. } => (),
@@ -9818,7 +9818,7 @@ pub mod reduce {
         v: &'lt ResugaredTyKind,
     ) -> V::Out {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
@@ -11033,7 +11033,7 @@ pub mod reduce {
             ItemKind::Error { .. } => V::Out::identity(),
             ItemKind::Resugared(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
-                visitor_reduce_value = visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor_reduce_value = visitor.visit_resugared_item_kind(anon_field_0);
                 visitor_reduce_value
             }
             ItemKind::NotImplementedYet { .. } => V::Out::identity(),
@@ -11350,7 +11350,7 @@ pub mod vanilla {
         v: &'lt ResugaredTyKind,
     ) -> () {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => (),
         }
     }
     #[allow(unused)]
@@ -12425,7 +12425,7 @@ pub mod vanilla {
             }
             ItemKind::Error { .. } => (),
             ItemKind::Resugared(anon_field_0) => {
-                visitor.visit_resugared_ty_kind(anon_field_0);
+                visitor.visit_resugared_item_kind(anon_field_0);
                 ()
             }
             ItemKind::NotImplementedYet { .. } => (),

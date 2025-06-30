@@ -72,7 +72,7 @@ pub struct Region;
 /// A indirection for the representation of types.
 #[derive_group_for_ast]
 #[visitable]
-pub struct Ty(Box<TyKind>);
+pub struct Ty(pub Box<TyKind>);
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
@@ -1465,7 +1465,7 @@ pub enum ItemKind {
     /// A resugared item.
     /// This variant is introduced before printing only.
     /// Phases must not produce this variant.
-    Resugared(ResugaredTyKind),
+    Resugared(ResugaredItemKind),
 
     /// Item that is not implemented yet
     NotImplementedYet,
