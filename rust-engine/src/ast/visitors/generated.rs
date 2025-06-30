@@ -469,7 +469,7 @@ pub mod map_reduce_cf {
         v: &mut ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
         }
     }
     #[allow(unused)]
@@ -2190,7 +2190,7 @@ pub mod map_cf {
         v: &mut ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
         }
     }
     #[allow(unused)]
@@ -3817,7 +3817,7 @@ pub mod reduce_cf {
         v: &'lt ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
         }
     }
     #[allow(unused)]
@@ -5538,7 +5538,7 @@ pub mod cf {
         v: &'lt ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
         }
     }
     #[allow(unused)]
@@ -6993,7 +6993,7 @@ pub mod map_reduce {
         v: &mut ResugaredTyKind,
     ) -> V::Out {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
@@ -8468,7 +8468,7 @@ pub mod map {
         v: &mut ResugaredTyKind,
     ) -> () {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => (),
         }
     }
     #[allow(unused)]
@@ -9818,7 +9818,7 @@ pub mod reduce {
         v: &'lt ResugaredTyKind,
     ) -> V::Out {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
@@ -11350,7 +11350,7 @@ pub mod vanilla {
         v: &'lt ResugaredTyKind,
     ) -> () {
         match v {
-            _ => unreachable!("references are always considered inhabited, even for an empty enum"),
+            ResugaredTyKind::Unit { .. } => (),
         }
     }
     #[allow(unused)]
