@@ -1,7 +1,7 @@
 pub mod map_reduce_cf {
     use super::*;
     #[doc = "Map visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST. Each visiting function may break control flow."]
-    pub trait MapReduceCf: Sized {
+    pub trait MapReduceCf {
         type Error;
         type Out: Monoid;
         fn visit_global_id(
@@ -342,7 +342,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<V: MapReduceCf>(
+    pub fn visit_global_id<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut GlobalId,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -350,7 +350,7 @@ pub mod map_reduce_cf {
         std::ops::ControlFlow::Continue(V::Out::identity())
     }
     #[allow(unused)]
-    pub fn visit_local_id<V: MapReduceCf>(
+    pub fn visit_local_id<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut LocalId,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -358,7 +358,7 @@ pub mod map_reduce_cf {
         std::ops::ControlFlow::Continue(V::Out::identity())
     }
     #[allow(unused)]
-    pub fn visit_int_size<V: MapReduceCf>(
+    pub fn visit_int_size<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut IntSize,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -372,7 +372,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<V: MapReduceCf>(
+    pub fn visit_signedness<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Signedness,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -382,7 +382,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<V: MapReduceCf>(
+    pub fn visit_int_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut IntKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -396,7 +396,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<V: MapReduceCf>(
+    pub fn visit_float_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut FloatKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -408,7 +408,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<V: MapReduceCf>(
+    pub fn visit_literal<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Literal,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -437,7 +437,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<V: MapReduceCf>(
+    pub fn visit_resugared_item_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -446,7 +446,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<V: MapReduceCf>(
+    pub fn visit_resugared_expr_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredExprKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -455,7 +455,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<V: MapReduceCf>(
+    pub fn visit_resugared_pat_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredPatKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -464,7 +464,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<V: MapReduceCf>(
+    pub fn visit_resugared_ty_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -473,7 +473,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<V: MapReduceCf>(
+    pub fn visit_resugared_impl_item_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -482,7 +482,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<V: MapReduceCf>(
+    pub fn visit_resugared_trait_item_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -491,7 +491,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<V: MapReduceCf>(
+    pub fn visit_span<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Span,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -499,7 +499,7 @@ pub mod map_reduce_cf {
         std::ops::ControlFlow::Continue(V::Out::identity())
     }
     #[allow(unused)]
-    pub fn visit_generic_value<V: MapReduceCf>(
+    pub fn visit_generic_value<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericValue,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -518,7 +518,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<V: MapReduceCf>(
+    pub fn visit_primitive_ty<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut PrimitiveTy,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -539,7 +539,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<V: MapReduceCf>(
+    pub fn visit_region<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Region,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -548,7 +548,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<V: MapReduceCf>(
+    pub fn visit_ty<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Ty,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -561,7 +561,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<V: MapReduceCf>(
+    pub fn visit_ty_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut TyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -651,7 +651,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<V: MapReduceCf>(
+    pub fn visit_dyn_trait_goal<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut DynTraitGoal,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -670,7 +670,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<V: MapReduceCf>(
+    pub fn visit_metadata<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Metadata,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -683,7 +683,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<V: MapReduceCf>(
+    pub fn visit_expr<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Expr,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -698,7 +698,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<V: MapReduceCf>(
+    pub fn visit_pat<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Pat,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -713,7 +713,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<V: MapReduceCf>(
+    pub fn visit_arm<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Arm,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -733,7 +733,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<V: MapReduceCf>(
+    pub fn visit_guard<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Guard,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -747,7 +747,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<V: MapReduceCf>(
+    pub fn visit_borrow_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut BorrowKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -758,7 +758,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<V: MapReduceCf>(
+    pub fn visit_binding_mode<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut BindingMode,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -772,7 +772,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<V: MapReduceCf>(
+    pub fn visit_pat_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut PatKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -847,7 +847,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<V: MapReduceCf>(
+    pub fn visit_guard_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut GuardKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -861,7 +861,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<V: MapReduceCf>(
+    pub fn visit_lhs<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Lhs,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -894,7 +894,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<V: MapReduceCf>(
+    pub fn visit_impl_expr<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplExpr,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -908,7 +908,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<V: MapReduceCf>(
+    pub fn visit_impl_expr_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplExprKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -950,7 +950,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<V: MapReduceCf>(
+    pub fn visit_impl_item<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplItem,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -971,7 +971,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<V: MapReduceCf>(
+    pub fn visit_impl_item_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1004,7 +1004,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<V: MapReduceCf>(
+    pub fn visit_trait_item<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut TraitItem,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1025,7 +1025,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<V: MapReduceCf>(
+    pub fn visit_trait_item_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut TraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1060,7 +1060,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<V: MapReduceCf>(
+    pub fn visit_quote_content<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut QuoteContent,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1084,7 +1084,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<V: MapReduceCf>(
+    pub fn visit_quote<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Quote,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1100,7 +1100,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<V: MapReduceCf>(
+    pub fn visit_item_quote_origin<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOrigin,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1119,7 +1119,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<V: MapReduceCf>(
+    pub fn visit_item_quote_origin_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1152,7 +1152,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<V: MapReduceCf>(
+    pub fn visit_item_quote_origin_position<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginPosition,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1169,7 +1169,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<V: MapReduceCf>(
+    pub fn visit_loop_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut LoopKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1204,7 +1204,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<V: MapReduceCf>(
+    pub fn visit_control_flow_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ControlFlowKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1218,7 +1218,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<V: MapReduceCf>(
+    pub fn visit_loop_state<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut LoopState,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1232,7 +1232,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<V: MapReduceCf>(
+    pub fn visit_expr_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ExprKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1417,7 +1417,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<V: MapReduceCf>(
+    pub fn visit_generic_param_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericParamKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1434,7 +1434,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<V: MapReduceCf>(
+    pub fn visit_trait_goal<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut TraitGoal,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1450,7 +1450,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<V: MapReduceCf>(
+    pub fn visit_impl_ident<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplIdent,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1463,7 +1463,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<V: MapReduceCf>(
+    pub fn visit_projection_predicate<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ProjectionPredicate,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1482,7 +1482,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<V: MapReduceCf>(
+    pub fn visit_generic_constraint<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericConstraint,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1503,7 +1503,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<V: MapReduceCf>(
+    pub fn visit_generic_param<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericParam,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1518,7 +1518,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<V: MapReduceCf>(
+    pub fn visit_generics<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Generics,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1540,7 +1540,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<V: MapReduceCf>(
+    pub fn visit_safety_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut SafetyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1550,7 +1550,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<V: MapReduceCf>(
+    pub fn visit_attribute<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Attribute,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1564,7 +1564,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<V: MapReduceCf>(
+    pub fn visit_attribute_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut AttributeKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1578,7 +1578,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<V: MapReduceCf>(
+    pub fn visit_doc_comment_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut DocCommentKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1588,7 +1588,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<V: MapReduceCf>(
+    pub fn visit_spanned_ty<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut SpannedTy,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1602,7 +1602,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<V: MapReduceCf>(
+    pub fn visit_param<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Param,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1621,7 +1621,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<V: MapReduceCf>(
+    pub fn visit_variant<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Variant,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1647,7 +1647,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<V: MapReduceCf>(
+    pub fn visit_item_kind<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1759,7 +1759,7 @@ pub mod map_reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<V: MapReduceCf>(
+    pub fn visit_item<V: MapReduceCf + ?Sized>(
         visitor: &mut V,
         v: &mut Item,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -1777,7 +1777,7 @@ pub mod map_reduce_cf {
 pub mod map_cf {
     use super::*;
     #[doc = "Fold visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST. Each visiting function may break control flow."]
-    pub trait MapCf: Sized {
+    pub trait MapCf {
         type Error;
         fn visit_global_id(&mut self, v: &mut GlobalId) -> std::ops::ControlFlow<Self::Error, ()> {
             visit_global_id(self, v)
@@ -2066,7 +2066,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<V: MapCf>(
+    pub fn visit_global_id<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut GlobalId,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2074,7 +2074,7 @@ pub mod map_cf {
         std::ops::ControlFlow::Continue(())
     }
     #[allow(unused)]
-    pub fn visit_local_id<V: MapCf>(
+    pub fn visit_local_id<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut LocalId,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2082,7 +2082,7 @@ pub mod map_cf {
         std::ops::ControlFlow::Continue(())
     }
     #[allow(unused)]
-    pub fn visit_int_size<V: MapCf>(
+    pub fn visit_int_size<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut IntSize,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2096,7 +2096,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<V: MapCf>(
+    pub fn visit_signedness<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Signedness,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2106,7 +2106,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<V: MapCf>(
+    pub fn visit_int_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut IntKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2119,7 +2119,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<V: MapCf>(
+    pub fn visit_float_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut FloatKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2131,7 +2131,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<V: MapCf>(
+    pub fn visit_literal<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Literal,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2158,7 +2158,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<V: MapCf>(
+    pub fn visit_resugared_item_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2167,7 +2167,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<V: MapCf>(
+    pub fn visit_resugared_expr_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredExprKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2176,7 +2176,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<V: MapCf>(
+    pub fn visit_resugared_pat_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredPatKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2185,7 +2185,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<V: MapCf>(
+    pub fn visit_resugared_ty_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2194,7 +2194,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<V: MapCf>(
+    pub fn visit_resugared_impl_item_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2203,7 +2203,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<V: MapCf>(
+    pub fn visit_resugared_trait_item_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2212,7 +2212,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<V: MapCf>(
+    pub fn visit_span<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Span,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2220,7 +2220,7 @@ pub mod map_cf {
         std::ops::ControlFlow::Continue(())
     }
     #[allow(unused)]
-    pub fn visit_generic_value<V: MapCf>(
+    pub fn visit_generic_value<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericValue,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2237,7 +2237,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<V: MapCf>(
+    pub fn visit_primitive_ty<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut PrimitiveTy,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2256,7 +2256,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<V: MapCf>(
+    pub fn visit_region<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Region,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2265,7 +2265,10 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<V: MapCf>(visitor: &mut V, v: &mut Ty) -> std::ops::ControlFlow<V::Error, ()> {
+    pub fn visit_ty<V: MapCf + ?Sized>(
+        visitor: &mut V,
+        v: &mut Ty,
+    ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
             Ty(anon_field_0) => {
                 visitor.visit_ty_kind(anon_field_0.deref_mut())?;
@@ -2274,7 +2277,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<V: MapCf>(
+    pub fn visit_ty_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut TyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2349,7 +2352,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<V: MapCf>(
+    pub fn visit_dyn_trait_goal<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut DynTraitGoal,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2367,7 +2370,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<V: MapCf>(
+    pub fn visit_metadata<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Metadata,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2379,7 +2382,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<V: MapCf>(
+    pub fn visit_expr<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Expr,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2393,7 +2396,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<V: MapCf>(
+    pub fn visit_pat<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Pat,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2407,7 +2410,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<V: MapCf>(
+    pub fn visit_arm<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Arm,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2426,7 +2429,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<V: MapCf>(
+    pub fn visit_guard<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Guard,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2439,7 +2442,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<V: MapCf>(
+    pub fn visit_borrow_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut BorrowKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2450,7 +2453,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<V: MapCf>(
+    pub fn visit_binding_mode<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut BindingMode,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2463,7 +2466,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<V: MapCf>(
+    pub fn visit_pat_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut PatKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2528,7 +2531,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<V: MapCf>(
+    pub fn visit_guard_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut GuardKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2541,7 +2544,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<V: MapCf>(
+    pub fn visit_lhs<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Lhs,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2570,7 +2573,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<V: MapCf>(
+    pub fn visit_impl_expr<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplExpr,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2583,7 +2586,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<V: MapCf>(
+    pub fn visit_impl_expr_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplExprKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2620,7 +2623,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<V: MapCf>(
+    pub fn visit_impl_item<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplItem,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2640,7 +2643,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<V: MapCf>(
+    pub fn visit_impl_item_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2670,7 +2673,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<V: MapCf>(
+    pub fn visit_trait_item<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut TraitItem,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2690,7 +2693,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<V: MapCf>(
+    pub fn visit_trait_item_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut TraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2719,7 +2722,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<V: MapCf>(
+    pub fn visit_quote_content<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut QuoteContent,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2740,7 +2743,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<V: MapCf>(
+    pub fn visit_quote<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Quote,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2754,7 +2757,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<V: MapCf>(
+    pub fn visit_item_quote_origin<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOrigin,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2772,7 +2775,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<V: MapCf>(
+    pub fn visit_item_quote_origin_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2791,7 +2794,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<V: MapCf>(
+    pub fn visit_item_quote_origin_position<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginPosition,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2802,7 +2805,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<V: MapCf>(
+    pub fn visit_loop_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut LoopKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2832,7 +2835,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<V: MapCf>(
+    pub fn visit_control_flow_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ControlFlowKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2842,7 +2845,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<V: MapCf>(
+    pub fn visit_loop_state<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut LoopState,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -2855,7 +2858,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<V: MapCf>(
+    pub fn visit_expr_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ExprKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3015,7 +3018,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<V: MapCf>(
+    pub fn visit_generic_param_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericParamKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3029,7 +3032,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<V: MapCf>(
+    pub fn visit_trait_goal<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut TraitGoal,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3044,7 +3047,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<V: MapCf>(
+    pub fn visit_impl_ident<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ImplIdent,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3056,7 +3059,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<V: MapCf>(
+    pub fn visit_projection_predicate<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ProjectionPredicate,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3074,7 +3077,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<V: MapCf>(
+    pub fn visit_generic_constraint<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericConstraint,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3091,7 +3094,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<V: MapCf>(
+    pub fn visit_generic_param<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut GenericParam,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3105,7 +3108,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<V: MapCf>(
+    pub fn visit_generics<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Generics,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3125,7 +3128,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<V: MapCf>(
+    pub fn visit_safety_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut SafetyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3135,7 +3138,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<V: MapCf>(
+    pub fn visit_attribute<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Attribute,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3148,7 +3151,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<V: MapCf>(
+    pub fn visit_attribute_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut AttributeKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3161,7 +3164,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<V: MapCf>(
+    pub fn visit_doc_comment_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut DocCommentKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3171,7 +3174,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<V: MapCf>(
+    pub fn visit_spanned_ty<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut SpannedTy,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3184,7 +3187,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<V: MapCf>(
+    pub fn visit_param<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Param,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3202,7 +3205,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<V: MapCf>(
+    pub fn visit_variant<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Variant,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3227,7 +3230,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<V: MapCf>(
+    pub fn visit_item_kind<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut ItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3329,7 +3332,7 @@ pub mod map_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<V: MapCf>(
+    pub fn visit_item<V: MapCf + ?Sized>(
         visitor: &mut V,
         v: &mut Item,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -3346,7 +3349,7 @@ pub mod map_cf {
 pub mod reduce_cf {
     use super::*;
     #[doc = "Map visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST. Each visiting function may break control flow."]
-    pub trait ReduceCf<'lt>: Sized {
+    pub trait ReduceCf<'lt> {
         type Error;
         type Out: Monoid;
         fn visit_global_id(
@@ -3687,7 +3690,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_global_id<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GlobalId,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3695,7 +3698,7 @@ pub mod reduce_cf {
         std::ops::ControlFlow::Continue(V::Out::identity())
     }
     #[allow(unused)]
-    pub fn visit_local_id<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_local_id<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt LocalId,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3703,7 +3706,7 @@ pub mod reduce_cf {
         std::ops::ControlFlow::Continue(V::Out::identity())
     }
     #[allow(unused)]
-    pub fn visit_int_size<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_int_size<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt IntSize,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3717,7 +3720,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_signedness<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Signedness,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3727,7 +3730,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_int_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt IntKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3741,7 +3744,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_float_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt FloatKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3753,7 +3756,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_literal<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Literal,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3782,7 +3785,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_resugared_item_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3791,7 +3794,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_resugared_expr_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredExprKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3800,7 +3803,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_resugared_pat_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredPatKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3809,7 +3812,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_resugared_ty_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3818,7 +3821,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_resugared_impl_item_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3827,7 +3830,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_resugared_trait_item_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3836,7 +3839,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_span<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Span,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3844,7 +3847,7 @@ pub mod reduce_cf {
         std::ops::ControlFlow::Continue(V::Out::identity())
     }
     #[allow(unused)]
-    pub fn visit_generic_value<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_generic_value<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericValue,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3863,7 +3866,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_primitive_ty<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt PrimitiveTy,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3884,7 +3887,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_region<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Region,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3893,7 +3896,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_ty<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Ty,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3906,7 +3909,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_ty_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -3996,7 +3999,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_dyn_trait_goal<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DynTraitGoal,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4015,7 +4018,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_metadata<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Metadata,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4028,7 +4031,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_expr<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Expr,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4043,7 +4046,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_pat<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Pat,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4058,7 +4061,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_arm<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Arm,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4078,7 +4081,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_guard<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Guard,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4092,7 +4095,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_borrow_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt BorrowKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4103,7 +4106,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_binding_mode<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt BindingMode,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4117,7 +4120,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_pat_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt PatKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4192,7 +4195,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_guard_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GuardKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4206,7 +4209,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_lhs<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Lhs,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4239,7 +4242,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_impl_expr<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplExpr,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4253,7 +4256,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_impl_expr_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplExprKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4295,7 +4298,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_impl_item<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplItem,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4316,7 +4319,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_impl_item_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4349,7 +4352,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_trait_item<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitItem,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4370,7 +4373,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_trait_item_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4405,7 +4408,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_quote_content<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt QuoteContent,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4429,7 +4432,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_quote<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Quote,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4445,7 +4448,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_item_quote_origin<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOrigin,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4464,7 +4467,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_item_quote_origin_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4497,7 +4500,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_item_quote_origin_position<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginPosition,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4514,7 +4517,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_loop_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt LoopKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4549,7 +4552,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_control_flow_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ControlFlowKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4563,7 +4566,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_loop_state<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt LoopState,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4577,7 +4580,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_expr_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ExprKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4762,7 +4765,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_generic_param_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParamKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4779,7 +4782,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_trait_goal<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitGoal,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4795,7 +4798,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_impl_ident<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplIdent,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4808,7 +4811,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_projection_predicate<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ProjectionPredicate,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4827,7 +4830,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_generic_constraint<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericConstraint,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4848,7 +4851,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_generic_param<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParam,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4863,7 +4866,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_generics<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Generics,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4885,7 +4888,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_safety_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt SafetyKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4895,7 +4898,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_attribute<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Attribute,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4909,7 +4912,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_attribute_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt AttributeKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4923,7 +4926,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_doc_comment_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DocCommentKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4933,7 +4936,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_spanned_ty<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt SpannedTy,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4947,7 +4950,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_param<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Param,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4966,7 +4969,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_variant<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Variant,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -4992,7 +4995,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_item_kind<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemKind,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -5104,7 +5107,7 @@ pub mod reduce_cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<'lt, V: ReduceCf<'lt>>(
+    pub fn visit_item<'lt, V: ReduceCf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Item,
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
@@ -5122,7 +5125,7 @@ pub mod reduce_cf {
 pub mod cf {
     use super::*;
     #[doc = "Fold visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST. Each visiting function may break control flow."]
-    pub trait Cf<'lt>: Sized {
+    pub trait Cf<'lt> {
         type Error;
         fn visit_global_id(&mut self, v: &'lt GlobalId) -> std::ops::ControlFlow<Self::Error, ()> {
             visit_global_id(self, v)
@@ -5411,7 +5414,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<'lt, V: Cf<'lt>>(
+    pub fn visit_global_id<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GlobalId,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5419,7 +5422,7 @@ pub mod cf {
         std::ops::ControlFlow::Continue(())
     }
     #[allow(unused)]
-    pub fn visit_local_id<'lt, V: Cf<'lt>>(
+    pub fn visit_local_id<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt LocalId,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5427,7 +5430,7 @@ pub mod cf {
         std::ops::ControlFlow::Continue(())
     }
     #[allow(unused)]
-    pub fn visit_int_size<'lt, V: Cf<'lt>>(
+    pub fn visit_int_size<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt IntSize,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5441,7 +5444,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<'lt, V: Cf<'lt>>(
+    pub fn visit_signedness<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Signedness,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5451,7 +5454,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_int_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt IntKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5464,7 +5467,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_float_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt FloatKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5476,7 +5479,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<'lt, V: Cf<'lt>>(
+    pub fn visit_literal<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Literal,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5503,7 +5506,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_resugared_item_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5512,7 +5515,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_resugared_expr_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredExprKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5521,7 +5524,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_resugared_pat_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredPatKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5530,7 +5533,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_resugared_ty_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5539,7 +5542,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_resugared_impl_item_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5548,7 +5551,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_resugared_trait_item_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5557,7 +5560,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<'lt, V: Cf<'lt>>(
+    pub fn visit_span<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Span,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5565,7 +5568,7 @@ pub mod cf {
         std::ops::ControlFlow::Continue(())
     }
     #[allow(unused)]
-    pub fn visit_generic_value<'lt, V: Cf<'lt>>(
+    pub fn visit_generic_value<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericValue,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5582,7 +5585,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<'lt, V: Cf<'lt>>(
+    pub fn visit_primitive_ty<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt PrimitiveTy,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5601,7 +5604,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<'lt, V: Cf<'lt>>(
+    pub fn visit_region<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Region,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5610,7 +5613,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<'lt, V: Cf<'lt>>(
+    pub fn visit_ty<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Ty,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5622,7 +5625,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_ty_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5697,7 +5700,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<'lt, V: Cf<'lt>>(
+    pub fn visit_dyn_trait_goal<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DynTraitGoal,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5715,7 +5718,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<'lt, V: Cf<'lt>>(
+    pub fn visit_metadata<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Metadata,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5727,7 +5730,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<'lt, V: Cf<'lt>>(
+    pub fn visit_expr<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Expr,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5741,7 +5744,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<'lt, V: Cf<'lt>>(
+    pub fn visit_pat<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Pat,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5755,7 +5758,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<'lt, V: Cf<'lt>>(
+    pub fn visit_arm<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Arm,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5774,7 +5777,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<'lt, V: Cf<'lt>>(
+    pub fn visit_guard<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Guard,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5787,7 +5790,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_borrow_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt BorrowKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5798,7 +5801,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<'lt, V: Cf<'lt>>(
+    pub fn visit_binding_mode<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt BindingMode,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5811,7 +5814,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_pat_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt PatKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5876,7 +5879,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_guard_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GuardKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5889,7 +5892,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<'lt, V: Cf<'lt>>(
+    pub fn visit_lhs<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Lhs,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5918,7 +5921,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<'lt, V: Cf<'lt>>(
+    pub fn visit_impl_expr<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplExpr,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5931,7 +5934,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_impl_expr_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplExprKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5968,7 +5971,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<'lt, V: Cf<'lt>>(
+    pub fn visit_impl_item<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplItem,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -5988,7 +5991,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_impl_item_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6018,7 +6021,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<'lt, V: Cf<'lt>>(
+    pub fn visit_trait_item<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitItem,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6038,7 +6041,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_trait_item_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6067,7 +6070,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<'lt, V: Cf<'lt>>(
+    pub fn visit_quote_content<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt QuoteContent,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6088,7 +6091,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<'lt, V: Cf<'lt>>(
+    pub fn visit_quote<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Quote,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6102,7 +6105,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<'lt, V: Cf<'lt>>(
+    pub fn visit_item_quote_origin<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOrigin,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6120,7 +6123,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_item_quote_origin_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6139,7 +6142,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<'lt, V: Cf<'lt>>(
+    pub fn visit_item_quote_origin_position<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginPosition,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6150,7 +6153,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_loop_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt LoopKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6180,7 +6183,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_control_flow_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ControlFlowKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6190,7 +6193,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<'lt, V: Cf<'lt>>(
+    pub fn visit_loop_state<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt LoopState,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6203,7 +6206,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_expr_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ExprKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6363,7 +6366,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_generic_param_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParamKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6377,7 +6380,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<'lt, V: Cf<'lt>>(
+    pub fn visit_trait_goal<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitGoal,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6392,7 +6395,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<'lt, V: Cf<'lt>>(
+    pub fn visit_impl_ident<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplIdent,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6404,7 +6407,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<'lt, V: Cf<'lt>>(
+    pub fn visit_projection_predicate<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ProjectionPredicate,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6422,7 +6425,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<'lt, V: Cf<'lt>>(
+    pub fn visit_generic_constraint<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericConstraint,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6439,7 +6442,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<'lt, V: Cf<'lt>>(
+    pub fn visit_generic_param<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParam,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6453,7 +6456,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<'lt, V: Cf<'lt>>(
+    pub fn visit_generics<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Generics,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6473,7 +6476,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_safety_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt SafetyKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6483,7 +6486,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<'lt, V: Cf<'lt>>(
+    pub fn visit_attribute<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Attribute,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6496,7 +6499,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_attribute_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt AttributeKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6509,7 +6512,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_doc_comment_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DocCommentKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6519,7 +6522,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<'lt, V: Cf<'lt>>(
+    pub fn visit_spanned_ty<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt SpannedTy,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6532,7 +6535,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<'lt, V: Cf<'lt>>(
+    pub fn visit_param<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Param,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6550,7 +6553,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<'lt, V: Cf<'lt>>(
+    pub fn visit_variant<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Variant,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6575,7 +6578,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<'lt, V: Cf<'lt>>(
+    pub fn visit_item_kind<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemKind,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6677,7 +6680,7 @@ pub mod cf {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<'lt, V: Cf<'lt>>(
+    pub fn visit_item<'lt, V: Cf<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt Item,
     ) -> std::ops::ControlFlow<V::Error, ()> {
@@ -6694,7 +6697,7 @@ pub mod cf {
 pub mod map_reduce {
     use super::*;
     #[doc = "Map visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST."]
-    pub trait MapReduce: Sized {
+    pub trait MapReduce {
         type Out: Monoid;
         fn visit_global_id(&mut self, v: &mut GlobalId) -> Self::Out {
             visit_global_id(self, v)
@@ -6884,17 +6887,17 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<V: MapReduce>(visitor: &mut V, v: &mut GlobalId) -> V::Out {
+    pub fn visit_global_id<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut GlobalId) -> V::Out {
         let _ = v;
         V::Out::identity()
     }
     #[allow(unused)]
-    pub fn visit_local_id<V: MapReduce>(visitor: &mut V, v: &mut LocalId) -> V::Out {
+    pub fn visit_local_id<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut LocalId) -> V::Out {
         let _ = v;
         V::Out::identity()
     }
     #[allow(unused)]
-    pub fn visit_int_size<V: MapReduce>(visitor: &mut V, v: &mut IntSize) -> V::Out {
+    pub fn visit_int_size<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut IntSize) -> V::Out {
         match v {
             IntSize::S8 { .. } => V::Out::identity(),
             IntSize::S16 { .. } => V::Out::identity(),
@@ -6905,14 +6908,14 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<V: MapReduce>(visitor: &mut V, v: &mut Signedness) -> V::Out {
+    pub fn visit_signedness<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Signedness) -> V::Out {
         match v {
             Signedness::Signed { .. } => V::Out::identity(),
             Signedness::Unsigned { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<V: MapReduce>(visitor: &mut V, v: &mut IntKind) -> V::Out {
+    pub fn visit_int_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut IntKind) -> V::Out {
         match v {
             IntKind { size, signedness } => {
                 let mut visitor_reduce_value: V::Out;
@@ -6923,7 +6926,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<V: MapReduce>(visitor: &mut V, v: &mut FloatKind) -> V::Out {
+    pub fn visit_float_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut FloatKind) -> V::Out {
         match v {
             FloatKind::F16 { .. } => V::Out::identity(),
             FloatKind::F32 { .. } => V::Out::identity(),
@@ -6932,7 +6935,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<V: MapReduce>(visitor: &mut V, v: &mut Literal) -> V::Out {
+    pub fn visit_literal<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Literal) -> V::Out {
         match v {
             Literal::String { .. } => V::Out::identity(),
             Literal::Char { .. } => V::Out::identity(),
@@ -6958,7 +6961,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<V: MapReduce>(
+    pub fn visit_resugared_item_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredItemKind,
     ) -> V::Out {
@@ -6967,7 +6970,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<V: MapReduce>(
+    pub fn visit_resugared_expr_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredExprKind,
     ) -> V::Out {
@@ -6976,7 +6979,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<V: MapReduce>(
+    pub fn visit_resugared_pat_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredPatKind,
     ) -> V::Out {
@@ -6985,7 +6988,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<V: MapReduce>(
+    pub fn visit_resugared_ty_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTyKind,
     ) -> V::Out {
@@ -6994,7 +6997,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<V: MapReduce>(
+    pub fn visit_resugared_impl_item_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredImplItemKind,
     ) -> V::Out {
@@ -7003,7 +7006,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<V: MapReduce>(
+    pub fn visit_resugared_trait_item_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTraitItemKind,
     ) -> V::Out {
@@ -7012,12 +7015,15 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<V: MapReduce>(visitor: &mut V, v: &mut Span) -> V::Out {
+    pub fn visit_span<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Span) -> V::Out {
         let _ = v;
         V::Out::identity()
     }
     #[allow(unused)]
-    pub fn visit_generic_value<V: MapReduce>(visitor: &mut V, v: &mut GenericValue) -> V::Out {
+    pub fn visit_generic_value<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut GenericValue,
+    ) -> V::Out {
         match v {
             GenericValue::Ty(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -7033,7 +7039,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<V: MapReduce>(visitor: &mut V, v: &mut PrimitiveTy) -> V::Out {
+    pub fn visit_primitive_ty<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut PrimitiveTy,
+    ) -> V::Out {
         match v {
             PrimitiveTy::Bool { .. } => V::Out::identity(),
             PrimitiveTy::Int(anon_field_0) => {
@@ -7051,13 +7060,13 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<V: MapReduce>(visitor: &mut V, v: &mut Region) -> V::Out {
+    pub fn visit_region<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Region) -> V::Out {
         match v {
             Region { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<V: MapReduce>(visitor: &mut V, v: &mut Ty) -> V::Out {
+    pub fn visit_ty<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Ty) -> V::Out {
         match v {
             Ty(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -7067,7 +7076,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<V: MapReduce>(visitor: &mut V, v: &mut TyKind) -> V::Out {
+    pub fn visit_ty_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut TyKind) -> V::Out {
         match v {
             TyKind::Primitive(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -7154,7 +7163,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<V: MapReduce>(visitor: &mut V, v: &mut DynTraitGoal) -> V::Out {
+    pub fn visit_dyn_trait_goal<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut DynTraitGoal,
+    ) -> V::Out {
         match v {
             DynTraitGoal {
                 trait_,
@@ -7170,7 +7182,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<V: MapReduce>(visitor: &mut V, v: &mut Metadata) -> V::Out {
+    pub fn visit_metadata<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Metadata) -> V::Out {
         match v {
             Metadata { span, attributes } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7180,7 +7192,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<V: MapReduce>(visitor: &mut V, v: &mut Expr) -> V::Out {
+    pub fn visit_expr<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Expr) -> V::Out {
         match v {
             Expr { kind, ty, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7192,7 +7204,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<V: MapReduce>(visitor: &mut V, v: &mut Pat) -> V::Out {
+    pub fn visit_pat<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Pat) -> V::Out {
         match v {
             Pat { kind, ty, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7204,7 +7216,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<V: MapReduce>(visitor: &mut V, v: &mut Arm) -> V::Out {
+    pub fn visit_arm<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Arm) -> V::Out {
         match v {
             Arm {
                 pat,
@@ -7221,7 +7233,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<V: MapReduce>(visitor: &mut V, v: &mut Guard) -> V::Out {
+    pub fn visit_guard<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Guard) -> V::Out {
         match v {
             Guard { kind, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7232,7 +7244,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<V: MapReduce>(visitor: &mut V, v: &mut BorrowKind) -> V::Out {
+    pub fn visit_borrow_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut BorrowKind) -> V::Out {
         match v {
             BorrowKind::Shared { .. } => V::Out::identity(),
             BorrowKind::Unique { .. } => V::Out::identity(),
@@ -7240,7 +7252,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<V: MapReduce>(visitor: &mut V, v: &mut BindingMode) -> V::Out {
+    pub fn visit_binding_mode<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut BindingMode,
+    ) -> V::Out {
         match v {
             BindingMode::ByValue { .. } => V::Out::identity(),
             BindingMode::ByRef(anon_field_0) => {
@@ -7251,7 +7266,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<V: MapReduce>(visitor: &mut V, v: &mut PatKind) -> V::Out {
+    pub fn visit_pat_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut PatKind) -> V::Out {
         match v {
             PatKind::Wild { .. } => V::Out::identity(),
             PatKind::Ascription { pat, ty } => {
@@ -7323,7 +7338,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<V: MapReduce>(visitor: &mut V, v: &mut GuardKind) -> V::Out {
+    pub fn visit_guard_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut GuardKind) -> V::Out {
         match v {
             GuardKind::IfLet { lhs, rhs } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7334,7 +7349,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<V: MapReduce>(visitor: &mut V, v: &mut Lhs) -> V::Out {
+    pub fn visit_lhs<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Lhs) -> V::Out {
         match v {
             Lhs::LocalVar { var, ty } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7364,7 +7379,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<V: MapReduce>(visitor: &mut V, v: &mut ImplExpr) -> V::Out {
+    pub fn visit_impl_expr<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut ImplExpr) -> V::Out {
         match v {
             ImplExpr { kind, goal } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7375,7 +7390,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<V: MapReduce>(visitor: &mut V, v: &mut ImplExprKind) -> V::Out {
+    pub fn visit_impl_expr_kind<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut ImplExprKind,
+    ) -> V::Out {
         match v {
             ImplExprKind::Self_ { .. } => V::Out::identity(),
             ImplExprKind::Concrete(anon_field_0) => {
@@ -7414,7 +7432,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<V: MapReduce>(visitor: &mut V, v: &mut ImplItem) -> V::Out {
+    pub fn visit_impl_item<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut ImplItem) -> V::Out {
         match v {
             ImplItem {
                 meta,
@@ -7432,7 +7450,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<V: MapReduce>(visitor: &mut V, v: &mut ImplItemKind) -> V::Out {
+    pub fn visit_impl_item_kind<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut ImplItemKind,
+    ) -> V::Out {
         match v {
             ImplItemKind::Type { ty, parent_bounds } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7462,7 +7483,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<V: MapReduce>(visitor: &mut V, v: &mut TraitItem) -> V::Out {
+    pub fn visit_trait_item<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut TraitItem) -> V::Out {
         match v {
             TraitItem {
                 meta,
@@ -7480,7 +7501,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<V: MapReduce>(visitor: &mut V, v: &mut TraitItemKind) -> V::Out {
+    pub fn visit_trait_item_kind<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut TraitItemKind,
+    ) -> V::Out {
         match v {
             TraitItemKind::Type(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -7512,7 +7536,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<V: MapReduce>(visitor: &mut V, v: &mut QuoteContent) -> V::Out {
+    pub fn visit_quote_content<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut QuoteContent,
+    ) -> V::Out {
         match v {
             QuoteContent::Verbatim { .. } => V::Out::identity(),
             QuoteContent::Expr(anon_field_0) => {
@@ -7533,7 +7560,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<V: MapReduce>(visitor: &mut V, v: &mut Quote) -> V::Out {
+    pub fn visit_quote<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Quote) -> V::Out {
         match v {
             Quote(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -7546,7 +7573,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<V: MapReduce>(
+    pub fn visit_item_quote_origin<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOrigin,
     ) -> V::Out {
@@ -7565,7 +7592,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<V: MapReduce>(
+    pub fn visit_item_quote_origin_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginKind,
     ) -> V::Out {
@@ -7584,7 +7611,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<V: MapReduce>(
+    pub fn visit_item_quote_origin_position<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginPosition,
     ) -> V::Out {
@@ -7595,7 +7622,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<V: MapReduce>(visitor: &mut V, v: &mut LoopKind) -> V::Out {
+    pub fn visit_loop_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut LoopKind) -> V::Out {
         match v {
             LoopKind::UnconditionalLoop { .. } => V::Out::identity(),
             LoopKind::WhileLoop { condition } => {
@@ -7625,7 +7652,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<V: MapReduce>(
+    pub fn visit_control_flow_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ControlFlowKind,
     ) -> V::Out {
@@ -7635,7 +7662,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<V: MapReduce>(visitor: &mut V, v: &mut LoopState) -> V::Out {
+    pub fn visit_loop_state<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut LoopState) -> V::Out {
         match v {
             LoopState { init, body_pat } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7646,7 +7673,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<V: MapReduce>(visitor: &mut V, v: &mut ExprKind) -> V::Out {
+    pub fn visit_expr_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut ExprKind) -> V::Out {
         match v {
             ExprKind::If {
                 condition,
@@ -7828,7 +7855,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<V: MapReduce>(
+    pub fn visit_generic_param_kind<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut GenericParamKind,
     ) -> V::Out {
@@ -7843,7 +7870,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<V: MapReduce>(visitor: &mut V, v: &mut TraitGoal) -> V::Out {
+    pub fn visit_trait_goal<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut TraitGoal) -> V::Out {
         match v {
             TraitGoal { trait_, args } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7856,7 +7883,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<V: MapReduce>(visitor: &mut V, v: &mut ImplIdent) -> V::Out {
+    pub fn visit_impl_ident<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut ImplIdent) -> V::Out {
         match v {
             ImplIdent { goal, name } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7866,7 +7893,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<V: MapReduce>(
+    pub fn visit_projection_predicate<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut ProjectionPredicate,
     ) -> V::Out {
@@ -7885,7 +7912,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<V: MapReduce>(
+    pub fn visit_generic_constraint<V: MapReduce + ?Sized>(
         visitor: &mut V,
         v: &mut GenericConstraint,
     ) -> V::Out {
@@ -7904,7 +7931,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<V: MapReduce>(visitor: &mut V, v: &mut GenericParam) -> V::Out {
+    pub fn visit_generic_param<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut GenericParam,
+    ) -> V::Out {
         match v {
             GenericParam { ident, meta, kind } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7916,7 +7946,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<V: MapReduce>(visitor: &mut V, v: &mut Generics) -> V::Out {
+    pub fn visit_generics<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Generics) -> V::Out {
         match v {
             Generics {
                 params,
@@ -7935,14 +7965,14 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<V: MapReduce>(visitor: &mut V, v: &mut SafetyKind) -> V::Out {
+    pub fn visit_safety_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut SafetyKind) -> V::Out {
         match v {
             SafetyKind::Safe { .. } => V::Out::identity(),
             SafetyKind::Unsafe { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<V: MapReduce>(visitor: &mut V, v: &mut Attribute) -> V::Out {
+    pub fn visit_attribute<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Attribute) -> V::Out {
         match v {
             Attribute { kind, span } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7953,7 +7983,10 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<V: MapReduce>(visitor: &mut V, v: &mut AttributeKind) -> V::Out {
+    pub fn visit_attribute_kind<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut AttributeKind,
+    ) -> V::Out {
         match v {
             AttributeKind::Tool { .. } => V::Out::identity(),
             AttributeKind::DocComment { kind, body } => {
@@ -7964,14 +7997,17 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<V: MapReduce>(visitor: &mut V, v: &mut DocCommentKind) -> V::Out {
+    pub fn visit_doc_comment_kind<V: MapReduce + ?Sized>(
+        visitor: &mut V,
+        v: &mut DocCommentKind,
+    ) -> V::Out {
         match v {
             DocCommentKind::Line { .. } => V::Out::identity(),
             DocCommentKind::Block { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<V: MapReduce>(visitor: &mut V, v: &mut SpannedTy) -> V::Out {
+    pub fn visit_spanned_ty<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut SpannedTy) -> V::Out {
         match v {
             SpannedTy { span, ty } => {
                 let mut visitor_reduce_value: V::Out;
@@ -7982,7 +8018,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<V: MapReduce>(visitor: &mut V, v: &mut Param) -> V::Out {
+    pub fn visit_param<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Param) -> V::Out {
         match v {
             Param {
                 pat,
@@ -7998,7 +8034,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<V: MapReduce>(visitor: &mut V, v: &mut Variant) -> V::Out {
+    pub fn visit_variant<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Variant) -> V::Out {
         match v {
             Variant {
                 name,
@@ -8021,7 +8057,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<V: MapReduce>(visitor: &mut V, v: &mut ItemKind) -> V::Out {
+    pub fn visit_item_kind<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut ItemKind) -> V::Out {
         match v {
             ItemKind::Fn {
                 name,
@@ -8128,7 +8164,7 @@ pub mod map_reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<V: MapReduce>(visitor: &mut V, v: &mut Item) -> V::Out {
+    pub fn visit_item<V: MapReduce + ?Sized>(visitor: &mut V, v: &mut Item) -> V::Out {
         match v {
             Item { ident, kind, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -8143,7 +8179,7 @@ pub mod map_reduce {
 pub mod map {
     use super::*;
     #[doc = "Fold visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST."]
-    pub trait Map: Sized {
+    pub trait Map {
         fn visit_global_id(&mut self, v: &mut GlobalId) -> () {
             visit_global_id(self, v)
         }
@@ -8329,17 +8365,17 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<V: Map>(visitor: &mut V, v: &mut GlobalId) -> () {
+    pub fn visit_global_id<V: Map + ?Sized>(visitor: &mut V, v: &mut GlobalId) -> () {
         let _ = v;
         ()
     }
     #[allow(unused)]
-    pub fn visit_local_id<V: Map>(visitor: &mut V, v: &mut LocalId) -> () {
+    pub fn visit_local_id<V: Map + ?Sized>(visitor: &mut V, v: &mut LocalId) -> () {
         let _ = v;
         ()
     }
     #[allow(unused)]
-    pub fn visit_int_size<V: Map>(visitor: &mut V, v: &mut IntSize) -> () {
+    pub fn visit_int_size<V: Map + ?Sized>(visitor: &mut V, v: &mut IntSize) -> () {
         match v {
             IntSize::S8 { .. } => (),
             IntSize::S16 { .. } => (),
@@ -8350,14 +8386,14 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<V: Map>(visitor: &mut V, v: &mut Signedness) -> () {
+    pub fn visit_signedness<V: Map + ?Sized>(visitor: &mut V, v: &mut Signedness) -> () {
         match v {
             Signedness::Signed { .. } => (),
             Signedness::Unsigned { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<V: Map>(visitor: &mut V, v: &mut IntKind) -> () {
+    pub fn visit_int_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut IntKind) -> () {
         match v {
             IntKind { size, signedness } => {
                 visitor.visit_int_size(size);
@@ -8367,7 +8403,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<V: Map>(visitor: &mut V, v: &mut FloatKind) -> () {
+    pub fn visit_float_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut FloatKind) -> () {
         match v {
             FloatKind::F16 { .. } => (),
             FloatKind::F32 { .. } => (),
@@ -8376,7 +8412,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<V: Map>(visitor: &mut V, v: &mut Literal) -> () {
+    pub fn visit_literal<V: Map + ?Sized>(visitor: &mut V, v: &mut Literal) -> () {
         match v {
             Literal::String { .. } => (),
             Literal::Char { .. } => (),
@@ -8400,31 +8436,43 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<V: Map>(visitor: &mut V, v: &mut ResugaredItemKind) -> () {
+    pub fn visit_resugared_item_kind<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ResugaredItemKind,
+    ) -> () {
         match v {
             _ => unreachable!("references are always considered inhabited, even for an empty enum"),
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<V: Map>(visitor: &mut V, v: &mut ResugaredExprKind) -> () {
+    pub fn visit_resugared_expr_kind<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ResugaredExprKind,
+    ) -> () {
         match v {
             _ => unreachable!("references are always considered inhabited, even for an empty enum"),
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<V: Map>(visitor: &mut V, v: &mut ResugaredPatKind) -> () {
+    pub fn visit_resugared_pat_kind<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ResugaredPatKind,
+    ) -> () {
         match v {
             _ => unreachable!("references are always considered inhabited, even for an empty enum"),
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<V: Map>(visitor: &mut V, v: &mut ResugaredTyKind) -> () {
+    pub fn visit_resugared_ty_kind<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ResugaredTyKind,
+    ) -> () {
         match v {
             _ => unreachable!("references are always considered inhabited, even for an empty enum"),
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<V: Map>(
+    pub fn visit_resugared_impl_item_kind<V: Map + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredImplItemKind,
     ) -> () {
@@ -8433,7 +8481,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<V: Map>(
+    pub fn visit_resugared_trait_item_kind<V: Map + ?Sized>(
         visitor: &mut V,
         v: &mut ResugaredTraitItemKind,
     ) -> () {
@@ -8442,12 +8490,12 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<V: Map>(visitor: &mut V, v: &mut Span) -> () {
+    pub fn visit_span<V: Map + ?Sized>(visitor: &mut V, v: &mut Span) -> () {
         let _ = v;
         ()
     }
     #[allow(unused)]
-    pub fn visit_generic_value<V: Map>(visitor: &mut V, v: &mut GenericValue) -> () {
+    pub fn visit_generic_value<V: Map + ?Sized>(visitor: &mut V, v: &mut GenericValue) -> () {
         match v {
             GenericValue::Ty(anon_field_0) => {
                 visitor.visit_ty(anon_field_0);
@@ -8461,7 +8509,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<V: Map>(visitor: &mut V, v: &mut PrimitiveTy) -> () {
+    pub fn visit_primitive_ty<V: Map + ?Sized>(visitor: &mut V, v: &mut PrimitiveTy) -> () {
         match v {
             PrimitiveTy::Bool { .. } => (),
             PrimitiveTy::Int(anon_field_0) => {
@@ -8477,13 +8525,13 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<V: Map>(visitor: &mut V, v: &mut Region) -> () {
+    pub fn visit_region<V: Map + ?Sized>(visitor: &mut V, v: &mut Region) -> () {
         match v {
             Region { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<V: Map>(visitor: &mut V, v: &mut Ty) -> () {
+    pub fn visit_ty<V: Map + ?Sized>(visitor: &mut V, v: &mut Ty) -> () {
         match v {
             Ty(anon_field_0) => {
                 visitor.visit_ty_kind(anon_field_0.deref_mut());
@@ -8492,7 +8540,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<V: Map>(visitor: &mut V, v: &mut TyKind) -> () {
+    pub fn visit_ty_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut TyKind) -> () {
         match v {
             TyKind::Primitive(anon_field_0) => {
                 visitor.visit_primitive_ty(anon_field_0);
@@ -8564,7 +8612,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<V: Map>(visitor: &mut V, v: &mut DynTraitGoal) -> () {
+    pub fn visit_dyn_trait_goal<V: Map + ?Sized>(visitor: &mut V, v: &mut DynTraitGoal) -> () {
         match v {
             DynTraitGoal {
                 trait_,
@@ -8579,7 +8627,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<V: Map>(visitor: &mut V, v: &mut Metadata) -> () {
+    pub fn visit_metadata<V: Map + ?Sized>(visitor: &mut V, v: &mut Metadata) -> () {
         match v {
             Metadata { span, attributes } => {
                 visitor.visit_span(span);
@@ -8588,7 +8636,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<V: Map>(visitor: &mut V, v: &mut Expr) -> () {
+    pub fn visit_expr<V: Map + ?Sized>(visitor: &mut V, v: &mut Expr) -> () {
         match v {
             Expr { kind, ty, meta } => {
                 visitor.visit_expr_kind(kind.deref_mut());
@@ -8599,7 +8647,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<V: Map>(visitor: &mut V, v: &mut Pat) -> () {
+    pub fn visit_pat<V: Map + ?Sized>(visitor: &mut V, v: &mut Pat) -> () {
         match v {
             Pat { kind, ty, meta } => {
                 visitor.visit_pat_kind(kind.deref_mut());
@@ -8610,7 +8658,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<V: Map>(visitor: &mut V, v: &mut Arm) -> () {
+    pub fn visit_arm<V: Map + ?Sized>(visitor: &mut V, v: &mut Arm) -> () {
         match v {
             Arm {
                 pat,
@@ -8626,7 +8674,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<V: Map>(visitor: &mut V, v: &mut Guard) -> () {
+    pub fn visit_guard<V: Map + ?Sized>(visitor: &mut V, v: &mut Guard) -> () {
         match v {
             Guard { kind, meta } => {
                 visitor.visit_guard_kind(kind);
@@ -8636,7 +8684,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<V: Map>(visitor: &mut V, v: &mut BorrowKind) -> () {
+    pub fn visit_borrow_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut BorrowKind) -> () {
         match v {
             BorrowKind::Shared { .. } => (),
             BorrowKind::Unique { .. } => (),
@@ -8644,7 +8692,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<V: Map>(visitor: &mut V, v: &mut BindingMode) -> () {
+    pub fn visit_binding_mode<V: Map + ?Sized>(visitor: &mut V, v: &mut BindingMode) -> () {
         match v {
             BindingMode::ByValue { .. } => (),
             BindingMode::ByRef(anon_field_0) => {
@@ -8654,7 +8702,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<V: Map>(visitor: &mut V, v: &mut PatKind) -> () {
+    pub fn visit_pat_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut PatKind) -> () {
         match v {
             PatKind::Wild { .. } => (),
             PatKind::Ascription { pat, ty } => {
@@ -8716,7 +8764,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<V: Map>(visitor: &mut V, v: &mut GuardKind) -> () {
+    pub fn visit_guard_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut GuardKind) -> () {
         match v {
             GuardKind::IfLet { lhs, rhs } => {
                 visitor.visit_pat(lhs);
@@ -8726,7 +8774,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<V: Map>(visitor: &mut V, v: &mut Lhs) -> () {
+    pub fn visit_lhs<V: Map + ?Sized>(visitor: &mut V, v: &mut Lhs) -> () {
         match v {
             Lhs::LocalVar { var, ty } => {
                 visitor.visit_local_id(var);
@@ -8752,7 +8800,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<V: Map>(visitor: &mut V, v: &mut ImplExpr) -> () {
+    pub fn visit_impl_expr<V: Map + ?Sized>(visitor: &mut V, v: &mut ImplExpr) -> () {
         match v {
             ImplExpr { kind, goal } => {
                 visitor.visit_impl_expr_kind(kind.deref_mut());
@@ -8762,7 +8810,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<V: Map>(visitor: &mut V, v: &mut ImplExprKind) -> () {
+    pub fn visit_impl_expr_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut ImplExprKind) -> () {
         match v {
             ImplExprKind::Self_ { .. } => (),
             ImplExprKind::Concrete(anon_field_0) => {
@@ -8796,7 +8844,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<V: Map>(visitor: &mut V, v: &mut ImplItem) -> () {
+    pub fn visit_impl_item<V: Map + ?Sized>(visitor: &mut V, v: &mut ImplItem) -> () {
         match v {
             ImplItem {
                 meta,
@@ -8813,7 +8861,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<V: Map>(visitor: &mut V, v: &mut ImplItemKind) -> () {
+    pub fn visit_impl_item_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut ImplItemKind) -> () {
         match v {
             ImplItemKind::Type { ty, parent_bounds } => {
                 visitor.visit_ty(ty);
@@ -8840,7 +8888,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<V: Map>(visitor: &mut V, v: &mut TraitItem) -> () {
+    pub fn visit_trait_item<V: Map + ?Sized>(visitor: &mut V, v: &mut TraitItem) -> () {
         match v {
             TraitItem {
                 meta,
@@ -8857,7 +8905,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<V: Map>(visitor: &mut V, v: &mut TraitItemKind) -> () {
+    pub fn visit_trait_item_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut TraitItemKind) -> () {
         match v {
             TraitItemKind::Type(anon_field_0) => {
                 for visitor_item in anon_field_0 {
@@ -8883,7 +8931,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<V: Map>(visitor: &mut V, v: &mut QuoteContent) -> () {
+    pub fn visit_quote_content<V: Map + ?Sized>(visitor: &mut V, v: &mut QuoteContent) -> () {
         match v {
             QuoteContent::Verbatim { .. } => (),
             QuoteContent::Expr(anon_field_0) => {
@@ -8901,7 +8949,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<V: Map>(visitor: &mut V, v: &mut Quote) -> () {
+    pub fn visit_quote<V: Map + ?Sized>(visitor: &mut V, v: &mut Quote) -> () {
         match v {
             Quote(anon_field_0) => {
                 for visitor_item in anon_field_0 {
@@ -8912,7 +8960,10 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<V: Map>(visitor: &mut V, v: &mut ItemQuoteOrigin) -> () {
+    pub fn visit_item_quote_origin<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ItemQuoteOrigin,
+    ) -> () {
         match v {
             ItemQuoteOrigin {
                 item_kind,
@@ -8927,7 +8978,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<V: Map>(
+    pub fn visit_item_quote_origin_kind<V: Map + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginKind,
     ) -> () {
@@ -8946,7 +8997,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<V: Map>(
+    pub fn visit_item_quote_origin_position<V: Map + ?Sized>(
         visitor: &mut V,
         v: &mut ItemQuoteOriginPosition,
     ) -> () {
@@ -8957,7 +9008,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<V: Map>(visitor: &mut V, v: &mut LoopKind) -> () {
+    pub fn visit_loop_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut LoopKind) -> () {
         match v {
             LoopKind::UnconditionalLoop { .. } => (),
             LoopKind::WhileLoop { condition } => {
@@ -8984,14 +9035,17 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<V: Map>(visitor: &mut V, v: &mut ControlFlowKind) -> () {
+    pub fn visit_control_flow_kind<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ControlFlowKind,
+    ) -> () {
         match v {
             ControlFlowKind::BreakOnly { .. } => (),
             ControlFlowKind::BreakOrReturn { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<V: Map>(visitor: &mut V, v: &mut LoopState) -> () {
+    pub fn visit_loop_state<V: Map + ?Sized>(visitor: &mut V, v: &mut LoopState) -> () {
         match v {
             LoopState { init, body_pat } => {
                 visitor.visit_expr(init);
@@ -9001,7 +9055,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<V: Map>(visitor: &mut V, v: &mut ExprKind) -> () {
+    pub fn visit_expr_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut ExprKind) -> () {
         match v {
             ExprKind::If {
                 condition,
@@ -9158,7 +9212,10 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<V: Map>(visitor: &mut V, v: &mut GenericParamKind) -> () {
+    pub fn visit_generic_param_kind<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut GenericParamKind,
+    ) -> () {
         match v {
             GenericParamKind::Lifetime { .. } => (),
             GenericParamKind::Type { .. } => (),
@@ -9169,7 +9226,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<V: Map>(visitor: &mut V, v: &mut TraitGoal) -> () {
+    pub fn visit_trait_goal<V: Map + ?Sized>(visitor: &mut V, v: &mut TraitGoal) -> () {
         match v {
             TraitGoal { trait_, args } => {
                 visitor.visit_global_id(trait_);
@@ -9181,7 +9238,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<V: Map>(visitor: &mut V, v: &mut ImplIdent) -> () {
+    pub fn visit_impl_ident<V: Map + ?Sized>(visitor: &mut V, v: &mut ImplIdent) -> () {
         match v {
             ImplIdent { goal, name } => {
                 visitor.visit_trait_goal(goal);
@@ -9190,7 +9247,10 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<V: Map>(visitor: &mut V, v: &mut ProjectionPredicate) -> () {
+    pub fn visit_projection_predicate<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut ProjectionPredicate,
+    ) -> () {
         match v {
             ProjectionPredicate {
                 impl_,
@@ -9205,7 +9265,10 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<V: Map>(visitor: &mut V, v: &mut GenericConstraint) -> () {
+    pub fn visit_generic_constraint<V: Map + ?Sized>(
+        visitor: &mut V,
+        v: &mut GenericConstraint,
+    ) -> () {
         match v {
             GenericConstraint::Lifetime { .. } => (),
             GenericConstraint::Type(anon_field_0) => {
@@ -9219,7 +9282,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<V: Map>(visitor: &mut V, v: &mut GenericParam) -> () {
+    pub fn visit_generic_param<V: Map + ?Sized>(visitor: &mut V, v: &mut GenericParam) -> () {
         match v {
             GenericParam { ident, meta, kind } => {
                 visitor.visit_local_id(ident);
@@ -9230,7 +9293,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<V: Map>(visitor: &mut V, v: &mut Generics) -> () {
+    pub fn visit_generics<V: Map + ?Sized>(visitor: &mut V, v: &mut Generics) -> () {
         match v {
             Generics {
                 params,
@@ -9247,14 +9310,14 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<V: Map>(visitor: &mut V, v: &mut SafetyKind) -> () {
+    pub fn visit_safety_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut SafetyKind) -> () {
         match v {
             SafetyKind::Safe { .. } => (),
             SafetyKind::Unsafe { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<V: Map>(visitor: &mut V, v: &mut Attribute) -> () {
+    pub fn visit_attribute<V: Map + ?Sized>(visitor: &mut V, v: &mut Attribute) -> () {
         match v {
             Attribute { kind, span } => {
                 visitor.visit_attribute_kind(kind);
@@ -9264,7 +9327,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<V: Map>(visitor: &mut V, v: &mut AttributeKind) -> () {
+    pub fn visit_attribute_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut AttributeKind) -> () {
         match v {
             AttributeKind::Tool { .. } => (),
             AttributeKind::DocComment { kind, body } => {
@@ -9274,14 +9337,14 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<V: Map>(visitor: &mut V, v: &mut DocCommentKind) -> () {
+    pub fn visit_doc_comment_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut DocCommentKind) -> () {
         match v {
             DocCommentKind::Line { .. } => (),
             DocCommentKind::Block { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<V: Map>(visitor: &mut V, v: &mut SpannedTy) -> () {
+    pub fn visit_spanned_ty<V: Map + ?Sized>(visitor: &mut V, v: &mut SpannedTy) -> () {
         match v {
             SpannedTy { span, ty } => {
                 visitor.visit_span(span);
@@ -9291,7 +9354,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<V: Map>(visitor: &mut V, v: &mut Param) -> () {
+    pub fn visit_param<V: Map + ?Sized>(visitor: &mut V, v: &mut Param) -> () {
         match v {
             Param {
                 pat,
@@ -9306,7 +9369,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<V: Map>(visitor: &mut V, v: &mut Variant) -> () {
+    pub fn visit_variant<V: Map + ?Sized>(visitor: &mut V, v: &mut Variant) -> () {
         match v {
             Variant {
                 name,
@@ -9328,7 +9391,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<V: Map>(visitor: &mut V, v: &mut ItemKind) -> () {
+    pub fn visit_item_kind<V: Map + ?Sized>(visitor: &mut V, v: &mut ItemKind) -> () {
         match v {
             ItemKind::Fn {
                 name,
@@ -9427,7 +9490,7 @@ pub mod map {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<V: Map>(visitor: &mut V, v: &mut Item) -> () {
+    pub fn visit_item<V: Map + ?Sized>(visitor: &mut V, v: &mut Item) -> () {
         match v {
             Item { ident, kind, meta } => {
                 visitor.visit_global_id(ident);
@@ -9441,7 +9504,7 @@ pub mod map {
 pub mod reduce {
     use super::*;
     #[doc = "Map visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST."]
-    pub trait Reduce<'lt>: Sized {
+    pub trait Reduce<'lt> {
         type Out: Monoid;
         fn visit_global_id(&mut self, v: &'lt GlobalId) -> Self::Out {
             visit_global_id(self, v)
@@ -9631,17 +9694,26 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt GlobalId) -> V::Out {
+    pub fn visit_global_id<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt GlobalId,
+    ) -> V::Out {
         let _ = v;
         V::Out::identity()
     }
     #[allow(unused)]
-    pub fn visit_local_id<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt LocalId) -> V::Out {
+    pub fn visit_local_id<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt LocalId,
+    ) -> V::Out {
         let _ = v;
         V::Out::identity()
     }
     #[allow(unused)]
-    pub fn visit_int_size<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt IntSize) -> V::Out {
+    pub fn visit_int_size<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt IntSize,
+    ) -> V::Out {
         match v {
             IntSize::S8 { .. } => V::Out::identity(),
             IntSize::S16 { .. } => V::Out::identity(),
@@ -9652,14 +9724,20 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Signedness) -> V::Out {
+    pub fn visit_signedness<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt Signedness,
+    ) -> V::Out {
         match v {
             Signedness::Signed { .. } => V::Out::identity(),
             Signedness::Unsigned { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt IntKind) -> V::Out {
+    pub fn visit_int_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt IntKind,
+    ) -> V::Out {
         match v {
             IntKind { size, signedness } => {
                 let mut visitor_reduce_value: V::Out;
@@ -9670,7 +9748,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt FloatKind) -> V::Out {
+    pub fn visit_float_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt FloatKind,
+    ) -> V::Out {
         match v {
             FloatKind::F16 { .. } => V::Out::identity(),
             FloatKind::F32 { .. } => V::Out::identity(),
@@ -9679,7 +9760,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Literal) -> V::Out {
+    pub fn visit_literal<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Literal) -> V::Out {
         match v {
             Literal::String { .. } => V::Out::identity(),
             Literal::Char { .. } => V::Out::identity(),
@@ -9705,7 +9786,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_resugared_item_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredItemKind,
     ) -> V::Out {
@@ -9714,7 +9795,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_resugared_expr_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredExprKind,
     ) -> V::Out {
@@ -9723,7 +9804,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_resugared_pat_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredPatKind,
     ) -> V::Out {
@@ -9732,7 +9813,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_resugared_ty_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTyKind,
     ) -> V::Out {
@@ -9741,7 +9822,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_resugared_impl_item_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredImplItemKind,
     ) -> V::Out {
@@ -9750,7 +9831,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_resugared_trait_item_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTraitItemKind,
     ) -> V::Out {
@@ -9759,12 +9840,12 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Span) -> V::Out {
+    pub fn visit_span<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Span) -> V::Out {
         let _ = v;
         V::Out::identity()
     }
     #[allow(unused)]
-    pub fn visit_generic_value<'lt, V: Reduce<'lt>>(
+    pub fn visit_generic_value<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericValue,
     ) -> V::Out {
@@ -9783,7 +9864,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt PrimitiveTy) -> V::Out {
+    pub fn visit_primitive_ty<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt PrimitiveTy,
+    ) -> V::Out {
         match v {
             PrimitiveTy::Bool { .. } => V::Out::identity(),
             PrimitiveTy::Int(anon_field_0) => {
@@ -9801,13 +9885,13 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Region) -> V::Out {
+    pub fn visit_region<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Region) -> V::Out {
         match v {
             Region { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Ty) -> V::Out {
+    pub fn visit_ty<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Ty) -> V::Out {
         match v {
             Ty(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -9817,7 +9901,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt TyKind) -> V::Out {
+    pub fn visit_ty_kind<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt TyKind) -> V::Out {
         match v {
             TyKind::Primitive(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -9904,7 +9988,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<'lt, V: Reduce<'lt>>(
+    pub fn visit_dyn_trait_goal<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DynTraitGoal,
     ) -> V::Out {
@@ -9923,7 +10007,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Metadata) -> V::Out {
+    pub fn visit_metadata<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt Metadata,
+    ) -> V::Out {
         match v {
             Metadata { span, attributes } => {
                 let mut visitor_reduce_value: V::Out;
@@ -9933,7 +10020,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Expr) -> V::Out {
+    pub fn visit_expr<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Expr) -> V::Out {
         match v {
             Expr { kind, ty, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -9945,7 +10032,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Pat) -> V::Out {
+    pub fn visit_pat<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Pat) -> V::Out {
         match v {
             Pat { kind, ty, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -9957,7 +10044,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Arm) -> V::Out {
+    pub fn visit_arm<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Arm) -> V::Out {
         match v {
             Arm {
                 pat,
@@ -9974,7 +10061,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Guard) -> V::Out {
+    pub fn visit_guard<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Guard) -> V::Out {
         match v {
             Guard { kind, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -9985,7 +10072,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt BorrowKind) -> V::Out {
+    pub fn visit_borrow_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt BorrowKind,
+    ) -> V::Out {
         match v {
             BorrowKind::Shared { .. } => V::Out::identity(),
             BorrowKind::Unique { .. } => V::Out::identity(),
@@ -9993,7 +10083,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt BindingMode) -> V::Out {
+    pub fn visit_binding_mode<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt BindingMode,
+    ) -> V::Out {
         match v {
             BindingMode::ByValue { .. } => V::Out::identity(),
             BindingMode::ByRef(anon_field_0) => {
@@ -10004,7 +10097,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt PatKind) -> V::Out {
+    pub fn visit_pat_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt PatKind,
+    ) -> V::Out {
         match v {
             PatKind::Wild { .. } => V::Out::identity(),
             PatKind::Ascription { pat, ty } => {
@@ -10076,7 +10172,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt GuardKind) -> V::Out {
+    pub fn visit_guard_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt GuardKind,
+    ) -> V::Out {
         match v {
             GuardKind::IfLet { lhs, rhs } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10087,7 +10186,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Lhs) -> V::Out {
+    pub fn visit_lhs<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Lhs) -> V::Out {
         match v {
             Lhs::LocalVar { var, ty } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10117,7 +10216,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt ImplExpr) -> V::Out {
+    pub fn visit_impl_expr<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ImplExpr,
+    ) -> V::Out {
         match v {
             ImplExpr { kind, goal } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10128,7 +10230,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_impl_expr_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplExprKind,
     ) -> V::Out {
@@ -10170,7 +10272,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt ImplItem) -> V::Out {
+    pub fn visit_impl_item<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ImplItem,
+    ) -> V::Out {
         match v {
             ImplItem {
                 meta,
@@ -10188,7 +10293,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_impl_item_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ImplItemKind,
     ) -> V::Out {
@@ -10221,7 +10326,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt TraitItem) -> V::Out {
+    pub fn visit_trait_item<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt TraitItem,
+    ) -> V::Out {
         match v {
             TraitItem {
                 meta,
@@ -10239,7 +10347,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_trait_item_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitItemKind,
     ) -> V::Out {
@@ -10274,7 +10382,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<'lt, V: Reduce<'lt>>(
+    pub fn visit_quote_content<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt QuoteContent,
     ) -> V::Out {
@@ -10298,7 +10406,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Quote) -> V::Out {
+    pub fn visit_quote<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Quote) -> V::Out {
         match v {
             Quote(anon_field_0) => {
                 let mut visitor_reduce_value: V::Out;
@@ -10311,7 +10419,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<'lt, V: Reduce<'lt>>(
+    pub fn visit_item_quote_origin<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOrigin,
     ) -> V::Out {
@@ -10330,7 +10438,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_item_quote_origin_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginKind,
     ) -> V::Out {
@@ -10349,7 +10457,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<'lt, V: Reduce<'lt>>(
+    pub fn visit_item_quote_origin_position<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginPosition,
     ) -> V::Out {
@@ -10360,7 +10468,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt LoopKind) -> V::Out {
+    pub fn visit_loop_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt LoopKind,
+    ) -> V::Out {
         match v {
             LoopKind::UnconditionalLoop { .. } => V::Out::identity(),
             LoopKind::WhileLoop { condition } => {
@@ -10390,7 +10501,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_control_flow_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ControlFlowKind,
     ) -> V::Out {
@@ -10400,7 +10511,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt LoopState) -> V::Out {
+    pub fn visit_loop_state<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt LoopState,
+    ) -> V::Out {
         match v {
             LoopState { init, body_pat } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10411,7 +10525,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt ExprKind) -> V::Out {
+    pub fn visit_expr_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ExprKind,
+    ) -> V::Out {
         match v {
             ExprKind::If {
                 condition,
@@ -10593,7 +10710,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_generic_param_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParamKind,
     ) -> V::Out {
@@ -10608,7 +10725,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt TraitGoal) -> V::Out {
+    pub fn visit_trait_goal<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt TraitGoal,
+    ) -> V::Out {
         match v {
             TraitGoal { trait_, args } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10621,7 +10741,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt ImplIdent) -> V::Out {
+    pub fn visit_impl_ident<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ImplIdent,
+    ) -> V::Out {
         match v {
             ImplIdent { goal, name } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10631,7 +10754,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<'lt, V: Reduce<'lt>>(
+    pub fn visit_projection_predicate<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ProjectionPredicate,
     ) -> V::Out {
@@ -10650,7 +10773,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<'lt, V: Reduce<'lt>>(
+    pub fn visit_generic_constraint<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericConstraint,
     ) -> V::Out {
@@ -10669,7 +10792,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<'lt, V: Reduce<'lt>>(
+    pub fn visit_generic_param<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParam,
     ) -> V::Out {
@@ -10684,7 +10807,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Generics) -> V::Out {
+    pub fn visit_generics<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt Generics,
+    ) -> V::Out {
         match v {
             Generics {
                 params,
@@ -10703,14 +10829,20 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt SafetyKind) -> V::Out {
+    pub fn visit_safety_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt SafetyKind,
+    ) -> V::Out {
         match v {
             SafetyKind::Safe { .. } => V::Out::identity(),
             SafetyKind::Unsafe { .. } => V::Out::identity(),
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Attribute) -> V::Out {
+    pub fn visit_attribute<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt Attribute,
+    ) -> V::Out {
         match v {
             Attribute { kind, span } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10721,7 +10853,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_attribute_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt AttributeKind,
     ) -> V::Out {
@@ -10735,7 +10867,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<'lt, V: Reduce<'lt>>(
+    pub fn visit_doc_comment_kind<'lt, V: Reduce<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DocCommentKind,
     ) -> V::Out {
@@ -10745,7 +10877,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt SpannedTy) -> V::Out {
+    pub fn visit_spanned_ty<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt SpannedTy,
+    ) -> V::Out {
         match v {
             SpannedTy { span, ty } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10756,7 +10891,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Param) -> V::Out {
+    pub fn visit_param<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Param) -> V::Out {
         match v {
             Param {
                 pat,
@@ -10772,7 +10907,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Variant) -> V::Out {
+    pub fn visit_variant<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Variant) -> V::Out {
         match v {
             Variant {
                 name,
@@ -10795,7 +10930,10 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt ItemKind) -> V::Out {
+    pub fn visit_item_kind<'lt, V: Reduce<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ItemKind,
+    ) -> V::Out {
         match v {
             ItemKind::Fn {
                 name,
@@ -10902,7 +11040,7 @@ pub mod reduce {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<'lt, V: Reduce<'lt>>(visitor: &mut V, v: &'lt Item) -> V::Out {
+    pub fn visit_item<'lt, V: Reduce<'lt> + ?Sized>(visitor: &mut V, v: &'lt Item) -> V::Out {
         match v {
             Item { ident, kind, meta } => {
                 let mut visitor_reduce_value: V::Out;
@@ -10917,7 +11055,7 @@ pub mod reduce {
 pub mod vanilla {
     use super::*;
     #[doc = "Fold visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST."]
-    pub trait Vanilla<'lt>: Sized {
+    pub trait Vanilla<'lt> {
         fn visit_global_id(&mut self, v: &'lt GlobalId) -> () {
             visit_global_id(self, v)
         }
@@ -11103,17 +11241,17 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_global_id<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt GlobalId) -> () {
+    pub fn visit_global_id<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt GlobalId) -> () {
         let _ = v;
         ()
     }
     #[allow(unused)]
-    pub fn visit_local_id<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt LocalId) -> () {
+    pub fn visit_local_id<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt LocalId) -> () {
         let _ = v;
         ()
     }
     #[allow(unused)]
-    pub fn visit_int_size<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt IntSize) -> () {
+    pub fn visit_int_size<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt IntSize) -> () {
         match v {
             IntSize::S8 { .. } => (),
             IntSize::S16 { .. } => (),
@@ -11124,14 +11262,17 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_signedness<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Signedness) -> () {
+    pub fn visit_signedness<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt Signedness,
+    ) -> () {
         match v {
             Signedness::Signed { .. } => (),
             Signedness::Unsigned { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_int_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt IntKind) -> () {
+    pub fn visit_int_kind<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt IntKind) -> () {
         match v {
             IntKind { size, signedness } => {
                 visitor.visit_int_size(size);
@@ -11141,7 +11282,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_float_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt FloatKind) -> () {
+    pub fn visit_float_kind<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt FloatKind,
+    ) -> () {
         match v {
             FloatKind::F16 { .. } => (),
             FloatKind::F32 { .. } => (),
@@ -11150,7 +11294,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_literal<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Literal) -> () {
+    pub fn visit_literal<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Literal) -> () {
         match v {
             Literal::String { .. } => (),
             Literal::Char { .. } => (),
@@ -11174,7 +11318,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_item_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_resugared_item_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredItemKind,
     ) -> () {
@@ -11183,7 +11327,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_expr_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_resugared_expr_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredExprKind,
     ) -> () {
@@ -11192,7 +11336,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_pat_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_resugared_pat_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredPatKind,
     ) -> () {
@@ -11201,7 +11345,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_ty_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_resugared_ty_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTyKind,
     ) -> () {
@@ -11210,7 +11354,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_impl_item_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_resugared_impl_item_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredImplItemKind,
     ) -> () {
@@ -11219,7 +11363,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_resugared_trait_item_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_resugared_trait_item_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ResugaredTraitItemKind,
     ) -> () {
@@ -11228,12 +11372,15 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_span<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Span) -> () {
+    pub fn visit_span<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Span) -> () {
         let _ = v;
         ()
     }
     #[allow(unused)]
-    pub fn visit_generic_value<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt GenericValue) -> () {
+    pub fn visit_generic_value<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt GenericValue,
+    ) -> () {
         match v {
             GenericValue::Ty(anon_field_0) => {
                 visitor.visit_ty(anon_field_0);
@@ -11247,7 +11394,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_primitive_ty<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt PrimitiveTy) -> () {
+    pub fn visit_primitive_ty<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt PrimitiveTy,
+    ) -> () {
         match v {
             PrimitiveTy::Bool { .. } => (),
             PrimitiveTy::Int(anon_field_0) => {
@@ -11263,13 +11413,13 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_region<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Region) -> () {
+    pub fn visit_region<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Region) -> () {
         match v {
             Region { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_ty<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Ty) -> () {
+    pub fn visit_ty<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Ty) -> () {
         match v {
             Ty(anon_field_0) => {
                 visitor.visit_ty_kind(anon_field_0.deref());
@@ -11278,7 +11428,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_ty_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt TyKind) -> () {
+    pub fn visit_ty_kind<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt TyKind) -> () {
         match v {
             TyKind::Primitive(anon_field_0) => {
                 visitor.visit_primitive_ty(anon_field_0);
@@ -11350,7 +11500,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_dyn_trait_goal<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt DynTraitGoal) -> () {
+    pub fn visit_dyn_trait_goal<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt DynTraitGoal,
+    ) -> () {
         match v {
             DynTraitGoal {
                 trait_,
@@ -11365,7 +11518,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_metadata<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Metadata) -> () {
+    pub fn visit_metadata<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Metadata) -> () {
         match v {
             Metadata { span, attributes } => {
                 visitor.visit_span(span);
@@ -11374,7 +11527,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Expr) -> () {
+    pub fn visit_expr<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Expr) -> () {
         match v {
             Expr { kind, ty, meta } => {
                 visitor.visit_expr_kind(kind.deref());
@@ -11385,7 +11538,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Pat) -> () {
+    pub fn visit_pat<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Pat) -> () {
         match v {
             Pat { kind, ty, meta } => {
                 visitor.visit_pat_kind(kind.deref());
@@ -11396,7 +11549,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_arm<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Arm) -> () {
+    pub fn visit_arm<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Arm) -> () {
         match v {
             Arm {
                 pat,
@@ -11412,7 +11565,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Guard) -> () {
+    pub fn visit_guard<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Guard) -> () {
         match v {
             Guard { kind, meta } => {
                 visitor.visit_guard_kind(kind);
@@ -11422,7 +11575,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_borrow_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt BorrowKind) -> () {
+    pub fn visit_borrow_kind<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt BorrowKind,
+    ) -> () {
         match v {
             BorrowKind::Shared { .. } => (),
             BorrowKind::Unique { .. } => (),
@@ -11430,7 +11586,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_binding_mode<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt BindingMode) -> () {
+    pub fn visit_binding_mode<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt BindingMode,
+    ) -> () {
         match v {
             BindingMode::ByValue { .. } => (),
             BindingMode::ByRef(anon_field_0) => {
@@ -11440,7 +11599,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_pat_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt PatKind) -> () {
+    pub fn visit_pat_kind<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt PatKind) -> () {
         match v {
             PatKind::Wild { .. } => (),
             PatKind::Ascription { pat, ty } => {
@@ -11502,7 +11661,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_guard_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt GuardKind) -> () {
+    pub fn visit_guard_kind<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt GuardKind,
+    ) -> () {
         match v {
             GuardKind::IfLet { lhs, rhs } => {
                 visitor.visit_pat(lhs);
@@ -11512,7 +11674,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_lhs<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Lhs) -> () {
+    pub fn visit_lhs<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Lhs) -> () {
         match v {
             Lhs::LocalVar { var, ty } => {
                 visitor.visit_local_id(var);
@@ -11538,7 +11700,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ImplExpr) -> () {
+    pub fn visit_impl_expr<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt ImplExpr) -> () {
         match v {
             ImplExpr { kind, goal } => {
                 visitor.visit_impl_expr_kind(kind.deref());
@@ -11548,7 +11710,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_expr_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ImplExprKind) -> () {
+    pub fn visit_impl_expr_kind<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ImplExprKind,
+    ) -> () {
         match v {
             ImplExprKind::Self_ { .. } => (),
             ImplExprKind::Concrete(anon_field_0) => {
@@ -11582,7 +11747,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ImplItem) -> () {
+    pub fn visit_impl_item<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt ImplItem) -> () {
         match v {
             ImplItem {
                 meta,
@@ -11599,7 +11764,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_item_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ImplItemKind) -> () {
+    pub fn visit_impl_item_kind<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ImplItemKind,
+    ) -> () {
         match v {
             ImplItemKind::Type { ty, parent_bounds } => {
                 visitor.visit_ty(ty);
@@ -11626,7 +11794,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt TraitItem) -> () {
+    pub fn visit_trait_item<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt TraitItem,
+    ) -> () {
         match v {
             TraitItem {
                 meta,
@@ -11643,7 +11814,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_item_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_trait_item_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt TraitItemKind,
     ) -> () {
@@ -11672,7 +11843,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote_content<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt QuoteContent) -> () {
+    pub fn visit_quote_content<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt QuoteContent,
+    ) -> () {
         match v {
             QuoteContent::Verbatim { .. } => (),
             QuoteContent::Expr(anon_field_0) => {
@@ -11690,7 +11864,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_quote<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Quote) -> () {
+    pub fn visit_quote<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Quote) -> () {
         match v {
             Quote(anon_field_0) => {
                 for visitor_item in anon_field_0 {
@@ -11701,7 +11875,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin<'lt, V: Vanilla<'lt>>(
+    pub fn visit_item_quote_origin<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOrigin,
     ) -> () {
@@ -11719,7 +11893,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_item_quote_origin_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginKind,
     ) -> () {
@@ -11738,7 +11912,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_quote_origin_position<'lt, V: Vanilla<'lt>>(
+    pub fn visit_item_quote_origin_position<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ItemQuoteOriginPosition,
     ) -> () {
@@ -11749,7 +11923,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt LoopKind) -> () {
+    pub fn visit_loop_kind<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt LoopKind) -> () {
         match v {
             LoopKind::UnconditionalLoop { .. } => (),
             LoopKind::WhileLoop { condition } => {
@@ -11776,7 +11950,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_control_flow_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_control_flow_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ControlFlowKind,
     ) -> () {
@@ -11786,7 +11960,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_loop_state<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt LoopState) -> () {
+    pub fn visit_loop_state<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt LoopState,
+    ) -> () {
         match v {
             LoopState { init, body_pat } => {
                 visitor.visit_expr(init);
@@ -11796,7 +11973,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_expr_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ExprKind) -> () {
+    pub fn visit_expr_kind<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt ExprKind) -> () {
         match v {
             ExprKind::If {
                 condition,
@@ -11953,7 +12130,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_generic_param_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericParamKind,
     ) -> () {
@@ -11967,7 +12144,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_trait_goal<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt TraitGoal) -> () {
+    pub fn visit_trait_goal<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt TraitGoal,
+    ) -> () {
         match v {
             TraitGoal { trait_, args } => {
                 visitor.visit_global_id(trait_);
@@ -11979,7 +12159,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_impl_ident<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ImplIdent) -> () {
+    pub fn visit_impl_ident<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt ImplIdent,
+    ) -> () {
         match v {
             ImplIdent { goal, name } => {
                 visitor.visit_trait_goal(goal);
@@ -11988,7 +12171,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_projection_predicate<'lt, V: Vanilla<'lt>>(
+    pub fn visit_projection_predicate<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt ProjectionPredicate,
     ) -> () {
@@ -12006,7 +12189,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_constraint<'lt, V: Vanilla<'lt>>(
+    pub fn visit_generic_constraint<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt GenericConstraint,
     ) -> () {
@@ -12023,7 +12206,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_generic_param<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt GenericParam) -> () {
+    pub fn visit_generic_param<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt GenericParam,
+    ) -> () {
         match v {
             GenericParam { ident, meta, kind } => {
                 visitor.visit_local_id(ident);
@@ -12034,7 +12220,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_generics<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Generics) -> () {
+    pub fn visit_generics<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Generics) -> () {
         match v {
             Generics {
                 params,
@@ -12051,14 +12237,20 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_safety_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt SafetyKind) -> () {
+    pub fn visit_safety_kind<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt SafetyKind,
+    ) -> () {
         match v {
             SafetyKind::Safe { .. } => (),
             SafetyKind::Unsafe { .. } => (),
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Attribute) -> () {
+    pub fn visit_attribute<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt Attribute,
+    ) -> () {
         match v {
             Attribute { kind, span } => {
                 visitor.visit_attribute_kind(kind);
@@ -12068,7 +12260,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_attribute_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_attribute_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt AttributeKind,
     ) -> () {
@@ -12081,7 +12273,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_doc_comment_kind<'lt, V: Vanilla<'lt>>(
+    pub fn visit_doc_comment_kind<'lt, V: Vanilla<'lt> + ?Sized>(
         visitor: &mut V,
         v: &'lt DocCommentKind,
     ) -> () {
@@ -12091,7 +12283,10 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_spanned_ty<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt SpannedTy) -> () {
+    pub fn visit_spanned_ty<'lt, V: Vanilla<'lt> + ?Sized>(
+        visitor: &mut V,
+        v: &'lt SpannedTy,
+    ) -> () {
         match v {
             SpannedTy { span, ty } => {
                 visitor.visit_span(span);
@@ -12101,7 +12296,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_param<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Param) -> () {
+    pub fn visit_param<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Param) -> () {
         match v {
             Param {
                 pat,
@@ -12116,7 +12311,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_variant<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Variant) -> () {
+    pub fn visit_variant<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Variant) -> () {
         match v {
             Variant {
                 name,
@@ -12138,7 +12333,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_item_kind<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt ItemKind) -> () {
+    pub fn visit_item_kind<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt ItemKind) -> () {
         match v {
             ItemKind::Fn {
                 name,
@@ -12237,7 +12432,7 @@ pub mod vanilla {
         }
     }
     #[allow(unused)]
-    pub fn visit_item<'lt, V: Vanilla<'lt>>(visitor: &mut V, v: &'lt Item) -> () {
+    pub fn visit_item<'lt, V: Vanilla<'lt> + ?Sized>(visitor: &mut V, v: &'lt Item) -> () {
         match v {
             Item { ident, kind, meta } => {
                 visitor.visit_global_id(ident);
