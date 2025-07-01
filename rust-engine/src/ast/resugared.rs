@@ -54,6 +54,7 @@ pub trait ResugaredFragment {
     type ParentFragment;
 }
 
+/// Convenience macro which implements [`ResugaredFragment`] on `$ty`, setting `$parent` as the `ParentFragment`, as well as `From<$ty>` for `$parent`, by wrapping the `$ty` in `$parent::Resugared(..)`.
 macro_rules! derive_from {
     ($($ty:ty => $parent:ty),*) => {
         $(impl ResugaredFragment for $ty {
