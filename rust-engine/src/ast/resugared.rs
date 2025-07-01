@@ -50,7 +50,7 @@ pub enum ResugaredTraitItemKind {}
 
 /// Marks a type as a resugar fragment of the AST.
 pub trait ResugaredFragment {
-    /// What fragment of the AST this resugar is extending?
+    /// What fragment of the AST is this resugar extending?
     type ParentFragment;
 }
 
