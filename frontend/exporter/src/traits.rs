@@ -7,7 +7,7 @@ mod utils;
 #[cfg(feature = "rustc")]
 pub use utils::{
     erase_and_norm, implied_predicates, predicates_defined_on, required_predicates, self_predicate,
-    ToPolyTraitRef,
+    Predicates, ToPolyTraitRef,
 };
 
 #[cfg(feature = "rustc")]
@@ -358,12 +358,11 @@ pub fn solve_item_implied_traits<'tcx, S: UnderOwnerState<'tcx>>(
 fn solve_item_traits_inner<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     generics: ty::GenericArgsRef<'tcx>,
-    predicates: ty::GenericPredicates<'tcx>,
+    predicates: utils::Predicates<'tcx>,
 ) -> Vec<ImplExpr> {
     let tcx = s.base().tcx;
     let typing_env = s.typing_env();
     predicates
-        .predicates
         .iter()
         .map(|(clause, _span)| *clause)
         .filter_map(|clause| clause.as_trait_clause())

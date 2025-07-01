@@ -11,9 +11,10 @@ use rustc_middle::traits::CodegenObligationError;
 use rustc_middle::ty::{self, *};
 use rustc_trait_selection::traits::ImplSource;
 
-use crate::{self_predicate, traits::utils::erase_and_norm};
-
-use super::utils::{implied_predicates, normalize_bound_val, required_predicates, ToPolyTraitRef};
+use super::utils::{
+    self, erase_and_norm, implied_predicates, normalize_bound_val, required_predicates,
+    self_predicate, ToPolyTraitRef,
+};
 
 #[derive(Debug, Clone)]
 pub enum PathChunk<'tcx> {
@@ -179,7 +180,6 @@ fn initial_search_predicates<'tcx>(
         }
         predicates.extend(
             required_predicates(tcx, def_id, add_drop)
-                .predicates
                 .iter()
                 .map(|(clause, _span)| *clause)
                 .filter_map(|clause| {
@@ -204,7 +204,6 @@ fn parents_trait_predicates<'tcx>(
 ) -> Vec<PolyTraitPredicate<'tcx>> {
     let self_trait_ref = pred.to_poly_trait_ref();
     implied_predicates(tcx, pred.def_id(), add_drop)
-        .predicates
         .iter()
         .map(|(clause, _span)| *clause)
         // Substitute with the `self` args so that the clause makes sense in the
@@ -342,8 +341,8 @@ impl<'tcx> PredicateSearcher<'tcx> {
         };
 
         // The bounds that hold on the associated type.
-        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop)
-            .predicates
+        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop);
+        let item_bounds = item_bounds
             .iter()
             .map(|(clause, _span)| *clause)
             .filter_map(|pred| pred.as_trait_clause())
@@ -642,13 +641,12 @@ impl<'tcx> PredicateSearcher<'tcx> {
     pub fn resolve_predicates(
         &mut self,
         generics: GenericArgsRef<'tcx>,
-        predicates: GenericPredicates<'tcx>,
+        predicates: utils::Predicates<'tcx>,
         // Call back into hax-related code to display a nice warning.
         warn: &impl Fn(&str),
     ) -> Result<Vec<ImplExpr<'tcx>>, String> {
         let tcx = self.tcx;
         predicates
-            .predicates
             .iter()
             .map(|(clause, _span)| *clause)
             .filter_map(|clause| clause.as_trait_clause())

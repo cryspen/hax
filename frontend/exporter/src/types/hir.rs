@@ -830,7 +830,6 @@ fn region_bounds_at_current_owner<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> Gene
             .instantiate_identity()
     } else {
         predicates_defined_on(tcx, s.owner_id())
-            .predicates
             .iter()
             .map(|(x, _span)| x)
             .copied()
