@@ -51,10 +51,10 @@ Record Foo_record : Type :=
 #[export]
 Notation "'Foo_Foo_record'" := Build_Foo_record.
 
-Class t_Trait (v_Self : Type) : Type :=
+Class t_Trait (v_Self : Type) `{t_MetaSized (v_Self)} : Type :=
   {
   }.
-Arguments t_Trait (_).
+Arguments t_Trait (_) {_}.
 
 Instance t_Trait_572156424 : t_Trait ((t_Foo)) :=
   {

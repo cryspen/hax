@@ -119,6 +119,7 @@ val ff_pre_post (x y: bool)
           result =. y)
 
 class t_T (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_U:Type0;
   f_c:u8;
   f_d_pre:Prims.unit -> Type0;
@@ -133,6 +134,7 @@ class t_T (v_Self: Type0) = {
 val impl_T_for_u8:t_T u8
 
 class t_TrGeneric (v_Self: Type0) (v_U: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_17240578109911634293:Core.Clone.t_Clone v_U;
   f_f_pre:v_U -> Type0;
   f_f_post:v_U -> v_Self -> Type0;

@@ -32,13 +32,18 @@ module Traits.Block_size
 open Core
 open FStar.Mul
 
-class t_BlockSizeUser (v_Self: Type0) = { f_BlockSize:Type0 }
+class t_BlockSizeUser (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
+  f_BlockSize:Type0
+}
 
 class t_ParBlocksSizeUser (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_5884559561557426095:t_BlockSizeUser v_Self
 }
 
 class t_BlockBackend (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_17422710415653782164:t_ParBlocksSizeUser v_Self;
   f_proc_block_pre:Alloc.Vec.t_Vec _ Alloc.Alloc.t_Global -> Type0;
   f_proc_block_post:Alloc.Vec.t_Vec _ Alloc.Alloc.t_Global -> Prims.unit -> Type0;
@@ -52,9 +57,12 @@ module Traits.Default_traits_parameters
 open Core
 open FStar.Mul
 
-class t_Bar (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Bar:Prims.unit }
+class t_Bar (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self
+}
 
 class t_Foo (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_7275791365833186636:t_Bar v_Self f_U;
   f_U:Type0
 }
@@ -65,7 +73,9 @@ module Traits.For_clauses.Issue_495_.Minimized_3_
 open Core
 open FStar.Mul
 
-class t_Trait (v_Self: Type0) = { __marker_trait_t_Trait:Prims.unit }
+class t_Trait (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self
+}
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl
@@ -148,6 +158,7 @@ open Core
 open FStar.Mul
 
 class t_Foo (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_to_t_pre:v_Self -> Type0;
   f_to_t_post:v_Self -> v_T -> Type0;
   f_to_t:x0: v_Self -> Prims.Pure v_T (f_to_t_pre x0) (fun result -> f_to_t_post x0 result)
@@ -164,9 +175,14 @@ module Traits.Impl_expr_in_goal
 open Core
 open FStar.Mul
 
-class t_T1 (v_Self: Type0) = { f_Assoc:Type0 }
+class t_T1 (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
+  f_Assoc:Type0
+}
 
-class t_T2 (v_Self: Type0) = { __marker_trait_t_T2:Prims.unit }
+class t_T2 (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self
+}
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl
@@ -230,6 +246,7 @@ open Core
 open FStar.Mul
 
 class t_MyTrait (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_my_method_pre:v_Self -> Type0;
   f_my_method_post:v_Self -> Prims.unit -> Type0;
   f_my_method:x0: v_Self
@@ -263,6 +280,7 @@ open FStar.Mul
 type t_Type (v_TypeArg: Type0) (v_ConstArg: usize) = { f_field:t_Array v_TypeArg v_ConstArg }
 
 class t_Trait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_method_pre:
       #v_MethodTypeArg: Type0 ->
       v_MethodConstArg: usize ->
@@ -425,6 +443,7 @@ let associated_function_caller
   ()
 
 class t_SubTrait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_15145771689388873921:t_Trait v_Self
     v_TypeArg
     v_ConstArg;
@@ -442,6 +461,7 @@ type t_Bar (v_FooConst: usize) (v_FooType: Type0) =
   | Bar : t_Array v_FooType v_FooConst -> t_Bar v_FooConst v_FooType
 
 class t_Foo (v_Self: Type0) (v_FooConst: usize) (v_FooType: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_fun_pre:
       v_FunConst: usize ->
       #v_FunType: Type0 ->
@@ -505,11 +525,13 @@ open Core
 open FStar.Mul
 
 class t_Trait1 (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_T:Type0;
   f_T_7969211799618487585:t_Trait1 f_T
 }
 
 class t_Trait2 (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_3259985701465885527:t_Trait1 v_Self;
   f_U:Type0
 }
@@ -530,6 +552,7 @@ open Core
 open FStar.Mul
 
 class t_PolyOp (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_op_pre:u32 -> u32 -> Type0;
   f_op_post:u32 -> u32 -> u32 -> Type0;
   f_op:x0: u32 -> x1: u32 -> Prims.Pure u32 (f_op_pre x0 x1) (fun result -> f_op_post x0 x1 result)
@@ -567,6 +590,7 @@ open Core
 open FStar.Mul
 
 class t_SuperTrait (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_15837849249852401974:Core.Clone.t_Clone v_Self;
   f_function_of_super_trait_pre:v_Self -> Type0;
   f_function_of_super_trait_post:v_Self -> u32 -> Type0;
@@ -588,6 +612,7 @@ let impl: t_SuperTrait i32 =
 type t_Struct = | Struct : t_Struct
 
 class t_Bar (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_bar_pre:v_Self -> Type0;
   f_bar_post:v_Self -> Prims.unit -> Type0;
   f_bar:x0: v_Self -> Prims.Pure Prims.unit (f_bar_pre x0) (fun result -> f_bar_post x0 result)
@@ -650,6 +675,7 @@ let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
   ()
 
 class t_Foo (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_AssocType:Type0;
   f_AssocType_1162045947544099865:t_SuperTrait f_AssocType;
   f_N:usize;

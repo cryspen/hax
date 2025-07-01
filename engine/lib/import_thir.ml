@@ -1513,7 +1513,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
   in
   (* TODO: things might be unnamed (e.g. constants) *)
   match (item.kind : Thir.item_kind) with
-  | Const (_, _, generics, body) ->
+  | Const (_, generics, _, body) ->
       mk
       @@ Fn
            {
@@ -1523,14 +1523,14 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              params = [];
              safety = Safe;
            }
-  | Static (_, _, true, _) ->
+  | Static (true, _, _, _) ->
       unimplemented ~issue_id:1343 [ item.span ]
         "Mutable static items are not supported."
-  | Static (_, _ty, false, body) ->
+  | Static (false, _, _ty, body) ->
       let name = Concrete_ident.of_def_id ~value:true (assert_item_def_id ()) in
       let generics = { params = []; constraints = [] } in
       mk (Fn { name; generics; body = c_body body; params = []; safety = Safe })
-  | TyAlias (_, ty, generics) ->
+  | TyAlias (_, generics, ty) ->
       mk
       @@ TyAlias
            {
@@ -1549,13 +1549,13 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
              params = c_fn_params item.span params;
              safety = c_header_safety safety;
            }
-  | (Enum (_, _, generics, _) | Struct (_, _, generics)) when erased ->
+  | (Enum (_, generics, _, _) | Struct (_, generics, _)) when erased ->
       let generics = c_generics generics in
       let is_struct = match item.kind with Struct _ -> true | _ -> false in
       let def_id = assert_item_def_id () in
       let name = Concrete_ident.of_def_id ~value:false def_id in
       mk @@ Type { name; generics; variants = []; is_struct }
-  | Enum (_, variants, generics, repr) ->
+  | Enum (_, generics, variants, repr) ->
       let def_id = assert_item_def_id () in
       let generics = c_generics generics in
       let is_struct = false in
@@ -1613,7 +1613,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         mk_one (Type { name; generics; variants; is_struct }) :: discs
       in
       if is_primitive then cast_fun :: result else result
-  | Struct (_, v, generics) ->
+  | Struct (_, generics, v) ->
       let generics = c_generics generics in
       let def_id = assert_item_def_id () in
       let is_struct = true in
@@ -1808,7 +1808,9 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
           {
             path = List.map ~f:(fun x -> fst x.ident) segments;
             is_external =
-              List.exists ~f:(function Err -> true | _ -> false) res;
+              List.exists
+                ~f:(function None | Some Err -> true | _ -> false)
+                res;
             (* TODO: this should represent local/external? *)
             rename;
           }

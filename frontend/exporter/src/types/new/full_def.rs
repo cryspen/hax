@@ -217,7 +217,7 @@ pub enum FullDefKind<Body> {
         /// `Some` if the item is in the local crate.
         #[value(s.base().tcx.hir_get_if_local(s.owner_id()).map(|node| {
             let rustc_hir::Node::Item(item) = node else { unreachable!() };
-            let rustc_hir::ItemKind::TyAlias(_, ty, _generics) = &item.kind else { unreachable!() };
+            let rustc_hir::ItemKind::TyAlias(_, _generics, ty) = &item.kind else { unreachable!() };
             let mut s = State::from_under_owner(s);
             s.base.ty_alias_mode = true;
             ty.sinto(&s)
@@ -981,7 +981,8 @@ fn closure_once_shim<'tcx>(
 
 #[cfg(feature = "rustc")]
 fn drop_glue_shim<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Option<mir::Body<'tcx>> {
-    let drop_in_place = tcx.require_lang_item(rustc_hir::LangItem::DropInPlace, None);
+    let drop_in_place =
+        tcx.require_lang_item(rustc_hir::LangItem::DropInPlace, rustc_span::DUMMY_SP);
     if !tcx.generics_of(def_id).is_empty() {
         // Hack: layout code panics if it can't fully normalize types, which can happen e.g. with a
         // trait associated type. For now we only translate the glue for monomorphic types.
