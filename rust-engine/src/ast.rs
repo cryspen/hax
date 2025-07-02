@@ -14,6 +14,7 @@ pub mod diagnostics;
 pub mod fragment;
 pub mod identifiers;
 pub mod literals;
+pub mod resugared;
 pub mod span;
 
 use crate::symbol::Symbol;
@@ -22,6 +23,7 @@ use fragment::Fragment;
 use hax_rust_engine_macros::*;
 use identifiers::*;
 use literals::*;
+use resugared::*;
 use span::Span;
 
 /// Represents a generic value used in type applications (e.g., `T` in `Vec<T>`).
@@ -170,6 +172,11 @@ pub enum TyKind {
     /// dyn Tr
     /// ```
     Dyn(Vec<DynTraitGoal>),
+
+    /// A resugared type.
+    /// This variant is introduced before printing only.
+    /// Phases must not produce this variant.
+    Resugared(ResugaredTyKind),
 
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
@@ -367,6 +374,11 @@ pub enum PatKind {
         /// A list of fields.
         fields: Vec<(GlobalId, Pat)>,
     },
+
+    /// A resugared pattern.
+    /// This variant is introduced before printing only.
+    /// Phases must not produce this variant.
+    Resugared(ResugaredPatKind),
 
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
@@ -582,6 +594,11 @@ pub enum ImplItemKind {
         /// The list of the argument for the associated function (`&self` in the example).
         params: Vec<Param>,
     },
+
+    /// A resugared impl item.
+    /// This variant is introduced before printing only.
+    /// Phases must not produce this variant.
+    Resugared(ResugaredImplItemKind),
 }
 
 /// Represents a trait item (associated type, fn, or default)
@@ -628,6 +645,11 @@ pub enum TraitItemKind {
         /// The default body of the associated function (`x + 2` in the example).
         body: Expr,
     },
+
+    /// A resugared trait item.
+    /// This variant is introduced before printing only.
+    /// Phases must not produce this variant.
+    Resugared(ResugaredTraitItemKind),
 }
 
 /// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
@@ -1019,6 +1041,11 @@ pub enum ExprKind {
         contents: Quote,
     },
 
+    /// A resugared expression.
+    /// This variant is introduced before printing only.
+    /// Phases must not produce this variant.
+    Resugared(ResugaredExprKind),
+
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
 }
@@ -1388,6 +1415,11 @@ pub enum ItemKind {
     /// Fallback constructor to carry errors.
     Error(Diagnostic),
 
+    /// A resugared item.
+    /// This variant is introduced before printing only.
+    /// Phases must not produce this variant.
+    Resugared(ResugaredItemKind),
+
     /// Item that is not implemented yet
     NotImplementedYet,
 }
@@ -1455,8 +1487,26 @@ pub mod traits {
         };
     }
 
-    derive_has_metadata!(Item, Expr, Pat);
-    derive_has_kind!(Item => ItemKind, Expr => ExprKind, Pat => PatKind);
+    derive_has_metadata!(
+        Item,
+        Expr,
+        Pat,
+        Guard,
+        Arm,
+        ImplItem,
+        TraitItem,
+        GenericParam
+    );
+    derive_has_kind!(
+        Item => ItemKind, Expr => ExprKind, Pat => PatKind, Guard => GuardKind,
+        GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind
+    );
+
+    impl HasSpan for Attribute {
+        fn span(&self) -> Span {
+            self.span.clone()
+        }
+    }
 
     impl Typed for Expr {
         fn ty(&self) -> &Ty {

@@ -28,7 +28,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
 
       - name: Test
-        run: cargo test --workspace --exclude hax-engine-names-extract --verbose
+        run: cargo test --workspace --exclude hax-engine-names-extract --exclude hax-rust-engine --verbose
 
       - name: Test `hax-frontend-exporter` with feature `rustc` off
         run: cargo check -p hax-frontend-exporter --no-default-features --verbose

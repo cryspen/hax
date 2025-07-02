@@ -31,7 +31,7 @@ cd_rootwise () {
 
 rust () {
     cd_rootwise "cli"
-    for i in driver subcommands ../engine/names/extract; do
+    for i in driver subcommands ../engine/names/extract ../rust-engine; do
         CURRENT="rust/$i"
         cargo install --locked --quiet $OFFLINE_FLAG --debug --path $i
     done

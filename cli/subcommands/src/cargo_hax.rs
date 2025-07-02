@@ -125,6 +125,25 @@ fn find_hax_engine(message_format: MessageFormat) -> process::Command {
         })
 }
 
+const RUST_ENGINE_BINARY_NAME: &str = "hax-rust-engine";
+const RUST_ENGINE_BINARY_NOT_FOUND: &str =
+    "The binary [hax-rust-engine] was not found in your [PATH].";
+
+#[allow(unused_variables, unreachable_code)]
+fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
+    use which::which;
+
+    std::env::var("HAX_RUST_BINARY")
+        .ok()
+        .map(process::Command::new)
+        .or_else(|| {
+            which(RUST_ENGINE_BINARY_NAME)
+                .ok()
+                .map(process::Command::new)
+        })
+        .expect(RUST_ENGINE_BINARY_NOT_FOUND)
+}
+
 use hax_types::diagnostics::message::HaxMessage;
 use hax_types::diagnostics::report::ReportCtx;
 
@@ -245,7 +264,12 @@ fn run_engine(
         input: haxmeta.items,
         impl_infos: haxmeta.impl_infos,
     };
-    let mut engine_subprocess = find_hax_engine(message_format)
+    let mut hax_engine_command = if let Backend::Lean { .. } = &engine_options.backend.backend {
+        find_rust_hax_engine(message_format)
+    } else {
+        find_hax_engine(message_format)
+    };
+    let mut engine_subprocess = hax_engine_command
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
         .spawn()

@@ -13,7 +13,7 @@ use rustc_trait_selection::traits::ImplSource;
 
 use crate::{self_predicate, traits::utils::erase_and_norm};
 
-use super::utils::{implied_predicates, required_predicates, ToPolyTraitRef};
+use super::utils::{implied_predicates, normalize_bound_val, required_predicates, ToPolyTraitRef};
 
 #[derive(Debug, Clone)]
 pub enum PathChunk<'tcx> {
@@ -281,7 +281,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let mut new_candidates = Vec::new();
         for mut candidate in candidates {
             // Normalize and erase all lifetimes.
-            candidate.pred = erase_and_norm(tcx, self.typing_env, candidate.pred);
+            candidate.pred = normalize_bound_val(tcx, self.typing_env, candidate.pred);
             if let Entry::Vacant(entry) = self.candidates.entry(candidate.pred) {
                 entry.insert(candidate.clone());
                 new_candidates.push(candidate);
@@ -421,7 +421,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let tcx = self.tcx;
         let drop_trait = tcx.lang_items().drop_trait().unwrap();
 
-        let erased_tref = erase_and_norm(self.tcx, self.typing_env, *tref);
+        let erased_tref = normalize_bound_val(self.tcx, self.typing_env, *tref);
         let trait_def_id = erased_tref.skip_binder().def_id;
 
         let impl_source = shallow_resolve_trait_ref(tcx, self.typing_env.param_env, erased_tref);
