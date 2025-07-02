@@ -290,7 +290,9 @@ pub fn translate_item_ref<'tcx, S: UnderOwnerState<'tcx>>(
         let num_trait_generics = trait_ref.generic_args.len();
         generic_args.drain(0..num_trait_generics);
         let num_trait_trait_clauses = trait_ref.impl_exprs.len();
-        impl_exprs.drain(0..num_trait_trait_clauses);
+        // Associated items take a `Self` clause as first clause, we skip that one too. Note: that
+        // clause is the same as `tinfo`.
+        impl_exprs.drain(0..num_trait_trait_clauses + 1);
     }
 
     let content = ItemRefContents {
@@ -386,7 +388,6 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
     def_id: RDefId,
     generics: rustc_middle::ty::GenericArgsRef<'tcx>,
 ) -> Option<ImplExpr> {
-    use rustc_middle::ty::EarlyBinder;
     let tcx = s.base().tcx;
 
     let tr_def_id = tcx.trait_of_item(def_id)?;
@@ -394,7 +395,7 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
     let self_pred = self_predicate(tcx, tr_def_id);
     // Substitute to be in the context of the current item.
     let generics = generics.truncate_to(tcx, tcx.generics_of(tr_def_id));
-    let self_pred = EarlyBinder::bind(self_pred).instantiate(tcx, generics);
+    let self_pred = ty::EarlyBinder::bind(self_pred).instantiate(tcx, generics);
 
     // Resolve
     Some(solve_trait(s, self_pred))

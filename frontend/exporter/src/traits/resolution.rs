@@ -154,6 +154,7 @@ fn initial_search_predicates<'tcx>(
         tcx: TyCtxt<'tcx>,
         def_id: rustc_span::def_id::DefId,
         add_drop: bool,
+        include_self_pred: bool,
         predicates: &mut Vec<AnnotatedTraitPred<'tcx>>,
         pred_id: &mut usize,
     ) {
@@ -165,11 +166,22 @@ fn initial_search_predicates<'tcx>(
         use DefKind::*;
         match tcx.def_kind(def_id) {
             // These inherit some predicates from their parent.
-            AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant => {
+            dk @ (AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant) => {
                 let parent = tcx.parent(def_id);
-                acc_predicates(tcx, parent, add_drop, predicates, pred_id);
+                // Hack: we don't support GATs well so for now we let assoc types refer to the
+                // implicit trait `Self` clause. Other associated items get an explicit `Self:
+                // Trait` clause passed to them so they don't need that.
+                let include_self_pred = include_self_pred && matches!(dk, AssocTy);
+                acc_predicates(
+                    tcx,
+                    parent,
+                    add_drop,
+                    include_self_pred,
+                    predicates,
+                    pred_id,
+                );
             }
-            Trait | TraitAlias => {
+            Trait | TraitAlias if include_self_pred => {
                 let self_pred = self_predicate(tcx, def_id).upcast(tcx);
                 predicates.push(AnnotatedTraitPred {
                     origin: BoundPredicateOrigin::SelfPred,
@@ -192,7 +204,7 @@ fn initial_search_predicates<'tcx>(
     }
 
     let mut predicates = vec![];
-    acc_predicates(tcx, def_id, add_drop, &mut predicates, &mut 0);
+    acc_predicates(tcx, def_id, add_drop, true, &mut predicates, &mut 0);
     predicates
 }
 
