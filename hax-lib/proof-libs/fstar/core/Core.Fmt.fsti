@@ -32,6 +32,12 @@ val impl_4__new_v1_formatted :
 
 val impl_11__write_fmt : Core.Fmt.t_Formatter -> Core.Fmt.t_Arguments -> Core.Fmt.t_Formatter & Core.Result_Option_bundle.t_Result unit Core.Fmt.t_Error
 
+[@FStar.Tactics.Typeclasses.tcinstance]
+val impl_t_debug_string : t_Debug Prims.string
+
+[@FStar.Tactics.Typeclasses.tcinstance]
+val impl_t_display_string : t_Display Prims.string
+
 instance debuggable_bool : t_Debug Prims.bool =
 {
   f_dbg_fmt_pre = (fun (b: Prims.bool) (fmt: Core.Fmt.t_Formatter) -> true);
@@ -56,3 +62,7 @@ instance debuggable_pair (#a:Type) (#b:Type) (x: t_Debug a) (y: t_Debug b): t_De
      | Core.Result.Result_Ok v -> f_dbg_fmt pair._2 fmt_a
      | Core.Result.Result_Err e -> (fmt_a, result_a));
 }
+
+/// Default empty implementation, used for lax-checking
+[@FStar.Tactics.Typeclasses.tcinstance]
+val derive_debug (#t: Type) : t_Debug t
