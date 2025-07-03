@@ -53,15 +53,23 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                 safety: _,
             } => {
                 // Generics are ignored for now
+
+                let args = if params.is_empty() {
+                    allocator.nil()
+                } else {
+                    docs![
+                        allocator,
+                        allocator.softline(),
+                        allocator.intersperse(params, allocator.line()),
+                    ]
+                    .align()
+                    .group()
+                };
                 docs![
                     allocator,
                     "def ",
                     name,
-                    allocator.softline(),
-                    allocator
-                        .intersperse(params, allocator.line())
-                        .align()
-                        .group(),
+                    args,
                     docs![allocator, allocator.line(), ": ", &body.ty].group(),
                     " :=",
                     allocator.line(),
@@ -69,12 +77,17 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                 ]
                 .nest(INDENT)
                 .group()
+                .append(allocator.hardline())
+                .append(allocator.hardline())
             }
             ItemKind::TyAlias {
                 name,
                 generics: _,
                 ty,
-            } => docs![allocator, "abbrev ", name, allocator.reflow(" := "), ty].group(),
+            } => docs![allocator, "abbrev ", name, allocator.reflow(" := "), ty]
+                .group()
+                .append(allocator.hardline())
+                .append(allocator.hardline()),
             ItemKind::Type {
                 name: _,
                 generics: _,
@@ -106,7 +119,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
             } => print_todo!(allocator),
             ItemKind::Error(_diagnostic) => print_todo!(allocator),
             ItemKind::Resugared(_resugared_ty_kind) => print_todo!(allocator),
-            ItemKind::NotImplementedYet => allocator.text("-- unimplemented yet"),
+            ItemKind::NotImplementedYet => allocator.nil(),
         }
     }
 }
