@@ -7,7 +7,7 @@ val impl_1__new_debug (#t:Type0) (x: t): t_Argument
 val impl_4__new_v1_formatted (#t:Type0) (x: t) : t_Argument
 val impl_1__new_binary (#t:Type0) (x: t) : t_Argument
 val impl_1__new_lower_hex (#t:Type0) (x: t) : t_Argument
-val impl_2__new_const (#t:Type0) (#u:Type0) (xconst: t) (yconst: u): t_Argument
+val impl_1__new_const (#t:Type0) (#u:Type0) (xconst: t) (yconst: u): t_Argument
 val impl_1__new_v1 (#t1:Type0) (#t2:Type0) (#t3:Type0) (#t4:Type0) 
   (x1: t1) (x2: t2) (x3: t3) (x4: t4) : t_Argument
 val impl__new_display (#t:Type0) (x: t): t_Argument
