@@ -535,7 +535,7 @@ pub struct Variant<Body: IsBody> {
 pub struct UsePath {
     pub span: Span,
     #[map(x.iter().map(|res| res.sinto(s)).collect())]
-    pub res: Vec<Res>,
+    pub res: Vec<Option<Res>>,
     pub segments: Vec<PathSegment>,
     #[value(self.segments.iter().last().and_then(|segment| {
             match s.base().tcx.hir_node_by_def_id(segment.hir_id.owner.def_id) {
@@ -620,8 +620,8 @@ pub struct PathSegment {
 pub enum ItemKind<Body: IsBody> {
     ExternCrate(Option<Symbol>, Ident),
     Use(UsePath, UseKind),
-    Static(Ident, Ty, Mutability, Body),
-    Const(Ident, Ty, Generics<Body>, Body),
+    Static(Mutability, Ident, Ty, Body),
+    Const(Ident, Generics<Body>, Ty, Body),
     #[custom_arm(
         hir::ItemKind::Fn{ ident, sig, generics, body, .. } => {
             ItemKind::Fn {
@@ -648,6 +648,7 @@ pub enum ItemKind<Body: IsBody> {
     },
     TyAlias(
         Ident,
+        Generics<Body>,
         #[map({
             let s = &State {
                 base: Base {ty_alias_mode: true, ..s.base()},
@@ -659,20 +660,19 @@ pub enum ItemKind<Body: IsBody> {
             x.sinto(s)
         })]
         Ty,
-        Generics<Body>,
     ),
     Enum(
         Ident,
-        EnumDef<Body>,
         Generics<Body>,
+        EnumDef<Body>,
         #[value({
             let tcx = s.base().tcx;
             tcx.repr_options_of_def(s.owner_id().expect_local()).sinto(s)
         })]
         ReprOptions,
     ),
-    Struct(Ident, VariantData, Generics<Body>),
-    Union(Ident, VariantData, Generics<Body>),
+    Struct(Ident, Generics<Body>, VariantData),
+    Union(Ident, Generics<Body>, VariantData),
     Trait(
         IsAuto,
         Safety,
@@ -916,7 +916,7 @@ impl<'tcx, S: BaseState<'tcx>, Body: IsBody> SInto<S, Item<Body>> for hir::Item<
         let name = match self.kind {
             ExternCrate(_, i)
             | Use(_, hir::UseKind::Single(i))
-            | Static(i, ..)
+            | Static(_, i, ..)
             | Const(i, ..)
             | Fn { ident: i, .. }
             | Macro(i, ..)

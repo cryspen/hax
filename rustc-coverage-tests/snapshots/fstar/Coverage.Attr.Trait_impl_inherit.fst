@@ -7,7 +7,7 @@ open FStar.Mul
 Last available AST for this item:
 
 #[path()]#[<cfg>(any(feature = "json"))]#[feature(coverage_attribute)]#[<cfg>(any(feature = "json", feature = "fstar", feature = "fstar-lax", feature =
-"coq"))]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait t_T<Self_>{fn f_f((self: Self)) -> tuple0{{let _: tuple0 = {std::io::stdio::e_print(core::fmt::rt::impl_2__new_const::<generic_value!(todo)>(["default\n"]))};{let _: tuple0 = {Tuple0};Tuple0}}}}
+"coq"))]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait t_T<Self_>{fn f_f((self: Self)) -> tuple0{{let _: tuple0 = {std::io::stdio::e_print(core::fmt::rt::impl_1__new_const::<generic_value!(todo)>(["default\n"]))};{let _: tuple0 = {Tuple0};Tuple0}}}}
 
 Last AST:
 /** print_rust: pitem: not implemented  (item: { Concrete_ident.T.def_id =
@@ -74,7 +74,7 @@ let impl: t_T t_S =
     =
     fun (self: t_S) ->
       let _:Prims.unit =
-        Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
+        Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
               (let list = ["impl S\n"] in
                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                 Rust_primitives.Hax.array_of_list 1 list)

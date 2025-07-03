@@ -544,14 +544,14 @@ impl std::ops::Deref for ItemRef {
 #[cfg(feature = "rustc")]
 impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, GenericArg> for ty::GenericArg<'tcx> {
     fn sinto(&self, s: &S) -> GenericArg {
-        self.unpack().sinto(s)
+        self.kind().sinto(s)
     }
 }
 
 #[cfg(feature = "rustc")]
 impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, Vec<GenericArg>> for ty::GenericArgsRef<'tcx> {
     fn sinto(&self, s: &S) -> Vec<GenericArg> {
-        self.iter().map(|v| v.unpack().sinto(s)).collect()
+        self.iter().map(|v| v.kind().sinto(s)).collect()
     }
 }
 
@@ -1169,7 +1169,7 @@ pub enum Term {
 impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, Term> for ty::Term<'tcx> {
     fn sinto(&self, s: &S) -> Term {
         use ty::TermKind;
-        match self.unpack() {
+        match self.kind() {
             TermKind::Ty(ty) => Term::Ty(ty.sinto(s)),
             TermKind::Const(c) => Term::Const(c.sinto(s)),
         }

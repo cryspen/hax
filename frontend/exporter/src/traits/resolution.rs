@@ -677,7 +677,7 @@ pub fn shallow_resolve_trait_ref<'tcx>(
     use rustc_middle::traits::CodegenObligationError;
     use rustc_middle::ty::TypeVisitableExt;
     use rustc_trait_selection::traits::{
-        Obligation, ObligationCause, ObligationCtxt, SelectionContext, Unimplemented,
+        Obligation, ObligationCause, ObligationCtxt, SelectionContext, SelectionError,
     };
     // Do the initial selection for the obligation. This yields the
     // shallow result we are looking for -- that is, what specific impl.
@@ -693,7 +693,7 @@ pub fn shallow_resolve_trait_ref<'tcx>(
     let selection = match selcx.poly_select(&obligation) {
         Ok(Some(selection)) => selection,
         Ok(None) => return Err(CodegenObligationError::Ambiguity),
-        Err(Unimplemented) => return Err(CodegenObligationError::Unimplemented),
+        Err(SelectionError::Unimplemented) => return Err(CodegenObligationError::Unimplemented),
         Err(_) => return Err(CodegenObligationError::Ambiguity),
     };
 
