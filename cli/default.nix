@@ -82,10 +82,10 @@ in stdenv.mkDerivation {
     makeWrapper ${hax}/bin/cargo-hax $out/bin/cargo-hax \
       --prefix PATH : ${lib.makeBinPath binaries} \
       ${
-        if stdenv.hostPlatform.isDarwin then
-          "--suffix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath [ libz rustc ]}"
-        else
-          ""
+        lib.optionalString stdenv.isDarwin ''
+          --prefix RUSTFLAGS : "-C link-arg=-L${libiconv}/lib" \
+          --suffix DYLD_LIBRARY_PATH : ${lib.makeLibraryPath [ libz rustc ]}
+        ''
       }
   '';
   meta.mainProgram = "cargo-hax";
