@@ -37,6 +37,17 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
             ItemKind::Fn {
                 name,
                 generics: _,
+                body: _,
+                params,
+                safety: _,
+            } if name.is_empty() && params.is_empty() => {
+                // Anonymous const, ignored
+                // Todo: turn it into a proper refactor (see Hax issue #1542)
+                allocator.nil()
+            }
+            ItemKind::Fn {
+                name,
+                generics: _,
                 body,
                 params,
                 safety: _,
