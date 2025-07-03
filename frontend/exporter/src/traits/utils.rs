@@ -27,6 +27,7 @@
 //! benefit of reducing the size of signatures. Moreover, the rules on which bounds are required vs
 //! implied are subtle. We may change this if this proves to be a problem.
 use rustc_hir::def::DefKind;
+use rustc_hir::LangItem;
 use rustc_middle::ty::*;
 use rustc_span::def_id::DefId;
 use rustc_span::{Span, DUMMY_SP};
@@ -92,11 +93,21 @@ pub fn required_predicates<'tcx>(
         predicates.to_mut().insert(0, (self_clause, DUMMY_SP));
     }
     if add_drop {
-        // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or
-        // `Sized`.
-        let drop_trait = tcx.lang_items().drop_trait().unwrap();
-        let sized_trait = tcx.lang_items().sized_trait().unwrap();
-        if def_id != drop_trait && def_id != sized_trait {
+        // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or a
+        // built-in marker trait that we know doesn't need the bound.
+        let lang_item = tcx.as_lang_item(def_id);
+        if !matches!(
+            lang_item,
+            Some(
+                LangItem::Drop
+                    | LangItem::Sized
+                    | LangItem::MetaSized
+                    | LangItem::PointeeSized
+                    | LangItem::DiscriminantKind
+                    | LangItem::PointeeTrait
+            )
+        ) {
+            let drop_trait = tcx.lang_items().drop_trait().unwrap();
             let extra_bounds = tcx
                 .generics_of(def_id)
                 .own_params
