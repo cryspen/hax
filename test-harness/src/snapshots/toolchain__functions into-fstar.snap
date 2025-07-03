@@ -38,7 +38,6 @@ type t_CallableViaDeref = | CallableViaDeref : t_CallableViaDeref
 let impl: Core.Ops.Deref.t_Deref t_CallableViaDeref =
   {
     f_Target = Prims.unit -> bool;
-    f_Target_4695674276362814091 = FStar.Tactics.Typeclasses.solve;
     f_deref_pre = (fun (self: t_CallableViaDeref) -> true);
     f_deref_post = (fun (self: t_CallableViaDeref) (out: (Prims.unit -> bool)) -> true);
     f_deref

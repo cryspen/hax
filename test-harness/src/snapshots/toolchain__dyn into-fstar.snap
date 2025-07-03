@@ -33,7 +33,6 @@ open Core
 open FStar.Mul
 
 class t_Printable (v_Self: Type0) (v_S: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_stringify_pre:v_Self -> Type0;
   f_stringify_post:v_Self -> v_S -> Type0;
   f_stringify:x0: v_Self
