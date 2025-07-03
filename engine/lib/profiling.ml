@@ -1,7 +1,7 @@
 open Prelude
 
 (** Is profiling enabled? *)
-let enabled = ref true
+let enabled = ref false
 
 (** Profiles the function `f`, that operates in a given context over a given quantity of things it is processing. *)
 let profile (type b) (context : Diagnostics.Context.t) (quantity : int)

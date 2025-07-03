@@ -1,0 +1,73 @@
+---
+source: test-harness/src/harness.rs
+expression: snapshot
+info:
+  kind:
+    Translate:
+      backend: lean
+  info:
+    name: literals
+    manifest: literals/Cargo.toml
+    description: ~
+  spec:
+    optional: false
+    broken: false
+    issue_id: ~
+    positive: true
+    snapshot:
+      stderr: true
+      stdout: true
+    include_flag: ~
+    backend_options: ~
+---
+exit = 1
+stderr = """
+warning: unused import: `hax_lib::*`
+ --> literals/src/lib.rs:2:5
+  |
+2 | use hax_lib::*;
+  |     ^^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: `literals` (lib) generated 1 warning (run `cargo fix --lib -p literals` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_RawOrMutPointer: 0.4749ms, memory=168, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: TransformHaxLibInline: 0.3562ms, memory=448, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: Specialize: 0.4749ms, memory=978, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropSizedTrait: 0.2375ms, memory=493, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SimplifyQuestionMarks: 0.3562ms, memory=178, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: AndMutDefsite: 0.67676ms, memory=20510, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReconstructAsserts: 0.3562ms, memory=512, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReconstructForLoops: 0.5936ms, memory=209, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReconstructWhileLoops: 0.3562ms, memory=209, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DirectAndMut: 0.7124ms, memory=1074, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_ArbitraryLhs: 0.1187ms, memory=168, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropBlocks: 0.4749ms, memory=192, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropMatchGuards: 0.3562ms, memory=158, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropReferences: 0.3562ms, memory=161, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: TrivializeAssignLhs: 0.3562ms, memory=158, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: HoistSideEffects: 0.4749ms, memory=184, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: HoistDisjunctivePatterns: 0.2374ms, memory=436, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SimplifyMatchReturn: 0.2375ms, memory=476, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: LocalMutation: 0.3562ms, memory=212, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: RewriteControlFlow: 0.3562ms, memory=476, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropReturnBreakContinue: 0.7124ms, memory=1092, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: FunctionalizeLoops: 0.4749ms, memory=536, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_QuestionMark: 0.1188ms, memory=158, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_AsPattern: 0.1187ms, memory=158, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: TraitsSpecs: 0.2375ms, memory=470, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SimplifyHoisting: 0.2375ms, memory=476, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: NewtypeAsRefinement: 0.3562ms, memory=476, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_TraitItemDefault: 0.1188ms, memory=158, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: BundleCycles: 0.125854ms, memory=80308, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReorderFields: 0.1187ms, memory=27, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SortItems: 1.493627ms, memory=85785, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_not_in_FStar: 0.3562ms, memory=158, 4 items\u001B[0m
+\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: Identity: 0.1187ms, memory=15, 4 items\u001B[0m
+
+thread 'main' panicked at /home/cblaudeau/cryspen/hax/dev/rust-engine/src/lean.rs:415:59:
+not yet implemented
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+\u001B[1m\u001B[91merror\u001B[0m: \u001B[1mhax: hax-engine exited with non-zero code 101\u001B[0m"""
+stdout = ''

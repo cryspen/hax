@@ -49,6 +49,14 @@ From Core Require Import Core.
 
 Definition math_integers (x : t_Int) `{andb (f_gt (x) (impl_Int__e_unsafe_from_str (("0"%string : string)))) (f_lt (x) (impl_Int__e_unsafe_from_str (("16"%string : string)))) = true} : t_u8 :=
   let _ : t_Int := f_lift ((3 : t_usize)) in
+  let e_neg_dec := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_dec := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let e_neg_hex := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_hex := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let e_neg_octal := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_octal := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let e_neg_bin := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_bin := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
   let _ := f_gt (impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string))) (impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string))) in
   let _ := f_lt (x) (x) in
   let _ := f_ge (x) (x) in

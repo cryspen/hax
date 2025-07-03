@@ -140,7 +140,12 @@ let run (options : Types.engine_options) : Types.output =
         | Fstar opts -> run (module Fstar_backend) opts
         | Coq -> run (module Coq_backend) ()
         | Ssprove -> run (module Ssprove_backend) ()
-        | Easycrypt -> run (module Easycrypt_backend) ())
+        | Easycrypt -> run (module Easycrypt_backend) ()
+        | Lean ->
+            failwith
+              "The OCaml hax engine should never be called for lean. The Lean \
+               backend uses the newer rust engine. Please report this issue on \
+               our GitHub repository: https://github.com/cryspen/hax.")
   in
   {
     diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;
@@ -181,34 +186,39 @@ let parse_id_table_node (json : Yojson.Safe.t) :
   in
   (table, value)
 
-let parse_options () =
+let load_table ?(check_version = true) : Yojson.Safe.t =
   let table, json =
     Hax_io.read_json () |> Option.value_exn |> parse_id_table_node
   in
-  let version =
-    try Yojson.Safe.Util.(member "hax_version" json |> to_string)
-    with _ -> "unknown"
-  in
-  if String.equal version Types.hax_version |> not then (
-    prerr_endline
-      [%string
-        {|
+  (if check_version then
+     let version =
+       try Yojson.Safe.Util.(member "hax_version" json |> to_string)
+       with _ -> "unknown"
+     in
+     if String.equal version Types.hax_version |> not then (
+       prerr_endline
+         [%string
+           {|
 The versions of `hax-engine` and of `cargo-hax` are different:
   - `hax-engine` version: %{Types.hax_version}
   - `cargo-hax`  version: %{version}
 
 Please reinstall hax.
 |}];
-    Stdlib.exit 1);
+       Stdlib.exit 1));
   table
   |> List.iter ~f:(fun (id, json) ->
          Hashtbl.add_exn Types.cache_map ~key:id ~data:(`JSON json));
+  json
+
+let parse_options () =
+  let json = load_table ~check_version:true in
   let options = [%of_yojson: Types.engine_options] json in
   Profiling.enabled := options.backend.profile;
   options
 
 (** Entrypoint of the engine. Assumes `Hax_io.init` was called. *)
-let main () =
+let engine () =
   let options = Profiling.profile (Other "parse_options") 1 parse_options in
   Printexc.record_backtrace true;
   let result =
@@ -240,3 +250,41 @@ let main () =
   | Error (exn, bt) ->
       Logs.info (fun m -> m "Exiting Hax engine (with an unexpected failure)");
       Printexc.raise_with_backtrace exn bt
+
+module ExportRustAst = Export_ast.Make (Features.Rust)
+module ExportFStarAst = Export_ast.Make (Fstar_backend.InputLanguage)
+
+(** Entry point for interacting with the Rust hax engine *)
+let driver_for_rust_engine () : unit =
+  let query : Rust_engine_types.query =
+    (* TODO: support for table *)
+    (* let json = load_table ~check_version:false in *)
+    let json = Hax_io.read_json () |> Option.value_exn in
+    [%of_yojson: Rust_engine_types.query] json
+  in
+  Concrete_ident.ImplInfoStore.init
+    (Concrete_ident_generated.impl_infos @ query.impl_infos);
+  match query.kind with
+  | Types.ImportThir { input } ->
+      let imported_items = import_thir_items [] input in
+      let imported_items =
+        (* TODO: this let binding is applying the phases from the F* backend *)
+        Fstar_backend.apply_phases
+          {
+            cli_extension = EmptyStructempty_args_extension;
+            fuel = Int64.zero;
+            ifuel = Int64.zero;
+            interfaces = [];
+            line_width = 80;
+            z3rlimit = Int64.zero;
+          }
+          imported_items
+      in
+      let rust_ast_items =
+        List.concat_map
+          ~f:(fun item -> ExportFStarAst.ditem item)
+          imported_items
+      in
+      let response = Rust_engine_types.ImportThir { output = rust_ast_items } in
+      Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
+      Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)

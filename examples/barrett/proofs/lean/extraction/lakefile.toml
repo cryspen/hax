@@ -1,0 +1,10 @@
+name = "barrett"
+version = "0.1.0"
+defaultTargets = ["barrett"]
+
+[[lean_lib]]
+name = "Lib"
+
+[[lean_exe]]
+name = "barrett"
+root = "barrett"

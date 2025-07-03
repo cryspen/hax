@@ -5,7 +5,7 @@ let
   is-webapp-static-asset = path:
     builtins.match ".*(script[.]js|index[.]html)" path != null;
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv libz.dev ];
-  binaries = [ hax hax-engine.bin rustc gcc ] ++ buildInputs;
+  binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
     version = "0.0.1";
     src = lib.cleanSourceWith {
@@ -39,6 +39,12 @@ let
   hax_with_artifacts = craneLib.buildPackage (commonArgs // {
     inherit cargoArtifacts pname;
     doInstallCargoArtifacts = true;
+  });
+  hax_rust_engine = craneLib.buildPackage (commonArgs // {
+    inherit cargoArtifacts;
+    buildInputs = buildInputs ++ [ makeWrapper ];
+    pname = "hax-rust-engine";
+    cargoExtraArgs = "--manifest-path rust-engine/Cargo.toml --locked";
   });
   docs = craneLib.cargoDoc (commonArgs // {
     # preBuildPhases = [ "addRustcDocs" ];

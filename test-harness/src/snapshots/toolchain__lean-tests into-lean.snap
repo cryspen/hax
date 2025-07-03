@@ -1,0 +1,57 @@
+---
+source: test-harness/src/harness.rs
+expression: snapshot
+info:
+  kind:
+    Translate:
+      backend: lean
+  info:
+    name: lean-tests
+    manifest: lean-tests/Cargo.toml
+    description: ~
+  spec:
+    optional: false
+    broken: false
+    issue_id: ~
+    positive: true
+    snapshot:
+      stderr: true
+      stdout: true
+    include_flag: ~
+    backend_options: ~
+---
+exit = 0
+stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
+
+[stdout]
+diagnostics = []
+
+[stdout.files]
+"lean_tests.lean" = '''
+-- Experimental lean backend for Hax
+-- Comment the following line to not import the prelude (requires the Lib.lean file) : 
+import Lib
+
+
+
+-- unimplemented yet
+
+def FORTYTWO  : usize := 42
+
+def returns42 (_ : hax_Tuple0) : usize := FORTYTWO
+
+def add_two_numbers (x : usize) (y : usize) : usize := (hax_machine_int_add x y)
+
+def letBinding (x : usize) (y : usize) : usize :=
+  let useless := (.constr_hax_Tuple0 : hax_Tuple0);
+  let result1 := (hax_machine_int_add x y);
+  let result2 := (hax_machine_int_add result1 2);
+  (hax_machine_int_add result2 1)
+
+def closure (_ : hax_Tuple0) : i32 :=
+  let x := 41;
+  let f := (fun y => (hax_machine_int_add y x));
+  (ops_function_Fn_call f
+    (.constr_hax_Tuple1 {hax_Tuple1_Tuple0 := 1} : (hax_Tuple1 i32)))
+
+abbrev UsizeAlias := usize'''

@@ -12,6 +12,7 @@ members = [
         "side-effects",
         "mut-ref-functionalization",
         "generics",
+        "lean-tests",
         "loops",
         "even",
         "odd",

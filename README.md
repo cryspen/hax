@@ -122,7 +122,7 @@ Quicklinks:
 ## Hacking on Hax
 The documentation of the internal crate of hax and its engine can be
 found [here for the engine](https://hax.cryspen.com/engine/index.html)
-and [here for the frontent](https://hax.cryspen.com/frontend/index.html).
+and [here for the frontend](https://hax.cryspen.com/frontend/index.html).
 
 ### Edit the sources (Nix)
 

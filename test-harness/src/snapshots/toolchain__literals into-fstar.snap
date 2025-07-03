@@ -38,6 +38,14 @@ let math_integers (x: Hax_lib.Int.t_Int)
       (requires x > (0 <: Hax_lib.Int.t_Int) && x < (16 <: Hax_lib.Int.t_Int))
       (fun _ -> Prims.l_True) =
   let _:Hax_lib.Int.t_Int = Rust_primitives.Hax.Int.from_machine (mk_usize 3) in
+  let e_neg_dec:Hax_lib.Int.t_Int = (-340282366920938463463374607431768211455000) in
+  let e_pos_dec:Hax_lib.Int.t_Int = 340282366920938463463374607431768211455000 in
+  let e_neg_hex:Hax_lib.Int.t_Int = (-340282366920938463463374607431768211455000) in
+  let e_pos_hex:Hax_lib.Int.t_Int = 340282366920938463463374607431768211455000 in
+  let e_neg_octal:Hax_lib.Int.t_Int = (-340282366920938463463374607431768211455000) in
+  let e_pos_octal:Hax_lib.Int.t_Int = 340282366920938463463374607431768211455000 in
+  let e_neg_bin:Hax_lib.Int.t_Int = (-340282366920938463463374607431768211455000) in
+  let e_pos_bin:Hax_lib.Int.t_Int = 340282366920938463463374607431768211455000 in
   let _:bool =
     ((-340282366920938463463374607431768211455000) <: Hax_lib.Int.t_Int) >
     (340282366920938463463374607431768211455000 <: Hax_lib.Int.t_Int)

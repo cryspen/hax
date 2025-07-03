@@ -21,9 +21,11 @@ impl CommandHaxExt for Command {
         use std::path::PathBuf;
         struct Paths {
             engine: PathBuf,
+            rust_engine: PathBuf,
             cargo_hax: PathBuf,
         }
         const CARGO_HAX: &str = "cargo-hax";
+        const HAX_RUST_ENGINE: &str = "hax-rust-engine";
         lazy_static! {
             static ref PATHS: Option<Paths> = {
                 if let "yes" | "y" | "true" | "1" = std::env::var("CARGO_TESTS_ASSUME_BUILT").unwrap_or("".into()).to_lowercase().as_str() {
@@ -52,6 +54,12 @@ impl CommandHaxExt for Command {
                         .status()
                         .unwrap()
                         .success());
+                assert!(Command::new("cargo")
+                        .args(&["build"])
+                        .current_dir(&root.join("rust-engine"))
+                        .status()
+                        .unwrap()
+                        .success());
                 assert!(Command::new("dune")
                         .args(&["build"])
                         .args(dune_jobs_args())
@@ -61,8 +69,10 @@ impl CommandHaxExt for Command {
                         .status()
                         .unwrap()
                         .success());
+                let rust_engine = cargo_bin(HAX_RUST_ENGINE);
                 Some(Paths {
                     cargo_hax,
+                    rust_engine,
                     engine: engine_dir.join("_build/install/default/bin/hax-engine"),
                 })
             };
@@ -71,6 +81,7 @@ impl CommandHaxExt for Command {
             Some(paths) => {
                 let mut cmd = Command::new(paths.cargo_hax.clone());
                 cmd.env("HAX_ENGINE_BINARY", paths.engine.clone());
+                cmd.env("HAX_RUST_ENGINE_BINARY", paths.rust_engine.clone());
                 cmd
             }
             None => Command::new(CARGO_HAX),
