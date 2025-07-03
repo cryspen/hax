@@ -31,10 +31,7 @@ fn lean_backend(items: Vec<Item>) {
         .append(allocator.hardline())
         .append(allocator.hardline());
 
-    let item_docs: DocBuilder<_, Span> = header.append(allocator.intersperse(
-        items.iter(),
-        allocator.hardline().append(allocator.hardline()),
-    ));
+    let item_docs: DocBuilder<_, Span> = header.append(allocator.concat(items.iter()));
 
     hax_rust_engine::hax_io::write(&hax_types::engine_api::protocol::FromEngine::File(File {
         path: krate + ".lean",
