@@ -169,10 +169,27 @@ pub fn implied_predicates<'tcx>(
     }
 }
 
+/// Normalize a value.
+pub fn normalize<'tcx, T>(tcx: TyCtxt<'tcx>, typing_env: TypingEnv<'tcx>, value: T) -> T
+where
+    T: TypeFoldable<TyCtxt<'tcx>> + Copy,
+{
+    use rustc_infer::infer::TyCtxtInferExt;
+    use rustc_middle::traits::ObligationCause;
+    use rustc_trait_selection::traits::query::normalize::QueryNormalizeExt;
+    let (infcx, param_env) = tcx.infer_ctxt().build_with_typing_env(typing_env);
+    infcx
+        .at(&ObligationCause::dummy(), param_env)
+        .query_normalize(value)
+        // We ignore the generated outlives relations. Unsure what we should do with them.
+        .map(|x| x.value)
+        .unwrap_or(value)
+}
+
 /// Erase free regions from the given value. Largely copied from `tcx.erase_regions`, but also
 /// erases bound regions that are bound outside `value`, so we can call this function inside a
 /// `Binder`.
-fn erase_free_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
+pub fn erase_free_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
 where
     T: TypeFoldable<TyCtxt<'tcx>>,
 {

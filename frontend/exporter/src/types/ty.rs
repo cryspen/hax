@@ -804,7 +804,17 @@ impl Alias {
         alias_ty: &ty::AliasTy<'tcx>,
     ) -> TyKind {
         let tcx = s.base().tcx;
+        let typing_env = s.typing_env();
         use rustc_type_ir::AliasTyKind as RustAliasKind;
+
+        // Try to normalize the alias first.
+        let ty = ty::Ty::new_alias(tcx, *alias_kind, *alias_ty);
+        let ty = crate::traits::normalize(tcx, typing_env, ty);
+        let ty::Alias(alias_kind, alias_ty) = ty.kind() else {
+            let ty: Ty = ty.sinto(s);
+            return ty.kind().clone();
+        };
+
         let kind = match alias_kind {
             RustAliasKind::Projection => {
                 let trait_ref = alias_ty.trait_ref(tcx);
@@ -820,7 +830,7 @@ impl Alias {
                 // yet we dont have a binder around (could even be several). Binding this correctly
                 // is therefore difficult. Since our trait resolution ignores lifetimes anyway, we
                 // just erase them. See also https://github.com/hacspec/hax/issues/747.
-                let trait_ref = crate::traits::erase_and_norm(tcx, s.typing_env(), trait_ref);
+                let trait_ref = crate::traits::erase_free_regions(tcx, trait_ref);
                 AliasKind::Projection {
                     assoc_item: tcx.associated_item(alias_ty.def_id).sinto(s),
                     impl_expr: solve_trait(s, ty::Binder::dummy(trait_ref)),

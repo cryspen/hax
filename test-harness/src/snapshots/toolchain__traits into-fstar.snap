@@ -666,11 +666,15 @@ let iter_option (#v_T: Type0) (x: Core.Option.t_Option v_T) : Core.Option.t_Into
     (Core.Option.impl__as_ref #v_T x <: Core.Option.t_Option v_T)
 
 let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
-  let iter:_ = iter_option #bool (Core.Option.Option_Some false <: Core.Option.t_Option bool) in
-  let tmp0, out:(_ & Core.Option.t_Option bool) =
-    Core.Iter.Traits.Iterator.f_next #_ #FStar.Tactics.Typeclasses.solve iter
+  let iter:Core.Option.t_IntoIter bool =
+    iter_option #bool (Core.Option.Option_Some false <: Core.Option.t_Option bool)
   in
-  let iter:_ = tmp0 in
+  let tmp0, out:(Core.Option.t_IntoIter bool & Core.Option.t_Option bool) =
+    Core.Iter.Traits.Iterator.f_next #(Core.Option.t_IntoIter bool)
+      #FStar.Tactics.Typeclasses.solve
+      iter
+  in
+  let iter:Core.Option.t_IntoIter bool = tmp0 in
   let _:Core.Option.t_Option bool = out in
   ()
 
