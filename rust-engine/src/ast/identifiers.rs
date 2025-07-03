@@ -102,6 +102,11 @@ pub mod global_id {
             }
         }
 
+        /// Returns true if the GlobalId is actually empty (reduced to "_")
+        pub fn is_empty(&self) -> bool {
+            self.to_debug_string() == "_".to_string()
+        }
+
         /// Raw printing of identifier separated by underscore. Used for testing
         pub fn to_debug_string(&self) -> String {
             match self {
