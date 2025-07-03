@@ -140,7 +140,7 @@ pub enum ImplExprAtom {
         /// FnOnce`.
         impl_exprs: Vec<ImplExpr>,
         /// The values of the associated types for this trait.
-        types: Vec<(DefId, Ty)>,
+        types: Vec<(DefId, Ty, Vec<ImplExpr>)>,
     },
     /// An error happened while resolving traits.
     Error(String),

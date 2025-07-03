@@ -89,7 +89,7 @@ pub enum ImplExprAtom<'tcx> {
         /// FnOnce`.
         impl_exprs: Vec<ImplExpr<'tcx>>,
         /// The values of the associated types for this trait.
-        types: Vec<(DefId, Ty<'tcx>)>,
+        types: Vec<(DefId, Ty<'tcx>, Vec<ImplExpr<'tcx>>)>,
     },
     /// An error happened while resolving traits.
     Error(String),
@@ -495,7 +495,14 @@ impl<'tcx> PredicateSearcher<'tcx> {
                                 return None;
                             }
                         }
-                        Some((assoc.def_id, ty))
+                        let impl_exprs = self
+                            .resolve_item_implied_predicates(
+                                assoc.def_id,
+                                erased_tref.skip_binder().args,
+                                warn,
+                            )
+                            .ok()?;
+                        Some((assoc.def_id, ty, impl_exprs))
                     })
                     .collect();
                 ImplExprAtom::Builtin {
