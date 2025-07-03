@@ -544,14 +544,14 @@ impl std::ops::Deref for ItemRef {
 #[cfg(feature = "rustc")]
 impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, GenericArg> for ty::GenericArg<'tcx> {
     fn sinto(&self, s: &S) -> GenericArg {
-        self.unpack().sinto(s)
+        self.kind().sinto(s)
     }
 }
 
 #[cfg(feature = "rustc")]
 impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, Vec<GenericArg>> for ty::GenericArgsRef<'tcx> {
     fn sinto(&self, s: &S) -> Vec<GenericArg> {
-        self.iter().map(|v| v.unpack().sinto(s)).collect()
+        self.iter().map(|v| v.kind().sinto(s)).collect()
     }
 }
 
@@ -804,7 +804,17 @@ impl Alias {
         alias_ty: &ty::AliasTy<'tcx>,
     ) -> TyKind {
         let tcx = s.base().tcx;
+        let typing_env = s.typing_env();
         use rustc_type_ir::AliasTyKind as RustAliasKind;
+
+        // Try to normalize the alias first.
+        let ty = ty::Ty::new_alias(tcx, *alias_kind, *alias_ty);
+        let ty = crate::traits::normalize(tcx, typing_env, ty);
+        let ty::Alias(alias_kind, alias_ty) = ty.kind() else {
+            let ty: Ty = ty.sinto(s);
+            return ty.kind().clone();
+        };
+
         let kind = match alias_kind {
             RustAliasKind::Projection => {
                 let trait_ref = alias_ty.trait_ref(tcx);
@@ -820,7 +830,7 @@ impl Alias {
                 // yet we dont have a binder around (could even be several). Binding this correctly
                 // is therefore difficult. Since our trait resolution ignores lifetimes anyway, we
                 // just erase them. See also https://github.com/hacspec/hax/issues/747.
-                let trait_ref = crate::traits::erase_and_norm(tcx, s.typing_env(), trait_ref);
+                let trait_ref = crate::traits::erase_free_regions(tcx, trait_ref);
                 AliasKind::Projection {
                     assoc_item: tcx.associated_item(alias_ty.def_id).sinto(s),
                     impl_expr: solve_trait(s, ty::Binder::dummy(trait_ref)),
@@ -1169,7 +1179,7 @@ pub enum Term {
 impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, Term> for ty::Term<'tcx> {
     fn sinto(&self, s: &S) -> Term {
         use ty::TermKind;
-        match self.unpack() {
+        match self.kind() {
             TermKind::Ty(ty) => Term::Ty(ty.sinto(s)),
             TermKind::Const(c) => Term::Const(c.sinto(s)),
         }
@@ -1335,6 +1345,17 @@ impl<T> Binder<T> {
 pub struct GenericPredicates {
     #[value(self.predicates.iter().map(|x| x.sinto(s)).collect())]
     pub predicates: Vec<(Clause, Span)>,
+}
+
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, GenericPredicates>
+    for crate::traits::Predicates<'tcx>
+{
+    fn sinto(&self, s: &S) -> GenericPredicates {
+        GenericPredicates {
+            predicates: self.as_ref().sinto(s),
+        }
+    }
 }
 
 #[cfg(feature = "rustc")]
