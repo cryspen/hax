@@ -14,6 +14,7 @@ pub mod diagnostics;
 pub mod fragment;
 pub mod identifiers;
 pub mod literals;
+pub mod ref_kind;
 pub mod resugared;
 pub mod span;
 pub mod visitors;
@@ -77,6 +78,7 @@ pub struct Ty(pub Box<TyKind>);
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
 #[visitable]
+#[derive(RefEnum)]
 pub enum TyKind {
     /// A primitive type.
     ///
@@ -827,6 +829,7 @@ pub struct LoopState {
 /// Describes the shape of an expression.
 #[derive_group_for_ast]
 #[visitable]
+// #[derive(RefEnum)]
 pub enum ExprKind {
     /// If expression.
     ///
@@ -1005,6 +1008,7 @@ pub enum ExprKind {
         value: Expr,
         /// What loop shall we break? By default, the parent enclosing loop.
         label: Option<Symbol>,
+
         /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
         /// `state` is `Some(_)`. This carries the updated state for the loop.
         state: Option<Expr>,
@@ -1520,6 +1524,17 @@ pub mod traits {
                     &self.kind
                 }
             })*
+            $(impl std::ops::Deref for $ty {
+                type Target = $kind;
+                fn deref(&self) -> &Self::Target {
+                    &self.kind
+                }
+            })*
+            $(impl std::ops::DerefMut for $ty {
+                fn deref_mut(&mut self) -> &mut Self::Target {
+                    &mut self.kind
+                }
+            })*
         };
     }
 
@@ -1537,6 +1552,18 @@ pub mod traits {
         Item => ItemKind, Expr => ExprKind, Pat => PatKind, Guard => GuardKind,
         GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind
     );
+
+    impl std::ops::Deref for Ty {
+        type Target = TyKind;
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
+    impl std::ops::DerefMut for Ty {
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.0
+        }
+    }
 
     impl HasSpan for Attribute {
         fn span(&self) -> Span {

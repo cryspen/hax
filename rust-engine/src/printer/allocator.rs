@@ -1,6 +1,7 @@
 //! This module provides a custom [`pretty`] allocator, indexed by a printer,
 //! enabling multiple printers to cohexist and to implement the type `Pretty`.
 
+use super::Annotation;
 use crate::ast::span::Span;
 use pretty::*;
 
@@ -44,44 +45,44 @@ impl<'a, P, A: 'a> DocAllocator<'a, A> for Allocator<P> {
     }
 }
 
-/// A helper type used to manually implement `Pretty` for types that carry spans.
-///
-/// By default, we implement the `Pretty` trait for all span-carrying
-/// types. These implementations annotate spans in the generated document, allowing
-/// source spans to be produced during pretty-printing. However, this default behavior
-/// does not provide access to the underlying data, which is sometimes necessary
-/// for custom printing logic.
-///
-/// For example, when printing an item, it's often useful to access its attributes.
-/// To support this, the default `Pretty` implementations delegate to `Manual<Item>`,
-/// which allows printers to access the inner value directly.
-///
-/// In practice, calling `expr.pretty(..)` will internally use
-/// `Manual(expr).pretty(..)`, enabling more flexible control over printing behavior.
-struct Manual<T>(T);
+// /// A helper type used to manually implement `Pretty` for types that carry spans.
+// ///
+// /// By default, we implement the `Pretty` trait for all span-carrying
+// /// types. These implementations annotate spans in the generated document, allowing
+// /// source spans to be produced during pretty-printing. However, this default behavior
+// /// does not provide access to the underlying data, which is sometimes necessary
+// /// for custom printing logic.
+// ///
+// /// For example, when printing an item, it's often useful to access its attributes.
+// /// To support this, the default `Pretty` implementations delegate to `Manual<Item>`,
+// /// which allows printers to access the inner value directly.
+// ///
+// /// In practice, calling `expr.pretty(..)` will internally use
+// /// `Manual(expr).pretty(..)`, enabling more flexible control over printing behavior.
+// struct Manual<T>(T);
 
-use crate::ast::*;
-macro_rules! impl_pretty_kind_meta {
-        ($($type:ty),*) => {
-            $(impl<'a, 'b, P> Pretty<'a, Allocator<P>, Span> for &'b $type
-            where
-                Manual<&'b $type>: Pretty<'a, Allocator<P>, Span>,
-            {
-                fn pretty(self, allocator: &'a Allocator<P>) -> DocBuilder<'a, Allocator<P>, Span> {
-                    let doc = Manual(self).pretty(allocator);
-                    doc.annotate(self.span())
-                }
-            })*
-        };
-    }
-impl_pretty_kind_meta!(
-    Item,
-    Expr,
-    Pat,
-    Guard,
-    Arm,
-    ImplItem,
-    TraitItem,
-    GenericParam,
-    Attribute
-);
+// use crate::ast::*;
+// macro_rules! impl_pretty_kind_meta {
+//         ($($type:ty),*) => {
+//             $(impl<'a, 'b, P> Pretty<'a, Allocator<P>, Annotation> for &'b $type
+//             where
+//                 Manual<&'b $type>: Pretty<'a, Allocator<P>, Annotation>,
+//             {
+//                 fn pretty(self, allocator: &'a Allocator<P>) -> DocBuilder<'a, Allocator<P>, Annotation> {
+//                     let doc = Manual(self).pretty(allocator);
+//                     doc.annotate(Annotation(self.span()))
+//                 }
+//             })*
+//         };
+//     }
+// impl_pretty_kind_meta!(
+//     Item,
+//     Expr,
+//     Pat,
+//     Guard,
+//     Arm,
+//     ImplItem,
+//     TraitItem,
+//     GenericParam,
+//     Attribute
+// );

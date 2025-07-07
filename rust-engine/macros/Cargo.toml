@@ -8,6 +8,7 @@ edition = "2024"
 proc-macro = true
 
 [dependencies]
+convert_case = "0.8.0"
 proc-macro2.workspace = true
 quote.workspace = true
-syn.workspace = true
+syn = { workspace = true, features = ["parsing", "visit-mut"] }

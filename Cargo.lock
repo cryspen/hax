@@ -117,6 +117,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
 
 [[package]]
+name = "bitstream-io"
+version = "4.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f30faa215941f112abe3f87ae44889e4596260602a1a2b82837c7860fdd56a0"
+dependencies = [
+ "core2",
+]
+
+[[package]]
 name = "bstr"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -293,6 +302,24 @@ dependencies = [
  "lazy_static",
  "libc",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "convert_case"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "baaaa0ecca5b51987b9423ccdc971514dd8b0bb7b4060b983d3664dad3f1f89f"
+dependencies = [
+ "unicode-segmentation",
+]
+
+[[package]]
+name = "core2"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b49ba7ef1ad6107f8824dbe97de947cbaac53c44e7f9756a1fba0d37c1eec505"
+dependencies = [
+ "memchr",
 ]
 
 [[package]]
@@ -587,6 +614,7 @@ dependencies = [
 name = "hax-rust-engine"
 version = "0.3.1"
 dependencies = [
+ "bitstream-io",
  "hax-frontend-exporter",
  "hax-rust-engine-macros",
  "hax-types",
@@ -613,6 +641,7 @@ dependencies = [
 name = "hax-rust-engine-macros"
 version = "0.1.0"
 dependencies = [
+ "convert_case",
  "proc-macro2",
  "quote",
  "syn 1.0.109",

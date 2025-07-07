@@ -7,6 +7,8 @@
 //!    a simple `use derive_group_for_ast_base as derive_group_for_ast` can change what is to be
 //!    derived without any attribute manipulation.
 
+mod ref_enum;
+
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
@@ -71,4 +73,9 @@ pub fn derive_group_for_ast_base(_attr: TokenStream, item: TokenStream) -> Token
 #[proc_macro_attribute]
 pub fn visitable(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
+}
+
+#[proc_macro_derive(RefEnum)]
+pub fn derive_ref_enum(input: TokenStream) -> TokenStream {
+    ref_enum::derive_ref_enum(input)
 }

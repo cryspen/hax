@@ -2,6 +2,7 @@ open Hax_engine
 open Base
 open Stdio
 open Utils
+module _ = Hax_engine.Import_ast
 
 let setup_logs (options : Types.engine_options) =
   let level : Logs.level option =
