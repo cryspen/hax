@@ -67,3 +67,5 @@ assume val impl_2__resize #t (#[(Tactics.exact (`()))]alloc:unit)  (v: t_Vec t a
 assume val impl_1__remove #t (#[(Tactics.exact (`()))]alloc:unit)  (v: t_Vec t alloc) (index: usize): t_Vec t alloc & t
 
 assume val impl_1__clear #t (#[(Tactics.exact (`()))]alloc:unit)  (v: t_Vec t alloc): t_Vec t alloc
+
+assume val impl_1__append #t (#[(Tactics.exact (`()))]alloc:unit)  (v v': t_Vec t alloc): t_Vec t alloc
