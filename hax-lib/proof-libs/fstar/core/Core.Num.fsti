@@ -133,7 +133,7 @@ val impl_u32__to_be_bytes: u32 -> t_Array u8 (sz 4)
 val impl_u32__rotate_right: u32 -> u32 -> u32
 
 
-val impl_u64__rotate_left: u32 -> u32 -> u32
+val impl_u64__rotate_left: u64 -> u32 -> u64
 val impl_u64__from_le_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__from_be_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__to_le_bytes: u64 -> t_Array u8 (sz 8)
