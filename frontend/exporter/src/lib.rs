@@ -1,6 +1,5 @@
 #![allow(rustdoc::private_intra_doc_links)]
 #![cfg_attr(feature = "rustc", feature(if_let_guard))]
-#![cfg_attr(feature = "rustc", feature(let_chains))]
 #![cfg_attr(feature = "rustc", feature(macro_metavar_expr))]
 #![cfg_attr(feature = "rustc", feature(rustc_private))]
 #![cfg_attr(feature = "rustc", feature(sized_hierarchy))]

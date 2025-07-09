@@ -1051,8 +1051,8 @@ pub enum StrStyle {
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum LitKind {
     Str(Symbol, StrStyle),
-    ByteStr(Vec<u8>, StrStyle),
-    CStr(Vec<u8>, StrStyle),
+    ByteStr(ByteSymbol, StrStyle),
+    CStr(ByteSymbol, StrStyle),
     Byte(u8),
     Char(char),
     Int(

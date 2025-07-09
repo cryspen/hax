@@ -1101,8 +1101,6 @@ end) : EXPR = struct
         match non_traits with
         | [] -> TDyn { witness = W.dyn; goals }
         | _ -> assertion_failure [ span ] "type Dyn with non trait predicate")
-    | Dynamic (_, _, DynStar) ->
-        unimplemented ~issue_id:931 [ span ] "type DynStar"
     | Coroutine _ ->
         unimplemented ~issue_id:924 [ span ]
           "Got type `Coroutine`: coroutines are not supported by hax"

@@ -94,22 +94,22 @@ pub struct ExistentialProjection {
 #[args(<S>, from: ty::DynKind, state: S as _s)]
 pub enum DynKind {
     Dyn,
-    DynStar,
 }
 
 /// Reflects [`ty::BoundTyKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundTyKind, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundTyKind, state: S as s)]
 pub enum BoundTyKind {
     Anon,
+    #[custom_arm(&FROM_TYPE::Param(def_id) => TO_TYPE::Param(def_id.sinto(s), s.base().tcx.item_name(def_id).sinto(s)),)]
     Param(DefId, Symbol),
 }
 
 /// Reflects [`ty::BoundTy`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundTy, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundTy, state: S as s)]
 pub struct BoundTy {
     pub var: BoundVar,
     pub kind: BoundTyKind,
@@ -120,9 +120,11 @@ sinto_as_usize!(rustc_middle::ty, BoundVar);
 /// Reflects [`ty::BoundRegionKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundRegionKind, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundRegionKind, state: S as s)]
 pub enum BoundRegionKind {
     Anon,
+    NamedAnon(Symbol),
+    #[custom_arm(&FROM_TYPE::Named(def_id) => TO_TYPE::Named(def_id.sinto(s), s.base().tcx.item_name(def_id).sinto(s)),)]
     Named(DefId, Symbol),
     ClosureEnv,
 }
@@ -130,7 +132,7 @@ pub enum BoundRegionKind {
 /// Reflects [`ty::BoundRegion`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundRegion, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundRegion, state: S as s)]
 pub struct BoundRegion {
     pub var: BoundVar,
     pub kind: BoundRegionKind,
@@ -370,7 +372,7 @@ impl VariantDef {
 /// Reflects [`ty::EarlyParamRegion`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::EarlyParamRegion, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::EarlyParamRegion, state: S as s)]
 pub struct EarlyParamRegion {
     pub index: u32,
     pub name: Symbol,
@@ -379,7 +381,7 @@ pub struct EarlyParamRegion {
 /// Reflects [`ty::LateParamRegion`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::LateParamRegion, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::LateParamRegion, state: S as s)]
 pub struct LateParamRegion {
     pub scope: DefId,
     pub kind: LateParamRegionKind,
@@ -388,9 +390,11 @@ pub struct LateParamRegion {
 /// Reflects [`ty::LateParamRegionKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::LateParamRegionKind, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::LateParamRegionKind, state: S as s)]
 pub enum LateParamRegionKind {
     Anon(u32),
+    NamedAnon(u32, Symbol),
+    #[custom_arm(&FROM_TYPE::Named(def_id) => TO_TYPE::Named(def_id.sinto(s), s.base().tcx.item_name(def_id).sinto(s)),)]
     Named(DefId, Symbol),
     ClosureEnv,
 }
@@ -1078,7 +1082,6 @@ pub enum PointerCoercion {
     ClosureFnPointer(Safety),
     MutToConstPointer,
     ArrayToPointer,
-    DynStar,
     Unsize,
 }
 
