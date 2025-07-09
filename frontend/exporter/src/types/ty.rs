@@ -709,6 +709,18 @@ impl<S, U, T: SInto<S, U>> SInto<S, Vec<U>> for ty::List<T> {
     }
 }
 
+/// Reflects [`ty::Variance`]
+#[derive(AdtInto)]
+#[args(<S>, from: ty::Variance, state: S as _s)]
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema)]
+pub enum Variance {
+    Covariant,
+    Invariant,
+    Contravariant,
+    Bivariant,
+}
+
 /// Reflects [`ty::GenericParamDef`]
 #[derive(AdtInto)]
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::GenericParamDef, state: S as s)]
@@ -730,6 +742,19 @@ pub struct GenericParamDef {
         }
     )]
     pub kind: GenericParamDefKind,
+    /// Variance of this type parameter, if sensible.
+    #[value({
+        use rustc_hir::def::DefKind::*;
+        let tcx = s.base().tcx;
+        let parent = tcx.parent(self.def_id);
+        match tcx.def_kind(parent) {
+            Fn | AssocFn | Enum | Struct | Union | Ctor(..) | OpaqueTy => {
+                Some(tcx.variances_of(parent)[self.index as usize].sinto(s))
+            }
+            _ => None
+        }
+    })]
+    pub variance: Option<Variance>,
 }
 
 /// Reflects [`ty::GenericParamDefKind`]
@@ -966,18 +991,6 @@ pub enum TyKind {
     Error,
     #[todo]
     Todo(String),
-}
-
-/// Reflects [`ty::Variance`]
-#[derive(AdtInto)]
-#[args(<S>, from: ty::Variance, state: S as _s)]
-#[derive_group(Serializers)]
-#[derive(Clone, Debug, JsonSchema)]
-pub enum Variance {
-    Covariant,
-    Invariant,
-    Contravariant,
-    Bivariant,
 }
 
 /// Reflects [`ty::CanonicalUserTypeAnnotation`]
