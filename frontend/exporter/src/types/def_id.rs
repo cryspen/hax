@@ -21,11 +21,20 @@ use crate::{AdtInto, JsonSchema};
 use {rustc_hir as hir, rustc_hir::def_id::DefId as RDefId, rustc_middle::ty};
 
 pub type Symbol = String;
+#[cfg(not(feature = "extract_names_mode"))]
+pub type ByteSymbol = Vec<u8>;
 
 #[cfg(all(not(feature = "extract_names_mode"), feature = "rustc"))]
 impl<'t, S> SInto<S, Symbol> for rustc_span::symbol::Symbol {
     fn sinto(&self, _s: &S) -> Symbol {
         self.to_ident_string()
+    }
+}
+
+#[cfg(all(not(feature = "extract_names_mode"), feature = "rustc"))]
+impl<'t, S> SInto<S, ByteSymbol> for rustc_span::symbol::ByteSymbol {
+    fn sinto(&self, _s: &S) -> ByteSymbol {
+        self.as_byte_str().to_owned()
     }
 }
 

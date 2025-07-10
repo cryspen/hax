@@ -1,10 +1,10 @@
 [package]
 name = "hax-frontend-exporter"
+edition = "2024"
 version.workspace = true
 authors.workspace = true
 license.workspace = true
 homepage.workspace = true
-edition.workspace = true
 repository.workspace = true
 readme.workspace = true
 description = "Provides mirrors of the algebraic data types used in the Rust compilers, removing indirections and inlining various pieces of information."
