@@ -189,7 +189,6 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             TyKind::Primitive(primitive_ty) => primitive_ty.pretty(allocator),
-            TyKind::Tuple(items) => allocator.intersperse(items, allocator.reflow(" * ")),
             TyKind::App { head, args } => {
                 if args.len() == 0 {
                     head.pretty(allocator)
@@ -443,7 +442,6 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 scrutinee: _,
                 arms: _,
             } => print_todo!(allocator),
-            ExprKind::Tuple(_exprs) => print_todo!(allocator),
             ExprKind::Borrow {
                 mutable: _,
                 inner: _,
@@ -452,21 +450,19 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 mutable: _,
                 inner: _,
             } => print_todo!(allocator),
-            ExprKind::Deref(_expr) => print_todo!(allocator),
-            ExprKind::Let { lhs, rhs, body } => docs![
-                allocator,
-                "let ",
-                lhs,
-                " ←",
-                allocator.softline(),
-                docs![allocator, "pure", allocator.line(), rhs]
-                    .group()
-                    .nest(INDENT),
-                ";",
-                allocator.line(),
-                body,
-            ]
-            .group(),
+            ExprKind::Let { lhs, rhs, body } => {
+                docs![
+                    allocator,
+                    "let ",
+                    lhs,
+                    " :=",
+                    allocator.softline(),
+                    docs![allocator, rhs].group(),
+                    ";",
+                    allocator.line(),
+                    body,
+                ]
+            }
             ExprKind::GlobalId(global_id) => global_id.pretty(allocator),
             ExprKind::LocalId(local_id) => local_id.pretty(allocator),
             ExprKind::Ascription { e, ty } => {
@@ -486,9 +482,13 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 control_flow: _,
                 label: _,
             } => print_todo!(allocator),
-            ExprKind::Break { value: _, label: _ } => print_todo!(allocator),
+            ExprKind::Break {
+                value: _,
+                label: _,
+                state: _,
+            } => print_todo!(allocator),
             ExprKind::Return { value: _ } => print_todo!(allocator),
-            ExprKind::Continue { label: _ } => print_todo!(allocator),
+            ExprKind::Continue { label: _, state: _ } => print_todo!(allocator),
             ExprKind::Closure {
                 params,
                 body,
