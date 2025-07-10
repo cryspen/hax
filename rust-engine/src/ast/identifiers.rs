@@ -124,58 +124,83 @@ pub mod global_id {
         Projector(ConcreteOrTupleId),
     }
 
-    impl GlobalId {
-        /// Extracts the Crate info
-        pub fn krate(&self) -> String {
+    impl ConcreteId {
+        /// Extracts the crate name of a concrete identifier
+        fn krate(&self) -> String {
+            self.def_id.def_id.krate.clone()
+        }
+        /// Prints a debug string
+        fn to_debug_string(&self) -> String {
+            self.def_id
+                .def_id
+                .clone()
+                .path
+                .into_iter()
+                .map(|def| match def.clone().data {
+                    hax_frontend_exporter::DefPathItem::ValueNs(s)
+                    | hax_frontend_exporter::DefPathItem::MacroNs(s)
+                    | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
+                    hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
+                    other => unimplemented!("{other:?}"),
+                })
+                .collect::<Vec<String>>()
+                .join("_")
+        }
+    }
+
+    impl ConcreteOrTupleId {
+        /// Extracts a concrete ident out of `&self` if possible
+        fn expect_concrete_ident(&self) -> Option<&ConcreteId> {
             match self {
-                GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
-                    concrete_id.def_id.def_id.krate.clone()
-                }
+                ConcreteOrTupleId::Tuple(_) => None,
+                ConcreteOrTupleId::Concrete(concrete_id) => Some(concrete_id),
             }
+        }
+
+        /// Renders a Rust-looking path, for debugging purposes.
+        pub fn to_debug_string(&self) -> String {
+            match self {
+                ConcreteOrTupleId::Tuple(tuple_id) => match tuple_id {
+                    TupleIdentifier::Type { length } => format!("tuple{length}"),
+                    TupleIdentifier::Constructor { length } => format!("Tuple{length}"),
+                    TupleIdentifier::Field { length, nth } => format!("Tuple{length}::{nth}"),
+                },
+                ConcreteOrTupleId::Concrete(concrete_id) => concrete_id.to_debug_string(),
+            }
+        }
+    }
+
+    impl GlobalId {
+        /// Extracts a concrete ident out of `&self` if possible.
+        fn expect_concrete_ident(&self) -> Option<&ConcreteId> {
+            let (GlobalId::Concrete(inner) | GlobalId::Projector(inner)) = self;
+            inner.expect_concrete_ident()
+        }
+
+        /// Extracts the name of the crate for an identifier.
+        pub fn krate(&self) -> Option<String> {
+            Some(self.expect_concrete_ident()?.krate())
+        }
+
+        /// Renders a Rust-looking path, for debugging purposes.
+        pub fn to_debug_string(&self) -> String {
+            match self {
+                GlobalId::Concrete(inner) => inner.to_debug_string(),
+                GlobalId::Projector(inner) => format!("Projector<{}>", inner.to_debug_string()),
+            }
+        }
+
+        /// Extract the raw `DefId` from a `GlobalId`.
+        /// This should never be used for name printing.
+        pub fn def_id(&self) -> Option<DefId> {
+            let concrete_id = self.expect_concrete_ident()?;
+            Some(concrete_id.def_id.def_id.clone())
         }
 
         /// Tests if the raw output is reduced to "_". Should be used only for
         /// testing. See https://github.com/cryspen/hax/issues/1599
         pub fn is_empty(&self) -> bool {
             self.to_debug_string() == "_".to_string()
-        }
-
-        /// Extract the raw `DefId` from a `GlobalId`.
-        /// This should never be used for name printing.
-        pub fn def_id(&self) -> DefId {
-            let (GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id)) = self;
-            concrete_id.def_id.def_id.clone()
-        }
-
-        /// Raw printing of identifier separated by underscore. Should be used
-        /// only for testing. See https://github.com/cryspen/hax/issues/1599
-        pub fn to_debug_string(&self) -> String {
-            match self {
-                GlobalId::Concrete(concrete_id) => concrete_id
-                    .def_id
-                    .def_id
-                    .clone()
-                    .path
-                    .into_iter()
-                    .map(|def| {
-                        let data = match def.clone().data {
-                            hax_frontend_exporter::DefPathItem::ValueNs(s)
-                            | hax_frontend_exporter::DefPathItem::MacroNs(s)
-                            | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
-                            hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
-                            other => unimplemented!("{other:?}"),
-                        };
-                        if def.disambiguator != 0 && !data.is_empty() && data != "_" {
-                            // Don't print disambiguator of empty data
-                            format!("_{}_{}", def.disambiguator, data)
-                        } else {
-                            data
-                        }
-                    })
-                    .collect::<Vec<String>>()
-                    .join("_"),
-                GlobalId::Projector(_concrete_id) => todo!(),
-            }
         }
     }
 
