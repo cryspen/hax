@@ -5,6 +5,7 @@ use hax_rust_engine_macros::*;
 
 /// Size of an integer type
 #[derive_group_for_ast]
+#[visitable]
 pub enum IntSize {
     /// 8 bits integer type
     S8,
@@ -48,6 +49,7 @@ impl From<UintTy> for IntSize {
 
 /// Signedness of a numeric type
 #[derive_group_for_ast]
+#[visitable]
 pub enum Signedness {
     /// Signed type (`i32`, `i64`, ...)
     Signed,
@@ -57,6 +59,7 @@ pub enum Signedness {
 
 /// Describes a Rust integer type (`u64`, `i32`, ...)
 #[derive_group_for_ast]
+#[visitable]
 pub struct IntKind {
     /// Size of this integer type
     pub size: IntSize,
@@ -66,6 +69,7 @@ pub struct IntKind {
 
 /// Float types
 #[derive_group_for_ast]
+#[visitable]
 pub enum FloatKind {
     /// 16 bits float
     F16,
@@ -79,6 +83,7 @@ pub enum FloatKind {
 
 /// Rust literal
 #[derive_group_for_ast]
+#[visitable]
 pub enum Literal {
     /// String literal
     String(Symbol),

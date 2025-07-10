@@ -52,6 +52,12 @@ regenerate-names:
   cargo hax -C --manifest-path engine/names/Cargo.toml \; into --output-dir $(dirname -- $OUTPUT_FILE) generate-rust-engine-names
   rustfmt "$OUTPUT_FILE"
 
+# Regenerate visitors for the Rust engine.
+regenerate-visitors:
+  #!/usr/bin/env bash
+  cd rust-engine/codegen
+  cargo run
+
 # Format all the code
 fmt:
   cargo fmt
