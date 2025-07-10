@@ -157,6 +157,7 @@ let call_g (_: Prims.unit) : usize =
   mk_usize 3
 
 class t_Foo (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_const_add_pre:v_N: usize -> v_Self -> Type0;
   f_const_add_post:v_N: usize -> v_Self -> usize -> Type0;
   f_const_add:v_N: usize -> x0: v_Self

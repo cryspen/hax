@@ -1,6 +1,12 @@
 use crate::prelude::{derive_group, JsonSchema};
 
+#[cfg(not(feature = "rustc"))]
 pub trait SInto<S, To> {
+    fn sinto(&self, s: &S) -> To;
+}
+
+#[cfg(feature = "rustc")]
+pub trait SInto<S, To>: std::marker::PointeeSized {
     fn sinto(&self, s: &S) -> To;
 }
 
@@ -56,6 +62,14 @@ sinto_todo!(test, Foo);
 impl<S, LL, RR, L: SInto<S, LL>, R: SInto<S, RR>> SInto<S, (LL, RR)> for (L, R) {
     fn sinto(&self, s: &S) -> (LL, RR) {
         (self.0.sinto(s), self.1.sinto(s))
+    }
+}
+
+impl<S, AA, BB, CC, A: SInto<S, AA>, B: SInto<S, BB>, C: SInto<S, CC>> SInto<S, (AA, BB, CC)>
+    for (A, B, C)
+{
+    fn sinto(&self, s: &S) -> (AA, BB, CC) {
+        (self.0.sinto(s), self.1.sinto(s), self.2.sinto(s))
     }
 }
 

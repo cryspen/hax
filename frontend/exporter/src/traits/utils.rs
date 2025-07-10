@@ -27,25 +27,24 @@
 //! benefit of reducing the size of signatures. Moreover, the rules on which bounds are required vs
 //! implied are subtle. We may change this if this proves to be a problem.
 use rustc_hir::def::DefKind;
+use rustc_hir::LangItem;
 use rustc_middle::ty::*;
 use rustc_span::def_id::DefId;
-use rustc_span::DUMMY_SP;
+use rustc_span::{Span, DUMMY_SP};
+use std::borrow::Cow;
+
+pub type Predicates<'tcx> = Cow<'tcx, [(Clause<'tcx>, Span)]>;
 
 /// Returns a list of type predicates for the definition with ID `def_id`, including inferred
 /// lifetime constraints. This is the basic list of predicates we use for essentially all items.
-pub fn predicates_defined_on(tcx: TyCtxt<'_>, def_id: DefId) -> GenericPredicates<'_> {
-    let mut result = tcx.explicit_predicates_of(def_id);
+pub fn predicates_defined_on(tcx: TyCtxt<'_>, def_id: DefId) -> Predicates<'_> {
+    let mut result = Cow::Borrowed(tcx.explicit_predicates_of(def_id).predicates);
     let inferred_outlives = tcx.inferred_outlives_of(def_id);
     if !inferred_outlives.is_empty() {
-        let inferred_outlives_iter = inferred_outlives
-            .iter()
-            .map(|(clause, span)| ((*clause).upcast(tcx), *span));
-        result.predicates = tcx.arena.alloc_from_iter(
-            result
-                .predicates
-                .into_iter()
-                .copied()
-                .chain(inferred_outlives_iter),
+        result.to_mut().extend(
+            inferred_outlives
+                .iter()
+                .map(|(clause, span)| ((*clause).upcast(tcx), *span)),
         );
     }
     result
@@ -66,7 +65,7 @@ pub fn required_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: DefId,
     add_drop: bool,
-) -> GenericPredicates<'tcx> {
+) -> Predicates<'tcx> {
     use DefKind::*;
     let def_kind = tcx.def_kind(def_id);
     let mut predicates = match def_kind {
@@ -88,12 +87,27 @@ pub fn required_predicates<'tcx>(
         // `predicates_defined_on` ICEs on other def kinds.
         _ => Default::default(),
     };
+    // For associated items in trait definitions, we add an explicit `Self: Trait` clause.
+    if let Some(trait_def_id) = tcx.trait_of_item(def_id) {
+        let self_clause = self_predicate(tcx, trait_def_id).upcast(tcx);
+        predicates.to_mut().insert(0, (self_clause, DUMMY_SP));
+    }
     if add_drop {
-        // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or
-        // `Sized`.
-        let drop_trait = tcx.lang_items().drop_trait().unwrap();
-        let sized_trait = tcx.lang_items().sized_trait().unwrap();
-        if def_id != drop_trait && def_id != sized_trait {
+        // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or a
+        // built-in marker trait that we know doesn't need the bound.
+        let lang_item = tcx.as_lang_item(def_id);
+        if !matches!(
+            lang_item,
+            Some(
+                LangItem::Drop
+                    | LangItem::Sized
+                    | LangItem::MetaSized
+                    | LangItem::PointeeSized
+                    | LangItem::DiscriminantKind
+                    | LangItem::PointeeTrait
+            )
+        ) {
+            let drop_trait = tcx.lang_items().drop_trait().unwrap();
             let extra_bounds = tcx
                 .generics_of(def_id)
                 .own_params
@@ -103,9 +117,7 @@ pub fn required_predicates<'tcx>(
                 .map(|ty| Binder::dummy(TraitRef::new(tcx, drop_trait, [ty])))
                 .map(|tref| tref.upcast(tcx))
                 .map(|clause| (clause, DUMMY_SP));
-            predicates.predicates = tcx
-                .arena
-                .alloc_from_iter(predicates.predicates.iter().copied().chain(extra_bounds));
+            predicates.to_mut().extend(extra_bounds);
         }
     }
     predicates
@@ -134,43 +146,50 @@ pub fn implied_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: DefId,
     add_drop: bool,
-) -> GenericPredicates<'tcx> {
+) -> Predicates<'tcx> {
     use DefKind::*;
     let parent = tcx.opt_parent(def_id);
     match tcx.def_kind(def_id) {
         // We consider all predicates on traits to be outputs
         Trait | TraitAlias => predicates_defined_on(tcx, def_id),
         AssocTy if matches!(tcx.def_kind(parent.unwrap()), Trait) => {
-            let mut predicates = GenericPredicates {
-                parent,
-                // `skip_binder` is for the GAT `EarlyBinder`
-                predicates: tcx.explicit_item_bounds(def_id).skip_binder(),
-                ..GenericPredicates::default()
-            };
+            // `skip_binder` is for the GAT `EarlyBinder`
+            let mut predicates = Cow::Borrowed(tcx.explicit_item_bounds(def_id).skip_binder());
             if add_drop {
                 // Add a `Drop` bound to the assoc item.
                 let drop_trait = tcx.lang_items().drop_trait().unwrap();
                 let ty =
                     Ty::new_projection(tcx, def_id, GenericArgs::identity_for_item(tcx, def_id));
                 let tref = Binder::dummy(TraitRef::new(tcx, drop_trait, [ty]));
-                predicates.predicates = tcx.arena.alloc_from_iter(
-                    predicates
-                        .predicates
-                        .iter()
-                        .copied()
-                        .chain([(tref.upcast(tcx), DUMMY_SP)]),
-                );
+                predicates.to_mut().push((tref.upcast(tcx), DUMMY_SP));
             }
             predicates
         }
-        _ => GenericPredicates::default(),
+        _ => Predicates::default(),
     }
+}
+
+/// Normalize a value.
+pub fn normalize<'tcx, T>(tcx: TyCtxt<'tcx>, typing_env: TypingEnv<'tcx>, value: T) -> T
+where
+    T: TypeFoldable<TyCtxt<'tcx>> + Copy,
+{
+    use rustc_infer::infer::TyCtxtInferExt;
+    use rustc_middle::traits::ObligationCause;
+    use rustc_trait_selection::traits::query::normalize::QueryNormalizeExt;
+    let (infcx, param_env) = tcx.infer_ctxt().build_with_typing_env(typing_env);
+    infcx
+        .at(&ObligationCause::dummy(), param_env)
+        .query_normalize(value)
+        // We ignore the generated outlives relations. Unsure what we should do with them.
+        .map(|x| x.value)
+        .unwrap_or(value)
 }
 
 /// Erase free regions from the given value. Largely copied from `tcx.erase_regions`, but also
 /// erases bound regions that are bound outside `value`, so we can call this function inside a
 /// `Binder`.
-fn erase_free_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
+pub fn erase_free_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
 where
     T: TypeFoldable<TyCtxt<'tcx>>,
 {
