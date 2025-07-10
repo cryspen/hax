@@ -11,9 +11,10 @@ use rustc_middle::traits::CodegenObligationError;
 use rustc_middle::ty::{self, *};
 use rustc_trait_selection::traits::ImplSource;
 
-use crate::{self_predicate, traits::utils::erase_and_norm};
-
-use super::utils::{implied_predicates, normalize_bound_val, required_predicates, ToPolyTraitRef};
+use super::utils::{
+    self, erase_and_norm, implied_predicates, normalize_bound_val, required_predicates,
+    self_predicate, ToPolyTraitRef,
+};
 
 #[derive(Debug, Clone)]
 pub enum PathChunk<'tcx> {
@@ -153,6 +154,7 @@ fn initial_search_predicates<'tcx>(
         tcx: TyCtxt<'tcx>,
         def_id: rustc_span::def_id::DefId,
         add_drop: bool,
+        include_self_pred: bool,
         predicates: &mut Vec<AnnotatedTraitPred<'tcx>>,
         pred_id: &mut usize,
     ) {
@@ -164,11 +166,22 @@ fn initial_search_predicates<'tcx>(
         use DefKind::*;
         match tcx.def_kind(def_id) {
             // These inherit some predicates from their parent.
-            AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant => {
+            dk @ (AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant) => {
                 let parent = tcx.parent(def_id);
-                acc_predicates(tcx, parent, add_drop, predicates, pred_id);
+                // Hack: we don't support GATs well so for now we let assoc types refer to the
+                // implicit trait `Self` clause. Other associated items get an explicit `Self:
+                // Trait` clause passed to them so they don't need that.
+                let include_self_pred = include_self_pred && matches!(dk, AssocTy);
+                acc_predicates(
+                    tcx,
+                    parent,
+                    add_drop,
+                    include_self_pred,
+                    predicates,
+                    pred_id,
+                );
             }
-            Trait | TraitAlias => {
+            Trait | TraitAlias if include_self_pred => {
                 let self_pred = self_predicate(tcx, def_id).upcast(tcx);
                 predicates.push(AnnotatedTraitPred {
                     origin: BoundPredicateOrigin::SelfPred,
@@ -179,7 +192,6 @@ fn initial_search_predicates<'tcx>(
         }
         predicates.extend(
             required_predicates(tcx, def_id, add_drop)
-                .predicates
                 .iter()
                 .map(|(clause, _span)| *clause)
                 .filter_map(|clause| {
@@ -192,7 +204,7 @@ fn initial_search_predicates<'tcx>(
     }
 
     let mut predicates = vec![];
-    acc_predicates(tcx, def_id, add_drop, &mut predicates, &mut 0);
+    acc_predicates(tcx, def_id, add_drop, true, &mut predicates, &mut 0);
     predicates
 }
 
@@ -204,7 +216,6 @@ fn parents_trait_predicates<'tcx>(
 ) -> Vec<PolyTraitPredicate<'tcx>> {
     let self_trait_ref = pred.to_poly_trait_ref();
     implied_predicates(tcx, pred.def_id(), add_drop)
-        .predicates
         .iter()
         .map(|(clause, _span)| *clause)
         // Substitute with the `self` args so that the clause makes sense in the
@@ -342,8 +353,8 @@ impl<'tcx> PredicateSearcher<'tcx> {
         };
 
         // The bounds that hold on the associated type.
-        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop)
-            .predicates
+        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop);
+        let item_bounds = item_bounds
             .iter()
             .map(|(clause, _span)| *clause)
             .filter_map(|pred| pred.as_trait_clause())
@@ -642,13 +653,12 @@ impl<'tcx> PredicateSearcher<'tcx> {
     pub fn resolve_predicates(
         &mut self,
         generics: GenericArgsRef<'tcx>,
-        predicates: GenericPredicates<'tcx>,
+        predicates: utils::Predicates<'tcx>,
         // Call back into hax-related code to display a nice warning.
         warn: &impl Fn(&str),
     ) -> Result<Vec<ImplExpr<'tcx>>, String> {
         let tcx = self.tcx;
         predicates
-            .predicates
             .iter()
             .map(|(clause, _span)| *clause)
             .filter_map(|clause| clause.as_trait_clause())
