@@ -1,6 +1,12 @@
 use crate::prelude::{derive_group, JsonSchema};
 
+#[cfg(not(feature = "rustc"))]
 pub trait SInto<S, To> {
+    fn sinto(&self, s: &S) -> To;
+}
+
+#[cfg(feature = "rustc")]
+pub trait SInto<S, To>: std::marker::PointeeSized {
     fn sinto(&self, s: &S) -> To;
 }
 

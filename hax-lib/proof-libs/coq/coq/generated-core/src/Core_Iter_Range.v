@@ -100,7 +100,7 @@ Instance t_RangeIteratorImpl_158276838 `{v_A : Type} `{t_Sized (v_A)} `{t_Step (
   {
     RangeIteratorImpl_impl_f_Item := v_A;
     RangeIteratorImpl_impl_f_spec_next := fun  (self : t_Range ((v_A)))=>
-      let hax_temp_output := never_to_any (panic_fmt (impl_2__new_v1 (["not yet implemented: specification needed"%string]) (impl_1__none (tt)))) in
+      let hax_temp_output := never_to_any (panic_fmt (impl_1__new_v1 (["not yet implemented: specification needed"%string]) (impl_1__none (tt)))) in
       (self,hax_temp_output);
   }.
 
@@ -108,7 +108,7 @@ Instance t_Iterator_416192239 `{v_A : Type} `{t_Sized (v_A)} `{t_Step (v_A)} : t
   {
     Iterator_impl_1_f_Item := v_A;
     Iterator_impl_1_f_next := fun  (self : t_Range ((v_A)))=>
-      let hax_temp_output := never_to_any (panic_fmt (impl_2__new_v1 (["not yet implemented: specification needed"%string]) (impl_1__none (tt)))) in
+      let hax_temp_output := never_to_any (panic_fmt (impl_1__new_v1 (["not yet implemented: specification needed"%string]) (impl_1__none (tt)))) in
       (self,hax_temp_output);
     Iterator_impl_1_f_size_hint := fun  (self : t_Range ((v_A)))=>
       if

@@ -25,11 +25,11 @@ let display
     : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.failure "(FunctionalizeLoops) something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation"
-      "{\n for x in (core::iter::traits::collect::f_into_iter(xs)) {\n {\n let _: tuple0 = {\n std::io::stdio::e_print(\n core::fmt::rt::impl_2__new_v1::<\n generic_value!(todo),\n generic_value!(todo),\n >([\"\"], [c..."
+      "{\n for x in (core::iter::traits::collect::f_into_iter(xs)) {\n {\n let args: [core::fmt::rt::t_Argument; 1] = {\n [core::fmt::rt::impl__new_display::<T>(x)]\n };\n {\n let _: tuple0 = {\n std::io::stdio::e_p..."
 
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
           (let list = ["\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
@@ -40,7 +40,7 @@ let display
   ()
 
 let error (_: Prims.unit) : Prims.unit =
-  Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.Rt.impl_2__new_const (mk_usize
+  Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.Rt.impl_1__new_const (mk_usize
               1)
             (let list = ["error"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);

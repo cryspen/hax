@@ -154,7 +154,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
         let span = self.default_span(s.base().tcx);
         match self.kind() {
             ty::ConstKind::Param(p) => {
-                let ty = p.find_ty_from_env(s.param_env());
+                let ty = p.find_const_ty_from_env(s.param_env());
                 let kind = ConstantExprKind::ConstRef { id: p.sinto(s) };
                 kind.decorate(ty.sinto(s), span.sinto(s))
             }
@@ -279,7 +279,7 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
     // Helper for struct-likes.
     let read_fields = |of: rustc_const_eval::interpret::OpTy<'tcx>, field_count| {
         (0..field_count).map(move |i| {
-            let field_op = ecx.project_field(&of, i)?;
+            let field_op = ecx.project_field(&of, rustc_abi::FieldIdx::from_usize(i))?;
             op_to_const(s, span, &ecx, field_op)
         })
     };

@@ -54,27 +54,28 @@ let print
           Alloc.Boxed.t_Box (dyn 1 (fun z -> t_Printable z Alloc.String.t_String))
             Alloc.Alloc.t_Global)
     : Prims.unit =
+  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list =
+      [
+        Core.Fmt.Rt.impl__new_display #Alloc.String.t_String
+          (f_stringify #(dyn 1 (fun z -> t_Printable z Alloc.String.t_String))
+              #Alloc.String.t_String
+              #FStar.Tactics.Typeclasses.solve
+              a
+            <:
+            Alloc.String.t_String)
+      ]
+    in
+    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+    Rust_primitives.Hax.array_of_list 1 list
+  in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_2__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = [""; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
-          (let list =
-              [
-                Core.Fmt.Rt.impl__new_display #Alloc.String.t_String
-                  (f_stringify #(dyn 1 (fun z -> t_Printable z Alloc.String.t_String))
-                      #Alloc.String.t_String
-                      #FStar.Tactics.Typeclasses.solve
-                      a
-                    <:
-                    Alloc.String.t_String)
-                <:
-                Core.Fmt.Rt.t_Argument
-              ]
-            in
-            FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
-            Rust_primitives.Hax.array_of_list 1 list)
+          args
         <:
         Core.Fmt.t_Arguments)
   in
