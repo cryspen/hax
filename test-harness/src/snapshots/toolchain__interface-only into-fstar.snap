@@ -101,6 +101,7 @@ unfold
 let ff_generic (v_X: usize) (#v_U: Type0) = ff_generic' v_X #v_U
 
 class t_T (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_Assoc:Type0;
   f_d_pre:Prims.unit -> Type0;
   f_d_post:Prims.unit -> Prims.unit -> Type0;
@@ -118,6 +119,7 @@ let impl_T_for_u8: t_T u8 =
   }
 
 class t_T2 (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_d_pre:Prims.unit -> Type0;
   f_d_post:Prims.unit -> Prims.unit -> Type0;
   f_d:x0: Prims.unit -> Prims.Pure Prims.unit (f_d_pre x0) (fun result -> f_d_post x0 result)

@@ -45,8 +45,7 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-From Literals Require Import hax_lib.
-Export hax_lib.
+
 
 Definition math_integers (x : t_Int) `{andb (f_gt (x) (impl_Int__e_unsafe_from_str (("0"%string : string)))) (f_lt (x) (impl_Int__e_unsafe_from_str (("16"%string : string)))) = true} : t_u8 :=
   let _ : t_Int := f_lift ((3 : t_usize)) in
@@ -81,7 +80,7 @@ Definition math_integers (x : t_Int) `{andb (f_gt (x) (impl_Int__e_unsafe_from_s
   impl_Int__to_u8 (f_add (x) (f_mul (x) (x))).
 
 Definition panic_with_msg '(_ : unit) : unit :=
-  never_to_any (panic_fmt (impl_2__new_const ([("with msg"%string : string)]))).
+  never_to_any (panic_fmt (impl_1__new_const ([("with msg"%string : string)]))).
 
 Record Foo_record : Type :=
   {

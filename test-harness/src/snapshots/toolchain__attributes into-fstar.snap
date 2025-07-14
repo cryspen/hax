@@ -155,6 +155,7 @@ open Core
 open FStar.Mul
 
 class t_T (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_v_pre:v_Self -> Type0;
   f_v_post:x: v_Self -> x_future: v_Self -> pred: Type0{pred ==> true};
   f_v:x0: v_Self -> Prims.Pure v_Self (f_v_pre x0) (fun result -> f_v_post x0 result)
@@ -214,6 +215,7 @@ let impl_SafeIndex__as_usize (self: t_SafeIndex) : usize = self.f_i
 let impl_1 (#v_T: Type0) : Core.Ops.Index.t_Index (t_Array v_T (mk_usize 10)) t_SafeIndex =
   {
     f_Output = v_T;
+    f_Output_6696274936538609082 = FStar.Tactics.Typeclasses.solve;
     f_index_pre = (fun (self: t_Array v_T (mk_usize 10)) (index: t_SafeIndex) -> true);
     f_index_post = (fun (self: t_Array v_T (mk_usize 10)) (index: t_SafeIndex) (out: v_T) -> true);
     f_index = fun (self: t_Array v_T (mk_usize 10)) (index: t_SafeIndex) -> self.[ index.f_i ]
@@ -250,6 +252,7 @@ open Core
 open FStar.Mul
 
 class t_Operation (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_double_pre:x: u8
     -> pred:
       Type0
@@ -306,6 +309,7 @@ let impl_Operation_for_ViaMul: t_Operation t_ViaMul =
   }
 
 class t_TraitWithRequiresAndEnsures (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_method_pre:self_: v_Self -> x: u8 -> pred: Type0{x <. mk_u8 100 ==> pred};
   f_method_post:self_: v_Self -> x: u8 -> r: u8 -> pred: Type0{pred ==> r >. mk_u8 88};
   f_method:x0: v_Self -> x1: u8
@@ -400,6 +404,7 @@ let mutation_example
 let impl: Core.Ops.Index.t_Index t_MyArray usize =
   {
     f_Output = u8;
+    f_Output_6696274936538609082 = FStar.Tactics.Typeclasses.solve;
     f_index_pre = (fun (self_: t_MyArray) (index: usize) -> index <. v_MAX);
     f_index_post = (fun (self: t_MyArray) (index: usize) (out: u8) -> true);
     f_index = fun (self: t_MyArray) (index: usize) -> self.[ index ]
@@ -588,6 +593,7 @@ open Core
 open FStar.Mul
 
 class t_Foo (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4726684624731801277:Core.Marker.t_MetaSized v_Self;
   f_f_pre:x: u8 -> y: u8
     -> pred:
       Type0
