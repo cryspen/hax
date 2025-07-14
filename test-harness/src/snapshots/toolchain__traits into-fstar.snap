@@ -661,9 +661,18 @@ class t_Foo (v_Self: Type0) = {
   f_method_f_post:v_Self -> Prims.unit -> Type0;
   f_method_f:x0: v_Self
     -> Prims.Pure Prims.unit (f_method_f_pre x0) (fun result -> f_method_f_post x0 result);
-  f_assoc_type_pre:{| i2: Core.Marker.t_Copy f_AssocType |} -> f_AssocType -> Type0;
-  f_assoc_type_post:{| i2: Core.Marker.t_Copy f_AssocType |} -> f_AssocType -> Prims.unit -> Type0;
-  f_assoc_type:{| i2: Core.Marker.t_Copy f_AssocType |} -> x0: f_AssocType
+  f_assoc_type_pre:
+      {| i2: Core.Marker.t_Copy v_5081411602995720689.f_AssocType |} ->
+      v_5081411602995720689.f_AssocType
+    -> Type0;
+  f_assoc_type_post:
+      {| i2: Core.Marker.t_Copy v_5081411602995720689.f_AssocType |} ->
+      v_5081411602995720689.f_AssocType ->
+      Prims.unit
+    -> Type0;
+  f_assoc_type:
+      {| i2: Core.Marker.t_Copy v_5081411602995720689.f_AssocType |} ->
+      x0: v_5081411602995720689.f_AssocType
     -> Prims.Pure Prims.unit
         (f_assoc_type_pre #i2 x0)
         (fun result -> f_assoc_type_post #i2 x0 result)
@@ -672,9 +681,11 @@ class t_Foo (v_Self: Type0) = {
 class t_Lang (v_Self: Type0) = {
   f_Var:Type0;
   f_s_pre:v_Self -> i32 -> Type0;
-  f_s_post:v_Self -> i32 -> (v_Self & f_Var) -> Type0;
+  f_s_post:v_Self -> i32 -> (v_Self & v_178762381425797165.f_Var) -> Type0;
   f_s:x0: v_Self -> x1: i32
-    -> Prims.Pure (v_Self & f_Var) (f_s_pre x0 x1) (fun result -> f_s_post x0 x1 result)
+    -> Prims.Pure (v_Self & v_178762381425797165.f_Var)
+        (f_s_pre x0 x1)
+        (fun result -> f_s_post x0 x1 result)
 }
 
 let f (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_Foo v_T) (x: v_T) : Prims.unit =

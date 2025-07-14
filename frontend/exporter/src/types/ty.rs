@@ -1338,6 +1338,17 @@ pub struct GenericPredicates {
 }
 
 #[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, GenericPredicates>
+    for crate::traits::Predicates<'tcx>
+{
+    fn sinto(&self, s: &S) -> GenericPredicates {
+        GenericPredicates {
+            predicates: self.as_ref().sinto(s),
+        }
+    }
+}
+
+#[cfg(feature = "rustc")]
 impl<'tcx, S: UnderOwnerState<'tcx>, T1, T2> SInto<S, Binder<T2>> for ty::Binder<'tcx, T1>
 where
     T1: SInto<StateWithBinder<'tcx>, T2>,
