@@ -62,7 +62,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                         allocator.softline(),
                         allocator.intersperse(params, allocator.line()),
                     ]
-                    .align()
+                    .nest(INDENT)
                     .group()
                 };
                 docs![
@@ -142,8 +142,8 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
                     head.pretty(allocator)
                         .append(allocator.softline())
                         .append(allocator.intersperse(args, allocator.softline()))
-                        .group()
                         .parens()
+                        .group()
                 }
             }
             TyKind::Arrow { inputs, output } => allocator
@@ -161,8 +161,8 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
             TyKind::Slice(ty) => docs![allocator, "Array ", ty].parens(),
             TyKind::Array { ty, length } => {
                 docs![allocator, "Vector ", ty, allocator.softline(), &(**length),]
-                    .parens()
                     .group()
+                    .parens()
             }
             TyKind::RawPointer => print_todo!(allocator),
             TyKind::AssociatedType { impl_: _, item: _ } => print_todo!(allocator),
@@ -271,12 +271,11 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 bounds_impls: _,
                 trait_: _,
             } => {
-                let separator = allocator.line();
                 head.pretty(allocator)
                     .append(allocator.softline())
-                    .append(allocator.intersperse(args, separator).nest(INDENT))
-                    .parens()
+                    .append(allocator.intersperse(args, allocator.softline()).nest(INDENT))
                     .group()
+                    .parens()
             }
             ExprKind::Literal(literal) => literal.pretty(allocator),
             ExprKind::Array(exprs) => docs![
@@ -355,8 +354,8 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
             ExprKind::LocalId(local_id) => local_id.pretty(allocator),
             ExprKind::Ascription { e, ty } => docs![allocator, e, allocator.reflow(" : "), ty]
                 .nest(INDENT)
-                .parens()
-                .group(),
+                .group()
+                .parens(),
             ExprKind::Assign { lhs: _, value: _ } => print_todo!(allocator),
             ExprKind::Loop {
                 body: _,
@@ -374,13 +373,13 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 captures: _,
             } => docs![
                 allocator,
+                allocator.line_(),
                 allocator.reflow("fun "),
-                allocator.intersperse(params, allocator.line()),
-                allocator.reflow(" =>"),
-                allocator.line(),
+                allocator.intersperse(params, allocator.line()).group(),
+                allocator.reflow(" => "),
                 body
             ]
-            .nest(INDENT)
+            //.nest(INDENT)
             .group()
             .parens(),
             ExprKind::Block {
@@ -476,7 +475,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Param {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         docs![allocator, &self.pat, allocator.softline(), ": ", &self.ty]
             .nest(INDENT)
-            .parens()
             .group()
+            .parens()
     }
 }
