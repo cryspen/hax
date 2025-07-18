@@ -69,7 +69,7 @@ fn barrett_reduce(value: i32) -> i32 {
 effect, but in F\*, that establishes that `(quotient * 3329) % 3329` is
 zero. -->
 
-The proof for the code above uses the Z3 SMT solver to prive the
+The proof for the code above uses the Z3 SMT solver to prove the
 post-condition.  Since the SMT solver needs to reason about non-linear
 arithmetic (multiplication, modulus, division) it needs more
 resources, hence we bump up the `rlimit` to 100 in an annotation above
