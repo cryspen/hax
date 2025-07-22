@@ -33,6 +33,6 @@ jobs:
         find . -name '*.rs'
         set -x
         nix shell .#rustfmt -c \
-          rustfmt --edition 2021 --check $(find . -name '*.rs')
+          rustfmt -v --edition 2021 --check $(find . -name '*.rs')
         echo "XXX EXIT CODE: $?"
 
