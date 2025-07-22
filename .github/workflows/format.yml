@@ -27,11 +27,12 @@ jobs:
     - uses: DeterminateSystems/nix-installer-action@main
     - name: Run Rust formatter
       run: |
-        echo TREE
+        echo "XXX TREE"
         tree
-        echo "FIND"
+        echo "XXX FIND"
         find . -name '*.rs'
         set -x
         nix shell .#rustfmt -c \
           rustfmt --edition 2021 --check $(find . -name '*.rs')
+        echo "XXX EXIT CODE: $?"
 
