@@ -24,7 +24,7 @@ use std::{
 
 /// Unique IDs in a ID table.
 #[derive_group(Serializers)]
-#[derive(Default, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Default, Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(transparent)]
 pub struct Id {
     id: u32,
@@ -88,7 +88,7 @@ impl SupportedType<Value> for ItemRefContents {
 }
 
 /// A node is a bundle of an ID with a value.
-#[derive(Deserialize, Serialize, Debug, JsonSchema, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Deserialize, Serialize, Debug, JsonSchema, PartialOrd, Ord)]
 #[serde(into = "serde_repr::NodeRepr<T>")]
 #[serde(try_from = "serde_repr::NodeRepr<T>")]
 pub struct Node<T: 'static + SupportedType<Value>> {
@@ -109,6 +109,12 @@ impl<T: SupportedType<Value>> std::ops::Deref for Node<T> {
 impl<T: SupportedType<Value> + Hash> Hash for Node<T> {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.value.as_ref().hash(state);
+    }
+}
+impl<T: SupportedType<Value> + Eq> Eq for Node<T> {}
+impl<T: SupportedType<Value> + PartialEq> PartialEq for Node<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
     }
 }
 
@@ -202,6 +208,10 @@ impl<T: Sync + Send + 'static + SupportedType<Value>> Node<T> {
 
     pub fn inner(&self) -> &Arc<T> {
         &self.value
+    }
+
+    pub fn id(&self) -> Id {
+        self.id
     }
 }
 
