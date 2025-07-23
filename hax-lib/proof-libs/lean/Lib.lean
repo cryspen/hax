@@ -1,9 +1,12 @@
--- This library is the panic-free version of the prelude, where identifiers are
--- *as most as possible* interpreted without any proof obligation, ignoring
--- potential rust panics. It is useful for testing, but proving properties with
--- it would not guarantee panic freedom.
-
+-- This library provides a monadic encoding over Hax primitives
 -- Aeneas errors
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+import Std
+
+open Std.Do
+open Std.Tactic
 
 inductive Error where
    | assertionFailure: Error
@@ -23,73 +26,148 @@ inductive Result.{u} (α : Type u) where
   | div
 deriving Repr, BEq
 
-instance : Monad Result where
-  pure x := .ok x
-  bind x f := match x with
+@[simp]
+def Result.pure (x:α) : Result α := .ok x
+
+@[simp]
+def Result.bind (x: Result α) (f: α -> Result β) := match x with
   | .ok v => f v
   | .fail e => .fail e
   | .div => .div
 
-instance : LawfulMonad Result := sorry
+instance ResultMonad : Monad Result where
+  pure := Result.pure
+  bind := Result.bind
+
+instance : LawfulMonad Result where
+  id_map x := by
+    dsimp [id, Functor.map]
+    cases x;
+    all_goals grind
+  map_const := by
+    intros α β
+    dsimp [Functor.map, Functor.mapConst]
+  seqLeft_eq x y := by
+    dsimp [Functor.map, SeqLeft.seqLeft, Seq.seq]
+    cases x ; all_goals cases y
+    all_goals try simp
+  seqRight_eq x y := by
+    dsimp [Functor.map, SeqRight.seqRight, Seq.seq]
+    cases x ; all_goals cases y
+    all_goals try simp
+  pure_seq g x := by
+    dsimp [Functor.map, Seq.seq, pure]
+  bind_pure_comp f x := by
+    dsimp [Functor.map]
+    cases x ; all_goals dsimp [bind, pure]
+  bind_map f x := by
+    dsimp [Functor.map, bind, pure, Seq.seq]
+  pure_bind x f := by
+    dsimp [pure, bind]
+  bind_assoc x f g := by
+    dsimp [pure, bind]
+    cases x; all_goals simp
+
+-- set_option pp.coercions false
+instance Result.instWP : WP Result (.except Error .pure) where
+  wp x := match x with
+  | .ok v => wp (Pure.pure v : Except Error _)
+  | .fail e => wp (throw e : Except Error _)
+  | .div => PredTrans.const ⌜False⌝
+
+-- set_option pp.raw true
+instance Result.instWPMonad : WPMonad Result (.except Error .pure) where
+  wp_pure := by intros; ext Q; simp [wp, PredTrans.pure, Pure.pure, Except.pure, Id.run]
+  wp_bind x f := by
+    simp only [instWP]
+    ext Q
+    cases x <;> simp [PredTrans.bind, PredTrans.const, Bind.bind]
+
+
+
+instance : Coe α (Result α) where
+  coe x := pure x
+
 
 -- Logic
-abbrev hax_logical_op_and := (fun a b => a ∧ b)
+abbrev hax_logical_op_and := (fun a b => a && b)
 
 -- Integer types
-abbrev u8 := Nat -- to fix
-abbrev i8 := Int -- to fix
 
+abbrev u8 := UInt8
 abbrev u16 := UInt16
 abbrev u32 := UInt32
 abbrev u64 := UInt64
 abbrev usize := USize
+abbrev i8 := Int8
 abbrev i16 := Int16
 abbrev i32 := Int32
 abbrev i64 := Int64
 abbrev isize := ISize
 
--- Coercions between integers types:
-instance : Coe i32 i64 where
-  coe x := x.toInt64
+class ToNat (α: Type) where
+  toNat : α -> Nat
 
-instance : Coe i64 i32 where
-  coe x := x.toInt32
+-- should use a macro here
+instance : ToNat USize where
+  toNat x := x.toNat
+instance : ToNat u64 where
+  toNat x := x.toNat
+instance : ToNat u32 where
+  toNat x := x.toNat
+instance : ToNat u16 where
+  toNat x := x.toNat
+instance : ToNat Nat where
+  toNat x := x
 
-instance : Coe USize Nat where
-  coe x := x.toNat
+instance : Coe i32 (Result i64) where
+  coe x := pure (x.toInt64)
 
-instance : Coe (BitVec 32) u32 where
-  coe x := UInt32.ofBitVec x
-
-instance {n} : CoeOut (BitVec n) (Result u32) where
-  coe x := match n with
-  | 32 => .ok (UInt32.ofBitVec x)
-  | _ => .fail (integerOverflow)
-
-instance : Coe u32 (BitVec 32) where
-  coe x := x.toBitVec
+instance : Coe i64 (Result i32) where
+  coe x := pure (Int64.toInt32 x)
 
 instance : Coe u32 Nat where
   coe x := x.toNat
+
+instance : Coe Nat usize where
+  coe x := USize.ofNat x
+
+instance : Coe USize UInt32 where
+  coe x := x.toUInt32
+
+instance : Coe USize (Result u32) where
+  coe x := if h: x.toNat < UInt32.size then pure (x.toUInt32)
+           else Result.fail .integerOverflow
+
+instance {β} : Coe (α -> usize -> β) (α -> Nat -> β) where
+  coe f a x := f a (USize.ofNat x)
+instance {β} : Coe (α -> i32 -> β) (α -> Nat -> β) where
+  coe f a x := f a (Int32.ofNat x)
+
+instance : OfNat (Result Nat) n where
+  ofNat := pure (n)
+
 
 -- Arithmetic
 section Arithmetic
 
 -- Overflowing operations
 @[simp]
-def hax_machine_int_add {α} [Add α] (x y: α) := x + y
+def hax_machine_int_add {α} [Add α] (x y: α) := Result.pure (x + y)
 @[simp]
-def hax_machine_int_sub {α} [Sub α] (x y: α) := x - y
+def hax_machine_int_sub {α} [Sub α] (x y: α) := Result.pure (x - y)
 @[simp]
-def hax_machine_int_mul {α} [Mul α] (x y: α) := x * y
+def hax_machine_int_mul {α} [Mul α] (x y: α) := Result.pure (x * y)
 @[simp]
-def hax_machine_int_rem {α} [Mod α] (x y: α) := x % y
+def hax_machine_int_div {α} [Div α] (x y: α) := Result.pure (x / y)
 @[simp]
-def hax_machine_int_shr {α β γ} [HShiftRight α β γ] (a: α) (b: β) : γ := a >>> b
+def hax_machine_int_rem {α} [Mod α] (x y: α) := Result.pure (x % y)
 @[simp]
-def hax_machine_int_bitxor {α} [Xor α] (a b: α) : α := a ^^^ b
+def hax_machine_int_shr {α β γ} [HShiftRight α β γ] (a: α) (b: β) : Result γ := Result.pure (a >>> b)
 @[simp]
-def ops_arith_Neg_neg {α} [Neg α] (x:α) := -x
+def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := Result.pure (a ^^^ b)
+@[simp]
+def ops_arith_Neg_neg {α} [Neg α] (x:α) := Result.pure (-x)
 
 @[simp]
 def hax_machine_int_eq {α} (x y: α) [BEq α] : Bool := x == y
@@ -103,6 +181,7 @@ def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Bool := 
 def hax_machine_int_gt {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Bool := x ≥ y
 @[simp]
 def hax_machine_int_ge {α} (x y: α) [(LT α)] [Decidable (x > y)] : Bool := x > y
+
 
 abbrev hax__autogenerated_refinement__BoundedUsize_BoundedUsize
   (lo: USize) (hi: USize) := USize
@@ -131,106 +210,233 @@ set_option pp.coercions false
 
 -- Wrapping operations
 @[simp]
-def num_impl_wrapping_add {α} [Add α] (x y: α) := x + y
+def num_impl_wrapping_add {α} [Add α] (x y: α) := Result.pure (x + y)
+
+
+class RotateLeft (α: Type) where
+  rotateLeft : α -> Nat -> α
+
+instance {w} : RotateLeft (BitVec w) where
+  rotateLeft x n := BitVec.rotateLeft x n
+
+instance : RotateLeft usize where
+  rotateLeft x n := USize.ofBitVec (BitVec.rotateLeft x.toBitVec n)
+
+instance : RotateLeft u32 where
+  rotateLeft x n := UInt32.ofBitVec (BitVec.rotateLeft x.toBitVec n)
 
 @[simp]
-def num_impl_rotate_left {w} := @BitVec.rotateLeft w
+def num_impl_rotate_left {α} [r: RotateLeft α] (x: α) (n: Nat) : Result α :=
+  Result.pure (r.rotateLeft x n)
 
 end Arithmetic
 
 -- Tuples
-structure hax_Tuple2_arg (α β: Type) where
-hax_Tuple2_Tuple0 : α
-hax_Tuple2_Tuple1 : β
 
-inductive hax_Tuple2 (α β: Type)
-| constr_hax_Tuple2 : (hax_Tuple2_arg α β) -> hax_Tuple2 α β
+def hax_Tuple0 : Type := Unit
+def constr_hax_Tuple0 : hax_Tuple0 := ()
+instance : Coe hax_Tuple0 Unit where
+  coe _ := ()
 
-abbrev hax_Tuple0 := ()
+
+def hax_Tuple1 (α: Type) : Type := α × Unit
+def constr_hax_Tuple1 {hax_Tuple1_Tuple0: α} : hax_Tuple1 α := (hax_Tuple1_Tuple0, ())
+
+def hax_Tuple2 (α β: Type) : Type := α × β
+def constr_hax_Tuple2 {α β} {hax_Tuple2_Tuple0: α} {hax_Tuple2_Tuple1 : β} : hax_Tuple2 α β
+  := (hax_Tuple2_Tuple0, hax_Tuple2_Tuple1)
+
+
 
 -- Nums
-def num_impl_from_le_bytes {α} : (Array α) -> u32 := sorry
+-- TO remove once name display is fixed
+
+def num_impl_from_le_bytes {α} (x: Vector α n) : u32 := (0: u32) -- TOFIX
 
 -- Casts
 @[simp]
-def convert_From_from {α β} [Coe α β] (x:α) : β := x
+def convert_From_from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 @[simp]
-def hax_cast_op {α β} [Coe α β] (x:α) : β := x
+def hax_cast_op {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 
 -- Results
 inductive result_Result α β
 | ok : α -> result_Result α β
 | err : β -> result_Result α β
 
-axiom array_TryFromSliceError : Type
+instance {β : Type} : Monad (fun α => result_Result α β) where
+  pure x := .ok x
+  bind {α α'} x (f: α -> result_Result α' β) := match x with
+  | .ok v => f v
+  | .err e => .err e
+
+inductive array_TryFromSliceError where
+  | array_TryFromSliceError
 
 -- Assert
 def assert (b:Bool) : Result Unit :=
   if b then pure ()
   else .fail (Error.assertionFailure)
 
-def assume : Prop -> Unit := fun _ => ()
-def prop_constructors_from_bool : Bool -> Prop := sorry
+def assume : Prop -> Result Unit := fun _ => pure ()
+def prop_constructors_from_bool (b :Bool) : Prop := (b = true)
 
 -- Hax
+
+-- To extend with invariants
 def hax_folds_fold_range {α}
   (s e : Nat)
-  (_filter : α -> Nat -> Bool)
+  (_inv : α -> Nat -> Result Bool)
   (init: α)
-  (f : α -> Nat -> Result α) :=
+  (f : α -> Nat -> Result α) : Result α :=
   Array.foldlM f init (Array.range e) s e
 
 -- Arrays
 
-def hax_monomorphized_update_at_update_at_usize {α}
-  (a: Array α) (i:Nat) (v:α) : Result (Array α) :=
+def hax_monomorphized_update_at_update_at_usize {α n}
+  (a: Vector α n) (i:Nat) (v:α) : Result (Vector α n) :=
   if h: i < a.size then
-    pure ( Array.set a i v )
+    pure ( Vector.set a i v )
   else
     .fail (.arrayOutOfBounds)
 
 def hax_update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector α n) :=
   if i < n then
-    .ok ( Vector.setIfInBounds m i v)
+    pure ( Vector.setIfInBounds m i v)
   else
     .fail (.arrayOutOfBounds)
 
 
-def result_impl_unwrap {α} : α -> Array β := sorry
+def result_impl_unwrap (α: Type) (β:Type) (x: result_Result α β) : (Result α) :=
+  match x with
+  | .ok v => pure v
+  | .err _ => .fail .panic
 
 -- Vectors
-def hax_repeat (x:Nat) (y:Nat) : Array u32 := sorry
+def hax_repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
+  pure (Eq.mp (congrArg (Vector α) (@Array.size_replicate α n v))
+    (Array.replicate n v).toVector)
 
 -- Ranges
 
-structure ops_range_Range_arg (α: Type) where
-ops_range_Range_start : α
-ops_range_Range_end : α
-
 inductive ops_range_Range (α: Type)  where
-| constr_ops_range_Range : ops_range_Range_arg α -> ops_range_Range α
+| constr_ops_range_Range
+  {ops_range_Range_start: α}
+  {ops_range_Range_end: α} : ops_range_Range α
+
+def constr_ops_range_Range {α} {ops_range_Range_start : α} {ops_range_Range_end : α} :=
+  ops_range_Range.constr_ops_range_Range
+    (ops_range_Range_start := ops_range_Range_start)
+    (ops_range_Range_end := ops_range_Range_end)
+
+def ops_index_Index_index {α β γ} (a: α) (i:β)
+  [GetElem α β (Result γ) (fun _ _ => True) ] : (Result γ) := a[i]
+
+instance :
+  GetElem
+    (Array α)
+    (ops_range_Range usize)
+    (Result (Array α)) (fun _ _ => True) where
+  getElem xs i _ := match i with
+  | @ops_range_Range.constr_ops_range_Range _ s e =>
+    let size := xs.size;
+    if (s > e || e > size || s > size) then
+      Result.fail Error.arrayOutOfBounds
+    else
+      pure ( xs.extract s e )
+
+instance {α n} [tn: ToNat β]:
+  GetElem
+    (Vector α n)
+    (ops_range_Range β)
+    (Result (Array α)) (fun _ _ => True) where
+  getElem xs i _ := match i with
+  | @ops_range_Range.constr_ops_range_Range _ s e =>
+    let e := tn.toNat e;
+    let s := tn.toNat s;
+    let size := xs.size;
+    if (s > e || e > size || s > size) then
+      Result.fail Error.arrayOutOfBounds
+    else
+      pure ( (Vector.extract xs s e ).toArray)
 
 
+instance GetElemResult [tn: ToNat β] : GetElem (Array α) β (Result α) (fun _ _ => True) where
+  getElem xs i _ := match xs[tn.toNat i]? with
+  | .some v => pure v
+  | .none => Result.fail .arrayOutOfBounds
+
+instance : GetElem (Array α) usize (Result α) (fun _ _ => True) :=
+  GetElemResult
+instance : GetElem (Array α) Nat (Result α) (fun _ _ => True) :=
+  GetElemResult
+
+instance {α β : Type} {n : Nat} [tn: ToNat β]: GetElem (Vector α n) β (Result α) (fun _ _ => True) where
+  getElem xs i _ := match xs[tn.toNat i]? with
+  | .some v => pure v
+  | .none => Result.fail (.arrayOutOfBounds)
+
+instance {α : Type} {n : Nat}: GetElem (Vector α n) Nat (Result α) (fun _ _ => True) where
+  getElem xs i _ := match xs[i]? with
+  | .some v => pure v
+  | .none => Result.fail (.arrayOutOfBounds)
 
 -- Arrays
 section Arrays
-def ops_index_Index_index (a: Array α) (i:Nat) : Result α :=
-  match a[i]? with
-  | .none => .fail arrayOutOfBounds
-  | .some v => .ok v
 
-def convert_TryInto_try_into {α} : Array α ->
-   result_Result (Array α) array_TryFromSliceError := sorry
-
-instance {α n} : CoeOut (Vector α n) (Array α) where
-  coe x := x.toArray
-
-instance {α β} [i:Coe α β]: Coe (Array α) (Array β) where
-  coe x := Array.map i.coe x
+def convert_TryInto_try_into {α n} (a: Array α) :
+   Result (result_Result (Vector α n) array_TryFromSliceError) :=
+   pure (
+     if h: a.size = n then
+       result_Result.ok (Eq.mp (congrArg _ h) a.toVector)
+     else
+       .err .array_TryFromSliceError
+     )
 
 end Arrays
+
 -- Slices
-def slice_impl_len (a: Array u32) : Nat := sorry
+def alloc_Global : Type := Unit
+
+def unsize {α n} (a: Vector α n) : Result (Array α) :=
+  pure (a.toArray)
+
+def slice_impl_len α (a: Array α) : Nat := a.size
+def vec_Vec (α: Type) (_Allocator:Type) : Type := Array α
+
+def vec_impl_new (α: Type) (Allocator:Type) : Result (vec_Vec α Allocator) :=
+  Result.pure ((List.nil).toArray)
+
+def vec_impl_len (α: Type) (Allocator:Type) (x: vec_Vec α Allocator) : Result Nat :=
+  Result.pure x.size
+
+def vec_impl_extend_from_slice (α Allocator) (x: vec_Vec α Allocator) (y: Array α)
+  : Result (vec_Vec α Allocator):=
+  pure (x.append y)
+
+def slice_impl_to_vec {β} α (a:  Array α) : Result (vec_Vec α β) :=
+  pure a
+
+-- For
+instance {α n} : Coe (Array α) (Result (Vector α n)) where
+  coe x :=
+    if h: x.size = n then by
+      rw [←h]
+      apply Result.pure
+      apply (Array.toVector x)
+    else .fail (.arrayOutOfBounds)
+
 
 -- Bytes
-def num_impl_to_le_bytes : u32 -> Array u8 := sorry
+def num_impl_to_le_bytes (_:u32) : Result (Vector u8 4) :=
+  pure (#v[0, 0, 0, 0]) -- TOFIX
+
+
+-- Closures
+def ops_function_Fn_call {α β} (f: α -> β) (x: α) := f x
+
+
+-- Miscellaneous
+def ops_deref_Deref_deref {α Allocator} (v: vec_Vec α Allocator)
+  : Result (Array α)
+  := pure v
