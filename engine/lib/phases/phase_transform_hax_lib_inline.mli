@@ -1,18 +1,17 @@
 (** This phase transforms nodes like:
     {@rust[
-    hax_lib::inline({
-      let _KIND = ...;
-      ...
-      let _KIND = ...;
-      "payload"
-    })
+      hax_lib::inline({
+        let _KIND = ...;
+        ...
+        let _KIND = ...;
+        "payload"
+      })
     ]}
 
-    into [hax_lib::inline("payload'")] where [payload'] is a string
-    with all the binding names substituted.
+    into [hax_lib::inline("payload'")] where [payload'] is a string with all the
+    binding names substituted.
 
-    Note: above `_KIND` can be `_expr`, `_pat` or `_constructor`.
-*)
+    Note: above `_KIND` can be `_expr`, `_pat` or `_constructor`. *)
 
 module Make (F : Features.T) : sig
   include module type of struct

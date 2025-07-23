@@ -1,12 +1,13 @@
 open! Prelude
 
 module%inlined_contents Make
-    (FA : Features.T
-            with type mutable_variable = Features.On.mutable_variable
-             and type mutable_reference = Features.On.mutable_reference
-             and type nontrivial_lhs = Features.On.nontrivial_lhs
-             and type arbitrary_lhs = Features.On.arbitrary_lhs
-             and type reference = Features.On.reference) =
+    (FA :
+      Features.T
+        with type mutable_variable = Features.On.mutable_variable
+         and type mutable_reference = Features.On.mutable_reference
+         and type nontrivial_lhs = Features.On.nontrivial_lhs
+         and type arbitrary_lhs = Features.On.arbitrary_lhs
+         and type reference = Features.On.reference) =
 struct
   open Ast
   module FB = FA

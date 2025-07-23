@@ -1,9 +1,10 @@
 open! Prelude
 
 module%inlined_contents Make
-    (FA : Features.T
-            with type raw_pointer = Features.Off.raw_pointer
-             and type mutable_pointer = Features.Off.mutable_pointer) =
+    (FA :
+      Features.T
+        with type raw_pointer = Features.Off.raw_pointer
+         and type mutable_pointer = Features.Off.mutable_pointer) =
 struct
   open Ast
 
@@ -213,9 +214,9 @@ struct
               args
               |> List.map
                    ~f:
-                     (fst >> function
-                      | Either.First p -> Place.to_expr p
-                      | Either.Second e -> e)
+                     ( fst >> function
+                       | Either.First p -> Place.to_expr p
+                       | Either.Second e -> e )
               |> List.map ~f:dexpr
             in
             B.

@@ -33,8 +33,7 @@ module%inlined_contents Make (F : Features.T) = struct
 
     [%%inline_defs dmutability + dsafety_kind]
 
-    (** Patterns are "stored" in a
-        [match None { Some <PAT> => (), _ => () }]
+    (** Patterns are "stored" in a [match None { Some <PAT> => (), _ => () }]
         dummy expression. *)
     let extract_pattern (e : B.expr) : B.pat option =
       match e.e with

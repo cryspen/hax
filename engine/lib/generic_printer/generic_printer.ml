@@ -12,7 +12,8 @@ module Annotation = struct
     let line = Int.compare a.line b.line in
     if Int.equal line 0 then Int.compare a.col b.col else line
 
-  (** Converts a list of annotation and a string to a list of annotated string *)
+  (** Converts a list of annotation and a string to a list of annotated string
+  *)
   let split_with_string (s : string) (annots : t list) =
     let lines_position =
       String.to_list s
@@ -99,16 +100,10 @@ module AnnotatedString = struct
 
   let to_sourcemap : t -> Types.source_map =
     snd >> List.filter_map ~f:Annotation.to_mapping >> Sourcemaps.Source_maps.mk
-    >> fun ({
-              mappings;
-              sourceRoot;
-              sources;
-              sourcesContent;
-              names;
-              version;
-              file;
-            } :
-             Sourcemaps.Source_maps.t) ->
+    >>
+    fun ({ mappings; sourceRoot; sources; sourcesContent; names; version; file } :
+          Sourcemaps.Source_maps.t)
+    ->
     Types.
       { mappings; sourceRoot; sources; sourcesContent; names; version; file }
 end
@@ -221,16 +216,16 @@ module Make (F : Features.T) = struct
         |> string
       (** {2:specialize-expr Printers for special types} *)
 
-      method concrete_ident ~local (id : Concrete_ident_render_sig.rendered)
-          : document =
+      method concrete_ident ~local (id : Concrete_ident_render_sig.rendered) :
+          document =
         string
           (if local then id.name
            else
              String.concat ~sep:self#module_path_separator
                (id.path @ [ id.name ]))
-      (** [concrete_ident ~local id] prints a name without path if
-      [local] is true, otherwise it prints the full path, separated by
-      `module_path_separator`. *)
+      (** [concrete_ident ~local id] prints a name without path if [local] is
+          true, otherwise it prints the full path, separated by
+          `module_path_separator`. *)
 
       method quote ~contents ~witness:_ : document =
         List.map ~f:(fun doc -> doc#p) contents |> concat
@@ -247,9 +242,8 @@ module Make (F : Features.T) = struct
             constant:concrete_ident lazy_doc ->
             generics:generic_value lazy_doc list ->
             document
-      (** [expr'_App_constant ~super ~constant ~generics] prints the
-      constant [e] with generics [generics]. [super] is the
-      unspecialized [expr]. *)
+      (** [expr'_App_constant ~super ~constant ~generics] prints the constant
+          [e] with generics [generics]. [super] is the unspecialized [expr]. *)
 
       method virtual expr'_App_application
           : super:expr ->
@@ -257,24 +251,24 @@ module Make (F : Features.T) = struct
             args:expr lazy_doc list ->
             generics:generic_value lazy_doc list ->
             document
-      (** [expr'_App_application ~super ~f ~args ~generics] prints the
-      function application [e<...generics>(...args)]. [super] is the
-      unspecialized [expr]. *)
+      (** [expr'_App_application ~super ~f ~args ~generics] prints the function
+          application [e<...generics>(...args)]. [super] is the unspecialized
+          [expr]. *)
 
       method virtual expr'_App_tuple_projection
           : super:expr -> size:int -> nth:int -> e:expr lazy_doc -> document
-      (** [expr'_App_tuple_projection ~super ~size ~nth ~e] prints
-      the projection of the [nth] component of the tuple [e] of
-      size [size]. [super] is the unspecialized [expr]. *)
+      (** [expr'_App_tuple_projection ~super ~size ~nth ~e] prints the
+          projection of the [nth] component of the tuple [e] of size [size].
+          [super] is the unspecialized [expr]. *)
 
       method virtual expr'_App_field_projection
           : super:expr ->
             field:concrete_ident lazy_doc ->
             e:expr lazy_doc ->
             document
-      (** [expr'_App_field_projection ~super ~field ~e] prints the
-      projection of the field [field] in the expression [e]. [super]
-      is the unspecialized [expr]. *)
+      (** [expr'_App_field_projection ~super ~field ~e] prints the projection of
+          the field [field] in the expression [e]. [super] is the unspecialized
+          [expr]. *)
 
       method virtual expr'_Construct_inductive
           : super:expr ->
@@ -284,10 +278,10 @@ module Make (F : Features.T) = struct
             fields:(global_ident lazy_doc * expr lazy_doc) list ->
             base:(expr lazy_doc * F.construct_base) lazy_doc option ->
             document
-      (** [expr'_Construct_inductive ~super ~is_record ~is_struct
-      ~constructor ~base ~fields] prints the construction of an
-      inductive with base [base] and fields [fields]. [super] is the
-      unspecialized [expr]. TODO doc is_record is_struct *)
+      (** [expr'_Construct_inductive ~super ~is_record ~is_struct ~constructor
+           ~base ~fields] prints the construction of an inductive with base
+          [base] and fields [fields]. [super] is the unspecialized [expr]. TODO
+          doc is_record is_struct *)
 
       method virtual expr'_Construct_tuple
           : super:expr -> components:expr lazy_doc list -> document
@@ -331,15 +325,15 @@ module Make (F : Features.T) = struct
       (** {2:specialize-ty Specialized printers for [ty]} *)
 
       method virtual ty_TApp_tuple : types:ty list -> document
-      (** [ty_TApp_tuple ~types] prints a tuple type with
-      compounds types [types]. *)
+      (** [ty_TApp_tuple ~types] prints a tuple type with compounds types
+          [types]. *)
 
       method virtual ty_TApp_application
           : typ:concrete_ident lazy_doc ->
             generics:generic_value lazy_doc list ->
             document
       (** [ty_TApp_application ~typ ~generics] prints the type
-      [typ<...generics>]. *)
+          [typ<...generics>]. *)
 
       (** {2:specialize-ty Specialized printers for [item]} *)
 
@@ -352,11 +346,16 @@ module Make (F : Features.T) = struct
             arguments:
               (concrete_ident lazy_doc * ty lazy_doc * attr list lazy_doc) list ->
             document
-      (** [item'_Type_struct ~super ~type_name ~constructor_name ~generics ~tuple_struct ~arguments] prints the struct definition [struct name<generics> arguments]. `tuple_struct` says whether we are dealing with a tuple struct
-            (e.g. [struct Foo(T1, T2)]) or a named struct
-            (e.g. [struct Foo {field: T1, other: T2}])?
-            
-            `type_name` is the identifier of the type itself, while `constructor_name` is the identifier of the constructor of the struct. Depending on the naming policy, those can be rendered as the same name or not. *)
+      (** [item'_Type_struct ~super ~type_name ~constructor_name ~generics
+           ~tuple_struct ~arguments] prints the struct definition
+          [struct name<generics> arguments]. `tuple_struct` says whether we are
+          dealing with a tuple struct (e.g. [struct Foo(T1, T2)]) or a named
+          struct (e.g. [struct Foo {field: T1, other: T2}])?
+
+          `type_name` is the identifier of the type itself, while
+          `constructor_name` is the identifier of the constructor of the struct.
+          Depending on the naming policy, those can be rendered as the same name
+          or not. *)
 
       method virtual item'_Type_enum
           : super:item ->
@@ -364,8 +363,8 @@ module Make (F : Features.T) = struct
             generics:generics lazy_doc ->
             variants:variant lazy_doc list ->
             document
-      (** [item'_Type_enum ~super ~name ~generics ~variants] prints
-      the enum type [enum name<generics> { ... }]. *)
+      (** [item'_Type_enum ~super ~name ~generics ~variants] prints the enum
+          type [enum name<generics> { ... }]. *)
 
       method virtual item'_Enum_Variant
           : name:concrete_ident lazy_doc ->
@@ -379,13 +378,14 @@ module Make (F : Features.T) = struct
       (** {2:common-nodes Printers for common nodes} *)
 
       method virtual common_array : document list -> document
-      (** [common_array values] is a default for printing array-like nodes: array patterns, array expressions. *)
+      (** [common_array values] is a default for printing array-like nodes:
+          array patterns, array expressions. *)
 
       (** {2:defaults Default printers} **)
 
       method module_path_separator = "::"
-      (** [module_path_separator] is the default separator for
-      paths. `::` by default *)
+      (** [module_path_separator] is the default separator for paths. `::` by
+          default *)
 
       method pat'_PArray ~super:_ ~args =
         List.map ~f:(fun arg -> arg#p) args |> self#common_array
@@ -591,13 +591,13 @@ module Make (F : Features.T) = struct
           | _ -> self#unreachable ()
         else self#item'_Type_enum ~super ~name ~generics ~variants
 
-      method _do_not_override_variant
-          : name:concrete_ident lazy_doc ->
-            arguments:
-              (concrete_ident lazy_doc * ty lazy_doc * attrs lazy_doc) list ->
-            is_record:bool ->
-            attrs:attrs lazy_doc ->
-            document =
+      method _do_not_override_variant :
+          name:concrete_ident lazy_doc ->
+          arguments:
+            (concrete_ident lazy_doc * ty lazy_doc * attrs lazy_doc) list ->
+          is_record:bool ->
+          attrs:attrs lazy_doc ->
+          document =
         self#item'_Enum_Variant
 
       method _do_not_override_lazy_of_local_ident ast_position
@@ -638,17 +638,17 @@ module Make (F : Features.T) = struct
                   ^ "]"))
           ast_position id
 
-      method! _do_not_override_lazy_of_item ast_position (value : item)
-          : item lazy_doc =
+      method! _do_not_override_lazy_of_item ast_position (value : item) :
+          item lazy_doc =
         let module View = (val concrete_ident_view) in
         current_namespace <- Some (View.render value.ident).path;
         super#_do_not_override_lazy_of_item ast_position value
 
-      method _do_not_override_lazy_of_generics ast_position (value : generics)
-          : (generics lazy_doc
-            * generic_param lazy_doc list
-            * generic_constraint lazy_doc list)
-            lazy_doc =
+      method _do_not_override_lazy_of_generics ast_position (value : generics) :
+          (generics lazy_doc
+          * generic_param lazy_doc list
+          * generic_constraint lazy_doc list)
+          lazy_doc =
         let params =
           List.map
             ~f:(fun x ->

@@ -1,6 +1,4 @@
-(**
-This module helps communicating with `cargo-hax`.
-*)
+(** This module helps communicating with `cargo-hax`. *)
 
 open Prelude
 

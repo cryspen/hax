@@ -2,13 +2,13 @@ open! Prelude
 
 (** This modules defines what is the view over a concrete identifiers.
 
-    Hax manipulates concrete identifiers (that is global identifiers referring to
-    concrete Rust items -- not built-in operators) as raw Rust identifiers
+    Hax manipulates concrete identifiers (that is global identifiers referring
+    to concrete Rust items -- not built-in operators) as raw Rust identifiers
     augmented with some metadata.
 
     Rust represents identifiers as a crate and a path. Each chunk of the path is
-    roughly a level of nest in Rust. The path lacks information about
-    definition kinds.
+    roughly a level of nest in Rust. The path lacks information about definition
+    kinds.
 
     There is two kinds of nesting for items.
     - Comfort: e.g. the user decides to embed a struct within a function to work
@@ -36,16 +36,9 @@ open! Prelude
     [my_crate::a::<Impl 0>::assoc_fn::LocalStruct::field].
 
     The view for [LocalStruct] looks like:
-    [{
-      {
-        path: ["mycrate"; "a"],
-        name_path: [
-          `AssociatedItem ("assoc_fn", `Impl 0);
-          `Field ("field", `Constructor ("LocalStruct", `Struct "LocalStruct"))
-        ]
-      }
-    }]
-*)
+    [{ { path: ["mycrate"; "a"], name_path: [ `AssociatedItem ("assoc_fn", `Impl
+     0); `Field ("field", `Constructor ("LocalStruct", `Struct "LocalStruct")) ]
+     } }] *)
 
 type disambiguator = Int64.t
 [@@deriving show, hash, compare, sexp, hash, eq, map]
@@ -65,7 +58,7 @@ module DisambiguatedString = struct
 end
 
 (** A "module and crate"-only path. This is the longest `mod` suffix of a
-  definition identifier path. This is a list of disambiguated strings. *)
+    definition identifier path. This is a list of disambiguated strings. *)
 module ModPath = struct
   module T = struct
     open struct
@@ -86,16 +79,16 @@ end
 (** A relational path is a path composed of relational chunks. *)
 module RelPath = struct
   (** A relational chunk is a short path describing "mandatory" nestings between
-      items: e.g. a field below a struct, an enum below an enum variants, etc. 
+      items: e.g. a field below a struct, an enum below an enum variants, etc.
 
-    The types defined by this module are indexed by two other types: ['name] and
-    ['disambiguator]. This helps for instrumenting the view to perform
-    additional operations: see [collect_either], [collect] and [root].
-    *)
+      The types defined by this module are indexed by two other types: ['name]
+      and ['disambiguator]. This helps for instrumenting the view to perform
+      additional operations: see [collect_either], [collect] and [root]. *)
   module Chunk = struct
     type 'name type_definition =
       [ `Enum of 'name | `Struct of 'name | `Union of 'name ]
-    (** A type can be an enum, a struct or a union. A type is standalone: it has no mandatory parent item. *)
+    (** A type can be an enum, a struct or a union. A type is standalone: it has
+        no mandatory parent item. *)
 
     and 'name constructor = [ `Constructor of 'name * 'name type_definition ]
     (** A constructor always has a parent type definition. *)
@@ -103,11 +96,11 @@ module RelPath = struct
     and 'name maybe_associated = [ `Fn of 'name | `Const of 'name ]
     [@@deriving show, hash, compare, sexp, hash, eq, map]
     (** Helper type for function and constants: those exist both as associated
-      in an impl block or a trait, and as standalone. *)
+        in an impl block or a trait, and as standalone. *)
 
     type 'name associated = [ 'name maybe_associated | `Type of 'name ]
     (** An associated item. This is pulled out of [`AssociatedItem] below:
-      otherwise, some PPX is broken...  *)
+        otherwise, some PPX is broken... *)
 
     and ('name, 'disambiguator) assoc_parent =
       [ `Impl of
@@ -154,19 +147,19 @@ module RelPath = struct
       | `Field of 'name * 'name constructor
       | `Closure of 'disambiguator
         (** We usually never refer to closure: in THIR, we inline closures.
-          However, items can be placed under closures, thus it is present here.
-          See #1450 for more details. *)
-      ]
+            However, items can be placed under closures, thus it is present
+            here. See #1450 for more details. *) ]
     [@@deriving show, hash, compare, sexp, hash, eq, map]
-    (** [poly] is the (polymorphic) type for a relational chunk: it defines what is a chunk. *)
+    (** [poly] is the (polymorphic) type for a relational chunk: it defines what
+        is a chunk. *)
 
     type t = (DisambiguatedString.t, disambiguator) poly
     [@@deriving show, hash, compare, sexp, hash, eq]
     (** [t] is the natural instantiation of [poly]. *)
 
     (** Transforms a [t] into a [poly] with annotated strings instead of just
-        disambiguators. This adds names to the disambiguator-only constructs defined in
-        [poly]. *)
+        disambiguators. This adds names to the disambiguator-only constructs
+        defined in [poly]. *)
     let add_strings ?(impl = "impl") ?(anon_const = "anon_const")
         ?(foreign = "foregin") ?(global_asm = "global_asm") (n : t) :
         (DisambiguatedString.t, DisambiguatedString.t) poly =
@@ -185,7 +178,7 @@ module RelPath = struct
 
     (** Collects all the data of a [t], from the child to the parent. *)
     let rec collect_either :
-          'n 'd. ('n, 'd) poly -> [ `N of 'n | `D of 'd ] list = function
+        'n 'd. ('n, 'd) poly -> [ `N of 'n | `D of 'd ] list = function
       | `Opaque n
       | `GlobalAsm n
       | `AnonConst n
@@ -215,7 +208,7 @@ module RelPath = struct
       | `Field (a, b) -> `N a :: collect_either (b :> _ poly)
 
     (** Same as [collect_either], but works on a [poly] whose ['name] and
-      ['disambiguator] happen to be the same type. *)
+        ['disambiguator] happen to be the same type. *)
     let collect : 'a. ('a, 'a) poly -> 'a list =
      fun n -> collect_either n |> List.map ~f:(function `D v | `N v -> v)
 

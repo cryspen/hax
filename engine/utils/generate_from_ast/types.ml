@@ -1,5 +1,4 @@
-(** This module defines a subset of OCaml inductives as a nice and
-simple AST *)
+(** This module defines a subset of OCaml inductives as a nice and simple AST *)
 
 open Base
 open! Utils
@@ -54,7 +53,8 @@ module Record = struct
   let of_ocaml : label_declaration list -> t = List.map ~f:field_of_ocaml
 end
 
-(** Describe what is a variant payload, reflects OCaml's `construtor_arguments`. *)
+(** Describe what is a variant payload, reflects OCaml's `construtor_arguments`.
+*)
 module VariantPayload = struct
   type t = Record of Record.t | Tuple of Type.t list | None
   [@@deriving show, yojson]
@@ -99,7 +99,8 @@ module Datatype = struct
     | Variant of Variant.t list
     | TypeSynonym of Type.t
     | Opaque
-        (** `Opaque` is not produced by `of_ocaml` below; it is used by `codegen_visitor` to generate identity visitors *)
+        (** `Opaque` is not produced by `of_ocaml` below; it is used by
+            `codegen_visitor` to generate identity visitors *)
   [@@deriving show, yojson]
 
   type t = { name : string; type_vars : string list; kind : kind }

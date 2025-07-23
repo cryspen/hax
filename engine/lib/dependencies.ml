@@ -10,8 +10,8 @@ module Make (F : Features.T) = struct
   let ident_of (item : item) : Concrete_ident.t = item.ident
 
   (** Get all the identifiers declared under an item. This includes the
-    identifier of the item itself, but also of any sub-item: for instance,
-    associated items within an impl. *)
+      identifier of the item itself, but also of any sub-item: for instance,
+      associated items within an impl. *)
   let idents_of (item : item) : Concrete_ident.t list =
     let is_field_anonymous ident =
       match List.last (Concrete_ident.to_view ident).mod_path with

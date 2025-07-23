@@ -139,7 +139,8 @@ let c_item_attrs (attrs : Thir.item_attributes) : attrs =
   let parent =
     c_attrs attrs.parent_attributes
     |> List.filter ~f:([%matches? ({ kind = DocComment _; _ } : attr)] >> not)
-    |> (* Repeating associateditem or uid is harmful, same for comments *)
+    |>
+    (* Repeating associateditem or uid is harmful, same for comments *)
     List.filter ~f:(fun payload ->
         match Attr_payloads.payloads [ payload ] with
         | [ ((Uid _ | AssociatedItem _), _) ] -> false
@@ -363,9 +364,9 @@ end) : EXPR = struct
       let span = Span.of_thir e.span in
       U.hax_failure_expr' span typ (ctx, kind) ""
 
-  (** Extracts an expression as the global name `dropped_body`: this
-      drops the computational part of the expression, but keeps a
-      correct type and span. *)
+  (** Extracts an expression as the global name `dropped_body`: this drops the
+      computational part of the expression, but keeps a correct type and span.
+  *)
   and c_expr_drop_body (e : Thir.decorated_for__expr_kind) : expr =
     let typ = c_ty e.span e.ty in
     let span = Span.of_thir e.span in
@@ -603,7 +604,7 @@ end) : EXPR = struct
           let projector =
             GlobalVar
               (`Projector
-                (`Concrete (Concrete_ident.of_def_id ~value:true field)))
+                 (`Concrete (Concrete_ident.of_def_id ~value:true field)))
           in
           let span = Span.of_thir e.span in
           App
@@ -616,7 +617,10 @@ end) : EXPR = struct
             }
       | TupleField { lhs; field } ->
           (* TODO: refactor *)
-          let tuple_len = 0 (* todo, lookup type *) in
+          let tuple_len =
+            0
+            (* todo, lookup type *)
+          in
           let lhs = c_expr lhs in
           let projector =
             GlobalVar
@@ -1321,9 +1325,8 @@ include struct
     c_clause
 end
 
-(** Instantiate the functor for translating expressions. The crate
-name can be configured (there are special handling related to `core`)
-*)
+(** Instantiate the functor for translating expressions. The crate name can be
+    configured (there are special handling related to `core`) *)
 let make ~krate : (module EXPR) =
   let is_core_item = String.(krate = "core" || krate = "core_hax_model") in
   let module M : EXPR = Make (struct
@@ -1357,8 +1360,8 @@ let should_skip (attrs : Thir.item_attributes) =
   let attrs = attrs.attributes @ attrs.parent_attributes in
   is_automatically_derived attrs
 
-(** Converts a generic parameter to a generic value. This assumes the
-parameter is bound. *)
+(** Converts a generic parameter to a generic value. This assumes the parameter
+    is bound. *)
 let generic_param_to_value ({ ident; kind; span; _ } : generic_param) :
     generic_value =
   match kind with
@@ -1626,7 +1629,10 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
       in
       let { params; constraints } = c_generics generics in
       let self =
-        let id = Local_ident.mk_id Typ 0 (* todo *) in
+        let id =
+          Local_ident.mk_id Typ 0
+          (* todo *)
+        in
         let ident = Local_ident.{ name = "Self"; id } in
         { ident; span; attrs = []; kind = GPType }
       in

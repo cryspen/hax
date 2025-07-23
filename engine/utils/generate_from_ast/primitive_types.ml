@@ -1,5 +1,5 @@
-(** This module encodes several primitive OCaml types as Datatype.t so
-that visitors can be generated automatically for them as well. *)
+(** This module encodes several primitive OCaml types as Datatype.t so that
+    visitors can be generated automatically for them as well. *)
 
 open Base
 open! Utils

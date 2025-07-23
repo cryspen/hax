@@ -27,7 +27,8 @@ module Make (F : Features.T) =
             trait:(impl_expr * generic_value list) option ->
             expr
 
-          (** Retype a function application: this concretize the types, using concrete types from arguments.  *)
+          (** Retype a function application: this concretize the types, using
+              concrete types from arguments. *)
           let retype (fn : t) : t =
            fun ~span ~typ ~f ~args ~generic_args ~bounds_impls ~trait ->
             let f =
@@ -44,7 +45,8 @@ module Make (F : Features.T) =
            fun ~span ~typ ~f ~args ~generic_args:_ ~bounds_impls:_ ~trait:_ ->
             fn ~span ~typ ~f ~args ~generic_args:[] ~bounds_impls:[] ~trait:None
 
-          (** Monomorphize a function call: this removes any impl references, and concretize types. *)
+          (** Monomorphize a function call: this removes any impl references,
+              and concretize types. *)
           let monorphic (fn : t) : t = remove_traits (retype fn)
 
           let name name : t =
@@ -73,8 +75,8 @@ module Make (F : Features.T) =
         (** A pattern that helps matching against function applications *)
 
         type ('a, 'b) predicate = 'a -> 'b option
-        (** Instead of working directly with boolean predicate, we
-        work with `_ -> _ option` so that we can chain them *)
+        (** Instead of working directly with boolean predicate, we work with `_
+            -> _ option` so that we can chain them *)
 
         (** Constructs a predicate out of predicates and names *)
         let mk' (args : ('a, 'b) predicate list) (ret : ('c, 'd) predicate)

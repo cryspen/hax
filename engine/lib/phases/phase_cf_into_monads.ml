@@ -1,9 +1,10 @@
 open! Prelude
 
 module%inlined_contents Make
-    (F : Features.T
-           with type monadic_action = Features.Off.monadic_action
-            and type monadic_binding = Features.Off.monadic_binding) =
+    (F :
+      Features.T
+        with type monadic_action = Features.Off.monadic_action
+         and type monadic_binding = Features.Off.monadic_binding) =
 struct
   open Ast
   module FA = F

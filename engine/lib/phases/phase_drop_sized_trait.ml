@@ -14,10 +14,25 @@ module Make (F : Features.T) =
         let ctx = Diagnostics.Context.Phase phase_id
       end)
 
-      let visitor =
-        let keep (ii : impl_ident) =
-          Concrete_ident.eq_name Core__marker__Sized ii.goal.trait |> not
+      let discard (trait : Ast.concrete_ident) =
+        let hax_core_models_extraction =
+          Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
+          |> [%equal: string option] (Some "on")
         in
+
+        Concrete_ident.eq_name Core__marker__Sized trait
+        || hax_core_models_extraction
+           && (Concrete_ident.eq_name Core__clone__Clone trait
+              || Concrete_ident.eq_name Core__ops__function__Fn trait
+              || Concrete_ident.eq_name Core__marker__Copy trait
+              || Concrete_ident.eq_name Core__marker__StructuralPartialEq trait
+              || Concrete_ident.eq_name Core__cmp__PartialEq trait
+              || Concrete_ident.eq_name Core__cmp__Eq trait
+              || Concrete_ident.eq_name Core__cmp__PartialOrd trait
+              || Concrete_ident.eq_name Core__cmp__Ord trait)
+
+      let visitor =
+        let keep (ii : impl_ident) = discard ii.goal.trait |> not in
         object
           inherit [_] Visitors.map as super
 
@@ -62,5 +77,10 @@ module Make (F : Features.T) =
             | _ -> ii'
         end
 
-      let ditems = List.map ~f:(visitor#visit_item ())
+      let ditems =
+        List.filter ~f:(fun item ->
+            match item.v with
+            | Impl { of_trait = tr, _; _ } when discard tr -> false
+            | _ -> true)
+        >> List.map ~f:(visitor#visit_item ())
     end)

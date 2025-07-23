@@ -48,8 +48,8 @@ module%inlined_contents Make (FA : Features.T) = struct
               ^ [%show: ty] t)
 
       (** Expects [impl] to be an impl. expr. for the trait
-      `std::ops::FromResidual` for the type [Result<_, _>], and
-      extract its parent [From] impl expr *)
+          `std::ops::FromResidual` for the type [Result<_, _>], and extract its
+          parent [From] impl expr *)
       let expect_residual_impl_result (impl : impl_expr) : impl_expr option =
         match impl with
         | {
@@ -91,9 +91,8 @@ module%inlined_contents Make (FA : Features.T) = struct
             { e with typ = make_result_type success error }
         | _ -> e
 
-      (** [map_err e error_dest impl] creates the expression
-      [e.map_err(from)] with the proper types and impl
-      informations. *)
+      (** [map_err e error_dest impl] creates the expression [e.map_err(from)]
+          with the proper types and impl informations. *)
       let map_err (e : expr) (error_dest : ty) impl : expr option =
         let* success, error_src = expect_result_type e.typ in
         let* impl = expect_residual_impl_result impl in
@@ -109,9 +108,9 @@ module%inlined_contents Make (FA : Features.T) = struct
           in
           Some call
 
-      (** [extract e] returns [Some (x, ty)] if [e] was a `y?`
-      desugared by rustc. `y` is `x` plus possibly a coercion. [ty] is
-      the return type of the function. *)
+      (** [extract e] returns [Some (x, ty)] if [e] was a `y?` desugared by
+          rustc. `y` is `x` plus possibly a coercion. [ty] is the return type of
+          the function. *)
       let extract (e : expr) : (expr * ty) option =
         let extract_return (e : expr) =
           match e.e with

@@ -60,8 +60,8 @@ module MAKE_MONOMORPHIC_PHASE (F : Features.T) = struct
   end
 end
 
-(** Make a monomorphic phase: a phase that transform an AST with
-feature set [F] into an AST with the same feature set [F] *)
+(** Make a monomorphic phase: a phase that transform an AST with feature set [F]
+    into an AST with the same feature set [F] *)
 module MakeMonomorphicPhase
     (F : Features.T)
     (M : MAKE_MONOMORPHIC_PHASE(F).ARG) : MAKE_MONOMORPHIC_PHASE(F).T = struct

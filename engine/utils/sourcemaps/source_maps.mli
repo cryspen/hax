@@ -10,7 +10,7 @@ type mapping = {
   source : string;
   name : string option;
 }
-(** A source file to generated file mapping  *)
+(** A source file to generated file mapping *)
 
 type t = {
   mappings : string;

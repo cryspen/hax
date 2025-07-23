@@ -29,8 +29,8 @@ let expect_singleton : 'a. 'a list -> 'a option = function
   | [ x ] -> Some x
   | _ -> None
 
-(** [let*? () = guard in body] acts as a guard: if [guard] holds, then
-[body] is executed, otherwise [None] is returned. *)
+(** [let*? () = guard in body] acts as a guard: if [guard] holds, then [body] is
+    executed, otherwise [None] is returned. *)
 let ( let*? ) (type a) (x : bool) (f : unit -> a option) =
   let* () = some_if_true x in
   f ()
@@ -55,7 +55,8 @@ let split_list ~equal ~needle (subject : 'a list) : 'a list list =
   in
   h subject
 
-(** Map over a list with a option-returning function. Returns `Some` iff every calls to `f` returned `Some`. *)
+(** Map over a list with a option-returning function. Returns `Some` iff every
+    calls to `f` returned `Some`. *)
 let rec maybe_map ~(f : 'a -> 'b option) (l : 'a list) : 'b list option =
   match l with
   | hd :: tl ->

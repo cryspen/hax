@@ -27,7 +27,8 @@ module H = struct
     Option.map ~f:contents did.parent
 end
 
-(** A pure, def_id_contents version of [of_def_id]. This is not exposed publicly. *)
+(** A pure, def_id_contents version of [of_def_id]. This is not exposed
+    publicly. *)
 let pure_of_def_id ?constructor (def_id : Types.def_id_contents) : t option =
   let* _not_crate_root = def_id.path |> List.last in
   let path_without_ctor =
@@ -90,8 +91,8 @@ let rec parents (did : t) =
 let to_def_id { def_id; _ } = def_id
 let is_constructor { is_constructor; _ } = is_constructor
 
-(** Stateful store that maps [def_id]s to implementation information
-(which trait is implemented? for which type? under which constraints?) *)
+(** Stateful store that maps [def_id]s to implementation information (which
+    trait is implemented? for which type? under which constraints?) *)
 module ImplInfoStore = struct
   let state : (Types.def_id_contents, Types.impl_infos) Hashtbl.t option ref =
     ref None
@@ -113,13 +114,13 @@ module ImplInfoStore = struct
     | None -> failwith "ImplInfoStore was not initialized"
     | Some state -> state
 
-  (** Given a [id] of type [def_id], [find id] will return [Some
-            impl_info] when [id] is an (non-inherent[1]) impl. [impl_info]
-            contains information about the trait being implemented and for
-            which type.
-      
-            [1]: https://doc.rust-lang.org/reference/items/implementations.html#inherent-implementations
-        *)
+  (** Given a [id] of type [def_id], [find id] will return [Some impl_info] when
+      [id] is an (non-inherent[1]) impl. [impl_info] contains information about
+      the trait being implemented and for which type.
+
+      [1]:
+      https://doc.rust-lang.org/reference/items/implementations.html#inherent-implementations
+  *)
   let find k = Hashtbl.find (get_state ()) k
 
   let lookup_raw (impl_def_id : t) : Types.impl_infos option =

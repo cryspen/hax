@@ -241,11 +241,11 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
             contents
           |> concat
 
-        method expr_monadic_let
-            : monad:supported_monads * F.monadic_binding ->
-              lhs:pat ->
-              rhs:expr ->
-              expr fn =
+        method expr_monadic_let :
+            monad:supported_monads * F.monadic_binding ->
+            lhs:pat ->
+            rhs:expr ->
+            expr fn =
           fun ~monad:_ ~lhs ~rhs body -> print#expr_let ~lhs ~rhs body
 
         method expr_let : lhs:pat -> rhs:expr -> expr fn =
@@ -295,12 +295,12 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
           | _ ->
               print#assertion_failure "global_ident_projector: not a projector"
 
-        method doc_construct_inductive
-            : is_record:bool ->
-              is_struct:bool ->
-              constructor:concrete_ident ->
-              base:document option ->
-              (global_ident * document) list fn =
+        method doc_construct_inductive :
+            is_record:bool ->
+            is_struct:bool ->
+            constructor:concrete_ident ->
+            base:document option ->
+            (global_ident * document) list fn =
           fun ~is_record ~is_struct:_ ~constructor ~base:_ args ->
             if is_record then
               print#concrete_ident constructor
@@ -317,12 +317,12 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
               ^^ space
               ^^ iblock parens (separate_map (break 0) snd args)
 
-        method expr_construct_inductive
-            : is_record:bool ->
-              is_struct:bool ->
-              constructor:concrete_ident ->
-              base:(expr * F.construct_base) option ->
-              (global_ident * expr) list fn =
+        method expr_construct_inductive :
+            is_record:bool ->
+            is_struct:bool ->
+            constructor:concrete_ident ->
+            base:(expr * F.construct_base) option ->
+            (global_ident * expr) list fn =
           fun ~is_record ~is_struct ~constructor ~base ->
             let base =
               Option.map

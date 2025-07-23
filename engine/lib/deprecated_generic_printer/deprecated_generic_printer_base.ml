@@ -2,8 +2,8 @@ open! Prelude
 open! Ast
 open PPrint
 
-(** Generic printer for the {!module:Ast} ASTs. It uses the [PPrint]
-library, and additionally computes {!Annotation.t}.  *)
+(** Generic printer for the {!module:Ast} ASTs. It uses the [PPrint] library,
+    and additionally computes {!Annotation.t}. *)
 
 (** Identifies a position in the AST. This is useful for figuring out wether we
     should wrap a chunk of AST in parenthesis, or not, or for implementing
@@ -66,12 +66,12 @@ end
 
 type annot_str = string * Annotation.t list [@@deriving show, yojson, eq]
 
-(** When printing a chunk of AST, should we wrap parenthesis
-({!NeedsPar}) or not ({!AlreadyPar})? *)
+(** When printing a chunk of AST, should we wrap parenthesis ({!NeedsPar}) or
+    not ({!AlreadyPar})? *)
 type par_state = NeedsPar | AlreadyPar
 
 (** The context of a literal in the AST, does it appear in a pattern ({!Pat}) or
-  in an expression ({!Expr})?*)
+    in an expression ({!Expr})?*)
 type literal_ctx = Pat | Expr
 
 module Make (F : Features.T) = struct
@@ -81,9 +81,9 @@ module Make (F : Features.T) = struct
 
   type 't fn = 't -> document
 
-  (** Raw generic printers base class. Those are useful for building a
-  printer, not for consuming printers. Consumers should use
-  the {!module:Api} functor. *)
+  (** Raw generic printers base class. Those are useful for building a printer,
+      not for consuming printers. Consumers should use the {!module:Api}
+      functor. *)
   class virtual print_base =
     object (print)
       val mutable current_span = Span.default
@@ -122,8 +122,8 @@ module Make (F : Features.T) = struct
             id
       (** Print a concrete identifier.
 
-      Differentiates between encounters of the identifier in its own namespace
-      or a foreign namespace.*)
+          Differentiates between encounters of the identifier in its own
+          namespace or a foreign namespace.*)
 
       method assertion_failure : 'any. string -> 'any =
         fun details ->

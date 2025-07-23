@@ -1,5 +1,5 @@
-(** Give a list of {!Types.Datatype.t}, this file generates an ocaml
-module of visitors. *)
+(** Give a list of {!Types.Datatype.t}, this file generates an ocaml module of
+    visitors. *)
 
 open Base
 open Utils
@@ -46,7 +46,8 @@ let of_type typ payload = app [ of_type' false typ; env_var; payload ]
 
 let acc_var_for_field ((field, _) : Record.field) = acc_var_prefix ^ field
 
-(** Given a list [x1; ...; xN], produces `self#plus x1 (self#plus ... (self#plus xN))` *)
+(** Given a list [x1; ...; xN], produces `self#plus x1 (self#plus ... (self#plus
+    xN))` *)
 let self_plus =
   List.fold_left
     ~f:(fun acc var ->

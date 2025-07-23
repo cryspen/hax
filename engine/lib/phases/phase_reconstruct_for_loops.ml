@@ -1,7 +1,8 @@
 open! Prelude
 
 module%inlined_contents Make
-    (FA : Features.T
+    (FA :
+      Features.T
     (* with type raw_pointer = Features.off *)
     (*  and type mutable_pointer = Features.off *)) =
 struct
@@ -97,7 +98,7 @@ struct
                                                                     e =
                                                                       GlobalVar
                                                                         (`Concrete
-                                                                          next_meth);
+                                                                           next_meth);
                                                                   };
                                                                 args =
                                                                   [
@@ -117,8 +118,8 @@ struct
                                                                           };
                                                                     };
                                                                   ];
-                                                                _;
-                                                                (* TODO: see issue #328 *)
+                                                                _
+                                                                (* TODO: see issue #328 *);
                                                               };
                                                         };
                                                       arms =
@@ -166,8 +167,8 @@ struct
                                                                                 };
                                                                               };
                                                                             ];
-                                                                          _;
-                                                                          (* TODO: see issue #328 *)
+                                                                          _
+                                                                          (* TODO: see issue #328 *);
                                                                         };
                                                                   };
                                                               };

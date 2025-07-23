@@ -100,8 +100,7 @@ module Make (F : Features.T) = struct
             args = [ e ];
             generic_args = _;
             trait = _;
-            _;
-            (* TODO: see issue #328 *)
+            _ (* TODO: see issue #328 *);
           }
         when Concrete_ident.eq_name f f' ->
           Some e
@@ -206,8 +205,7 @@ module Make (F : Features.T) = struct
                   args = [ { e = Borrow { e = sub; _ }; _ } ];
                   generic_args = _;
                   trait = _;
-                  _;
-                  (* TODO: see issue #328 *)
+                  _ (* TODO: see issue #328 *);
                 } ->
                 expr sub
             | _ -> super#visit_expr () e
@@ -215,9 +213,9 @@ module Make (F : Features.T) = struct
           expr e
       end
 
-    (** Rename impl expressions variables. By default, they are big
-      and unique identifiers, after this function, they are renamed
-      into `iN` where `N` is a short local unique identifier. *)
+    (** Rename impl expressions variables. By default, they are big and unique
+        identifiers, after this function, they are renamed into `iN` where `N`
+        is a short local unique identifier. *)
     let rename_generic_constraints =
       object
         inherit [_] Visitors.map as super
@@ -280,9 +278,9 @@ module Make (F : Features.T) = struct
           | _ -> super#visit_expr () e
       end
 
-    (** [replace_local_variable var replacement] returns a visitor
-      that maps any type of the AST replacing every occurence of the
-      expression [LocalVar var] by [replacement]. *)
+    (** [replace_local_variable var replacement] returns a visitor that maps any
+        type of the AST replacing every occurence of the expression
+        [LocalVar var] by [replacement]. *)
     let replace_local_variable (var : local_ident) (replacement : expr) =
       replace_local_variables
         (Map.of_alist_exn (module Local_ident) [ (var, replacement) ])
@@ -319,9 +317,9 @@ module Make (F : Features.T) = struct
         (f : visit_level -> global_ident -> global_ident) : item -> item =
       (rename_global_idents f)#visit_item ExprLevel
 
-    (** Add type ascription nodes in nested function calls.  This helps
-    type inference in the presence of associated types in backends
-    that don't support them well (F* for instance). *)
+    (** Add type ascription nodes in nested function calls. This helps type
+        inference in the presence of associated types in backends that don't
+        support them well (F* for instance). *)
     let add_typ_ascription =
       let is_app = Expect.concrete_app' >> Option.is_some in
       let o =
@@ -425,11 +423,11 @@ module Make (F : Features.T) = struct
           shadows' ~env vars x next
       end
 
-      (** Rust macros are hygienic: even if a macro introduces a name
-         that already exists in scope, the compiler will not shadow
-         it. Instead, it will track and differentiate the two, even if
-         those have the same name. `collect_ambiguous_local_idents` is
-         a visitor that collects such "fake" shadowings. *)
+      (** Rust macros are hygienic: even if a macro introduces a name that
+          already exists in scope, the compiler will not shadow it. Instead, it
+          will track and differentiate the two, even if those have the same
+          name. `collect_ambiguous_local_idents` is a visitor that collects such
+          "fake" shadowings. *)
       let collect_ambiguous_local_idents =
         object (self)
           inherit [_] Visitors.reduce as super
@@ -495,12 +493,11 @@ module Make (F : Features.T) = struct
               (module Local_ident)
         end
 
-      (** Rust macros are hygienic: even if a macro introduces a name
-         that already exists in scope, the compiler will not shadow
-         it. Instead, it will track and differentiate the two, even if
-         those have the same name. `disambiguate_local_idents item`
-         renames every instance of such a "fake" shadowing in
-         `item`. See PR #368 for an example. *)
+      (** Rust macros are hygienic: even if a macro introduces a name that
+          already exists in scope, the compiler will not shadow it. Instead, it
+          will track and differentiate the two, even if those have the same
+          name. `disambiguate_local_idents item` renames every instance of such
+          a "fake" shadowing in `item`. See PR #368 for an example. *)
       let disambiguate_local_idents (item : item) =
         let ambiguous = collect_ambiguous_local_idents#visit_item [] item in
         let local_vars = collect_local_idents#visit_item () item |> ref in
@@ -757,8 +754,9 @@ module Make (F : Features.T) = struct
     in
     Some ((Mappers.replace_local_variables replacements)#visit_expr () body)
 
-  (** Reduces a [(|x1, ..., xN| body)(e1, ..., eN)] to [body[x1/e1, ..., xN/eN]].
-        This assumes the arities are right: [(|x, y| ...)(e1)]. *)
+  (** Reduces a [(|x1, ..., xN| body)(e1, ..., eN)] to
+      [body[x1/e1, ..., xN/eN]]. This assumes the arities are right:
+      [(|x, y| ...)(e1)]. *)
   let beta_reduce_closure (e : expr) : expr =
     beta_reduce_closure_opt e |> Option.value ~default:e
 
@@ -981,9 +979,9 @@ module Make (F : Features.T) = struct
 
   module Debug : sig
     val expr : ?label:string -> AST.expr -> unit
-    (** Prints an expression pretty-printed as Rust, with its full
-    AST encoded as JSON, available as a file, so that one can
-    `jless` or `jq` into it. *)
+    (** Prints an expression pretty-printed as Rust, with its full AST encoded
+        as JSON, available as a file, so that one can `jless` or `jq` into it.
+    *)
 
     val item' : ?label:string -> AST.item -> string
     val item : ?label:string -> AST.item -> unit
@@ -1180,7 +1178,8 @@ module Make (F : Features.T) = struct
           };
     }
 
-  (** Concatenates the generics [g1] and [g2], making sure lifetimes appear first *)
+  (** Concatenates the generics [g1] and [g2], making sure lifetimes appear
+      first *)
   let concat_generics (g1 : generics) (g2 : generics) : generics =
     let params = g1.params @ g2.params in
     let constraints = g1.constraints @ g2.constraints in

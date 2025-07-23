@@ -3,7 +3,8 @@ open Prelude
 (** Is profiling enabled? *)
 let enabled = ref true
 
-(** Profiles the function `f`, that operates in a given context over a given quantity of things it is processing. *)
+(** Profiles the function `f`, that operates in a given context over a given
+    quantity of things it is processing. *)
 let profile (type b) (context : Diagnostics.Context.t) (quantity : int)
     (f : unit -> b) : b =
   if !enabled (* `!` derefs, it's not a negation *) then (

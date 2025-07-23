@@ -1,8 +1,8 @@
 open Ppxlib
 open! Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
-(** Define `pp_*` functions for some type of the OCaml ASTs so that we
-can show them *)
+(** Define `pp_*` functions for some type of the OCaml ASTs so that we can show
+    them *)
 include struct
   let pp_core_type = Pprintast.core_type
 
@@ -28,7 +28,8 @@ type t =
   | UnsupportedTypeDeclaration of type_declaration
 [@@deriving show]
 
-(** We can't derive yojson for OCaml types. Thus this indirection, that prints payload of `t` as string, and *then* produces JSON. *)
+(** We can't derive yojson for OCaml types. Thus this indirection, that prints
+    payload of `t` as string, and *then* produces JSON. *)
 open struct
   type t_string =
     | UnsupportedCoreType of string

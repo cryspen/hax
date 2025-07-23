@@ -18,34 +18,35 @@ include
     end)
 
 module SubtypeToInputLanguage
-    (FA : Features.T
-            with type mutable_reference = Features.Off.mutable_reference
-             and type continue = Features.Off.continue
-             and type break = Features.Off.break
-             and type mutable_reference = Features.Off.mutable_reference
-             and type mutable_pointer = Features.Off.mutable_pointer
-             and type mutable_variable = Features.Off.mutable_variable
-             and type reference = Features.Off.reference
-             and type raw_pointer = Features.Off.raw_pointer
-             and type early_exit = Features.Off.early_exit
-             and type question_mark = Features.Off.question_mark
-             and type as_pattern = Features.Off.as_pattern
-             and type lifetime = Features.Off.lifetime
-             and type monadic_action = Features.Off.monadic_action
-             and type arbitrary_lhs = Features.Off.arbitrary_lhs
-             and type nontrivial_lhs = Features.Off.nontrivial_lhs
-             and type block = Features.Off.block
-             and type quote = Features.Off.quote
-             and type dyn = Features.Off.dyn
-             and type match_guard = Features.Off.match_guard
-             and type trait_item_default = Features.Off.trait_item_default
-             and type unsafe = Features.Off.unsafe
-             and type loop = Features.Off.loop
-             and type for_loop = Features.Off.for_loop
-             and type while_loop = Features.Off.while_loop
-             and type for_index_loop = Features.Off.for_index_loop
-             and type state_passing_loop = Features.Off.state_passing_loop
-             and type fold_like_loop = Features.Off.fold_like_loop) =
+    (FA :
+      Features.T
+        with type mutable_reference = Features.Off.mutable_reference
+         and type continue = Features.Off.continue
+         and type break = Features.Off.break
+         and type mutable_reference = Features.Off.mutable_reference
+         and type mutable_pointer = Features.Off.mutable_pointer
+         and type mutable_variable = Features.Off.mutable_variable
+         and type reference = Features.Off.reference
+         and type raw_pointer = Features.Off.raw_pointer
+         and type early_exit = Features.Off.early_exit
+         and type question_mark = Features.Off.question_mark
+         and type as_pattern = Features.Off.as_pattern
+         and type lifetime = Features.Off.lifetime
+         and type monadic_action = Features.Off.monadic_action
+         and type arbitrary_lhs = Features.Off.arbitrary_lhs
+         and type nontrivial_lhs = Features.Off.nontrivial_lhs
+         and type block = Features.Off.block
+         and type quote = Features.Off.quote
+         and type dyn = Features.Off.dyn
+         and type match_guard = Features.Off.match_guard
+         and type trait_item_default = Features.Off.trait_item_default
+         and type unsafe = Features.Off.unsafe
+         and type loop = Features.Off.loop
+         and type for_loop = Features.Off.for_loop
+         and type while_loop = Features.Off.while_loop
+         and type for_index_loop = Features.Off.for_index_loop
+         and type state_passing_loop = Features.Off.state_passing_loop
+         and type fold_like_loop = Features.Off.fold_like_loop) =
 struct
   module FB = InputLanguage
 
@@ -67,8 +68,8 @@ end
 module CoqNamePolicy = struct
   include Concrete_ident.DefaultNamePolicy
 
-  (** List of all words that have a special meaning in the target
-      language, and that should thus be escaped. *)
+  (** List of all words that have a special meaning in the target language, and
+      that should thus be escaped. *)
   let reserved_words : string Hash_set.t =
     Hash_set.of_list
       (module String)

@@ -4,10 +4,9 @@ module View = Concrete_ident_view
 module Fresh_module : sig
   (** This module provides a way of generating fresh modules paths. This can be
       used to reorganize locally definitions; the main motivation for this is
-      recursive bundles, where we move definitions from multiple modules to
-      one fresh module. This is fine because we re-expose all the original
-      definitions.
-    *)
+      recursive bundles, where we move definitions from multiple modules to one
+      fresh module. This is fine because we re-expose all the original
+      definitions. *)
 
   type t [@@deriving show, yojson, hash, compare, sexp, hash, eq]
 
@@ -15,12 +14,12 @@ module Fresh_module : sig
   (** [fresh ~label hints] creates a fresh module out of the non-empty list of
       explicit definition identifiers hints [hints] and out of a label [label].
 
-    The new module will have a unique path, close to [hints], and containing the
-    label [label].
-    *)
+      The new module will have a unique path, close to [hints], and containing
+      the label [label]. *)
 
   val register : fresh_module:t -> Explicit_def_id.t -> unit
-  (** [register ~fresh_module id] declares that [id] belongs to [fresh_module]. *)
+  (** [register ~fresh_module id] declares that [id] belongs to [fresh_module].
+  *)
 
   val get_path_hints : t -> Explicit_def_id.t list
   (** List path hints for a fresh module. *)
@@ -46,9 +45,9 @@ end = struct
     let f (set, opt) = (Set.add set (View.of_def_id did).mod_path, opt) in
     Hashtbl.update map_state fresh_module.id ~f:(Option.value ~default >> f)
 
-  (** [compute_path_chunks fresh_module] returns [(mod_path, mod_name,
-        suffixes)]. [suffixes] are optional suffixes to add to [mod_name] so
-        that the resulting path is unique. *)
+  (** [compute_path_chunks fresh_module] returns
+      [(mod_path, mod_name, suffixes)]. [suffixes] are optional suffixes to add
+      to [mod_name] so that the resulting path is unique. *)
   let compute_path_chunks (m : t) =
     let mod_paths = List.map ~f:(fun d -> (of_def_id d).mod_path) m.hints in
     let base = List.longest_prefix ~eq:DisambiguatedString.equal mod_paths in
@@ -116,7 +115,7 @@ end
 type reserved_suffix = [ `Cast | `Pre | `Post ]
 [@@deriving show, yojson, hash, compare, sexp, hash, eq]
 (** A concrete identifier can have a reserved suffix: this is useful to derive
-  new identifiers from existing identifiers. *)
+    new identifiers from existing identifiers. *)
 
 module T = struct
   type t = {
@@ -184,8 +183,8 @@ let to_view (ident : t) : Concrete_ident_view.t =
   in
   { mod_path; rel_path }
 
-(** Stateful store that maps [def_id]s to implementation information
-(which trait is implemented? for which type? under which constraints?) *)
+(** Stateful store that maps [def_id]s to implementation information (which
+    trait is implemented? for which type? under which constraints?) *)
 module ImplInfoStore = struct
   include Explicit_def_id.ImplInfoStore
 
@@ -203,12 +202,11 @@ module MakeToString (R : VIEW_RENDERER) = struct
       name.
 
       Otherwise, when we print a name under a fresh module, we take a look at
-      the set: if there is already an identifier in the fresh module with
-      the exact same rendered name, then we have a collision, and we need to
+      the set: if there is already an identifier in the fresh module with the
+      exact same rendered name, then we have a collision, and we need to
       generate a fresh name.
 
-      To generate a fresh name, we use the set of rendered names.
-      *)
+      To generate a fresh name, we use the set of rendered names. *)
   let per_module :
       (string list, string Hash_set.t * (t, string) Hashtbl.t) Hashtbl.t =
     Hashtbl.create
@@ -218,6 +216,13 @@ module MakeToString (R : VIEW_RENDERER) = struct
 
   let render (i : t) : rendered =
     let Concrete_ident_view.{ mod_path; rel_path } = to_view i in
+    let mod_path =
+      match mod_path with
+      | krate :: path when String.equal krate.data "core" ->
+          { krate with data = "core_models" } :: path
+      | _ -> mod_path
+    in
+
     let path = List.map ~f:R.render_module mod_path in
     (* Retrieve the various maps. *)
     let name_set, memo =
@@ -474,12 +479,14 @@ module MakeRenderAPI (NP : NAME_POLICY) : RENDER_API = struct
         else rendered
     end
 
-    (** [pretty_impl_name ~namespace impl_infos] computes a pretty impl name given impl information and a namespace.
-        A pretty name can be computed when:
-        - (1) the impl, (2) the type and (3) the trait implemented all live in the same namespace
+    (** [pretty_impl_name ~namespace impl_infos] computes a pretty impl name
+        given impl information and a namespace. A pretty name can be computed
+        when:
+        - (1) the impl, (2) the type and (3) the trait implemented all live in
+          the same namespace
         - the impl block has no generics
-        - the type implemented is simple enough to be represented as a string (see module {!Thir_simple_types})
-    *)
+        - the type implemented is simple enough to be represented as a string
+          (see module {!Thir_simple_types}) *)
     let pretty_impl_name ~namespace (impl_infos : Types.impl_infos) =
       let* ty = Thir_simple_types.to_string ~namespace impl_infos.typ in
       let*? _no_generics = List.is_empty impl_infos.generics.params in
@@ -503,7 +510,8 @@ module MakeRenderAPI (NP : NAME_POLICY) : RENDER_API = struct
           Some (trait ^ "_for_" ^ ty)
       | _ -> None
 
-    (** Produces a name for an impl block, only if it is necessary (e.g. the disambiguator is non-null) *)
+    (** Produces a name for an impl block, only if it is necessary (e.g. the
+        disambiguator is non-null) *)
     let impl_name ~namespace ?(always = false) disambiguator
         (impl_infos : Types.impl_infos option) =
       let pretty = impl_infos |> Option.bind ~f:(pretty_impl_name ~namespace) in

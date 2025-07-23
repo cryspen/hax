@@ -183,39 +183,31 @@ functor
       | Builtin of trait_goal
 
     and trait_goal = { trait : concrete_ident; args : generic_value list }
-    (** A fully applied trait: [Foo<SomeTy, T0, ..., Tn>] (or
-      `SomeTy: Foo<T0, ..., Tn>`). An `impl_expr` "inhabits" a
-      `trait_goal`. *)
+    (** A fully applied trait: [Foo<SomeTy, T0, ..., Tn>] (or `SomeTy: Foo<T0,
+        ..., Tn>`). An `impl_expr` "inhabits" a `trait_goal`. *)
 
     and dyn_trait_goal = {
       trait : concrete_ident;
       non_self_args : generic_value list;
     }
-    (** A dyn trait: [Foo<_, T0, ..., Tn>]. The generic arguments are known 
-      but the actual type implementing the trait is known only dynamically. *)
+    (** A dyn trait: [Foo<_, T0, ..., Tn>]. The generic arguments are known but
+        the actual type implementing the trait is known only dynamically. *)
 
     and impl_ident = { goal : trait_goal; name : string }
     (** An impl identifier [{goal; name}] can be:
-          {ul
-              {- An in-scope variable [name] that inhabits [goal].}
-              {- A field of some other impl expression [i]: [i.name] inhabits [goal]. This corresponds to parent bounds or associated type bounds.}
-              {- An argument that introduces a variable [name] that inhabits [goal].}
-          }
-      *)
+        - An in-scope variable [name] that inhabits [goal].
+        - A field of some other impl expression [i]: [i.name] inhabits [goal].
+          This corresponds to parent bounds or associated type bounds.
+        - An argument that introduces a variable [name] that inhabits [goal]. *)
 
     and projection_predicate = {
       impl : impl_expr;
       assoc_item : concrete_ident;
       typ : ty;
     }
-    (** Expresses a constraints over an associated type.
-        For instance:
-        [
-        fn f<T : Foo<S = String>>(...)
-                    ^^^^^^^^^^
-        ]
-        (provided the trait `Foo` has an associated type `S`).
-      *)
+    (** Expresses a constraints over an associated type. For instance:
+        [ fn f<T : Foo<S = String>>(...) ^^^^^^^^^^ ] (provided the trait `Foo`
+        has an associated type `S`). *)
 
     (* TODO: ADD SPAN! *)
     and pat' =
@@ -308,9 +300,9 @@ functor
         }
       | Return of { e : expr; witness : F.early_exit }
       | QuestionMark of { e : expr; return_typ : ty; witness : F.question_mark }
-          (** The expression `e?`. In opposition to Rust, no implicit
-      coercion is applied on the (potential) error payload of
-      `e`. Coercion should be made explicit within `e`. *)
+          (** The expression `e?`. In opposition to Rust, no implicit coercion
+              is applied on the (potential) error payload of `e`. Coercion
+              should be made explicit within `e`. *)
       | Continue of {
           acc : (expr * F.state_passing_loop) option;
           label : string option;
@@ -327,8 +319,8 @@ functor
       | Closure of { params : pat list; body : expr; captures : expr list }
       | EffectAction of { action : F.monadic_action; argument : expr }
       | Quote of quote
-          (** A quotation is an inlined piece of backend code
-              interleaved with Rust code *)
+          (** A quotation is an inlined piece of backend code interleaved with
+              Rust code *)
 
     and expr = { e : expr'; span : span; typ : ty }
     and quote = { contents : quote_content list; witness : F.quote }
@@ -412,8 +404,8 @@ functor
       | GCLifetime of todo * F.lifetime
       | GCType of impl_ident
       | GCProjection of projection_predicate
-          (** Trait or lifetime constraints. For instance, `A` and `B` in
-    `fn f<T: A + B>()`. *)
+          (** Trait or lifetime constraints. For instance, `A` and `B` in `fn
+              f<T: A + B>()`. *)
     [@@deriving show, yojson, hash, compare, sexp, hash, eq]
 
     type param = { pat : pat; typ : ty; typ_span : span option; attrs : attrs }

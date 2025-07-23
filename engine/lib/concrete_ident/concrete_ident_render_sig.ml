@@ -4,8 +4,8 @@ type rendered = { path : string list; name : string }
 
 module type NAME_POLICY = sig
   val reserved_words : string Hash_set.t
-  (** List of all words that have a special meaning in the target
-      language, and that should thus be escaped. *)
+  (** List of all words that have a special meaning in the target language, and
+      that should thus be escaped. *)
 
   val anonymous_field_transform : string -> string
   (** Transformation applied to anonymous tuple fields (i.e. [x.1]) *)

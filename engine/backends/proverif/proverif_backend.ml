@@ -19,25 +19,26 @@ include
     end)
 
 module SubtypeToInputLanguage
-    (FA : Features.T
-          (*  type loop = Features.Off.loop *)
-          (* and type for_loop = Features.Off.for_loop *)
-          (* and type for_index_loop = Features.Off.for_index_loop *)
-          (* and type state_passing_loop = Features.Off.state_passing_loop *)
-          (* and type continue = Features.Off.continue *)
-          (* and type break = Features.Off.break *)
-          (* and type mutable_variable = Features.Off.mutable_variable *)
-          (* and type mutable_reference = Features.Off.mutable_reference *)
-          (* and type mutable_pointer = Features.Off.mutable_pointer *)
-          (* and type reference = Features.Off.reference *)
-          (* and type slice = Features.Off.slice *)
-          (* and type raw_pointer = Features.Off.raw_pointer *)
-            with type early_exit = Features.On.early_exit
-             and type slice = Features.On.slice
-             and type question_mark = Features.On.question_mark
-             and type macro = Features.On.macro
-             and type quote = Features.On.quote
-             and type construct_base = Features.On.construct_base
+    (FA :
+      Features.T
+      (*  type loop = Features.Off.loop *)
+      (* and type for_loop = Features.Off.for_loop *)
+      (* and type for_index_loop = Features.Off.for_index_loop *)
+      (* and type state_passing_loop = Features.Off.state_passing_loop *)
+      (* and type continue = Features.Off.continue *)
+      (* and type break = Features.Off.break *)
+      (* and type mutable_variable = Features.Off.mutable_variable *)
+      (* and type mutable_reference = Features.Off.mutable_reference *)
+      (* and type mutable_pointer = Features.Off.mutable_pointer *)
+      (* and type reference = Features.Off.reference *)
+      (* and type slice = Features.Off.slice *)
+      (* and type raw_pointer = Features.Off.raw_pointer *)
+        with type early_exit = Features.On.early_exit
+         and type slice = Features.On.slice
+         and type question_mark = Features.On.question_mark
+         and type macro = Features.On.macro
+         and type quote = Features.On.quote
+         and type construct_base = Features.On.construct_base
 (* and type as_pattern = Features.Off.as_pattern *)
 (* and type nontrivial_lhs = Features.Off.nontrivial_lhs *)
 (* and type arbitrary_lhs = Features.Off.arbitrary_lhs *)
@@ -179,7 +180,8 @@ module Make (Options : OPTS) : MAKE = struct
 
         method pv_const name typ =
           string "const" ^^ space ^^ name ^^ colon ^^ space ^^ typ ^^ dot
-        (** Print a ProVerif constant declaration of the given typ (provided as a document).*)
+        (** Print a ProVerif constant declaration of the given typ (provided as
+            a document).*)
 
         method pv_constructor ?(is_data = false) ?(is_typeconverter = false)
             name arg_types typ =
@@ -252,8 +254,8 @@ module Make (Options : OPTS) : MAKE = struct
 
         method typed_wildcard = print#wildcard ^^ string ": bitstring"
 
-        method tuple_elem_pat'
-            : Deprecated_generic_printer_base.par_state -> pat' fn =
+        method tuple_elem_pat' :
+            Deprecated_generic_printer_base.par_state -> pat' fn =
           fun ctx ->
             let wrap_parens =
               group
@@ -266,8 +268,8 @@ module Make (Options : OPTS) : MAKE = struct
                 p ^^ colon ^^ space ^^ print#ty ctx typ
             | p -> print#pat' ctx p
 
-        method tuple_elem_pat
-            : Deprecated_generic_printer_base.par_state -> pat fn =
+        method tuple_elem_pat :
+            Deprecated_generic_printer_base.par_state -> pat fn =
           fun ctx { p; span; _ } ->
             print#with_span ~span (fun _ -> print#tuple_elem_pat' ctx p)
 
@@ -657,12 +659,12 @@ module Make (Options : OPTS) : MAKE = struct
               ^^ underscore ^^ underscore
               ^^ print#name_of_concrete_ident id
 
-        method! doc_construct_inductive
-            : is_record:bool ->
-              is_struct:bool ->
-              constructor:concrete_ident ->
-              base:document option ->
-              (global_ident * document) list fn =
+        method! doc_construct_inductive :
+            is_record:bool ->
+            is_struct:bool ->
+            constructor:concrete_ident ->
+            base:document option ->
+            (global_ident * document) list fn =
           fun ~is_record ~is_struct:_ ~constructor ~base:_ args ->
             if is_record then
               print#concrete_ident constructor

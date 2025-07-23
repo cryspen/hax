@@ -182,7 +182,11 @@ functor
           (a_ty_str ^ " " ^ "->" ^ " " ^ b_ty_str, true)
       | AST.ArrayTy (t, l) ->
           let ty_str = ty_to_string_with_paren t in
-          ("nseq" ^ " " ^ ty_str ^ " " ^ (* Int.to_string *) l, true)
+          ( "nseq" ^ " " ^ ty_str ^ " "
+            ^
+            (* Int.to_string *)
+            l,
+            true )
       | AST.SliceTy t ->
           let ty_str = ty_to_string_with_paren t in
           ("seq" ^ " " ^ ty_str, true)
@@ -261,7 +265,7 @@ functor
       | Const_char c -> Int.to_string c (* TODO *)
       | Const_int (i, { size; _ }) ->
           Lib.Notation.int_repr (int_size_to_string size) i
-      (*  *)
+      (* *)
       | Const_bool b -> Bool.to_string b
 
     let rec pat_to_string (x : AST.pat) (is_top_expr : bool) depth : string =

@@ -33,10 +33,9 @@ module Make (F : Features.T) = struct
           args = [ GType break_type; GType continue_type ];
         }
 
-    (** This gives the type of a value encoded in the `ControlFlow` enum.
-       In case a `return_type` is provided the encoding is nested:
-       `return v` is `Break (Break v)` 
-       `break v` is `Break (Continue (v, acc))` *)
+    (** This gives the type of a value encoded in the `ControlFlow` enum. In
+        case a `return_type` is provided the encoding is nested: `return v` is
+        `Break (Break v)` `break v` is `Break (Continue (v, acc))` *)
     let ty_cf_return ~(acc_type : ty) ~(break_type : ty)
         ~(return_type : ty option) : ty =
       let break_type = ty_tuple [ break_type; acc_type ] in
@@ -148,15 +147,12 @@ module Make (F : Features.T) = struct
           call_Constructor Core__ops__control_flow__ControlFlow__Continue false
             [ e ] span typ
 
-    (** We use the following encoding of return, break and continue in the `ControlFlow` enum:
-       Return e -> Break (Break e)
-       Break e -> Break ((Continue(e, acc)))
-       Continue -> Continue(acc)
+    (** We use the following encoding of return, break and continue in the
+        `ControlFlow` enum: Return e -> Break (Break e) Break e -> Break
+        ((Continue(e, acc))) Continue -> Continue(acc)
 
-       In case there is no return we simplify to:
-        Break e -> (Break (e, acc))
-        Continue -> (continue (acc))
-    *)
+        In case there is no return we simplify to: Break e -> (Break (e, acc))
+        Continue -> (continue (acc)) *)
     let expr_Constructor_CF ~(span : span) ~(break_type : ty option)
         ~(return_type : ty option) ~(acc : expr) ?(e : expr = expr_unit ~span)
         (cf : [ `Return | `Break | `Continue ]) =

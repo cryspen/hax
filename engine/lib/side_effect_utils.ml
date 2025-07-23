@@ -1,9 +1,10 @@
 open! Prelude
 
 module MakeSI
-    (F : Features.T
-           with type monadic_binding = Features.Off.monadic_binding
-            and type for_index_loop = Features.Off.for_index_loop) =
+    (F :
+      Features.T
+        with type monadic_binding = Features.Off.monadic_binding
+         and type for_index_loop = Features.Off.for_index_loop) =
 struct
   module AST = Ast.Make (F)
   module U = Ast_utils.Make (F)
@@ -512,9 +513,10 @@ struct
 end
 
 module%inlined_contents Hoist
-    (F : Features.T
-           with type monadic_binding = Features.Off.monadic_binding
-            and type for_index_loop = Features.Off.for_index_loop) =
+    (F :
+      Features.T
+        with type monadic_binding = Features.Off.monadic_binding
+         and type for_index_loop = Features.Off.for_index_loop) =
 struct
   module FA = F
 

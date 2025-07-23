@@ -1,9 +1,10 @@
 open! Prelude
 
 module%inlined_contents Make
-    (F : Features.T
-           with type raw_pointer = Features.Off.raw_pointer
-            and type mutable_reference = Features.Off.mutable_reference) =
+    (F :
+      Features.T
+        with type raw_pointer = Features.Off.raw_pointer
+         and type mutable_reference = Features.Off.mutable_reference) =
 struct
   open Ast
   module FA = F

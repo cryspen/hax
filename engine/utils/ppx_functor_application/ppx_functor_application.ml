@@ -107,8 +107,8 @@ let rec normalize (t : module_dsl) : module_dsl =
       | [ t ] -> t
       | l -> Pipe l)
 
-(** Recognize a small language embedded in OCaml syntax for applying
-functors in chain. *)
+(** Recognize a small language embedded in OCaml syntax for applying functors in
+    chain. *)
 let rec parse expr =
   let r =
     match expr with

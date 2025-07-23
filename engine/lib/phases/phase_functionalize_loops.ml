@@ -1,10 +1,11 @@
 open! Prelude
 
 module%inlined_contents Make
-    (F : Features.T
-           with type continue = Features.Off.continue
-            and type early_exit = Features.Off.early_exit
-            and type break = Features.Off.break) =
+    (F :
+      Features.T
+        with type continue = Features.Off.continue
+         and type early_exit = Features.Off.early_exit
+         and type break = Features.Off.break) =
 struct
   open Ast
   module FA = F

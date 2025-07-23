@@ -246,9 +246,9 @@ struct
             control_flow =
               Option.map
                 ~f:
-                  ((function
-                     | A.BreakOnly -> B.BreakOnly
-                     | A.BreakOrReturn -> B.BreakOrReturn)
+                  (( function
+                   | A.BreakOnly -> B.BreakOnly
+                   | A.BreakOrReturn -> B.BreakOrReturn )
                   *** S.fold_like_loop span)
                 control_flow;
             witness = S.loop span witness;

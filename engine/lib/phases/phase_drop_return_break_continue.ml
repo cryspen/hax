@@ -1,9 +1,8 @@
-(** This phase removes `return`s in exit position. Inside loops,
-   it replaces `return`, `break` and `continue` (in exit position)
-   by their encoding in the `ControlFlow` enum. It replaces another
-   expression in exit position by an equivalent `continue`.
-   This phase should comae after `RewriteControlFlow` to ensure all
-   control flow is in exit position. *)
+(** This phase removes `return`s in exit position. Inside loops, it replaces
+    `return`, `break` and `continue` (in exit position) by their encoding in the
+    `ControlFlow` enum. It replaces another expression in exit position by an
+    equivalent `continue`. This phase should comae after `RewriteControlFlow` to
+    ensure all control flow is in exit position. *)
 
 open! Prelude
 
@@ -113,12 +112,11 @@ module%inlined_contents Make (F : Features.T) = struct
               UA.M.expr_Constructor_CF ~return_type ~span ~break_type ~acc:e
                 `Continue
           | _ -> e
-        (** The invariant here is that [visit_expr] is called only
-                 on expressions that are on exit positions. [visit_expr]
-                 is first called on root expressions, which are (by
-                 definition) exit nodes. Then, [visit_expr] itself makes
-                 recursive calls to sub expressions that are themselves
-                 in exit nodes. **)
+        (** The invariant here is that [visit_expr] is called only on
+            expressions that are on exit positions. [visit_expr] is first called
+            on root expressions, which are (by definition) exit nodes. Then,
+            [visit_expr] itself makes recursive calls to sub expressions that
+            are themselves in exit nodes. **)
       end
 
     let closure_visitor =

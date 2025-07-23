@@ -73,12 +73,12 @@ let expand ~(ctxt : Expansion_context.Extension.t) (features : string list) :
                       (PStr
                          [%str
                            show { with_path = false },
-                             yojson,
-                             hash,
-                             compare,
-                             sexp,
-                             hash,
-                             eq]);
+                           yojson,
+                           hash,
+                           compare,
+                           sexp,
+                           hash,
+                           eq]);
                 ];
             };
           ]]

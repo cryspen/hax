@@ -27,7 +27,8 @@ module Phase = struct
       | x -> [%show: t] x
   end
 
-  (** All names for phases defined in `lib/phases_*` are generated automatically *)
+  (** All names for phases defined in `lib/phases_*` are generated automatically
+  *)
   type%add_phase_names t = Identity | HoistSideEffects | Reject of Rejection.t
   [@@deriving show { with_path = false }, eq, yojson, compare, hash, sexp]
 

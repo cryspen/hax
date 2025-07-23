@@ -24,27 +24,28 @@ include
     end)
 
 module SubtypeToInputLanguage
-    (FA : Features.T
-            with type mutable_reference = Features.Off.mutable_reference
-             and type continue = Features.Off.continue
-             and type break = Features.Off.break
-             and type mutable_pointer = Features.Off.mutable_pointer
-             and type mutable_variable = Features.Off.mutable_variable
-             and type reference = Features.Off.reference
-             and type raw_pointer = Features.Off.raw_pointer
-             and type early_exit = Features.Off.early_exit
-             and type question_mark = Features.Off.question_mark
-             and type as_pattern = Features.Off.as_pattern
-             and type lifetime = Features.Off.lifetime
-             and type monadic_action = Features.Off.monadic_action
-             and type arbitrary_lhs = Features.Off.arbitrary_lhs
-             and type nontrivial_lhs = Features.Off.nontrivial_lhs
-             and type quote = Features.Off.quote
-             and type block = Features.Off.block
-             and type dyn = Features.Off.dyn
-             and type match_guard = Features.Off.match_guard
-             and type trait_item_default = Features.Off.trait_item_default
-             and type unsafe = Features.Off.unsafe) =
+    (FA :
+      Features.T
+        with type mutable_reference = Features.Off.mutable_reference
+         and type continue = Features.Off.continue
+         and type break = Features.Off.break
+         and type mutable_pointer = Features.Off.mutable_pointer
+         and type mutable_variable = Features.Off.mutable_variable
+         and type reference = Features.Off.reference
+         and type raw_pointer = Features.Off.raw_pointer
+         and type early_exit = Features.Off.early_exit
+         and type question_mark = Features.Off.question_mark
+         and type as_pattern = Features.Off.as_pattern
+         and type lifetime = Features.Off.lifetime
+         and type monadic_action = Features.Off.monadic_action
+         and type arbitrary_lhs = Features.Off.arbitrary_lhs
+         and type nontrivial_lhs = Features.Off.nontrivial_lhs
+         and type quote = Features.Off.quote
+         and type block = Features.Off.block
+         and type dyn = Features.Off.dyn
+         and type match_guard = Features.Off.match_guard
+         and type trait_item_default = Features.Off.trait_item_default
+         and type unsafe = Features.Off.unsafe) =
 struct
   module FB = InputLanguage
 

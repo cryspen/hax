@@ -103,10 +103,10 @@ let fresh_owner_id (owner : Types.def_id) : owner_id =
   owner_id_list := owner :: !owner_id_list;
   next_id
 
-(** This state changes the behavior of `of_thir`: the hint placed into
-this state will be inserted automatically by `of_thir`. The field
-`owner_hint` shall be used solely for reporting to the user, not for
-any logic within the engine. *)
+(** This state changes the behavior of `of_thir`: the hint placed into this
+    state will be inserted automatically by `of_thir`. The field `owner_hint`
+    shall be used solely for reporting to the user, not for any logic within the
+    engine. *)
 let state_owner_hint : owner_id option ref = ref None
 
 let with_owner_hint (type t) (owner : Types.def_id) (f : unit -> t) : t =

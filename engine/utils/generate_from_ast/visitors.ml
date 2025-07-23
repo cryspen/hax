@@ -1,5 +1,5 @@
-(** This module is mostly generated, but hand-edited, it defines
-visitors for the types defined in module `Types`. *)
+(** This module is mostly generated, but hand-edited, it defines visitors for
+    the types defined in module `Types`. *)
 
 open Base
 open Types
@@ -11,13 +11,13 @@ class virtual ['self] reduce =
     method virtual zero : 'acc
     method visit_string (_env : 'env) (_s : string) = self#zero
 
-    method visit_prim___tuple_2
-        : 't0 't1.
-          ('env -> 't0 -> 'acc) ->
-          ('env -> 't1 -> 'acc) ->
-          'env ->
-          't0 * 't1 ->
-          'acc =
+    method visit_prim___tuple_2 :
+        't0 't1.
+        ('env -> 't0 -> 'acc) ->
+        ('env -> 't1 -> 'acc) ->
+        'env ->
+        't0 * 't1 ->
+        'acc =
       fun visit_'t0 visit_'t1 env___var v___payload ->
         match v___payload with
         | x0, x1 ->
@@ -25,14 +25,14 @@ class virtual ['self] reduce =
             let a1 = visit_'t1 env___var x1 in
             self#plus a0 a1
 
-    method visit_prim___tuple_3
-        : 't0 't1 't2.
-          ('env -> 't0 -> 'acc) ->
-          ('env -> 't1 -> 'acc) ->
-          ('env -> 't2 -> 'acc) ->
-          'env ->
-          't0 * 't1 * 't2 ->
-          'acc =
+    method visit_prim___tuple_3 :
+        't0 't1 't2.
+        ('env -> 't0 -> 'acc) ->
+        ('env -> 't1 -> 'acc) ->
+        ('env -> 't2 -> 'acc) ->
+        'env ->
+        't0 * 't1 * 't2 ->
+        'acc =
       fun visit_'t0 visit_'t1 visit_'t2 env___var v___payload ->
         match v___payload with
         | x0, x1, x2 ->
@@ -41,15 +41,15 @@ class virtual ['self] reduce =
             let a2 = visit_'t2 env___var x2 in
             self#plus (self#plus a0 a1) a2
 
-    method visit_prim___tuple_4
-        : 't0 't1 't2 't3.
-          ('env -> 't0 -> 'acc) ->
-          ('env -> 't1 -> 'acc) ->
-          ('env -> 't2 -> 'acc) ->
-          ('env -> 't3 -> 'acc) ->
-          'env ->
-          't0 * 't1 * 't2 * 't3 ->
-          'acc =
+    method visit_prim___tuple_4 :
+        't0 't1 't2 't3.
+        ('env -> 't0 -> 'acc) ->
+        ('env -> 't1 -> 'acc) ->
+        ('env -> 't2 -> 'acc) ->
+        ('env -> 't3 -> 'acc) ->
+        'env ->
+        't0 * 't1 * 't2 * 't3 ->
+        'acc =
       fun visit_'t0 visit_'t1 visit_'t2 visit_'t3 env___var v___payload ->
         match v___payload with
         | x0, x1, x2, x3 ->
@@ -104,13 +104,13 @@ class virtual ['self] reduce =
         in
         self#plus acc___name acc___payload
 
-    method visit_Result__t
-        : 'r 'e.
-          ('env -> 'r -> 'acc) ->
-          ('env -> 'e -> 'acc) ->
-          'env ->
-          ('r, 'e) Result.t ->
-          'acc =
+    method visit_Result__t :
+        'r 'e.
+        ('env -> 'r -> 'acc) ->
+        ('env -> 'e -> 'acc) ->
+        'env ->
+        ('r, 'e) Result.t ->
+        'acc =
       fun visit_'r visit_'e env___var v___payload ->
         match v___payload with
         | Ok x0 ->

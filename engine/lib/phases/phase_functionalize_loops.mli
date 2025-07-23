@@ -1,10 +1,11 @@
 open! Prelude
 
 module Make
-    (F : Features.T
-           with type continue = Features.Off.continue
-            and type early_exit = Features.Off.early_exit
-            and type break = Features.Off.break) : sig
+    (F :
+      Features.T
+        with type continue = Features.Off.continue
+         and type early_exit = Features.Off.early_exit
+         and type break = Features.Off.break) : sig
   include module type of struct
     module FA = F
 

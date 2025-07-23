@@ -20,31 +20,32 @@ include
     end)
 
 module SubtypeToInputLanguage
-    (FA : Features.T
-            with type mutable_reference = Features.Off.mutable_reference
-             and type continue = Features.Off.continue
-             and type break = Features.Off.break
-             and type mutable_reference = Features.Off.mutable_reference
-             and type mutable_pointer = Features.Off.mutable_pointer
-             and type mutable_variable = Features.Off.mutable_variable
-             and type reference = Features.Off.reference
-             and type raw_pointer = Features.Off.raw_pointer
-             and type early_exit = Features.Off.early_exit
-             and type question_mark = Features.Off.question_mark
-             and type as_pattern = Features.Off.as_pattern
-             and type lifetime = Features.Off.lifetime
-             and type monadic_action = Features.Off.monadic_action
-             and type arbitrary_lhs = Features.Off.arbitrary_lhs
-             and type nontrivial_lhs = Features.Off.nontrivial_lhs
-             and type loop = Features.Off.loop
-             and type block = Features.Off.block
-             and type for_loop = Features.Off.for_loop
-             and type while_loop = Features.Off.while_loop
-             and type for_index_loop = Features.Off.for_index_loop
-             and type state_passing_loop = Features.Off.state_passing_loop
-             and type fold_like_loop = Features.Off.fold_like_loop
-             and type match_guard = Features.Off.match_guard
-             and type trait_item_default = Features.Off.trait_item_default) =
+    (FA :
+      Features.T
+        with type mutable_reference = Features.Off.mutable_reference
+         and type continue = Features.Off.continue
+         and type break = Features.Off.break
+         and type mutable_reference = Features.Off.mutable_reference
+         and type mutable_pointer = Features.Off.mutable_pointer
+         and type mutable_variable = Features.Off.mutable_variable
+         and type reference = Features.Off.reference
+         and type raw_pointer = Features.Off.raw_pointer
+         and type early_exit = Features.Off.early_exit
+         and type question_mark = Features.Off.question_mark
+         and type as_pattern = Features.Off.as_pattern
+         and type lifetime = Features.Off.lifetime
+         and type monadic_action = Features.Off.monadic_action
+         and type arbitrary_lhs = Features.Off.arbitrary_lhs
+         and type nontrivial_lhs = Features.Off.nontrivial_lhs
+         and type loop = Features.Off.loop
+         and type block = Features.Off.block
+         and type for_loop = Features.Off.for_loop
+         and type while_loop = Features.Off.while_loop
+         and type for_index_loop = Features.Off.for_index_loop
+         and type state_passing_loop = Features.Off.state_passing_loop
+         and type fold_like_loop = Features.Off.fold_like_loop
+         and type match_guard = Features.Off.match_guard
+         and type trait_item_default = Features.Off.trait_item_default) =
 struct
   module FB = InputLanguage
 
@@ -290,7 +291,7 @@ struct
     let c = Global_ident.of_name ~value:true in
     [
       (c Rust_primitives__hax__array_of_list, (3, ".[]<-"));
-      (c Core__ops__index__Index__index, (2, ".[]"));
+      (* (c Core__ops__index__Index__index, (2, ".[]")); *)
       (c Core__ops__bit__Not__not, (1, "~."));
       (c Rust_primitives__hax__machine_int__not, (1, "~."));
       (c Rust_primitives__hax__machine_int__add, (2, "+!"));
@@ -1771,7 +1772,7 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
       |> Set.to_list
       |> List.filter ~f:(fun m ->
              (* Special treatment for modules handled specifically in our F* libraries *)
-             String.is_prefix ~prefix:"Core." m |> not
+             String.is_prefix ~prefix:"Core_models." m |> not
              && String.is_prefix ~prefix:"Alloc." m |> not
              && String.equal "Hax_lib.Int" m |> not)
       |> List.map ~f:(fun mod_path -> "let open " ^ mod_path ^ " in")
@@ -1836,7 +1837,7 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
       its
     |> List.map ~f:(map_string ~f:String.strip)
     |> List.filter
-         ~f:(fst >> (function `Impl s | `Intf s -> String.is_empty s) >> not)
+         ~f:(fst >> ( function `Impl s | `Intf s -> String.is_empty s ) >> not)
   in
   let string_for filter =
     let l =
@@ -1863,12 +1864,24 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
   ( string_for (function `Impl s -> Some (replace s) | _ -> None),
     string_for (function `Intf s -> Some (replace s) | _ -> None) )
 
-let fstar_headers (bo : BackendOptions.t) =
+let hax_core_models_extraction =
+  Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
+  |> [%equal: string option] (Some "on")
+
+let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   let opts =
     Printf.sprintf {|#set-options "--fuel %Ld --ifuel %Ld --z3rlimit %Ld"|}
       bo.fuel bo.ifuel bo.z3rlimit
   in
-  [ opts; "open Core"; "open FStar.Mul" ] |> String.concat ~sep:"\n"
+
+  List.append [ opts; "open FStar.Mul" ]
+    (if
+       hax_core_models_extraction
+       && (String.is_prefix ~prefix:"Core_models.Primitives" mod_name
+          || String.is_prefix ~prefix:"Core_models.Base" mod_name)
+     then []
+     else [ "open Core_models" ])
+  |> String.concat ~sep:"\n"
 
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
@@ -1889,8 +1902,8 @@ let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
                  {
                    path = mod_name ^ "." ^ ext;
                    contents =
-                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo ^ "\n\n"
-                     ^ body ^ "\n";
+                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo mod_name
+                     ^ "\n\n" ^ body ^ "\n";
                    sourcemap = None;
                  }
          in
@@ -1945,7 +1958,8 @@ module TransformToInputLanguage =
   ]
   [@ocamlformat "disable"]
 
-(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by `unsize_identity_typ` *)
+(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
+    `unsize_identity_typ` *)
 let unsize_as_identity =
   (* Tells if a unsize should be treated as identity by type *)
   let rec unsize_identity_typ = function

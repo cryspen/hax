@@ -1,9 +1,10 @@
 open! Prelude
 
 module Make
-    (F : Features.T
-           with type raw_pointer = Features.Off.raw_pointer
-            and type mutable_reference = Features.Off.mutable_reference) : sig
+    (F :
+      Features.T
+        with type raw_pointer = Features.Off.raw_pointer
+         and type mutable_reference = Features.Off.mutable_reference) : sig
   include module type of struct
     module FA = F
 
