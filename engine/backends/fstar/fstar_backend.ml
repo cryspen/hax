@@ -296,7 +296,6 @@ struct
     let c = Global_ident.of_name ~value:true in
     [
       (c Rust_primitives__hax__array_of_list, (3, ".[]<-"));
-      (c Core__ops__index__Index__index, (2, ".[]"));
       (c Core__ops__bit__Not__not, (1, "~."));
       (c Rust_primitives__hax__machine_int__not, (1, "~."));
       (c Rust_primitives__hax__machine_int__add, (2, "+!"));
@@ -1815,7 +1814,7 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
       |> Set.to_list
       |> List.filter ~f:(fun m ->
              (* Special treatment for modules handled specifically in our F* libraries *)
-             String.is_prefix ~prefix:"Core." m |> not
+             String.is_prefix ~prefix:"Core_models." m |> not
              && String.is_prefix ~prefix:"Alloc." m |> not
              && String.equal "Hax_lib.Int" m |> not)
       |> List.map ~f:(fun mod_path -> "let open " ^ mod_path ^ " in")
@@ -1907,12 +1906,24 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
   ( string_for (function `Impl s -> Some (replace s) | _ -> None),
     string_for (function `Intf s -> Some (replace s) | _ -> None) )
 
-let fstar_headers (bo : BackendOptions.t) =
+let hax_core_models_extraction =
+  Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
+  |> [%equal: string option] (Some "on")
+
+let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   let opts =
     Printf.sprintf {|#set-options "--fuel %Ld --ifuel %Ld --z3rlimit %Ld"|}
       bo.fuel bo.ifuel bo.z3rlimit
   in
-  [ opts; "open Core"; "open FStar.Mul" ] |> String.concat ~sep:"\n"
+
+  List.append [ opts; "open FStar.Mul" ]
+    (if
+       hax_core_models_extraction
+       && (String.is_prefix ~prefix:"Core_models.Primitives" mod_name
+          || String.is_prefix ~prefix:"Core_models.Base" mod_name)
+     then []
+     else [ "open Core_models" ])
+  |> String.concat ~sep:"\n"
 
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
@@ -1933,8 +1944,8 @@ let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
                  {
                    path = mod_name ^ "." ^ ext;
                    contents =
-                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo ^ "\n\n"
-                     ^ body ^ "\n";
+                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo mod_name
+                     ^ "\n\n" ^ body ^ "\n";
                    sourcemap = None;
                  }
          in
