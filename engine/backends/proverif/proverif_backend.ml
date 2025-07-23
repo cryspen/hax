@@ -887,7 +887,6 @@ module DepGraphR = Dependencies.Make (Features.Rust)
 module TransformToInputLanguage =
   [%functor_application
   Phases.Reject.Unsafe(Features.Rust)
-  |> Phases.Drop_metasized
   |> Phases.Reject.RawOrMutPointer
   |> Phases.Transform_hax_lib_inline
   |> Phases.Simplify_question_marks
