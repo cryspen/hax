@@ -254,9 +254,7 @@ fn prune_sized_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     generic_predicates: &mut GenericPredicates<'tcx>,
 ) {
-    use rustc_middle::ty::SizedTraitKind;
-    let meta_sized_def_id = SizedTraitKind::require_lang_item(SizedTraitKind::MetaSized, tcx);
-    let sized_def_id = SizedTraitKind::require_lang_item(SizedTraitKind::Sized, tcx);
+    use rustc_hir::lang_items::LangItem;
     let mut pruned = false;
     let predicates: Vec<(Clause<'tcx>, rustc_span::Span)> = generic_predicates
         .predicates
@@ -264,8 +262,11 @@ fn prune_sized_predicates<'tcx>(
         .filter(|(clause, _)| match clause.as_trait_clause() {
             None => true,
             Some(trait_predicate) => {
-                let def_id = trait_predicate.skip_binder().def_id();
-                let prune = def_id == meta_sized_def_id || def_id == sized_def_id;
+                let lang_item = tcx.as_lang_item(trait_predicate.skip_binder().def_id());
+                let prune = matches!(
+                    lang_item,
+                    Some(LangItem::PointeeSized | LangItem::MetaSized | LangItem::Sized)
+                );
                 if prune {
                     pruned = true;
                 }
