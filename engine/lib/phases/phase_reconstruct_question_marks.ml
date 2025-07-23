@@ -53,7 +53,7 @@ module%inlined_contents Make (FA : Features.T) = struct
       let expect_residual_impl_result (impl : impl_expr) : impl_expr option =
         match impl with
         | {
-         kind = ImplApp { args = [ _; _; _; from_impl ]; _ };
+         kind = ImplApp { args = [ from_impl ]; _ };
          goal =
            {
              trait;
