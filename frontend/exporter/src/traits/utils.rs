@@ -26,6 +26,7 @@
 //! The current implementation considers all predicates on traits to be outputs, which has the
 //! benefit of reducing the size of signatures. Moreover, the rules on which bounds are required vs
 //! implied are subtle. We may change this if this proves to be a problem.
+use hax_frontend_exporter_options::BoundsOptions;
 use rustc_hir::def::DefKind;
 use rustc_middle::ty::*;
 use rustc_span::DUMMY_SP;
@@ -65,7 +66,7 @@ pub fn predicates_defined_on(tcx: TyCtxt<'_>, def_id: DefId) -> GenericPredicate
 pub fn required_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: DefId,
-    add_drop: bool,
+    options: BoundsOptions,
 ) -> GenericPredicates<'tcx> {
     use DefKind::*;
     let def_kind = tcx.def_kind(def_id);
@@ -88,7 +89,7 @@ pub fn required_predicates<'tcx>(
         // `predicates_defined_on` ICEs on other def kinds.
         _ => Default::default(),
     };
-    if add_drop {
+    if options.resolve_drop {
         // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or
         // `Sized`.
         let drop_trait = tcx.lang_items().drop_trait().unwrap();
@@ -107,6 +108,9 @@ pub fn required_predicates<'tcx>(
                 .arena
                 .alloc_from_iter(predicates.predicates.iter().copied().chain(extra_bounds));
         }
+    }
+    if options.prune_sized {
+        prune_sized_predicates(tcx, &mut predicates);
     }
     predicates
 }
@@ -133,11 +137,11 @@ pub fn self_predicate<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> PolyTraitRef<'t
 pub fn implied_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: DefId,
-    add_drop: bool,
+    options: BoundsOptions,
 ) -> GenericPredicates<'tcx> {
     use DefKind::*;
     let parent = tcx.opt_parent(def_id);
-    match tcx.def_kind(def_id) {
+    let mut predicates = match tcx.def_kind(def_id) {
         // We consider all predicates on traits to be outputs
         Trait | TraitAlias => predicates_defined_on(tcx, def_id),
         AssocTy if matches!(tcx.def_kind(parent.unwrap()), Trait) => {
@@ -147,7 +151,7 @@ pub fn implied_predicates<'tcx>(
                 predicates: tcx.explicit_item_bounds(def_id).skip_binder(),
                 ..GenericPredicates::default()
             };
-            if add_drop {
+            if options.resolve_drop {
                 // Add a `Drop` bound to the assoc item.
                 let drop_trait = tcx.lang_items().drop_trait().unwrap();
                 let ty =
@@ -164,7 +168,11 @@ pub fn implied_predicates<'tcx>(
             predicates
         }
         _ => GenericPredicates::default(),
+    };
+    if options.prune_sized {
+        prune_sized_predicates(tcx, &mut predicates);
     }
+    predicates
 }
 
 /// Erase free regions from the given value. Largely copied from `tcx.erase_regions`, but also
@@ -238,6 +246,37 @@ where
     T: TypeFoldable<TyCtxt<'tcx>> + Copy,
 {
     Binder::dummy(erase_and_norm(tcx, typing_env, x.skip_binder()))
+}
+
+/// Given a `GenericPredicates`, prune every occurence of a sized-related clause.
+/// Prunes bounds of the shape `T: MetaSized` and `T: Sized`.
+fn prune_sized_predicates<'tcx>(
+    tcx: TyCtxt<'tcx>,
+    generic_predicates: &mut GenericPredicates<'tcx>,
+) {
+    use rustc_middle::ty::SizedTraitKind;
+    let meta_sized_def_id = SizedTraitKind::require_lang_item(SizedTraitKind::MetaSized, tcx);
+    let sized_def_id = SizedTraitKind::require_lang_item(SizedTraitKind::Sized, tcx);
+    let mut pruned = false;
+    let predicates: Vec<(Clause<'tcx>, rustc_span::Span)> = generic_predicates
+        .predicates
+        .iter()
+        .filter(|(clause, _)| match clause.as_trait_clause() {
+            None => true,
+            Some(trait_predicate) => {
+                let def_id = trait_predicate.skip_binder().def_id();
+                let prune = def_id == meta_sized_def_id || def_id == sized_def_id;
+                if prune {
+                    pruned = true;
+                }
+                !prune
+            }
+        })
+        .copied()
+        .collect();
+    if pruned {
+        generic_predicates.predicates = tcx.arena.alloc_slice(&predicates);
+    }
 }
 
 pub trait ToPolyTraitRef<'tcx> {

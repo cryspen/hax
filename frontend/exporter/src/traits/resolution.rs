@@ -2,6 +2,7 @@
 //! This module is independent from the rest of hax, in particular it doesn't use its
 //! state-tracking machinery.
 
+use hax_frontend_exporter_options::BoundsOptions;
 use itertools::Itertools;
 use std::collections::{HashMap, hash_map::Entry};
 
@@ -147,12 +148,12 @@ pub struct AnnotatedTraitPred<'tcx> {
 fn initial_search_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: rustc_span::def_id::DefId,
-    add_drop: bool,
+    options: BoundsOptions,
 ) -> Vec<AnnotatedTraitPred<'tcx>> {
     fn acc_predicates<'tcx>(
         tcx: TyCtxt<'tcx>,
         def_id: rustc_span::def_id::DefId,
-        add_drop: bool,
+        options: BoundsOptions,
         predicates: &mut Vec<AnnotatedTraitPred<'tcx>>,
         pred_id: &mut usize,
     ) {
@@ -166,7 +167,7 @@ fn initial_search_predicates<'tcx>(
             // These inherit some predicates from their parent.
             AssocTy | AssocFn | AssocConst | Closure | Ctor(..) | Variant => {
                 let parent = tcx.parent(def_id);
-                acc_predicates(tcx, parent, add_drop, predicates, pred_id);
+                acc_predicates(tcx, parent, options, predicates, pred_id);
             }
             Trait | TraitAlias => {
                 let self_pred = self_predicate(tcx, def_id).upcast(tcx);
@@ -178,7 +179,7 @@ fn initial_search_predicates<'tcx>(
             _ => {}
         }
         predicates.extend(
-            required_predicates(tcx, def_id, add_drop)
+            required_predicates(tcx, def_id, options)
                 .predicates
                 .iter()
                 .map(|(clause, _span)| *clause)
@@ -192,7 +193,7 @@ fn initial_search_predicates<'tcx>(
     }
 
     let mut predicates = vec![];
-    acc_predicates(tcx, def_id, add_drop, &mut predicates, &mut 0);
+    acc_predicates(tcx, def_id, options, &mut predicates, &mut 0);
     predicates
 }
 
@@ -200,10 +201,10 @@ fn initial_search_predicates<'tcx>(
 fn parents_trait_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     pred: PolyTraitPredicate<'tcx>,
-    add_drop: bool,
+    options: BoundsOptions,
 ) -> Vec<PolyTraitPredicate<'tcx>> {
     let self_trait_ref = pred.to_poly_trait_ref();
-    implied_predicates(tcx, pred.def_id(), add_drop)
+    implied_predicates(tcx, pred.def_id(), options)
         .predicates
         .iter()
         .map(|(clause, _span)| *clause)
@@ -245,13 +246,12 @@ pub struct PredicateSearcher<'tcx> {
     typing_env: rustc_middle::ty::TypingEnv<'tcx>,
     /// Local clauses available in the current context.
     candidates: HashMap<PolyTraitPredicate<'tcx>, Candidate<'tcx>>,
-    /// Whether to add `T: Drop` bounds for every type generic and associated item.
-    add_drop: bool,
+    options: BoundsOptions,
 }
 
 impl<'tcx> PredicateSearcher<'tcx> {
     /// Initialize the elaborator with the predicates accessible within this item.
-    pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId, add_drop: bool) -> Self {
+    pub fn new_for_owner(tcx: TyCtxt<'tcx>, owner_id: DefId, options: BoundsOptions) -> Self {
         let mut out = Self {
             tcx,
             typing_env: TypingEnv {
@@ -259,10 +259,10 @@ impl<'tcx> PredicateSearcher<'tcx> {
                 typing_mode: TypingMode::PostAnalysis,
             },
             candidates: Default::default(),
-            add_drop,
+            options,
         };
         out.extend(
-            initial_search_predicates(tcx, owner_id, add_drop)
+            initial_search_predicates(tcx, owner_id, options)
                 .into_iter()
                 .map(|clause| Candidate {
                     path: vec![],
@@ -299,9 +299,9 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let tcx = self.tcx;
         // Then recursively add their parents. This way ensures a breadth-first order,
         // which means we select the shortest path when looking up predicates.
-        let add_drop = self.add_drop;
+        let options = self.options;
         self.extend(new_candidates.into_iter().flat_map(|candidate| {
-            parents_trait_predicates(tcx, candidate.pred, add_drop)
+            parents_trait_predicates(tcx, candidate.pred, options)
                 .into_iter()
                 .enumerate()
                 .map(move |(index, parent_pred)| {
@@ -342,7 +342,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         };
 
         // The bounds that hold on the associated type.
-        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.add_drop)
+        let item_bounds = implied_predicates(tcx, alias_ty.def_id, self.options)
             .predicates
             .iter()
             .map(|(clause, _span)| *clause)
@@ -562,7 +562,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
                     // `Drop` in its list of traits.
                     ty::Dynamic(..) => ImplExprAtom::Dyn,
                     ty::Param(..) | ty::Alias(..) | ty::Bound(..) => {
-                        if self.add_drop {
+                        if self.options.resolve_drop {
                             // We've added `Drop` impls on everything, we should be able to resolve
                             // it.
                             match self.resolve_local(erased_tref.upcast(self.tcx), warn)? {
@@ -616,7 +616,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let tcx = self.tcx;
         self.resolve_predicates(
             generics,
-            required_predicates(tcx, def_id, self.add_drop),
+            required_predicates(tcx, def_id, self.options),
             warn,
         )
     }
@@ -632,7 +632,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
         let tcx = self.tcx;
         self.resolve_predicates(
             generics,
-            implied_predicates(tcx, def_id, self.add_drop),
+            implied_predicates(tcx, def_id, self.options),
             warn,
         )
     }

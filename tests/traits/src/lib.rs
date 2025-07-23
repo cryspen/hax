@@ -322,3 +322,32 @@ mod implement_arithmetic_trait {
         x + y
     }
 }
+
+// issue 1566
+mod typenum_perf {
+    use typenum::{IsLess, UInt, UTerm, B1};
+
+    type I20 = UInt<I19, B1>;
+    type I19 = UInt<I18, B1>;
+    type I18 = UInt<I17, B1>;
+    type I17 = UInt<I16, B1>;
+    type I16 = UInt<I15, B1>;
+    type I15 = UInt<I14, B1>;
+    type I14 = UInt<I13, B1>;
+    type I13 = UInt<I12, B1>;
+    type I12 = UInt<I11, B1>;
+    type I11 = UInt<I10, B1>;
+    type I10 = UInt<I9, B1>;
+    type I9 = UInt<I8, B1>;
+    type I8 = UInt<I7, B1>;
+    type I7 = UInt<I6, B1>;
+    type I6 = UInt<I5, B1>;
+    type I5 = UInt<I4, B1>;
+    type I4 = UInt<I3, B1>;
+    type I3 = UInt<I2, B1>;
+    type I2 = UInt<I1, B1>;
+    type I1 = UInt<I0, B1>;
+    type I0 = UTerm;
+
+    fn _f<T: IsLess<I20>>() {}
+}

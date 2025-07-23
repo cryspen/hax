@@ -545,7 +545,10 @@ impl From<Options> for hax_frontend_exporter_options::Options {
     fn from(_opts: Options) -> hax_frontend_exporter_options::Options {
         hax_frontend_exporter_options::Options {
             inline_anon_consts: true,
-            resolve_drop_bounds: false,
+            bounds_options: hax_frontend_exporter_options::BoundsOptions {
+                resolve_drop: false,
+                prune_sized: true,
+            },
         }
     }
 }
