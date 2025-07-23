@@ -314,7 +314,7 @@ class t_TraitWithRequiresAndEnsures (v_Self: Type0) = {
 
 let test
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_TraitWithRequiresAndEnsures v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_TraitWithRequiresAndEnsures v_T)
       (x: v_T)
     : u8 = (f_method #v_T #FStar.Tactics.Typeclasses.solve x (mk_u8 99) <: u8) -! mk_u8 88
 '''

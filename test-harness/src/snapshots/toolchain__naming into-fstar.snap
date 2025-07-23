@@ -218,7 +218,7 @@ class t_FooTrait (v_Self: Type0) = { f_ASSOCIATED_CONSTANT:usize }
 
 let constants
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_FooTrait v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_FooTrait v_T)
       (_: Prims.unit)
     : usize =
   (f_ASSOCIATED_CONSTANT #FStar.Tactics.Typeclasses.solve <: usize) +! v_INHERENT_CONSTANT
