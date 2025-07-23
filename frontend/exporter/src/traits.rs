@@ -6,8 +6,8 @@ mod resolution;
 mod utils;
 #[cfg(feature = "rustc")]
 pub use utils::{
-    ToPolyTraitRef, erase_and_norm, implied_predicates, predicates_defined_on, required_predicates,
-    self_predicate,
+    ToPolyTraitRef, erase_and_norm, implied_predicates, is_sized_related_trait,
+    predicates_defined_on, required_predicates, self_predicate,
 };
 
 #[cfg(feature = "rustc")]

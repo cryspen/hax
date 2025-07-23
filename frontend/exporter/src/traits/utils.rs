@@ -248,34 +248,33 @@ where
     Binder::dummy(erase_and_norm(tcx, typing_env, x.skip_binder()))
 }
 
+/// Returns true whenever `def_id` is `MetaSized`, `Sized` or `PointeeSized`.
+pub fn is_sized_related_trait<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> bool {
+    use rustc_hir::lang_items::LangItem;
+    let lang_item = tcx.as_lang_item(def_id);
+    matches!(
+        lang_item,
+        Some(LangItem::PointeeSized | LangItem::MetaSized | LangItem::Sized)
+    )
+}
+
 /// Given a `GenericPredicates`, prune every occurence of a sized-related clause.
-/// Prunes bounds of the shape `T: MetaSized` and `T: Sized`.
+/// Prunes bounds of the shape `T: MetaSized`, `T: Sized` or `T: PointeeSized`.
 fn prune_sized_predicates<'tcx>(
     tcx: TyCtxt<'tcx>,
     generic_predicates: &mut GenericPredicates<'tcx>,
 ) {
-    use rustc_hir::lang_items::LangItem;
-    let mut pruned = false;
     let predicates: Vec<(Clause<'tcx>, rustc_span::Span)> = generic_predicates
         .predicates
         .iter()
-        .filter(|(clause, _)| match clause.as_trait_clause() {
-            None => true,
-            Some(trait_predicate) => {
-                let lang_item = tcx.as_lang_item(trait_predicate.skip_binder().def_id());
-                let prune = matches!(
-                    lang_item,
-                    Some(LangItem::PointeeSized | LangItem::MetaSized | LangItem::Sized)
-                );
-                if prune {
-                    pruned = true;
-                }
-                !prune
-            }
+        .filter(|(clause, _)| {
+            clause.as_trait_clause().is_some_and(|trait_predicate| {
+                !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
+            })
         })
         .copied()
         .collect();
-    if pruned {
+    if predicates.len() != generic_predicates.predicates.len() {
         generic_predicates.predicates = tcx.arena.alloc_slice(&predicates);
     }
 }
