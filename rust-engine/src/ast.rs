@@ -185,7 +185,17 @@ pub enum TyKind {
     Resugared(ResugaredTyKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
+}
+
+#[derive_group_for_ast]
+#[visitable(opaque)]
+/// Represent a node of the AST where an error occured.
+pub struct ErrorNode {
+    /// The node from the AST at the time something failed
+    pub fragment: Box<Fragment>,
+    /// The error(s) encountered.
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 /// A `dyn` trait. The generic arguments are known but the actual type
@@ -396,7 +406,7 @@ pub enum PatKind {
     Resugared(ResugaredPatKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 }
 
 /// Represents the various kinds of pattern guards.
@@ -1079,7 +1089,7 @@ pub enum ExprKind {
     Resugared(ResugaredExprKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 }
 
 /// Represents the kinds of generic parameters
@@ -1460,7 +1470,7 @@ pub enum ItemKind {
     },
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 
     /// A resugared item.
     /// This variant is introduced before printing only.
