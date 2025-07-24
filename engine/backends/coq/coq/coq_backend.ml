@@ -193,6 +193,9 @@ struct
     object (self)
       inherit BasePrinter.base
 
+      val concrete_ident_view : (module Concrete_ident.RENDER_API) =
+        (module Concrete_ident.MakeRenderAPI (CoqNamePolicy))
+
       method private primitive_to_string (id : primitive_ident) : document =
         match id with
         | Deref -> default_document_for "(TODO: Deref)"
@@ -998,23 +1001,6 @@ struct
 
       (* method quote (quote : quote) : document = empty *)
       method module_path_separator = "."
-
-      method concrete_ident ~local:_ id : document =
-        match id.name with
-        | "not" -> !^"negb"
-        | "eq" -> !^"PartialEq_f_eq"
-        | "lt" -> !^"PartialOrd_f_lt"
-        | "gt" -> !^"PartialOrd_f_gt"
-        | "le" -> !^"PartialOrd_f_le"
-        | "ge" -> !^"PartialOrd_f_ge"
-        | "rem" -> !^"Rem_f_rem"
-        | "add" -> !^"Add_f_add"
-        | "sub" -> !^"Sub_f_sub"
-        | "mul" -> !^"Mul_f_mul"
-        | "div" -> !^"Div_f_div"
-        | "index" -> !^"Index_f_index"
-        | "f_to_string" -> CoqNotation.comment !^"f_to_string"
-        | x -> !^x
     end
 
   let new_printer : BasePrinter.finalized_printer =
