@@ -11,7 +11,7 @@
 /// # Examples
 ///
 /// ```rust
-/// use your_crate::Monoid;
+/// use hax_rust_engine::ast::visitors::Monoid;
 ///
 /// #[derive(Debug, Clone)]
 /// struct Sum(i32);

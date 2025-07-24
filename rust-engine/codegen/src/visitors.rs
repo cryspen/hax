@@ -1,9 +1,9 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::{
-    Attribute, Fields, Ident, ItemEnum, ItemStruct, LitStr, Meta, Token,
+    Attribute, Fields, Ident, ItemEnum, ItemStruct, LitStr, Meta,
     parse::{Parse, ParseStream},
-    parse_macro_input, parse_quote,
+    parse_quote,
     punctuated::Punctuated,
     token::Comma,
     visit::Visit,
