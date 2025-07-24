@@ -589,7 +589,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b LocalId {
 
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b GlobalId {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
-        allocator.text(self.to_debug_string())
+        allocator.text(self.to_debug_string().replace("::", "."))
     }
 }
 
