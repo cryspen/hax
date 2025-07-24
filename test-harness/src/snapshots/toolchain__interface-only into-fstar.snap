@@ -71,10 +71,10 @@ unfold
 let impl_1 = impl_1'
 
 assume
-val f_from__impl_1__from': u8 -> t_Bar
+val impl_1__f_from__from': u8 -> t_Bar
 
 unfold
-let f_from__impl_1__from = f_from__impl_1__from'
+let impl_1__f_from__from = impl_1__f_from__from'
 
 type t_Holder (v_T: Type0) = { f_value:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global }
 
