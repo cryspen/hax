@@ -599,9 +599,7 @@ pub mod map_reduce_cf_diag {
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             }
         };
         result
@@ -2876,9 +2874,7 @@ pub mod map_cf_diag {
     ) -> std::ops::ControlFlow<V::Error, ()> {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
             }
         };
         result
@@ -4856,9 +4852,7 @@ pub mod map_reduce_diag {
     ) -> V::Out {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => V::Out::identity(),
             }
         };
         result
@@ -7030,9 +7024,7 @@ pub mod map_diag {
     ) -> () {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => (),
             }
         };
         result
@@ -8907,9 +8899,7 @@ pub mod map_reduce_cf {
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             }
         };
         result
@@ -10846,9 +10836,7 @@ pub mod map_cf {
     ) -> std::ops::ControlFlow<V::Error, ()> {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
             }
         };
         result
@@ -12671,9 +12659,7 @@ pub mod reduce_cf {
     ) -> std::ops::ControlFlow<V::Error, V::Out> {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(V::Out::identity()),
             }
         };
         result
@@ -14610,9 +14596,7 @@ pub mod cf {
     ) -> std::ops::ControlFlow<V::Error, ()> {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => std::ops::ControlFlow::Continue(()),
             }
         };
         result
@@ -16281,9 +16265,7 @@ pub mod map_reduce {
     ) -> V::Out {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => V::Out::identity(),
             }
         };
         result
@@ -18013,9 +17995,7 @@ pub mod map {
     ) -> () {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => (),
             }
         };
         result
@@ -19589,9 +19569,7 @@ pub mod reduce {
     ) -> V::Out {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => V::Out::identity(),
             }
         };
         result
@@ -21369,9 +21347,7 @@ pub mod vanilla {
     ) -> () {
         let result = {
             match v {
-                _ => unreachable!(
-                    "references are always considered inhabited, even for an empty enum"
-                ),
+                ResugaredTyKind::Unit { .. } => (),
             }
         };
         result
