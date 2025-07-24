@@ -95,9 +95,7 @@ instance Result.instWPMonad : WPMonad Result (.except Error .pure) where
     ext Q
     cases x <;> simp [PredTrans.bind, PredTrans.const, Bind.bind]
 
-
-
-instance : Coe α (Result α) where
+instance Result.instCoe {α} : Coe α (Result α) where
   coe x := pure x
 
 -- Logic
@@ -132,13 +130,9 @@ instance : ToNat u16 where
 instance : ToNat Nat where
   toNat x := x
 
-@[simp]
+@[simp, spec]
 instance : Coe i32 (Result i64) where
   coe x := pure (x.toInt64)
-
-@[simp]
-instance : Coe i64 (Result i32) where
-  coe x := pure (Int64.toInt32 x)
 
 @[simp]
 instance : Coe u32 Nat where
@@ -173,23 +167,164 @@ instance : OfNat (Result Nat) n where
 -- Arithmetic
 section Arithmetic
 
+/--
+The notation typeclass for homogeneous addition that returns a Result.
+This enables the notation `a +? b : α` where `a : α`, `b : α`. For now, there is
+no heterogeneous version
+-/
+class HaxAdd α where
+  /-- `a +? b` computes the panicking sum of `a` and `b`.
+  The meaning of this notation is type-dependent. -/
+  add : α → α → Result α
+
+@[inherit_doc] infixl:65 " +? " => HaxAdd.add
+
+/--
+The notation typeclass for homogeneous substraction that returns a Result.
+This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
+no heterogeneous version
+-/
+class HaxSub α where
+  /-- `a -? b` computes the panicking substraction of `a` and `b`.
+  The meaning of this notation is type-dependent. -/
+  sub : α → α → Result α
+
+@[inherit_doc] infixl:65 " -? " => HaxSub.sub
+
+/--
+The notation typeclass for homogeneous multiplication that returns a Result.
+This enables the notation `a *? b : α` where `a : α`, `b : α`. For now, there is
+no heterogeneous version
+-/
+class HaxMul α where
+  /-- `a -? b` computes the panicking multiplication of `a` and `b`.
+  The meaning of this notation is type-dependent. -/
+  mul : α → α → Result α
+
+@[inherit_doc] infixl:70 " *? " => HaxMul.mul
+
+/-- The typeclass behind the notation `a >>>? b : α` where `a b : α`. -/
+class HaxShiftRight α where
+  /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
+  of this notation is type-dependent. It panics if `b` exceeds the size of
+  `a`. -/
+  shiftRight : α → α → Result α
+
+@[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
+
+namespace Int64
+
+instance instHaxAdd : HaxAdd Int64 where
+  add x y :=
+    if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x + y)
+
+@[spec]
+theorem HaxAdd_spec_bv (x y: i64) :
+  ⦃ ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) ⦄
+  (x +? y)
+  ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
+
+instance instHaxSub : HaxSub Int64 where
+  sub x y :=
+    if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x - y)
+
+@[spec]
+theorem HaxSub_spec_bv (x y: i64) :
+  ⦃ ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) ⦄
+  (x -? y)
+  ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
+
+instance instHaxMul : HaxMul Int64 where
+  mul x y :=
+    if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+@[spec]
+theorem HaxMul_spec_bv (x y: i64) :
+  ⦃ ¬ (BitVec.smulOverflow x.toBitVec y.toBitVec) ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+instance instHaxShiftRight : HaxShiftRight Int64 where
+  shiftRight x y :=
+    if (y ≤ 32) then pure (x >>> y)
+    else .fail .integerOverflow
+
+@[spec]
+theorem HaxShiftRight_spec_bv (x y: i64) :
+  ⦃ y ≤ 32 ⦄
+  ( x >>>? y)
+  ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
+
+end Int64
+
+namespace Int32
+
+instance instHaxAdd : HaxAdd Int32 where
+  add x y :=
+    if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x + y)
+
+@[spec]
+theorem HaxAdd_spec_bv (x y: i32) :
+  ⦃ ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) ⦄
+  (x +? y)
+  ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
+
+-- @[spec]
+-- theorem HaxAdd_spec_Int (x y: i32) :
+--   ⦃ x.toInt + y.toInt < Int32.maxValue.toInt ⦄
+--   (x +? y : Result i32)
+--   ⦃ ⇓ r => r = x + y ⦄
+-- := by
+--   mvcgen [Int32.instHaxAdd ]
+--   cases h__overflow : ((toBitVec x).saddOverflow (toBitVec y)) <;> try simp
+--   have := @BitVec.toInt_add_of_not_saddOverflow _ (x.toBitVec) (y.toBitVec)
+--   simp []
+
+instance instHaxSub : HaxSub Int32 where
+  sub x y :=
+    if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x - y)
+
+@[spec]
+theorem HaxSub_spec_bv (x y: i32) :
+  ⦃ ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) ⦄
+  (x -? y : Result i32)
+  ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
+
+instance instHaxMul : HaxMul Int32 where
+  mul x y :=
+    if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+@[spec]
+theorem HaxMul_spec_bv (x y: i32) :
+  ⦃ ¬ (BitVec.smulOverflow x.toBitVec y.toBitVec) ⦄
+  (x *? y : Result i32)
+  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+end Int32
+
 -- Overflowing operations
 @[simp, spec]
-def hax_machine_int_add {α} [Add α] (x y: α) : Result α := pure (x + y)
+def hax_machine_int_add {α} [HaxAdd α] (x y: α) : Result α := x +? y
 @[simp, spec]
-def hax_machine_int_sub {α} [Sub α] (x y: α) := Result.pure (x - y)
+def hax_machine_int_sub {α} [HaxSub α] (x y: α) : Result α := x -? y
 @[simp, spec]
-def hax_machine_int_mul {α} [Mul α] (x y: α) := Result.pure (x * y)
+def hax_machine_int_mul {α} [HaxMul α] (x y: α) : Result α := x *? y
+@[simp]
+def hax_machine_int_div {α} [Div α] (x y: α) : Result α := pure (x / y)
+@[simp]
+def hax_machine_int_rem {α} [Mod α] (x y: α) : Result α := pure (x % y)
 @[simp, spec]
-def hax_machine_int_div {α} [Div α] (x y: α) := Result.pure (x / y)
-@[simp,spec]
-def hax_machine_int_rem {α} [Mod α] (x y: α) := Result.pure (x % y)
-@[simp, spec]
-def hax_machine_int_shr {α β γ} [HShiftRight α β γ] (a: α) (b: β) : Result γ := Result.pure (a >>> b)
+def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := (a >>>? b)
 @[simp]
 def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := Result.pure (a ^^^ b)
 @[simp]
-def ops_arith_Neg_neg {α} [Neg α] (x:α) := Result.pure (-x)
+def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 @[simp]
 def hax_machine_int_eq {α} (x y: α) [BEq α] : Bool := x == y
@@ -232,7 +367,7 @@ set_option pp.coercions false
 
 -- Wrapping operations
 @[simp]
-def num_impl_wrapping_add {α} [Add α] (x y: α) := Result.pure (x + y)
+def num_impl_wrapping_add {α} [Add α] (x y: α) : Result α := pure (x + y)
 
 
 class RotateLeft (α: Type) where
@@ -249,7 +384,7 @@ instance : RotateLeft u32 where
 
 @[simp]
 def num_impl_rotate_left {α} [r: RotateLeft α] (x: α) (n: Nat) : Result α :=
-  Result.pure (r.rotateLeft x n)
+  pure (r.rotateLeft x n)
 
 end Arithmetic
 
@@ -276,10 +411,18 @@ def constr_hax_Tuple2 {α β} {hax_Tuple2_Tuple0: α} {hax_Tuple2_Tuple1 : β} :
 def num_impl_from_le_bytes {α} (x: Vector α n) : u32 := (0: u32) -- TOFIX
 
 -- Casts
-@[simp]
-def convert_From_from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 @[simp, spec]
-def hax_cast_op {α β} [Coe α (Result β)] (x:α) : (Result β) := x
+def convert_From_from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
+
+class Cast (α β: Type) where
+  cast : α → Result β
+
+@[spec]
+instance : Cast i64 i32 where
+  cast x := pure (Int64.toInt32 x)
+
+@[simp, spec]
+def hax_cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
 
 -- Results
 inductive result_Result α β
@@ -421,10 +564,10 @@ def slice_impl_len α (a: Array α) : Nat := a.size
 def vec_Vec (α: Type) (_Allocator:Type) : Type := Array α
 
 def vec_impl_new (α: Type) (Allocator:Type) : Result (vec_Vec α Allocator) :=
-  Result.pure ((List.nil).toArray)
+  pure ((List.nil).toArray)
 
 def vec_impl_len (α: Type) (Allocator:Type) (x: vec_Vec α Allocator) : Result Nat :=
-  Result.pure x.size
+  pure x.size
 
 def vec_impl_extend_from_slice (α Allocator) (x: vec_Vec α Allocator) (y: Array α)
   : Result (vec_Vec α Allocator):=
