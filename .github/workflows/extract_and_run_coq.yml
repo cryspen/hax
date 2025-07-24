@@ -4,6 +4,7 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 47 # equal to max + 3*std over the last 77 successful runs
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
