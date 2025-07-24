@@ -1,5 +1,4 @@
 -- This library provides a monadic encoding over Hax primitives
--- Aeneas errors
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -8,6 +7,7 @@ import Std
 open Std.Do
 open Std.Tactic
 
+-- Aeneas errors
 inductive Error where
    | assertionFailure: Error
    | integerOverflow: Error
@@ -27,7 +27,11 @@ inductive Result.{u} (α : Type u) where
 deriving Repr, BEq
 
 @[simp]
-def Result.pure (x:α) : Result α := .ok x
+instance Result.instPure: Pure Result where
+  pure x := .ok x
+
+@[simp, spec]
+def Result.pure (x: α) : Result α := (Result.instPure.pure x)
 
 @[simp]
 def Result.bind (x: Result α) (f: α -> Result β) := match x with
@@ -35,40 +39,47 @@ def Result.bind (x: Result α) (f: α -> Result β) := match x with
   | .fail e => .fail e
   | .div => .div
 
-instance ResultMonad : Monad Result where
-  pure := Result.pure
+@[simp]
+def Result.ofOption {α} (x:Option α) (e: Error) : Result α := match x with
+  | .some v => pure v
+  | .none => .fail e
+
+@[simp]
+instance Result.instMonad : Monad Result where
+  pure := pure
   bind := Result.bind
 
-instance : LawfulMonad Result where
+@[simp]
+instance Result.instLawfulMonad : LawfulMonad Result where
   id_map x := by
-    dsimp [id, Functor.map]
+    dsimp [id, Functor.map, Result.pure]
     cases x;
     all_goals grind
   map_const := by
     intros α β
     dsimp [Functor.map, Functor.mapConst]
   seqLeft_eq x y := by
-    dsimp [Functor.map, SeqLeft.seqLeft, Seq.seq]
+    dsimp [Functor.map, SeqLeft.seqLeft, Seq.seq, Result.pure]
     cases x ; all_goals cases y
     all_goals try simp
   seqRight_eq x y := by
-    dsimp [Functor.map, SeqRight.seqRight, Seq.seq]
+    dsimp [Functor.map, SeqRight.seqRight, Seq.seq, Result.pure]
     cases x ; all_goals cases y
     all_goals try simp
   pure_seq g x := by
-    dsimp [Functor.map, Seq.seq, pure]
+    dsimp [Functor.map, Seq.seq, pure, Result.pure]
   bind_pure_comp f x := by
     dsimp [Functor.map]
-    cases x ; all_goals dsimp [bind, pure]
   bind_map f x := by
-    dsimp [Functor.map, bind, pure, Seq.seq]
+    dsimp [Functor.map, bind, pure, Seq.seq, Result.pure]
   pure_bind x f := by
-    dsimp [pure, bind]
+    dsimp [pure, bind, Result.pure]
   bind_assoc x f g := by
     dsimp [pure, bind]
     cases x; all_goals simp
 
 -- set_option pp.coercions false
+@[simp]
 instance Result.instWP : WP Result (.except Error .pure) where
   wp x := match x with
   | .ok v => wp (Pure.pure v : Except Error _)
@@ -76,8 +87,9 @@ instance Result.instWP : WP Result (.except Error .pure) where
   | .div => PredTrans.const ⌜False⌝
 
 -- set_option pp.raw true
+@[simp]
 instance Result.instWPMonad : WPMonad Result (.except Error .pure) where
-  wp_pure := by intros; ext Q; simp [wp, PredTrans.pure, Pure.pure, Except.pure, Id.run]
+  wp_pure := by intros; ext Q; simp [wp, PredTrans.pure, Pure.pure, Except.pure, Id.run, Result.pure]
   wp_bind x f := by
     simp only [instWP]
     ext Q
@@ -88,9 +100,9 @@ instance Result.instWPMonad : WPMonad Result (.except Error .pure) where
 instance : Coe α (Result α) where
   coe x := pure x
 
-
 -- Logic
 abbrev hax_logical_op_and := (fun a b => a && b)
+abbrev hax_logical_op_or := (fun a b => a || b)
 
 -- Integer types
 
@@ -120,30 +132,40 @@ instance : ToNat u16 where
 instance : ToNat Nat where
   toNat x := x
 
+@[simp]
 instance : Coe i32 (Result i64) where
   coe x := pure (x.toInt64)
 
+@[simp]
 instance : Coe i64 (Result i32) where
   coe x := pure (Int64.toInt32 x)
 
+@[simp]
 instance : Coe u32 Nat where
   coe x := x.toNat
 
+@[simp]
 instance : Coe Nat usize where
   coe x := USize.ofNat x
 
+@[simp]
 instance : Coe USize UInt32 where
   coe x := x.toUInt32
 
+@[simp]
 instance : Coe USize (Result u32) where
   coe x := if h: x.toNat < UInt32.size then pure (x.toUInt32)
            else Result.fail .integerOverflow
 
+@[simp]
 instance {β} : Coe (α -> usize -> β) (α -> Nat -> β) where
   coe f a x := f a (USize.ofNat x)
+
+@[simp]
 instance {β} : Coe (α -> i32 -> β) (α -> Nat -> β) where
   coe f a x := f a (Int32.ofNat x)
 
+@[simp]
 instance : OfNat (Result Nat) n where
   ofNat := pure (n)
 
@@ -152,17 +174,17 @@ instance : OfNat (Result Nat) n where
 section Arithmetic
 
 -- Overflowing operations
-@[simp]
-def hax_machine_int_add {α} [Add α] (x y: α) := Result.pure (x + y)
-@[simp]
+@[simp, spec]
+def hax_machine_int_add {α} [Add α] (x y: α) : Result α := pure (x + y)
+@[simp, spec]
 def hax_machine_int_sub {α} [Sub α] (x y: α) := Result.pure (x - y)
-@[simp]
+@[simp, spec]
 def hax_machine_int_mul {α} [Mul α] (x y: α) := Result.pure (x * y)
-@[simp]
+@[simp, spec]
 def hax_machine_int_div {α} [Div α] (x y: α) := Result.pure (x / y)
-@[simp]
+@[simp,spec]
 def hax_machine_int_rem {α} [Mod α] (x y: α) := Result.pure (x % y)
-@[simp]
+@[simp, spec]
 def hax_machine_int_shr {α β γ} [HShiftRight α β γ] (a: α) (b: β) : Result γ := Result.pure (a >>> b)
 @[simp]
 def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := Result.pure (a ^^^ b)
@@ -256,7 +278,7 @@ def num_impl_from_le_bytes {α} (x: Vector α n) : u32 := (0: u32) -- TOFIX
 -- Casts
 @[simp]
 def convert_From_from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
-@[simp]
+@[simp, spec]
 def hax_cast_op {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 
 -- Results
@@ -362,9 +384,7 @@ instance {α n} [tn: ToNat β]:
 
 
 instance GetElemResult [tn: ToNat β] : GetElem (Array α) β (Result α) (fun _ _ => True) where
-  getElem xs i _ := match xs[tn.toNat i]? with
-  | .some v => pure v
-  | .none => Result.fail .arrayOutOfBounds
+  getElem xs i _ := Result.ofOption (xs[tn.toNat i]?) .arrayOutOfBounds
 
 instance : GetElem (Array α) usize (Result α) (fun _ _ => True) :=
   GetElemResult
@@ -372,14 +392,10 @@ instance : GetElem (Array α) Nat (Result α) (fun _ _ => True) :=
   GetElemResult
 
 instance {α β : Type} {n : Nat} [tn: ToNat β]: GetElem (Vector α n) β (Result α) (fun _ _ => True) where
-  getElem xs i _ := match xs[tn.toNat i]? with
-  | .some v => pure v
-  | .none => Result.fail (.arrayOutOfBounds)
+  getElem xs i _ := Result.ofOption (xs[tn.toNat i]?) .arrayOutOfBounds
 
 instance {α : Type} {n : Nat}: GetElem (Vector α n) Nat (Result α) (fun _ _ => True) where
-  getElem xs i _ := match xs[i]? with
-  | .some v => pure v
-  | .none => Result.fail (.arrayOutOfBounds)
+  getElem xs i _ := Result.ofOption xs[i]? .arrayOutOfBounds
 
 -- Arrays
 section Arrays
