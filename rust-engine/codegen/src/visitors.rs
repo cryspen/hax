@@ -1,12 +1,12 @@
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::{
+    Attribute, Fields, Ident, ItemEnum, ItemStruct, LitStr, Meta, Token,
     parse::{Parse, ParseStream},
     parse_macro_input, parse_quote,
     punctuated::Punctuated,
     token::Comma,
     visit::Visit,
-    Attribute, Fields, Ident, ItemEnum, ItemStruct, LitStr, Meta, Token,
 };
 
 use crate::helpers::*;
