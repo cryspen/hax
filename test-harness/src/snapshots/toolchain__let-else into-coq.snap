@@ -44,22 +44,22 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-Definition let_else (opt : t_Option ((t_u32))) : bool :=
-  run (match opt with
-  | Option_Some (x) =>
-    ControlFlow_Continue ((true : bool))
+Definition let_else (opt : core.option.t_Option ((t_u32))) : bool :=
+  rust_primitives.hax.control_flow_monad.mexception.run (match opt with
+  | core.option.Option_Some (x) =>
+    core.ops.control_flow.ControlFlow_Continue ((true : bool))
   | _ =>
-    ControlFlow_Break ((false : bool))
+    core.ops.control_flow.ControlFlow_Break ((false : bool))
   end).
 
-Definition let_else_different_type (opt : t_Option ((t_u32))) : bool :=
-  run (let hoist1 := match opt with
-  | Option_Some (x) =>
-    ControlFlow_Continue (Option_Some (f_add (x) ((1 : t_u32))))
+Definition let_else_different_type (opt : core.option.t_Option ((t_u32))) : bool :=
+  rust_primitives.hax.control_flow_monad.mexception.run (let hoist1 := match opt with
+  | core.option.Option_Some (x) =>
+    core.ops.control_flow.ControlFlow_Continue (core.option.Option_Some (core.ops.arith.Add__f_add (x) ((1 : t_u32))))
   | _ =>
-    ControlFlow_Break ((false : bool))
+    core.ops.control_flow.ControlFlow_Break ((false : bool))
   end in
-  ControlFlow_Continue (let_else (hoist1))).
+  core.ops.control_flow.ControlFlow_Continue (let_else (hoist1))).
 '''
 _CoqProject = '''
 -R ./ TODO

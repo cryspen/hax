@@ -66,47 +66,47 @@ Definition bar (x : t_E) : unit :=
     tt
   end.
 
-Definition nested (x : t_Option ((t_i32))) : t_i32 :=
+Definition nested (x : core.option.t_Option ((t_i32))) : t_i32 :=
   match x with
-  | Option_Some (1
+  | core.option.Option_Some (1
   | 2) =>
     (1 : t_i32)
-  | Option_Some (x) =>
+  | core.option.Option_Some (x) =>
     x
-  | Option_None =>
+  | core.option.Option_None =>
     (0 : t_i32)
   end.
 
-Definition deep (x : (t_i32*t_Option ((t_i32)))) : t_i32 :=
+Definition deep (x : (t_i32*core.option.t_Option ((t_i32)))) : t_i32 :=
   match x with
   | (1
-  | 2,Option_Some (3
+  | 2,core.option.Option_Some (3
   | 4)) =>
     (0 : t_i32)
   | (x,_) =>
     x
   end.
 
-Definition equivalent (x : (t_i32*t_Option ((t_i32)))) : t_i32 :=
+Definition equivalent (x : (t_i32*core.option.t_Option ((t_i32)))) : t_i32 :=
   match x with
-  | (1,Option_Some (3))
-  | (1,Option_Some (4))
-  | (2,Option_Some (3))
-  | (2,Option_Some (4)) =>
+  | (1,core.option.Option_Some (3))
+  | (1,core.option.Option_Some (4))
+  | (2,core.option.Option_Some (3))
+  | (2,core.option.Option_Some (4)) =>
     (0 : t_i32)
   | (x,_) =>
     x
   end.
 
-Definition deep_capture (x : t_Result (((t_i32*t_i32))) (((t_i32*t_i32)))) : t_i32 :=
+Definition deep_capture (x : core.result.t_Result (((t_i32*t_i32))) (((t_i32*t_i32)))) : t_i32 :=
   match x with
-  | Result_Ok ((1
+  | core.result.Result_Ok ((1
   | 2,x))
-  | Result_Err ((3
+  | core.result.Result_Err ((3
   | 4,x)) =>
     x
-  | Result_Ok ((x,_))
-  | Result_Err ((x,_)) =>
+  | core.result.Result_Ok ((x,_))
+  | core.result.Result_Err ((x,_)) =>
     x
   end.
 '''
