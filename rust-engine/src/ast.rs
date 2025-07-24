@@ -227,7 +227,7 @@ pub struct Metadata {
 
 /// A typed expression with metadata.
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(handle_diagnostics, span)]
 pub struct Expr {
     /// The kind of expression.
     pub kind: Box<ExprKind>,
@@ -239,7 +239,7 @@ pub struct Expr {
 
 /// A typed pattern with metadata.
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(handle_diagnostics, span)]
 pub struct Pat {
     /// The kind of pattern.
     pub kind: Box<PatKind>,
@@ -251,7 +251,7 @@ pub struct Pat {
 
 /// A pattern matching arm with metadata.
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(span)]
 pub struct Arm {
     /// The pattern of the arm.
     pub pat: Pat,
@@ -265,7 +265,7 @@ pub struct Arm {
 
 /// A pattern matching arm guard with metadata.
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(span)]
 pub struct Guard {
     /// The kind of guard.
     pub kind: GuardKind,
@@ -577,7 +577,7 @@ pub enum ImplExprKind {
 /// }
 /// ```
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(span)]
 pub struct ImplItem {
     /// Metadata (span and attributes) for the impl item.
     pub meta: Metadata,
@@ -634,7 +634,7 @@ pub enum ImplItemKind {
 
 /// Represents a trait item (associated type, fn, or default)
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(span)]
 pub struct TraitItem {
     /// Source span and attributes.
     pub meta: Metadata,
@@ -1160,7 +1160,7 @@ pub enum GenericConstraint {
 
 /// A generic parameter (lifetime, type parameter or const parameter)
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(span)]
 pub struct GenericParam {
     /// The local identifier for the generic parameter
     pub ident: LocalId,
@@ -1483,7 +1483,7 @@ pub enum ItemKind {
 
 /// A top-level item with metadata.
 #[derive_group_for_ast]
-#[visitable]
+#[visitable(handle_diagnostics, span)]
 pub struct Item {
     /// The global identifier of the item.
     pub ident: GlobalId,
