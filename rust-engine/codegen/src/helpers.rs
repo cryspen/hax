@@ -1,6 +1,6 @@
-use quote::{quote, ToTokens};
+use quote::{ToTokens, quote};
 use std::{fs, path::Path};
-use syn::{parse_file, Field, Fields, File, GenericParam, Generics, Ident};
+use syn::{Field, Fields, File, GenericParam, Generics, Ident, parse_file};
 
 /// Given an iterator of fields, this produces a vector of all its field idents.
 /// When a field is not named, we produce a proper name.

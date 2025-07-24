@@ -3,9 +3,8 @@ use std::{
     path::{Path, PathBuf},
 };
 use syn::{
-    parse_file,
+    File, ItemMod, parse_file,
     visit_mut::{self, VisitMut},
-    File, ItemMod,
 };
 
 /// A visitor which replaces `mod name;` with `mod name { /* contents of file… */ }`.

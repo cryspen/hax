@@ -1,6 +1,6 @@
 mod visitors;
 use quote::quote;
-use syn::{visit::Visit, visit_mut::VisitMut, File};
+use syn::{File, visit::Visit, visit_mut::VisitMut};
 use visitors::*;
 
 mod helpers;
