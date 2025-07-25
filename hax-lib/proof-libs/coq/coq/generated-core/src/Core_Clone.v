@@ -9,13 +9,12 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
 Class t_Clone (v_Self : Type) : Type :=
   {
-    Clone_f_clone : v_Self -> v_Self;
+    Clone__f_clone : v_Self -> v_Self;
   }.
 Arguments t_Clone (_).
-
-#[global] Instance t_Clone_any T : t_Clone T := { Clone_f_clone := id }.

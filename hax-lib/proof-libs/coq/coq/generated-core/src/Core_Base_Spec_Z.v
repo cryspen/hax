@@ -15,22 +15,20 @@ From Core Require Import Core.
 
 
 
-Class t_Sized (v_Self : Type) : Type :=
-  {
-  }.
-Arguments t_Sized (_).
+Inductive t_Z : Type :=
+| Z_NEG : Core_Base_Spec_Binary_Positive.t_Positive -> _
+| Z_ZERO
+| Z_POS : Core_Base_Spec_Binary_Positive.t_Positive -> _.
 
-Class t_Copy (v_Self : Type) `{hax_core.clone.t_Clone (v_Self)} : Type :=
-  {
-  }.
-Arguments t_Copy (_) {_}.
 
-Class t_Destruct (v_Self : Type) : Type :=
-  {
-  }.
-Arguments t_Destruct (_).
 
-Class t_Tuple (v_Self : Type) : Type :=
-  {
-  }.
-Arguments t_Tuple (_).
+
+
+
+
+
+Definition v_Z_ONE : t_Z :=
+  Z_POS (Core_Base_Spec_Binary_Positive.xH).
+
+Definition v_Z_TWO : t_Z :=
+  Z_POS (Core_Base_Spec_Binary_Positive.Positive_Positive (Core_Base_Spec_Haxint.v_HaxInt_TWO)).

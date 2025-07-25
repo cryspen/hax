@@ -17,7 +17,7 @@ From Core Require Import Core.
 
 Record Unary_Unary_record : Type :=
   {
-    Unary_Unary_0 : hax_core.base.spec.haxint.t_HaxInt;
+    Unary_Unary_0 : Core_Base_Spec_Haxint.t_HaxInt;
   }.
 
 
@@ -31,27 +31,27 @@ Inductive t_UNARY : Type :=
 
 
 
-Instance core.clone.t_Clone_754850048 : core.clone.t_Clone ((t_Unary)) :=
+Instance Core_Clone.t_Clone_648246659 : Core_Clone.t_Clone ((t_Unary)) :=
   {
     implaabbcc_t_Clone_impl__f_clone := fun  (self : t_Unary)=>
-      rust_primitives.hax.never_to_any (core.panicking.panic_fmt (core.fmt.rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
+      Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
   }.
 
-Definition unary_to_int (s : t_Unary) : hax_core.base.spec.haxint.t_HaxInt :=
+Definition unary_to_int (s : t_Unary) : Core_Base_Spec_Haxint.t_HaxInt :=
   0 s.
 
-Definition unary_from_int (x : hax_core.base.spec.haxint.t_HaxInt) : t_Unary :=
+Definition unary_from_int (x : Core_Base_Spec_Haxint.t_HaxInt) : t_Unary :=
   Unary_Unary (x).
 
 Definition succ (x : t_Unary) : t_Unary :=
-  rust_primitives.hax.never_to_any (core.panicking.panic_fmt (core.fmt.rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
+  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
 
 Definition pred (x : t_Unary) : t_Unary :=
-  rust_primitives.hax.never_to_any (core.panicking.panic_fmt (core.fmt.rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
+  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
 
 Definition match_unary (s : t_Unary) : t_UNARY :=
   if
-    hax_core.base.spec.haxint.is_zero (unary_to_int (core.clone.Clone__f_clone (s)))
+    Core_Base_Spec_Haxint.is_zero (unary_to_int (Core_Clone.Clone__f_clone (s)))
   then
     UNARY_ZERO
   else

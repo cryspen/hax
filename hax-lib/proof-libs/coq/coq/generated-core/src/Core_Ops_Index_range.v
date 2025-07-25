@@ -9,55 +9,52 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
-From Core Require Import Core_Primitive.
-Export Core_Primitive.
 
-From Core Require Import Core_Iter_Traits_Iterator.
-Export Core_Iter_Traits_Iterator.
 
-Record t_IndexRange : Type :=
+
+
+Record IndexRange_IndexRange_record : Type :=
   {
-    IndexRange_f_start : t_usize;
-    IndexRange_f_end : t_usize;
+    IndexRange_IndexRange_f_IndexRange_start : t_usize;
+    IndexRange_IndexRange_f_IndexRange_end : t_usize;
   }.
-Arguments Build_t_IndexRange.
-Arguments IndexRange_f_start.
-Arguments IndexRange_f_end.
-#[export] Instance settable_t_IndexRange : Settable _ :=
-  settable! (Build_t_IndexRange) <IndexRange_f_start; IndexRange_f_end>.
 
-Definition impl__IndexRange__zero_to (v_end : t_usize) : t_IndexRange :=
-  Build_t_IndexRange (Build_t_usize (Build_t_U64 0%N)) (v_end).
 
-Definition impl__IndexRange__next_unchecked (self : t_IndexRange) : (t_IndexRange*t_usize) :=
-  let value := IndexRange_f_start self in
-  let self := self <|IndexRange_f_start := Add_f_add (value) (Build_t_usize (Build_t_U64 1%N) : t_usize) |> in
+
+#[export] Instance settable_IndexRange_IndexRange_record : Settable _ :=
+  settable! (Build_IndexRange_IndexRange_record) <IndexRange_IndexRange_f_IndexRange_start; IndexRange_IndexRange_f_IndexRange_end>.
+
+Definition impl_IndexRange__zero_to (v_end : t_usize) : t_IndexRange :=
+  IndexRange_IndexRange ((0 : t_usize)) (v_end).
+
+Definition impl_IndexRange__len (self : t_IndexRange) : t_usize :=
+  Rust_primitives_U128.sub (f_IndexRange_end self) (f_IndexRange_start self).
+
+Definition impl_IndexRange__next_unchecked (self : t_IndexRange) : (t_IndexRange*t_usize) :=
+  let value := f_IndexRange_start self in
+  let self := self <|t_IndexRangef_IndexRange_start := Rust_primitives_U128.add (value) ((1 : t_usize)) |> in
   let hax_temp_output := value in
   (self,hax_temp_output).
 
-Definition impl__IndexRange__len (self : t_IndexRange) : t_usize :=
-  Sub_f_sub (IndexRange_f_end self) (IndexRange_f_start self).
-
-Program Instance t_Iterator_538767852 : t_Iterator ((t_IndexRange)) :=
+Instance Core_Iter_Traits_Iterator.t_Iterator_1000831689 : Core_Iter_Traits_Iterator.t_Iterator ((t_IndexRange)) :=
   {
-    Iterator_f_Item := t_usize;
-    Iterator_f_next := fun  (self : t_IndexRange)=>
-      (* let hax_temp_output := never_to_any (panic ("not yet implemented: specification needed"%string)) in *)
-      (self,Option_Some (self.(IndexRange_f_start)));
-    Iterator_f_size_hint := fun  (self : t_IndexRange)=>
-      let len := impl__IndexRange__len (self) in
-      (len,Option_Some (len));
-    Iterator_f_fold := fun {v_B : Type} {v_F : Type} `{t_Sized v_B} `{t_Sized v_F} `{t_Sized t_IndexRange} (_ : t_FnOnce v_F (v_B * t_usize)) (_ : t_FnMut v_F (v_B * t_usize)) `{_ : FnOnce_f_Output = v_B} (self : t_IndexRange) (init : v_B) (f : v_F)=>
-      never_to_any (panic "not yet implemented: specification needed"%string);
+    implaabbcc_t_Iterator_impl_1__f_Item := t_usize;
+    implaabbcc_t_Iterator_impl_1__f_next := fun  (self : t_IndexRange)=>
+      let hax_temp_output := Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))) in
+      (self,hax_temp_output);
+    implaabbcc_t_Iterator_impl_1__f_size_hint := fun  (self : t_IndexRange)=>
+      let len := impl_IndexRange__len (self) in
+      (len,Core_Option.Option_Some (len));
+    implaabbcc_t_Iterator_impl_1__f_fold := fun  (self : t_IndexRange) (init : v_B) (f : v_F)=>
+      Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
   }.
-Next Obligation.
-Admitted.
 
-(* Instance t_ExactSizeIterator_661616782 : t_ExactSizeIterator ((t_IndexRange)) := *)
-(*   { *)
-(*     ExactSizeIterator_impl_2_f_len := fun  (self : t_IndexRange)=> *)
-(*       impl__IndexRange__len (self); *)
-(*   }. *)
+Instance Core_Iter_Traits_Exact_size.t_ExactSizeIterator_338933472 : Core_Iter_Traits_Exact_size.t_ExactSizeIterator ((t_IndexRange)) :=
+  {
+    implaabbcc_t_ExactSizeIterator_impl_2__f_len := fun  (self : t_IndexRange)=>
+      impl_IndexRange__len (self);
+  }.

@@ -9,33 +9,30 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-
-(* From Core Require Import Core. *)
-
-From Core Require Import Core_Marker.
-Export Core_Marker.
-
-From Core Require Import Core_Primitive.
-Export Core_Primitive.
-
-Record t_Iter (v_T : Type) `{t_Sized (v_T)} : Type :=
-  {
-    Iter_f_data : t_Slice ((v_T));
-    Iter_f__marker : t_PhantomData ((v_T));
-  }.
-Arguments Build_t_Iter {_} {_}.
-Arguments Iter_f_data {_} {_}.
-Arguments Iter_f__marker {_} {_}.
-#[export] Instance settable_t_Iter `{v_T : Type} `{t_Sized (v_T)} : Settable _ :=
-  settable! (Build_t_Iter) <Iter_f_data; Iter_f__marker>.
-
-Definition impl__new `{v_T : Type} `{t_Sized (v_T)} `{t_Clone (v_T)} (slice : t_Slice ((v_T))) : t_Iter ((v_T)) :=
-  Build_t_Iter (Clone_f_clone (slice)) (Build_t_PhantomData).
-
-Instance t_Clone_313886898 `{v_T : Type} `{t_Sized (v_T)} `{t_Clone (v_T)} : t_Clone ((t_Iter ((v_T)))) :=
-  {
-    Clone_f_clone := fun  (self : t_Iter ((v_T)))=>
-      Build_t_Iter (Clone_f_clone (Iter_f_data self)) (Iter_f__marker self);
-  }.
+From Core Require Import Core.
 
 (* NotImplementedYet *)
+
+
+
+
+
+Record Iter_Iter_record (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type :=
+  {
+    Iter_Iter_f_Iter_data : Core_Primitive_Primitive_definitions.t_Slice ((v_T));
+    Iter_Iter_f_Iter_e_marker : Core_Marker.t_PhantomData ((v_T));
+  }.
+Arguments Build_Iter_Iter_record {_} {_}.
+Arguments Iter_Iter_f_Iter_data {_} {_}.
+Arguments Iter_Iter_f_Iter_e_marker {_} {_}.
+#[export] Instance settable_Iter_Iter_record `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : Settable _ :=
+  settable! (Build_Iter_Iter_record (v_T := v_T)) <Iter_Iter_f_Iter_data; Iter_Iter_f_Iter_e_marker>.
+
+Definition impl__new `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (slice : Core_Primitive_Primitive_definitions.t_Slice ((v_T))) : t_Iter ((v_T)) :=
+  Iter_Iter (Core_Clone.Clone__f_clone (slice)) (Core_Marker.PhantomData_PhantomData).
+
+Instance Core_Clone.t_Clone_942369049 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Iter ((v_T)))) :=
+  {
+    implaabbcc_t_Clone_impl_1__f_clone := fun  (self : t_Iter ((v_T)))=>
+      Iter_Iter (Core_Clone.Clone__f_clone (f_Iter_data self)) (f_Iter_e_marker self);
+  }.

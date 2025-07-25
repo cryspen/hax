@@ -9,369 +9,475 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
-From Core Require Import Core_Base_Spec.
-Export Core_Base_Spec.
 
-From Core Require Import Core_Base_Binary.
-Export Core_Base_Binary.
 
-From Core Require Import Core_Cmp (t_Ordering).
-Export Core_Cmp (t_Ordering).
 
-From Core Require Import Core_Base_Pos.
-Export Core_Base_Pos.
 
-Definition z_neg (x : t_Z) : t_Z :=
-  match x with
-  | Z_NEG (p) =>
-    Z_POS (p)
-  | Z_ZERO =>
-    Z_ZERO
-  | Z_POS (p) =>
-    Z_NEG (p)
-  end.
 
-Definition z_bitor__n_succ (x : t_POS) : t_Positive :=
-  match x with
-  | POS_ZERO =>
-    xH
-  | POS_POS (p) =>
-    positive_from_int (Hpos := ltac:(easy)) (unary_to_int (succ (unary_from_int (positive_to_int (p)))))
-  end.
 
-Definition z_add__z_double (s : t_Z) : t_Z :=
-  match s with
-  | Z_ZERO =>
-    Z_ZERO
-  | Z_POS (p) =>
-    Z_POS (xO (p))
-  | Z_NEG (p) =>
-    Z_NEG (xO (p))
-  end.
 
-Definition z_bitor__haxint_ldiff__n_double (x : t_POS) : t_POS :=
-  match x with
-  | POS_ZERO =>
-    POS_ZERO
-  | POS_POS (p) =>
-    POS_POS (xO (p))
-  end.
 
-Definition z_bitor__haxint_ldiff__n_succ_double (x : t_POS) : t_POS :=
-  match x with
-  | POS_ZERO =>
-    POS_POS (xH)
-  | POS_POS (p) =>
-    POS_POS (xI (p))
-  end.
-
-Definition z_add__z_pred_double (s : t_Z) : t_Z :=
-  match s with
-  | Z_ZERO =>
-    Z_NEG (xH)
-  | Z_POS (p) =>
-    Z_POS (positive_pred_double (p))
-  | Z_NEG (p) =>
-    Z_NEG (xI (p))
-  end.
-
-Definition z_add__z_succ_double (s : t_Z) : t_Z :=
-  match s with
-  | Z_ZERO =>
-    Z_POS (xH)
-  | Z_POS (p) =>
-    Z_POS (xI (p))
-  | Z_NEG (p) =>
-    Z_NEG (positive_pred_double (p))
-  end.
-
-Fixpoint z_bitor__haxint_ldiff__positive_ldiff (lhs : t_Positive) (rhs : t_Positive) : t_POS :=
-  match match_positive (lhs) with
-  | POSITIVE_XH =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      POS_ZERO
-    | POSITIVE_XO (_) =>
-      POS_POS (xH)
-    | POSITIVE_XI (_) =>
-      POS_ZERO
-    end
-  | POSITIVE_XO (p) =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      POS_POS (xO (p))
-    | POSITIVE_XO (q) =>
-      z_bitor__haxint_ldiff__n_double (z_bitor__haxint_ldiff__positive_ldiff (p) (q))
-    | POSITIVE_XI (q) =>
-      z_bitor__haxint_ldiff__n_double (z_bitor__haxint_ldiff__positive_ldiff (p) (q))
-    end
-  | POSITIVE_XI (p) =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      POS_POS (xO (p))
-    | POSITIVE_XO (q) =>
-      z_bitor__haxint_ldiff__n_succ_double (z_bitor__haxint_ldiff__positive_ldiff (p) (q))
-    | POSITIVE_XI (q) =>
-      z_bitor__haxint_ldiff__n_double (z_bitor__haxint_ldiff__positive_ldiff (p) (q))
-    end
-  end.
-
-Definition z_bitor__haxint_ldiff (lhs : t_POS) (rhs : t_POS) : t_POS :=
+Definition z_cmp (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Cmp.t_Ordering :=
   match lhs with
-  | POS_ZERO =>
-    POS_ZERO
-  | POS_POS (p) =>
+  | Core_Base_Spec_Z.Z_NEG (p) =>
     match rhs with
-    | POS_ZERO =>
-      POS_POS (p)
-    | POS_POS (q) =>
-      z_bitor__haxint_ldiff__positive_ldiff (p) (q)
-    end
-  end.
-
-Definition z_bitor__n_and (lhs : t_POS) (rhs : t_POS) : t_POS :=
-  match lhs with
-  | POS_ZERO =>
-    POS_ZERO
-  | POS_POS (p) =>
-    match rhs with
-    | POS_ZERO =>
-      POS_ZERO
-    | POS_POS (q) =>
-      match_pos (bitand_binary (p) (q))
-    end
-  end.
-
-Definition z_bitor__positive_pred_N (x : t_Positive) : t_POS :=
-  match match_positive (x) with
-  | POSITIVE_XH =>
-    POS_ZERO
-  | POSITIVE_XI (p) =>
-    POS_POS (xO (p))
-  | POSITIVE_XO (p) =>
-    POS_POS (positive_pred_double (p))
-  end.
-
-Definition z_bitor (lhs : t_Z) (rhs : t_Z) : t_Z :=
-  match lhs with
-  | Z_ZERO =>
-    rhs
-  | Z_POS (x) =>
-    match rhs with
-    | Z_ZERO =>
-      Z_POS (x)
-    | Z_POS (y) =>
-      Z_POS (bitor_binary (x) (y))
-    | Z_NEG (y) =>
-      Z_NEG (z_bitor__n_succ (z_bitor__haxint_ldiff (z_bitor__positive_pred_N (y)) (POS_POS (x))))
-    end
-  | Z_NEG (x) =>
-    match rhs with
-    | Z_ZERO =>
-      Z_NEG (x)
-    | Z_POS (y) =>
-      Z_NEG (z_bitor__n_succ (z_bitor__haxint_ldiff (z_bitor__positive_pred_N (x)) (POS_POS (y))))
-    | Z_NEG (y) =>
-      Z_NEG (z_bitor__n_succ (z_bitor__n_and (z_bitor__positive_pred_N (x)) (z_bitor__positive_pred_N (y))))
-    end
-  end.
-
-Definition z_cmp (lhs : t_Z) (rhs : t_Z) : t_Ordering :=
-  match lhs with
-  | Z_NEG (p) =>
-    match rhs with
-    | Z_NEG (q) =>
-      match positive_cmp (p) (q) with
-      | Ordering_Equal =>
-        Ordering_Equal
-      | Ordering_Less =>
-        Ordering_Greater
-      | Ordering_Greater =>
-        Ordering_Less
+    | Core_Base_Spec_Z.Z_NEG (q) =>
+      match Core_Base_Binary.positive_cmp (p) (q) with
+      | Core_Cmp.Ordering_Equal =>
+        Core_Cmp.Ordering_Equal
+      | Core_Cmp.Ordering_Less =>
+        Core_Cmp.Ordering_Greater
+      | Core_Cmp.Ordering_Greater =>
+        Core_Cmp.Ordering_Less
       end
     | _ =>
-      Ordering_Less
+      Core_Cmp.Ordering_Less
     end
-  | Z_ZERO =>
+  | Core_Base_Spec_Z.Z_ZERO =>
     match rhs with
-    | Z_ZERO =>
-      Ordering_Equal
-    | Z_POS (_) =>
-      Ordering_Less
-    | Z_NEG (_) =>
-      Ordering_Greater
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Cmp.Ordering_Equal
+    | Core_Base_Spec_Z.Z_POS (_) =>
+      Core_Cmp.Ordering_Less
+    | Core_Base_Spec_Z.Z_NEG (_) =>
+      Core_Cmp.Ordering_Greater
     end
-  | Z_POS (p) =>
+  | Core_Base_Spec_Z.Z_POS (p) =>
     match rhs with
-    | Z_POS (q) =>
-      positive_cmp (p) (q)
+    | Core_Base_Spec_Z.Z_POS (q) =>
+      Core_Base_Binary.positive_cmp (p) (q)
     | _ =>
-      Ordering_Greater
+      Core_Cmp.Ordering_Greater
     end
   end.
 
-Definition z_le (lhs : t_Z) (rhs : t_Z) : bool :=
-  match Option_Some (z_cmp (lhs) (rhs)) with
-  | Option_Some (Ordering_Less
-  | Ordering_Equal) =>
-    true
+Definition z_le (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : bool :=
+  match Core_Option.Option_Some (z_cmp (lhs) (rhs)) with
+  | Core_Option.Option_Some (Core_Cmp.Ordering_Less
+  | Core_Cmp.Ordering_Equal) =>
+    (true : bool)
   | _ =>
-    false
+    (false : bool)
   end.
 
-Definition z_lt (lhs : t_Z) (rhs : t_Z) : bool :=
-  match Option_Some (z_cmp (lhs) (rhs)) with
-  | Option_Some (Ordering_Less) =>
-    true
+Definition z_lt (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : bool :=
+  match Core_Option.Option_Some (z_cmp (lhs) (rhs)) with
+  | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
+    (true : bool)
   | _ =>
-    false
+    (false : bool)
   end.
 
-Fixpoint z_add__pos_z_sub (x : t_Positive) (y : t_Positive) : t_Z :=
-  match match_positive (x) with
-  | POSITIVE_XH =>
-    match match_positive (y) with
-    | POSITIVE_XH =>
-      Z_ZERO
-    | POSITIVE_XO (q) =>
-      Z_NEG (positive_pred_double (q))
-    | POSITIVE_XI (q) =>
-      Z_NEG (xO (q))
+Definition z_add__z_pred_double (s : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match s with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    Core_Base_Spec_Z.Z_NEG (Core_Base_Spec_Binary_Positive.xH)
+  | Core_Base_Spec_Z.Z_POS (p) =>
+    Core_Base_Spec_Z.Z_POS (Core_Base_Binary.positive_pred_double (p))
+  | Core_Base_Spec_Z.Z_NEG (p) =>
+    Core_Base_Spec_Z.Z_NEG (Core_Base_Spec_Binary_Positive.xI (p))
+  end.
+
+Definition z_add__z_double (s : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match s with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    Core_Base_Spec_Z.Z_ZERO
+  | Core_Base_Spec_Z.Z_POS (p) =>
+    Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xO (p))
+  | Core_Base_Spec_Z.Z_NEG (p) =>
+    Core_Base_Spec_Z.Z_NEG (Core_Base_Spec_Binary_Positive.xO (p))
+  end.
+
+Definition z_add__z_succ_double (s : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match s with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH)
+  | Core_Base_Spec_Z.Z_POS (p) =>
+    Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xI (p))
+  | Core_Base_Spec_Z.Z_NEG (p) =>
+    Core_Base_Spec_Z.Z_NEG (Core_Base_Binary.positive_pred_double (p))
+  end.
+
+Definition z_neg (x : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match x with
+  | Core_Base_Spec_Z.Z_NEG (p) =>
+    Core_Base_Spec_Z.Z_POS (p)
+  | Core_Base_Spec_Z.Z_ZERO =>
+    Core_Base_Spec_Z.Z_ZERO
+  | Core_Base_Spec_Z.Z_POS (p) =>
+    Core_Base_Spec_Z.Z_NEG (p)
+  end.
+
+Definition z_mul (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match lhs with
+  | Core_Base_Spec_Z.Z_NEG (p) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_NEG (q) =>
+      Core_Base_Spec_Z.Z_POS (Core_Base_Binary.positive_mul (p) (q))
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Z.Z_POS (q) =>
+      Core_Base_Spec_Z.Z_NEG (Core_Base_Binary.positive_mul (p) (q))
     end
-  | POSITIVE_XO (p) =>
-    match match_positive (y) with
-    | POSITIVE_XH =>
-      Z_POS (positive_pred_double (p))
-    | POSITIVE_XO (q) =>
+  | Core_Base_Spec_Z.Z_ZERO =>
+    Core_Base_Spec_Z.Z_ZERO
+  | Core_Base_Spec_Z.Z_POS (p) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_NEG (q) =>
+      Core_Base_Spec_Z.Z_NEG (Core_Base_Binary.positive_mul (p) (q))
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Z.Z_POS (q) =>
+      Core_Base_Spec_Z.Z_POS (Core_Base_Binary.positive_mul (p) (q))
+    end
+  end.
+
+Definition haxint_ldiff__n_double (x : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match x with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    Core_Base_Spec_Binary_Pos.POS_ZERO
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xO (p))
+  end.
+
+Definition haxint_ldiff__n_succ_double (x : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match x with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xH)
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xI (p))
+  end.
+
+Definition n_succ (x : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Positive.t_Positive :=
+  match x with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    Core_Base_Spec_Binary_Positive.xH
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    Core_Base_Spec_Binary_Positive.positive_from_int (Core_Base_Spec_Unary.unary_to_int (Core_Base_Spec_Unary.succ (Core_Base_Spec_Unary.unary_from_int (Core_Base_Spec_Binary_Positive.positive_to_int (p)))))
+  end.
+
+Definition positive_pred_N (x : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match Core_Base_Spec_Binary_Positive.match_positive (x) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    Core_Base_Spec_Binary_Pos.POS_ZERO
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xO (p))
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Binary.positive_pred_double (p))
+  end.
+
+Definition z_bitor__n_and (lhs : Core_Base_Spec_Binary_Pos.t_POS) (rhs : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match lhs with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    Core_Base_Spec_Binary_Pos.POS_ZERO
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    match rhs with
+    | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+      Core_Base_Spec_Binary_Pos.POS_ZERO
+    | Core_Base_Spec_Binary_Pos.POS_POS (q) =>
+      Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.bitand_binary (p) (q))
+    end
+  end.
+
+Definition z_of_n (x : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Z.t_Z :=
+  match x with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    Core_Base_Spec_Z.Z_ZERO
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    Core_Base_Spec_Z.Z_POS (p)
+  end.
+
+Definition z_bitand__n_or (lhs : Core_Base_Spec_Binary_Pos.t_POS) (rhs : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match lhs with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    rhs
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    match rhs with
+    | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+      Core_Base_Spec_Binary_Pos.POS_POS (p)
+    | Core_Base_Spec_Binary_Pos.POS_POS (q) =>
+      Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Pos.bitor_binary (p) (q))
+    end
+  end.
+
+Definition z_bitxor__n_xor (lhs : Core_Base_Spec_Binary_Pos.t_POS) (rhs : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match lhs with
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    rhs
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
+    match rhs with
+    | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+      Core_Base_Spec_Binary_Pos.POS_POS (p)
+    | Core_Base_Spec_Binary_Pos.POS_POS (q) =>
+      Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.bitxor_binary (p) (q))
+    end
+  end.
+
+Definition z_bitxor (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match lhs with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    rhs
+  | Core_Base_Spec_Z.Z_POS (a) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_POS (a)
+    | Core_Base_Spec_Z.Z_POS (b) =>
+      z_of_n (Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.bitxor_binary (a) (b)))
+    | Core_Base_Spec_Z.Z_NEG (b) =>
+      Core_Base_Spec_Z.Z_NEG (n_succ (z_bitxor__n_xor (Core_Base_Spec_Binary_Pos.POS_POS (a)) (positive_pred_N (b))))
+    end
+  | Core_Base_Spec_Z.Z_NEG (a) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_NEG (a)
+    | Core_Base_Spec_Z.Z_POS (b) =>
+      Core_Base_Spec_Z.Z_NEG (n_succ (z_bitxor__n_xor (positive_pred_N (a)) (Core_Base_Spec_Binary_Pos.POS_POS (b))))
+    | Core_Base_Spec_Z.Z_NEG (b) =>
+      z_of_n (z_bitxor__n_xor (positive_pred_N (a)) (positive_pred_N (b)))
+    end
+  end.
+
+Definition z_shl (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match rhs with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    lhs
+  | Core_Base_Spec_Z.Z_POS (p) =>
+    match lhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Z.Z_POS (q) =>
+      z_of_n (Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.haxint_shl (Core_Base_Spec_Binary_Positive.positive_to_int (q)) (Core_Base_Spec_Binary_Positive.positive_to_int (p))))
+    | Core_Base_Spec_Z.Z_NEG (q) =>
+      z_neg (z_of_n (Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.haxint_shl (Core_Base_Spec_Binary_Positive.positive_to_int (q)) (Core_Base_Spec_Binary_Positive.positive_to_int (p)))))
+    end
+  | Core_Base_Spec_Z.Z_NEG (p) =>
+    match lhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Z.Z_POS (q) =>
+      z_of_n (Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.haxint_shr (Core_Base_Spec_Binary_Positive.positive_to_int (q)) (Core_Base_Spec_Binary_Positive.positive_to_int (p))))
+    | Core_Base_Spec_Z.Z_NEG (q) =>
+      z_neg (z_of_n (Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.haxint_shr (Core_Base_Spec_Binary_Positive.positive_to_int (q)) (Core_Base_Spec_Binary_Positive.positive_to_int (p)))))
+    end
+  end.
+
+Definition z_shr (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  z_shl (lhs) (z_neg (rhs)).
+
+Fixpoint z_add__pos_z_sub (x : Core_Base_Spec_Binary_Positive.t_Positive) (y : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Z.t_Z :=
+  match Core_Base_Spec_Binary_Positive.match_positive (x) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    match Core_Base_Spec_Binary_Positive.match_positive (y) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Z.Z_NEG (Core_Base_Binary.positive_pred_double (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Z.Z_NEG (Core_Base_Spec_Binary_Positive.xO (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (y) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Z.Z_POS (Core_Base_Binary.positive_pred_double (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
       z_add__z_double (z_add__pos_z_sub (p) (q))
-    | POSITIVE_XI (q) =>
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
       z_add__z_pred_double (z_add__pos_z_sub (p) (q))
     end
-  | POSITIVE_XI (p) =>
-    match match_positive (y) with
-    | POSITIVE_XH =>
-      Z_POS (xO (p))
-    | POSITIVE_XO (q) =>
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (y) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xO (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
       z_add__z_succ_double (z_add__pos_z_sub (p) (q))
-    | POSITIVE_XI (q) =>
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
       z_add__z_double (z_add__pos_z_sub (p) (q))
     end
   end.
 
-Definition z_add (lhs : t_Z) (rhs : t_Z) : t_Z :=
+Fixpoint haxint_ldiff__positive_ldiff (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Pos.t_POS :=
+  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Pos.POS_ZERO
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (_) =>
+      Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xH)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (_) =>
+      Core_Base_Spec_Binary_Pos.POS_ZERO
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xO (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      haxint_ldiff__n_double (haxint_ldiff__positive_ldiff (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      haxint_ldiff__n_double (haxint_ldiff__positive_ldiff (p) (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Pos.POS_POS (Core_Base_Spec_Binary_Positive.xO (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      haxint_ldiff__n_succ_double (haxint_ldiff__positive_ldiff (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      haxint_ldiff__n_double (haxint_ldiff__positive_ldiff (p) (q))
+    end
+  end.
+
+Definition z_add (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
   match lhs with
-  | Z_NEG (p) =>
+  | Core_Base_Spec_Z.Z_NEG (p) =>
     match rhs with
-    | Z_NEG (q) =>
-      Z_NEG (positive_add (p) (q))
-    | Z_ZERO =>
-      Z_NEG (p)
-    | Z_POS (q) =>
+    | Core_Base_Spec_Z.Z_NEG (q) =>
+      Core_Base_Spec_Z.Z_NEG (Core_Base_Binary.positive_add (p) (q))
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_NEG (p)
+    | Core_Base_Spec_Z.Z_POS (q) =>
       z_add__pos_z_sub (q) (p)
     end
-  | Z_ZERO =>
+  | Core_Base_Spec_Z.Z_ZERO =>
     rhs
-  | Z_POS (p) =>
+  | Core_Base_Spec_Z.Z_POS (p) =>
     match rhs with
-    | Z_NEG (q) =>
+    | Core_Base_Spec_Z.Z_NEG (q) =>
       z_add__pos_z_sub (p) (q)
-    | Z_ZERO =>
-      Z_POS (p)
-    | Z_POS (q) =>
-      Z_POS (positive_add (p) (q))
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_POS (p)
+    | Core_Base_Spec_Z.Z_POS (q) =>
+      Core_Base_Spec_Z.Z_POS (Core_Base_Binary.positive_add (p) (q))
     end
   end.
 
-Definition z_sub (lhs : t_Z) (rhs : t_Z) : t_Z :=
+Definition z_sub (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
   z_add (lhs) (z_neg (rhs)).
 
-Definition z_mul (lhs : t_Z) (rhs : t_Z) : t_Z :=
+Definition haxint_ldiff (lhs : Core_Base_Spec_Binary_Pos.t_POS) (rhs : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_Pos.t_POS :=
   match lhs with
-  | Z_NEG (p) =>
+  | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+    Core_Base_Spec_Binary_Pos.POS_ZERO
+  | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
     match rhs with
-    | Z_NEG (q) =>
-      Z_POS (positive_mul (p) (q))
-    | Z_ZERO =>
-      Z_ZERO
-    | Z_POS (q) =>
-      Z_NEG (positive_mul (p) (q))
-    end
-  | Z_ZERO =>
-    Z_ZERO
-  | Z_POS (p) =>
-    match rhs with
-    | Z_NEG (q) =>
-      Z_NEG (positive_mul (p) (q))
-    | Z_ZERO =>
-      Z_ZERO
-    | Z_POS (q) =>
-      Z_POS (positive_mul (p) (q))
+    | Core_Base_Spec_Binary_Pos.POS_ZERO =>
+      Core_Base_Spec_Binary_Pos.POS_POS (p)
+    | Core_Base_Spec_Binary_Pos.POS_POS (q) =>
+      haxint_ldiff__positive_ldiff (p) (q)
     end
   end.
 
-Fixpoint pos_div_eucl (a : t_Positive) (b : t_Z) : (t_Z*t_Z) :=
-  match match_positive (a) with
-  | POSITIVE_XH =>
-    if
-      z_le (v_Z_TWO) (Clone_f_clone (b))
-    then
-      (Z_ZERO,v_Z_ONE)
-    else
-      (v_Z_ONE,Z_ZERO)
-  | POSITIVE_XO (p) =>
-    let (q,r) := pos_div_eucl (p) (Clone_f_clone (b)) in
-    let r___ := z_mul (v_Z_TWO) (r) in
-    if
-      z_lt (Clone_f_clone (r___)) (Clone_f_clone (b))
-    then
-      (z_mul (v_Z_TWO) (q),r___)
-    else
-      (z_add (z_mul (v_Z_TWO) (q)) (v_Z_ONE),z_sub (r___) (b))
-  | POSITIVE_XI (p) =>
-    let (q,r) := pos_div_eucl (p) (Clone_f_clone (b)) in
-    let r___ := z_add (z_mul (v_Z_TWO) (r)) (v_Z_ONE) in
-    if
-      z_lt (Clone_f_clone (r___)) (Clone_f_clone (b))
-    then
-      (z_mul (v_Z_TWO) (q),r___)
-    else
-      (z_add (z_mul (v_Z_TWO) (q)) (v_Z_ONE),z_sub (r___) (b))
+Definition z_bitor (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match lhs with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    rhs
+  | Core_Base_Spec_Z.Z_POS (x) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_POS (x)
+    | Core_Base_Spec_Z.Z_POS (y) =>
+      Core_Base_Spec_Z.Z_POS (Core_Base_Pos.bitor_binary (x) (y))
+    | Core_Base_Spec_Z.Z_NEG (y) =>
+      Core_Base_Spec_Z.Z_NEG (n_succ (haxint_ldiff (positive_pred_N (y)) (Core_Base_Spec_Binary_Pos.POS_POS (x))))
+    end
+  | Core_Base_Spec_Z.Z_NEG (x) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_NEG (x)
+    | Core_Base_Spec_Z.Z_POS (y) =>
+      Core_Base_Spec_Z.Z_NEG (n_succ (haxint_ldiff (positive_pred_N (x)) (Core_Base_Spec_Binary_Pos.POS_POS (y))))
+    | Core_Base_Spec_Z.Z_NEG (y) =>
+      Core_Base_Spec_Z.Z_NEG (n_succ (z_bitor__n_and (positive_pred_N (x)) (positive_pred_N (y))))
+    end
   end.
 
-Definition z_divmod (a : t_Z) (b : t_Z) : (t_Z*t_Z) :=
+Definition z_bitand (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
+  match lhs with
+  | Core_Base_Spec_Z.Z_ZERO =>
+    Core_Base_Spec_Z.Z_ZERO
+  | Core_Base_Spec_Z.Z_POS (a) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Z.Z_POS (b) =>
+      z_of_n (Core_Base_Spec_Binary_Pos.match_pos (Core_Base_Pos.bitand_binary (a) (b)))
+    | Core_Base_Spec_Z.Z_NEG (b) =>
+      z_of_n (haxint_ldiff (Core_Base_Spec_Binary_Pos.POS_POS (a)) (positive_pred_N (b)))
+    end
+  | Core_Base_Spec_Z.Z_NEG (a) =>
+    match rhs with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      Core_Base_Spec_Z.Z_ZERO
+    | Core_Base_Spec_Z.Z_POS (b) =>
+      z_of_n (haxint_ldiff (Core_Base_Spec_Binary_Pos.POS_POS (b)) (positive_pred_N (a)))
+    | Core_Base_Spec_Z.Z_NEG (b) =>
+      Core_Base_Spec_Z.Z_NEG (n_succ (z_bitand__n_or (positive_pred_N (a)) (positive_pred_N (b))))
+    end
+  end.
+
+Fixpoint pos_div_eucl (a : Core_Base_Spec_Binary_Positive.t_Positive) (b : Core_Base_Spec_Z.t_Z) : (Core_Base_Spec_Z.t_Z*Core_Base_Spec_Z.t_Z) :=
+  match Core_Base_Spec_Binary_Positive.match_positive (a) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    if
+      z_le (Core_Base_Spec_Z.v_Z_TWO) (Core_Clone.Clone__f_clone (b))
+    then
+      (Core_Base_Spec_Z.Z_ZERO,Core_Base_Spec_Z.v_Z_ONE)
+    else
+      (Core_Base_Spec_Z.v_Z_ONE,Core_Base_Spec_Z.Z_ZERO)
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    let (q,r) := pos_div_eucl (p) (Core_Clone.Clone__f_clone (b)) in
+    let r_ := z_mul (Core_Base_Spec_Z.v_Z_TWO) (r) in
+    if
+      z_lt (Core_Clone.Clone__f_clone (r_)) (Core_Clone.Clone__f_clone (b))
+    then
+      (z_mul (Core_Base_Spec_Z.v_Z_TWO) (q),r_)
+    else
+      (z_add (z_mul (Core_Base_Spec_Z.v_Z_TWO) (q)) (Core_Base_Spec_Z.v_Z_ONE),z_sub (r_) (b))
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    let (q,r) := pos_div_eucl (p) (Core_Clone.Clone__f_clone (b)) in
+    let r_ := z_add (z_mul (Core_Base_Spec_Z.v_Z_TWO) (r)) (Core_Base_Spec_Z.v_Z_ONE) in
+    if
+      z_lt (Core_Clone.Clone__f_clone (r_)) (Core_Clone.Clone__f_clone (b))
+    then
+      (z_mul (Core_Base_Spec_Z.v_Z_TWO) (q),r_)
+    else
+      (z_add (z_mul (Core_Base_Spec_Z.v_Z_TWO) (q)) (Core_Base_Spec_Z.v_Z_ONE),z_sub (r_) (b))
+  end.
+
+Definition z_divmod (a : Core_Base_Spec_Z.t_Z) (b : Core_Base_Spec_Z.t_Z) : (Core_Base_Spec_Z.t_Z*Core_Base_Spec_Z.t_Z) :=
   match a with
-  | Z_ZERO =>
-    (Z_ZERO,Z_ZERO)
-  | Z_POS (a___) =>
-    match Clone_f_clone (b) with
-    | Z_ZERO =>
-      (Z_ZERO,Z_POS (a___))
-    | Z_POS (b___) =>
-      pos_div_eucl (a___) (b)
-    | Z_NEG (b___) =>
-      let (q,r) := pos_div_eucl (a___) (Z_POS (b___)) in
+  | Core_Base_Spec_Z.Z_ZERO =>
+    (Core_Base_Spec_Z.Z_ZERO,Core_Base_Spec_Z.Z_ZERO)
+  | Core_Base_Spec_Z.Z_POS (a_) =>
+    match Core_Clone.Clone__f_clone (b) with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      (Core_Base_Spec_Z.Z_ZERO,Core_Base_Spec_Z.Z_POS (a_))
+    | Core_Base_Spec_Z.Z_POS (b_) =>
+      pos_div_eucl (a_) (b)
+    | Core_Base_Spec_Z.Z_NEG (b_) =>
+      let (q,r) := pos_div_eucl (a_) (Core_Base_Spec_Z.Z_POS (b_)) in
       (z_neg (q),r)
     end
-  | Z_NEG (a___) =>
-    match Clone_f_clone (b) with
-    | Z_ZERO =>
-      (Z_ZERO,Z_NEG (a___))
-    | Z_POS (_) =>
-      let (q,r) := pos_div_eucl (a___) (Clone_f_clone (b)) in
+  | Core_Base_Spec_Z.Z_NEG (a_) =>
+    match Core_Clone.Clone__f_clone (b) with
+    | Core_Base_Spec_Z.Z_ZERO =>
+      (Core_Base_Spec_Z.Z_ZERO,Core_Base_Spec_Z.Z_NEG (a_))
+    | Core_Base_Spec_Z.Z_POS (_) =>
+      let (q,r) := pos_div_eucl (a_) (Core_Clone.Clone__f_clone (b)) in
       (z_neg (q),z_neg (r))
-    | Z_NEG (b___) =>
-      let (q,r) := pos_div_eucl (a___) (Z_POS (b___)) in
+    | Core_Base_Spec_Z.Z_NEG (b_) =>
+      let (q,r) := pos_div_eucl (a_) (Core_Base_Spec_Z.Z_POS (b_)) in
       (q,z_neg (r))
     end
   end.
 
-Definition z_div (lhs : t_Z) (rhs : t_Z) : t_Z :=
+Definition z_div (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
   let (q,_) := z_divmod (lhs) (rhs) in
   q.
 
-Definition z_rem (lhs : t_Z) (rhs : t_Z) : t_Z :=
+Definition z_rem (lhs : Core_Base_Spec_Z.t_Z) (rhs : Core_Base_Spec_Z.t_Z) : Core_Base_Spec_Z.t_Z :=
   let (_,r) := z_divmod (lhs) (rhs) in
   r.

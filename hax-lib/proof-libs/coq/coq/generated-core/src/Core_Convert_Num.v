@@ -13,7 +13,7 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-
+(* NotImplementedYet *)
 
 
 
@@ -34,3 +34,33 @@ Notation "'impl_6'" := (Core_Bundle.impl_6).
 Notation "'impl_7'" := (Core_Bundle.impl_7).
 
 Notation "'impl_8'" := (Core_Bundle.impl_8).
+
+Notation "'impl_9'" := (Core_Bundle.impl_9).
+
+Notation "'impl_10'" := (Core_Bundle.impl_10).
+
+Notation "'impl_11'" := (Core_Bundle.impl_11).
+
+Notation "'impl_12'" := (Core_Bundle.impl_12).
+
+Notation "'impl_13'" := (Core_Bundle.impl_13).
+
+Notation "'impl_14'" := (Core_Bundle.impl_14).
+
+Notation "'impl_15'" := (Core_Bundle.impl_15).
+
+Notation "'impl_16'" := (Core_Bundle.impl_16).
+
+Notation "'impl_17'" := (Core_Bundle.impl_17).
+
+Notation "'impl_18'" := (Core_Bundle.impl_18).
+
+Notation "'impl_19'" := (Core_Bundle.impl_19).
+
+Notation "'impl_20'" := (Core_Bundle.impl_20).
+
+Notation "'impl_21'" := (Core_Bundle.impl_21).
+
+Notation "'impl_22'" := (Core_Bundle.impl_22).
+
+Notation "'impl_23'" := (Core_Bundle.impl_23).

@@ -9,29 +9,40 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-
-(* From Core Require Import Core. *)
-
-From Core Require Import Core_Ops_Index.
-Export Core_Ops_Index.
-
-(* From Core Require Import Core_Ops_IndexMut. *)
-(* Export Core_Ops (t_IndexMut). *)
-
-From Core Require Import Core_Primitive.
-Export Core_Primitive.
-
-From Core Require Import Core_Array_Iter.
-Export Core_Array_Iter.
-
-Notation "'t_TryFromSliceError'" := (t_TryFromSliceError).
-
-Notation "'TryFromSliceError_0'" := (TryFromSliceError_0).
+From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-(* Notation "'impl_2'" := (impl_2). *)
 
-(* Notation "'impl_1'" := (impl_1). *)
 
-(* Notation "'impl'" := (impl). *)
+
+
+
+
+
+
+
+
+
+
+
+
+Notation "'t_TryFromSliceError'" := (Core_Bundle.t_TryFromSliceError).
+
+Notation "'TryFromSliceError_TryFromSliceError'" := (Core_Bundle.TryFromSliceError_TryFromSliceError).
+
+Notation "'impl_6'" := (Core_Bundle.impl_6).
+
+Notation "'impl_7'" := (Core_Bundle.impl_7).
+
+Notation "'impl_8'" := (Core_Bundle.impl_8).
+
+Notation "'impl'" := (Core_Bundle.impl).
+
+Notation "'impl_1'" := (Core_Bundle.impl_1).
+
+Notation "'impl_2'" := (Core_Bundle.impl_2).
+
+Notation "'impl_3'" := (Core_Bundle.impl_3).
+
+Notation "'impl_4'" := (Core_Bundle.impl_4).

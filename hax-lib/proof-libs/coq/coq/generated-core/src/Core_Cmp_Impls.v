@@ -23,31 +23,23 @@ From Core Require Import Core.
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 (* NotImplementedYet *)
 
-Notation "'impl_24__from_u8_binary'" := (Core_Bundle.impl_24__from_u8_binary).
+(* NotImplementedYet *)
 
-Notation "'impl_24__to_u8_binary'" := (Core_Bundle.impl_24__to_u8_binary).
-
-Notation "'impl_24__from_u16_binary'" := (Core_Bundle.impl_24__from_u16_binary).
-
-Notation "'impl_24__to_u16_binary'" := (Core_Bundle.impl_24__to_u16_binary).
-
-Notation "'impl_24__from_u32_binary'" := (Core_Bundle.impl_24__from_u32_binary).
-
-Notation "'impl_24__to_u32_binary'" := (Core_Bundle.impl_24__to_u32_binary).
-
-Notation "'impl_24__from_u64_binary'" := (Core_Bundle.impl_24__from_u64_binary).
-
-Notation "'impl_24__to_u64_binary'" := (Core_Bundle.impl_24__to_u64_binary).
-
-Notation "'impl_24__from_u128_binary'" := (Core_Bundle.impl_24__from_u128_binary).
-
-Notation "'impl_24__to_u128_binary'" := (Core_Bundle.impl_24__to_u128_binary).
-
-Notation "'impl_24__from_usize_binary'" := (Core_Bundle.impl_24__from_usize_binary).
-
-Notation "'impl_24__to_usize_binary'" := (Core_Bundle.impl_24__to_usize_binary).
+(* NotImplementedYet *)
 
 Notation "'impl'" := (Core_Bundle.impl).
 
@@ -96,3 +88,51 @@ Notation "'impl_21'" := (Core_Bundle.impl_21).
 Notation "'impl_22'" := (Core_Bundle.impl_22).
 
 Notation "'impl_23'" := (Core_Bundle.impl_23).
+
+Notation "'impl_24'" := (Core_Bundle.impl_24).
+
+Notation "'impl_25'" := (Core_Bundle.impl_25).
+
+Notation "'impl_26'" := (Core_Bundle.impl_26).
+
+Notation "'impl_27'" := (Core_Bundle.impl_27).
+
+Notation "'impl_28'" := (Core_Bundle.impl_28).
+
+Notation "'impl_29'" := (Core_Bundle.impl_29).
+
+Notation "'impl_30'" := (Core_Bundle.impl_30).
+
+Notation "'impl_31'" := (Core_Bundle.impl_31).
+
+Notation "'impl_32'" := (Core_Bundle.impl_32).
+
+Notation "'impl_33'" := (Core_Bundle.impl_33).
+
+Notation "'impl_34'" := (Core_Bundle.impl_34).
+
+Notation "'impl_35'" := (Core_Bundle.impl_35).
+
+Notation "'impl_36'" := (Core_Bundle.impl_36).
+
+Notation "'impl_37'" := (Core_Bundle.impl_37).
+
+Notation "'impl_38'" := (Core_Bundle.impl_38).
+
+Notation "'impl_39'" := (Core_Bundle.impl_39).
+
+Notation "'impl_40'" := (Core_Bundle.impl_40).
+
+Notation "'impl_41'" := (Core_Bundle.impl_41).
+
+Notation "'impl_42'" := (Core_Bundle.impl_42).
+
+Notation "'impl_43'" := (Core_Bundle.impl_43).
+
+Notation "'impl_44'" := (Core_Bundle.impl_44).
+
+Notation "'impl_45'" := (Core_Bundle.impl_45).
+
+Notation "'impl_46'" := (Core_Bundle.impl_46).
+
+Notation "'impl_47'" := (Core_Bundle.impl_47).

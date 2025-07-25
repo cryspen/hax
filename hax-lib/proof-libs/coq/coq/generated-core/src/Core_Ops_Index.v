@@ -9,12 +9,13 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
 Class t_Index (v_Self : Type) (v_Idx : Type) : Type :=
   {
-    Index_f_Output : Type;
-    Index_f_index : v_Self -> v_Idx -> Index_f_Output;
+    Index__f_Output : Type;
+    Index__f_index : v_Self -> v_Idx -> Index__f_Output;
   }.
 Arguments t_Index (_) (_).

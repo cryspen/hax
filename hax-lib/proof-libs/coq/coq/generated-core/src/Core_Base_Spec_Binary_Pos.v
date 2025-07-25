@@ -17,36 +17,16 @@ From Core Require Import Core.
 
 
 
+Inductive t_POS : Type :=
+| POS_ZERO
+| POS_POS : Core_Base_Spec_Binary_Positive.t_Positive -> _.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Definition match_pos (s : Core_Base_Spec_Haxint.t_HaxInt) : t_POS :=
+  if
+    Core_Base_Spec_Haxint.is_zero (Core_Clone.Clone__f_clone (s))
+  then
+    POS_ZERO
+  else
+    POS_POS (Core_Base_Spec_Binary_Positive.positive_from_int (s)).

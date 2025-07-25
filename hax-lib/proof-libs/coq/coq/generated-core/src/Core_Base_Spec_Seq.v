@@ -13,8 +13,18 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-Class t_Clone (v_Self : Type) : Type :=
-  {
-    Clone__f_clone : v_Self -> v_Self;
-  }.
-Arguments t_Clone (_).
+Notation "'t_Seq'" := (Core_Bundle.t_Seq).
+
+Notation "'t_LIST'" := (Core_Bundle.t_LIST).
+
+Notation "'LIST_NIL'" := (Core_Bundle.LIST_NIL).
+
+Notation "'LIST_CONS'" := (Core_Bundle.LIST_CONS).
+
+Notation "'impl'" := (Core_Bundle.impl).
+
+Notation "'match_list'" := (Core_Bundle.match_list).
+
+Notation "'nil'" := (Core_Bundle.nil).
+
+Notation "'cons'" := (Core_Bundle.cons).

@@ -9,154 +9,147 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
-From Core Require Import Core_Base_Spec.
-Export Core_Base_Spec.
 
-From Core Require Import Core_Cmp.
-Export Core_Cmp.
 
-From Core Require Import Core_Option.
-Export Core_Option.
 
-From Core Require Import Core_Clone.
-Export Core_Clone.
 
-Fixpoint positive_cmp__cmp_binary_cont (x : t_Positive) (y : t_Positive) (r : t_Ordering) : t_Ordering :=
-  match match_positive (x) with
-  | POSITIVE_XH =>
-    match match_positive (y) with
-    | POSITIVE_XH =>
+Fixpoint positive_cmp__cmp_binary_cont (x : Core_Base_Spec_Binary_Positive.t_Positive) (y : Core_Base_Spec_Binary_Positive.t_Positive) (r : Core_Cmp.t_Ordering) : Core_Cmp.t_Ordering :=
+  match Core_Base_Spec_Binary_Positive.match_positive (x) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    match Core_Base_Spec_Binary_Positive.match_positive (y) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
       r
-    | POSITIVE_XO (q)
-    | POSITIVE_XI (q) =>
-      Ordering_Less
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Cmp.Ordering_Less
     end
-  | POSITIVE_XO (p) =>
-    match match_positive (y) with
-    | POSITIVE_XH =>
-      Ordering_Greater
-    | POSITIVE_XO (q) =>
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (y) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Cmp.Ordering_Greater
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
       positive_cmp__cmp_binary_cont (p) (q) (r)
-    | POSITIVE_XI (q) =>
-      positive_cmp__cmp_binary_cont (p) (q) (Ordering_Less)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      positive_cmp__cmp_binary_cont (p) (q) (Core_Cmp.Ordering_Less)
     end
-  | POSITIVE_XI (p) =>
-    match match_positive (y) with
-    | POSITIVE_XH =>
-      Ordering_Greater
-    | POSITIVE_XO (q) =>
-      positive_cmp__cmp_binary_cont (p) (q) (Ordering_Greater)
-    | POSITIVE_XI (q) =>
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (y) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Cmp.Ordering_Greater
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      positive_cmp__cmp_binary_cont (p) (q) (Core_Cmp.Ordering_Greater)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
       positive_cmp__cmp_binary_cont (p) (q) (r)
     end
   end.
 
-Definition positive_cmp (lhs : t_Positive) (rhs : t_Positive) : t_Ordering :=
-  positive_cmp__cmp_binary_cont (lhs) (rhs) (Ordering_Equal).
+Fixpoint positive_succ (s : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Positive.t_Positive :=
+  match Core_Base_Spec_Binary_Positive.match_positive (s) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    Core_Base_Spec_Binary_Positive.xO (Core_Base_Spec_Binary_Positive.xH)
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+    Core_Base_Spec_Binary_Positive.xI (q)
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+    Core_Base_Spec_Binary_Positive.xO (positive_succ (q))
+  end.
 
-Definition positive_le (lhs : t_Positive) (rhs : t_Positive) : bool :=
-  match Option_Some (positive_cmp (lhs) (rhs)) with
-  | Option_Some (Ordering_Less
-  | Ordering_Equal) =>
-    true
+Fixpoint positive_pred_double (s : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Positive.t_Positive :=
+  match Core_Base_Spec_Binary_Positive.match_positive (s) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    Core_Base_Spec_Binary_Positive.xH
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    Core_Base_Spec_Binary_Positive.xI (positive_pred_double (p))
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    Core_Base_Spec_Binary_Positive.xI (Core_Base_Spec_Binary_Positive.xO (p))
+  end.
+
+Definition positive_cmp (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Cmp.t_Ordering :=
+  positive_cmp__cmp_binary_cont (lhs) (rhs) (Core_Cmp.Ordering_Equal).
+
+Definition positive_le (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : bool :=
+  match Core_Option.Option_Some (positive_cmp (lhs) (rhs)) with
+  | Core_Option.Option_Some (Core_Cmp.Ordering_Less
+  | Core_Cmp.Ordering_Equal) =>
+    (true : bool)
   | _ =>
-    false
+    (false : bool)
   end.
 
-Fixpoint positive_pred_double (s : t_Positive) : t_Positive :=
-  match match_positive (s) with
-  | POSITIVE_XH =>
-    xH
-  | POSITIVE_XO (p) =>
-    xI (positive_pred_double (p))
-  | POSITIVE_XI (p) =>
-    xI (xO (p))
-  end.
-
-Fixpoint positive_succ (s : t_Positive) : t_Positive :=
-  match match_positive (s) with
-  | POSITIVE_XH =>
-    xO (xH)
-  | POSITIVE_XO (q) =>
-    xI (q)
-  | POSITIVE_XI (q) =>
-    xO (positive_succ (q))
-  end.
-
-Fixpoint positive_add__add (lhs : t_Positive) (rhs : t_Positive) : t_Positive :=
-  match match_positive (lhs) with
-  | POSITIVE_XH =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      xO (xH)
-    | POSITIVE_XO (q) =>
-      xI (q)
-    | POSITIVE_XI (q) =>
-      xO (positive_succ (q))
-    end
-  | POSITIVE_XO (p) =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      xI (p)
-    | POSITIVE_XO (q) =>
-      xO (positive_add__add (p) (q))
-    | POSITIVE_XI (q) =>
-      xI (positive_add__add (p) (q))
-    end
-  | POSITIVE_XI (p) =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      xO (positive_succ (p))
-    | POSITIVE_XO (q) =>
-      xI (positive_add__add (p) (q))
-    | POSITIVE_XI (q) =>
-      xO (positive_add__add_carry (p) (q))
-    end
-  end
-
-with positive_add__add_carry (lhs : t_Positive) (rhs : t_Positive) : t_Positive :=
-  match match_positive (lhs) with
-  | POSITIVE_XH =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      xI (xH)
-    | POSITIVE_XO (q) =>
-      xO (positive_succ (q))
-    | POSITIVE_XI (q) =>
-      xI (positive_succ (q))
-    end
-  | POSITIVE_XO (p) =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      xO (positive_succ (p))
-    | POSITIVE_XO (q) =>
-      xI (positive_add__add (p) (q))
-    | POSITIVE_XI (q) =>
-      xO (positive_add__add_carry (p) (q))
-    end
-  | POSITIVE_XI (p) =>
-    match match_positive (rhs) with
-    | POSITIVE_XH =>
-      xI (positive_succ (p))
-    | POSITIVE_XO (q) =>
-      xO (positive_add__add_carry (p) (q))
-    | POSITIVE_XI (q) =>
-      xI (positive_add__add_carry (p) (q))
-    end
-  end.
-
-Definition positive_add (lhs : t_Positive) (rhs : t_Positive) : t_Positive :=
+Definition positive_add (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Positive.t_Positive :=
   positive_add__add (lhs) (rhs).
 
-Fixpoint positive_mul (lhs : t_Positive) (rhs : t_Positive) : t_Positive :=
-  match match_positive (lhs) with
-  | POSITIVE_XH =>
+Fixpoint positive_mul (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Positive.t_Positive :=
+  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
     rhs
-  | POSITIVE_XO (p) =>
-    xO (positive_mul (p) (rhs))
-  | POSITIVE_XI (p) =>
-    positive_add (Clone_f_clone (rhs)) (xO (positive_mul (p) (rhs)))
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    Core_Base_Spec_Binary_Positive.xO (positive_mul (p) (rhs))
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    positive_add (Core_Clone.Clone__f_clone (rhs)) (Core_Base_Spec_Binary_Positive.xO (positive_mul (p) (rhs)))
+  end.
+
+Fixpoint positive_add__add_carry (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Positive.t_Positive :=
+  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Positive.xI (Core_Base_Spec_Binary_Positive.xH)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Binary_Positive.xO (positive_succ (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Binary_Positive.xI (positive_succ (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Positive.xO (positive_succ (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Binary_Positive.xI (positive_add__add (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Binary_Positive.xO (positive_add__add_carry (p) (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Positive.xI (positive_succ (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Binary_Positive.xO (positive_add__add_carry (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Binary_Positive.xI (positive_add__add_carry (p) (q))
+    end
+  end.
+
+Fixpoint positive_add__add (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Positive.t_Positive :=
+  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Positive.xO (Core_Base_Spec_Binary_Positive.xH)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Binary_Positive.xI (q)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Binary_Positive.xO (positive_succ (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Positive.xI (p)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Binary_Positive.xO (positive_add__add (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Binary_Positive.xI (positive_add__add (p) (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Core_Base_Spec_Binary_Positive.xO (positive_succ (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      Core_Base_Spec_Binary_Positive.xI (positive_add__add (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      Core_Base_Spec_Binary_Positive.xO (positive_add__add_carry (p) (q))
+    end
   end.

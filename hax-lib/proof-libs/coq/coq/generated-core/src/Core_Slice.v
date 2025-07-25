@@ -9,29 +9,21 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-
-(* From Core Require Import Core. *)
-
-From Core Require Import Core_Primitive.
-Export Core_Primitive.
-
-
-
-From Core Require Import Core_Slice_Iter.
-Export Core_Slice_Iter.
-
-From Core Require Import Core_Convert.
-Export Core_Convert.
+From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-(* NotImplementedYet *)
 
-Definition impl__iter `{v_T : Type} `{t_Sized (v_T)} `{t_Clone (v_T)} (self : t_Slice ((v_T))) : t_Iter ((v_T)) :=
-  impl__new (self).
 
-Definition impl__len `{v_T : Type} `{t_Sized (v_T)} `{t_Clone (v_T)} (self : t_Slice ((v_T))) : t_usize :=
-  From_f_from (len (Clone_f_clone (Slice_f_v self))).
 
-Definition impl__is_empty `{v_T : Type} `{t_Sized (v_T)} `{t_Clone (v_T)} (self : t_Slice ((v_T))) : bool :=
-  PartialEq_f_eq (impl__len (self)) (Build_t_usize (Build_t_U64 0%N)).
+
+
+
+Definition impl__len `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (self : Core_Primitive_Primitive_definitions.t_Slice ((v_T))) : t_usize :=
+  Core_Convert.From__f_from (Core_Base_Seq.len (Core_Clone.Clone__f_clone (Core_Primitive_Primitive_definitions.f_Slice_v self))).
+
+Definition impl__is_empty `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (self : Core_Primitive_Primitive_definitions.t_Slice ((v_T))) : bool :=
+  Rust_primitives_U128.eq (impl__len (self)) ((0 : t_usize)).
+
+Definition impl__iter `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (self : Core_Primitive_Primitive_definitions.t_Slice ((v_T))) : Core_Slice_Iter.t_Iter ((v_T)) :=
+  Core_Slice_Iter.impl__new (self).

@@ -19,35 +19,9 @@ From Core Require Import Core.
 
 
 
-
-
-
-
 (* NotImplementedYet *)
 
-Notation "'impl_24__from_u8_binary'" := (Core_Bundle.impl_24__from_u8_binary).
-
-Notation "'impl_24__to_u8_binary'" := (Core_Bundle.impl_24__to_u8_binary).
-
-Notation "'impl_24__from_u16_binary'" := (Core_Bundle.impl_24__from_u16_binary).
-
-Notation "'impl_24__to_u16_binary'" := (Core_Bundle.impl_24__to_u16_binary).
-
-Notation "'impl_24__from_u32_binary'" := (Core_Bundle.impl_24__from_u32_binary).
-
-Notation "'impl_24__to_u32_binary'" := (Core_Bundle.impl_24__to_u32_binary).
-
-Notation "'impl_24__from_u64_binary'" := (Core_Bundle.impl_24__from_u64_binary).
-
-Notation "'impl_24__to_u64_binary'" := (Core_Bundle.impl_24__to_u64_binary).
-
-Notation "'impl_24__from_u128_binary'" := (Core_Bundle.impl_24__from_u128_binary).
-
-Notation "'impl_24__to_u128_binary'" := (Core_Bundle.impl_24__to_u128_binary).
-
-Notation "'impl_24__from_usize_binary'" := (Core_Bundle.impl_24__from_usize_binary).
-
-Notation "'impl_24__to_usize_binary'" := (Core_Bundle.impl_24__to_usize_binary).
+(* NotImplementedYet *)
 
 Notation "'impl'" := (Core_Bundle.impl).
 
@@ -96,3 +70,13 @@ Notation "'impl_21'" := (Core_Bundle.impl_21).
 Notation "'impl_22'" := (Core_Bundle.impl_22).
 
 Notation "'impl_23'" := (Core_Bundle.impl_23).
+
+Notation "'impl_24'" := (Core_Bundle.impl_24).
+
+Notation "'impl_25'" := (Core_Bundle.impl_25).
+
+Notation "'impl_26'" := (Core_Bundle.impl_26).
+
+Notation "'impl_27'" := (Core_Bundle.impl_27).
+
+Notation "'impl_28'" := (Core_Bundle.impl_28).
