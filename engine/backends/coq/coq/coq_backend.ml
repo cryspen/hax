@@ -94,8 +94,8 @@ module CoqNamePolicy = struct
 
   let named_field_prefix = Some `TypeName
   let struct_constructor_prefix = Some "Build_t_"
-  let enum_constructor_prefix = Some "AABBCC"
-  let union_constructor_prefix = Some "DDEEFF"
+  (* let enum_constructor_prefix = Some "AABBCC" *)
+  (* let union_constructor_prefix = Some "DDEEFF" *)
   let prefix__constructors_with_type = true
   let prefix_struct_constructors_with_type = true
   let prefix_enum_constructors_with_type = true
@@ -125,6 +125,10 @@ let hardcoded_coq_headers =
    From Core Require Import Core.\n\n"
 
 module BasePrinter = Generic_printer.Make (InputLanguage)
+
+let module_name_from_path path =
+  String.concat ~sep:"_"
+    (List.map ~f:(map_first_letter String.uppercase) path)
 
 module Make
     (Default : sig
@@ -438,7 +442,16 @@ struct
       method impl_ident ~goal ~name:_ = goal#p
 
       method impl_item ~ii_span:_ ~ii_generics:_ ~ii_v ~ii_ident ~ii_attrs:_ =
-        ii_ident#p ^^ space ^^ string ":=" ^^ space ^^ ii_v#p ^^ semi
+        string
+          ((* if local *)
+           (* then (RenderId.render ii_ident#v).name *)
+            (* else *)
+            match String.chop_prefix ~prefix:"impl__" (RenderId.render ii_ident#v).name with
+            | Some chopped ->
+              chopped
+            | None -> (RenderId.render ii_ident#v).name
+          ) ^^
+        (* ii_ident#v ^^ *) space ^^ string ":=" ^^ space ^^ ii_v#p ^^ semi
 
       method impl_item'_IIFn ~body ~params =
         if List.length params == 0 then body#p
@@ -573,7 +586,7 @@ struct
         if Attrs.is_erased super.attrs then empty
         else
           CoqNotation.instance
-            (name#p ^^ string "_"
+            (string (RenderId.render name#v).name ^^ string "_"
             ^^ string (Int.to_string ([%hash: item] super)))
             generics#p []
             (name#p ^^ concat_map_with ~pre:space (fun x -> parens x#p) args)
@@ -582,8 +595,11 @@ struct
                   (concat_map_with
                      ~pre:
                        (break 1
-                       ^^ string ("implaabbcc_" ^ (RenderId.render name#v).name)
-                       ^^ !^"_")
+                        ^^ string (module_name_from_path (RenderId.render name#v).path) ^^ !^"."
+                        ^^ string (match String.chop_prefix ~prefix:"t_" (RenderId.render name#v).name with
+                            | Some chopped -> chopped
+                            | _ -> (RenderId.render name#v).name)
+                       ^^ !^"__")
                      (fun x -> x#p)
                      items)
                ^^ break 1))
@@ -999,6 +1015,20 @@ struct
                arguments
           ^^ space ^^ string "->" ^^ space ^^ string "_"
 
+      method concrete_ident ~local (id : Concrete_ident_render_sig.rendered) :
+          document =
+        string
+          (if local
+           then id.name
+           else
+             module_name_from_path id.path ^ "." ^ id.name
+             (* String.concat ~sep:self#module_path_separator *)
+             (*   (id.path) ^ self#module_name_separator ^ [ id.name ] *)
+          )
+      (** [concrete_ident ~local id] prints a name without path if [local] is
+          true, otherwise it prints the full path, separated by
+          `module_path_separator`. *)
+
       (* method quote (quote : quote) : document = empty *)
       method module_path_separator = "."
     end
@@ -1032,10 +1062,7 @@ let translate m _ ~bundles:_ (items : AST.item list) : Types.file list =
   in
   (groupped_items
   |> List.map ~f:(fun (ns, items) ->
-         let mod_name =
-           String.concat ~sep:"_"
-             (List.map ~f:(map_first_letter String.uppercase) ns)
-         in
+         let mod_name = module_name_from_path ns in
          let sourcemap, contents =
            let annotated = my_printer#entrypoint_modul items in
            let open Generic_printer.AnnotatedString in

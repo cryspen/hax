@@ -9,58 +9,56 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-
-(* From Core Require Import Core. *)
-
-From Core Require Import Core_Marker (t_Sized).
-Export Core_Marker (t_Sized).
+From Core Require Import Core_Marker.
 
 (* NotImplementedYet *)
 
-Class t_BitAnd (v_Self : Type) (v_Rhs : Type) `{t_Sized (v_Rhs)} : Type :=
-  {
-    BitAnd_f_Output : Type;
-    _ :: `{t_Sized (BitAnd_f_Output)};
-    BitAnd_f_bitand : v_Self -> v_Rhs -> BitAnd_f_Output;
-  }.
-Arguments t_BitAnd (_) (_) {_}.
 
-Class t_BitOr (v_Self : Type) (v_Rhs : Type) `{t_Sized (v_Rhs)} : Type :=
-  {
-    BitOr_f_Output : Type;
-    _ :: `{t_Sized (BitOr_f_Output)};
-    BitOr_f_bitor : v_Self -> v_Rhs -> BitOr_f_Output;
-  }.
-Arguments t_BitOr (_) (_) {_}.
-
-Class t_BitXor (v_Self : Type) (v_Rhs : Type) `{t_Sized (v_Rhs)} : Type :=
-  {
-    BitXor_f_Output : Type;
-    _ :: `{t_Sized (BitXor_f_Output)};
-    BitXor_f_bitxor : v_Self -> v_Rhs -> BitXor_f_Output;
-  }.
-Arguments t_BitXor (_) (_) {_}.
 
 Class t_Not (v_Self : Type) : Type :=
   {
-    Not_f_Output : Type;
-    _ :: `{t_Sized (Not_f_Output)};
-    Not_f_not : v_Self -> Not_f_Output;
+    Not__f_Output : Type;
+    _ :: `{Core_Marker.t_Sized (Not__f_Output)};
+    Not__f_not : v_Self -> Not__f_Output;
   }.
 Arguments t_Not (_).
 
-Class t_Shl (v_Self : Type) (v_Rhs : Type) `{t_Sized (v_Rhs)} : Type :=
+Class t_BitAnd (v_Self : Type) (v_Rhs : Type) `{Core_Marker.t_Sized (v_Rhs)} : Type :=
   {
-    Shl_f_Output : Type;
-    _ :: `{t_Sized (Shl_f_Output)};
-    Shl_f_shl : v_Self -> v_Rhs -> Shl_f_Output;
+    BitAnd__f_Output : Type;
+    _ :: `{Core_Marker.t_Sized (BitAnd__f_Output)};
+    BitAnd__f_bitand : v_Self -> v_Rhs -> BitAnd__f_Output;
+  }.
+Arguments t_BitAnd (_) (_) {_}.
+
+Class t_BitOr (v_Self : Type) (v_Rhs : Type) `{Core_Marker.t_Sized (v_Rhs)} : Type :=
+  {
+    BitOr__f_Output : Type;
+    _ :: `{Core_Marker.t_Sized (BitOr__f_Output)};
+    BitOr__f_bitor : v_Self -> v_Rhs -> BitOr__f_Output;
+  }.
+Arguments t_BitOr (_) (_) {_}.
+
+Class t_BitXor (v_Self : Type) (v_Rhs : Type) `{Core_Marker.t_Sized (v_Rhs)} : Type :=
+  {
+    BitXor__f_Output : Type;
+    _ :: `{Core_Marker.t_Sized (BitXor__f_Output)};
+    BitXor__f_bitxor : v_Self -> v_Rhs -> BitXor__f_Output;
+  }.
+Arguments t_BitXor (_) (_) {_}.
+
+Class t_Shl (v_Self : Type) (v_Rhs : Type) `{Core_Marker.t_Sized (v_Rhs)} : Type :=
+  {
+    Shl__f_Output : Type;
+    _ :: `{Core_Marker.t_Sized (Shl__f_Output)};
+    Shl__f_shl : v_Self -> v_Rhs -> Shl__f_Output;
   }.
 Arguments t_Shl (_) (_) {_}.
 
-Class t_Shr (v_Self : Type) (v_Rhs : Type) `{t_Sized (v_Rhs)} : Type :=
+Class t_Shr (v_Self : Type) (v_Rhs : Type) `{Core_Marker.t_Sized (v_Rhs)} : Type :=
   {
-    Shr_f_Output : Type;
-    _ :: `{t_Sized (Shr_f_Output)};
-    Shr_f_shr : v_Self -> v_Rhs -> Shr_f_Output;
+    Shr__f_Output : Type;
+    _ :: `{Core_Marker.t_Sized (Shr__f_Output)};
+    Shr__f_shr : v_Self -> v_Rhs -> Shr__f_Output;
   }.
 Arguments t_Shr (_) (_) {_}.
