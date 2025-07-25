@@ -34,3 +34,5 @@ Class t_Tuple (v_Self : Type) : Type :=
   {
   }.
 Arguments t_Tuple (_).
+
+Instance t_Sized_any (v_Self : Type) : t_Sized v_Self := {}.

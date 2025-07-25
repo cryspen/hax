@@ -9,7 +9,11 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+From Core Require Import Core_Marker.
+From Core Require Import Core_Base_Spec_Seq.
+From Core Require Import Core_Panicking.
+From Core Require Import Core_Ops_Bit.
+From Core Require Import Core_Base_Spec_Unary.
 
 (* NotImplementedYet *)
 
@@ -28,32 +32,32 @@ From Core Require Import Core.
 Definition is_empty `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) : bool :=
   match Core_Base_Spec_Seq.match_list (s) with
   | Core_Base_Spec_Seq.LIST_NIL =>
-    (true : bool)
+      (true : bool)
   | Core_Base_Spec_Seq.LIST_CONS (_) (_) =>
     (false : bool)
   end.
 
-Definition hd__panic_cold_explicit '(_ : unit) : Rust_primitives_Hax.t_Never :=
-  Core_Panicking.panic_explicit (tt).
+Definition hd__panic_cold_explicit '(_ : unit) `{HFalse : t_Never} : t_Never :=
+  Core_Panicking.panic_explicit (tt) _ HFalse.
 
-Definition hd `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) `{Core_Ops_Bit.Not__f_not (is_empty (s)) = true} : v_T :=
-  match Core_Base_Spec_Seq.match_list (s) with
+Definition hd `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) `{negb (is_empty (s)) = true} : v_T :=
+  match Core_Base_Spec_Seq.match_list (s) as k return (negb (is_empty k) = true) -> _ with
   | Core_Base_Spec_Seq.LIST_NIL =>
-    Rust_primitives_Hax.never_to_any (hd__panic_cold_explicit (tt))
+    fun HFalse => never_to_any (hd__panic_cold_explicit (tt) (False_rect _ (Bool.diff_false_true HFalse)))
   | Core_Base_Spec_Seq.LIST_CONS (hd) (_) =>
-    hd
-  end.
+    fun _ => hd
+  end H1.
 
-Definition tl `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) `{Core_Ops_Bit.Not__f_not (is_empty (s)) = true} : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
+Definition tl `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) `{negb (is_empty (s)) = true} : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
   match Core_Base_Spec_Seq.match_list (s) with
   | Core_Base_Spec_Seq.LIST_NIL =>
-    Core_Base_Spec_Seq.nil (tt)
+    Core_Base_Spec_Seq.nil (* (tt) *)
   | Core_Base_Spec_Seq.LIST_CONS (_) (tl) =>
     tl
   end.
 
-Definition set_index__set_index_unary__panic_cold_explicit '(_ : unit) : Rust_primitives_Hax.t_Never :=
-  Core_Panicking.panic_explicit (tt).
+Definition set_index__set_index_unary__panic_cold_explicit '(_ : unit) `{HFalse : t_Never}: t_Never :=
+  Core_Panicking.panic_explicit (tt) _ HFalse.
 
 Fixpoint len__len_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) : Core_Base_Spec_Unary.t_Unary :=
   match Core_Base_Spec_Seq.match_list (s) with
@@ -63,26 +67,28 @@ Fixpoint len__len_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.
     Core_Base_Spec_Unary.succ (len__len_unary (tl))
   end.
 
+Check cons.
+
 Fixpoint repeat__repeat_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (n : Core_Base_Spec_Unary.t_Unary) (v : v_T) : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
-  match Core_Base_Spec_Unary.match_unary (n) with
+ match Core_Base_Spec_Unary.match_unary (n) with
   | Core_Base_Spec_Unary.UNARY_ZERO =>
-    Core_Base_Spec_Seq.nil (tt)
+    Core_Base_Spec_Seq.nil (* (tt) *)
   | Core_Base_Spec_Unary.UNARY_SUCC (m) =>
     Core_Base_Spec_Seq.cons (repeat__repeat_unary (m) (Core_Clone.Clone__f_clone (v))) (v)
-  end.
+ end.
 
-Fixpoint set_index__set_index_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (x : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Unary.t_Unary) (v : v_T) : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
-  match Core_Base_Spec_Seq.match_list (x) with
-  | Core_Base_Spec_Seq.LIST_NIL =>
-    Rust_primitives_Hax.never_to_any (set_index__set_index_unary__panic_cold_explicit (tt))
-  | Core_Base_Spec_Seq.LIST_CONS (hd) (tl) =>
-    match Core_Base_Spec_Unary.match_unary (i) with
-    | Core_Base_Spec_Unary.UNARY_ZERO =>
-      Core_Base_Spec_Seq.cons (tl) (v)
-    | Core_Base_Spec_Unary.UNARY_SUCC (n) =>
-      Core_Base_Spec_Seq.cons (set_index__set_index_unary (tl) (n) (v)) (hd)
-    end
-  end.
+(* Fixpoint set_index__set_index_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (x : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Unary.t_Unary) (v : v_T) : Core_Base_Spec_Seq.t_Seq ((v_T)) := *)
+(*   match Core_Base_Spec_Seq.match_list (x) with *)
+(*   | Core_Base_Spec_Seq.LIST_NIL => *)
+(*     never_to_any (set_index__set_index_unary__panic_cold_explicit (tt) (False_rec _ _)) *)
+(*   | Core_Base_Spec_Seq.LIST_CONS (hd) (tl) => *)
+(*     match Core_Base_Spec_Unary.match_unary (i) with *)
+(*     | Core_Base_Spec_Unary.UNARY_ZERO => *)
+(*       Core_Base_Spec_Seq.cons (tl) (v) *)
+(*     | Core_Base_Spec_Unary.UNARY_SUCC (n) => *)
+(*       Core_Base_Spec_Seq.cons (set_index__set_index_unary (tl) (n) (v)) (hd) *)
+(*     end *)
+(*   end. *)
 
 Fixpoint rev__rev_accum `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (accum : Core_Base_Spec_Seq.t_Seq ((v_T))) : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
   match Core_Base_Spec_Seq.match_list (s) with
@@ -92,18 +98,18 @@ Fixpoint rev__rev_accum `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.
     rev__rev_accum (tl) (Core_Base_Spec_Seq.cons (accum) (hd))
   end.
 
-Fixpoint eq_inner `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} `{Core_Cmp.t_PartialEq (v_T) (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (other : Core_Base_Spec_Seq.t_Seq ((v_T))) : bool :=
-  match Core_Base_Spec_Seq.match_list (Core_Clone.Clone__f_clone (s)) with
-  | Core_Base_Spec_Seq.LIST_NIL =>
-    is_empty (Core_Clone.Clone__f_clone (other))
-  | Core_Base_Spec_Seq.LIST_CONS (x) (xs) =>
-    match Core_Base_Spec_Seq.match_list (Core_Clone.Clone__f_clone (other)) with
-    | Core_Base_Spec_Seq.LIST_NIL =>
-      (false : bool)
-    | Core_Base_Spec_Seq.LIST_CONS (y) (ys) =>
-      andb (Core_Cmp.PartialEq__f_eq (x) (y)) (eq_inner (xs) (ys))
-    end
-  end.
+(* Fixpoint eq_inner `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} `{Core_Cmp.t_PartialEq (v_T) (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (other : Core_Base_Spec_Seq.t_Seq ((v_T))) : bool := *)
+(*   match Core_Base_Spec_Seq.match_list (Core_Clone.Clone__f_clone (s)) with *)
+(*   | Core_Base_Spec_Seq.LIST_NIL => *)
+(*     is_empty (Core_Clone.Clone__f_clone (other)) *)
+(*   | Core_Base_Spec_Seq.LIST_CONS (x) (xs) => *)
+(*     match Core_Base_Spec_Seq.match_list (Core_Clone.Clone__f_clone (other)) with *)
+(*     | Core_Base_Spec_Seq.LIST_NIL => *)
+(*       (false : bool) *)
+(*     | Core_Base_Spec_Seq.LIST_CONS (y) (ys) => *)
+(*       andb (Core_Cmp.PartialEq__f_eq (x) (y)) (eq_inner (xs) (ys)) *)
+(*     end *)
+(*   end. *)
 
 Definition len `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) : Core_Base_Spec_Haxint.t_HaxInt :=
   Core_Base_Spec_Unary.unary_to_int (len__len_unary (s)).
@@ -111,27 +117,27 @@ Definition len `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (
 Definition repeat `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (n : Core_Base_Spec_Haxint.t_HaxInt) (v : v_T) : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
   repeat__repeat_unary (Core_Base_Spec_Unary.unary_from_int (n)) (v).
 
-Definition set_index `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Haxint.t_HaxInt) (v : v_T) `{Core_Base_Pos.haxint_lt (i) (len (s)) = true} : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
-  set_index__set_index_unary (s) (Core_Base_Spec_Unary.unary_from_int (i)) (v).
+(* Definition set_index `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Haxint.t_HaxInt) (v : v_T) `{Core_Base_Pos.haxint_lt (i) (len (s)) = true} : Core_Base_Spec_Seq.t_Seq ((v_T)) := *)
+(*   set_index__set_index_unary (s) (Core_Base_Spec_Unary.unary_from_int (i)) (v). *)
 
-Definition rev `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) : Core_Base_Spec_Seq.t_Seq ((v_T)) :=
-  rev__rev_accum (s) (Core_Base_Spec_Seq.nil (tt)).
+(* Definition rev `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) : Core_Base_Spec_Seq.t_Seq ((v_T)) := *)
+(*   rev__rev_accum (s) (Core_Base_Spec_Seq.nil (tt)). *)
 
-Instance Core_Cmp.t_PartialEq_377162091 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} `{Core_Cmp.t_PartialEq (v_T) (v_T)} : Core_Cmp.t_PartialEq ((Core_Base_Spec_Seq.t_Seq ((v_T)))) ((Core_Base_Spec_Seq.t_Seq ((v_T)))) :=
-  {
-    implaabbcc_t_PartialEq_impl__f_eq := fun  (self : Core_Base_Spec_Seq.t_Seq ((v_T))) (other : Core_Base_Spec_Seq.t_Seq ((v_T)))=>
-      eq_inner (Core_Clone.Clone__f_clone (self)) (Core_Clone.Clone__f_clone (other));
-    implaabbcc_t_PartialEq_impl__f_ne := fun  (self : Core_Base_Spec_Seq.t_Seq ((v_T))) (other : Core_Base_Spec_Seq.t_Seq ((v_T)))=>
-      Core_Ops_Bit.Not__f_not (eq_inner (Core_Clone.Clone__f_clone (self)) (Core_Clone.Clone__f_clone (other)));
-  }.
+(* Instance t_PartialEq_377162091 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} `{Core_Cmp.t_PartialEq (v_T) (v_T)} : Core_Cmp.t_PartialEq ((Core_Base_Spec_Seq.t_Seq ((v_T)))) ((Core_Base_Spec_Seq.t_Seq ((v_T)))) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_f_eq := fun  (self : Core_Base_Spec_Seq.t_Seq ((v_T))) (other : Core_Base_Spec_Seq.t_Seq ((v_T)))=> *)
+(*       eq_inner (Core_Clone.Clone__f_clone (self)) (Core_Clone.Clone__f_clone (other)); *)
+(*     Core_Cmp.PartialEq_f_ne := fun  (self : Core_Base_Spec_Seq.t_Seq ((v_T))) (other : Core_Base_Spec_Seq.t_Seq ((v_T)))=> *)
+(*       Core_Ops_Bit.Not__f_not (eq_inner (Core_Clone.Clone__f_clone (self)) (Core_Clone.Clone__f_clone (other))); *)
+(*   }. *)
 
-Fixpoint get_index_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (l : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Unary.t_Unary) `{Core_Base_Pos.haxint_lt (Core_Base_Spec_Unary.unary_to_int (i)) (len (l)) = true} : v_T :=
-  match Core_Base_Spec_Unary.match_unary (i) with
-  | Core_Base_Spec_Unary.UNARY_ZERO =>
-    hd (l)
-  | Core_Base_Spec_Unary.UNARY_SUCC (n) =>
-    get_index_unary (tl (l)) (n)
-  end.
+(* Fixpoint get_index_unary `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (l : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Unary.t_Unary) `{Core_Base_Pos.haxint_lt (Core_Base_Spec_Unary.unary_to_int (i)) (len (l)) = true} : v_T := *)
+(*   match Core_Base_Spec_Unary.match_unary (i) with *)
+(*   | Core_Base_Spec_Unary.UNARY_ZERO => *)
+(*     hd (l) *)
+(*   | Core_Base_Spec_Unary.UNARY_SUCC (n) => *)
+(*     get_index_unary (tl (l)) (n) *)
+(*   end. *)
 
-Definition get_index `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Haxint.t_HaxInt) `{Core_Base_Pos.haxint_lt (i) (len (s)) = true} : v_T :=
-  get_index_unary (s) (Core_Base_Spec_Unary.unary_from_int (i)).
+(* Definition get_index `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : Core_Base_Spec_Seq.t_Seq ((v_T))) (i : Core_Base_Spec_Haxint.t_HaxInt) `{Core_Base_Pos.haxint_lt (i) (len (s)) = true} : v_T := *)
+(*   get_index_unary (s) (Core_Base_Spec_Unary.unary_from_int (i)). *)

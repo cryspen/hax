@@ -9,7 +9,9 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+From Core Require Import Core_Convert.
+From Core Require Import Core_Base_interface_Int.
+From Core Require Import Core_Base_Spec_Seq.
 
 Record TryFromSliceError_TryFromSliceError_record : Type :=
   {
@@ -27,5282 +29,5281 @@ Notation "'TryFromSliceError_TryFromSliceError_record'" := Build_TryFromSliceErr
 
 
 
-Instance Core_Convert.t_From_222673973 : Core_Convert.t_From ((t_TryFromSliceError)) ((Core_Convert.t_Infallible)) :=
+(* Instance t_From_222673973 : Core_Convert.t_From ((t_TryFromSliceError)) ((Core_Convert.t_Infallible)) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (x : Core_Convert.t_Infallible)=> *)
+(*       Rust_primitives_Hax.never_to_any (match x with *)
+(*       end); *)
+(*   }. *)
+
+(* TODO: please implement the method `item'_HaxError` *)
+
+(* Record Seq_Seq_record (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type := *)
+(*   { *)
+(*     Seq_Seq_f_Seq_v : Alloc_Vec.t_Vec ((v_T)) ((Alloc_Alloc.t_Global)); *)
+(*   }. *)
+(* Arguments Build_Seq_Seq_record {_} {_}. *)
+(* Arguments Seq_Seq_f_Seq_v {_} {_}. *)
+(* #[export] Instance settable_Seq_Seq_record `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : Settable _ := *)
+(*   settable! (Build_Seq_Seq_record (v_T := v_T)) <Seq_Seq_f_Seq_v>. *)
+
+(* Inductive t_LIST (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type := *)
+(* | LIST_NIL *)
+(* | LIST_CONS : v_T -> t_Seq ((v_T)) -> _. *)
+(* Arguments LIST_NIL {_} {_}. *)
+(* Arguments LIST_CONS {_} {_}. *)
+
+(* Instance t_Clone_945595863 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Seq ((v_T)))) := *)
+(*   { *)
+(*     Core_Clone.Clone_f_clone := fun  (self : t_Seq ((v_T)))=> *)
+(*       Seq_Seq (Core_Clone.Clone__f_clone (f_Seq_v self)); *)
+(*   }. *)
+
+(* Definition nil `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} '(_ : unit) : t_Seq ((v_T)) := *)
+(*   Seq_Seq (Alloc_Vec.impl__new (tt)). *)
+
+Record t_u8 : Type :=
   {
-    implaabbcc_t_From_impl__f_from := fun  (x : Core_Convert.t_Infallible)=>
-      Rust_primitives_Hax.never_to_any (match x with
-      end);
-  }.
-
-TODO: please implement the method `item'_HaxError`
-
-Record Seq_Seq_record (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type :=
-  {
-    Seq_Seq_f_Seq_v : Alloc_Vec.t_Vec ((v_T)) ((Alloc_Alloc.t_Global));
-  }.
-Arguments Build_Seq_Seq_record {_} {_}.
-Arguments Seq_Seq_f_Seq_v {_} {_}.
-#[export] Instance settable_Seq_Seq_record `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : Settable _ :=
-  settable! (Build_Seq_Seq_record (v_T := v_T)) <Seq_Seq_f_Seq_v>.
-
-Inductive t_LIST (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type :=
-| LIST_NIL
-| LIST_CONS : v_T -> t_Seq ((v_T)) -> _.
-Arguments LIST_NIL {_} {_}.
-Arguments LIST_CONS {_} {_}.
-
-Instance Core_Clone.t_Clone_945595863 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Seq ((v_T)))) :=
-  {
-    implaabbcc_t_Clone_impl__f_clone := fun  (self : t_Seq ((v_T)))=>
-      Seq_Seq (Core_Clone.Clone__f_clone (f_Seq_v self));
-  }.
-
-Definition nil `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} '(_ : unit) : t_Seq ((v_T)) :=
-  Seq_Seq (Alloc_Vec.impl__new (tt)).
-
-Record Build_t__u8_u8_record : Type :=
-  {
-    Build_t__u8_u8_0 : Core_Base_interface_Int.t_U8;
+    t_u8_0 : Core_Base_interface_Int.t_U8;
   }.
 
 
 #[export] Instance settable_Build_t__u8_u8_record : Settable _ :=
-  settable! (Build_Build_t__u8_u8_record) <Build_t__u8_u8_0>.
-Notation "'Build_t__u8_u8_record'" := Build_Build_t__u8_u8_record.
-
-Instance Core_Cmp.t_PartialEq_65376715 : Core_Cmp.t_PartialEq ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_PartialEq_impl_1__f_eq := fun  (self : t_u8) (other : t_u8)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_1__f_ne := fun  (self : t_u8) (other : t_u8)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_438293247 : Core_Cmp.t_Eq ((t_u8)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_810291116 : Core_Cmp.t_PartialOrd ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_26__f_partial_cmp := fun  (self : t_u8) (other : t_u8)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_26__f_lt := fun  (self : t_u8) (other : t_u8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_26__f_le := fun  (self : t_u8) (other : t_u8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_26__f_ge := fun  (self : t_u8) (other : t_u8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_26__f_gt := fun  (self : t_u8) (other : t_u8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_874912829 : Core_Cmp.t_Ord ((t_u8)) :=
-  {
-    implaabbcc_t_Ord_impl_27__f_cmp := fun  (self : t_u8) (other : t_u8)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Definition wrapping_add_u8 (a : t_u8) (b : t_u8) : t_u8 :=
-  Build_t__u8_u8 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_u8 (a : t_u8) (b : t_u8) : t_u8 :=
-  Build_t__u8_u8 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_u8 (a : t_u8) (b : t_u8) : t_u8 :=
-  Build_t__u8_u8 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition three_way_compare_u8 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u8) (rhs : t_u8) : Core_Cmp.t_Ordering :=
-  Core_Cmp.Ord__f_cmp (lhs) (rhs).
-
-Definition add_with_overflow_u8 (x : t_u8) (y : t_u8) : (t_u8*bool) :=
-  let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_U8 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__u8_u8 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_u8 (x : t_u8) (y : t_u8) : t_u8 :=
-  Build_t__u8_u8 (Core_Base_interface_Int.U8_U8 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_u8 (x : t_u8) (y : t_u8) : t_u8 :=
-  Build_t__u8_u8 (Core_Base_interface_Int.U8_U8 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_6__MIN : t_u8 :=
-  Build_t__u8_u8 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_6__MAX : t_u8 :=
-  Build_t__u8_u8 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_6__from_le (x : t_u8) : t_u8 :=
-  x.
-
-Definition impl_6__to_le (self : t_u8) : t_u8 :=
-  self.
-
-Definition impl_6__checked_add (self : t_u8) (rhs : t_u8) : Core_Option.t_Option ((t_u8)) :=
-  Core_Option.Option_Some (unchecked_add_u8 (self) (rhs)).
-
-Definition impl_6__wrapping_add (self : t_u8) (rhs : t_u8) : t_u8 :=
-  wrapping_add_u8 (self) (rhs).
-
-Definition impl_6__wrapping_sub (self : t_u8) (rhs : t_u8) : t_u8 :=
-  wrapping_sub_u8 (self) (rhs).
-
-Definition impl_6__wrapping_mul (self : t_u8) (rhs : t_u8) : t_u8 :=
-  wrapping_mul_u8 (self) (rhs).
-
-Definition impl_6__wrapping_neg (self : t_u8) : t_u8 :=
-  impl_6__wrapping_sub (Build_t__u8_u8 (Core_Base_interface_Int.Constants__f_ZERO)) (self).
-
-Definition impl_6__overflowing_add (self : t_u8) (rhs : t_u8) : (t_u8*bool) :=
-  add_with_overflow_u8 (self) (rhs).
-
-Instance Core_Clone.t_Clone_63118506 : Core_Clone.t_Clone ((t_u8)) :=
-  {
-    implaabbcc_t_Clone_impl_5__f_clone := fun  (self : t_u8)=>
-      Build_t__u8_u8 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__u16_u16_record : Type :=
-  {
-    Build_t__u16_u16_0 : Core_Base_interface_Int.t_U16;
-  }.
-
-
-#[export] Instance settable_Build_t__u16_u16_record : Settable _ :=
-  settable! (Build_Build_t__u16_u16_record) <Build_t__u16_u16_0>.
-Notation "'Build_t__u16_u16_record'" := Build_Build_t__u16_u16_record.
-
-Instance Core_Cmp.t_PartialEq_135623619 : Core_Cmp.t_PartialEq ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_PartialEq_impl_2__f_eq := fun  (self : t_u16) (other : t_u16)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_2__f_ne := fun  (self : t_u16) (other : t_u16)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_300707985 : Core_Cmp.t_Eq ((t_u16)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_127792480 : Core_Cmp.t_PartialOrd ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_28__f_partial_cmp := fun  (self : t_u16) (other : t_u16)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_28__f_lt := fun  (self : t_u16) (other : t_u16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_28__f_le := fun  (self : t_u16) (other : t_u16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_28__f_ge := fun  (self : t_u16) (other : t_u16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_28__f_gt := fun  (self : t_u16) (other : t_u16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_146704218 : Core_Cmp.t_Ord ((t_u16)) :=
-  {
-    implaabbcc_t_Ord_impl_29__f_cmp := fun  (self : t_u16) (other : t_u16)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_200763843 : Core_Convert.t_From ((t_u16)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl__f_from := fun  (small : t_u8)=>
-      Build_t__u16_u16 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_915843081 : Core_Convert.t_From ((t_u8)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_12__f_from := fun  (x : t_u16)=>
-      Build_t__u8_u8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_u16 (a : t_u16) (b : t_u16) : t_u16 :=
-  Build_t__u16_u16 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_u16 (a : t_u16) (b : t_u16) : t_u16 :=
-  Build_t__u16_u16 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_u16 (a : t_u16) (b : t_u16) : t_u16 :=
-  Build_t__u16_u16 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition three_way_compare_u16 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u16) (rhs : t_u16) : Core_Cmp.t_Ordering :=
-  Core_Cmp.Ord__f_cmp (lhs) (rhs).
-
-Definition add_with_overflow_u16 (x : t_u16) (y : t_u16) : (t_u16*bool) :=
-  let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_U16 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__u16_u16 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_u16 (x : t_u16) (y : t_u16) : t_u16 :=
-  Build_t__u16_u16 (Core_Base_interface_Int.U16_U16 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_u16 (x : t_u16) (y : t_u16) : t_u16 :=
-  Build_t__u16_u16 (Core_Base_interface_Int.U16_U16 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_7__MIN : t_u16 :=
-  Build_t__u16_u16 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_7__MAX : t_u16 :=
-  Build_t__u16_u16 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_7__from_le (x : t_u16) : t_u16 :=
-  x.
-
-Definition impl_7__to_le (self : t_u16) : t_u16 :=
-  self.
-
-Definition impl_7__checked_add (self : t_u16) (rhs : t_u16) : Core_Option.t_Option ((t_u16)) :=
-  Core_Option.Option_Some (unchecked_add_u16 (self) (rhs)).
-
-Definition impl_7__wrapping_add (self : t_u16) (rhs : t_u16) : t_u16 :=
-  wrapping_add_u16 (self) (rhs).
-
-Definition impl_7__wrapping_sub (self : t_u16) (rhs : t_u16) : t_u16 :=
-  wrapping_sub_u16 (self) (rhs).
-
-Definition impl_7__wrapping_mul (self : t_u16) (rhs : t_u16) : t_u16 :=
-  wrapping_mul_u16 (self) (rhs).
-
-Definition impl_7__wrapping_neg (self : t_u16) : t_u16 :=
-  impl_7__wrapping_sub (Build_t__u16_u16 (Core_Base_interface_Int.Constants__f_ZERO)) (self).
-
-Definition impl_7__overflowing_add (self : t_u16) (rhs : t_u16) : (t_u16*bool) :=
-  add_with_overflow_u16 (self) (rhs).
-
-Instance Core_Clone.t_Clone_682346410 : Core_Clone.t_Clone ((t_u16)) :=
-  {
-    implaabbcc_t_Clone_impl_7__f_clone := fun  (self : t_u16)=>
-      Build_t__u16_u16 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__u32_u32_record : Type :=
-  {
-    Build_t__u32_u32_0 : Core_Base_interface_Int.t_U32;
-  }.
-
-
-#[export] Instance settable_Build_t__u32_u32_record : Settable _ :=
-  settable! (Build_Build_t__u32_u32_record) <Build_t__u32_u32_0>.
-Notation "'Build_t__u32_u32_record'" := Build_Build_t__u32_u32_record.
-
-Instance Core_Cmp.t_PartialEq_222334941 : Core_Cmp.t_PartialEq ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_PartialEq_impl_3__f_eq := fun  (self : t_u32) (other : t_u32)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_3__f_ne := fun  (self : t_u32) (other : t_u32)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_500049768 : Core_Cmp.t_Eq ((t_u32)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_119362547 : Core_Cmp.t_PartialOrd ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_30__f_partial_cmp := fun  (self : t_u32) (other : t_u32)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_30__f_lt := fun  (self : t_u32) (other : t_u32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_30__f_le := fun  (self : t_u32) (other : t_u32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_30__f_ge := fun  (self : t_u32) (other : t_u32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_30__f_gt := fun  (self : t_u32) (other : t_u32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_207671765 : Core_Cmp.t_Ord ((t_u32)) :=
-  {
-    implaabbcc_t_Ord_impl_31__f_cmp := fun  (self : t_u32) (other : t_u32)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_825461097 : Core_Convert.t_From ((t_u32)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl_1__f_from := fun  (small : t_u8)=>
-      Build_t__u32_u32 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_323529564 : Core_Convert.t_From ((t_u32)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_5__f_from := fun  (small : t_u16)=>
-      Build_t__u32_u32 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_280971665 : Core_Convert.t_From ((t_u8)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_13__f_from := fun  (x : t_u32)=>
-      Build_t__u8_u8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_729180779 : Core_Convert.t_From ((t_u16)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_14__f_from := fun  (x : t_u32)=>
-      Build_t__u16_u16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_u32 (a : t_u32) (b : t_u32) : t_u32 :=
-  Build_t__u32_u32 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_u32 (a : t_u32) (b : t_u32) : t_u32 :=
-  Build_t__u32_u32 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_u32 (a : t_u32) (b : t_u32) : t_u32 :=
-  Build_t__u32_u32 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition three_way_compare_u32 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u32) (rhs : t_u32) : Core_Cmp.t_Ordering :=
-  Core_Cmp.Ord__f_cmp (lhs) (rhs).
-
-Definition add_with_overflow_u32 (x : t_u32) (y : t_u32) : (t_u32*bool) :=
-  let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_U32 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__u32_u32 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_u32 (x : t_u32) (y : t_u32) : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.U32_U32 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_u32 (x : t_u32) (y : t_u32) : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.U32_U32 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_149__BITS).
-
-Definition impl_1__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_122__BITS).
-
-Definition impl_2__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_95__BITS).
-
-Definition impl_3__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_68__BITS).
-
-Definition impl_4__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_41__BITS).
-
-Definition impl_5__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_68__BITS).
-
-Definition impl_6__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_284__BITS).
-
-Definition impl_7__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_257__BITS).
-
-Definition impl_8__MIN : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_8__MAX : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_8__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_230__BITS).
-
-Definition impl_8__from_le (x : t_u32) : t_u32 :=
-  x.
-
-Definition impl_8__to_le (self : t_u32) : t_u32 :=
-  self.
-
-Definition impl_8__checked_add (self : t_u32) (rhs : t_u32) : Core_Option.t_Option ((t_u32)) :=
-  Core_Option.Option_Some (unchecked_add_u32 (self) (rhs)).
-
-Definition impl_8__wrapping_add (self : t_u32) (rhs : t_u32) : t_u32 :=
-  wrapping_add_u32 (self) (rhs).
-
-Definition impl_8__wrapping_sub (self : t_u32) (rhs : t_u32) : t_u32 :=
-  wrapping_sub_u32 (self) (rhs).
-
-Definition impl_8__wrapping_mul (self : t_u32) (rhs : t_u32) : t_u32 :=
-  wrapping_mul_u32 (self) (rhs).
-
-Definition impl_8__wrapping_neg (self : t_u32) : t_u32 :=
-  impl_8__wrapping_sub (Build_t__u32_u32 (Core_Base_interface_Int.Constants__f_ZERO)) (self).
-
-Definition impl_8__overflowing_add (self : t_u32) (rhs : t_u32) : (t_u32*bool) :=
-  add_with_overflow_u32 (self) (rhs).
-
-Definition impl_9__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_203__BITS).
-
-Definition impl_10__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_176__BITS).
-
-Definition impl_11__BITS : t_u32 :=
-  Build_t__u32_u32 (Core_Base_interface_Int.impl_203__BITS).
-
-Instance Core_Clone.t_Clone_716919478 : Core_Clone.t_Clone ((t_u32)) :=
-  {
-    implaabbcc_t_Clone_impl_9__f_clone := fun  (self : t_u32)=>
-      Build_t__u32_u32 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__u64_u64_record : Type :=
-  {
-    Build_t__u64_u64_0 : Core_Base_interface_Int.t_U64;
-  }.
-
-
-#[export] Instance settable_Build_t__u64_u64_record : Settable _ :=
-  settable! (Build_Build_t__u64_u64_record) <Build_t__u64_u64_0>.
-Notation "'Build_t__u64_u64_record'" := Build_Build_t__u64_u64_record.
-
-Instance Core_Cmp.t_PartialEq_698876183 : Core_Cmp.t_PartialEq ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_PartialEq_impl_4__f_eq := fun  (self : t_u64) (other : t_u64)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_4__f_ne := fun  (self : t_u64) (other : t_u64)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_836077972 : Core_Cmp.t_Eq ((t_u64)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_62313665 : Core_Cmp.t_PartialOrd ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_32__f_partial_cmp := fun  (self : t_u64) (other : t_u64)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_32__f_lt := fun  (self : t_u64) (other : t_u64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_32__f_le := fun  (self : t_u64) (other : t_u64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_32__f_ge := fun  (self : t_u64) (other : t_u64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_32__f_gt := fun  (self : t_u64) (other : t_u64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_106529917 : Core_Cmp.t_Ord ((t_u64)) :=
-  {
-    implaabbcc_t_Ord_impl_33__f_cmp := fun  (self : t_u64) (other : t_u64)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_1048234506 : Core_Convert.t_From ((t_u64)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl_2__f_from := fun  (small : t_u8)=>
-      Build_t__u64_u64 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_383321967 : Core_Convert.t_From ((t_u64)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_6__f_from := fun  (small : t_u16)=>
-      Build_t__u64_u64 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_664380061 : Core_Convert.t_From ((t_u64)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_8__f_from := fun  (small : t_u32)=>
-      Build_t__u64_u64 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_310071588 : Core_Convert.t_From ((t_u8)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_16__f_from := fun  (x : t_u64)=>
-      Build_t__u8_u8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_266045733 : Core_Convert.t_From ((t_u16)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_17__f_from := fun  (x : t_u64)=>
-      Build_t__u16_u16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_186232571 : Core_Convert.t_From ((t_u32)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_18__f_from := fun  (x : t_u64)=>
-      Build_t__u32_u32 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_u64 (a : t_u64) (b : t_u64) : t_u64 :=
-  Build_t__u64_u64 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_u64 (a : t_u64) (b : t_u64) : t_u64 :=
-  Build_t__u64_u64 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_u64 (a : t_u64) (b : t_u64) : t_u64 :=
-  Build_t__u64_u64 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition three_way_compare_u64 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u64) (rhs : t_u64) : Core_Cmp.t_Ordering :=
-  Core_Cmp.Ord__f_cmp (lhs) (rhs).
-
-Definition add_with_overflow_u64 (x : t_u64) (y : t_u64) : (t_u64*bool) :=
-  let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_U64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__u64_u64 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_u64 (x : t_u64) (y : t_u64) : t_u64 :=
-  Build_t__u64_u64 (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_u64 (x : t_u64) (y : t_u64) : t_u64 :=
-  Build_t__u64_u64 (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_9__MIN : t_u64 :=
-  Build_t__u64_u64 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_9__MAX : t_u64 :=
-  Build_t__u64_u64 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_9__from_le (x : t_u64) : t_u64 :=
-  x.
-
-Definition impl_9__to_le (self : t_u64) : t_u64 :=
-  self.
-
-Definition impl_9__checked_add (self : t_u64) (rhs : t_u64) : Core_Option.t_Option ((t_u64)) :=
-  Core_Option.Option_Some (unchecked_add_u64 (self) (rhs)).
-
-Definition impl_9__wrapping_add (self : t_u64) (rhs : t_u64) : t_u64 :=
-  wrapping_add_u64 (self) (rhs).
-
-Definition impl_9__wrapping_sub (self : t_u64) (rhs : t_u64) : t_u64 :=
-  wrapping_sub_u64 (self) (rhs).
-
-Definition impl_9__wrapping_mul (self : t_u64) (rhs : t_u64) : t_u64 :=
-  wrapping_mul_u64 (self) (rhs).
-
-Definition impl_9__wrapping_neg (self : t_u64) : t_u64 :=
-  impl_9__wrapping_sub (Build_t__u64_u64 (Core_Base_interface_Int.Constants__f_ZERO)) (self).
-
-Definition impl_9__overflowing_add (self : t_u64) (rhs : t_u64) : (t_u64*bool) :=
-  add_with_overflow_u64 (self) (rhs).
-
-Instance Core_Clone.t_Clone_495279431 : Core_Clone.t_Clone ((t_u64)) :=
-  {
-    implaabbcc_t_Clone_impl_11__f_clone := fun  (self : t_u64)=>
-      Build_t__u64_u64 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__u128_u128_record : Type :=
-  {
-    Build_t__u128_u128_0 : Core_Base_interface_Int.t_U128;
-  }.
-
-
-#[export] Instance settable_Build_t__u128_u128_record : Settable _ :=
-  settable! (Build_Build_t__u128_u128_record) <Build_t__u128_u128_0>.
-Notation "'Build_t__u128_u128_record'" := Build_Build_t__u128_u128_record.
-
-Instance Core_Cmp.t_PartialEq_593791874 : Core_Cmp.t_PartialEq ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_PartialEq_impl_5__f_eq := fun  (self : t_u128) (other : t_u128)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_5__f_ne := fun  (self : t_u128) (other : t_u128)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_684733949 : Core_Cmp.t_Eq ((t_u128)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_191034703 : Core_Cmp.t_PartialOrd ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_34__f_partial_cmp := fun  (self : t_u128) (other : t_u128)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_34__f_lt := fun  (self : t_u128) (other : t_u128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_34__f_le := fun  (self : t_u128) (other : t_u128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_34__f_ge := fun  (self : t_u128) (other : t_u128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_34__f_gt := fun  (self : t_u128) (other : t_u128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_122134072 : Core_Cmp.t_Ord ((t_u128)) :=
-  {
-    implaabbcc_t_Ord_impl_35__f_cmp := fun  (self : t_u128) (other : t_u128)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_209943810 : Core_Convert.t_From ((t_u128)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl_3__f_from := fun  (small : t_u8)=>
-      Build_t__u128_u128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_623156147 : Core_Convert.t_From ((t_u128)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_7__f_from := fun  (small : t_u16)=>
-      Build_t__u128_u128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_700116453 : Core_Convert.t_From ((t_u128)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_9__f_from := fun  (small : t_u32)=>
-      Build_t__u128_u128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_481902408 : Core_Convert.t_From ((t_u128)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_10__f_from := fun  (small : t_u64)=>
-      Build_t__u128_u128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_919042308 : Core_Convert.t_From ((t_u8)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_20__f_from := fun  (x : t_u128)=>
-      Build_t__u8_u8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_412368669 : Core_Convert.t_From ((t_u16)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_21__f_from := fun  (x : t_u128)=>
-      Build_t__u16_u16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_63055626 : Core_Convert.t_From ((t_u32)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_22__f_from := fun  (x : t_u128)=>
-      Build_t__u32_u32 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_476352782 : Core_Convert.t_From ((t_u64)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_23__f_from := fun  (x : t_u128)=>
-      Build_t__u64_u64 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_u128 (a : t_u128) (b : t_u128) : t_u128 :=
-  Build_t__u128_u128 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_u128 (a : t_u128) (b : t_u128) : t_u128 :=
-  Build_t__u128_u128 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_u128 (a : t_u128) (b : t_u128) : t_u128 :=
-  Build_t__u128_u128 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition three_way_compare_u128 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u128) (rhs : t_u128) : Core_Cmp.t_Ordering :=
-  Core_Cmp.Ord__f_cmp (lhs) (rhs).
-
-Definition add_with_overflow_u128 (x : t_u128) (y : t_u128) : (t_u128*bool) :=
-  let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_U128 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__u128_u128 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_u128 (x : t_u128) (y : t_u128) : t_u128 :=
-  Build_t__u128_u128 (Core_Base_interface_Int.U128_U128 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_u128 (x : t_u128) (y : t_u128) : t_u128 :=
-  Build_t__u128_u128 (Core_Base_interface_Int.U128_U128 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_10__MIN : t_u128 :=
-  Build_t__u128_u128 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_10__MAX : t_u128 :=
-  Build_t__u128_u128 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_10__from_le (x : t_u128) : t_u128 :=
-  x.
-
-Definition impl_10__to_le (self : t_u128) : t_u128 :=
-  self.
-
-Definition impl_10__checked_add (self : t_u128) (rhs : t_u128) : Core_Option.t_Option ((t_u128)) :=
-  Core_Option.Option_Some (unchecked_add_u128 (self) (rhs)).
-
-Definition impl_10__wrapping_add (self : t_u128) (rhs : t_u128) : t_u128 :=
-  wrapping_add_u128 (self) (rhs).
-
-Definition impl_10__wrapping_sub (self : t_u128) (rhs : t_u128) : t_u128 :=
-  wrapping_sub_u128 (self) (rhs).
-
-Definition impl_10__wrapping_mul (self : t_u128) (rhs : t_u128) : t_u128 :=
-  wrapping_mul_u128 (self) (rhs).
-
-Definition impl_10__wrapping_neg (self : t_u128) : t_u128 :=
-  impl_10__wrapping_sub (Build_t__u128_u128 (Core_Base_interface_Int.Constants__f_ZERO)) (self).
-
-Definition impl_10__overflowing_add (self : t_u128) (rhs : t_u128) : (t_u128*bool) :=
-  add_with_overflow_u128 (self) (rhs).
-
-Instance Core_Clone.t_Clone_680974943 : Core_Clone.t_Clone ((t_u128)) :=
-  {
-    implaabbcc_t_Clone_impl_13__f_clone := fun  (self : t_u128)=>
-      Build_t__u128_u128 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__usize_usize_record : Type :=
-  {
-    Build_t__usize_usize_0 : Core_Base_interface_Int.t_U64;
-  }.
-
-
-#[export] Instance settable_Build_t__usize_usize_record : Settable _ :=
-  settable! (Build_Build_t__usize_usize_record) <Build_t__usize_usize_0>.
-Notation "'Build_t__usize_usize_record'" := Build_Build_t__usize_usize_record.
-
-Instance Core_Cmp.t_PartialEq_20401119 : Core_Cmp.t_PartialEq ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_PartialEq_impl__f_eq := fun  (self : t_usize) (other : t_usize)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl__f_ne := fun  (self : t_usize) (other : t_usize)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_1020398107 : Core_Cmp.t_Eq ((t_usize)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_391347786 : Core_Cmp.t_PartialOrd ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_24__f_partial_cmp := fun  (self : t_usize) (other : t_usize)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_24__f_lt := fun  (self : t_usize) (other : t_usize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_24__f_le := fun  (self : t_usize) (other : t_usize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_24__f_ge := fun  (self : t_usize) (other : t_usize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_24__f_gt := fun  (self : t_usize) (other : t_usize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_723764915 : Core_Cmp.t_Ord ((t_usize)) :=
-  {
-    implaabbcc_t_Ord_impl_25__f_cmp := fun  (self : t_usize) (other : t_usize)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_314414825 : Core_Convert.t_From ((t_usize)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl_4__f_from := fun  (small : t_u8)=>
-      Build_t__usize_usize (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_813671375 : Core_Convert.t_From ((t_usize)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_22__f_from := fun  (small : t_u16)=>
-      Build_t__usize_usize (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_65917013 : Core_Convert.t_From ((t_usize)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_15__f_from := fun  (x : t_u32)=>
-      Build_t__usize_usize (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_622871812 : Core_Convert.t_From ((t_usize)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_19__f_from := fun  (x : t_u64)=>
-      Build_t__usize_usize (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_86009989 : Core_Convert.t_From ((t_usize)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_24__f_from := fun  (x : t_u128)=>
-      Build_t__usize_usize (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_40539971 : Core_Convert.t_From ((t_u8)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_25__f_from := fun  (x : t_usize)=>
-      Build_t__u8_u8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_601277894 : Core_Convert.t_From ((t_u16)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_26__f_from := fun  (x : t_usize)=>
-      Build_t__u16_u16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_900739187 : Core_Convert.t_From ((t_u32)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_27__f_from := fun  (x : t_usize)=>
-      Build_t__u32_u32 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_1037884731 : Core_Convert.t_From ((t_u64)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_28__f_from := fun  (x : t_usize)=>
-      Build_t__u64_u64 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_796503562 : Core_Convert.t_From ((t_u128)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_29__f_from := fun  (x : t_usize)=>
-      Build_t__u128_u128 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_usize (a : t_usize) (b : t_usize) : t_usize :=
-  Build_t__usize_usize (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_usize (a : t_usize) (b : t_usize) : t_usize :=
-  Build_t__usize_usize (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_usize (a : t_usize) (b : t_usize) : t_usize :=
-  Build_t__usize_usize (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition three_way_compare_usize `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_usize) (rhs : t_usize) : Core_Cmp.t_Ordering :=
-  Core_Cmp.Ord__f_cmp (lhs) (rhs).
-
-Definition add_with_overflow_usize (x : t_usize) (y : t_usize) : (t_usize*bool) :=
-  let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_U64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__usize_usize (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_usize (x : t_usize) (y : t_usize) : t_usize :=
-  Build_t__usize_usize (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_usize (x : t_usize) (y : t_usize) : t_usize :=
-  Build_t__usize_usize (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_11__MIN : t_usize :=
-  Build_t__usize_usize (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_11__MAX : t_usize :=
-  Build_t__usize_usize (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_11__from_le (x : t_usize) : t_usize :=
-  x.
-
-Definition impl_11__to_le (self : t_usize) : t_usize :=
-  self.
-
-Definition impl_11__checked_add (self : t_usize) (rhs : t_usize) : Core_Option.t_Option ((t_usize)) :=
-  Core_Option.Option_Some (unchecked_add_usize (self) (rhs)).
-
-Definition impl_11__wrapping_add (self : t_usize) (rhs : t_usize) : t_usize :=
-  wrapping_add_usize (self) (rhs).
-
-Definition impl_11__wrapping_sub (self : t_usize) (rhs : t_usize) : t_usize :=
-  wrapping_sub_usize (self) (rhs).
-
-Definition impl_11__wrapping_mul (self : t_usize) (rhs : t_usize) : t_usize :=
-  wrapping_mul_usize (self) (rhs).
-
-Definition impl_11__wrapping_neg (self : t_usize) : t_usize :=
-  impl_11__wrapping_sub (Build_t__usize_usize (Core_Base_interface_Int.Constants__f_ZERO)) (self).
-
-Definition impl_11__overflowing_add (self : t_usize) (rhs : t_usize) : (t_usize*bool) :=
-  add_with_overflow_usize (self) (rhs).
-
-Instance Core_Clone.t_Clone_195920202 : Core_Clone.t_Clone ((t_usize)) :=
-  {
-    implaabbcc_t_Clone_impl_15__f_clone := fun  (self : t_usize)=>
-      Build_t__usize_usize (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__i8_i8_record : Type :=
-  {
-    Build_t__i8_i8_0 : Core_Base_interface_Int.t_I8;
-  }.
-
-
-#[export] Instance settable_Build_t__i8_i8_record : Settable _ :=
-  settable! (Build_Build_t__i8_i8_record) <Build_t__i8_i8_0>.
-Notation "'Build_t__i8_i8_record'" := Build_Build_t__i8_i8_record.
-
-Instance Core_Cmp.t_PartialEq_800685930 : Core_Cmp.t_PartialEq ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_PartialEq_impl_7__f_eq := fun  (self : t_i8) (other : t_i8)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_7__f_ne := fun  (self : t_i8) (other : t_i8)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_532787599 : Core_Cmp.t_Eq ((t_i8)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_734270374 : Core_Cmp.t_PartialOrd ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_38__f_partial_cmp := fun  (self : t_i8) (other : t_i8)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_38__f_lt := fun  (self : t_i8) (other : t_i8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_38__f_le := fun  (self : t_i8) (other : t_i8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_38__f_ge := fun  (self : t_i8) (other : t_i8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_38__f_gt := fun  (self : t_i8) (other : t_i8)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_181371211 : Core_Cmp.t_Ord ((t_i8)) :=
-  {
-    implaabbcc_t_Ord_impl_39__f_cmp := fun  (self : t_i8) (other : t_i8)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Definition wrapping_add_i8 (a : t_i8) (b : t_i8) : t_i8 :=
-  Build_t__i8_i8 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_i8 (a : t_i8) (b : t_i8) : t_i8 :=
-  Build_t__i8_i8 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_i8 (a : t_i8) (b : t_i8) : t_i8 :=
-  Build_t__i8_i8 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition add_with_overflow_i8 (x : t_i8) (y : t_i8) : (t_i8*bool) :=
-  let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_I8 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__i8_i8 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_i8 (x : t_i8) (y : t_i8) : t_i8 :=
-  Build_t__i8_i8 (Core_Base_interface_Int.I8_I8 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_i8 (x : t_i8) (y : t_i8) : t_i8 :=
-  Build_t__i8_i8 (Core_Base_interface_Int.I8_I8 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl__MIN : t_i8 :=
-  Build_t__i8_i8 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl__MAX : t_i8 :=
-  Build_t__i8_i8 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl__wrapping_add (self : t_i8) (rhs : t_i8) : t_i8 :=
-  wrapping_add_i8 (self) (rhs).
-
-Definition impl__wrapping_sub (self : t_i8) (rhs : t_i8) : t_i8 :=
-  wrapping_sub_i8 (self) (rhs).
-
-Instance Core_Clone.t_Clone_1057953267 : Core_Clone.t_Clone ((t_i8)) :=
-  {
-    implaabbcc_t_Clone_impl_17__f_clone := fun  (self : t_i8)=>
-      Build_t__i8_i8 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__i16_i16_record : Type :=
-  {
-    Build_t__i16_i16_0 : Core_Base_interface_Int.t_I16;
-  }.
-
-
-#[export] Instance settable_Build_t__i16_i16_record : Settable _ :=
-  settable! (Build_Build_t__i16_i16_record) <Build_t__i16_i16_0>.
-Notation "'Build_t__i16_i16_record'" := Build_Build_t__i16_i16_record.
-
-Instance Core_Cmp.t_PartialEq_534440819 : Core_Cmp.t_PartialEq ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_PartialEq_impl_8__f_eq := fun  (self : t_i16) (other : t_i16)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_8__f_ne := fun  (self : t_i16) (other : t_i16)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_124900064 : Core_Cmp.t_Eq ((t_i16)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_492791700 : Core_Cmp.t_PartialOrd ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_40__f_partial_cmp := fun  (self : t_i16) (other : t_i16)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_40__f_lt := fun  (self : t_i16) (other : t_i16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_40__f_le := fun  (self : t_i16) (other : t_i16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_40__f_ge := fun  (self : t_i16) (other : t_i16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_40__f_gt := fun  (self : t_i16) (other : t_i16)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_281318505 : Core_Cmp.t_Ord ((t_i16)) :=
-  {
-    implaabbcc_t_Ord_impl_41__f_cmp := fun  (self : t_i16) (other : t_i16)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_524319232 : Core_Convert.t_From ((t_i16)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_11__f_from := fun  (small : t_i8)=>
-      Build_t__i16_i16 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_1040017337 : Core_Convert.t_From ((t_i8)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_12__f_from := fun  (x : t_i16)=>
-      Build_t__i8_i8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_i16 (a : t_i16) (b : t_i16) : t_i16 :=
-  Build_t__i16_i16 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_i16 (a : t_i16) (b : t_i16) : t_i16 :=
-  Build_t__i16_i16 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_i16 (a : t_i16) (b : t_i16) : t_i16 :=
-  Build_t__i16_i16 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition add_with_overflow_i16 (x : t_i16) (y : t_i16) : (t_i16*bool) :=
-  let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_I16 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__i16_i16 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_i16 (x : t_i16) (y : t_i16) : t_i16 :=
-  Build_t__i16_i16 (Core_Base_interface_Int.I16_I16 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_i16 (x : t_i16) (y : t_i16) : t_i16 :=
-  Build_t__i16_i16 (Core_Base_interface_Int.I16_I16 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_1__MIN : t_i16 :=
-  Build_t__i16_i16 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_1__MAX : t_i16 :=
-  Build_t__i16_i16 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_1__wrapping_add (self : t_i16) (rhs : t_i16) : t_i16 :=
-  wrapping_add_i16 (self) (rhs).
-
-Definition impl_1__wrapping_sub (self : t_i16) (rhs : t_i16) : t_i16 :=
-  wrapping_sub_i16 (self) (rhs).
-
-Instance Core_Clone.t_Clone_259222772 : Core_Clone.t_Clone ((t_i16)) :=
-  {
-    implaabbcc_t_Clone_impl_19__f_clone := fun  (self : t_i16)=>
-      Build_t__i16_i16 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__i32_i32_record : Type :=
-  {
-    Build_t__i32_i32_0 : Core_Base_interface_Int.t_I32;
-  }.
-
-
-#[export] Instance settable_Build_t__i32_i32_record : Settable _ :=
-  settable! (Build_Build_t__i32_i32_record) <Build_t__i32_i32_0>.
-Notation "'Build_t__i32_i32_record'" := Build_Build_t__i32_i32_record.
-
-Instance Core_Cmp.t_PartialEq_1036981650 : Core_Cmp.t_PartialEq ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_PartialEq_impl_9__f_eq := fun  (self : t_i32) (other : t_i32)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_9__f_ne := fun  (self : t_i32) (other : t_i32)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_849966876 : Core_Cmp.t_Eq ((t_i32)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_610304260 : Core_Cmp.t_PartialOrd ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_42__f_partial_cmp := fun  (self : t_i32) (other : t_i32)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_42__f_lt := fun  (self : t_i32) (other : t_i32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_42__f_le := fun  (self : t_i32) (other : t_i32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_42__f_ge := fun  (self : t_i32) (other : t_i32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_42__f_gt := fun  (self : t_i32) (other : t_i32)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_5469414 : Core_Cmp.t_Ord ((t_i32)) :=
-  {
-    implaabbcc_t_Ord_impl_43__f_cmp := fun  (self : t_i32) (other : t_i32)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_304822956 : Core_Convert.t_From ((t_i32)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_12__f_from := fun  (small : t_i8)=>
-      Build_t__i32_i32 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_268015982 : Core_Convert.t_From ((t_i32)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_16__f_from := fun  (small : t_i16)=>
-      Build_t__i32_i32 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_846467833 : Core_Convert.t_From ((t_i8)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_13__f_from := fun  (x : t_i32)=>
-      Build_t__i8_i8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_102012354 : Core_Convert.t_From ((t_i16)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_14__f_from := fun  (x : t_i32)=>
-      Build_t__i16_i16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_i32 (a : t_i32) (b : t_i32) : t_i32 :=
-  Build_t__i32_i32 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_i32 (a : t_i32) (b : t_i32) : t_i32 :=
-  Build_t__i32_i32 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_i32 (a : t_i32) (b : t_i32) : t_i32 :=
-  Build_t__i32_i32 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition add_with_overflow_i32 (x : t_i32) (y : t_i32) : (t_i32*bool) :=
-  let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_I32 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__i32_i32 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_i32 (x : t_i32) (y : t_i32) : t_i32 :=
-  Build_t__i32_i32 (Core_Base_interface_Int.I32_I32 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_i32 (x : t_i32) (y : t_i32) : t_i32 :=
-  Build_t__i32_i32 (Core_Base_interface_Int.I32_I32 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_2__MIN : t_i32 :=
-  Build_t__i32_i32 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_2__MAX : t_i32 :=
-  Build_t__i32_i32 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_2__wrapping_add (self : t_i32) (rhs : t_i32) : t_i32 :=
-  wrapping_add_i32 (self) (rhs).
-
-Definition impl_2__wrapping_sub (self : t_i32) (rhs : t_i32) : t_i32 :=
-  wrapping_sub_i32 (self) (rhs).
-
-Instance Core_Clone.t_Clone_298598276 : Core_Clone.t_Clone ((t_i32)) :=
-  {
-    implaabbcc_t_Clone_impl_21__f_clone := fun  (self : t_i32)=>
-      Build_t__i32_i32 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__i64_i64_record : Type :=
-  {
-    Build_t__i64_i64_0 : Core_Base_interface_Int.t_I64;
-  }.
-
-
-#[export] Instance settable_Build_t__i64_i64_record : Settable _ :=
-  settable! (Build_Build_t__i64_i64_record) <Build_t__i64_i64_0>.
-Notation "'Build_t__i64_i64_record'" := Build_Build_t__i64_i64_record.
-
-Instance Core_Cmp.t_PartialEq_127778810 : Core_Cmp.t_PartialEq ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_PartialEq_impl_10__f_eq := fun  (self : t_i64) (other : t_i64)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_10__f_ne := fun  (self : t_i64) (other : t_i64)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_815470828 : Core_Cmp.t_Eq ((t_i64)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_1055114132 : Core_Cmp.t_PartialOrd ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_44__f_partial_cmp := fun  (self : t_i64) (other : t_i64)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_44__f_lt := fun  (self : t_i64) (other : t_i64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_44__f_le := fun  (self : t_i64) (other : t_i64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_44__f_ge := fun  (self : t_i64) (other : t_i64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_44__f_gt := fun  (self : t_i64) (other : t_i64)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_842602788 : Core_Cmp.t_Ord ((t_i64)) :=
-  {
-    implaabbcc_t_Ord_impl_45__f_cmp := fun  (self : t_i64) (other : t_i64)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_874857878 : Core_Convert.t_From ((t_i64)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_13__f_from := fun  (small : t_i8)=>
-      Build_t__i64_i64 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_649210204 : Core_Convert.t_From ((t_i64)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_17__f_from := fun  (small : t_i16)=>
-      Build_t__i64_i64 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_112011769 : Core_Convert.t_From ((t_i64)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_19__f_from := fun  (small : t_i32)=>
-      Build_t__i64_i64 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_613781257 : Core_Convert.t_From ((t_i8)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_15__f_from := fun  (x : t_i64)=>
-      Build_t__i8_i8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_611942225 : Core_Convert.t_From ((t_i16)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_16__f_from := fun  (x : t_i64)=>
-      Build_t__i16_i16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_1037946787 : Core_Convert.t_From ((t_i32)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_17__f_from := fun  (x : t_i64)=>
-      Build_t__i32_i32 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_i64 (a : t_i64) (b : t_i64) : t_i64 :=
-  Build_t__i64_i64 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_i64 (a : t_i64) (b : t_i64) : t_i64 :=
-  Build_t__i64_i64 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_i64 (a : t_i64) (b : t_i64) : t_i64 :=
-  Build_t__i64_i64 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition add_with_overflow_i64 (x : t_i64) (y : t_i64) : (t_i64*bool) :=
-  let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_I64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__i64_i64 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_i64 (x : t_i64) (y : t_i64) : t_i64 :=
-  Build_t__i64_i64 (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_i64 (x : t_i64) (y : t_i64) : t_i64 :=
-  Build_t__i64_i64 (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_3__MIN : t_i64 :=
-  Build_t__i64_i64 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_3__MAX : t_i64 :=
-  Build_t__i64_i64 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_3__wrapping_add (self : t_i64) (rhs : t_i64) : t_i64 :=
-  wrapping_add_i64 (self) (rhs).
-
-Definition impl_3__wrapping_sub (self : t_i64) (rhs : t_i64) : t_i64 :=
-  wrapping_sub_i64 (self) (rhs).
-
-Instance Core_Clone.t_Clone_1059640082 : Core_Clone.t_Clone ((t_i64)) :=
-  {
-    implaabbcc_t_Clone_impl_23__f_clone := fun  (self : t_i64)=>
-      Build_t__i64_i64 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__i128_i128_record : Type :=
-  {
-    Build_t__i128_i128_0 : Core_Base_interface_Int.t_I128;
-  }.
-
-
-#[export] Instance settable_Build_t__i128_i128_record : Settable _ :=
-  settable! (Build_Build_t__i128_i128_record) <Build_t__i128_i128_0>.
-Notation "'Build_t__i128_i128_record'" := Build_Build_t__i128_i128_record.
-
-Instance Core_Cmp.t_PartialEq_97159446 : Core_Cmp.t_PartialEq ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_PartialEq_impl_11__f_eq := fun  (self : t_i128) (other : t_i128)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_11__f_ne := fun  (self : t_i128) (other : t_i128)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_474315120 : Core_Cmp.t_Eq ((t_i128)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_323266256 : Core_Cmp.t_PartialOrd ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_46__f_partial_cmp := fun  (self : t_i128) (other : t_i128)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_46__f_lt := fun  (self : t_i128) (other : t_i128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_46__f_le := fun  (self : t_i128) (other : t_i128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_46__f_ge := fun  (self : t_i128) (other : t_i128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_46__f_gt := fun  (self : t_i128) (other : t_i128)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_941920678 : Core_Cmp.t_Ord ((t_i128)) :=
-  {
-    implaabbcc_t_Ord_impl_47__f_cmp := fun  (self : t_i128) (other : t_i128)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_858138420 : Core_Convert.t_From ((t_i128)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_14__f_from := fun  (small : t_i8)=>
-      Build_t__i128_i128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_1047430043 : Core_Convert.t_From ((t_i128)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_18__f_from := fun  (small : t_i16)=>
-      Build_t__i128_i128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_933480976 : Core_Convert.t_From ((t_i128)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_20__f_from := fun  (small : t_i32)=>
-      Build_t__i128_i128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_279091303 : Core_Convert.t_From ((t_i128)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_21__f_from := fun  (small : t_i64)=>
-      Build_t__i128_i128 (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_937160527 : Core_Convert.t_From ((t_i8)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_19__f_from := fun  (x : t_i128)=>
-      Build_t__i8_i8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_348302832 : Core_Convert.t_From ((t_i16)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_20__f_from := fun  (x : t_i128)=>
-      Build_t__i16_i16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_376500910 : Core_Convert.t_From ((t_i32)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_21__f_from := fun  (x : t_i128)=>
-      Build_t__i32_i32 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_1032279600 : Core_Convert.t_From ((t_i64)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_22__f_from := fun  (x : t_i128)=>
-      Build_t__i64_i64 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_i128 (a : t_i128) (b : t_i128) : t_i128 :=
-  Build_t__i128_i128 (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_i128 (a : t_i128) (b : t_i128) : t_i128 :=
-  Build_t__i128_i128 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_i128 (a : t_i128) (b : t_i128) : t_i128 :=
-  Build_t__i128_i128 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition add_with_overflow_i128 (x : t_i128) (y : t_i128) : (t_i128*bool) :=
-  let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_I128 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__i128_i128 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_i128 (x : t_i128) (y : t_i128) : t_i128 :=
-  Build_t__i128_i128 (Core_Base_interface_Int.I128_I128 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_i128 (x : t_i128) (y : t_i128) : t_i128 :=
-  Build_t__i128_i128 (Core_Base_interface_Int.I128_I128 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_4__MIN : t_i128 :=
-  Build_t__i128_i128 (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_4__MAX : t_i128 :=
-  Build_t__i128_i128 (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_4__wrapping_add (self : t_i128) (rhs : t_i128) : t_i128 :=
-  wrapping_add_i128 (self) (rhs).
-
-Definition impl_4__wrapping_sub (self : t_i128) (rhs : t_i128) : t_i128 :=
-  wrapping_sub_i128 (self) (rhs).
-
-Instance Core_Clone.t_Clone_951624458 : Core_Clone.t_Clone ((t_i128)) :=
-  {
-    implaabbcc_t_Clone_impl_25__f_clone := fun  (self : t_i128)=>
-      Build_t__i128_i128 (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Build_t__isize_isize_record : Type :=
-  {
-    Build_t__isize_isize_0 : Core_Base_interface_Int.t_I64;
-  }.
-
-
-#[export] Instance settable_Build_t__isize_isize_record : Settable _ :=
-  settable! (Build_Build_t__isize_isize_record) <Build_t__isize_isize_0>.
-Notation "'Build_t__isize_isize_record'" := Build_Build_t__isize_isize_record.
-
-Instance Core_Cmp.t_PartialEq_212108592 : Core_Cmp.t_PartialEq ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_PartialEq_impl_6__f_eq := fun  (self : t_isize) (other : t_isize)=>
-      Core_Cmp.PartialEq__f_eq (0 self) (0 other);
-    implaabbcc_t_PartialEq_impl_6__f_ne := fun  (self : t_isize) (other : t_isize)=>
-      Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other));
-  }.
-
-Instance Core_Cmp.t_Eq_354840521 : Core_Cmp.t_Eq ((t_isize)) :=
-  {
-  }.
-
-Instance Core_Cmp.t_PartialOrd_199151426 : Core_Cmp.t_PartialOrd ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_36__f_partial_cmp := fun  (self : t_isize) (other : t_isize)=>
-      Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other);
-    implaabbcc_t_PartialOrd_impl_36__f_lt := fun  (self : t_isize) (other : t_isize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_36__f_le := fun  (self : t_isize) (other : t_isize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_36__f_ge := fun  (self : t_isize) (other : t_isize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_36__f_gt := fun  (self : t_isize) (other : t_isize)=>
-      match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with
-      | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_Ord_419758853 : Core_Cmp.t_Ord ((t_isize)) :=
-  {
-    implaabbcc_t_Ord_impl_37__f_cmp := fun  (self : t_isize) (other : t_isize)=>
-      Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other));
-  }.
-
-Instance Core_Convert.t_From_582274875 : Core_Convert.t_From ((t_isize)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_15__f_from := fun  (small : t_i8)=>
-      Build_t__isize_isize (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_651733797 : Core_Convert.t_From ((t_isize)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_23__f_from := fun  (small : t_i16)=>
-      Build_t__isize_isize (Core_Convert.Into__f_into (0 small));
-  }.
-
-Instance Core_Convert.t_From_108653157 : Core_Convert.t_From ((t_isize)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_18__f_from := fun  (x : t_i64)=>
-      Build_t__isize_isize (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_222121252 : Core_Convert.t_From ((t_isize)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_23__f_from := fun  (x : t_i128)=>
-      Build_t__isize_isize (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_1048988073 : Core_Convert.t_From ((t_i8)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_24__f_from := fun  (x : t_isize)=>
-      Build_t__i8_i8 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_791634803 : Core_Convert.t_From ((t_i16)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_25__f_from := fun  (x : t_isize)=>
-      Build_t__i16_i16 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_224884538 : Core_Convert.t_From ((t_i32)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_26__f_from := fun  (x : t_isize)=>
-      Build_t__i32_i32 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_594464339 : Core_Convert.t_From ((t_i64)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_27__f_from := fun  (x : t_isize)=>
-      Build_t__i64_i64 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Instance Core_Convert.t_From_829779192 : Core_Convert.t_From ((t_i128)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_28__f_from := fun  (x : t_isize)=>
-      Build_t__i128_i128 (Core_Convert.Into__f_into (0 x));
-  }.
-
-Definition wrapping_add_isize (a : t_isize) (b : t_isize) : t_isize :=
-  Build_t__isize_isize (Core_Ops_Arith.Add__f_add (0 a) (0 b)).
-
-Definition wrapping_sub_isize (a : t_isize) (b : t_isize) : t_isize :=
-  Build_t__isize_isize (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)).
-
-Definition wrapping_mul_isize (a : t_isize) (b : t_isize) : t_isize :=
-  Build_t__isize_isize (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)).
-
-Definition add_with_overflow_isize (x : t_isize) (y : t_isize) : (t_isize*bool) :=
-  let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in
-  let res : Core_Base_interface_Int.t_I64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in
-  (Build_t__isize_isize (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)).
-
-Definition unchecked_div_isize (x : t_isize) (y : t_isize) : t_isize :=
-  Build_t__isize_isize (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition unchecked_add_isize (x : t_isize) (y : t_isize) : t_isize :=
-  Build_t__isize_isize (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))).
-
-Definition impl_5__MIN : t_isize :=
-  Build_t__isize_isize (Core_Base_interface_Int.Constants__f_MIN).
-
-Definition impl_5__MAX : t_isize :=
-  Build_t__isize_isize (Core_Base_interface_Int.Constants__f_MAX).
-
-Definition impl_5__wrapping_add (self : t_isize) (rhs : t_isize) : t_isize :=
-  wrapping_add_isize (self) (rhs).
-
-Definition impl_5__wrapping_sub (self : t_isize) (rhs : t_isize) : t_isize :=
-  wrapping_sub_isize (self) (rhs).
-
-Instance Core_Clone.t_Clone_637867385 : Core_Clone.t_Clone ((t_isize)) :=
-  {
-    implaabbcc_t_Clone_impl_27__f_clone := fun  (self : t_isize)=>
-      Build_t__isize_isize (Core_Clone.Clone__f_clone (0 self));
-  }.
-
-Record Slice_Slice_record (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type :=
-  {
-    Slice_Slice_f_Slice_v : t_Seq ((v_T));
-  }.
-Arguments Build_Slice_Slice_record {_} {_}.
-Arguments Slice_Slice_f_Slice_v {_} {_}.
+  settable! (Build_t_u8) <t_u8_0>.
+(* Notation "'Build_t__u8_u8_record'" := Build_Build_t__u8_u8_record. *)
+
+(* Instance t_PartialEq_65376715 : Core_Cmp.t_PartialEq ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_1__f_eq := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_1__f_ne := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+Instance t_Eq_438293247 : Core_Cmp.t_Eq ((t_u8)) :=
+  {
+  }.
+
+(* Instance t_PartialOrd_810291116 : Core_Cmp.t_PartialOrd ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_26__f_partial_cmp := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_26__f_lt := fun  (self : t_u8) (other : t_u8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_26__f_le := fun  (self : t_u8) (other : t_u8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_26__f_ge := fun  (self : t_u8) (other : t_u8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_26__f_gt := fun  (self : t_u8) (other : t_u8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_874912829 : Core_Cmp.t_Ord ((t_u8)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_27__f_cmp := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Definition wrapping_add_u8 (a : t_u8) (b : t_u8) : t_u8 := *)
+(*   Build_t_u8 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_u8 (a : t_u8) (b : t_u8) : t_u8 := *)
+(*   Build_t__u8_u8 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_u8 (a : t_u8) (b : t_u8) : t_u8 := *)
+(*   Build_t__u8_u8 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition three_way_compare_u8 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u8) (rhs : t_u8) : Core_Cmp.t_Ordering := *)
+(*   Core_Cmp.Ord__f_cmp (lhs) (rhs). *)
+
+(* Definition add_with_overflow_u8 (x : t_u8) (y : t_u8) : (t_u8*bool) := *)
+(*   let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_U8 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__u8_u8 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_u8 (x : t_u8) (y : t_u8) : t_u8 := *)
+(*   Build_t__u8_u8 (Core_Base_interface_Int.U8_U8 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_u8 (x : t_u8) (y : t_u8) : t_u8 := *)
+(*   Build_t__u8_u8 (Core_Base_interface_Int.U8_U8 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_6__MIN : t_u8 := *)
+(*   Build_t__u8_u8 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_6__MAX : t_u8 := *)
+(*   Build_t__u8_u8 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_6__from_le (x : t_u8) : t_u8 := *)
+(*   x. *)
+
+(* Definition impl_6__to_le (self : t_u8) : t_u8 := *)
+(*   self. *)
+
+(* Definition impl_6__checked_add (self : t_u8) (rhs : t_u8) : Core_Option.t_Option ((t_u8)) := *)
+(*   Core_Option.Option_Some (unchecked_add_u8 (self) (rhs)). *)
+
+(* Definition impl_6__wrapping_add (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   wrapping_add_u8 (self) (rhs). *)
+
+(* Definition impl_6__wrapping_sub (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   wrapping_sub_u8 (self) (rhs). *)
+
+(* Definition impl_6__wrapping_mul (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   wrapping_mul_u8 (self) (rhs). *)
+
+(* Definition impl_6__wrapping_neg (self : t_u8) : t_u8 := *)
+(*   impl_6__wrapping_sub (Build_t__u8_u8 (Core_Base_interface_Int.Constants__f_ZERO)) (self). *)
+
+(* Definition impl_6__overflowing_add (self : t_u8) (rhs : t_u8) : (t_u8*bool) := *)
+(*   add_with_overflow_u8 (self) (rhs). *)
+
+(* Instance t_Clone_63118506 : Core_Clone.t_Clone ((t_u8)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_5__f_clone := fun  (self : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_u16 : Type :=
+  {
+    t_u16_0 : Core_Base_interface_Int.t_U16;
+  }.
+
+
+(* #[export] Instance settable_Build_t__u16_u16_record : Settable _ := *)
+(*   settable! (Build_Build_t__u16_u16_record) <Build_t__u16_u16_0>. *)
+(* Notation "'Build_t__u16_u16_record'" := Build_Build_t__u16_u16_record. *)
+
+(* Instance t_PartialEq_135623619 : Core_Cmp.t_PartialEq ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_2__f_eq := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_2__f_ne := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_300707985 : Core_Cmp.t_Eq ((t_u16)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_127792480 : Core_Cmp.t_PartialOrd ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_28__f_partial_cmp := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_28__f_lt := fun  (self : t_u16) (other : t_u16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_28__f_le := fun  (self : t_u16) (other : t_u16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_28__f_ge := fun  (self : t_u16) (other : t_u16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_28__f_gt := fun  (self : t_u16) (other : t_u16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_146704218 : Core_Cmp.t_Ord ((t_u16)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_29__f_cmp := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_200763843 : Core_Convert.t_From ((t_u16)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (small : t_u8)=> *)
+(*       Build_t__u16_u16 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_915843081 : Core_Convert.t_From ((t_u8)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_12__f_from := fun  (x : t_u16)=> *)
+(*       Build_t__u8_u8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_u16 (a : t_u16) (b : t_u16) : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_u16 (a : t_u16) (b : t_u16) : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_u16 (a : t_u16) (b : t_u16) : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition three_way_compare_u16 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u16) (rhs : t_u16) : Core_Cmp.t_Ordering := *)
+(*   Core_Cmp.Ord__f_cmp (lhs) (rhs). *)
+
+(* Definition add_with_overflow_u16 (x : t_u16) (y : t_u16) : (t_u16*bool) := *)
+(*   let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_U16 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__u16_u16 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_u16 (x : t_u16) (y : t_u16) : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Base_interface_Int.U16_U16 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_u16 (x : t_u16) (y : t_u16) : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Base_interface_Int.U16_U16 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_7__MIN : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_7__MAX : t_u16 := *)
+(*   Build_t__u16_u16 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_7__from_le (x : t_u16) : t_u16 := *)
+(*   x. *)
+
+(* Definition impl_7__to_le (self : t_u16) : t_u16 := *)
+(*   self. *)
+
+(* Definition impl_7__checked_add (self : t_u16) (rhs : t_u16) : Core_Option.t_Option ((t_u16)) := *)
+(*   Core_Option.Option_Some (unchecked_add_u16 (self) (rhs)). *)
+
+(* Definition impl_7__wrapping_add (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   wrapping_add_u16 (self) (rhs). *)
+
+(* Definition impl_7__wrapping_sub (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   wrapping_sub_u16 (self) (rhs). *)
+
+(* Definition impl_7__wrapping_mul (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   wrapping_mul_u16 (self) (rhs). *)
+
+(* Definition impl_7__wrapping_neg (self : t_u16) : t_u16 := *)
+(*   impl_7__wrapping_sub (Build_t__u16_u16 (Core_Base_interface_Int.Constants__f_ZERO)) (self). *)
+
+(* Definition impl_7__overflowing_add (self : t_u16) (rhs : t_u16) : (t_u16*bool) := *)
+(*   add_with_overflow_u16 (self) (rhs). *)
+
+(* Instance t_Clone_682346410 : Core_Clone.t_Clone ((t_u16)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_7__f_clone := fun  (self : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_u32 : Type :=
+  {
+    t_u32_0 : Core_Base_interface_Int.t_U32;
+  }.
+
+
+(* #[export] Instance settable_Build_t__u32_u32_record : Settable _ := *)
+(*   settable! (Build_Build_t__u32_u32_record) <Build_t__u32_u32_0>. *)
+(* Notation "'Build_t__u32_u32_record'" := Build_Build_t__u32_u32_record. *)
+
+(* Instance t_PartialEq_222334941 : Core_Cmp.t_PartialEq ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_3__f_eq := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_3__f_ne := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_500049768 : Core_Cmp.t_Eq ((t_u32)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_119362547 : Core_Cmp.t_PartialOrd ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_30__f_partial_cmp := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_30__f_lt := fun  (self : t_u32) (other : t_u32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_30__f_le := fun  (self : t_u32) (other : t_u32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_30__f_ge := fun  (self : t_u32) (other : t_u32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_30__f_gt := fun  (self : t_u32) (other : t_u32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_207671765 : Core_Cmp.t_Ord ((t_u32)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_31__f_cmp := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_825461097 : Core_Convert.t_From ((t_u32)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_1__f_from := fun  (small : t_u8)=> *)
+(*       Build_t__u32_u32 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_323529564 : Core_Convert.t_From ((t_u32)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_5__f_from := fun  (small : t_u16)=> *)
+(*       Build_t__u32_u32 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_280971665 : Core_Convert.t_From ((t_u8)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_13__f_from := fun  (x : t_u32)=> *)
+(*       Build_t__u8_u8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_729180779 : Core_Convert.t_From ((t_u16)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_14__f_from := fun  (x : t_u32)=> *)
+(*       Build_t__u16_u16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_u32 (a : t_u32) (b : t_u32) : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_u32 (a : t_u32) (b : t_u32) : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_u32 (a : t_u32) (b : t_u32) : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition three_way_compare_u32 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u32) (rhs : t_u32) : Core_Cmp.t_Ordering := *)
+(*   Core_Cmp.Ord__f_cmp (lhs) (rhs). *)
+
+(* Definition add_with_overflow_u32 (x : t_u32) (y : t_u32) : (t_u32*bool) := *)
+(*   let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_U32 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__u32_u32 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_u32 (x : t_u32) (y : t_u32) : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.U32_U32 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_u32 (x : t_u32) (y : t_u32) : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.U32_U32 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_149__BITS). *)
+
+(* Definition impl_1__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_122__BITS). *)
+
+(* Definition impl_2__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_95__BITS). *)
+
+(* Definition impl_3__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_68__BITS). *)
+
+(* Definition impl_4__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_41__BITS). *)
+
+(* Definition impl_5__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_68__BITS). *)
+
+(* Definition impl_6__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_284__BITS). *)
+
+(* Definition impl_7__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_257__BITS). *)
+
+(* Definition impl_8__MIN : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_8__MAX : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_8__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_230__BITS). *)
+
+(* Definition impl_8__from_le (x : t_u32) : t_u32 := *)
+(*   x. *)
+
+(* Definition impl_8__to_le (self : t_u32) : t_u32 := *)
+(*   self. *)
+
+(* Definition impl_8__checked_add (self : t_u32) (rhs : t_u32) : Core_Option.t_Option ((t_u32)) := *)
+(*   Core_Option.Option_Some (unchecked_add_u32 (self) (rhs)). *)
+
+(* Definition impl_8__wrapping_add (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   wrapping_add_u32 (self) (rhs). *)
+
+(* Definition impl_8__wrapping_sub (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   wrapping_sub_u32 (self) (rhs). *)
+
+(* Definition impl_8__wrapping_mul (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   wrapping_mul_u32 (self) (rhs). *)
+
+(* Definition impl_8__wrapping_neg (self : t_u32) : t_u32 := *)
+(*   impl_8__wrapping_sub (Build_t__u32_u32 (Core_Base_interface_Int.Constants__f_ZERO)) (self). *)
+
+(* Definition impl_8__overflowing_add (self : t_u32) (rhs : t_u32) : (t_u32*bool) := *)
+(*   add_with_overflow_u32 (self) (rhs). *)
+
+(* Definition impl_9__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_203__BITS). *)
+
+(* Definition impl_10__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_176__BITS). *)
+
+(* Definition impl_11__BITS : t_u32 := *)
+(*   Build_t__u32_u32 (Core_Base_interface_Int.impl_203__BITS). *)
+
+(* Instance t_Clone_716919478 : Core_Clone.t_Clone ((t_u32)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_9__f_clone := fun  (self : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_u64 : Type :=
+  {
+    t_u64_0 : Core_Base_interface_Int.t_U64;
+  }.
+
+
+(* #[export] Instance settable_Build_t__u64_u64_record : Settable _ := *)
+(*   settable! (Build_Build_t__u64_u64_record) <Build_t__u64_u64_0>. *)
+(* Notation "'Build_t__u64_u64_record'" := Build_Build_t__u64_u64_record. *)
+
+(* Instance t_PartialEq_698876183 : Core_Cmp.t_PartialEq ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_4__f_eq := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_4__f_ne := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_836077972 : Core_Cmp.t_Eq ((t_u64)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_62313665 : Core_Cmp.t_PartialOrd ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_32__f_partial_cmp := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_32__f_lt := fun  (self : t_u64) (other : t_u64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_32__f_le := fun  (self : t_u64) (other : t_u64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_32__f_ge := fun  (self : t_u64) (other : t_u64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_32__f_gt := fun  (self : t_u64) (other : t_u64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_106529917 : Core_Cmp.t_Ord ((t_u64)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_33__f_cmp := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_1048234506 : Core_Convert.t_From ((t_u64)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_2__f_from := fun  (small : t_u8)=> *)
+(*       Build_t__u64_u64 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_383321967 : Core_Convert.t_From ((t_u64)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_6__f_from := fun  (small : t_u16)=> *)
+(*       Build_t__u64_u64 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_664380061 : Core_Convert.t_From ((t_u64)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_8__f_from := fun  (small : t_u32)=> *)
+(*       Build_t__u64_u64 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_310071588 : Core_Convert.t_From ((t_u8)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_16__f_from := fun  (x : t_u64)=> *)
+(*       Build_t__u8_u8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_266045733 : Core_Convert.t_From ((t_u16)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_17__f_from := fun  (x : t_u64)=> *)
+(*       Build_t__u16_u16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_186232571 : Core_Convert.t_From ((t_u32)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_18__f_from := fun  (x : t_u64)=> *)
+(*       Build_t__u32_u32 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_u64 (a : t_u64) (b : t_u64) : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_u64 (a : t_u64) (b : t_u64) : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_u64 (a : t_u64) (b : t_u64) : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition three_way_compare_u64 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u64) (rhs : t_u64) : Core_Cmp.t_Ordering := *)
+(*   Core_Cmp.Ord__f_cmp (lhs) (rhs). *)
+
+(* Definition add_with_overflow_u64 (x : t_u64) (y : t_u64) : (t_u64*bool) := *)
+(*   let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_U64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__u64_u64 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_u64 (x : t_u64) (y : t_u64) : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_u64 (x : t_u64) (y : t_u64) : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_9__MIN : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_9__MAX : t_u64 := *)
+(*   Build_t__u64_u64 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_9__from_le (x : t_u64) : t_u64 := *)
+(*   x. *)
+
+(* Definition impl_9__to_le (self : t_u64) : t_u64 := *)
+(*   self. *)
+
+(* Definition impl_9__checked_add (self : t_u64) (rhs : t_u64) : Core_Option.t_Option ((t_u64)) := *)
+(*   Core_Option.Option_Some (unchecked_add_u64 (self) (rhs)). *)
+
+(* Definition impl_9__wrapping_add (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   wrapping_add_u64 (self) (rhs). *)
+
+(* Definition impl_9__wrapping_sub (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   wrapping_sub_u64 (self) (rhs). *)
+
+(* Definition impl_9__wrapping_mul (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   wrapping_mul_u64 (self) (rhs). *)
+
+(* Definition impl_9__wrapping_neg (self : t_u64) : t_u64 := *)
+(*   impl_9__wrapping_sub (Build_t__u64_u64 (Core_Base_interface_Int.Constants__f_ZERO)) (self). *)
+
+(* Definition impl_9__overflowing_add (self : t_u64) (rhs : t_u64) : (t_u64*bool) := *)
+(*   add_with_overflow_u64 (self) (rhs). *)
+
+(* Instance t_Clone_495279431 : Core_Clone.t_Clone ((t_u64)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_11__f_clone := fun  (self : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_u128 : Type :=
+  {
+    t_u128_0 : Core_Base_interface_Int.t_U128;
+  }.
+
+
+(* #[export] Instance settable_Build_t__u128_u128_record : Settable _ := *)
+(*   settable! (Build_Build_t__u128_u128_record) <Build_t__u128_u128_0>. *)
+(* Notation "'Build_t__u128_u128_record'" := Build_Build_t__u128_u128_record. *)
+
+(* Instance t_PartialEq_593791874 : Core_Cmp.t_PartialEq ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_5__f_eq := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_5__f_ne := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_684733949 : Core_Cmp.t_Eq ((t_u128)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_191034703 : Core_Cmp.t_PartialOrd ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_34__f_partial_cmp := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_34__f_lt := fun  (self : t_u128) (other : t_u128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_34__f_le := fun  (self : t_u128) (other : t_u128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_34__f_ge := fun  (self : t_u128) (other : t_u128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_34__f_gt := fun  (self : t_u128) (other : t_u128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_122134072 : Core_Cmp.t_Ord ((t_u128)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_35__f_cmp := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_209943810 : Core_Convert.t_From ((t_u128)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_3__f_from := fun  (small : t_u8)=> *)
+(*       Build_t__u128_u128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_623156147 : Core_Convert.t_From ((t_u128)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_7__f_from := fun  (small : t_u16)=> *)
+(*       Build_t__u128_u128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_700116453 : Core_Convert.t_From ((t_u128)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_9__f_from := fun  (small : t_u32)=> *)
+(*       Build_t__u128_u128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_481902408 : Core_Convert.t_From ((t_u128)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_10__f_from := fun  (small : t_u64)=> *)
+(*       Build_t__u128_u128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_919042308 : Core_Convert.t_From ((t_u8)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_20__f_from := fun  (x : t_u128)=> *)
+(*       Build_t__u8_u8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_412368669 : Core_Convert.t_From ((t_u16)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_21__f_from := fun  (x : t_u128)=> *)
+(*       Build_t__u16_u16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_63055626 : Core_Convert.t_From ((t_u32)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_22__f_from := fun  (x : t_u128)=> *)
+(*       Build_t__u32_u32 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_476352782 : Core_Convert.t_From ((t_u64)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_23__f_from := fun  (x : t_u128)=> *)
+(*       Build_t__u64_u64 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_u128 (a : t_u128) (b : t_u128) : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_u128 (a : t_u128) (b : t_u128) : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_u128 (a : t_u128) (b : t_u128) : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition three_way_compare_u128 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_u128) (rhs : t_u128) : Core_Cmp.t_Ordering := *)
+(*   Core_Cmp.Ord__f_cmp (lhs) (rhs). *)
+
+(* Definition add_with_overflow_u128 (x : t_u128) (y : t_u128) : (t_u128*bool) := *)
+(*   let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_U128 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__u128_u128 (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_u128 (x : t_u128) (y : t_u128) : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Base_interface_Int.U128_U128 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_u128 (x : t_u128) (y : t_u128) : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Base_interface_Int.U128_U128 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_10__MIN : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_10__MAX : t_u128 := *)
+(*   Build_t__u128_u128 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_10__from_le (x : t_u128) : t_u128 := *)
+(*   x. *)
+
+(* Definition impl_10__to_le (self : t_u128) : t_u128 := *)
+(*   self. *)
+
+(* Definition impl_10__checked_add (self : t_u128) (rhs : t_u128) : Core_Option.t_Option ((t_u128)) := *)
+(*   Core_Option.Option_Some (unchecked_add_u128 (self) (rhs)). *)
+
+(* Definition impl_10__wrapping_add (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   wrapping_add_u128 (self) (rhs). *)
+
+(* Definition impl_10__wrapping_sub (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   wrapping_sub_u128 (self) (rhs). *)
+
+(* Definition impl_10__wrapping_mul (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   wrapping_mul_u128 (self) (rhs). *)
+
+(* Definition impl_10__wrapping_neg (self : t_u128) : t_u128 := *)
+(*   impl_10__wrapping_sub (Build_t__u128_u128 (Core_Base_interface_Int.Constants__f_ZERO)) (self). *)
+
+(* Definition impl_10__overflowing_add (self : t_u128) (rhs : t_u128) : (t_u128*bool) := *)
+(*   add_with_overflow_u128 (self) (rhs). *)
+
+(* Instance t_Clone_680974943 : Core_Clone.t_Clone ((t_u128)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_13__f_clone := fun  (self : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_usize : Type :=
+  {
+    t_usize_0 : Core_Base_interface_Int.t_U64;
+  }.
+
+
+(* #[export] Instance settable_Build_t__usize_usize_record : Settable _ := *)
+(*   settable! (Build_Build_t__usize_usize_record) <Build_t__usize_usize_0>. *)
+(* Notation "'Build_t__usize_usize_record'" := Build_Build_t__usize_usize_record. *)
+
+(* Instance t_PartialEq_20401119 : Core_Cmp.t_PartialEq ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_f_eq := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_f_ne := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_1020398107 : Core_Cmp.t_Eq ((t_usize)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_391347786 : Core_Cmp.t_PartialOrd ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_24__f_partial_cmp := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_24__f_lt := fun  (self : t_usize) (other : t_usize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_24__f_le := fun  (self : t_usize) (other : t_usize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_24__f_ge := fun  (self : t_usize) (other : t_usize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_24__f_gt := fun  (self : t_usize) (other : t_usize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_723764915 : Core_Cmp.t_Ord ((t_usize)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_25__f_cmp := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_314414825 : Core_Convert.t_From ((t_usize)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_4__f_from := fun  (small : t_u8)=> *)
+(*       Build_t__usize_usize (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_813671375 : Core_Convert.t_From ((t_usize)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_22__f_from := fun  (small : t_u16)=> *)
+(*       Build_t__usize_usize (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_65917013 : Core_Convert.t_From ((t_usize)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_15__f_from := fun  (x : t_u32)=> *)
+(*       Build_t__usize_usize (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_622871812 : Core_Convert.t_From ((t_usize)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_19__f_from := fun  (x : t_u64)=> *)
+(*       Build_t__usize_usize (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_86009989 : Core_Convert.t_From ((t_usize)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_24__f_from := fun  (x : t_u128)=> *)
+(*       Build_t__usize_usize (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_40539971 : Core_Convert.t_From ((t_u8)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_25__f_from := fun  (x : t_usize)=> *)
+(*       Build_t__u8_u8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_601277894 : Core_Convert.t_From ((t_u16)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_26__f_from := fun  (x : t_usize)=> *)
+(*       Build_t__u16_u16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_900739187 : Core_Convert.t_From ((t_u32)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_27__f_from := fun  (x : t_usize)=> *)
+(*       Build_t__u32_u32 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_1037884731 : Core_Convert.t_From ((t_u64)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_28__f_from := fun  (x : t_usize)=> *)
+(*       Build_t__u64_u64 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_796503562 : Core_Convert.t_From ((t_u128)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_29__f_from := fun  (x : t_usize)=> *)
+(*       Build_t__u128_u128 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_usize (a : t_usize) (b : t_usize) : t_usize := *)
+(*   Build_t__usize_usize (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_usize (a : t_usize) (b : t_usize) : t_usize := *)
+(*   Build_t__usize_usize (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_usize (a : t_usize) (b : t_usize) : t_usize := *)
+(*   Build_t__usize_usize (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition three_way_compare_usize `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} (lhs : t_usize) (rhs : t_usize) : Core_Cmp.t_Ordering := *)
+(*   Core_Cmp.Ord__f_cmp (lhs) (rhs). *)
+
+(* Definition add_with_overflow_usize (x : t_usize) (y : t_usize) : (t_usize*bool) := *)
+(*   let overflow := Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_U64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__usize_usize (Core_Clone.Clone__f_clone (res)),Core_Base_Pos.haxint_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_usize (x : t_usize) (y : t_usize) : t_usize := *)
+(*   Build_t__usize_usize (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_usize (x : t_usize) (y : t_usize) : t_usize := *)
+(*   Build_t__usize_usize (Core_Base_interface_Int.U64_U64 (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_11__MIN : t_usize := *)
+(*   Build_t__usize_usize (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_11__MAX : t_usize := *)
+(*   Build_t__usize_usize (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_11__from_le (x : t_usize) : t_usize := *)
+(*   x. *)
+
+(* Definition impl_11__to_le (self : t_usize) : t_usize := *)
+(*   self. *)
+
+(* Definition impl_11__checked_add (self : t_usize) (rhs : t_usize) : Core_Option.t_Option ((t_usize)) := *)
+(*   Core_Option.Option_Some (unchecked_add_usize (self) (rhs)). *)
+
+(* Definition impl_11__wrapping_add (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   wrapping_add_usize (self) (rhs). *)
+
+(* Definition impl_11__wrapping_sub (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   wrapping_sub_usize (self) (rhs). *)
+
+(* Definition impl_11__wrapping_mul (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   wrapping_mul_usize (self) (rhs). *)
+
+(* Definition impl_11__wrapping_neg (self : t_usize) : t_usize := *)
+(*   impl_11__wrapping_sub (Build_t__usize_usize (Core_Base_interface_Int.Constants__f_ZERO)) (self). *)
+
+(* Definition impl_11__overflowing_add (self : t_usize) (rhs : t_usize) : (t_usize*bool) := *)
+(*   add_with_overflow_usize (self) (rhs). *)
+
+(* Instance t_Clone_195920202 : Core_Clone.t_Clone ((t_usize)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_15__f_clone := fun  (self : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_i8 : Type :=
+  {
+    t_i8_0 : Core_Base_interface_Int.t_I8;
+  }.
+
+
+(* #[export] Instance settable_Build_t__i8_i8_record : Settable _ := *)
+(*   settable! (Build_Build_t__i8_i8_record) <Build_t__i8_i8_0>. *)
+(* Notation "'Build_t__i8_i8_record'" := Build_Build_t__i8_i8_record. *)
+
+(* Instance t_PartialEq_800685930 : Core_Cmp.t_PartialEq ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_7__f_eq := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_7__f_ne := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_532787599 : Core_Cmp.t_Eq ((t_i8)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_734270374 : Core_Cmp.t_PartialOrd ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_38__f_partial_cmp := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_38__f_lt := fun  (self : t_i8) (other : t_i8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_38__f_le := fun  (self : t_i8) (other : t_i8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_38__f_ge := fun  (self : t_i8) (other : t_i8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_38__f_gt := fun  (self : t_i8) (other : t_i8)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_181371211 : Core_Cmp.t_Ord ((t_i8)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_39__f_cmp := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Definition wrapping_add_i8 (a : t_i8) (b : t_i8) : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_i8 (a : t_i8) (b : t_i8) : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_i8 (a : t_i8) (b : t_i8) : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition add_with_overflow_i8 (x : t_i8) (y : t_i8) : (t_i8*bool) := *)
+(*   let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_I8 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__i8_i8 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_i8 (x : t_i8) (y : t_i8) : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Base_interface_Int.I8_I8 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_i8 (x : t_i8) (y : t_i8) : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Base_interface_Int.I8_I8 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl__MIN : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl__MAX : t_i8 := *)
+(*   Build_t__i8_i8 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl__wrapping_add (self : t_i8) (rhs : t_i8) : t_i8 := *)
+(*   wrapping_add_i8 (self) (rhs). *)
+
+(* Definition impl__wrapping_sub (self : t_i8) (rhs : t_i8) : t_i8 := *)
+(*   wrapping_sub_i8 (self) (rhs). *)
+
+(* Instance t_Clone_1057953267 : Core_Clone.t_Clone ((t_i8)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_17__f_clone := fun  (self : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_i16 : Type :=
+  {
+    t_i16_0 : Core_Base_interface_Int.t_I16;
+  }.
+
+
+(* #[export] Instance settable_Build_t__i16_i16_record : Settable _ := *)
+(*   settable! (Build_Build_t__i16_i16_record) <Build_t__i16_i16_0>. *)
+(* Notation "'Build_t__i16_i16_record'" := Build_Build_t__i16_i16_record. *)
+
+(* Instance t_PartialEq_534440819 : Core_Cmp.t_PartialEq ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_8__f_eq := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_8__f_ne := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_124900064 : Core_Cmp.t_Eq ((t_i16)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_492791700 : Core_Cmp.t_PartialOrd ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_40__f_partial_cmp := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_40__f_lt := fun  (self : t_i16) (other : t_i16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_40__f_le := fun  (self : t_i16) (other : t_i16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_40__f_ge := fun  (self : t_i16) (other : t_i16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_40__f_gt := fun  (self : t_i16) (other : t_i16)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_281318505 : Core_Cmp.t_Ord ((t_i16)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_41__f_cmp := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_524319232 : Core_Convert.t_From ((t_i16)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_11__f_from := fun  (small : t_i8)=> *)
+(*       Build_t__i16_i16 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_1040017337 : Core_Convert.t_From ((t_i8)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_12__f_from := fun  (x : t_i16)=> *)
+(*       Build_t__i8_i8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_i16 (a : t_i16) (b : t_i16) : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_i16 (a : t_i16) (b : t_i16) : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_i16 (a : t_i16) (b : t_i16) : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition add_with_overflow_i16 (x : t_i16) (y : t_i16) : (t_i16*bool) := *)
+(*   let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_I16 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__i16_i16 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_i16 (x : t_i16) (y : t_i16) : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Base_interface_Int.I16_I16 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_i16 (x : t_i16) (y : t_i16) : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Base_interface_Int.I16_I16 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_1__MIN : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_1__MAX : t_i16 := *)
+(*   Build_t__i16_i16 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_1__wrapping_add (self : t_i16) (rhs : t_i16) : t_i16 := *)
+(*   wrapping_add_i16 (self) (rhs). *)
+
+(* Definition impl_1__wrapping_sub (self : t_i16) (rhs : t_i16) : t_i16 := *)
+(*   wrapping_sub_i16 (self) (rhs). *)
+
+(* Instance t_Clone_259222772 : Core_Clone.t_Clone ((t_i16)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_19__f_clone := fun  (self : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_i32 : Type :=
+  {
+    t_i32_0 : Core_Base_interface_Int.t_I32;
+  }.
+
+
+(* #[export] Instance settable_Build_t__i32_i32_record : Settable _ := *)
+(*   settable! (Build_Build_t__i32_i32_record) <Build_t__i32_i32_0>. *)
+(* Notation "'Build_t__i32_i32_record'" := Build_Build_t__i32_i32_record. *)
+
+(* Instance t_PartialEq_1036981650 : Core_Cmp.t_PartialEq ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_9__f_eq := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_9__f_ne := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_849966876 : Core_Cmp.t_Eq ((t_i32)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_610304260 : Core_Cmp.t_PartialOrd ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_42__f_partial_cmp := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_42__f_lt := fun  (self : t_i32) (other : t_i32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_42__f_le := fun  (self : t_i32) (other : t_i32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_42__f_ge := fun  (self : t_i32) (other : t_i32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_42__f_gt := fun  (self : t_i32) (other : t_i32)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_5469414 : Core_Cmp.t_Ord ((t_i32)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_43__f_cmp := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_304822956 : Core_Convert.t_From ((t_i32)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_12__f_from := fun  (small : t_i8)=> *)
+(*       Build_t__i32_i32 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_268015982 : Core_Convert.t_From ((t_i32)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_16__f_from := fun  (small : t_i16)=> *)
+(*       Build_t__i32_i32 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_846467833 : Core_Convert.t_From ((t_i8)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_13__f_from := fun  (x : t_i32)=> *)
+(*       Build_t__i8_i8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_102012354 : Core_Convert.t_From ((t_i16)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_14__f_from := fun  (x : t_i32)=> *)
+(*       Build_t__i16_i16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_i32 (a : t_i32) (b : t_i32) : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_i32 (a : t_i32) (b : t_i32) : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_i32 (a : t_i32) (b : t_i32) : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition add_with_overflow_i32 (x : t_i32) (y : t_i32) : (t_i32*bool) := *)
+(*   let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_I32 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__i32_i32 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_i32 (x : t_i32) (y : t_i32) : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Base_interface_Int.I32_I32 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_i32 (x : t_i32) (y : t_i32) : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Base_interface_Int.I32_I32 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_2__MIN : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_2__MAX : t_i32 := *)
+(*   Build_t__i32_i32 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_2__wrapping_add (self : t_i32) (rhs : t_i32) : t_i32 := *)
+(*   wrapping_add_i32 (self) (rhs). *)
+
+(* Definition impl_2__wrapping_sub (self : t_i32) (rhs : t_i32) : t_i32 := *)
+(*   wrapping_sub_i32 (self) (rhs). *)
+
+(* Instance t_Clone_298598276 : Core_Clone.t_Clone ((t_i32)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_21__f_clone := fun  (self : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_i64 : Type :=
+  {
+    t_i64_0 : Core_Base_interface_Int.t_I64;
+  }.
+
+
+(* #[export] Instance settable_Build_t__i64_i64_record : Settable _ := *)
+(*   settable! (Build_Build_t__i64_i64_record) <Build_t__i64_i64_0>. *)
+(* Notation "'Build_t__i64_i64_record'" := Build_Build_t__i64_i64_record. *)
+
+(* Instance t_PartialEq_127778810 : Core_Cmp.t_PartialEq ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_10__f_eq := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_10__f_ne := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_815470828 : Core_Cmp.t_Eq ((t_i64)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_1055114132 : Core_Cmp.t_PartialOrd ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_44__f_partial_cmp := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_44__f_lt := fun  (self : t_i64) (other : t_i64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_44__f_le := fun  (self : t_i64) (other : t_i64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_44__f_ge := fun  (self : t_i64) (other : t_i64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_44__f_gt := fun  (self : t_i64) (other : t_i64)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_842602788 : Core_Cmp.t_Ord ((t_i64)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_45__f_cmp := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_874857878 : Core_Convert.t_From ((t_i64)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_13__f_from := fun  (small : t_i8)=> *)
+(*       Build_t__i64_i64 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_649210204 : Core_Convert.t_From ((t_i64)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_17__f_from := fun  (small : t_i16)=> *)
+(*       Build_t__i64_i64 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_112011769 : Core_Convert.t_From ((t_i64)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_19__f_from := fun  (small : t_i32)=> *)
+(*       Build_t__i64_i64 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_613781257 : Core_Convert.t_From ((t_i8)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_15__f_from := fun  (x : t_i64)=> *)
+(*       Build_t__i8_i8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_611942225 : Core_Convert.t_From ((t_i16)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_16__f_from := fun  (x : t_i64)=> *)
+(*       Build_t__i16_i16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_1037946787 : Core_Convert.t_From ((t_i32)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_17__f_from := fun  (x : t_i64)=> *)
+(*       Build_t__i32_i32 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_i64 (a : t_i64) (b : t_i64) : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_i64 (a : t_i64) (b : t_i64) : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_i64 (a : t_i64) (b : t_i64) : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition add_with_overflow_i64 (x : t_i64) (y : t_i64) : (t_i64*bool) := *)
+(*   let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_I64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__i64_i64 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_i64 (x : t_i64) (y : t_i64) : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_i64 (x : t_i64) (y : t_i64) : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_3__MIN : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_3__MAX : t_i64 := *)
+(*   Build_t__i64_i64 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_3__wrapping_add (self : t_i64) (rhs : t_i64) : t_i64 := *)
+(*   wrapping_add_i64 (self) (rhs). *)
+
+(* Definition impl_3__wrapping_sub (self : t_i64) (rhs : t_i64) : t_i64 := *)
+(*   wrapping_sub_i64 (self) (rhs). *)
+
+(* Instance t_Clone_1059640082 : Core_Clone.t_Clone ((t_i64)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_23__f_clone := fun  (self : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_i128 : Type :=
+  {
+    t_i128_0 : Core_Base_interface_Int.t_I128;
+  }.
+
+
+(* #[export] Instance settable_Build_t__i128_i128_record : Settable _ := *)
+(*   settable! (Build_Build_t__i128_i128_record) <Build_t__i128_i128_0>. *)
+(* Notation "'Build_t__i128_i128_record'" := Build_Build_t__i128_i128_record. *)
+
+(* Instance t_PartialEq_97159446 : Core_Cmp.t_PartialEq ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_11__f_eq := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_11__f_ne := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_474315120 : Core_Cmp.t_Eq ((t_i128)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_323266256 : Core_Cmp.t_PartialOrd ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_46__f_partial_cmp := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_46__f_lt := fun  (self : t_i128) (other : t_i128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_46__f_le := fun  (self : t_i128) (other : t_i128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_46__f_ge := fun  (self : t_i128) (other : t_i128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_46__f_gt := fun  (self : t_i128) (other : t_i128)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_941920678 : Core_Cmp.t_Ord ((t_i128)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_47__f_cmp := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_858138420 : Core_Convert.t_From ((t_i128)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_14__f_from := fun  (small : t_i8)=> *)
+(*       Build_t__i128_i128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_1047430043 : Core_Convert.t_From ((t_i128)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_18__f_from := fun  (small : t_i16)=> *)
+(*       Build_t__i128_i128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_933480976 : Core_Convert.t_From ((t_i128)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_20__f_from := fun  (small : t_i32)=> *)
+(*       Build_t__i128_i128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_279091303 : Core_Convert.t_From ((t_i128)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_21__f_from := fun  (small : t_i64)=> *)
+(*       Build_t__i128_i128 (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_937160527 : Core_Convert.t_From ((t_i8)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_19__f_from := fun  (x : t_i128)=> *)
+(*       Build_t__i8_i8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_348302832 : Core_Convert.t_From ((t_i16)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_20__f_from := fun  (x : t_i128)=> *)
+(*       Build_t__i16_i16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_376500910 : Core_Convert.t_From ((t_i32)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_21__f_from := fun  (x : t_i128)=> *)
+(*       Build_t__i32_i32 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_1032279600 : Core_Convert.t_From ((t_i64)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_22__f_from := fun  (x : t_i128)=> *)
+(*       Build_t__i64_i64 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_i128 (a : t_i128) (b : t_i128) : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_i128 (a : t_i128) (b : t_i128) : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_i128 (a : t_i128) (b : t_i128) : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition add_with_overflow_i128 (x : t_i128) (y : t_i128) : (t_i128*bool) := *)
+(*   let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_I128 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__i128_i128 (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_i128 (x : t_i128) (y : t_i128) : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Base_interface_Int.I128_I128 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_i128 (x : t_i128) (y : t_i128) : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Base_interface_Int.I128_I128 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_4__MIN : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_4__MAX : t_i128 := *)
+(*   Build_t__i128_i128 (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_4__wrapping_add (self : t_i128) (rhs : t_i128) : t_i128 := *)
+(*   wrapping_add_i128 (self) (rhs). *)
+
+(* Definition impl_4__wrapping_sub (self : t_i128) (rhs : t_i128) : t_i128 := *)
+(*   wrapping_sub_i128 (self) (rhs). *)
+
+(* Instance t_Clone_951624458 : Core_Clone.t_Clone ((t_i128)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_25__f_clone := fun  (self : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_isize : Type :=
+  {
+    t_isize_0 : Core_Base_interface_Int.t_I64;
+  }.
+
+
+(* #[export] Instance settable_Build_t__isize_isize_record : Settable _ := *)
+(*   settable! (Build_Build_t__isize_isize_record) <Build_t__isize_isize_0>. *)
+(* Notation "'Build_t__isize_isize_record'" := Build_Build_t__isize_isize_record. *)
+
+(* Instance t_PartialEq_212108592 : Core_Cmp.t_PartialEq ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_6__f_eq := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Core_Cmp.PartialEq__f_eq (0 self) (0 other); *)
+(*     Core_Cmp.PartialEq_impl_6__f_ne := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Core_Ops_Bit.Not__f_not (Core_Cmp.PartialEq__f_eq (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Eq_354840521 : Core_Cmp.t_Eq ((t_isize)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_PartialOrd_199151426 : Core_Cmp.t_PartialOrd ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_36__f_partial_cmp := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other); *)
+(*     Core_Cmp.PartialOrd_impl_36__f_lt := fun  (self : t_isize) (other : t_isize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_36__f_le := fun  (self : t_isize) (other : t_isize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_36__f_ge := fun  (self : t_isize) (other : t_isize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_36__f_gt := fun  (self : t_isize) (other : t_isize)=> *)
+(*       match Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other) with *)
+(*       | Core_Option.Option_Some (Core_Cmp.Ordering_Greater) => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Ord_419758853 : Core_Cmp.t_Ord ((t_isize)) := *)
+(*   { *)
+(*     Core_Cmp.Ord_impl_37__f_cmp := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Core_Option.impl__unwrap (Core_Cmp.PartialOrd__f_partial_cmp (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_From_582274875 : Core_Convert.t_From ((t_isize)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_15__f_from := fun  (small : t_i8)=> *)
+(*       Build_t__isize_isize (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_651733797 : Core_Convert.t_From ((t_isize)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_23__f_from := fun  (small : t_i16)=> *)
+(*       Build_t__isize_isize (Core_Convert.Into__f_into (0 small)); *)
+(*   }. *)
+
+(* Instance t_From_108653157 : Core_Convert.t_From ((t_isize)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_18__f_from := fun  (x : t_i64)=> *)
+(*       Build_t__isize_isize (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_222121252 : Core_Convert.t_From ((t_isize)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_23__f_from := fun  (x : t_i128)=> *)
+(*       Build_t__isize_isize (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_1048988073 : Core_Convert.t_From ((t_i8)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_24__f_from := fun  (x : t_isize)=> *)
+(*       Build_t__i8_i8 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_791634803 : Core_Convert.t_From ((t_i16)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_25__f_from := fun  (x : t_isize)=> *)
+(*       Build_t__i16_i16 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_224884538 : Core_Convert.t_From ((t_i32)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_26__f_from := fun  (x : t_isize)=> *)
+(*       Build_t__i32_i32 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_594464339 : Core_Convert.t_From ((t_i64)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_27__f_from := fun  (x : t_isize)=> *)
+(*       Build_t__i64_i64 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Instance t_From_829779192 : Core_Convert.t_From ((t_i128)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_28__f_from := fun  (x : t_isize)=> *)
+(*       Build_t__i128_i128 (Core_Convert.Into__f_into (0 x)); *)
+(*   }. *)
+
+(* Definition wrapping_add_isize (a : t_isize) (b : t_isize) : t_isize := *)
+(*   Build_t__isize_isize (Core_Ops_Arith.Add__f_add (0 a) (0 b)). *)
+
+(* Definition wrapping_sub_isize (a : t_isize) (b : t_isize) : t_isize := *)
+(*   Build_t__isize_isize (Core_Ops_Arith.Sub__f_sub (0 a) (0 b)). *)
+
+(* Definition wrapping_mul_isize (a : t_isize) (b : t_isize) : t_isize := *)
+(*   Build_t__isize_isize (Core_Ops_Arith.Mul__f_mul (0 a) (0 b)). *)
+
+(* Definition add_with_overflow_isize (x : t_isize) (y : t_isize) : (t_isize*bool) := *)
+(*   let overflow := Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)) in *)
+(*   let res : Core_Base_interface_Int.t_I64 := Core_Base_interface_Coerce.Concretization__f_concretize (Core_Clone.Clone__f_clone (overflow)) in *)
+(*   (Build_t__isize_isize (Core_Clone.Clone__f_clone (res)),Core_Base_Z.z_lt (Core_Base_interface_Coerce.Abstraction__f_lift (res)) (overflow)). *)
+
+(* Definition unchecked_div_isize (x : t_isize) (y : t_isize) : t_isize := *)
+(*   Build_t__isize_isize (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition unchecked_add_isize (x : t_isize) (y : t_isize) : t_isize := *)
+(*   Build_t__isize_isize (Core_Base_interface_Int.I64_I64 (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (0 x)) (Core_Base_interface_Coerce.Abstraction__f_lift (0 y)))). *)
+
+(* Definition impl_5__MIN : t_isize := *)
+(*   Build_t__isize_isize (Core_Base_interface_Int.Constants__f_MIN). *)
+
+(* Definition impl_5__MAX : t_isize := *)
+(*   Build_t__isize_isize (Core_Base_interface_Int.Constants__f_MAX). *)
+
+(* Definition impl_5__wrapping_add (self : t_isize) (rhs : t_isize) : t_isize := *)
+(*   wrapping_add_isize (self) (rhs). *)
+
+(* Definition impl_5__wrapping_sub (self : t_isize) (rhs : t_isize) : t_isize := *)
+(*   wrapping_sub_isize (self) (rhs). *)
+
+(* Instance t_Clone_637867385 : Core_Clone.t_Clone ((t_isize)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_27__f_clone := fun  (self : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Clone.Clone__f_clone (0 self)); *)
+(*   }. *)
+
+Record t_Slice (v_T : Type) `{Core_Marker.t_Sized (v_T)} : Type :=
+  {
+    f_Slice_v : t_Seq ((v_T));
+  }.
+Arguments Build_t_Slice {_} {_}.
+Arguments f_Slice_v {_} {_}.
 #[export] Instance settable_Slice_Slice_record `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : Settable _ :=
-  settable! (Build_Slice_Slice_record (v_T := v_T)) <Slice_Slice_f_Slice_v>.
+  settable! (Build_t_Slice (v_T := v_T)) <f_Slice_v>.
 
 
-
-Record Array_Array_record (v_T : Type) (v_N : t_usize) `{Core_Marker.t_Sized (v_T)} : Type :=
+Record t_Array (v_T : Type) (v_N : t_usize) `{Core_Marker.t_Sized (v_T)} : Type :=
   {
-    Array_Array_f_Array_v : t_Slice ((v_T));
+    f_Array_v : t_Slice ((v_T));
   }.
-Arguments Build_Array_Array_record {_} {_} {_}.
-Arguments Array_Array_f_Array_v {_} {_} {_}.
+Arguments Build_t_Array {_} {_} {_}.
+Arguments f_Array_v {_} {_} {_}.
 #[export] Instance settable_Array_Array_record `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} : Settable _ :=
-  settable! (Build_Array_Array_record (v_T := v_T) (v_N := v_N)) <Array_Array_f_Array_v>.
-
-Instance Core_Clone.t_Clone_280203255 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Array ((v_T)) (v_N))) :=
-  {
-    implaabbcc_t_Clone_impl_4__f_clone := fun  (self : t_Array ((v_T)) (v_N))=>
-      Array_Array (Core_Clone.Clone__f_clone (f_Array_v self));
-  }.
-
-Instance Core_Convert.t_From_136385924 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_From ((t_Array (v_T) (v_N))) ((t_Array ((v_T)) (v_N))) :=
-  {
-    implaabbcc_t_From_impl_1__f_from := fun  (x : t_Array ((v_T)) (v_N))=>
-      match Core_Convert.TryInto__f_try_into (f_Seq_v f_Slice_v f_Array_v x) with
-      | Core_Result.Result_Ok (x) =>
-        x
-      | _ =>
-        Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_const ([("some error?"%string : string)])))
-      end;
-  }.
-
-Instance Core_Convert.t_From_693883310 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_From ((t_Slice ((v_T)))) ((t_Slice v_T)) :=
-  {
-    implaabbcc_t_From_impl_2__f_from := fun  (x : t_Slice v_T)=>
-      Slice_Slice (Seq_Seq (Alloc_Slice.impl__to_vec (x)));
-  }.
-
-Definition impl_3__cast `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (self : t_Array ((v_T)) (v_N)) : t_Slice ((v_T)) :=
-  f_Array_v self.
-
-TODO: please implement the method `item'_HaxError`
-
-Class t_Sealed (v_Self : Type) : Type :=
-  {
-  }.
-Arguments t_Sealed (_).
-
-Instance t_Sealed_333055463 : t_Sealed ((t_usize)) :=
-  {
-  }.
-
-Instance t_Sealed_559949524 : t_Sealed ((Core_Ops_Range.t_Range ((t_usize)))) :=
-  {
-  }.
-
-Instance t_Sealed_593349583 : t_Sealed ((Core_Ops_Range.t_RangeTo ((t_usize)))) :=
-  {
-  }.
-
-Instance t_Sealed_953301182 : t_Sealed ((Core_Ops_Range.t_RangeFrom ((t_usize)))) :=
-  {
-  }.
-
-Instance t_Sealed_449367833 : t_Sealed ((Core_Ops_Range.t_RangeFull)) :=
-  {
-  }.
-
-Instance t_Sealed_146970483 : t_Sealed ((Core_Ops_Range.t_RangeInclusive ((t_usize)))) :=
-  {
-  }.
-
-Instance t_Sealed_696202684 : t_Sealed ((Core_Ops_Range.t_RangeToInclusive ((t_usize)))) :=
-  {
-  }.
-
-Instance t_Sealed_491368469 : t_Sealed (((Core_Ops_Range.t_Bound ((t_usize))*Core_Ops_Range.t_Bound ((t_usize))))) :=
-  {
-  }.
-
-Instance t_Sealed_665181514 : t_Sealed ((Core_Ops_Index_range.t_IndexRange)) :=
-  {
-  }.
-
-Instance Core_Convert.t_TryFrom_60962407 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} : Core_Convert.t_TryFrom ((t_Array ((v_T)) (v_N))) ((t_Slice ((v_T)))) :=
-  {
-    implaabbcc_t_TryFrom_impl_2__f_Error := t_TryFromSliceError;
-    implaabbcc_t_TryFrom_impl_2__f_try_from := fun  (slice : t_Slice ((v_T)))=>
-      Core_Convert.TryFrom__f_try_from (slice);
-  }.
-
-Fixpoint impl_24__from_u8_binary (x : t_u8) `{Rust_primitives_U128.ne (x) ((0 : t_u8)) = true} : Core_Base_Spec_Binary_Positive.t_Positive :=
-  if
-    Rust_primitives_U128.eq (x) ((1 : t_u8))
-  then
-    Core_Base_Spec_Binary_Positive.xH
-  else
-    if
-      Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u8))) ((0 : t_u8))
-    then
-      Core_Base_Spec_Binary_Positive.xO (impl_24__from_u8_binary (Rust_primitives_U128.div (x) ((2 : t_u8))))
-    else
-      Core_Base_Spec_Binary_Positive.xI (impl_24__from_u8_binary (Rust_primitives_U128.div (x) ((2 : t_u8)))).
-
-Fixpoint impl_24__to_u8_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u8 :=
-  match Core_Base_Spec_Binary_Positive.match_positive (self) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    (1 : t_u8)
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    Rust_primitives_U128.mul (impl_24__to_u8_binary (p)) ((2 : t_u8))
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u8_binary (p)) ((2 : t_u8))) ((1 : t_u8))
-  end.
-
-Fixpoint impl_24__from_u16_binary (x : t_u16) `{Rust_primitives_U128.ne (x) ((0 : t_u16)) = true} : Core_Base_Spec_Binary_Positive.t_Positive :=
-  if
-    Rust_primitives_U128.eq (x) ((1 : t_u16))
-  then
-    Core_Base_Spec_Binary_Positive.xH
-  else
-    if
-      Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u16))) ((0 : t_u16))
-    then
-      Core_Base_Spec_Binary_Positive.xO (impl_24__from_u16_binary (Rust_primitives_U128.div (x) ((2 : t_u16))))
-    else
-      Core_Base_Spec_Binary_Positive.xI (impl_24__from_u16_binary (Rust_primitives_U128.div (x) ((2 : t_u16)))).
-
-Fixpoint impl_24__to_u16_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u16 :=
-  match Core_Base_Spec_Binary_Positive.match_positive (self) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    (1 : t_u16)
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    Rust_primitives_U128.mul (impl_24__to_u16_binary (p)) ((2 : t_u16))
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u16_binary (p)) ((2 : t_u16))) ((1 : t_u16))
-  end.
-
-Fixpoint impl_24__from_u32_binary (x : t_u32) `{Rust_primitives_U128.ne (x) ((0 : t_u32)) = true} : Core_Base_Spec_Binary_Positive.t_Positive :=
-  if
-    Rust_primitives_U128.eq (x) ((1 : t_u32))
-  then
-    Core_Base_Spec_Binary_Positive.xH
-  else
-    if
-      Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u32))) ((0 : t_u32))
-    then
-      Core_Base_Spec_Binary_Positive.xO (impl_24__from_u32_binary (Rust_primitives_U128.div (x) ((2 : t_u32))))
-    else
-      Core_Base_Spec_Binary_Positive.xI (impl_24__from_u32_binary (Rust_primitives_U128.div (x) ((2 : t_u32)))).
-
-Fixpoint impl_24__to_u32_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u32 :=
-  match Core_Base_Spec_Binary_Positive.match_positive (self) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    (1 : t_u32)
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    Rust_primitives_U128.mul (impl_24__to_u32_binary (p)) ((2 : t_u32))
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u32_binary (p)) ((2 : t_u32))) ((1 : t_u32))
-  end.
-
-Fixpoint impl_24__from_u64_binary (x : t_u64) `{Rust_primitives_U128.ne (x) ((0 : t_u64)) = true} : Core_Base_Spec_Binary_Positive.t_Positive :=
-  if
-    Rust_primitives_U128.eq (x) ((1 : t_u64))
-  then
-    Core_Base_Spec_Binary_Positive.xH
-  else
-    if
-      Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u64))) ((0 : t_u64))
-    then
-      Core_Base_Spec_Binary_Positive.xO (impl_24__from_u64_binary (Rust_primitives_U128.div (x) ((2 : t_u64))))
-    else
-      Core_Base_Spec_Binary_Positive.xI (impl_24__from_u64_binary (Rust_primitives_U128.div (x) ((2 : t_u64)))).
-
-Fixpoint impl_24__to_u64_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u64 :=
-  match Core_Base_Spec_Binary_Positive.match_positive (self) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    (1 : t_u64)
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    Rust_primitives_U128.mul (impl_24__to_u64_binary (p)) ((2 : t_u64))
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u64_binary (p)) ((2 : t_u64))) ((1 : t_u64))
-  end.
-
-Fixpoint impl_24__from_u128_binary (x : t_u128) `{Rust_primitives_U128.ne (x) ((0 : t_u128)) = true} : Core_Base_Spec_Binary_Positive.t_Positive :=
-  if
-    Rust_primitives_U128.eq (x) ((1 : t_u128))
-  then
-    Core_Base_Spec_Binary_Positive.xH
-  else
-    if
-      Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u128))) ((0 : t_u128))
-    then
-      Core_Base_Spec_Binary_Positive.xO (impl_24__from_u128_binary (Rust_primitives_U128.div (x) ((2 : t_u128))))
-    else
-      Core_Base_Spec_Binary_Positive.xI (impl_24__from_u128_binary (Rust_primitives_U128.div (x) ((2 : t_u128)))).
-
-Fixpoint impl_24__to_u128_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u128 :=
-  match Core_Base_Spec_Binary_Positive.match_positive (self) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    (1 : t_u128)
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    Rust_primitives_U128.mul (impl_24__to_u128_binary (p)) ((2 : t_u128))
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u128_binary (p)) ((2 : t_u128))) ((1 : t_u128))
-  end.
-
-Fixpoint impl_24__from_usize_binary (x : t_usize) `{Rust_primitives_U128.ne (x) ((0 : t_usize)) = true} : Core_Base_Spec_Binary_Positive.t_Positive :=
-  if
-    Rust_primitives_U128.eq (x) ((1 : t_usize))
-  then
-    Core_Base_Spec_Binary_Positive.xH
-  else
-    if
-      Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_usize))) ((0 : t_usize))
-    then
-      Core_Base_Spec_Binary_Positive.xO (impl_24__from_usize_binary (Rust_primitives_U128.div (x) ((2 : t_usize))))
-    else
-      Core_Base_Spec_Binary_Positive.xI (impl_24__from_usize_binary (Rust_primitives_U128.div (x) ((2 : t_usize)))).
-
-Fixpoint impl_24__to_usize_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_usize :=
-  match Core_Base_Spec_Binary_Positive.match_positive (self) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    (1 : t_usize)
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    Rust_primitives_U128.mul (impl_24__to_usize_binary (p)) ((2 : t_usize))
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_usize_binary (p)) ((2 : t_usize))) ((1 : t_usize))
-  end.
-
-Instance Core_Ops_Arith.t_Neg_458983225 : Core_Ops_Arith.t_Neg ((t_i8)) :=
-  {
-    implaabbcc_t_Neg_impl__f_Output := t_i8;
-    implaabbcc_t_Neg_impl__f_neg := fun  (self : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Arith.Neg__f_neg (0 self));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_391498896 : Core_Ops_Arith.t_Neg ((t_i16)) :=
-  {
-    implaabbcc_t_Neg_impl_1__f_Output := t_i16;
-    implaabbcc_t_Neg_impl_1__f_neg := fun  (self : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Arith.Neg__f_neg (0 self));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_335089866 : Core_Ops_Arith.t_Neg ((t_i32)) :=
-  {
-    implaabbcc_t_Neg_impl_2__f_Output := t_i32;
-    implaabbcc_t_Neg_impl_2__f_neg := fun  (self : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Arith.Neg__f_neg (0 self));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_310163602 : Core_Ops_Arith.t_Neg ((t_i64)) :=
-  {
-    implaabbcc_t_Neg_impl_3__f_Output := t_i64;
-    implaabbcc_t_Neg_impl_3__f_neg := fun  (self : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Arith.Neg__f_neg (0 self));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_561836308 : Core_Ops_Arith.t_Neg ((t_i128)) :=
-  {
-    implaabbcc_t_Neg_impl_4__f_Output := t_i128;
-    implaabbcc_t_Neg_impl_4__f_neg := fun  (self : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Arith.Neg__f_neg (0 self));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_226429037 : Core_Ops_Arith.t_Neg ((t_isize)) :=
-  {
-    implaabbcc_t_Neg_impl_5__f_Output := t_isize;
-    implaabbcc_t_Neg_impl_5__f_neg := fun  (self : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Arith.Neg__f_neg (0 self));
-  }.
-
-Instance Core_Ops_Arith.t_Add_163564448 : Core_Ops_Arith.t_Add ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Add_impl_6__f_Output := t_u8;
-    implaabbcc_t_Add_impl_6__f_add := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_778409526 : Core_Ops_Arith.t_Add ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Add_impl_7__f_Output := t_u16;
-    implaabbcc_t_Add_impl_7__f_add := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_656085397 : Core_Ops_Arith.t_Add ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Add_impl_8__f_Output := t_u32;
-    implaabbcc_t_Add_impl_8__f_add := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_382169722 : Core_Ops_Arith.t_Add ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Add_impl_9__f_Output := t_u64;
-    implaabbcc_t_Add_impl_9__f_add := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_774774984 : Core_Ops_Arith.t_Add ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Add_impl_10__f_Output := t_u128;
-    implaabbcc_t_Add_impl_10__f_add := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_557028235 : Core_Ops_Arith.t_Add ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Add_impl_11__f_Output := t_usize;
-    implaabbcc_t_Add_impl_11__f_add := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_423766827 : Core_Ops_Arith.t_Add ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Add_impl_12__f_Output := t_i8;
-    implaabbcc_t_Add_impl_12__f_add := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_559913541 : Core_Ops_Arith.t_Add ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Add_impl_13__f_Output := t_i16;
-    implaabbcc_t_Add_impl_13__f_add := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_393651638 : Core_Ops_Arith.t_Add ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Add_impl_14__f_Output := t_i32;
-    implaabbcc_t_Add_impl_14__f_add := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_970037768 : Core_Ops_Arith.t_Add ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Add_impl_15__f_Output := t_i64;
-    implaabbcc_t_Add_impl_15__f_add := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_207273596 : Core_Ops_Arith.t_Add ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Add_impl_16__f_Output := t_i128;
-    implaabbcc_t_Add_impl_16__f_add := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Add_100074189 : Core_Ops_Arith.t_Add ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Add_impl_17__f_Output := t_isize;
-    implaabbcc_t_Add_impl_17__f_add := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Arith.Add__f_add (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_881975497 : Core_Ops_Arith.t_Sub ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Sub_impl_18__f_Output := t_u8;
-    implaabbcc_t_Sub_impl_18__f_sub := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_131267277 : Core_Ops_Arith.t_Sub ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Sub_impl_19__f_Output := t_u16;
-    implaabbcc_t_Sub_impl_19__f_sub := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_723285712 : Core_Ops_Arith.t_Sub ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Sub_impl_20__f_Output := t_u32;
-    implaabbcc_t_Sub_impl_20__f_sub := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_984355770 : Core_Ops_Arith.t_Sub ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Sub_impl_21__f_Output := t_u64;
-    implaabbcc_t_Sub_impl_21__f_sub := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_425350993 : Core_Ops_Arith.t_Sub ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Sub_impl_22__f_Output := t_u128;
-    implaabbcc_t_Sub_impl_22__f_sub := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_651230636 : Core_Ops_Arith.t_Sub ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Sub_impl_23__f_Output := t_usize;
-    implaabbcc_t_Sub_impl_23__f_sub := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_523653575 : Core_Ops_Arith.t_Sub ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Sub_impl_24__f_Output := t_i8;
-    implaabbcc_t_Sub_impl_24__f_sub := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_806513589 : Core_Ops_Arith.t_Sub ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Sub_impl_25__f_Output := t_i16;
-    implaabbcc_t_Sub_impl_25__f_sub := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_857810117 : Core_Ops_Arith.t_Sub ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Sub_impl_26__f_Output := t_i32;
-    implaabbcc_t_Sub_impl_26__f_sub := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_970121413 : Core_Ops_Arith.t_Sub ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Sub_impl_27__f_Output := t_i64;
-    implaabbcc_t_Sub_impl_27__f_sub := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_416724147 : Core_Ops_Arith.t_Sub ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Sub_impl_28__f_Output := t_i128;
-    implaabbcc_t_Sub_impl_28__f_sub := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_630146066 : Core_Ops_Arith.t_Sub ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Sub_impl_29__f_Output := t_isize;
-    implaabbcc_t_Sub_impl_29__f_sub := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Arith.Sub__f_sub (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_848701541 : Core_Ops_Arith.t_Mul ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Mul_impl_30__f_Output := t_u8;
-    implaabbcc_t_Mul_impl_30__f_mul := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_25219058 : Core_Ops_Arith.t_Mul ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Mul_impl_31__f_Output := t_u16;
-    implaabbcc_t_Mul_impl_31__f_mul := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_693615511 : Core_Ops_Arith.t_Mul ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Mul_impl_32__f_Output := t_u32;
-    implaabbcc_t_Mul_impl_32__f_mul := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_533399539 : Core_Ops_Arith.t_Mul ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Mul_impl_33__f_Output := t_u64;
-    implaabbcc_t_Mul_impl_33__f_mul := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_26494971 : Core_Ops_Arith.t_Mul ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Mul_impl_34__f_Output := t_u128;
-    implaabbcc_t_Mul_impl_34__f_mul := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_920306108 : Core_Ops_Arith.t_Mul ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Mul_impl_35__f_Output := t_usize;
-    implaabbcc_t_Mul_impl_35__f_mul := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_234085771 : Core_Ops_Arith.t_Mul ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Mul_impl_36__f_Output := t_i8;
-    implaabbcc_t_Mul_impl_36__f_mul := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_905086505 : Core_Ops_Arith.t_Mul ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Mul_impl_37__f_Output := t_i16;
-    implaabbcc_t_Mul_impl_37__f_mul := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_487928150 : Core_Ops_Arith.t_Mul ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Mul_impl_38__f_Output := t_i32;
-    implaabbcc_t_Mul_impl_38__f_mul := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_459208571 : Core_Ops_Arith.t_Mul ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Mul_impl_39__f_Output := t_i64;
-    implaabbcc_t_Mul_impl_39__f_mul := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_33501126 : Core_Ops_Arith.t_Mul ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Mul_impl_40__f_Output := t_i128;
-    implaabbcc_t_Mul_impl_40__f_mul := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_4074258 : Core_Ops_Arith.t_Mul ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Mul_impl_41__f_Output := t_isize;
-    implaabbcc_t_Mul_impl_41__f_mul := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Arith.Mul__f_mul (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_931334788 : Core_Ops_Arith.t_Div ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Div_impl_42__f_Output := t_usize;
-    implaabbcc_t_Div_impl_42__f_div := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_617349534 : Core_Ops_Arith.t_Div ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Div_impl_43__f_Output := t_u8;
-    implaabbcc_t_Div_impl_43__f_div := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_457499033 : Core_Ops_Arith.t_Div ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Div_impl_44__f_Output := t_u16;
-    implaabbcc_t_Div_impl_44__f_div := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_811411375 : Core_Ops_Arith.t_Div ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Div_impl_45__f_Output := t_u32;
-    implaabbcc_t_Div_impl_45__f_div := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_488661846 : Core_Ops_Arith.t_Div ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Div_impl_46__f_Output := t_u64;
-    implaabbcc_t_Div_impl_46__f_div := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_240899356 : Core_Ops_Arith.t_Div ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Div_impl_47__f_Output := t_u128;
-    implaabbcc_t_Div_impl_47__f_div := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_152532073 : Core_Ops_Arith.t_Div ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Div_impl_48__f_Output := t_isize;
-    implaabbcc_t_Div_impl_48__f_div := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_500120844 : Core_Ops_Arith.t_Div ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Div_impl_49__f_Output := t_i8;
-    implaabbcc_t_Div_impl_49__f_div := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_172891911 : Core_Ops_Arith.t_Div ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Div_impl_50__f_Output := t_i16;
-    implaabbcc_t_Div_impl_50__f_div := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_317731517 : Core_Ops_Arith.t_Div ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Div_impl_51__f_Output := t_i32;
-    implaabbcc_t_Div_impl_51__f_div := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_660736826 : Core_Ops_Arith.t_Div ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Div_impl_52__f_Output := t_i64;
-    implaabbcc_t_Div_impl_52__f_div := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Div_377244152 : Core_Ops_Arith.t_Div ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Div_impl_53__f_Output := t_i128;
-    implaabbcc_t_Div_impl_53__f_div := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Arith.Div__f_div (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_803566572 : Core_Ops_Arith.t_Rem ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Rem_impl_54__f_Output := t_usize;
-    implaabbcc_t_Rem_impl_54__f_rem := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_743722603 : Core_Ops_Arith.t_Rem ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Rem_impl_55__f_Output := t_u8;
-    implaabbcc_t_Rem_impl_55__f_rem := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_880026988 : Core_Ops_Arith.t_Rem ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Rem_impl_56__f_Output := t_u16;
-    implaabbcc_t_Rem_impl_56__f_rem := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_25555618 : Core_Ops_Arith.t_Rem ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Rem_impl_57__f_Output := t_u32;
-    implaabbcc_t_Rem_impl_57__f_rem := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_968906586 : Core_Ops_Arith.t_Rem ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Rem_impl_58__f_Output := t_u64;
-    implaabbcc_t_Rem_impl_58__f_rem := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_375327970 : Core_Ops_Arith.t_Rem ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Rem_impl_59__f_Output := t_u128;
-    implaabbcc_t_Rem_impl_59__f_rem := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_622329521 : Core_Ops_Arith.t_Rem ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Rem_impl_60__f_Output := t_isize;
-    implaabbcc_t_Rem_impl_60__f_rem := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_455030026 : Core_Ops_Arith.t_Rem ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Rem_impl_61__f_Output := t_i8;
-    implaabbcc_t_Rem_impl_61__f_rem := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_505105792 : Core_Ops_Arith.t_Rem ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Rem_impl_62__f_Output := t_i16;
-    implaabbcc_t_Rem_impl_62__f_rem := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_628294430 : Core_Ops_Arith.t_Rem ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Rem_impl_63__f_Output := t_i32;
-    implaabbcc_t_Rem_impl_63__f_rem := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_93493223 : Core_Ops_Arith.t_Rem ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Rem_impl_64__f_Output := t_i64;
-    implaabbcc_t_Rem_impl_64__f_rem := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_145124954 : Core_Ops_Arith.t_Rem ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Rem_impl_65__f_Output := t_i128;
-    implaabbcc_t_Rem_impl_65__f_rem := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Not_229315204 : Core_Ops_Bit.t_Not ((t_u8)) :=
-  {
-    implaabbcc_t_Not_impl__f_Output := t_u8;
-    implaabbcc_t_Not_impl__f_not := fun  (self : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_942034783 : Core_Ops_Bit.t_Not ((t_u16)) :=
-  {
-    implaabbcc_t_Not_impl_1__f_Output := t_u16;
-    implaabbcc_t_Not_impl_1__f_not := fun  (self : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_357324864 : Core_Ops_Bit.t_Not ((t_u32)) :=
-  {
-    implaabbcc_t_Not_impl_2__f_Output := t_u32;
-    implaabbcc_t_Not_impl_2__f_not := fun  (self : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_985070921 : Core_Ops_Bit.t_Not ((t_u64)) :=
-  {
-    implaabbcc_t_Not_impl_3__f_Output := t_u64;
-    implaabbcc_t_Not_impl_3__f_not := fun  (self : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_850275208 : Core_Ops_Bit.t_Not ((t_u128)) :=
-  {
-    implaabbcc_t_Not_impl_4__f_Output := t_u128;
-    implaabbcc_t_Not_impl_4__f_not := fun  (self : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_486510241 : Core_Ops_Bit.t_Not ((t_usize)) :=
-  {
-    implaabbcc_t_Not_impl_5__f_Output := t_usize;
-    implaabbcc_t_Not_impl_5__f_not := fun  (self : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_339946088 : Core_Ops_Bit.t_Not ((t_i8)) :=
-  {
-    implaabbcc_t_Not_impl_6__f_Output := t_i8;
-    implaabbcc_t_Not_impl_6__f_not := fun  (self : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_971529715 : Core_Ops_Bit.t_Not ((t_i16)) :=
-  {
-    implaabbcc_t_Not_impl_7__f_Output := t_i16;
-    implaabbcc_t_Not_impl_7__f_not := fun  (self : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_933069850 : Core_Ops_Bit.t_Not ((t_i32)) :=
-  {
-    implaabbcc_t_Not_impl_8__f_Output := t_i32;
-    implaabbcc_t_Not_impl_8__f_not := fun  (self : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_313344644 : Core_Ops_Bit.t_Not ((t_i64)) :=
-  {
-    implaabbcc_t_Not_impl_9__f_Output := t_i64;
-    implaabbcc_t_Not_impl_9__f_not := fun  (self : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_430884737 : Core_Ops_Bit.t_Not ((t_i128)) :=
-  {
-    implaabbcc_t_Not_impl_10__f_Output := t_i128;
-    implaabbcc_t_Not_impl_10__f_not := fun  (self : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Not_991178827 : Core_Ops_Bit.t_Not ((t_isize)) :=
-  {
-    implaabbcc_t_Not_impl_11__f_Output := t_isize;
-    implaabbcc_t_Not_impl_11__f_not := fun  (self : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Bit.Not__f_not (0 self));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_12953330 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shr_impl_12__f_Output := t_u8;
-    implaabbcc_t_Shr_impl_12__f_shr := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_388260343 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shr_impl_13__f_Output := t_u8;
-    implaabbcc_t_Shr_impl_13__f_shr := fun  (self : t_u8) (other : t_u16)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_853130250 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shr_impl_14__f_Output := t_u8;
-    implaabbcc_t_Shr_impl_14__f_shr := fun  (self : t_u8) (other : t_u32)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_431768874 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shr_impl_15__f_Output := t_u8;
-    implaabbcc_t_Shr_impl_15__f_shr := fun  (self : t_u8) (other : t_u64)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_195972813 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shr_impl_16__f_Output := t_u8;
-    implaabbcc_t_Shr_impl_16__f_shr := fun  (self : t_u8) (other : t_u128)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1014708045 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shr_impl_17__f_Output := t_u8;
-    implaabbcc_t_Shr_impl_17__f_shr := fun  (self : t_u8) (other : t_usize)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_523336454 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shr_impl_18__f_Output := t_u16;
-    implaabbcc_t_Shr_impl_18__f_shr := fun  (self : t_u16) (other : t_u8)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_492915920 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shr_impl_19__f_Output := t_u16;
-    implaabbcc_t_Shr_impl_19__f_shr := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_668381950 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shr_impl_20__f_Output := t_u16;
-    implaabbcc_t_Shr_impl_20__f_shr := fun  (self : t_u16) (other : t_u32)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_737796241 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shr_impl_21__f_Output := t_u16;
-    implaabbcc_t_Shr_impl_21__f_shr := fun  (self : t_u16) (other : t_u64)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_274581485 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shr_impl_22__f_Output := t_u16;
-    implaabbcc_t_Shr_impl_22__f_shr := fun  (self : t_u16) (other : t_u128)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_222839051 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shr_impl_23__f_Output := t_u16;
-    implaabbcc_t_Shr_impl_23__f_shr := fun  (self : t_u16) (other : t_usize)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_309330251 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shr_impl_24__f_Output := t_u32;
-    implaabbcc_t_Shr_impl_24__f_shr := fun  (self : t_u32) (other : t_u8)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_786249415 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shr_impl_25__f_Output := t_u32;
-    implaabbcc_t_Shr_impl_25__f_shr := fun  (self : t_u32) (other : t_u16)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_424521487 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shr_impl_26__f_Output := t_u32;
-    implaabbcc_t_Shr_impl_26__f_shr := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_171434466 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shr_impl_27__f_Output := t_u32;
-    implaabbcc_t_Shr_impl_27__f_shr := fun  (self : t_u32) (other : t_u64)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_334275505 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shr_impl_28__f_Output := t_u32;
-    implaabbcc_t_Shr_impl_28__f_shr := fun  (self : t_u32) (other : t_u128)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_924047074 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shr_impl_29__f_Output := t_u32;
-    implaabbcc_t_Shr_impl_29__f_shr := fun  (self : t_u32) (other : t_usize)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_184871209 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shr_impl_30__f_Output := t_u64;
-    implaabbcc_t_Shr_impl_30__f_shr := fun  (self : t_u64) (other : t_u8)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_657280454 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shr_impl_31__f_Output := t_u64;
-    implaabbcc_t_Shr_impl_31__f_shr := fun  (self : t_u64) (other : t_u16)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_669439990 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shr_impl_32__f_Output := t_u64;
-    implaabbcc_t_Shr_impl_32__f_shr := fun  (self : t_u64) (other : t_u32)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_691158071 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shr_impl_33__f_Output := t_u64;
-    implaabbcc_t_Shr_impl_33__f_shr := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_14948994 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shr_impl_34__f_Output := t_u64;
-    implaabbcc_t_Shr_impl_34__f_shr := fun  (self : t_u64) (other : t_u128)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_455206495 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shr_impl_35__f_Output := t_u64;
-    implaabbcc_t_Shr_impl_35__f_shr := fun  (self : t_u64) (other : t_usize)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_564253207 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shr_impl_36__f_Output := t_u128;
-    implaabbcc_t_Shr_impl_36__f_shr := fun  (self : t_u128) (other : t_u8)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_969630543 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shr_impl_37__f_Output := t_u128;
-    implaabbcc_t_Shr_impl_37__f_shr := fun  (self : t_u128) (other : t_u16)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_232283601 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shr_impl_38__f_Output := t_u128;
-    implaabbcc_t_Shr_impl_38__f_shr := fun  (self : t_u128) (other : t_u32)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_124085536 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shr_impl_39__f_Output := t_u128;
-    implaabbcc_t_Shr_impl_39__f_shr := fun  (self : t_u128) (other : t_u64)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_100195117 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shr_impl_40__f_Output := t_u128;
-    implaabbcc_t_Shr_impl_40__f_shr := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_580295078 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shr_impl_41__f_Output := t_u128;
-    implaabbcc_t_Shr_impl_41__f_shr := fun  (self : t_u128) (other : t_usize)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_743095260 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shr_impl_42__f_Output := t_usize;
-    implaabbcc_t_Shr_impl_42__f_shr := fun  (self : t_usize) (other : t_u8)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_533612490 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shr_impl_43__f_Output := t_usize;
-    implaabbcc_t_Shr_impl_43__f_shr := fun  (self : t_usize) (other : t_u16)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_813229059 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shr_impl_44__f_Output := t_usize;
-    implaabbcc_t_Shr_impl_44__f_shr := fun  (self : t_usize) (other : t_u32)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_263955907 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shr_impl_45__f_Output := t_usize;
-    implaabbcc_t_Shr_impl_45__f_shr := fun  (self : t_usize) (other : t_u64)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_922020569 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shr_impl_46__f_Output := t_usize;
-    implaabbcc_t_Shr_impl_46__f_shr := fun  (self : t_usize) (other : t_u128)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_503396695 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shr_impl_47__f_Output := t_usize;
-    implaabbcc_t_Shr_impl_47__f_shr := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_121476011 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shr_impl_48__f_Output := t_i8;
-    implaabbcc_t_Shr_impl_48__f_shr := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_516848929 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shr_impl_49__f_Output := t_i8;
-    implaabbcc_t_Shr_impl_49__f_shr := fun  (self : t_i8) (other : t_i16)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_784891982 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shr_impl_50__f_Output := t_i8;
-    implaabbcc_t_Shr_impl_50__f_shr := fun  (self : t_i8) (other : t_i32)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_577800953 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shr_impl_51__f_Output := t_i8;
-    implaabbcc_t_Shr_impl_51__f_shr := fun  (self : t_i8) (other : t_i64)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_565021556 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shr_impl_52__f_Output := t_i8;
-    implaabbcc_t_Shr_impl_52__f_shr := fun  (self : t_i8) (other : t_i128)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_289749066 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shr_impl_53__f_Output := t_i8;
-    implaabbcc_t_Shr_impl_53__f_shr := fun  (self : t_i8) (other : t_isize)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_344591291 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shr_impl_54__f_Output := t_i16;
-    implaabbcc_t_Shr_impl_54__f_shr := fun  (self : t_i16) (other : t_i8)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_849637205 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shr_impl_55__f_Output := t_i16;
-    implaabbcc_t_Shr_impl_55__f_shr := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_705624838 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shr_impl_56__f_Output := t_i16;
-    implaabbcc_t_Shr_impl_56__f_shr := fun  (self : t_i16) (other : t_i32)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_214389896 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shr_impl_57__f_Output := t_i16;
-    implaabbcc_t_Shr_impl_57__f_shr := fun  (self : t_i16) (other : t_i64)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_336883057 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shr_impl_58__f_Output := t_i16;
-    implaabbcc_t_Shr_impl_58__f_shr := fun  (self : t_i16) (other : t_i128)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_146711596 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shr_impl_59__f_Output := t_i16;
-    implaabbcc_t_Shr_impl_59__f_shr := fun  (self : t_i16) (other : t_isize)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1047625734 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shr_impl_60__f_Output := t_i32;
-    implaabbcc_t_Shr_impl_60__f_shr := fun  (self : t_i32) (other : t_i8)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_510425851 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shr_impl_61__f_Output := t_i32;
-    implaabbcc_t_Shr_impl_61__f_shr := fun  (self : t_i32) (other : t_i16)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_863756152 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shr_impl_62__f_Output := t_i32;
-    implaabbcc_t_Shr_impl_62__f_shr := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_949209119 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shr_impl_63__f_Output := t_i32;
-    implaabbcc_t_Shr_impl_63__f_shr := fun  (self : t_i32) (other : t_i64)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_922072816 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shr_impl_64__f_Output := t_i32;
-    implaabbcc_t_Shr_impl_64__f_shr := fun  (self : t_i32) (other : t_i128)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_752457877 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shr_impl_65__f_Output := t_i32;
-    implaabbcc_t_Shr_impl_65__f_shr := fun  (self : t_i32) (other : t_isize)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1006263577 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shr_impl_66__f_Output := t_i64;
-    implaabbcc_t_Shr_impl_66__f_shr := fun  (self : t_i64) (other : t_i8)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_103862152 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shr_impl_67__f_Output := t_i64;
-    implaabbcc_t_Shr_impl_67__f_shr := fun  (self : t_i64) (other : t_i16)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_400961368 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shr_impl_68__f_Output := t_i64;
-    implaabbcc_t_Shr_impl_68__f_shr := fun  (self : t_i64) (other : t_i32)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_861775823 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shr_impl_69__f_Output := t_i64;
-    implaabbcc_t_Shr_impl_69__f_shr := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_452522790 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shr_impl_70__f_Output := t_i64;
-    implaabbcc_t_Shr_impl_70__f_shr := fun  (self : t_i64) (other : t_i128)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_333354071 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shr_impl_71__f_Output := t_i64;
-    implaabbcc_t_Shr_impl_71__f_shr := fun  (self : t_i64) (other : t_isize)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_432441345 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shr_impl_72__f_Output := t_i128;
-    implaabbcc_t_Shr_impl_72__f_shr := fun  (self : t_i128) (other : t_i8)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_277615905 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shr_impl_73__f_Output := t_i128;
-    implaabbcc_t_Shr_impl_73__f_shr := fun  (self : t_i128) (other : t_i16)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_915182570 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shr_impl_74__f_Output := t_i128;
-    implaabbcc_t_Shr_impl_74__f_shr := fun  (self : t_i128) (other : t_i32)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_494774243 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shr_impl_75__f_Output := t_i128;
-    implaabbcc_t_Shr_impl_75__f_shr := fun  (self : t_i128) (other : t_i64)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_805480385 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shr_impl_76__f_Output := t_i128;
-    implaabbcc_t_Shr_impl_76__f_shr := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_603049588 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shr_impl_77__f_Output := t_i128;
-    implaabbcc_t_Shr_impl_77__f_shr := fun  (self : t_i128) (other : t_isize)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_568611886 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shr_impl_78__f_Output := t_isize;
-    implaabbcc_t_Shr_impl_78__f_shr := fun  (self : t_isize) (other : t_i8)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_586753068 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shr_impl_79__f_Output := t_isize;
-    implaabbcc_t_Shr_impl_79__f_shr := fun  (self : t_isize) (other : t_i16)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_546943333 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shr_impl_80__f_Output := t_isize;
-    implaabbcc_t_Shr_impl_80__f_shr := fun  (self : t_isize) (other : t_i32)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_279387927 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shr_impl_81__f_Output := t_isize;
-    implaabbcc_t_Shr_impl_81__f_shr := fun  (self : t_isize) (other : t_i64)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1068345337 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shr_impl_82__f_Output := t_isize;
-    implaabbcc_t_Shr_impl_82__f_shr := fun  (self : t_isize) (other : t_i128)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_973059419 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shr_impl_83__f_Output := t_isize;
-    implaabbcc_t_Shr_impl_83__f_shr := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1068004004 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shl_impl_84__f_Output := t_u8;
-    implaabbcc_t_Shl_impl_84__f_shl := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_901091219 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shl_impl_85__f_Output := t_u8;
-    implaabbcc_t_Shl_impl_85__f_shl := fun  (self : t_u8) (other : t_u16)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_945857776 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shl_impl_86__f_Output := t_u8;
-    implaabbcc_t_Shl_impl_86__f_shl := fun  (self : t_u8) (other : t_u32)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_664847313 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shl_impl_87__f_Output := t_u8;
-    implaabbcc_t_Shl_impl_87__f_shl := fun  (self : t_u8) (other : t_u64)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_464846274 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shl_impl_88__f_Output := t_u8;
-    implaabbcc_t_Shl_impl_88__f_shl := fun  (self : t_u8) (other : t_u128)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_878244808 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shl_impl_89__f_Output := t_u8;
-    implaabbcc_t_Shl_impl_89__f_shl := fun  (self : t_u8) (other : t_usize)=>
-      Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_903453467 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shl_impl_90__f_Output := t_u16;
-    implaabbcc_t_Shl_impl_90__f_shl := fun  (self : t_u16) (other : t_u8)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_436372147 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shl_impl_91__f_Output := t_u16;
-    implaabbcc_t_Shl_impl_91__f_shl := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_947839621 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shl_impl_92__f_Output := t_u16;
-    implaabbcc_t_Shl_impl_92__f_shl := fun  (self : t_u16) (other : t_u32)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_628241268 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shl_impl_93__f_Output := t_u16;
-    implaabbcc_t_Shl_impl_93__f_shl := fun  (self : t_u16) (other : t_u64)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_424385160 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shl_impl_94__f_Output := t_u16;
-    implaabbcc_t_Shl_impl_94__f_shl := fun  (self : t_u16) (other : t_u128)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_323870545 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shl_impl_95__f_Output := t_u16;
-    implaabbcc_t_Shl_impl_95__f_shl := fun  (self : t_u16) (other : t_usize)=>
-      Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_126393744 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shl_impl_96__f_Output := t_u32;
-    implaabbcc_t_Shl_impl_96__f_shl := fun  (self : t_u32) (other : t_u8)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_656248550 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shl_impl_97__f_Output := t_u32;
-    implaabbcc_t_Shl_impl_97__f_shl := fun  (self : t_u32) (other : t_u16)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_813195779 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shl_impl_98__f_Output := t_u32;
-    implaabbcc_t_Shl_impl_98__f_shl := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_204059698 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shl_impl_99__f_Output := t_u32;
-    implaabbcc_t_Shl_impl_99__f_shl := fun  (self : t_u32) (other : t_u64)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_879986569 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shl_impl_100__f_Output := t_u32;
-    implaabbcc_t_Shl_impl_100__f_shl := fun  (self : t_u32) (other : t_u128)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_833700927 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shl_impl_101__f_Output := t_u32;
-    implaabbcc_t_Shl_impl_101__f_shl := fun  (self : t_u32) (other : t_usize)=>
-      Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_275505642 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shl_impl_102__f_Output := t_u64;
-    implaabbcc_t_Shl_impl_102__f_shl := fun  (self : t_u64) (other : t_u8)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_647895438 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shl_impl_103__f_Output := t_u64;
-    implaabbcc_t_Shl_impl_103__f_shl := fun  (self : t_u64) (other : t_u16)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_477979243 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shl_impl_104__f_Output := t_u64;
-    implaabbcc_t_Shl_impl_104__f_shl := fun  (self : t_u64) (other : t_u32)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_410861524 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shl_impl_105__f_Output := t_u64;
-    implaabbcc_t_Shl_impl_105__f_shl := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_552094963 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shl_impl_106__f_Output := t_u64;
-    implaabbcc_t_Shl_impl_106__f_shl := fun  (self : t_u64) (other : t_u128)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_149556751 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shl_impl_107__f_Output := t_u64;
-    implaabbcc_t_Shl_impl_107__f_shl := fun  (self : t_u64) (other : t_usize)=>
-      Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_304665212 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shl_impl_108__f_Output := t_u128;
-    implaabbcc_t_Shl_impl_108__f_shl := fun  (self : t_u128) (other : t_u8)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_472905058 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shl_impl_109__f_Output := t_u128;
-    implaabbcc_t_Shl_impl_109__f_shl := fun  (self : t_u128) (other : t_u16)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_428941264 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shl_impl_110__f_Output := t_u128;
-    implaabbcc_t_Shl_impl_110__f_shl := fun  (self : t_u128) (other : t_u32)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_914780398 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shl_impl_111__f_Output := t_u128;
-    implaabbcc_t_Shl_impl_111__f_shl := fun  (self : t_u128) (other : t_u64)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_430239094 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shl_impl_112__f_Output := t_u128;
-    implaabbcc_t_Shl_impl_112__f_shl := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_741881122 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shl_impl_113__f_Output := t_u128;
-    implaabbcc_t_Shl_impl_113__f_shl := fun  (self : t_u128) (other : t_usize)=>
-      Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_562088992 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u8)) :=
-  {
-    implaabbcc_t_Shl_impl_114__f_Output := t_usize;
-    implaabbcc_t_Shl_impl_114__f_shl := fun  (self : t_usize) (other : t_u8)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_513485474 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u16)) :=
-  {
-    implaabbcc_t_Shl_impl_115__f_Output := t_usize;
-    implaabbcc_t_Shl_impl_115__f_shl := fun  (self : t_usize) (other : t_u16)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_377785849 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u32)) :=
-  {
-    implaabbcc_t_Shl_impl_116__f_Output := t_usize;
-    implaabbcc_t_Shl_impl_116__f_shl := fun  (self : t_usize) (other : t_u32)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_812786829 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u64)) :=
-  {
-    implaabbcc_t_Shl_impl_117__f_Output := t_usize;
-    implaabbcc_t_Shl_impl_117__f_shl := fun  (self : t_usize) (other : t_u64)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_995341886 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u128)) :=
-  {
-    implaabbcc_t_Shl_impl_118__f_Output := t_usize;
-    implaabbcc_t_Shl_impl_118__f_shl := fun  (self : t_usize) (other : t_u128)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_175679910 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_Shl_impl_119__f_Output := t_usize;
-    implaabbcc_t_Shl_impl_119__f_shl := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_226835388 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shl_impl_120__f_Output := t_i8;
-    implaabbcc_t_Shl_impl_120__f_shl := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_952919099 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shl_impl_121__f_Output := t_i8;
-    implaabbcc_t_Shl_impl_121__f_shl := fun  (self : t_i8) (other : t_i16)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_112318712 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shl_impl_122__f_Output := t_i8;
-    implaabbcc_t_Shl_impl_122__f_shl := fun  (self : t_i8) (other : t_i32)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_525874705 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shl_impl_123__f_Output := t_i8;
-    implaabbcc_t_Shl_impl_123__f_shl := fun  (self : t_i8) (other : t_i64)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_961481736 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shl_impl_124__f_Output := t_i8;
-    implaabbcc_t_Shl_impl_124__f_shl := fun  (self : t_i8) (other : t_i128)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_439453927 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shl_impl_125__f_Output := t_i8;
-    implaabbcc_t_Shl_impl_125__f_shl := fun  (self : t_i8) (other : t_isize)=>
-      Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_592433891 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shl_impl_126__f_Output := t_i16;
-    implaabbcc_t_Shl_impl_126__f_shl := fun  (self : t_i16) (other : t_i8)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_641723100 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shl_impl_127__f_Output := t_i16;
-    implaabbcc_t_Shl_impl_127__f_shl := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_327062664 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shl_impl_128__f_Output := t_i16;
-    implaabbcc_t_Shl_impl_128__f_shl := fun  (self : t_i16) (other : t_i32)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_48655345 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shl_impl_129__f_Output := t_i16;
-    implaabbcc_t_Shl_impl_129__f_shl := fun  (self : t_i16) (other : t_i64)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1027629694 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shl_impl_130__f_Output := t_i16;
-    implaabbcc_t_Shl_impl_130__f_shl := fun  (self : t_i16) (other : t_i128)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_732630181 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shl_impl_131__f_Output := t_i16;
-    implaabbcc_t_Shl_impl_131__f_shl := fun  (self : t_i16) (other : t_isize)=>
-      Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_798117292 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shl_impl_132__f_Output := t_i32;
-    implaabbcc_t_Shl_impl_132__f_shl := fun  (self : t_i32) (other : t_i8)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_119978092 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shl_impl_133__f_Output := t_i32;
-    implaabbcc_t_Shl_impl_133__f_shl := fun  (self : t_i32) (other : t_i16)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_915848064 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shl_impl_134__f_Output := t_i32;
-    implaabbcc_t_Shl_impl_134__f_shl := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1048573970 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shl_impl_135__f_Output := t_i32;
-    implaabbcc_t_Shl_impl_135__f_shl := fun  (self : t_i32) (other : t_i64)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_187893644 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shl_impl_136__f_Output := t_i32;
-    implaabbcc_t_Shl_impl_136__f_shl := fun  (self : t_i32) (other : t_i128)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_388905415 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shl_impl_137__f_Output := t_i32;
-    implaabbcc_t_Shl_impl_137__f_shl := fun  (self : t_i32) (other : t_isize)=>
-      Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_125319009 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shl_impl_138__f_Output := t_i64;
-    implaabbcc_t_Shl_impl_138__f_shl := fun  (self : t_i64) (other : t_i8)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_922264754 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shl_impl_139__f_Output := t_i64;
-    implaabbcc_t_Shl_impl_139__f_shl := fun  (self : t_i64) (other : t_i16)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_653885117 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shl_impl_140__f_Output := t_i64;
-    implaabbcc_t_Shl_impl_140__f_shl := fun  (self : t_i64) (other : t_i32)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_458184648 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shl_impl_141__f_Output := t_i64;
-    implaabbcc_t_Shl_impl_141__f_shl := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_964774841 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shl_impl_142__f_Output := t_i64;
-    implaabbcc_t_Shl_impl_142__f_shl := fun  (self : t_i64) (other : t_i128)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_530100514 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shl_impl_143__f_Output := t_i64;
-    implaabbcc_t_Shl_impl_143__f_shl := fun  (self : t_i64) (other : t_isize)=>
-      Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_878351801 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shl_impl_144__f_Output := t_i128;
-    implaabbcc_t_Shl_impl_144__f_shl := fun  (self : t_i128) (other : t_i8)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_263500228 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shl_impl_145__f_Output := t_i128;
-    implaabbcc_t_Shl_impl_145__f_shl := fun  (self : t_i128) (other : t_i16)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_321265820 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shl_impl_146__f_Output := t_i128;
-    implaabbcc_t_Shl_impl_146__f_shl := fun  (self : t_i128) (other : t_i32)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_637380912 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shl_impl_147__f_Output := t_i128;
-    implaabbcc_t_Shl_impl_147__f_shl := fun  (self : t_i128) (other : t_i64)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1027887542 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shl_impl_148__f_Output := t_i128;
-    implaabbcc_t_Shl_impl_148__f_shl := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_937161025 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shl_impl_149__f_Output := t_i128;
-    implaabbcc_t_Shl_impl_149__f_shl := fun  (self : t_i128) (other : t_isize)=>
-      Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_755078895 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i8)) :=
-  {
-    implaabbcc_t_Shl_impl_150__f_Output := t_isize;
-    implaabbcc_t_Shl_impl_150__f_shl := fun  (self : t_isize) (other : t_i8)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_176396665 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i16)) :=
-  {
-    implaabbcc_t_Shl_impl_151__f_Output := t_isize;
-    implaabbcc_t_Shl_impl_151__f_shl := fun  (self : t_isize) (other : t_i16)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_155364696 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i32)) :=
-  {
-    implaabbcc_t_Shl_impl_152__f_Output := t_isize;
-    implaabbcc_t_Shl_impl_152__f_shl := fun  (self : t_isize) (other : t_i32)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_388376431 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i64)) :=
-  {
-    implaabbcc_t_Shl_impl_153__f_Output := t_isize;
-    implaabbcc_t_Shl_impl_153__f_shl := fun  (self : t_isize) (other : t_i64)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_23991972 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i128)) :=
-  {
-    implaabbcc_t_Shl_impl_154__f_Output := t_isize;
-    implaabbcc_t_Shl_impl_154__f_shl := fun  (self : t_isize) (other : t_i128)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_29513465 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_Shl_impl_155__f_Output := t_isize;
-    implaabbcc_t_Shl_impl_155__f_shl := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_1040853946 : Core_Ops_Bit.t_BitOr ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_BitOr_impl_156__f_Output := t_u8;
-    implaabbcc_t_BitOr_impl_156__f_bitor := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_321969851 : Core_Ops_Bit.t_BitOr ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_BitOr_impl_157__f_Output := t_u16;
-    implaabbcc_t_BitOr_impl_157__f_bitor := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_351603536 : Core_Ops_Bit.t_BitOr ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_BitOr_impl_158__f_Output := t_u32;
-    implaabbcc_t_BitOr_impl_158__f_bitor := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_622284079 : Core_Ops_Bit.t_BitOr ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_BitOr_impl_159__f_Output := t_u64;
-    implaabbcc_t_BitOr_impl_159__f_bitor := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_489814492 : Core_Ops_Bit.t_BitOr ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_BitOr_impl_160__f_Output := t_u128;
-    implaabbcc_t_BitOr_impl_160__f_bitor := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_32215878 : Core_Ops_Bit.t_BitOr ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_BitOr_impl_161__f_Output := t_usize;
-    implaabbcc_t_BitOr_impl_161__f_bitor := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_1041756998 : Core_Ops_Bit.t_BitOr ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_BitOr_impl_162__f_Output := t_i8;
-    implaabbcc_t_BitOr_impl_162__f_bitor := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_956932383 : Core_Ops_Bit.t_BitOr ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_BitOr_impl_163__f_Output := t_i16;
-    implaabbcc_t_BitOr_impl_163__f_bitor := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_594344031 : Core_Ops_Bit.t_BitOr ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_BitOr_impl_164__f_Output := t_i32;
-    implaabbcc_t_BitOr_impl_164__f_bitor := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_116125306 : Core_Ops_Bit.t_BitOr ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_BitOr_impl_165__f_Output := t_i64;
-    implaabbcc_t_BitOr_impl_165__f_bitor := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_38608744 : Core_Ops_Bit.t_BitOr ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_BitOr_impl_166__f_Output := t_i128;
-    implaabbcc_t_BitOr_impl_166__f_bitor := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_1042217209 : Core_Ops_Bit.t_BitOr ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_BitOr_impl_167__f_Output := t_isize;
-    implaabbcc_t_BitOr_impl_167__f_bitor := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_386756822 : Core_Ops_Bit.t_BitXor ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_BitXor_impl_168__f_Output := t_u8;
-    implaabbcc_t_BitXor_impl_168__f_bitxor := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_821701514 : Core_Ops_Bit.t_BitXor ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_BitXor_impl_169__f_Output := t_u16;
-    implaabbcc_t_BitXor_impl_169__f_bitxor := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_291279090 : Core_Ops_Bit.t_BitXor ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_BitXor_impl_170__f_Output := t_u32;
-    implaabbcc_t_BitXor_impl_170__f_bitxor := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_491195719 : Core_Ops_Bit.t_BitXor ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_BitXor_impl_171__f_Output := t_u64;
-    implaabbcc_t_BitXor_impl_171__f_bitxor := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_1062952053 : Core_Ops_Bit.t_BitXor ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_BitXor_impl_172__f_Output := t_u128;
-    implaabbcc_t_BitXor_impl_172__f_bitxor := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_578664073 : Core_Ops_Bit.t_BitXor ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_BitXor_impl_173__f_Output := t_usize;
-    implaabbcc_t_BitXor_impl_173__f_bitxor := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_10634863 : Core_Ops_Bit.t_BitXor ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_BitXor_impl_174__f_Output := t_i8;
-    implaabbcc_t_BitXor_impl_174__f_bitxor := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_17374705 : Core_Ops_Bit.t_BitXor ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_BitXor_impl_175__f_Output := t_i16;
-    implaabbcc_t_BitXor_impl_175__f_bitxor := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_540719776 : Core_Ops_Bit.t_BitXor ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_BitXor_impl_176__f_Output := t_i32;
-    implaabbcc_t_BitXor_impl_176__f_bitxor := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_364228620 : Core_Ops_Bit.t_BitXor ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_BitXor_impl_177__f_Output := t_i64;
-    implaabbcc_t_BitXor_impl_177__f_bitxor := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_1046651040 : Core_Ops_Bit.t_BitXor ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_BitXor_impl_178__f_Output := t_i128;
-    implaabbcc_t_BitXor_impl_178__f_bitxor := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_882768112 : Core_Ops_Bit.t_BitXor ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_BitXor_impl_179__f_Output := t_isize;
-    implaabbcc_t_BitXor_impl_179__f_bitxor := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_808417265 : Core_Ops_Bit.t_BitAnd ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_BitAnd_impl_180__f_Output := t_u8;
-    implaabbcc_t_BitAnd_impl_180__f_bitand := fun  (self : t_u8) (other : t_u8)=>
-      Build_t__u8_u8 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_497524034 : Core_Ops_Bit.t_BitAnd ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_BitAnd_impl_181__f_Output := t_u16;
-    implaabbcc_t_BitAnd_impl_181__f_bitand := fun  (self : t_u16) (other : t_u16)=>
-      Build_t__u16_u16 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_369920328 : Core_Ops_Bit.t_BitAnd ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_BitAnd_impl_182__f_Output := t_u32;
-    implaabbcc_t_BitAnd_impl_182__f_bitand := fun  (self : t_u32) (other : t_u32)=>
-      Build_t__u32_u32 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_916627715 : Core_Ops_Bit.t_BitAnd ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_BitAnd_impl_183__f_Output := t_u64;
-    implaabbcc_t_BitAnd_impl_183__f_bitand := fun  (self : t_u64) (other : t_u64)=>
-      Build_t__u64_u64 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_490377132 : Core_Ops_Bit.t_BitAnd ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_BitAnd_impl_184__f_Output := t_u128;
-    implaabbcc_t_BitAnd_impl_184__f_bitand := fun  (self : t_u128) (other : t_u128)=>
-      Build_t__u128_u128 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_183531911 : Core_Ops_Bit.t_BitAnd ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_BitAnd_impl_185__f_Output := t_usize;
-    implaabbcc_t_BitAnd_impl_185__f_bitand := fun  (self : t_usize) (other : t_usize)=>
-      Build_t__usize_usize (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_691365492 : Core_Ops_Bit.t_BitAnd ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_BitAnd_impl_186__f_Output := t_i8;
-    implaabbcc_t_BitAnd_impl_186__f_bitand := fun  (self : t_i8) (other : t_i8)=>
-      Build_t__i8_i8 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_279078905 : Core_Ops_Bit.t_BitAnd ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_BitAnd_impl_187__f_Output := t_i16;
-    implaabbcc_t_BitAnd_impl_187__f_bitand := fun  (self : t_i16) (other : t_i16)=>
-      Build_t__i16_i16 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_48965752 : Core_Ops_Bit.t_BitAnd ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_BitAnd_impl_188__f_Output := t_i32;
-    implaabbcc_t_BitAnd_impl_188__f_bitand := fun  (self : t_i32) (other : t_i32)=>
-      Build_t__i32_i32 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_140075308 : Core_Ops_Bit.t_BitAnd ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_BitAnd_impl_189__f_Output := t_i64;
-    implaabbcc_t_BitAnd_impl_189__f_bitand := fun  (self : t_i64) (other : t_i64)=>
-      Build_t__i64_i64 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_849922519 : Core_Ops_Bit.t_BitAnd ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_BitAnd_impl_190__f_Output := t_i128;
-    implaabbcc_t_BitAnd_impl_190__f_bitand := fun  (self : t_i128) (other : t_i128)=>
-      Build_t__i128_i128 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_519590116 : Core_Ops_Bit.t_BitAnd ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_BitAnd_impl_191__f_Output := t_isize;
-    implaabbcc_t_BitAnd_impl_191__f_bitand := fun  (self : t_isize) (other : t_isize)=>
-      Build_t__isize_isize (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other));
-  }.
-
-Class t_SliceIndex (v_Self : Type) (v_T : Type) `{t_Sealed (v_Self)} : Type :=
-  {
-    SliceIndex__f_Output : Type;
-    SliceIndex__f_index : v_Self -> v_T -> SliceIndex__f_Output;
-  }.
-Arguments t_SliceIndex (_) (_) {_}.
-
-Instance Core_Convert.t_From_44016844 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl__f_from := fun  (x : t_u8)=>
-      if
-        Rust_primitives_U128.eq (x) ((0 : t_u8))
-      then
-        Core_Base_Spec_Haxint.v_HaxInt_ZERO
-      else
-        Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u8_binary (x));
-  }.
-
-Instance Core_Convert.t_From_687290056 : Core_Convert.t_From ((t_u8)) ((Core_Base_Spec_Haxint.t_HaxInt)) :=
-  {
-    implaabbcc_t_From_impl_1__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=>
-      match Core_Base_Spec_Binary_Pos.match_pos (x) with
-      | Core_Base_Spec_Binary_Pos.POS_ZERO =>
-        (0 : t_u8)
-      | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-        impl_24__to_u8_binary (p)
-      end;
-  }.
-
-Instance Core_Convert.t_From_443091616 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_2__f_from := fun  (x : t_u16)=>
-      if
-        Rust_primitives_U128.eq (x) ((0 : t_u16))
-      then
-        Core_Base_Spec_Haxint.v_HaxInt_ZERO
-      else
-        Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u16_binary (x));
-  }.
-
-Instance Core_Convert.t_From_318689415 : Core_Convert.t_From ((t_u16)) ((Core_Base_Spec_Haxint.t_HaxInt)) :=
-  {
-    implaabbcc_t_From_impl_3__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=>
-      match Core_Base_Spec_Binary_Pos.match_pos (x) with
-      | Core_Base_Spec_Binary_Pos.POS_ZERO =>
-        (0 : t_u16)
-      | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-        impl_24__to_u16_binary (p)
-      end;
-  }.
-
-Instance Core_Convert.t_From_963987115 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_4__f_from := fun  (x : t_u32)=>
-      if
-        Rust_primitives_U128.eq (x) ((0 : t_u32))
-      then
-        Core_Base_Spec_Haxint.v_HaxInt_ZERO
-      else
-        Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u32_binary (x));
-  }.
-
-Instance Core_Convert.t_From_352982036 : Core_Convert.t_From ((t_u32)) ((Core_Base_Spec_Haxint.t_HaxInt)) :=
-  {
-    implaabbcc_t_From_impl_5__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=>
-      match Core_Base_Spec_Binary_Pos.match_pos (x) with
-      | Core_Base_Spec_Binary_Pos.POS_ZERO =>
-        (0 : t_u32)
-      | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-        impl_24__to_u32_binary (p)
-      end;
-  }.
-
-Instance Core_Convert.t_From_1028096748 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_6__f_from := fun  (x : t_u64)=>
-      if
-        Rust_primitives_U128.eq (x) ((0 : t_u64))
-      then
-        Core_Base_Spec_Haxint.v_HaxInt_ZERO
-      else
-        Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u64_binary (x));
-  }.
-
-Instance Core_Convert.t_From_545928960 : Core_Convert.t_From ((t_u64)) ((Core_Base_Spec_Haxint.t_HaxInt)) :=
-  {
-    implaabbcc_t_From_impl_7__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=>
-      match Core_Base_Spec_Binary_Pos.match_pos (x) with
-      | Core_Base_Spec_Binary_Pos.POS_ZERO =>
-        (0 : t_u64)
-      | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-        impl_24__to_u64_binary (p)
-      end;
-  }.
-
-Instance Core_Convert.t_From_240272474 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_8__f_from := fun  (x : t_u128)=>
-      if
-        Rust_primitives_U128.eq (x) ((0 : t_u128))
-      then
-        Core_Base_Spec_Haxint.v_HaxInt_ZERO
-      else
-        Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u128_binary (x));
-  }.
-
-Instance Core_Convert.t_From_222831558 : Core_Convert.t_From ((t_u128)) ((Core_Base_Spec_Haxint.t_HaxInt)) :=
-  {
-    implaabbcc_t_From_impl_9__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=>
-      match Core_Base_Spec_Binary_Pos.match_pos (x) with
-      | Core_Base_Spec_Binary_Pos.POS_ZERO =>
-        (0 : t_u128)
-      | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-        impl_24__to_u128_binary (p)
-      end;
-  }.
-
-Instance Core_Convert.t_From_835901229 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_10__f_from := fun  (x : t_usize)=>
-      if
-        Rust_primitives_U128.eq (x) ((0 : t_usize))
-      then
-        Core_Base_Spec_Haxint.v_HaxInt_ZERO
-      else
-        Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_usize_binary (x));
-  }.
-
-Instance Core_Convert.t_From_257114222 : Core_Convert.t_From ((t_usize)) ((Core_Base_Spec_Haxint.t_HaxInt)) :=
-  {
-    implaabbcc_t_From_impl_11__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=>
-      match Core_Base_Spec_Binary_Pos.match_pos (x) with
-      | Core_Base_Spec_Binary_Pos.POS_ZERO =>
-        (0 : t_usize)
-      | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-        impl_24__to_usize_binary (p)
-      end;
-  }.
-
-Instance Core_Convert.t_From_338289091 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_12__f_from := fun  (x : t_i8)=>
-      match Core_Cmp.Ord__f_cmp (x) ((0 : t_i8)) with
-      | Core_Cmp.Ordering_Equal =>
-        Core_Base_Spec_Z.Z_ZERO
-      | Core_Cmp.Ordering_Less =>
-        Core_Base_Spec_Z.Z_NEG (impl_24__from_u8_binary (Core_Num.impl_i8__unsigned_abs (x)))
-      | Core_Cmp.Ordering_Greater =>
-        Core_Base_Spec_Z.Z_POS (impl_24__from_u8_binary (Core_Num.impl_i8__unsigned_abs (x)))
-      end;
-  }.
-
-Instance Core_Convert.t_From_245838536 : Core_Convert.t_From ((t_i8)) ((Core_Base_Spec_Z.t_Z)) :=
-  {
-    implaabbcc_t_From_impl_13__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=>
-      match x with
-      | Core_Base_Spec_Z.Z_NEG (x) =>
-        Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u8_binary (x)) ((1 : t_u8))))) ((1 : t_i8))
-      | Core_Base_Spec_Z.Z_ZERO =>
-        (0 : t_i8)
-      | Core_Base_Spec_Z.Z_POS (x) =>
-        cast (impl_24__to_u8_binary (x))
-      end;
-  }.
-
-Instance Core_Convert.t_From_639914372 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_14__f_from := fun  (x : t_i16)=>
-      match Core_Cmp.Ord__f_cmp (x) ((0 : t_i16)) with
-      | Core_Cmp.Ordering_Equal =>
-        Core_Base_Spec_Z.Z_ZERO
-      | Core_Cmp.Ordering_Less =>
-        Core_Base_Spec_Z.Z_NEG (impl_24__from_u16_binary (Core_Num.impl_i16__unsigned_abs (x)))
-      | Core_Cmp.Ordering_Greater =>
-        Core_Base_Spec_Z.Z_POS (impl_24__from_u16_binary (Core_Num.impl_i16__unsigned_abs (x)))
-      end;
-  }.
-
-Instance Core_Convert.t_From_821253081 : Core_Convert.t_From ((t_i16)) ((Core_Base_Spec_Z.t_Z)) :=
-  {
-    implaabbcc_t_From_impl_15__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=>
-      match x with
-      | Core_Base_Spec_Z.Z_NEG (x) =>
-        Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u16_binary (x)) ((1 : t_u16))))) ((1 : t_i16))
-      | Core_Base_Spec_Z.Z_ZERO =>
-        (0 : t_i16)
-      | Core_Base_Spec_Z.Z_POS (x) =>
-        cast (impl_24__to_u16_binary (x))
-      end;
-  }.
-
-Instance Core_Convert.t_From_865374737 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_16__f_from := fun  (x : t_i32)=>
-      match Core_Cmp.Ord__f_cmp (x) ((0 : t_i32)) with
-      | Core_Cmp.Ordering_Equal =>
-        Core_Base_Spec_Z.Z_ZERO
-      | Core_Cmp.Ordering_Less =>
-        Core_Base_Spec_Z.Z_NEG (impl_24__from_u32_binary (Core_Num.impl_i32__unsigned_abs (x)))
-      | Core_Cmp.Ordering_Greater =>
-        Core_Base_Spec_Z.Z_POS (impl_24__from_u32_binary (Core_Num.impl_i32__unsigned_abs (x)))
-      end;
-  }.
-
-Instance Core_Convert.t_From_829456934 : Core_Convert.t_From ((t_i32)) ((Core_Base_Spec_Z.t_Z)) :=
-  {
-    implaabbcc_t_From_impl_17__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=>
-      match x with
-      | Core_Base_Spec_Z.Z_NEG (x) =>
-        Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u32_binary (x)) ((1 : t_u32))))) ((1 : t_i32))
-      | Core_Base_Spec_Z.Z_ZERO =>
-        (0 : t_i32)
-      | Core_Base_Spec_Z.Z_POS (x) =>
-        cast (impl_24__to_u32_binary (x))
-      end;
-  }.
-
-Instance Core_Convert.t_From_435789495 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_18__f_from := fun  (x : t_i64)=>
-      match Core_Cmp.Ord__f_cmp (x) ((0 : t_i64)) with
-      | Core_Cmp.Ordering_Equal =>
-        Core_Base_Spec_Z.Z_ZERO
-      | Core_Cmp.Ordering_Less =>
-        Core_Base_Spec_Z.Z_NEG (impl_24__from_u64_binary (Core_Num.impl_i64__unsigned_abs (x)))
-      | Core_Cmp.Ordering_Greater =>
-        Core_Base_Spec_Z.Z_POS (impl_24__from_u64_binary (Core_Num.impl_i64__unsigned_abs (x)))
-      end;
-  }.
-
-Instance Core_Convert.t_From_753989864 : Core_Convert.t_From ((t_i64)) ((Core_Base_Spec_Z.t_Z)) :=
-  {
-    implaabbcc_t_From_impl_19__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=>
-      match x with
-      | Core_Base_Spec_Z.Z_NEG (x) =>
-        Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u64_binary (x)) ((1 : t_u64))))) ((1 : t_i64))
-      | Core_Base_Spec_Z.Z_ZERO =>
-        (0 : t_i64)
-      | Core_Base_Spec_Z.Z_POS (x) =>
-        cast (impl_24__to_u64_binary (x))
-      end;
-  }.
-
-Instance Core_Convert.t_From_545262237 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_20__f_from := fun  (x : t_i128)=>
-      match Core_Cmp.Ord__f_cmp (x) ((0 : t_i128)) with
-      | Core_Cmp.Ordering_Equal =>
-        Core_Base_Spec_Z.Z_ZERO
-      | Core_Cmp.Ordering_Less =>
-        Core_Base_Spec_Z.Z_NEG (impl_24__from_u128_binary (Core_Num.impl_i128__unsigned_abs (x)))
-      | Core_Cmp.Ordering_Greater =>
-        Core_Base_Spec_Z.Z_POS (impl_24__from_u128_binary (Core_Num.impl_i128__unsigned_abs (x)))
-      end;
-  }.
-
-Instance Core_Convert.t_From_636246826 : Core_Convert.t_From ((t_i128)) ((Core_Base_Spec_Z.t_Z)) :=
-  {
-    implaabbcc_t_From_impl_21__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=>
-      match x with
-      | Core_Base_Spec_Z.Z_NEG (x) =>
-        Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u128_binary (x)) ((1 : t_u128))))) ((1 : t_i128))
-      | Core_Base_Spec_Z.Z_ZERO =>
-        (0 : t_i128)
-      | Core_Base_Spec_Z.Z_POS (x) =>
-        cast (impl_24__to_u128_binary (x))
-      end;
-  }.
-
-Instance Core_Convert.t_From_933861236 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_22__f_from := fun  (x : t_isize)=>
-      match Core_Cmp.Ord__f_cmp (x) ((0 : t_isize)) with
-      | Core_Cmp.Ordering_Equal =>
-        Core_Base_Spec_Z.Z_ZERO
-      | Core_Cmp.Ordering_Less =>
-        Core_Base_Spec_Z.Z_NEG (impl_24__from_usize_binary (Core_Num.impl_isize__unsigned_abs (x)))
-      | Core_Cmp.Ordering_Greater =>
-        Core_Base_Spec_Z.Z_POS (impl_24__from_usize_binary (Core_Num.impl_isize__unsigned_abs (x)))
-      end;
-  }.
-
-Instance Core_Convert.t_From_702271195 : Core_Convert.t_From ((t_isize)) ((Core_Base_Spec_Z.t_Z)) :=
-  {
-    implaabbcc_t_From_impl_23__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=>
-      match x with
-      | Core_Base_Spec_Z.Z_NEG (x) =>
-        Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_usize_binary (x)) ((1 : t_usize))))) ((1 : t_isize))
-      | Core_Base_Spec_Z.Z_ZERO =>
-        (0 : t_isize)
-      | Core_Base_Spec_Z.Z_POS (x) =>
-        cast (impl_24__to_usize_binary (x))
-      end;
-  }.
-
-Definition cons `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : t_Seq ((v_T))) (t : v_T) : t_Seq ((v_T)) :=
-  Seq_Seq (Alloc_Slice.impl__concat (Rust_primitives.unsize ([Core_Ops_Index.Index__f_index ([t]) (Core_Ops_Range.RangeFull_RangeFull); Core_Ops_Index.Index__f_index (f_Seq_v s) (Core_Ops_Range.RangeFull_RangeFull)]))).
-
-Instance Core_Convert.t_From_183625382 : Core_Convert.t_From ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl__f_from := fun  (x : t_u8)=>
-      Build_t__u8_u8 (Core_Base_interface_Int.U8_U8 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_937665402 : Core_Convert.t_From ((t_u8)) ((t_u8)) :=
-  {
-    implaabbcc_t_From_impl_1__f_from := fun  (x : t_u8)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_U8_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_152884980 : Core_Convert.t_From ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_2__f_from := fun  (x : t_u16)=>
-      Build_t__u16_u16 (Core_Base_interface_Int.U16_U16 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_386335264 : Core_Convert.t_From ((t_u16)) ((t_u16)) :=
-  {
-    implaabbcc_t_From_impl_3__f_from := fun  (x : t_u16)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_U16_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_715833290 : Core_Convert.t_From ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_4__f_from := fun  (x : t_u32)=>
-      Build_t__u32_u32 (Core_Base_interface_Int.U32_U32 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_406773128 : Core_Convert.t_From ((t_u32)) ((t_u32)) :=
-  {
-    implaabbcc_t_From_impl_5__f_from := fun  (x : t_u32)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_U32_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_541884810 : Core_Convert.t_From ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_6__f_from := fun  (x : t_u64)=>
-      Build_t__u64_u64 (Core_Base_interface_Int.U64_U64 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_444559756 : Core_Convert.t_From ((t_u64)) ((t_u64)) :=
-  {
-    implaabbcc_t_From_impl_7__f_from := fun  (x : t_u64)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_U64_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_700043518 : Core_Convert.t_From ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_8__f_from := fun  (x : t_u128)=>
-      Build_t__u128_u128 (Core_Base_interface_Int.U128_U128 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_835883228 : Core_Convert.t_From ((t_u128)) ((t_u128)) :=
-  {
-    implaabbcc_t_From_impl_9__f_from := fun  (x : t_u128)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_U128_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_181575805 : Core_Convert.t_From ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_10__f_from := fun  (x : t_usize)=>
-      Build_t__usize_usize (Core_Base_interface_Int.U64_U64 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_106156116 : Core_Convert.t_From ((t_usize)) ((t_usize)) :=
-  {
-    implaabbcc_t_From_impl_11__f_from := fun  (x : t_usize)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_U64_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_105996716 : Core_Convert.t_From ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl__f_from := fun  (x : t_i8)=>
-      Build_t__i8_i8 (Core_Base_interface_Int.I8_I8 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_539767262 : Core_Convert.t_From ((t_i8)) ((t_i8)) :=
-  {
-    implaabbcc_t_From_impl_1__f_from := fun  (x : t_i8)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_I8_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_488738214 : Core_Convert.t_From ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_2__f_from := fun  (x : t_i16)=>
-      Build_t__i16_i16 (Core_Base_interface_Int.I16_I16 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_482355400 : Core_Convert.t_From ((t_i16)) ((t_i16)) :=
-  {
-    implaabbcc_t_From_impl_3__f_from := fun  (x : t_i16)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_I16_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_661202142 : Core_Convert.t_From ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_4__f_from := fun  (x : t_i32)=>
-      Build_t__i32_i32 (Core_Base_interface_Int.I32_I32 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_270964557 : Core_Convert.t_From ((t_i32)) ((t_i32)) :=
-  {
-    implaabbcc_t_From_impl_5__f_from := fun  (x : t_i32)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_I32_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_518654672 : Core_Convert.t_From ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_6__f_from := fun  (x : t_i64)=>
-      Build_t__i64_i64 (Core_Base_interface_Int.I64_I64 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_908255250 : Core_Convert.t_From ((t_i64)) ((t_i64)) :=
-  {
-    implaabbcc_t_From_impl_7__f_from := fun  (x : t_i64)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_I64_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_104524569 : Core_Convert.t_From ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_8__f_from := fun  (x : t_i128)=>
-      Build_t__i128_i128 (Core_Base_interface_Int.I128_I128 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_216855781 : Core_Convert.t_From ((t_i128)) ((t_i128)) :=
-  {
-    implaabbcc_t_From_impl_9__f_from := fun  (x : t_i128)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_I128_v 0 x);
-  }.
-
-Instance Core_Convert.t_From_181769074 : Core_Convert.t_From ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_10__f_from := fun  (x : t_isize)=>
-      Build_t__isize_isize (Core_Base_interface_Int.I64_I64 (Core_Convert.Into__f_into (x)));
-  }.
-
-Instance Core_Convert.t_From_918115526 : Core_Convert.t_From ((t_isize)) ((t_isize)) :=
-  {
-    implaabbcc_t_From_impl_11__f_from := fun  (x : t_isize)=>
-      Core_Convert.Into__f_into (Core_Base_interface_Int.f_I64_v 0 x);
-  }.
-
-Definition ctpop_u8 (x : t_u8) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u8)))))) in
-  count.
-
-Definition cttz_u8 (x : t_u8) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u8)))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition ctlz_u8 (x : t_u8) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_6__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition rotate_left_u8 (x : t_u8) (shift : t_u32) : t_u8 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_6__BITS) in
-  let left : t_u8 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u8 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_6__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition rotate_right_u8 (x : t_u8) (shift : t_u32) : t_u8 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_6__BITS) in
-  let left : t_u8 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u8 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_6__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition bswap_u8 (x : t_u8) : t_u8 :=
-  let count : t_u8 := Core_Convert.Into__f_into ((0 : t_u8)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    let low_bit : t_u8 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u8)))) in
-    let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in
-    count) in
-  count.
-
-Definition ctpop_u16 (x : t_u16) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u16)))))) in
-  count.
-
-Definition cttz_u16 (x : t_u16) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u16)))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition ctlz_u16 (x : t_u16) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_7__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition rotate_left_u16 (x : t_u16) (shift : t_u32) : t_u16 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_7__BITS) in
-  let left : t_u16 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u16 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_7__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition rotate_right_u16 (x : t_u16) (shift : t_u32) : t_u16 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_7__BITS) in
-  let left : t_u16 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u16 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_7__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition bswap_u16 (x : t_u16) : t_u16 :=
-  let count : t_u16 := Core_Convert.Into__f_into ((0 : t_u16)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    let low_bit : t_u16 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u16)))) in
-    let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in
-    count) in
-  count.
-
-Definition ctpop_u32 (x : t_u32) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-  count.
-
-Definition cttz_u32 (x : t_u32) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u32)))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition ctlz_u32 (x : t_u32) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_8__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition rotate_left_u32 (x : t_u32) (shift : t_u32) : t_u32 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_8__BITS) in
-  let left : t_u32 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u32 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_8__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition rotate_right_u32 (x : t_u32) (shift : t_u32) : t_u32 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_8__BITS) in
-  let left : t_u32 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u32 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_8__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition bswap_u32 (x : t_u32) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u32)))) in
-    let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in
-    count) in
-  count.
-
-Definition ctpop_u64 (x : t_u64) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u64)))))) in
-  count.
-
-Definition cttz_u64 (x : t_u64) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u64)))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition ctlz_u64 (x : t_u64) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_9__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition rotate_left_u64 (x : t_u64) (shift : t_u32) : t_u64 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_9__BITS) in
-  let left : t_u64 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u64 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_9__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition rotate_right_u64 (x : t_u64) (shift : t_u32) : t_u64 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_9__BITS) in
-  let left : t_u64 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u64 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_9__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition bswap_u64 (x : t_u64) : t_u64 :=
-  let count : t_u64 := Core_Convert.Into__f_into ((0 : t_u64)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    let low_bit : t_u64 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u64)))) in
-    let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in
-    count) in
-  count.
-
-Definition ctpop_u128 (x : t_u128) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u128)))))) in
-  count.
-
-Definition cttz_u128 (x : t_u128) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u128)))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition ctlz_u128 (x : t_u128) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_10__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition rotate_left_u128 (x : t_u128) (shift : t_u32) : t_u128 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_10__BITS) in
-  let left : t_u128 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u128 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_10__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition rotate_right_u128 (x : t_u128) (shift : t_u32) : t_u128 :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_10__BITS) in
-  let left : t_u128 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_u128 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_10__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition bswap_u128 (x : t_u128) : t_u128 :=
-  let count : t_u128 := Core_Convert.Into__f_into ((0 : t_u128)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    let low_bit : t_u128 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u128)))) in
-    let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in
-    count) in
-  count.
-
-Definition ctpop_usize (x : t_usize) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_usize)))))) in
-  count.
-
-Definition cttz_usize (x : t_usize) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_usize)))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition ctlz_usize (x : t_usize) : t_u32 :=
-  let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in
-  let done := (false : bool) in
-  let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun (count,done) _ =>
-    (true : bool)) ((count,done)) (fun (count,done) i =>
-    let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_11__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in
-    if
-      orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done)
-    then
-      let done := (true : bool) in
-      (count,done)
-    else
-      let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in
-      (count,done)) in
-  count.
-
-Definition rotate_left_usize (x : t_usize) (shift : t_u32) : t_usize :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_11__BITS) in
-  let left : t_usize := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_usize := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_11__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition rotate_right_usize (x : t_usize) (shift : t_u32) : t_usize :=
-  let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_11__BITS) in
-  let left : t_usize := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in
-  let right : t_usize := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_11__BITS) (Core_Clone.Clone__f_clone (shift))) in
-  Core_Ops_Bit.BitOr__f_bitor (left) (right).
-
-Definition bswap_usize (x : t_usize) : t_usize :=
-  let count : t_usize := Core_Convert.Into__f_into ((0 : t_usize)) in
-  let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun count _ =>
-    (true : bool)) (count) (fun count i =>
-    let low_bit : t_usize := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_usize)))) in
-    let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in
-    count) in
-  count.
-
-Definition impl__wrapping_neg (self : t_i8) : t_i8 :=
-  impl__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i8))) (self).
-
-Definition impl__signum (self : t_i8) : t_i8 :=
-  if
-    Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i8)))
-  then
-    Core_Convert.Into__f_into ((-1 : t_i8))
-  else
-    if
-      Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i8)))
-    then
-      Core_Convert.Into__f_into ((0 : t_i8))
-    else
-      Core_Convert.Into__f_into ((1 : t_i8)).
-
-Definition impl__is_positive (self : t_i8) : bool :=
-  Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i8))).
-
-Definition impl__is_negative (self : t_i8) : bool :=
-  Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i8))).
-
-Definition impl__wrapping_abs (self : t_i8) : t_i8 :=
-  if
-    impl__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    impl__wrapping_neg (self)
-  else
-    self.
-
-Definition impl__rem_euclid (self : t_i8) (rhs : t_i8) : t_i8 :=
-  let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in
-  if
-    Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i8)))
-  then
-    impl__wrapping_add (r) (impl__wrapping_abs (rhs))
-  else
-    r.
-
-Definition impl__abs (self : t_i8) : t_i8 :=
-  if
-    impl__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    Core_Ops_Arith.Neg__f_neg (self)
-  else
-    self.
-
-Definition impl_1__wrapping_neg (self : t_i16) : t_i16 :=
-  impl_1__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i16))) (self).
-
-Definition impl_1__signum (self : t_i16) : t_i16 :=
-  if
-    Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i16)))
-  then
-    Core_Convert.Into__f_into ((-1 : t_i16))
-  else
-    if
-      Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i16)))
-    then
-      Core_Convert.Into__f_into ((0 : t_i16))
-    else
-      Core_Convert.Into__f_into ((1 : t_i16)).
-
-Definition impl_1__is_positive (self : t_i16) : bool :=
-  Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i16))).
-
-Definition impl_1__is_negative (self : t_i16) : bool :=
-  Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i16))).
-
-Definition impl_1__wrapping_abs (self : t_i16) : t_i16 :=
-  if
-    impl_1__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    impl_1__wrapping_neg (self)
-  else
-    self.
-
-Definition impl_1__rem_euclid (self : t_i16) (rhs : t_i16) : t_i16 :=
-  let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in
-  if
-    Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i16)))
-  then
-    impl_1__wrapping_add (r) (impl_1__wrapping_abs (rhs))
-  else
-    r.
-
-Definition impl_1__abs (self : t_i16) : t_i16 :=
-  if
-    impl_1__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    Core_Ops_Arith.Neg__f_neg (self)
-  else
-    self.
-
-Definition impl_2__wrapping_neg (self : t_i32) : t_i32 :=
-  impl_2__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i32))) (self).
-
-Definition impl_2__signum (self : t_i32) : t_i32 :=
-  if
-    Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i32)))
-  then
-    Core_Convert.Into__f_into ((-1 : t_i32))
-  else
-    if
-      Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i32)))
-    then
-      Core_Convert.Into__f_into ((0 : t_i32))
-    else
-      Core_Convert.Into__f_into ((1 : t_i32)).
-
-Definition impl_2__is_positive (self : t_i32) : bool :=
-  Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i32))).
-
-Definition impl_2__is_negative (self : t_i32) : bool :=
-  Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i32))).
-
-Definition impl_2__wrapping_abs (self : t_i32) : t_i32 :=
-  if
-    impl_2__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    impl_2__wrapping_neg (self)
-  else
-    self.
-
-Definition impl_2__rem_euclid (self : t_i32) (rhs : t_i32) : t_i32 :=
-  let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in
-  if
-    Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i32)))
-  then
-    impl_2__wrapping_add (r) (impl_2__wrapping_abs (rhs))
-  else
-    r.
-
-Definition impl_2__abs (self : t_i32) : t_i32 :=
-  if
-    impl_2__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    Core_Ops_Arith.Neg__f_neg (self)
-  else
-    self.
-
-Definition impl_3__wrapping_neg (self : t_i64) : t_i64 :=
-  impl_3__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i64))) (self).
-
-Definition impl_3__signum (self : t_i64) : t_i64 :=
-  if
-    Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i64)))
-  then
-    Core_Convert.Into__f_into ((-1 : t_i64))
-  else
-    if
-      Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i64)))
-    then
-      Core_Convert.Into__f_into ((0 : t_i64))
-    else
-      Core_Convert.Into__f_into ((1 : t_i64)).
-
-Definition impl_3__is_positive (self : t_i64) : bool :=
-  Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i64))).
-
-Definition impl_3__is_negative (self : t_i64) : bool :=
-  Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i64))).
-
-Definition impl_3__wrapping_abs (self : t_i64) : t_i64 :=
-  if
-    impl_3__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    impl_3__wrapping_neg (self)
-  else
-    self.
-
-Definition impl_3__rem_euclid (self : t_i64) (rhs : t_i64) : t_i64 :=
-  let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in
-  if
-    Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i64)))
-  then
-    impl_3__wrapping_add (r) (impl_3__wrapping_abs (rhs))
-  else
-    r.
-
-Definition impl_3__abs (self : t_i64) : t_i64 :=
-  if
-    impl_3__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    Core_Ops_Arith.Neg__f_neg (self)
-  else
-    self.
-
-Definition impl_4__wrapping_neg (self : t_i128) : t_i128 :=
-  impl_4__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i128))) (self).
-
-Definition impl_4__signum (self : t_i128) : t_i128 :=
-  if
-    Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i128)))
-  then
-    Core_Convert.Into__f_into ((-1 : t_i128))
-  else
-    if
-      Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i128)))
-    then
-      Core_Convert.Into__f_into ((0 : t_i128))
-    else
-      Core_Convert.Into__f_into ((1 : t_i128)).
-
-Definition impl_4__is_positive (self : t_i128) : bool :=
-  Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i128))).
-
-Definition impl_4__is_negative (self : t_i128) : bool :=
-  Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i128))).
-
-Definition impl_4__wrapping_abs (self : t_i128) : t_i128 :=
-  if
-    impl_4__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    impl_4__wrapping_neg (self)
-  else
-    self.
-
-Definition impl_4__rem_euclid (self : t_i128) (rhs : t_i128) : t_i128 :=
-  let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in
-  if
-    Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i128)))
-  then
-    impl_4__wrapping_add (r) (impl_4__wrapping_abs (rhs))
-  else
-    r.
-
-Definition impl_4__abs (self : t_i128) : t_i128 :=
-  if
-    impl_4__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    Core_Ops_Arith.Neg__f_neg (self)
-  else
-    self.
-
-Definition impl_5__wrapping_neg (self : t_isize) : t_isize :=
-  impl_5__wrapping_sub (Core_Convert.Into__f_into ((0 : t_isize))) (self).
-
-Definition impl_5__signum (self : t_isize) : t_isize :=
-  if
-    Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_isize)))
-  then
-    Core_Convert.Into__f_into ((-1 : t_isize))
-  else
-    if
-      Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_isize)))
-    then
-      Core_Convert.Into__f_into ((0 : t_isize))
-    else
-      Core_Convert.Into__f_into ((1 : t_isize)).
-
-Definition impl_5__is_positive (self : t_isize) : bool :=
-  Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_isize))).
-
-Definition impl_5__is_negative (self : t_isize) : bool :=
-  Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_isize))).
-
-Definition impl_5__wrapping_abs (self : t_isize) : t_isize :=
-  if
-    impl_5__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    impl_5__wrapping_neg (self)
-  else
-    self.
-
-Definition impl_5__rem_euclid (self : t_isize) (rhs : t_isize) : t_isize :=
-  let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in
-  if
-    Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_isize)))
-  then
-    impl_5__wrapping_add (r) (impl_5__wrapping_abs (rhs))
-  else
-    r.
-
-Definition impl_5__abs (self : t_isize) : t_isize :=
-  if
-    impl_5__is_negative (Core_Clone.Clone__f_clone (self))
-  then
-    Core_Ops_Arith.Neg__f_neg (self)
-  else
-    self.
-
-Definition impl_6__count_ones (self : t_u8) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist1 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u8 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist1))).
-
-Definition impl_6__count_zeros (self : t_u8) : t_u32 :=
-  impl_6__count_ones (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_6__leading_zeros (self : t_u8) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist2 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u8 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist2))).
-
-Definition impl_6__trailing_zeros (self : t_u8) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist3 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u8 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist3))).
-
-Definition impl_6__leading_ones (self : t_u8) : t_u32 :=
-  impl_6__leading_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_6__trailing_ones (self : t_u8) : t_u32 :=
-  impl_6__trailing_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_6__rotate_left (self : t_u8) (n : t_u32) : t_u8 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist4 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u8 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist4))).
-
-Definition impl_6__rotate_right (self : t_u8) (n : t_u32) : t_u8 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist5 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u8 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist5))).
-
-Definition impl_6__swap_bytes (self : t_u8) : t_u8 :=
-  Core_Convert.Into__f_into (bswap_u8 (self)).
-
-Definition impl_6__from_be (x : t_u8) : t_u8 :=
-  impl_6__swap_bytes (x).
-
-Definition impl_6__to_be (self : t_u8) : t_u8 :=
-  impl_6__swap_bytes (self).
-
-Definition impl_6__checked_div (self : t_u8) (rhs : t_u8) : Core_Option.t_Option ((t_u8)) :=
-  if
-    Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u8)))
-  then
-    Core_Option.Option_None
-  else
-    Core_Option.Option_Some (unchecked_div_u8 (self) (rhs)).
-
-Definition impl_6__wrapping_div (self : t_u8) (rhs : t_u8) : t_u8 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_6__wrapping_div_euclid (self : t_u8) (rhs : t_u8) : t_u8 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_6__wrapping_rem (self : t_u8) (rhs : t_u8) : t_u8 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_6__wrapping_rem_euclid (self : t_u8) (rhs : t_u8) : t_u8 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_7__count_ones (self : t_u16) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist6 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u16 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist6))).
-
-Definition impl_7__count_zeros (self : t_u16) : t_u32 :=
-  impl_7__count_ones (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_7__leading_zeros (self : t_u16) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist7 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u16 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist7))).
-
-Definition impl_7__trailing_zeros (self : t_u16) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist8 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u16 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist8))).
-
-Definition impl_7__leading_ones (self : t_u16) : t_u32 :=
-  impl_7__leading_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_7__trailing_ones (self : t_u16) : t_u32 :=
-  impl_7__trailing_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_7__rotate_left (self : t_u16) (n : t_u32) : t_u16 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist9 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u16 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist9))).
-
-Definition impl_7__rotate_right (self : t_u16) (n : t_u32) : t_u16 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist10 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u16 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist10))).
-
-Definition impl_7__swap_bytes (self : t_u16) : t_u16 :=
-  Core_Convert.Into__f_into (bswap_u16 (self)).
-
-Definition impl_7__from_be (x : t_u16) : t_u16 :=
-  impl_7__swap_bytes (x).
-
-Definition impl_7__to_be (self : t_u16) : t_u16 :=
-  impl_7__swap_bytes (self).
-
-Definition impl_7__checked_div (self : t_u16) (rhs : t_u16) : Core_Option.t_Option ((t_u16)) :=
-  if
-    Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u16)))
-  then
-    Core_Option.Option_None
-  else
-    Core_Option.Option_Some (unchecked_div_u16 (self) (rhs)).
-
-Definition impl_7__wrapping_div (self : t_u16) (rhs : t_u16) : t_u16 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_7__wrapping_div_euclid (self : t_u16) (rhs : t_u16) : t_u16 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_7__wrapping_rem (self : t_u16) (rhs : t_u16) : t_u16 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_7__wrapping_rem_euclid (self : t_u16) (rhs : t_u16) : t_u16 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_8__count_ones (self : t_u32) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist11 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u32 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist11))).
-
-Definition impl_8__count_zeros (self : t_u32) : t_u32 :=
-  impl_8__count_ones (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_8__leading_zeros (self : t_u32) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist12 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u32 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist12))).
-
-Definition impl_8__trailing_zeros (self : t_u32) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist13 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u32 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist13))).
-
-Definition impl_8__leading_ones (self : t_u32) : t_u32 :=
-  impl_8__leading_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_8__trailing_ones (self : t_u32) : t_u32 :=
-  impl_8__trailing_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_8__rotate_left (self : t_u32) (n : t_u32) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist14 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u32 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist14))).
-
-Definition impl_8__rotate_right (self : t_u32) (n : t_u32) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist15 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u32 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist15))).
-
-Definition impl_8__swap_bytes (self : t_u32) : t_u32 :=
-  Core_Convert.Into__f_into (bswap_u32 (self)).
-
-Definition impl_8__from_be (x : t_u32) : t_u32 :=
-  impl_8__swap_bytes (x).
-
-Definition impl_8__to_be (self : t_u32) : t_u32 :=
-  impl_8__swap_bytes (self).
-
-Definition impl_8__checked_div (self : t_u32) (rhs : t_u32) : Core_Option.t_Option ((t_u32)) :=
-  if
-    Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u32)))
-  then
-    Core_Option.Option_None
-  else
-    Core_Option.Option_Some (unchecked_div_u32 (self) (rhs)).
-
-Definition impl_8__wrapping_div (self : t_u32) (rhs : t_u32) : t_u32 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_8__wrapping_div_euclid (self : t_u32) (rhs : t_u32) : t_u32 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_8__wrapping_rem (self : t_u32) (rhs : t_u32) : t_u32 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_8__wrapping_rem_euclid (self : t_u32) (rhs : t_u32) : t_u32 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_9__count_ones (self : t_u64) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist16 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u64 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist16))).
-
-Definition impl_9__count_zeros (self : t_u64) : t_u32 :=
-  impl_9__count_ones (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_9__leading_zeros (self : t_u64) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist17 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u64 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist17))).
-
-Definition impl_9__trailing_zeros (self : t_u64) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist18 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u64 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist18))).
-
-Definition impl_9__leading_ones (self : t_u64) : t_u32 :=
-  impl_9__leading_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_9__trailing_ones (self : t_u64) : t_u32 :=
-  impl_9__trailing_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_9__rotate_left (self : t_u64) (n : t_u32) : t_u64 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist19 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u64 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist19))).
-
-Definition impl_9__rotate_right (self : t_u64) (n : t_u32) : t_u64 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist20 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u64 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist20))).
-
-Definition impl_9__swap_bytes (self : t_u64) : t_u64 :=
-  Core_Convert.Into__f_into (bswap_u64 (self)).
-
-Definition impl_9__from_be (x : t_u64) : t_u64 :=
-  impl_9__swap_bytes (x).
-
-Definition impl_9__to_be (self : t_u64) : t_u64 :=
-  impl_9__swap_bytes (self).
-
-Definition impl_9__checked_div (self : t_u64) (rhs : t_u64) : Core_Option.t_Option ((t_u64)) :=
-  if
-    Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u64)))
-  then
-    Core_Option.Option_None
-  else
-    Core_Option.Option_Some (unchecked_div_u64 (self) (rhs)).
-
-Definition impl_9__wrapping_div (self : t_u64) (rhs : t_u64) : t_u64 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_9__wrapping_div_euclid (self : t_u64) (rhs : t_u64) : t_u64 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_9__wrapping_rem (self : t_u64) (rhs : t_u64) : t_u64 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_9__wrapping_rem_euclid (self : t_u64) (rhs : t_u64) : t_u64 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_10__count_ones (self : t_u128) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist21 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u128 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist21))).
-
-Definition impl_10__count_zeros (self : t_u128) : t_u32 :=
-  impl_10__count_ones (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_10__leading_zeros (self : t_u128) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist22 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u128 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist22))).
-
-Definition impl_10__trailing_zeros (self : t_u128) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist23 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u128 (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist23))).
-
-Definition impl_10__leading_ones (self : t_u128) : t_u32 :=
-  impl_10__leading_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_10__trailing_ones (self : t_u128) : t_u32 :=
-  impl_10__trailing_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_10__rotate_left (self : t_u128) (n : t_u32) : t_u128 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist24 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u128 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist24))).
-
-Definition impl_10__rotate_right (self : t_u128) (n : t_u32) : t_u128 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist25 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u128 (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist25))).
-
-Definition impl_10__swap_bytes (self : t_u128) : t_u128 :=
-  Core_Convert.Into__f_into (bswap_u128 (self)).
-
-Definition impl_10__from_be (x : t_u128) : t_u128 :=
-  impl_10__swap_bytes (x).
-
-Definition impl_10__to_be (self : t_u128) : t_u128 :=
-  impl_10__swap_bytes (self).
-
-Definition impl_10__checked_div (self : t_u128) (rhs : t_u128) : Core_Option.t_Option ((t_u128)) :=
-  if
-    Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u128)))
-  then
-    Core_Option.Option_None
-  else
-    Core_Option.Option_Some (unchecked_div_u128 (self) (rhs)).
-
-Definition impl_10__wrapping_div (self : t_u128) (rhs : t_u128) : t_u128 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_10__wrapping_div_euclid (self : t_u128) (rhs : t_u128) : t_u128 :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_10__wrapping_rem (self : t_u128) (rhs : t_u128) : t_u128 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_10__wrapping_rem_euclid (self : t_u128) (rhs : t_u128) : t_u128 :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_11__count_ones (self : t_usize) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist26 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_usize (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist26))).
-
-Definition impl_11__count_zeros (self : t_usize) : t_u32 :=
-  impl_11__count_ones (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_11__leading_zeros (self : t_usize) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist27 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_usize (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist27))).
-
-Definition impl_11__trailing_zeros (self : t_usize) : t_u32 :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist28 := Core_Ops_Control_flow.ControlFlow_Break (cttz_usize (self)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist28))).
-
-Definition impl_11__leading_ones (self : t_usize) : t_u32 :=
-  impl_11__leading_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_11__trailing_ones (self : t_usize) : t_u32 :=
-  impl_11__trailing_zeros (Core_Ops_Bit.Not__f_not (self)).
-
-Definition impl_11__rotate_left (self : t_usize) (n : t_u32) : t_usize :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist29 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_usize (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist29))).
-
-Definition impl_11__rotate_right (self : t_usize) (n : t_u32) : t_usize :=
-  Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist30 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_usize (self) (n)) in
-  Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist30))).
-
-Definition impl_11__swap_bytes (self : t_usize) : t_usize :=
-  Core_Convert.Into__f_into (bswap_usize (self)).
-
-Definition impl_11__from_be (x : t_usize) : t_usize :=
-  impl_11__swap_bytes (x).
-
-Definition impl_11__to_be (self : t_usize) : t_usize :=
-  impl_11__swap_bytes (self).
-
-Definition impl_11__checked_div (self : t_usize) (rhs : t_usize) : Core_Option.t_Option ((t_usize)) :=
-  if
-    Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_usize)))
-  then
-    Core_Option.Option_None
-  else
-    Core_Option.Option_Some (unchecked_div_usize (self) (rhs)).
-
-Definition impl_11__wrapping_div (self : t_usize) (rhs : t_usize) : t_usize :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_11__wrapping_div_euclid (self : t_usize) (rhs : t_usize) : t_usize :=
-  Core_Ops_Arith.Div__f_div (self) (rhs).
-
-Definition impl_11__wrapping_rem (self : t_usize) (rhs : t_usize) : t_usize :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Definition impl_11__wrapping_rem_euclid (self : t_usize) (rhs : t_usize) : t_usize :=
-  Core_Ops_Arith.Rem__f_rem (self) (rhs).
-
-Instance Core_Convert.t_From_735931741 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_From ((t_Array ((v_T)) (v_N))) ((t_Array (v_T) (v_N))) :=
-  {
-    implaabbcc_t_From_impl__f_from := fun  (x : t_Array (v_T) (v_N))=>
-      Array_Array (Slice_Slice (Seq_Seq (Alloc_Slice.impl__to_vec (Core_Ops_Index.Index__f_index (x) (Core_Ops_Range.RangeFull_RangeFull)))));
-  }.
-
-Instance t_SliceIndex_181791132 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : t_SliceIndex ((Core_Ops_Range.t_RangeFull)) ((t_Slice ((v_T)))) :=
-  {
-    implaabbcc_t_SliceIndex_impl_2__f_Output := t_Slice ((v_T));
-    implaabbcc_t_SliceIndex_impl_2__f_index := fun  (self : Core_Ops_Range.t_RangeFull) (slice : t_Slice ((v_T)))=>
-      slice;
-  }.
-
-Instance Core_Convert.t_AsRef_225396752 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_AsRef ((t_Array ((v_T)) (v_N))) ((t_Slice ((v_T)))) :=
-  {
-    implaabbcc_t_AsRef_impl_1__f_as_ref := fun  (self : t_Array ((v_T)) (v_N))=>
-      Core_Ops_Index.Index__f_index (self) (Core_Ops_Range.RangeFull_RangeFull);
-  }.
-
-Definition match_list `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : t_Seq ((v_T))) : t_LIST ((v_T)) :=
-  if
-    Rust_primitives_U128.eq (Alloc_Vec.impl_1__len (f_Seq_v s)) ((0 : t_usize))
-  then
-    LIST_NIL
-  else
-    LIST_CONS (Core_Clone.Clone__f_clone (Core_Ops_Index.Index__f_index (f_Seq_v s) ((0 : t_usize)))) (Seq_Seq (Alloc_Slice.impl__concat (Rust_primitives.unsize ([Core_Ops_Index.Index__f_index (f_Seq_v s) (Core_Ops_Range.RangeFrom_RangeFrom ((1 : t_usize)))])))).
-
-Instance t_SliceIndex_823798546 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : t_SliceIndex ((t_usize)) ((t_Slice ((v_T)))) :=
-  {
-    implaabbcc_t_SliceIndex_impl_1__f_Output := v_T;
-    implaabbcc_t_SliceIndex_impl_1__f_index := fun  (self : t_usize) (slice : t_Slice ((v_T)))=>
-      let x : t_usize := Core_Convert.Into__f_into (Core_Base_interface_Int.f_U64_v 0 self) in
-      Core_Ops_Index.Index__f_index (f_Seq_v f_Slice_v slice) (x);
-  }.
+  settable! (Build_t_Array (v_T := v_T) (v_N := v_N)) <f_Array_v>.
+
+(* Instance t_Clone_280203255 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Array ((v_T)) (v_N))) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_4__f_clone := fun  (self : t_Array ((v_T)) (v_N))=> *)
+(*       Array_Array (Core_Clone.Clone__f_clone (f_Array_v self)); *)
+(*   }. *)
+
+(* Instance t_From_136385924 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_From ((t_Array (v_T) (v_N))) ((t_Array ((v_T)) (v_N))) := *)
+(*   { *)
+(*     Core_Convert.From_impl_1__f_from := fun  (x : t_Array ((v_T)) (v_N))=> *)
+(*       match Core_Convert.TryInto__f_try_into (f_Seq_v f_Slice_v f_Array_v x) with *)
+(*       | Core_Result.Result_Ok (x) => *)
+(*         x *)
+(*       | _ => *)
+(*         Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_const ([("some error?"%string : string)]))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_693883310 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_From ((t_Slice ((v_T)))) ((t_Slice v_T)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_2__f_from := fun  (x : t_Slice v_T)=> *)
+(*       Slice_Slice (Seq_Seq (Alloc_Slice.impl__to_vec (x))); *)
+(*   }. *)
+
+(* Definition impl_3__cast `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (self : t_Array ((v_T)) (v_N)) : t_Slice ((v_T)) := *)
+(*   f_Array_v self. *)
+
+(* TODO: please implement the method `item'_HaxError` *)
+
+(* Class t_Sealed (v_Self : Type) : Type := *)
+(*   { *)
+(*   }. *)
+(* Arguments t_Sealed (_). *)
+
+(* Instance t_Sealed_333055463 : t_Sealed ((t_usize)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_559949524 : t_Sealed ((Core_Ops_Range.t_Range ((t_usize)))) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_593349583 : t_Sealed ((Core_Ops_Range.t_RangeTo ((t_usize)))) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_953301182 : t_Sealed ((Core_Ops_Range.t_RangeFrom ((t_usize)))) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_449367833 : t_Sealed ((Core_Ops_Range.t_RangeFull)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_146970483 : t_Sealed ((Core_Ops_Range.t_RangeInclusive ((t_usize)))) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_696202684 : t_Sealed ((Core_Ops_Range.t_RangeToInclusive ((t_usize)))) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_491368469 : t_Sealed (((Core_Ops_Range.t_Bound ((t_usize))*Core_Ops_Range.t_Bound ((t_usize))))) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_Sealed_665181514 : t_Sealed ((Core_Ops_Index_range.t_IndexRange)) := *)
+(*   { *)
+(*   }. *)
+
+(* Instance t_TryFrom_60962407 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Copy (v_T)} : Core_Convert.t_TryFrom ((t_Array ((v_T)) (v_N))) ((t_Slice ((v_T)))) := *)
+(*   { *)
+(*     Core_Convert.TryFrom_impl_2__f_Error := t_TryFromSliceError; *)
+(*     Core_Convert.TryFrom_impl_2__f_try_from := fun  (slice : t_Slice ((v_T)))=> *)
+(*       Core_Convert.TryFrom__f_try_from (slice); *)
+(*   }. *)
+
+(* Fixpoint impl_24__from_u8_binary (x : t_u8) `{Rust_primitives_U128.ne (x) ((0 : t_u8)) = true} : Core_Base_Spec_Binary_Positive.t_Positive := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (x) ((1 : t_u8)) *)
+(*   then *)
+(*     Core_Base_Spec_Binary_Positive.xH *)
+(*   else *)
+(*     if *)
+(*       Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u8))) ((0 : t_u8)) *)
+(*     then *)
+(*       Core_Base_Spec_Binary_Positive.xO (impl_24__from_u8_binary (Rust_primitives_U128.div (x) ((2 : t_u8)))) *)
+(*     else *)
+(*       Core_Base_Spec_Binary_Positive.xI (impl_24__from_u8_binary (Rust_primitives_U128.div (x) ((2 : t_u8)))). *)
+
+(* Fixpoint impl_24__to_u8_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u8 := *)
+(*   match Core_Base_Spec_Binary_Positive.match_positive (self) with *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XH => *)
+(*     (1 : t_u8) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) => *)
+(*     Rust_primitives_U128.mul (impl_24__to_u8_binary (p)) ((2 : t_u8)) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) => *)
+(*     Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u8_binary (p)) ((2 : t_u8))) ((1 : t_u8)) *)
+(*   end. *)
+
+(* Fixpoint impl_24__from_u16_binary (x : t_u16) `{Rust_primitives_U128.ne (x) ((0 : t_u16)) = true} : Core_Base_Spec_Binary_Positive.t_Positive := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (x) ((1 : t_u16)) *)
+(*   then *)
+(*     Core_Base_Spec_Binary_Positive.xH *)
+(*   else *)
+(*     if *)
+(*       Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u16))) ((0 : t_u16)) *)
+(*     then *)
+(*       Core_Base_Spec_Binary_Positive.xO (impl_24__from_u16_binary (Rust_primitives_U128.div (x) ((2 : t_u16)))) *)
+(*     else *)
+(*       Core_Base_Spec_Binary_Positive.xI (impl_24__from_u16_binary (Rust_primitives_U128.div (x) ((2 : t_u16)))). *)
+
+(* Fixpoint impl_24__to_u16_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u16 := *)
+(*   match Core_Base_Spec_Binary_Positive.match_positive (self) with *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XH => *)
+(*     (1 : t_u16) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) => *)
+(*     Rust_primitives_U128.mul (impl_24__to_u16_binary (p)) ((2 : t_u16)) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) => *)
+(*     Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u16_binary (p)) ((2 : t_u16))) ((1 : t_u16)) *)
+(*   end. *)
+
+(* Fixpoint impl_24__from_u32_binary (x : t_u32) `{Rust_primitives_U128.ne (x) ((0 : t_u32)) = true} : Core_Base_Spec_Binary_Positive.t_Positive := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (x) ((1 : t_u32)) *)
+(*   then *)
+(*     Core_Base_Spec_Binary_Positive.xH *)
+(*   else *)
+(*     if *)
+(*       Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u32))) ((0 : t_u32)) *)
+(*     then *)
+(*       Core_Base_Spec_Binary_Positive.xO (impl_24__from_u32_binary (Rust_primitives_U128.div (x) ((2 : t_u32)))) *)
+(*     else *)
+(*       Core_Base_Spec_Binary_Positive.xI (impl_24__from_u32_binary (Rust_primitives_U128.div (x) ((2 : t_u32)))). *)
+
+(* Fixpoint impl_24__to_u32_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u32 := *)
+(*   match Core_Base_Spec_Binary_Positive.match_positive (self) with *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XH => *)
+(*     (1 : t_u32) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) => *)
+(*     Rust_primitives_U128.mul (impl_24__to_u32_binary (p)) ((2 : t_u32)) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) => *)
+(*     Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u32_binary (p)) ((2 : t_u32))) ((1 : t_u32)) *)
+(*   end. *)
+
+(* Fixpoint impl_24__from_u64_binary (x : t_u64) `{Rust_primitives_U128.ne (x) ((0 : t_u64)) = true} : Core_Base_Spec_Binary_Positive.t_Positive := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (x) ((1 : t_u64)) *)
+(*   then *)
+(*     Core_Base_Spec_Binary_Positive.xH *)
+(*   else *)
+(*     if *)
+(*       Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u64))) ((0 : t_u64)) *)
+(*     then *)
+(*       Core_Base_Spec_Binary_Positive.xO (impl_24__from_u64_binary (Rust_primitives_U128.div (x) ((2 : t_u64)))) *)
+(*     else *)
+(*       Core_Base_Spec_Binary_Positive.xI (impl_24__from_u64_binary (Rust_primitives_U128.div (x) ((2 : t_u64)))). *)
+
+(* Fixpoint impl_24__to_u64_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u64 := *)
+(*   match Core_Base_Spec_Binary_Positive.match_positive (self) with *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XH => *)
+(*     (1 : t_u64) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) => *)
+(*     Rust_primitives_U128.mul (impl_24__to_u64_binary (p)) ((2 : t_u64)) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) => *)
+(*     Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u64_binary (p)) ((2 : t_u64))) ((1 : t_u64)) *)
+(*   end. *)
+
+(* Fixpoint impl_24__from_u128_binary (x : t_u128) `{Rust_primitives_U128.ne (x) ((0 : t_u128)) = true} : Core_Base_Spec_Binary_Positive.t_Positive := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (x) ((1 : t_u128)) *)
+(*   then *)
+(*     Core_Base_Spec_Binary_Positive.xH *)
+(*   else *)
+(*     if *)
+(*       Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_u128))) ((0 : t_u128)) *)
+(*     then *)
+(*       Core_Base_Spec_Binary_Positive.xO (impl_24__from_u128_binary (Rust_primitives_U128.div (x) ((2 : t_u128)))) *)
+(*     else *)
+(*       Core_Base_Spec_Binary_Positive.xI (impl_24__from_u128_binary (Rust_primitives_U128.div (x) ((2 : t_u128)))). *)
+
+(* Fixpoint impl_24__to_u128_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_u128 := *)
+(*   match Core_Base_Spec_Binary_Positive.match_positive (self) with *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XH => *)
+(*     (1 : t_u128) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) => *)
+(*     Rust_primitives_U128.mul (impl_24__to_u128_binary (p)) ((2 : t_u128)) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) => *)
+(*     Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_u128_binary (p)) ((2 : t_u128))) ((1 : t_u128)) *)
+(*   end. *)
+
+(* Fixpoint impl_24__from_usize_binary (x : t_usize) `{Rust_primitives_U128.ne (x) ((0 : t_usize)) = true} : Core_Base_Spec_Binary_Positive.t_Positive := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (x) ((1 : t_usize)) *)
+(*   then *)
+(*     Core_Base_Spec_Binary_Positive.xH *)
+(*   else *)
+(*     if *)
+(*       Rust_primitives_U128.eq (Rust_primitives_U128.rem (x) ((2 : t_usize))) ((0 : t_usize)) *)
+(*     then *)
+(*       Core_Base_Spec_Binary_Positive.xO (impl_24__from_usize_binary (Rust_primitives_U128.div (x) ((2 : t_usize)))) *)
+(*     else *)
+(*       Core_Base_Spec_Binary_Positive.xI (impl_24__from_usize_binary (Rust_primitives_U128.div (x) ((2 : t_usize)))). *)
+
+(* Fixpoint impl_24__to_usize_binary (self : Core_Base_Spec_Binary_Positive.t_Positive) : t_usize := *)
+(*   match Core_Base_Spec_Binary_Positive.match_positive (self) with *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XH => *)
+(*     (1 : t_usize) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) => *)
+(*     Rust_primitives_U128.mul (impl_24__to_usize_binary (p)) ((2 : t_usize)) *)
+(*   | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) => *)
+(*     Rust_primitives_U128.add (Rust_primitives_U128.mul (impl_24__to_usize_binary (p)) ((2 : t_usize))) ((1 : t_usize)) *)
+(*   end. *)
+
+(* Instance t_Neg_458983225 : Core_Ops_Arith.t_Neg ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_f_Output := t_i8; *)
+(*     Core_Ops_Arith.Neg_f_neg := fun  (self : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Arith.Neg__f_neg (0 self)); *)
+(*   }. *)
+
+(* Instance t_Neg_391498896 : Core_Ops_Arith.t_Neg ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_1__f_Output := t_i16; *)
+(*     Core_Ops_Arith.Neg_impl_1__f_neg := fun  (self : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Arith.Neg__f_neg (0 self)); *)
+(*   }. *)
+
+(* Instance t_Neg_335089866 : Core_Ops_Arith.t_Neg ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_2__f_Output := t_i32; *)
+(*     Core_Ops_Arith.Neg_impl_2__f_neg := fun  (self : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Arith.Neg__f_neg (0 self)); *)
+(*   }. *)
+
+(* Instance t_Neg_310163602 : Core_Ops_Arith.t_Neg ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_3__f_Output := t_i64; *)
+(*     Core_Ops_Arith.Neg_impl_3__f_neg := fun  (self : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Arith.Neg__f_neg (0 self)); *)
+(*   }. *)
+
+(* Instance t_Neg_561836308 : Core_Ops_Arith.t_Neg ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_4__f_Output := t_i128; *)
+(*     Core_Ops_Arith.Neg_impl_4__f_neg := fun  (self : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Arith.Neg__f_neg (0 self)); *)
+(*   }. *)
+
+(* Instance t_Neg_226429037 : Core_Ops_Arith.t_Neg ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_5__f_Output := t_isize; *)
+(*     Core_Ops_Arith.Neg_impl_5__f_neg := fun  (self : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Arith.Neg__f_neg (0 self)); *)
+(*   }. *)
+
+(* Instance t_Add_163564448 : Core_Ops_Arith.t_Add ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_6__f_Output := t_u8; *)
+(*     Core_Ops_Arith.Add_impl_6__f_add := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_778409526 : Core_Ops_Arith.t_Add ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_7__f_Output := t_u16; *)
+(*     Core_Ops_Arith.Add_impl_7__f_add := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_656085397 : Core_Ops_Arith.t_Add ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_8__f_Output := t_u32; *)
+(*     Core_Ops_Arith.Add_impl_8__f_add := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_382169722 : Core_Ops_Arith.t_Add ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_9__f_Output := t_u64; *)
+(*     Core_Ops_Arith.Add_impl_9__f_add := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_774774984 : Core_Ops_Arith.t_Add ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_10__f_Output := t_u128; *)
+(*     Core_Ops_Arith.Add_impl_10__f_add := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_557028235 : Core_Ops_Arith.t_Add ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_11__f_Output := t_usize; *)
+(*     Core_Ops_Arith.Add_impl_11__f_add := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_423766827 : Core_Ops_Arith.t_Add ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_12__f_Output := t_i8; *)
+(*     Core_Ops_Arith.Add_impl_12__f_add := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_559913541 : Core_Ops_Arith.t_Add ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_13__f_Output := t_i16; *)
+(*     Core_Ops_Arith.Add_impl_13__f_add := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_393651638 : Core_Ops_Arith.t_Add ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_14__f_Output := t_i32; *)
+(*     Core_Ops_Arith.Add_impl_14__f_add := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_970037768 : Core_Ops_Arith.t_Add ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_15__f_Output := t_i64; *)
+(*     Core_Ops_Arith.Add_impl_15__f_add := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_207273596 : Core_Ops_Arith.t_Add ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_16__f_Output := t_i128; *)
+(*     Core_Ops_Arith.Add_impl_16__f_add := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Add_100074189 : Core_Ops_Arith.t_Add ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_17__f_Output := t_isize; *)
+(*     Core_Ops_Arith.Add_impl_17__f_add := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Arith.Add__f_add (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_881975497 : Core_Ops_Arith.t_Sub ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_18__f_Output := t_u8; *)
+(*     Core_Ops_Arith.Sub_impl_18__f_sub := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_131267277 : Core_Ops_Arith.t_Sub ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_19__f_Output := t_u16; *)
+(*     Core_Ops_Arith.Sub_impl_19__f_sub := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_723285712 : Core_Ops_Arith.t_Sub ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_20__f_Output := t_u32; *)
+(*     Core_Ops_Arith.Sub_impl_20__f_sub := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_984355770 : Core_Ops_Arith.t_Sub ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_21__f_Output := t_u64; *)
+(*     Core_Ops_Arith.Sub_impl_21__f_sub := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_425350993 : Core_Ops_Arith.t_Sub ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_22__f_Output := t_u128; *)
+(*     Core_Ops_Arith.Sub_impl_22__f_sub := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_651230636 : Core_Ops_Arith.t_Sub ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_23__f_Output := t_usize; *)
+(*     Core_Ops_Arith.Sub_impl_23__f_sub := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_523653575 : Core_Ops_Arith.t_Sub ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_24__f_Output := t_i8; *)
+(*     Core_Ops_Arith.Sub_impl_24__f_sub := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_806513589 : Core_Ops_Arith.t_Sub ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_25__f_Output := t_i16; *)
+(*     Core_Ops_Arith.Sub_impl_25__f_sub := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_857810117 : Core_Ops_Arith.t_Sub ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_26__f_Output := t_i32; *)
+(*     Core_Ops_Arith.Sub_impl_26__f_sub := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_970121413 : Core_Ops_Arith.t_Sub ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_27__f_Output := t_i64; *)
+(*     Core_Ops_Arith.Sub_impl_27__f_sub := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_416724147 : Core_Ops_Arith.t_Sub ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_28__f_Output := t_i128; *)
+(*     Core_Ops_Arith.Sub_impl_28__f_sub := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Sub_630146066 : Core_Ops_Arith.t_Sub ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_29__f_Output := t_isize; *)
+(*     Core_Ops_Arith.Sub_impl_29__f_sub := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Arith.Sub__f_sub (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_848701541 : Core_Ops_Arith.t_Mul ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_30__f_Output := t_u8; *)
+(*     Core_Ops_Arith.Mul_impl_30__f_mul := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_25219058 : Core_Ops_Arith.t_Mul ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_31__f_Output := t_u16; *)
+(*     Core_Ops_Arith.Mul_impl_31__f_mul := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_693615511 : Core_Ops_Arith.t_Mul ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_32__f_Output := t_u32; *)
+(*     Core_Ops_Arith.Mul_impl_32__f_mul := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_533399539 : Core_Ops_Arith.t_Mul ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_33__f_Output := t_u64; *)
+(*     Core_Ops_Arith.Mul_impl_33__f_mul := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_26494971 : Core_Ops_Arith.t_Mul ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_34__f_Output := t_u128; *)
+(*     Core_Ops_Arith.Mul_impl_34__f_mul := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_920306108 : Core_Ops_Arith.t_Mul ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_35__f_Output := t_usize; *)
+(*     Core_Ops_Arith.Mul_impl_35__f_mul := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_234085771 : Core_Ops_Arith.t_Mul ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_36__f_Output := t_i8; *)
+(*     Core_Ops_Arith.Mul_impl_36__f_mul := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_905086505 : Core_Ops_Arith.t_Mul ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_37__f_Output := t_i16; *)
+(*     Core_Ops_Arith.Mul_impl_37__f_mul := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_487928150 : Core_Ops_Arith.t_Mul ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_38__f_Output := t_i32; *)
+(*     Core_Ops_Arith.Mul_impl_38__f_mul := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_459208571 : Core_Ops_Arith.t_Mul ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_39__f_Output := t_i64; *)
+(*     Core_Ops_Arith.Mul_impl_39__f_mul := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_33501126 : Core_Ops_Arith.t_Mul ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_40__f_Output := t_i128; *)
+(*     Core_Ops_Arith.Mul_impl_40__f_mul := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Mul_4074258 : Core_Ops_Arith.t_Mul ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_41__f_Output := t_isize; *)
+(*     Core_Ops_Arith.Mul_impl_41__f_mul := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Arith.Mul__f_mul (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_931334788 : Core_Ops_Arith.t_Div ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_42__f_Output := t_usize; *)
+(*     Core_Ops_Arith.Div_impl_42__f_div := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_617349534 : Core_Ops_Arith.t_Div ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_43__f_Output := t_u8; *)
+(*     Core_Ops_Arith.Div_impl_43__f_div := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_457499033 : Core_Ops_Arith.t_Div ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_44__f_Output := t_u16; *)
+(*     Core_Ops_Arith.Div_impl_44__f_div := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_811411375 : Core_Ops_Arith.t_Div ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_45__f_Output := t_u32; *)
+(*     Core_Ops_Arith.Div_impl_45__f_div := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_488661846 : Core_Ops_Arith.t_Div ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_46__f_Output := t_u64; *)
+(*     Core_Ops_Arith.Div_impl_46__f_div := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_240899356 : Core_Ops_Arith.t_Div ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_47__f_Output := t_u128; *)
+(*     Core_Ops_Arith.Div_impl_47__f_div := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_152532073 : Core_Ops_Arith.t_Div ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_48__f_Output := t_isize; *)
+(*     Core_Ops_Arith.Div_impl_48__f_div := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_500120844 : Core_Ops_Arith.t_Div ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_49__f_Output := t_i8; *)
+(*     Core_Ops_Arith.Div_impl_49__f_div := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_172891911 : Core_Ops_Arith.t_Div ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_50__f_Output := t_i16; *)
+(*     Core_Ops_Arith.Div_impl_50__f_div := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_317731517 : Core_Ops_Arith.t_Div ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_51__f_Output := t_i32; *)
+(*     Core_Ops_Arith.Div_impl_51__f_div := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_660736826 : Core_Ops_Arith.t_Div ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_52__f_Output := t_i64; *)
+(*     Core_Ops_Arith.Div_impl_52__f_div := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Div_377244152 : Core_Ops_Arith.t_Div ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_53__f_Output := t_i128; *)
+(*     Core_Ops_Arith.Div_impl_53__f_div := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Arith.Div__f_div (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_803566572 : Core_Ops_Arith.t_Rem ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_54__f_Output := t_usize; *)
+(*     Core_Ops_Arith.Rem_impl_54__f_rem := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_743722603 : Core_Ops_Arith.t_Rem ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_55__f_Output := t_u8; *)
+(*     Core_Ops_Arith.Rem_impl_55__f_rem := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_880026988 : Core_Ops_Arith.t_Rem ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_56__f_Output := t_u16; *)
+(*     Core_Ops_Arith.Rem_impl_56__f_rem := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_25555618 : Core_Ops_Arith.t_Rem ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_57__f_Output := t_u32; *)
+(*     Core_Ops_Arith.Rem_impl_57__f_rem := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_968906586 : Core_Ops_Arith.t_Rem ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_58__f_Output := t_u64; *)
+(*     Core_Ops_Arith.Rem_impl_58__f_rem := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_375327970 : Core_Ops_Arith.t_Rem ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_59__f_Output := t_u128; *)
+(*     Core_Ops_Arith.Rem_impl_59__f_rem := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_622329521 : Core_Ops_Arith.t_Rem ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_60__f_Output := t_isize; *)
+(*     Core_Ops_Arith.Rem_impl_60__f_rem := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_455030026 : Core_Ops_Arith.t_Rem ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_61__f_Output := t_i8; *)
+(*     Core_Ops_Arith.Rem_impl_61__f_rem := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_505105792 : Core_Ops_Arith.t_Rem ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_62__f_Output := t_i16; *)
+(*     Core_Ops_Arith.Rem_impl_62__f_rem := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_628294430 : Core_Ops_Arith.t_Rem ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_63__f_Output := t_i32; *)
+(*     Core_Ops_Arith.Rem_impl_63__f_rem := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_93493223 : Core_Ops_Arith.t_Rem ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_64__f_Output := t_i64; *)
+(*     Core_Ops_Arith.Rem_impl_64__f_rem := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Rem_145124954 : Core_Ops_Arith.t_Rem ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_65__f_Output := t_i128; *)
+(*     Core_Ops_Arith.Rem_impl_65__f_rem := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Arith.Rem__f_rem (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Not_229315204 : Core_Ops_Bit.t_Not ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_f_Output := t_u8; *)
+(*     Core_Ops_Bit.Not_f_not := fun  (self : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_942034783 : Core_Ops_Bit.t_Not ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_1__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Not_impl_1__f_not := fun  (self : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_357324864 : Core_Ops_Bit.t_Not ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_2__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Not_impl_2__f_not := fun  (self : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_985070921 : Core_Ops_Bit.t_Not ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_3__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Not_impl_3__f_not := fun  (self : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_850275208 : Core_Ops_Bit.t_Not ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_4__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Not_impl_4__f_not := fun  (self : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_486510241 : Core_Ops_Bit.t_Not ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_5__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Not_impl_5__f_not := fun  (self : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_339946088 : Core_Ops_Bit.t_Not ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_6__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Not_impl_6__f_not := fun  (self : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_971529715 : Core_Ops_Bit.t_Not ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_7__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Not_impl_7__f_not := fun  (self : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_933069850 : Core_Ops_Bit.t_Not ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_8__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Not_impl_8__f_not := fun  (self : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_313344644 : Core_Ops_Bit.t_Not ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_9__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Not_impl_9__f_not := fun  (self : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_430884737 : Core_Ops_Bit.t_Not ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_10__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Not_impl_10__f_not := fun  (self : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Not_991178827 : Core_Ops_Bit.t_Not ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_11__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Not_impl_11__f_not := fun  (self : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Not__f_not (0 self)); *)
+(*   }. *)
+
+(* Instance t_Shr_12953330 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_12__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shr_impl_12__f_shr := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_388260343 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_13__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shr_impl_13__f_shr := fun  (self : t_u8) (other : t_u16)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_853130250 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_14__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shr_impl_14__f_shr := fun  (self : t_u8) (other : t_u32)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_431768874 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_15__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shr_impl_15__f_shr := fun  (self : t_u8) (other : t_u64)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_195972813 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_16__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shr_impl_16__f_shr := fun  (self : t_u8) (other : t_u128)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_1014708045 : Core_Ops_Bit.t_Shr ((t_u8)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_17__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shr_impl_17__f_shr := fun  (self : t_u8) (other : t_usize)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_523336454 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_18__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shr_impl_18__f_shr := fun  (self : t_u16) (other : t_u8)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_492915920 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_19__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shr_impl_19__f_shr := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_668381950 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_20__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shr_impl_20__f_shr := fun  (self : t_u16) (other : t_u32)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_737796241 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_21__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shr_impl_21__f_shr := fun  (self : t_u16) (other : t_u64)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_274581485 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_22__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shr_impl_22__f_shr := fun  (self : t_u16) (other : t_u128)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_222839051 : Core_Ops_Bit.t_Shr ((t_u16)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_23__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shr_impl_23__f_shr := fun  (self : t_u16) (other : t_usize)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_309330251 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_24__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shr_impl_24__f_shr := fun  (self : t_u32) (other : t_u8)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_786249415 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_25__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shr_impl_25__f_shr := fun  (self : t_u32) (other : t_u16)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_424521487 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_26__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shr_impl_26__f_shr := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_171434466 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_27__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shr_impl_27__f_shr := fun  (self : t_u32) (other : t_u64)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_334275505 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_28__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shr_impl_28__f_shr := fun  (self : t_u32) (other : t_u128)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_924047074 : Core_Ops_Bit.t_Shr ((t_u32)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_29__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shr_impl_29__f_shr := fun  (self : t_u32) (other : t_usize)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_184871209 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_30__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shr_impl_30__f_shr := fun  (self : t_u64) (other : t_u8)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_657280454 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_31__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shr_impl_31__f_shr := fun  (self : t_u64) (other : t_u16)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_669439990 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_32__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shr_impl_32__f_shr := fun  (self : t_u64) (other : t_u32)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_691158071 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_33__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shr_impl_33__f_shr := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_14948994 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_34__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shr_impl_34__f_shr := fun  (self : t_u64) (other : t_u128)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_455206495 : Core_Ops_Bit.t_Shr ((t_u64)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_35__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shr_impl_35__f_shr := fun  (self : t_u64) (other : t_usize)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_564253207 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_36__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shr_impl_36__f_shr := fun  (self : t_u128) (other : t_u8)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_969630543 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_37__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shr_impl_37__f_shr := fun  (self : t_u128) (other : t_u16)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_232283601 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_38__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shr_impl_38__f_shr := fun  (self : t_u128) (other : t_u32)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_124085536 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_39__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shr_impl_39__f_shr := fun  (self : t_u128) (other : t_u64)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_100195117 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_40__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shr_impl_40__f_shr := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_580295078 : Core_Ops_Bit.t_Shr ((t_u128)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_41__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shr_impl_41__f_shr := fun  (self : t_u128) (other : t_usize)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_743095260 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_42__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shr_impl_42__f_shr := fun  (self : t_usize) (other : t_u8)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_533612490 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_43__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shr_impl_43__f_shr := fun  (self : t_usize) (other : t_u16)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_813229059 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_44__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shr_impl_44__f_shr := fun  (self : t_usize) (other : t_u32)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_263955907 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_45__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shr_impl_45__f_shr := fun  (self : t_usize) (other : t_u64)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_922020569 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_46__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shr_impl_46__f_shr := fun  (self : t_usize) (other : t_u128)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_503396695 : Core_Ops_Bit.t_Shr ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_47__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shr_impl_47__f_shr := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_121476011 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_48__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shr_impl_48__f_shr := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_516848929 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_49__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shr_impl_49__f_shr := fun  (self : t_i8) (other : t_i16)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_784891982 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_50__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shr_impl_50__f_shr := fun  (self : t_i8) (other : t_i32)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_577800953 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_51__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shr_impl_51__f_shr := fun  (self : t_i8) (other : t_i64)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_565021556 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_52__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shr_impl_52__f_shr := fun  (self : t_i8) (other : t_i128)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_289749066 : Core_Ops_Bit.t_Shr ((t_i8)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_53__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shr_impl_53__f_shr := fun  (self : t_i8) (other : t_isize)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_344591291 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_54__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shr_impl_54__f_shr := fun  (self : t_i16) (other : t_i8)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_849637205 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_55__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shr_impl_55__f_shr := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_705624838 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_56__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shr_impl_56__f_shr := fun  (self : t_i16) (other : t_i32)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_214389896 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_57__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shr_impl_57__f_shr := fun  (self : t_i16) (other : t_i64)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_336883057 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_58__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shr_impl_58__f_shr := fun  (self : t_i16) (other : t_i128)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_146711596 : Core_Ops_Bit.t_Shr ((t_i16)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_59__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shr_impl_59__f_shr := fun  (self : t_i16) (other : t_isize)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_1047625734 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_60__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shr_impl_60__f_shr := fun  (self : t_i32) (other : t_i8)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_510425851 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_61__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shr_impl_61__f_shr := fun  (self : t_i32) (other : t_i16)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_863756152 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_62__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shr_impl_62__f_shr := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_949209119 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_63__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shr_impl_63__f_shr := fun  (self : t_i32) (other : t_i64)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_922072816 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_64__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shr_impl_64__f_shr := fun  (self : t_i32) (other : t_i128)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_752457877 : Core_Ops_Bit.t_Shr ((t_i32)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_65__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shr_impl_65__f_shr := fun  (self : t_i32) (other : t_isize)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_1006263577 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_66__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shr_impl_66__f_shr := fun  (self : t_i64) (other : t_i8)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_103862152 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_67__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shr_impl_67__f_shr := fun  (self : t_i64) (other : t_i16)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_400961368 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_68__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shr_impl_68__f_shr := fun  (self : t_i64) (other : t_i32)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_861775823 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_69__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shr_impl_69__f_shr := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_452522790 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_70__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shr_impl_70__f_shr := fun  (self : t_i64) (other : t_i128)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_333354071 : Core_Ops_Bit.t_Shr ((t_i64)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_71__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shr_impl_71__f_shr := fun  (self : t_i64) (other : t_isize)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_432441345 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_72__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shr_impl_72__f_shr := fun  (self : t_i128) (other : t_i8)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_277615905 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_73__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shr_impl_73__f_shr := fun  (self : t_i128) (other : t_i16)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_915182570 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_74__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shr_impl_74__f_shr := fun  (self : t_i128) (other : t_i32)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_494774243 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_75__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shr_impl_75__f_shr := fun  (self : t_i128) (other : t_i64)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_805480385 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_76__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shr_impl_76__f_shr := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_603049588 : Core_Ops_Bit.t_Shr ((t_i128)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_77__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shr_impl_77__f_shr := fun  (self : t_i128) (other : t_isize)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_568611886 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_78__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shr_impl_78__f_shr := fun  (self : t_isize) (other : t_i8)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_586753068 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_79__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shr_impl_79__f_shr := fun  (self : t_isize) (other : t_i16)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_546943333 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_80__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shr_impl_80__f_shr := fun  (self : t_isize) (other : t_i32)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_279387927 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_81__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shr_impl_81__f_shr := fun  (self : t_isize) (other : t_i64)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_1068345337 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_82__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shr_impl_82__f_shr := fun  (self : t_isize) (other : t_i128)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shr_973059419 : Core_Ops_Bit.t_Shr ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_83__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shr_impl_83__f_shr := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shr__f_shr (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_1068004004 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_84__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shl_impl_84__f_shl := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_901091219 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_85__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shl_impl_85__f_shl := fun  (self : t_u8) (other : t_u16)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_945857776 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_86__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shl_impl_86__f_shl := fun  (self : t_u8) (other : t_u32)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_664847313 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_87__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shl_impl_87__f_shl := fun  (self : t_u8) (other : t_u64)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_464846274 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_88__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shl_impl_88__f_shl := fun  (self : t_u8) (other : t_u128)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_878244808 : Core_Ops_Bit.t_Shl ((t_u8)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_89__f_Output := t_u8; *)
+(*     Core_Ops_Bit.Shl_impl_89__f_shl := fun  (self : t_u8) (other : t_usize)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_903453467 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_90__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shl_impl_90__f_shl := fun  (self : t_u16) (other : t_u8)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_436372147 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_91__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shl_impl_91__f_shl := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_947839621 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_92__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shl_impl_92__f_shl := fun  (self : t_u16) (other : t_u32)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_628241268 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_93__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shl_impl_93__f_shl := fun  (self : t_u16) (other : t_u64)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_424385160 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_94__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shl_impl_94__f_shl := fun  (self : t_u16) (other : t_u128)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_323870545 : Core_Ops_Bit.t_Shl ((t_u16)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_95__f_Output := t_u16; *)
+(*     Core_Ops_Bit.Shl_impl_95__f_shl := fun  (self : t_u16) (other : t_usize)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_126393744 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_96__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shl_impl_96__f_shl := fun  (self : t_u32) (other : t_u8)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_656248550 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_97__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shl_impl_97__f_shl := fun  (self : t_u32) (other : t_u16)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_813195779 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_98__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shl_impl_98__f_shl := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_204059698 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_99__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shl_impl_99__f_shl := fun  (self : t_u32) (other : t_u64)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_879986569 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_100__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shl_impl_100__f_shl := fun  (self : t_u32) (other : t_u128)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_833700927 : Core_Ops_Bit.t_Shl ((t_u32)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_101__f_Output := t_u32; *)
+(*     Core_Ops_Bit.Shl_impl_101__f_shl := fun  (self : t_u32) (other : t_usize)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_275505642 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_102__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shl_impl_102__f_shl := fun  (self : t_u64) (other : t_u8)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_647895438 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_103__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shl_impl_103__f_shl := fun  (self : t_u64) (other : t_u16)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_477979243 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_104__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shl_impl_104__f_shl := fun  (self : t_u64) (other : t_u32)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_410861524 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_105__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shl_impl_105__f_shl := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_552094963 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_106__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shl_impl_106__f_shl := fun  (self : t_u64) (other : t_u128)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_149556751 : Core_Ops_Bit.t_Shl ((t_u64)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_107__f_Output := t_u64; *)
+(*     Core_Ops_Bit.Shl_impl_107__f_shl := fun  (self : t_u64) (other : t_usize)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_304665212 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_108__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shl_impl_108__f_shl := fun  (self : t_u128) (other : t_u8)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_472905058 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_109__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shl_impl_109__f_shl := fun  (self : t_u128) (other : t_u16)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_428941264 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_110__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shl_impl_110__f_shl := fun  (self : t_u128) (other : t_u32)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_914780398 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_111__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shl_impl_111__f_shl := fun  (self : t_u128) (other : t_u64)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_430239094 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_112__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shl_impl_112__f_shl := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_741881122 : Core_Ops_Bit.t_Shl ((t_u128)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_113__f_Output := t_u128; *)
+(*     Core_Ops_Bit.Shl_impl_113__f_shl := fun  (self : t_u128) (other : t_usize)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_562088992 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_114__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shl_impl_114__f_shl := fun  (self : t_usize) (other : t_u8)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_513485474 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_115__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shl_impl_115__f_shl := fun  (self : t_usize) (other : t_u16)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_377785849 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_116__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shl_impl_116__f_shl := fun  (self : t_usize) (other : t_u32)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_812786829 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_117__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shl_impl_117__f_shl := fun  (self : t_usize) (other : t_u64)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_995341886 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_118__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shl_impl_118__f_shl := fun  (self : t_usize) (other : t_u128)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_175679910 : Core_Ops_Bit.t_Shl ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_119__f_Output := t_usize; *)
+(*     Core_Ops_Bit.Shl_impl_119__f_shl := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_226835388 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_120__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shl_impl_120__f_shl := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_952919099 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_121__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shl_impl_121__f_shl := fun  (self : t_i8) (other : t_i16)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_112318712 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_122__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shl_impl_122__f_shl := fun  (self : t_i8) (other : t_i32)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_525874705 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_123__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shl_impl_123__f_shl := fun  (self : t_i8) (other : t_i64)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_961481736 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_124__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shl_impl_124__f_shl := fun  (self : t_i8) (other : t_i128)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_439453927 : Core_Ops_Bit.t_Shl ((t_i8)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_125__f_Output := t_i8; *)
+(*     Core_Ops_Bit.Shl_impl_125__f_shl := fun  (self : t_i8) (other : t_isize)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_592433891 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_126__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shl_impl_126__f_shl := fun  (self : t_i16) (other : t_i8)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_641723100 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_127__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shl_impl_127__f_shl := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_327062664 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_128__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shl_impl_128__f_shl := fun  (self : t_i16) (other : t_i32)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_48655345 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_129__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shl_impl_129__f_shl := fun  (self : t_i16) (other : t_i64)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_1027629694 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_130__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shl_impl_130__f_shl := fun  (self : t_i16) (other : t_i128)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_732630181 : Core_Ops_Bit.t_Shl ((t_i16)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_131__f_Output := t_i16; *)
+(*     Core_Ops_Bit.Shl_impl_131__f_shl := fun  (self : t_i16) (other : t_isize)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_798117292 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_132__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shl_impl_132__f_shl := fun  (self : t_i32) (other : t_i8)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_119978092 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_133__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shl_impl_133__f_shl := fun  (self : t_i32) (other : t_i16)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_915848064 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_134__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shl_impl_134__f_shl := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_1048573970 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_135__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shl_impl_135__f_shl := fun  (self : t_i32) (other : t_i64)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_187893644 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_136__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shl_impl_136__f_shl := fun  (self : t_i32) (other : t_i128)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_388905415 : Core_Ops_Bit.t_Shl ((t_i32)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_137__f_Output := t_i32; *)
+(*     Core_Ops_Bit.Shl_impl_137__f_shl := fun  (self : t_i32) (other : t_isize)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_125319009 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_138__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shl_impl_138__f_shl := fun  (self : t_i64) (other : t_i8)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_922264754 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_139__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shl_impl_139__f_shl := fun  (self : t_i64) (other : t_i16)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_653885117 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_140__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shl_impl_140__f_shl := fun  (self : t_i64) (other : t_i32)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_458184648 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_141__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shl_impl_141__f_shl := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_964774841 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_142__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shl_impl_142__f_shl := fun  (self : t_i64) (other : t_i128)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_530100514 : Core_Ops_Bit.t_Shl ((t_i64)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_143__f_Output := t_i64; *)
+(*     Core_Ops_Bit.Shl_impl_143__f_shl := fun  (self : t_i64) (other : t_isize)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_878351801 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_144__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shl_impl_144__f_shl := fun  (self : t_i128) (other : t_i8)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_263500228 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_145__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shl_impl_145__f_shl := fun  (self : t_i128) (other : t_i16)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_321265820 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_146__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shl_impl_146__f_shl := fun  (self : t_i128) (other : t_i32)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_637380912 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_147__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shl_impl_147__f_shl := fun  (self : t_i128) (other : t_i64)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_1027887542 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_148__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shl_impl_148__f_shl := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_937161025 : Core_Ops_Bit.t_Shl ((t_i128)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_149__f_Output := t_i128; *)
+(*     Core_Ops_Bit.Shl_impl_149__f_shl := fun  (self : t_i128) (other : t_isize)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_755078895 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_150__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shl_impl_150__f_shl := fun  (self : t_isize) (other : t_i8)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_176396665 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_151__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shl_impl_151__f_shl := fun  (self : t_isize) (other : t_i16)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_155364696 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_152__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shl_impl_152__f_shl := fun  (self : t_isize) (other : t_i32)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_388376431 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_153__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shl_impl_153__f_shl := fun  (self : t_isize) (other : t_i64)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_23991972 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_154__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shl_impl_154__f_shl := fun  (self : t_isize) (other : t_i128)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_Shl_29513465 : Core_Ops_Bit.t_Shl ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_155__f_Output := t_isize; *)
+(*     Core_Ops_Bit.Shl_impl_155__f_shl := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.Shl__f_shl (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_1040853946 : Core_Ops_Bit.t_BitOr ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_156__f_Output := t_u8; *)
+(*     Core_Ops_Bit.BitOr_impl_156__f_bitor := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_321969851 : Core_Ops_Bit.t_BitOr ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_157__f_Output := t_u16; *)
+(*     Core_Ops_Bit.BitOr_impl_157__f_bitor := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_351603536 : Core_Ops_Bit.t_BitOr ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_158__f_Output := t_u32; *)
+(*     Core_Ops_Bit.BitOr_impl_158__f_bitor := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_622284079 : Core_Ops_Bit.t_BitOr ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_159__f_Output := t_u64; *)
+(*     Core_Ops_Bit.BitOr_impl_159__f_bitor := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_489814492 : Core_Ops_Bit.t_BitOr ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_160__f_Output := t_u128; *)
+(*     Core_Ops_Bit.BitOr_impl_160__f_bitor := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_32215878 : Core_Ops_Bit.t_BitOr ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_161__f_Output := t_usize; *)
+(*     Core_Ops_Bit.BitOr_impl_161__f_bitor := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_1041756998 : Core_Ops_Bit.t_BitOr ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_162__f_Output := t_i8; *)
+(*     Core_Ops_Bit.BitOr_impl_162__f_bitor := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_956932383 : Core_Ops_Bit.t_BitOr ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_163__f_Output := t_i16; *)
+(*     Core_Ops_Bit.BitOr_impl_163__f_bitor := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_594344031 : Core_Ops_Bit.t_BitOr ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_164__f_Output := t_i32; *)
+(*     Core_Ops_Bit.BitOr_impl_164__f_bitor := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_116125306 : Core_Ops_Bit.t_BitOr ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_165__f_Output := t_i64; *)
+(*     Core_Ops_Bit.BitOr_impl_165__f_bitor := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_38608744 : Core_Ops_Bit.t_BitOr ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_166__f_Output := t_i128; *)
+(*     Core_Ops_Bit.BitOr_impl_166__f_bitor := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitOr_1042217209 : Core_Ops_Bit.t_BitOr ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_167__f_Output := t_isize; *)
+(*     Core_Ops_Bit.BitOr_impl_167__f_bitor := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.BitOr__f_bitor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_386756822 : Core_Ops_Bit.t_BitXor ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_168__f_Output := t_u8; *)
+(*     Core_Ops_Bit.BitXor_impl_168__f_bitxor := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_821701514 : Core_Ops_Bit.t_BitXor ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_169__f_Output := t_u16; *)
+(*     Core_Ops_Bit.BitXor_impl_169__f_bitxor := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_291279090 : Core_Ops_Bit.t_BitXor ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_170__f_Output := t_u32; *)
+(*     Core_Ops_Bit.BitXor_impl_170__f_bitxor := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_491195719 : Core_Ops_Bit.t_BitXor ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_171__f_Output := t_u64; *)
+(*     Core_Ops_Bit.BitXor_impl_171__f_bitxor := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_1062952053 : Core_Ops_Bit.t_BitXor ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_172__f_Output := t_u128; *)
+(*     Core_Ops_Bit.BitXor_impl_172__f_bitxor := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_578664073 : Core_Ops_Bit.t_BitXor ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_173__f_Output := t_usize; *)
+(*     Core_Ops_Bit.BitXor_impl_173__f_bitxor := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_10634863 : Core_Ops_Bit.t_BitXor ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_174__f_Output := t_i8; *)
+(*     Core_Ops_Bit.BitXor_impl_174__f_bitxor := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_17374705 : Core_Ops_Bit.t_BitXor ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_175__f_Output := t_i16; *)
+(*     Core_Ops_Bit.BitXor_impl_175__f_bitxor := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_540719776 : Core_Ops_Bit.t_BitXor ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_176__f_Output := t_i32; *)
+(*     Core_Ops_Bit.BitXor_impl_176__f_bitxor := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_364228620 : Core_Ops_Bit.t_BitXor ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_177__f_Output := t_i64; *)
+(*     Core_Ops_Bit.BitXor_impl_177__f_bitxor := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_1046651040 : Core_Ops_Bit.t_BitXor ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_178__f_Output := t_i128; *)
+(*     Core_Ops_Bit.BitXor_impl_178__f_bitxor := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitXor_882768112 : Core_Ops_Bit.t_BitXor ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_179__f_Output := t_isize; *)
+(*     Core_Ops_Bit.BitXor_impl_179__f_bitxor := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.BitXor__f_bitxor (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_808417265 : Core_Ops_Bit.t_BitAnd ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_180__f_Output := t_u8; *)
+(*     Core_Ops_Bit.BitAnd_impl_180__f_bitand := fun  (self : t_u8) (other : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_497524034 : Core_Ops_Bit.t_BitAnd ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_181__f_Output := t_u16; *)
+(*     Core_Ops_Bit.BitAnd_impl_181__f_bitand := fun  (self : t_u16) (other : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_369920328 : Core_Ops_Bit.t_BitAnd ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_182__f_Output := t_u32; *)
+(*     Core_Ops_Bit.BitAnd_impl_182__f_bitand := fun  (self : t_u32) (other : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_916627715 : Core_Ops_Bit.t_BitAnd ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_183__f_Output := t_u64; *)
+(*     Core_Ops_Bit.BitAnd_impl_183__f_bitand := fun  (self : t_u64) (other : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_490377132 : Core_Ops_Bit.t_BitAnd ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_184__f_Output := t_u128; *)
+(*     Core_Ops_Bit.BitAnd_impl_184__f_bitand := fun  (self : t_u128) (other : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_183531911 : Core_Ops_Bit.t_BitAnd ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_185__f_Output := t_usize; *)
+(*     Core_Ops_Bit.BitAnd_impl_185__f_bitand := fun  (self : t_usize) (other : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_691365492 : Core_Ops_Bit.t_BitAnd ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_186__f_Output := t_i8; *)
+(*     Core_Ops_Bit.BitAnd_impl_186__f_bitand := fun  (self : t_i8) (other : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_279078905 : Core_Ops_Bit.t_BitAnd ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_187__f_Output := t_i16; *)
+(*     Core_Ops_Bit.BitAnd_impl_187__f_bitand := fun  (self : t_i16) (other : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_48965752 : Core_Ops_Bit.t_BitAnd ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_188__f_Output := t_i32; *)
+(*     Core_Ops_Bit.BitAnd_impl_188__f_bitand := fun  (self : t_i32) (other : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_140075308 : Core_Ops_Bit.t_BitAnd ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_189__f_Output := t_i64; *)
+(*     Core_Ops_Bit.BitAnd_impl_189__f_bitand := fun  (self : t_i64) (other : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_849922519 : Core_Ops_Bit.t_BitAnd ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_190__f_Output := t_i128; *)
+(*     Core_Ops_Bit.BitAnd_impl_190__f_bitand := fun  (self : t_i128) (other : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Instance t_BitAnd_519590116 : Core_Ops_Bit.t_BitAnd ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_191__f_Output := t_isize; *)
+(*     Core_Ops_Bit.BitAnd_impl_191__f_bitand := fun  (self : t_isize) (other : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Ops_Bit.BitAnd__f_bitand (0 self) (0 other)); *)
+(*   }. *)
+
+(* Class t_SliceIndex (v_Self : Type) (v_T : Type) `{t_Sealed (v_Self)} : Type := *)
+(*   { *)
+(*     SliceIndex__f_Output : Type; *)
+(*     SliceIndex__f_index : v_Self -> v_T -> SliceIndex__f_Outputt_item; *)
+(*   }. *)
+(* Arguments t_SliceIndex (_) (_) {_}. *)
+
+(* Instance t_From_44016844 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (x : t_u8)=> *)
+(*       if *)
+(*         Rust_primitives_U128.eq (x) ((0 : t_u8)) *)
+(*       then *)
+(*         Core_Base_Spec_Haxint.v_HaxInt_ZERO *)
+(*       else *)
+(*         Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u8_binary (x)); *)
+(*   }. *)
+
+(* Instance t_From_687290056 : Core_Convert.t_From ((t_u8)) ((Core_Base_Spec_Haxint.t_HaxInt)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_1__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       match Core_Base_Spec_Binary_Pos.match_pos (x) with *)
+(*       | Core_Base_Spec_Binary_Pos.POS_ZERO => *)
+(*         (0 : t_u8) *)
+(*       | Core_Base_Spec_Binary_Pos.POS_POS (p) => *)
+(*         impl_24__to_u8_binary (p) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_443091616 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_2__f_from := fun  (x : t_u16)=> *)
+(*       if *)
+(*         Rust_primitives_U128.eq (x) ((0 : t_u16)) *)
+(*       then *)
+(*         Core_Base_Spec_Haxint.v_HaxInt_ZERO *)
+(*       else *)
+(*         Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u16_binary (x)); *)
+(*   }. *)
+
+(* Instance t_From_318689415 : Core_Convert.t_From ((t_u16)) ((Core_Base_Spec_Haxint.t_HaxInt)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_3__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       match Core_Base_Spec_Binary_Pos.match_pos (x) with *)
+(*       | Core_Base_Spec_Binary_Pos.POS_ZERO => *)
+(*         (0 : t_u16) *)
+(*       | Core_Base_Spec_Binary_Pos.POS_POS (p) => *)
+(*         impl_24__to_u16_binary (p) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_963987115 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_4__f_from := fun  (x : t_u32)=> *)
+(*       if *)
+(*         Rust_primitives_U128.eq (x) ((0 : t_u32)) *)
+(*       then *)
+(*         Core_Base_Spec_Haxint.v_HaxInt_ZERO *)
+(*       else *)
+(*         Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u32_binary (x)); *)
+(*   }. *)
+
+(* Instance t_From_352982036 : Core_Convert.t_From ((t_u32)) ((Core_Base_Spec_Haxint.t_HaxInt)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_5__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       match Core_Base_Spec_Binary_Pos.match_pos (x) with *)
+(*       | Core_Base_Spec_Binary_Pos.POS_ZERO => *)
+(*         (0 : t_u32) *)
+(*       | Core_Base_Spec_Binary_Pos.POS_POS (p) => *)
+(*         impl_24__to_u32_binary (p) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_1028096748 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_6__f_from := fun  (x : t_u64)=> *)
+(*       if *)
+(*         Rust_primitives_U128.eq (x) ((0 : t_u64)) *)
+(*       then *)
+(*         Core_Base_Spec_Haxint.v_HaxInt_ZERO *)
+(*       else *)
+(*         Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u64_binary (x)); *)
+(*   }. *)
+
+(* Instance t_From_545928960 : Core_Convert.t_From ((t_u64)) ((Core_Base_Spec_Haxint.t_HaxInt)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_7__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       match Core_Base_Spec_Binary_Pos.match_pos (x) with *)
+(*       | Core_Base_Spec_Binary_Pos.POS_ZERO => *)
+(*         (0 : t_u64) *)
+(*       | Core_Base_Spec_Binary_Pos.POS_POS (p) => *)
+(*         impl_24__to_u64_binary (p) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_240272474 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_8__f_from := fun  (x : t_u128)=> *)
+(*       if *)
+(*         Rust_primitives_U128.eq (x) ((0 : t_u128)) *)
+(*       then *)
+(*         Core_Base_Spec_Haxint.v_HaxInt_ZERO *)
+(*       else *)
+(*         Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_u128_binary (x)); *)
+(*   }. *)
+
+(* Instance t_From_222831558 : Core_Convert.t_From ((t_u128)) ((Core_Base_Spec_Haxint.t_HaxInt)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_9__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       match Core_Base_Spec_Binary_Pos.match_pos (x) with *)
+(*       | Core_Base_Spec_Binary_Pos.POS_ZERO => *)
+(*         (0 : t_u128) *)
+(*       | Core_Base_Spec_Binary_Pos.POS_POS (p) => *)
+(*         impl_24__to_u128_binary (p) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_835901229 : Core_Convert.t_From ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_10__f_from := fun  (x : t_usize)=> *)
+(*       if *)
+(*         Rust_primitives_U128.eq (x) ((0 : t_usize)) *)
+(*       then *)
+(*         Core_Base_Spec_Haxint.v_HaxInt_ZERO *)
+(*       else *)
+(*         Core_Base_Spec_Binary_Positive.positive_to_int (impl_24__from_usize_binary (x)); *)
+(*   }. *)
+
+(* Instance t_From_257114222 : Core_Convert.t_From ((t_usize)) ((Core_Base_Spec_Haxint.t_HaxInt)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_11__f_from := fun  (x : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       match Core_Base_Spec_Binary_Pos.match_pos (x) with *)
+(*       | Core_Base_Spec_Binary_Pos.POS_ZERO => *)
+(*         (0 : t_usize) *)
+(*       | Core_Base_Spec_Binary_Pos.POS_POS (p) => *)
+(*         impl_24__to_usize_binary (p) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_338289091 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_12__f_from := fun  (x : t_i8)=> *)
+(*       match Core_Cmp.Ord__f_cmp (x) ((0 : t_i8)) with *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         Core_Base_Spec_Z.Z_ZERO *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         Core_Base_Spec_Z.Z_NEG (impl_24__from_u8_binary (Core_Num.impl_i8__unsigned_abs (x))) *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         Core_Base_Spec_Z.Z_POS (impl_24__from_u8_binary (Core_Num.impl_i8__unsigned_abs (x))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_245838536 : Core_Convert.t_From ((t_i8)) ((Core_Base_Spec_Z.t_Z)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_13__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=> *)
+(*       match x with *)
+(*       | Core_Base_Spec_Z.Z_NEG (x) => *)
+(*         Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u8_binary (x)) ((1 : t_u8))))) ((1 : t_i8)) *)
+(*       | Core_Base_Spec_Z.Z_ZERO => *)
+(*         (0 : t_i8) *)
+(*       | Core_Base_Spec_Z.Z_POS (x) => *)
+(*         cast (impl_24__to_u8_binary (x)) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_639914372 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_14__f_from := fun  (x : t_i16)=> *)
+(*       match Core_Cmp.Ord__f_cmp (x) ((0 : t_i16)) with *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         Core_Base_Spec_Z.Z_ZERO *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         Core_Base_Spec_Z.Z_NEG (impl_24__from_u16_binary (Core_Num.impl_i16__unsigned_abs (x))) *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         Core_Base_Spec_Z.Z_POS (impl_24__from_u16_binary (Core_Num.impl_i16__unsigned_abs (x))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_821253081 : Core_Convert.t_From ((t_i16)) ((Core_Base_Spec_Z.t_Z)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_15__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=> *)
+(*       match x with *)
+(*       | Core_Base_Spec_Z.Z_NEG (x) => *)
+(*         Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u16_binary (x)) ((1 : t_u16))))) ((1 : t_i16)) *)
+(*       | Core_Base_Spec_Z.Z_ZERO => *)
+(*         (0 : t_i16) *)
+(*       | Core_Base_Spec_Z.Z_POS (x) => *)
+(*         cast (impl_24__to_u16_binary (x)) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_865374737 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_16__f_from := fun  (x : t_i32)=> *)
+(*       match Core_Cmp.Ord__f_cmp (x) ((0 : t_i32)) with *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         Core_Base_Spec_Z.Z_ZERO *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         Core_Base_Spec_Z.Z_NEG (impl_24__from_u32_binary (Core_Num.impl_i32__unsigned_abs (x))) *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         Core_Base_Spec_Z.Z_POS (impl_24__from_u32_binary (Core_Num.impl_i32__unsigned_abs (x))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_829456934 : Core_Convert.t_From ((t_i32)) ((Core_Base_Spec_Z.t_Z)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_17__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=> *)
+(*       match x with *)
+(*       | Core_Base_Spec_Z.Z_NEG (x) => *)
+(*         Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u32_binary (x)) ((1 : t_u32))))) ((1 : t_i32)) *)
+(*       | Core_Base_Spec_Z.Z_ZERO => *)
+(*         (0 : t_i32) *)
+(*       | Core_Base_Spec_Z.Z_POS (x) => *)
+(*         cast (impl_24__to_u32_binary (x)) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_435789495 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_18__f_from := fun  (x : t_i64)=> *)
+(*       match Core_Cmp.Ord__f_cmp (x) ((0 : t_i64)) with *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         Core_Base_Spec_Z.Z_ZERO *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         Core_Base_Spec_Z.Z_NEG (impl_24__from_u64_binary (Core_Num.impl_i64__unsigned_abs (x))) *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         Core_Base_Spec_Z.Z_POS (impl_24__from_u64_binary (Core_Num.impl_i64__unsigned_abs (x))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_753989864 : Core_Convert.t_From ((t_i64)) ((Core_Base_Spec_Z.t_Z)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_19__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=> *)
+(*       match x with *)
+(*       | Core_Base_Spec_Z.Z_NEG (x) => *)
+(*         Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u64_binary (x)) ((1 : t_u64))))) ((1 : t_i64)) *)
+(*       | Core_Base_Spec_Z.Z_ZERO => *)
+(*         (0 : t_i64) *)
+(*       | Core_Base_Spec_Z.Z_POS (x) => *)
+(*         cast (impl_24__to_u64_binary (x)) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_545262237 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_20__f_from := fun  (x : t_i128)=> *)
+(*       match Core_Cmp.Ord__f_cmp (x) ((0 : t_i128)) with *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         Core_Base_Spec_Z.Z_ZERO *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         Core_Base_Spec_Z.Z_NEG (impl_24__from_u128_binary (Core_Num.impl_i128__unsigned_abs (x))) *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         Core_Base_Spec_Z.Z_POS (impl_24__from_u128_binary (Core_Num.impl_i128__unsigned_abs (x))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_636246826 : Core_Convert.t_From ((t_i128)) ((Core_Base_Spec_Z.t_Z)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_21__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=> *)
+(*       match x with *)
+(*       | Core_Base_Spec_Z.Z_NEG (x) => *)
+(*         Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_u128_binary (x)) ((1 : t_u128))))) ((1 : t_i128)) *)
+(*       | Core_Base_Spec_Z.Z_ZERO => *)
+(*         (0 : t_i128) *)
+(*       | Core_Base_Spec_Z.Z_POS (x) => *)
+(*         cast (impl_24__to_u128_binary (x)) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_933861236 : Core_Convert.t_From ((Core_Base_Spec_Z.t_Z)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_22__f_from := fun  (x : t_isize)=> *)
+(*       match Core_Cmp.Ord__f_cmp (x) ((0 : t_isize)) with *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         Core_Base_Spec_Z.Z_ZERO *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         Core_Base_Spec_Z.Z_NEG (impl_24__from_usize_binary (Core_Num.impl_isize__unsigned_abs (x))) *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         Core_Base_Spec_Z.Z_POS (impl_24__from_usize_binary (Core_Num.impl_isize__unsigned_abs (x))) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_From_702271195 : Core_Convert.t_From ((t_isize)) ((Core_Base_Spec_Z.t_Z)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_23__f_from := fun  (x : Core_Base_Spec_Z.t_Z)=> *)
+(*       match x with *)
+(*       | Core_Base_Spec_Z.Z_NEG (x) => *)
+(*         Rust_primitives_U128.sub (Core_Ops_Arith.Neg__f_neg (cast (Rust_primitives_U128.sub (impl_24__to_usize_binary (x)) ((1 : t_usize))))) ((1 : t_isize)) *)
+(*       | Core_Base_Spec_Z.Z_ZERO => *)
+(*         (0 : t_isize) *)
+(*       | Core_Base_Spec_Z.Z_POS (x) => *)
+(*         cast (impl_24__to_usize_binary (x)) *)
+(*       end; *)
+(*   }. *)
+
+(* Definition cons `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : t_Seq ((v_T))) (t : v_T) : t_Seq ((v_T)) := *)
+(*   Seq_Seq (Alloc_Slice.impl__concat (Rust_primitives.unsize ([Core_Ops_Index.Index__f_index ([t]) (Core_Ops_Range.RangeFull_RangeFull); Core_Ops_Index.Index__f_index (f_Seq_v s) (Core_Ops_Range.RangeFull_RangeFull)]))). *)
+
+(* Instance t_From_183625382 : Core_Convert.t_From ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (x : t_u8)=> *)
+(*       Build_t__u8_u8 (Core_Base_interface_Int.U8_U8 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_937665402 : Core_Convert.t_From ((t_u8)) ((t_u8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_1__f_from := fun  (x : t_u8)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_U8_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_152884980 : Core_Convert.t_From ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_2__f_from := fun  (x : t_u16)=> *)
+(*       Build_t__u16_u16 (Core_Base_interface_Int.U16_U16 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_386335264 : Core_Convert.t_From ((t_u16)) ((t_u16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_3__f_from := fun  (x : t_u16)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_U16_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_715833290 : Core_Convert.t_From ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_4__f_from := fun  (x : t_u32)=> *)
+(*       Build_t__u32_u32 (Core_Base_interface_Int.U32_U32 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_406773128 : Core_Convert.t_From ((t_u32)) ((t_u32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_5__f_from := fun  (x : t_u32)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_U32_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_541884810 : Core_Convert.t_From ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_6__f_from := fun  (x : t_u64)=> *)
+(*       Build_t__u64_u64 (Core_Base_interface_Int.U64_U64 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_444559756 : Core_Convert.t_From ((t_u64)) ((t_u64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_7__f_from := fun  (x : t_u64)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_U64_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_700043518 : Core_Convert.t_From ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_8__f_from := fun  (x : t_u128)=> *)
+(*       Build_t__u128_u128 (Core_Base_interface_Int.U128_U128 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_835883228 : Core_Convert.t_From ((t_u128)) ((t_u128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_9__f_from := fun  (x : t_u128)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_U128_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_181575805 : Core_Convert.t_From ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_10__f_from := fun  (x : t_usize)=> *)
+(*       Build_t__usize_usize (Core_Base_interface_Int.U64_U64 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_106156116 : Core_Convert.t_From ((t_usize)) ((t_usize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_11__f_from := fun  (x : t_usize)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_U64_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_105996716 : Core_Convert.t_From ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (x : t_i8)=> *)
+(*       Build_t__i8_i8 (Core_Base_interface_Int.I8_I8 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_539767262 : Core_Convert.t_From ((t_i8)) ((t_i8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_1__f_from := fun  (x : t_i8)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_I8_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_488738214 : Core_Convert.t_From ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_2__f_from := fun  (x : t_i16)=> *)
+(*       Build_t__i16_i16 (Core_Base_interface_Int.I16_I16 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_482355400 : Core_Convert.t_From ((t_i16)) ((t_i16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_3__f_from := fun  (x : t_i16)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_I16_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_661202142 : Core_Convert.t_From ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_4__f_from := fun  (x : t_i32)=> *)
+(*       Build_t__i32_i32 (Core_Base_interface_Int.I32_I32 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_270964557 : Core_Convert.t_From ((t_i32)) ((t_i32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_5__f_from := fun  (x : t_i32)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_I32_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_518654672 : Core_Convert.t_From ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_6__f_from := fun  (x : t_i64)=> *)
+(*       Build_t__i64_i64 (Core_Base_interface_Int.I64_I64 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_908255250 : Core_Convert.t_From ((t_i64)) ((t_i64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_7__f_from := fun  (x : t_i64)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_I64_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_104524569 : Core_Convert.t_From ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_8__f_from := fun  (x : t_i128)=> *)
+(*       Build_t__i128_i128 (Core_Base_interface_Int.I128_I128 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_216855781 : Core_Convert.t_From ((t_i128)) ((t_i128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_9__f_from := fun  (x : t_i128)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_I128_v 0 x); *)
+(*   }. *)
+
+(* Instance t_From_181769074 : Core_Convert.t_From ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_10__f_from := fun  (x : t_isize)=> *)
+(*       Build_t__isize_isize (Core_Base_interface_Int.I64_I64 (Core_Convert.Into__f_into (x))); *)
+(*   }. *)
+
+(* Instance t_From_918115526 : Core_Convert.t_From ((t_isize)) ((t_isize)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_11__f_from := fun  (x : t_isize)=> *)
+(*       Core_Convert.Into__f_into (Core_Base_interface_Int.f_I64_v 0 x); *)
+(*   }. *)
+
+(* Definition ctpop_u8 (x : t_u8) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u8)))))) in *)
+(*   count. *)
+
+(* Definition cttz_u8 (x : t_u8) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u8)))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition ctlz_u8 (x : t_u8) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_6__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition rotate_left_u8 (x : t_u8) (shift : t_u32) : t_u8 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_6__BITS) in *)
+(*   let left : t_u8 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u8 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_6__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition rotate_right_u8 (x : t_u8) (shift : t_u32) : t_u8 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_6__BITS) in *)
+(*   let left : t_u8 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u8 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_6__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition bswap_u8 (x : t_u8) : t_u8 := *)
+(*   let count : t_u8 := Core_Convert.Into__f_into ((0 : t_u8)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_6__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     let low_bit : t_u8 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u8)))) in *)
+(*     let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in *)
+(*     count) in *)
+(*   count. *)
+
+(* Definition ctpop_u16 (x : t_u16) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u16)))))) in *)
+(*   count. *)
+
+(* Definition cttz_u16 (x : t_u16) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u16)))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition ctlz_u16 (x : t_u16) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_7__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition rotate_left_u16 (x : t_u16) (shift : t_u32) : t_u16 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_7__BITS) in *)
+(*   let left : t_u16 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u16 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_7__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition rotate_right_u16 (x : t_u16) (shift : t_u32) : t_u16 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_7__BITS) in *)
+(*   let left : t_u16 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u16 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_7__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition bswap_u16 (x : t_u16) : t_u16 := *)
+(*   let count : t_u16 := Core_Convert.Into__f_into ((0 : t_u16)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_7__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     let low_bit : t_u16 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u16)))) in *)
+(*     let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in *)
+(*     count) in *)
+(*   count. *)
+
+(* Definition ctpop_u32 (x : t_u32) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*   count. *)
+
+(* Definition cttz_u32 (x : t_u32) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u32)))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition ctlz_u32 (x : t_u32) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_8__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition rotate_left_u32 (x : t_u32) (shift : t_u32) : t_u32 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_8__BITS) in *)
+(*   let left : t_u32 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u32 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_8__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition rotate_right_u32 (x : t_u32) (shift : t_u32) : t_u32 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_8__BITS) in *)
+(*   let left : t_u32 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u32 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_8__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition bswap_u32 (x : t_u32) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_8__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u32)))) in *)
+(*     let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in *)
+(*     count) in *)
+(*   count. *)
+
+(* Definition ctpop_u64 (x : t_u64) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u64)))))) in *)
+(*   count. *)
+
+(* Definition cttz_u64 (x : t_u64) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u64)))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition ctlz_u64 (x : t_u64) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_9__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition rotate_left_u64 (x : t_u64) (shift : t_u32) : t_u64 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_9__BITS) in *)
+(*   let left : t_u64 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u64 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_9__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition rotate_right_u64 (x : t_u64) (shift : t_u32) : t_u64 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_9__BITS) in *)
+(*   let left : t_u64 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u64 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_9__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition bswap_u64 (x : t_u64) : t_u64 := *)
+(*   let count : t_u64 := Core_Convert.Into__f_into ((0 : t_u64)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_9__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     let low_bit : t_u64 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u64)))) in *)
+(*     let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in *)
+(*     count) in *)
+(*   count. *)
+
+(* Definition ctpop_u128 (x : t_u128) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u128)))))) in *)
+(*   count. *)
+
+(* Definition cttz_u128 (x : t_u128) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u128)))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition ctlz_u128 (x : t_u128) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_10__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition rotate_left_u128 (x : t_u128) (shift : t_u32) : t_u128 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_10__BITS) in *)
+(*   let left : t_u128 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u128 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_10__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition rotate_right_u128 (x : t_u128) (shift : t_u32) : t_u128 := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_10__BITS) in *)
+(*   let left : t_u128 := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_u128 := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_10__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition bswap_u128 (x : t_u128) : t_u128 := *)
+(*   let count : t_u128 := Core_Convert.Into__f_into ((0 : t_u128)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_10__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     let low_bit : t_u128 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_u128)))) in *)
+(*     let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in *)
+(*     count) in *)
+(*   count. *)
+
+(* Definition ctpop_usize (x : t_usize) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_usize)))))) in *)
+(*   count. *)
+
+(* Definition cttz_usize (x : t_usize) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let low_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_usize)))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (low_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition ctlz_usize (x : t_usize) : t_u32 := *)
+(*   let count : t_u32 := Core_Convert.Into__f_into ((0 : t_u32)) in *)
+(*   let done := (false : bool) in *)
+(*   let (count,done) := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun (count,done) _ => *)
+(*     (true : bool)) ((count,done)) (fun (count,done) i => *)
+(*     let high_bit : t_u32 := Core_Convert.Into__f_into (Core_Ops_Bit.Shr__f_shr (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (impl_11__BITS) (Core_Convert.Into__f_into ((1 : t_u32)))))) in *)
+(*     if *)
+(*       orb (Core_Cmp.PartialEq__f_eq (high_bit) (Core_Convert.Into__f_into ((1 : t_u32)))) (done) *)
+(*     then *)
+(*       let done := (true : bool) in *)
+(*       (count,done) *)
+(*     else *)
+(*       let count := Core_Ops_Arith.Add__f_add (count) (Core_Convert.Into__f_into ((1 : t_u32))) in *)
+(*       (count,done)) in *)
+(*   count. *)
+
+(* Definition rotate_left_usize (x : t_usize) (shift : t_u32) : t_usize := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_11__BITS) in *)
+(*   let left : t_usize := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_usize := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_11__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition rotate_right_usize (x : t_usize) (shift : t_u32) : t_usize := *)
+(*   let shift : t_u32 := Core_Ops_Arith.Rem__f_rem (shift) (impl_11__BITS) in *)
+(*   let left : t_usize := Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (shift)) in *)
+(*   let right : t_usize := Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Sub__f_sub (impl_11__BITS) (Core_Clone.Clone__f_clone (shift))) in *)
+(*   Core_Ops_Bit.BitOr__f_bitor (left) (right). *)
+
+(* Definition bswap_usize (x : t_usize) : t_usize := *)
+(*   let count : t_usize := Core_Convert.Into__f_into ((0 : t_usize)) in *)
+(*   let count := Rust_primitives_Hax_Folds.fold_range ((0 : t_u32)) (Core_Convert.Into__f_into (impl_11__BITS)) (fun count _ => *)
+(*     (true : bool)) (count) (fun count i => *)
+(*     let low_bit : t_usize := Core_Convert.Into__f_into (Core_Ops_Bit.BitAnd__f_bitand (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Convert.Into__f_into (i))) (Core_Convert.Into__f_into ((1 : t_usize)))) in *)
+(*     let count := Core_Ops_Arith.Add__f_add (Core_Ops_Bit.Shl__f_shl (count) (Core_Convert.Into__f_into ((1 : t_u32)))) (low_bit) in *)
+(*     count) in *)
+(*   count. *)
+
+(* Definition impl__wrapping_neg (self : t_i8) : t_i8 := *)
+(*   impl__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i8))) (self). *)
+
+(* Definition impl__signum (self : t_i8) : t_i8 := *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i8))) *)
+(*   then *)
+(*     Core_Convert.Into__f_into ((-1 : t_i8)) *)
+(*   else *)
+(*     if *)
+(*       Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i8))) *)
+(*     then *)
+(*       Core_Convert.Into__f_into ((0 : t_i8)) *)
+(*     else *)
+(*       Core_Convert.Into__f_into ((1 : t_i8)). *)
+
+(* Definition impl__is_positive (self : t_i8) : bool := *)
+(*   Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i8))). *)
+
+(* Definition impl__is_negative (self : t_i8) : bool := *)
+(*   Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i8))). *)
+
+(* Definition impl__wrapping_abs (self : t_i8) : t_i8 := *)
+(*   if *)
+(*     impl__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     impl__wrapping_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl__rem_euclid (self : t_i8) (rhs : t_i8) : t_i8 := *)
+(*   let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i8))) *)
+(*   then *)
+(*     impl__wrapping_add (r) (impl__wrapping_abs (rhs)) *)
+(*   else *)
+(*     r. *)
+
+(* Definition impl__abs (self : t_i8) : t_i8 := *)
+(*   if *)
+(*     impl__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     Core_Ops_Arith.Neg__f_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_1__wrapping_neg (self : t_i16) : t_i16 := *)
+(*   impl_1__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i16))) (self). *)
+
+(* Definition impl_1__signum (self : t_i16) : t_i16 := *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i16))) *)
+(*   then *)
+(*     Core_Convert.Into__f_into ((-1 : t_i16)) *)
+(*   else *)
+(*     if *)
+(*       Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i16))) *)
+(*     then *)
+(*       Core_Convert.Into__f_into ((0 : t_i16)) *)
+(*     else *)
+(*       Core_Convert.Into__f_into ((1 : t_i16)). *)
+
+(* Definition impl_1__is_positive (self : t_i16) : bool := *)
+(*   Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i16))). *)
+
+(* Definition impl_1__is_negative (self : t_i16) : bool := *)
+(*   Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i16))). *)
+
+(* Definition impl_1__wrapping_abs (self : t_i16) : t_i16 := *)
+(*   if *)
+(*     impl_1__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     impl_1__wrapping_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_1__rem_euclid (self : t_i16) (rhs : t_i16) : t_i16 := *)
+(*   let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i16))) *)
+(*   then *)
+(*     impl_1__wrapping_add (r) (impl_1__wrapping_abs (rhs)) *)
+(*   else *)
+(*     r. *)
+
+(* Definition impl_1__abs (self : t_i16) : t_i16 := *)
+(*   if *)
+(*     impl_1__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     Core_Ops_Arith.Neg__f_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_2__wrapping_neg (self : t_i32) : t_i32 := *)
+(*   impl_2__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i32))) (self). *)
+
+(* Definition impl_2__signum (self : t_i32) : t_i32 := *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i32))) *)
+(*   then *)
+(*     Core_Convert.Into__f_into ((-1 : t_i32)) *)
+(*   else *)
+(*     if *)
+(*       Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i32))) *)
+(*     then *)
+(*       Core_Convert.Into__f_into ((0 : t_i32)) *)
+(*     else *)
+(*       Core_Convert.Into__f_into ((1 : t_i32)). *)
+
+(* Definition impl_2__is_positive (self : t_i32) : bool := *)
+(*   Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i32))). *)
+
+(* Definition impl_2__is_negative (self : t_i32) : bool := *)
+(*   Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i32))). *)
+
+(* Definition impl_2__wrapping_abs (self : t_i32) : t_i32 := *)
+(*   if *)
+(*     impl_2__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     impl_2__wrapping_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_2__rem_euclid (self : t_i32) (rhs : t_i32) : t_i32 := *)
+(*   let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i32))) *)
+(*   then *)
+(*     impl_2__wrapping_add (r) (impl_2__wrapping_abs (rhs)) *)
+(*   else *)
+(*     r. *)
+
+(* Definition impl_2__abs (self : t_i32) : t_i32 := *)
+(*   if *)
+(*     impl_2__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     Core_Ops_Arith.Neg__f_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_3__wrapping_neg (self : t_i64) : t_i64 := *)
+(*   impl_3__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i64))) (self). *)
+
+(* Definition impl_3__signum (self : t_i64) : t_i64 := *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i64))) *)
+(*   then *)
+(*     Core_Convert.Into__f_into ((-1 : t_i64)) *)
+(*   else *)
+(*     if *)
+(*       Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i64))) *)
+(*     then *)
+(*       Core_Convert.Into__f_into ((0 : t_i64)) *)
+(*     else *)
+(*       Core_Convert.Into__f_into ((1 : t_i64)). *)
+
+(* Definition impl_3__is_positive (self : t_i64) : bool := *)
+(*   Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i64))). *)
+
+(* Definition impl_3__is_negative (self : t_i64) : bool := *)
+(*   Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i64))). *)
+
+(* Definition impl_3__wrapping_abs (self : t_i64) : t_i64 := *)
+(*   if *)
+(*     impl_3__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     impl_3__wrapping_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_3__rem_euclid (self : t_i64) (rhs : t_i64) : t_i64 := *)
+(*   let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i64))) *)
+(*   then *)
+(*     impl_3__wrapping_add (r) (impl_3__wrapping_abs (rhs)) *)
+(*   else *)
+(*     r. *)
+
+(* Definition impl_3__abs (self : t_i64) : t_i64 := *)
+(*   if *)
+(*     impl_3__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     Core_Ops_Arith.Neg__f_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_4__wrapping_neg (self : t_i128) : t_i128 := *)
+(*   impl_4__wrapping_sub (Core_Convert.Into__f_into ((0 : t_i128))) (self). *)
+
+(* Definition impl_4__signum (self : t_i128) : t_i128 := *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_i128))) *)
+(*   then *)
+(*     Core_Convert.Into__f_into ((-1 : t_i128)) *)
+(*   else *)
+(*     if *)
+(*       Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_i128))) *)
+(*     then *)
+(*       Core_Convert.Into__f_into ((0 : t_i128)) *)
+(*     else *)
+(*       Core_Convert.Into__f_into ((1 : t_i128)). *)
+
+(* Definition impl_4__is_positive (self : t_i128) : bool := *)
+(*   Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_i128))). *)
+
+(* Definition impl_4__is_negative (self : t_i128) : bool := *)
+(*   Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_i128))). *)
+
+(* Definition impl_4__wrapping_abs (self : t_i128) : t_i128 := *)
+(*   if *)
+(*     impl_4__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     impl_4__wrapping_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_4__rem_euclid (self : t_i128) (rhs : t_i128) : t_i128 := *)
+(*   let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_i128))) *)
+(*   then *)
+(*     impl_4__wrapping_add (r) (impl_4__wrapping_abs (rhs)) *)
+(*   else *)
+(*     r. *)
+
+(* Definition impl_4__abs (self : t_i128) : t_i128 := *)
+(*   if *)
+(*     impl_4__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     Core_Ops_Arith.Neg__f_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_5__wrapping_neg (self : t_isize) : t_isize := *)
+(*   impl_5__wrapping_sub (Core_Convert.Into__f_into ((0 : t_isize))) (self). *)
+
+(* Definition impl_5__signum (self : t_isize) : t_isize := *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (self)) (Core_Convert.Into__f_into ((0 : t_isize))) *)
+(*   then *)
+(*     Core_Convert.Into__f_into ((-1 : t_isize)) *)
+(*   else *)
+(*     if *)
+(*       Core_Cmp.PartialEq__f_eq (self) (Core_Convert.Into__f_into ((0 : t_isize))) *)
+(*     then *)
+(*       Core_Convert.Into__f_into ((0 : t_isize)) *)
+(*     else *)
+(*       Core_Convert.Into__f_into ((1 : t_isize)). *)
+
+(* Definition impl_5__is_positive (self : t_isize) : bool := *)
+(*   Core_Cmp.PartialOrd__f_gt (self) (Core_Convert.Into__f_into ((0 : t_isize))). *)
+
+(* Definition impl_5__is_negative (self : t_isize) : bool := *)
+(*   Core_Cmp.PartialOrd__f_lt (self) (Core_Convert.Into__f_into ((0 : t_isize))). *)
+
+(* Definition impl_5__wrapping_abs (self : t_isize) : t_isize := *)
+(*   if *)
+(*     impl_5__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     impl_5__wrapping_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_5__rem_euclid (self : t_isize) (rhs : t_isize) : t_isize := *)
+(*   let r := Core_Ops_Arith.Rem__f_rem (self) (Core_Clone.Clone__f_clone (rhs)) in *)
+(*   if *)
+(*     Core_Cmp.PartialOrd__f_lt (r) (Core_Convert.Into__f_into ((0 : t_isize))) *)
+(*   then *)
+(*     impl_5__wrapping_add (r) (impl_5__wrapping_abs (rhs)) *)
+(*   else *)
+(*     r. *)
+
+(* Definition impl_5__abs (self : t_isize) : t_isize := *)
+(*   if *)
+(*     impl_5__is_negative (Core_Clone.Clone__f_clone (self)) *)
+(*   then *)
+(*     Core_Ops_Arith.Neg__f_neg (self) *)
+(*   else *)
+(*     self. *)
+
+(* Definition impl_6__count_ones (self : t_u8) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist1 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u8 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist1))). *)
+
+(* Definition impl_6__count_zeros (self : t_u8) : t_u32 := *)
+(*   impl_6__count_ones (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_6__leading_zeros (self : t_u8) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist2 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u8 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist2))). *)
+
+(* Definition impl_6__trailing_zeros (self : t_u8) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist3 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u8 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist3))). *)
+
+(* Definition impl_6__leading_ones (self : t_u8) : t_u32 := *)
+(*   impl_6__leading_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_6__trailing_ones (self : t_u8) : t_u32 := *)
+(*   impl_6__trailing_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_6__rotate_left (self : t_u8) (n : t_u32) : t_u8 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist4 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u8 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist4))). *)
+
+(* Definition impl_6__rotate_right (self : t_u8) (n : t_u32) : t_u8 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist5 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u8 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist5))). *)
+
+(* Definition impl_6__swap_bytes (self : t_u8) : t_u8 := *)
+(*   Core_Convert.Into__f_into (bswap_u8 (self)). *)
+
+(* Definition impl_6__from_be (x : t_u8) : t_u8 := *)
+(*   impl_6__swap_bytes (x). *)
+
+(* Definition impl_6__to_be (self : t_u8) : t_u8 := *)
+(*   impl_6__swap_bytes (self). *)
+
+(* Definition impl_6__checked_div (self : t_u8) (rhs : t_u8) : Core_Option.t_Option ((t_u8)) := *)
+(*   if *)
+(*     Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u8))) *)
+(*   then *)
+(*     Core_Option.Option_None *)
+(*   else *)
+(*     Core_Option.Option_Some (unchecked_div_u8 (self) (rhs)). *)
+
+(* Definition impl_6__wrapping_div (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_6__wrapping_div_euclid (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_6__wrapping_rem (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_6__wrapping_rem_euclid (self : t_u8) (rhs : t_u8) : t_u8 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_7__count_ones (self : t_u16) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist6 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u16 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist6))). *)
+
+(* Definition impl_7__count_zeros (self : t_u16) : t_u32 := *)
+(*   impl_7__count_ones (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_7__leading_zeros (self : t_u16) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist7 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u16 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist7))). *)
+
+(* Definition impl_7__trailing_zeros (self : t_u16) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist8 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u16 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist8))). *)
+
+(* Definition impl_7__leading_ones (self : t_u16) : t_u32 := *)
+(*   impl_7__leading_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_7__trailing_ones (self : t_u16) : t_u32 := *)
+(*   impl_7__trailing_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_7__rotate_left (self : t_u16) (n : t_u32) : t_u16 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist9 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u16 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist9))). *)
+
+(* Definition impl_7__rotate_right (self : t_u16) (n : t_u32) : t_u16 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist10 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u16 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist10))). *)
+
+(* Definition impl_7__swap_bytes (self : t_u16) : t_u16 := *)
+(*   Core_Convert.Into__f_into (bswap_u16 (self)). *)
+
+(* Definition impl_7__from_be (x : t_u16) : t_u16 := *)
+(*   impl_7__swap_bytes (x). *)
+
+(* Definition impl_7__to_be (self : t_u16) : t_u16 := *)
+(*   impl_7__swap_bytes (self). *)
+
+(* Definition impl_7__checked_div (self : t_u16) (rhs : t_u16) : Core_Option.t_Option ((t_u16)) := *)
+(*   if *)
+(*     Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u16))) *)
+(*   then *)
+(*     Core_Option.Option_None *)
+(*   else *)
+(*     Core_Option.Option_Some (unchecked_div_u16 (self) (rhs)). *)
+
+(* Definition impl_7__wrapping_div (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_7__wrapping_div_euclid (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_7__wrapping_rem (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_7__wrapping_rem_euclid (self : t_u16) (rhs : t_u16) : t_u16 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_8__count_ones (self : t_u32) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist11 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u32 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist11))). *)
+
+(* Definition impl_8__count_zeros (self : t_u32) : t_u32 := *)
+(*   impl_8__count_ones (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_8__leading_zeros (self : t_u32) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist12 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u32 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist12))). *)
+
+(* Definition impl_8__trailing_zeros (self : t_u32) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist13 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u32 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist13))). *)
+
+(* Definition impl_8__leading_ones (self : t_u32) : t_u32 := *)
+(*   impl_8__leading_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_8__trailing_ones (self : t_u32) : t_u32 := *)
+(*   impl_8__trailing_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_8__rotate_left (self : t_u32) (n : t_u32) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist14 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u32 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist14))). *)
+
+(* Definition impl_8__rotate_right (self : t_u32) (n : t_u32) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist15 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u32 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist15))). *)
+
+(* Definition impl_8__swap_bytes (self : t_u32) : t_u32 := *)
+(*   Core_Convert.Into__f_into (bswap_u32 (self)). *)
+
+(* Definition impl_8__from_be (x : t_u32) : t_u32 := *)
+(*   impl_8__swap_bytes (x). *)
+
+(* Definition impl_8__to_be (self : t_u32) : t_u32 := *)
+(*   impl_8__swap_bytes (self). *)
+
+(* Definition impl_8__checked_div (self : t_u32) (rhs : t_u32) : Core_Option.t_Option ((t_u32)) := *)
+(*   if *)
+(*     Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u32))) *)
+(*   then *)
+(*     Core_Option.Option_None *)
+(*   else *)
+(*     Core_Option.Option_Some (unchecked_div_u32 (self) (rhs)). *)
+
+(* Definition impl_8__wrapping_div (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_8__wrapping_div_euclid (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_8__wrapping_rem (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_8__wrapping_rem_euclid (self : t_u32) (rhs : t_u32) : t_u32 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_9__count_ones (self : t_u64) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist16 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u64 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist16))). *)
+
+(* Definition impl_9__count_zeros (self : t_u64) : t_u32 := *)
+(*   impl_9__count_ones (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_9__leading_zeros (self : t_u64) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist17 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u64 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist17))). *)
+
+(* Definition impl_9__trailing_zeros (self : t_u64) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist18 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u64 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist18))). *)
+
+(* Definition impl_9__leading_ones (self : t_u64) : t_u32 := *)
+(*   impl_9__leading_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_9__trailing_ones (self : t_u64) : t_u32 := *)
+(*   impl_9__trailing_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_9__rotate_left (self : t_u64) (n : t_u32) : t_u64 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist19 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u64 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist19))). *)
+
+(* Definition impl_9__rotate_right (self : t_u64) (n : t_u32) : t_u64 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist20 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u64 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist20))). *)
+
+(* Definition impl_9__swap_bytes (self : t_u64) : t_u64 := *)
+(*   Core_Convert.Into__f_into (bswap_u64 (self)). *)
+
+(* Definition impl_9__from_be (x : t_u64) : t_u64 := *)
+(*   impl_9__swap_bytes (x). *)
+
+(* Definition impl_9__to_be (self : t_u64) : t_u64 := *)
+(*   impl_9__swap_bytes (self). *)
+
+(* Definition impl_9__checked_div (self : t_u64) (rhs : t_u64) : Core_Option.t_Option ((t_u64)) := *)
+(*   if *)
+(*     Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u64))) *)
+(*   then *)
+(*     Core_Option.Option_None *)
+(*   else *)
+(*     Core_Option.Option_Some (unchecked_div_u64 (self) (rhs)). *)
+
+(* Definition impl_9__wrapping_div (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_9__wrapping_div_euclid (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_9__wrapping_rem (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_9__wrapping_rem_euclid (self : t_u64) (rhs : t_u64) : t_u64 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_10__count_ones (self : t_u128) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist21 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_u128 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist21))). *)
+
+(* Definition impl_10__count_zeros (self : t_u128) : t_u32 := *)
+(*   impl_10__count_ones (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_10__leading_zeros (self : t_u128) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist22 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_u128 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist22))). *)
+
+(* Definition impl_10__trailing_zeros (self : t_u128) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist23 := Core_Ops_Control_flow.ControlFlow_Break (cttz_u128 (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist23))). *)
+
+(* Definition impl_10__leading_ones (self : t_u128) : t_u32 := *)
+(*   impl_10__leading_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_10__trailing_ones (self : t_u128) : t_u32 := *)
+(*   impl_10__trailing_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_10__rotate_left (self : t_u128) (n : t_u32) : t_u128 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist24 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_u128 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist24))). *)
+
+(* Definition impl_10__rotate_right (self : t_u128) (n : t_u32) : t_u128 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist25 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_u128 (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist25))). *)
+
+(* Definition impl_10__swap_bytes (self : t_u128) : t_u128 := *)
+(*   Core_Convert.Into__f_into (bswap_u128 (self)). *)
+
+(* Definition impl_10__from_be (x : t_u128) : t_u128 := *)
+(*   impl_10__swap_bytes (x). *)
+
+(* Definition impl_10__to_be (self : t_u128) : t_u128 := *)
+(*   impl_10__swap_bytes (self). *)
+
+(* Definition impl_10__checked_div (self : t_u128) (rhs : t_u128) : Core_Option.t_Option ((t_u128)) := *)
+(*   if *)
+(*     Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_u128))) *)
+(*   then *)
+(*     Core_Option.Option_None *)
+(*   else *)
+(*     Core_Option.Option_Some (unchecked_div_u128 (self) (rhs)). *)
+
+(* Definition impl_10__wrapping_div (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_10__wrapping_div_euclid (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_10__wrapping_rem (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_10__wrapping_rem_euclid (self : t_u128) (rhs : t_u128) : t_u128 := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_11__count_ones (self : t_usize) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist26 := Core_Ops_Control_flow.ControlFlow_Break (ctpop_usize (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist26))). *)
+
+(* Definition impl_11__count_zeros (self : t_usize) : t_u32 := *)
+(*   impl_11__count_ones (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_11__leading_zeros (self : t_usize) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist27 := Core_Ops_Control_flow.ControlFlow_Break (ctlz_usize (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist27))). *)
+
+(* Definition impl_11__trailing_zeros (self : t_usize) : t_u32 := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist28 := Core_Ops_Control_flow.ControlFlow_Break (cttz_usize (self)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist28))). *)
+
+(* Definition impl_11__leading_ones (self : t_usize) : t_u32 := *)
+(*   impl_11__leading_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_11__trailing_ones (self : t_usize) : t_u32 := *)
+(*   impl_11__trailing_zeros (Core_Ops_Bit.Not__f_not (self)). *)
+
+(* Definition impl_11__rotate_left (self : t_usize) (n : t_u32) : t_usize := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist29 := Core_Ops_Control_flow.ControlFlow_Break (rotate_left_usize (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist29))). *)
+
+(* Definition impl_11__rotate_right (self : t_usize) (n : t_u32) : t_usize := *)
+(*   Rust_primitives_Hax_Control_flow_monad_Mexception.run (let hoist30 := Core_Ops_Control_flow.ControlFlow_Break (rotate_right_usize (self) (n)) in *)
+(*   Core_Ops_Control_flow.ControlFlow_Continue (Rust_primitives_Hax.never_to_any (hoist30))). *)
+
+(* Definition impl_11__swap_bytes (self : t_usize) : t_usize := *)
+(*   Core_Convert.Into__f_into (bswap_usize (self)). *)
+
+(* Definition impl_11__from_be (x : t_usize) : t_usize := *)
+(*   impl_11__swap_bytes (x). *)
+
+(* Definition impl_11__to_be (self : t_usize) : t_usize := *)
+(*   impl_11__swap_bytes (self). *)
+
+(* Definition impl_11__checked_div (self : t_usize) (rhs : t_usize) : Core_Option.t_Option ((t_usize)) := *)
+(*   if *)
+(*     Core_Cmp.PartialEq__f_eq (rhs) (Core_Convert.Into__f_into ((0 : t_usize))) *)
+(*   then *)
+(*     Core_Option.Option_None *)
+(*   else *)
+(*     Core_Option.Option_Some (unchecked_div_usize (self) (rhs)). *)
+
+(* Definition impl_11__wrapping_div (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_11__wrapping_div_euclid (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   Core_Ops_Arith.Div__f_div (self) (rhs). *)
+
+(* Definition impl_11__wrapping_rem (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Definition impl_11__wrapping_rem_euclid (self : t_usize) (rhs : t_usize) : t_usize := *)
+(*   Core_Ops_Arith.Rem__f_rem (self) (rhs). *)
+
+(* Instance t_From_735931741 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_From ((t_Array ((v_T)) (v_N))) ((t_Array (v_T) (v_N))) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (x : t_Array (v_T) (v_N))=> *)
+(*       Array_Array (Slice_Slice (Seq_Seq (Alloc_Slice.impl__to_vec (Core_Ops_Index.Index__f_index (x) (Core_Ops_Range.RangeFull_RangeFull))))); *)
+(*   }. *)
+
+(* Instance t_SliceIndex_181791132 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : t_SliceIndex ((Core_Ops_Range.t_RangeFull)) ((t_Slice ((v_T)))) := *)
+(*   { *)
+(*     Core_Bundle.SliceIndex_impl_2__f_Output := t_Slice ((v_T)); *)
+(*     Core_Bundle.SliceIndex_impl_2__f_index := fun  (self : Core_Ops_Range.t_RangeFull) (slice : t_Slice ((v_T)))=> *)
+(*       slice; *)
+(*   }. *)
+
+(* Instance t_AsRef_225396752 `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Convert.t_AsRef ((t_Array ((v_T)) (v_N))) ((t_Slice ((v_T)))) := *)
+(*   { *)
+(*     Core_Convert.AsRef_impl_1__f_as_ref := fun  (self : t_Array ((v_T)) (v_N))=> *)
+(*       Core_Ops_Index.Index__f_index (self) (Core_Ops_Range.RangeFull_RangeFull); *)
+(*   }. *)
+
+(* Definition match_list `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (s : t_Seq ((v_T))) : t_LIST ((v_T)) := *)
+(*   if *)
+(*     Rust_primitives_U128.eq (Alloc_Vec.impl_1__len (f_Seq_v s)) ((0 : t_usize)) *)
+(*   then *)
+(*     LIST_NIL *)
+(*   else *)
+(*     LIST_CONS (Core_Clone.Clone__f_clone (Core_Ops_Index.Index__f_index (f_Seq_v s) ((0 : t_usize)))) (Seq_Seq (Alloc_Slice.impl__concat (Rust_primitives.unsize ([Core_Ops_Index.Index__f_index (f_Seq_v s) (Core_Ops_Range.RangeFrom_RangeFrom ((1 : t_usize)))])))). *)
+
+(* Instance t_SliceIndex_823798546 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : t_SliceIndex ((t_usize)) ((t_Slice ((v_T)))) := *)
+(*   { *)
+(*     Core_Bundle.SliceIndex_impl_1__f_Output := v_T; *)
+(*     Core_Bundle.SliceIndex_impl_1__f_index := fun  (self : t_usize) (slice : t_Slice ((v_T)))=> *)
+(*       let x : t_usize := Core_Convert.Into__f_into (Core_Base_interface_Int.f_U64_v 0 self) in *)
+(*       Core_Ops_Index.Index__f_index (f_Seq_v f_Slice_v slice) (x); *)
+(*   }. *)

@@ -20,5 +20,10 @@ Notation "'Z_NEG'" := Zneg.
 Notation "'Z_ZERO'" := Z0.
 Notation "'Z_POS'" := Zpos.
 
+Notation "'Core_Base_Spec_Z.t_Z'" := Z.
+Notation "'Core_Base_Spec_Z.Z_NEG'" := Zneg.
+Notation "'Core_Base_Spec_Z.Z_ZERO'" := Z0.
+Notation "'Core_Base_Spec_Z.Z_POS'" := Zpos.
+
 Definition v_Z_ONE : t_Z := 1%Z.
 Definition v_Z_TWO : t_Z := 2%Z.

@@ -9,36 +9,16 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+(* From Core Require Import Core. *)
 
 (* NotImplementedYet *)
 
-Record HaxInt_HaxInt_record : Type :=
-  {
-    HaxInt_HaxInt_f_HaxInt_v : Alloc_Borrow.t_Cow ((t_Slice t_u8));
-  }.
+Notation "'t_HaxInt'" := N.
 
+Definition v_HaxInt_ONE : t_HaxInt := 1.
+Definition v_HaxInt_TWO : t_HaxInt := 2.
+Definition v_HaxInt_ZERO : t_HaxInt := 0.
 
-#[export] Instance settable_HaxInt_HaxInt_record : Settable _ :=
-  settable! (Build_HaxInt_HaxInt_record) <HaxInt_HaxInt_f_HaxInt_v>.
+Definition is_zero (s : t_HaxInt) : bool := match s with | N0 => true | _ => false end.
 
-Instance Core_Clone.t_Clone_572540916 : Core_Clone.t_Clone ((t_HaxInt)) :=
-  {
-    implaabbcc_t_Clone_impl__f_clone := fun  (self : t_HaxInt)=>
-      Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
-  }.
-
-Definition v_HaxInt_ZERO : t_HaxInt :=
-  HaxInt_HaxInt (Alloc_Borrow.Cow_Borrowed (Rust_primitives.unsize ([]))).
-
-Definition v_HaxInt_ONE : t_HaxInt :=
-  HaxInt_HaxInt (Alloc_Borrow.Cow_Borrowed (Rust_primitives.unsize ([(1 : t_u8)]))).
-
-Definition v_HaxInt_TWO : t_HaxInt :=
-  HaxInt_HaxInt (Alloc_Borrow.Cow_Borrowed (Rust_primitives.unsize ([(2 : t_u8)]))).
-
-Definition is_zero (s : t_HaxInt) : bool :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
-
-Definition div2 (s : t_HaxInt) : t_HaxInt :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
+Definition div2 (s : t_HaxInt) : t_HaxInt := s / 2.

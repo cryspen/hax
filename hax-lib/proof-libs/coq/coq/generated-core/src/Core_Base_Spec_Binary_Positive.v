@@ -13,67 +13,30 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
+From Core Require Import Core_Base_Spec_Haxint.
+Export Core_Base_Spec_Haxint.
 
+From Core Require Import Core_Clone.
+Export Core_Clone.
 
-Record Positive_Positive_record : Type :=
-  {
-    Positive_Positive_0 : Core_Base_Spec_Haxint.t_HaxInt;
-  }.
+Notation "'t_Positive'" := positive.
+Notation "'t_POSITIVE'" := positive.
+Notation "'POSITIVE_XH'" := xH.
+Notation "'POSITIVE_XO'" := xO.
+Notation "'POSITIVE_XI'" := xI.
 
+(* Inductive t_POSITIVE : Type := *)
+(* | POSITIVE_XH *)
+(* | POSITIVE_XO : t_Positive -> _ *)
+(* | POSITIVE_XI : t_Positive -> _. *)
 
-#[export] Instance settable_Positive_Positive_record : Settable _ :=
-  settable! (Build_Positive_Positive_record) <Positive_Positive_0>.
-Notation "'Positive_Positive_record'" := Build_Positive_Positive_record.
+Definition positive_from_int (x : t_HaxInt) `{Hpos : x <> N0} : t_Positive :=
+  match x return x <> N0 -> _ with | N0 => fun Hpos => False_rect _ (Hpos eq_refl) | Npos p => fun _ => p end Hpos.
 
+(* Definition positive_to_int (s : t_Positive) : Core_Base_Spec_Haxint.t_HaxInt := Npos s. *)
 
+Definition xH : t_Positive := xH.
+Definition xI (s : t_Positive) : t_Positive := xI s.
+Definition xO (s : t_Positive) : t_Positive := xO s.
 
-Inductive t_POSITIVE : Type :=
-| POSITIVE_XH
-| POSITIVE_XO : t_Positive -> _
-| POSITIVE_XI : t_Positive -> _.
-
-
-
-
-Instance Core_Clone.t_Clone_585471303 : Core_Clone.t_Clone ((t_Positive)) :=
-  {
-    implaabbcc_t_Clone_impl__f_clone := fun  (self : t_Positive)=>
-      Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
-  }.
-
-Definition positive_to_int (s : t_Positive) : Core_Base_Spec_Haxint.t_HaxInt :=
-  0 s.
-
-Definition positive_from_int (x : Core_Base_Spec_Haxint.t_HaxInt) : t_Positive :=
-  Positive_Positive (x).
-
-Definition xH : t_Positive :=
-  Positive_Positive (Core_Base_Spec_Haxint.v_HaxInt_ONE).
-
-Definition xO (s : t_Positive) : t_Positive :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
-
-Definition xI (s : t_Positive) : t_Positive :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
-
-Definition match_positive__is_xH (s : t_Positive) : bool :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
-
-Definition match_positive__is_xO (s : t_Positive) : bool :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
-
-Definition match_positive (s : t_Positive) : t_POSITIVE :=
-  if
-    match_positive__is_xH (Core_Clone.Clone__f_clone (s))
-  then
-    POSITIVE_XH
-  else
-    if
-      match_positive__is_xO (Core_Clone.Clone__f_clone (s))
-    then
-      POSITIVE_XO (positive_from_int (Core_Base_Spec_Haxint.div2 (positive_to_int (s))))
-    else
-      POSITIVE_XI (positive_from_int (Core_Base_Spec_Haxint.div2 (positive_to_int (s)))).
-
-Definition match_positive__is_xI (s : t_Positive) : bool :=
-  Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))).
+Definition match_positive (s : t_Positive) : t_POSITIVE := s.

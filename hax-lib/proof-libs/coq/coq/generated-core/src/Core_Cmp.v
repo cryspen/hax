@@ -9,7 +9,8 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+From Core Require Import Core_Ops_Bit.
+From Core Require Import Core_Option.
 
 (* NotImplementedYet *)
 
@@ -32,24 +33,24 @@ Inductive t_Ordering : Type :=
 
 
 
-Definition anon_const_Ordering_Less__anon_const_0 : t_i8 :=
-  (-1 : t_i8).
+(* Definition anon_const_Ordering_Less__anon_const_0 : t_i8 := *)
+(*   (-1 : t_i8). *)
 
-Definition anon_const_Ordering_Equal__anon_const_0 : t_i8 :=
-  (0 : t_i8).
+(* Definition anon_const_Ordering_Equal__anon_const_0 : t_i8 := *)
+(*   (0 : t_i8). *)
 
-Definition anon_const_Ordering_Greater__anon_const_0 : t_i8 :=
-  (1 : t_i8).
+(* Definition anon_const_Ordering_Greater__anon_const_0 : t_i8 := *)
+(*   (1 : t_i8). *)
 
-Definition t_Ordering_cast_to_repr (x : t_Ordering) : t_i8 :=
-  match x with
-  | Ordering_Less =>
-    anon_const_Ordering_Less__anon_const_0
-  | Ordering_Equal =>
-    anon_const_Ordering_Equal__anon_const_0
-  | Ordering_Greater =>
-    anon_const_Ordering_Greater__anon_const_0
-  end.
+(* Definition t_Ordering_cast_to_repr (x : t_Ordering) : t_i8 := *)
+(*   match x with *)
+(*   | Ordering_Less => *)
+(*     anon_const_Ordering_Less__anon_const_0 *)
+(*   | Ordering_Equal => *)
+(*     anon_const_Ordering_Equal__anon_const_0 *)
+(*   | Ordering_Greater => *)
+(*     anon_const_Ordering_Greater__anon_const_0 *)
+(*   end. *)
 
 
 
@@ -65,13 +66,15 @@ Definition impl_Ordering__is_eq (self : t_Ordering) : bool :=
     (false : bool)
   end.
 
-Definition impl_Ordering__is_ne (self : t_Ordering) : bool :=
-  Core_Ops_Bit.Not__f_not (match self with
+Definition impl_Ordering__is_ne (self : t_Ordering) `{t_Not : Core_Ops_Bit.t_Not bool} `{t_Not.(Not__f_Output) = bool} : bool :=
+  eq_rect Not__f_Output (fun T : Type => T)
+  (Core_Ops_Bit.Not__f_not (t_Not := t_Not) (match self with
   | Ordering_Equal =>
     (true : bool)
   | _ =>
     (false : bool)
-  end).
+  end))
+  bool H.
 
 Definition impl_Ordering__is_lt (self : t_Ordering) : bool :=
   match self with
@@ -89,21 +92,25 @@ Definition impl_Ordering__is_gt (self : t_Ordering) : bool :=
     (false : bool)
   end.
 
-Definition impl_Ordering__is_le (self : t_Ordering) : bool :=
-  Core_Ops_Bit.Not__f_not (match self with
+Definition impl_Ordering__is_le (self : t_Ordering) `{t_Not : Core_Ops_Bit.t_Not bool} `{t_Not.(Not__f_Output) = bool} : bool :=
+  eq_rect Not__f_Output (fun T : Type => T)
+  (Core_Ops_Bit.Not__f_not (match self with
   | Ordering_Greater =>
     (true : bool)
   | _ =>
     (false : bool)
-  end).
+  end))
+  bool H.
 
-Definition impl_Ordering__is_ge (self : t_Ordering) : bool :=
-  Core_Ops_Bit.Not__f_not (match self with
-  | Ordering_Less =>
-    (true : bool)
-  | _ =>
-    (false : bool)
-  end).
+Definition impl_Ordering__is_ge (self : t_Ordering) `{t_Not : Core_Ops_Bit.t_Not bool} `{t_Not.(Not__f_Output) = bool} : bool :=
+  eq_rect Not__f_Output (fun T : Type => T)
+    (Core_Ops_Bit.Not__f_not (match self with
+                              | Ordering_Less =>
+                                  (true : bool)
+                              | _ =>
+                                  (false : bool)
+                              end))
+    bool H.
 
 Definition impl_Ordering__reverse (self : t_Ordering) : t_Ordering :=
   match self with
@@ -115,6 +122,8 @@ Definition impl_Ordering__reverse (self : t_Ordering) : t_Ordering :=
     Ordering_Less
   end.
 
+Instance t_Ordering_t_Sized : Core_Marker.t_Sized t_Ordering := {}.
+
 Class t_PartialOrd (v_Self : Type) (v_Rhs : Type) `{t_PartialEq (v_Self) (v_Rhs)} : Type :=
   {
     PartialOrd__f_partial_cmp : v_Self -> v_Rhs -> Core_Option.t_Option ((t_Ordering));
@@ -125,9 +134,9 @@ Class t_PartialOrd (v_Self : Type) (v_Rhs : Type) `{t_PartialEq (v_Self) (v_Rhs)
   }.
 Arguments t_PartialOrd (_) (_) {_}.
 
-Instance t_PartialEq_1021649980 : t_PartialEq ((t_Ordering)) ((t_Ordering)) :=
+Instance t_PartialEq_1021649980 `{t_Not : Core_Ops_Bit.t_Not bool} `{t_Not.(Not__f_Output) = bool} : t_PartialEq ((t_Ordering)) ((t_Ordering)) :=
   {
-    implaabbcc_t_PartialEq_impl_1__f_eq := fun  (self : t_Ordering) (other : t_Ordering)=>
+    Core_Cmp.PartialEq__f_eq := fun  (self : t_Ordering) (other : t_Ordering)=>
       match self with
       | Ordering_Less =>
         match other with
@@ -151,8 +160,9 @@ Instance t_PartialEq_1021649980 : t_PartialEq ((t_Ordering)) ((t_Ordering)) :=
           (false : bool)
         end
       end;
-    implaabbcc_t_PartialEq_impl_1__f_ne := fun  (self : t_Ordering) (other : t_Ordering)=>
-      Core_Ops_Bit.Not__f_not (match self with
+    Core_Cmp.PartialEq__f_ne := fun  (self : t_Ordering) (other : t_Ordering)=>
+      eq_rect Not__f_Output (fun T : Type => T)
+      (Core_Ops_Bit.Not__f_not (t_Not := t_Not) (match self with
       | Ordering_Less =>
         match other with
         | Ordering_Less =>
@@ -174,10 +184,12 @@ Instance t_PartialEq_1021649980 : t_PartialEq ((t_Ordering)) ((t_Ordering)) :=
         | _ =>
           (false : bool)
         end
-      end);
+       end))
+       bool H;
   }.
 
-TODO: please implement the method `item'_HaxError`
+(* TODO: please implement the method `item'_HaxError` *)
+Class t_Eq (v_Self : Type) := {}.
 
 Class t_Ord (v_Self : Type) `{t_Eq (v_Self)} `{t_PartialOrd (v_Self) (v_Self)} : Type :=
   {

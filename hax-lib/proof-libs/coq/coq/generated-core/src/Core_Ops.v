@@ -9,44 +9,18 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+(* From Core Require Import Core. *)
 
 (* NotImplementedYet *)
 
+From Core Require Import Core_Ops_Arith.
+Export Core_Ops_Arith.
+ 
+From Core Require Import Core_Ops_Bit.
+Export Core_Ops_Bit.
 
+From Core Require Import Core_Ops_Index.
+Export Core_Ops_Index.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+(* From Core Require Import Core_Ops_Range. *)
+(* Export Core_Ops_Range. *)

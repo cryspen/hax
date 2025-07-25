@@ -9,8 +9,11 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
-
+From Core Require Import Core_Base_Spec_Haxint.
+From Core Require Import Core_Base_Spec_Constants.
+From Core Require Import Core_Base_interface_Coerce.
+From Core Require Import Core_Base_Pos.
+From Core Require Import Core_Base_Spec_Z.
 (* NotImplementedYet *)
 
 
@@ -78,2508 +81,2510 @@ Arguments t_Constants (_).
 
 (* NotImplementedYet *)
 
-Record U8_U8_record : Type :=
+Record t_U8 : Type :=
   {
-    U8_U8_f_U8_v : Core_Base_Spec_Haxint.t_HaxInt;
+    f_U8_v : Core_Base_Spec_Haxint.t_HaxInt;
   }.
 
 
 #[export] Instance settable_U8_U8_record : Settable _ :=
-  settable! (Build_U8_U8_record) <U8_U8_f_U8_v>.
+  settable! (Build_t_U8) <f_U8_v>.
+
+Instance t_U8_Sized : Core_Marker.t_Sized t_U8 := {}.
 
 Instance t_Constants_623735189 : t_Constants ((t_U8)) :=
   {
-    implaabbcc_t_Constants_impl_283__f_ZERO := U8_U8 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_283__f_ONE := U8_U8 (Core_Base_Spec_Haxint.v_HaxInt_ONE);
-    implaabbcc_t_Constants_impl_283__f_MIN := U8_U8 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_283__f_MAX := U8_U8 (Core_Base_Spec_Constants.v_WORDSIZE_8_SUB_1_);
+    Core_Base_interface_Int.Constants__f_ZERO := Build_t_U8 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
+    Core_Base_interface_Int.Constants__f_ONE := Build_t_U8 (Core_Base_Spec_Haxint.v_HaxInt_ONE);
+    Core_Base_interface_Int.Constants__f_MIN := Build_t_U8 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
+    Core_Base_interface_Int.Constants__f_MAX := Build_t_U8 (Core_Base_Spec_Constants.v_WORDSIZE_8_SUB_1_);
   }.
 
 Definition impl_284__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
   Core_Base_Spec_Constants.v_WORDSIZE_8_.
 
-Instance Core_Base_interface_Coerce.t_Concretization_776207118 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U8)) :=
+Instance t_Concretization_776207118 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U8)) :=
   {
-    implaabbcc_t_Concretization_impl_286__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=>
-      U8_U8 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_8_));
+    Core_Base_interface_Coerce.Concretization__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=>
+      Build_t_U8 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_8_));
   }.
 
-Instance Core_Clone.t_Clone_486264094 : Core_Clone.t_Clone ((t_U8)) :=
-  {
-    implaabbcc_t_Clone_impl_307__f_clone := fun  (self : t_U8)=>
-      U8_U8 (Core_Clone.Clone__f_clone (f_U8_v self));
-  }.
-
-Record U16_U16_record : Type :=
-  {
-    U16_U16_f_U16_v : Core_Base_Spec_Haxint.t_HaxInt;
-  }.
-
-
-#[export] Instance settable_U16_U16_record : Settable _ :=
-  settable! (Build_U16_U16_record) <U16_U16_f_U16_v>.
-
-Instance t_Constants_1008862138 : t_Constants ((t_U16)) :=
-  {
-    implaabbcc_t_Constants_impl_256__f_ZERO := U16_U16 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_256__f_ONE := U16_U16 (Core_Base_Spec_Haxint.v_HaxInt_ONE);
-    implaabbcc_t_Constants_impl_256__f_MIN := U16_U16 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_256__f_MAX := U16_U16 (Core_Base_Spec_Constants.v_WORDSIZE_16_SUB_1_);
-  }.
-
-Definition impl_257__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_16_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_667551646 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U16)) :=
-  {
-    implaabbcc_t_Concretization_impl_259__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=>
-      U16_U16 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_16_));
-  }.
-
-Instance Core_Clone.t_Clone_716402593 : Core_Clone.t_Clone ((t_U16)) :=
-  {
-    implaabbcc_t_Clone_impl_280__f_clone := fun  (self : t_U16)=>
-      U16_U16 (Core_Clone.Clone__f_clone (f_U16_v self));
-  }.
-
-Record U32_U32_record : Type :=
-  {
-    U32_U32_f_U32_v : Core_Base_Spec_Haxint.t_HaxInt;
-  }.
-
-
-#[export] Instance settable_U32_U32_record : Settable _ :=
-  settable! (Build_U32_U32_record) <U32_U32_f_U32_v>.
-
-Definition impl_284__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_8_).
-
-Definition impl_257__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_16_).
-
-Instance t_Constants_443398799 : t_Constants ((t_U32)) :=
-  {
-    implaabbcc_t_Constants_impl_229__f_ZERO := U32_U32 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_229__f_ONE := U32_U32 (Core_Base_Spec_Haxint.v_HaxInt_ONE);
-    implaabbcc_t_Constants_impl_229__f_MIN := U32_U32 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_229__f_MAX := U32_U32 (Core_Base_Spec_Constants.v_WORDSIZE_32_SUB_1_);
-  }.
-
-Definition impl_230__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_32_).
-
-Definition impl_230__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_32_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_272579079 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U32)) :=
-  {
-    implaabbcc_t_Concretization_impl_232__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=>
-      U32_U32 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_32_));
-  }.
-
-Instance Core_Clone.t_Clone_974027832 : Core_Clone.t_Clone ((t_U32)) :=
-  {
-    implaabbcc_t_Clone_impl_253__f_clone := fun  (self : t_U32)=>
-      U32_U32 (Core_Clone.Clone__f_clone (f_U32_v self));
-  }.
-
-Record U64_U64_record : Type :=
-  {
-    U64_U64_f_U64_v : Core_Base_Spec_Haxint.t_HaxInt;
-  }.
-
-
-#[export] Instance settable_U64_U64_record : Settable _ :=
-  settable! (Build_U64_U64_record) <U64_U64_f_U64_v>.
-
-Instance t_Constants_1057979424 : t_Constants ((t_U64)) :=
-  {
-    implaabbcc_t_Constants_impl_202__f_ZERO := U64_U64 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_202__f_ONE := U64_U64 (Core_Base_Spec_Haxint.v_HaxInt_ONE);
-    implaabbcc_t_Constants_impl_202__f_MIN := U64_U64 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_202__f_MAX := U64_U64 (Core_Base_Spec_Constants.v_WORDSIZE_64_SUB_1_);
-  }.
-
-Definition impl_203__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_64_).
-
-Definition impl_203__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_64_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_783203595 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U64)) :=
-  {
-    implaabbcc_t_Concretization_impl_205__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=>
-      U64_U64 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_64_));
-  }.
-
-Instance Core_Clone.t_Clone_826195165 : Core_Clone.t_Clone ((t_U64)) :=
-  {
-    implaabbcc_t_Clone_impl_226__f_clone := fun  (self : t_U64)=>
-      U64_U64 (Core_Clone.Clone__f_clone (f_U64_v self));
-  }.
-
-Record U128_U128_record : Type :=
-  {
-    U128_U128_f_U128_v : Core_Base_Spec_Haxint.t_HaxInt;
-  }.
-
-
-#[export] Instance settable_U128_U128_record : Settable _ :=
-  settable! (Build_U128_U128_record) <U128_U128_f_U128_v>.
-
-Instance t_Constants_748983978 : t_Constants ((t_U128)) :=
-  {
-    implaabbcc_t_Constants_impl_175__f_ZERO := U128_U128 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_175__f_ONE := U128_U128 (Core_Base_Spec_Haxint.v_HaxInt_ONE);
-    implaabbcc_t_Constants_impl_175__f_MIN := U128_U128 (Core_Base_Spec_Haxint.v_HaxInt_ZERO);
-    implaabbcc_t_Constants_impl_175__f_MAX := U128_U128 (Core_Base_Spec_Constants.v_WORDSIZE_128_SUB_1_);
-  }.
-
-Definition impl_176__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_128_).
-
-Definition impl_176__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_128_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_775057436 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U128)) :=
-  {
-    implaabbcc_t_Concretization_impl_178__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=>
-      U128_U128 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_128_));
-  }.
-
-Instance Core_Clone.t_Clone_684082468 : Core_Clone.t_Clone ((t_U128)) :=
-  {
-    implaabbcc_t_Clone_impl_199__f_clone := fun  (self : t_U128)=>
-      U128_U128 (Core_Clone.Clone__f_clone (f_U128_v self));
-  }.
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-Record I8_I8_record : Type :=
-  {
-    I8_I8_f_I8_v : Core_Base_Spec_Z.t_Z;
-  }.
-
-
-#[export] Instance settable_I8_I8_record : Settable _ :=
-  settable! (Build_I8_I8_record) <I8_I8_f_I8_v>.
-
-Instance t_Constants_54856411 : t_Constants ((t_I8)) :=
-  {
-    implaabbcc_t_Constants_impl_148__f_ZERO := I8_I8 (Core_Base_Spec_Z.Z_ZERO);
-    implaabbcc_t_Constants_impl_148__f_ONE := I8_I8 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH));
-    implaabbcc_t_Constants_impl_148__f_MIN := I8_I8 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_8_);
-    implaabbcc_t_Constants_impl_148__f_MAX := I8_I8 (Core_Base_Spec_Constants.v_POS_WORDSIZE_8_);
-  }.
-
-Definition impl_149__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_8_).
-
-Definition impl_149__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_8_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_340267805 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I8)) :=
-  {
-    implaabbcc_t_Concretization_impl_151__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=>
-      I8_I8 (self);
-  }.
-
-Instance Core_Clone.t_Clone_597304004 : Core_Clone.t_Clone ((t_I8)) :=
-  {
-    implaabbcc_t_Clone_impl_172__f_clone := fun  (self : t_I8)=>
-      I8_I8 (Core_Clone.Clone__f_clone (f_I8_v self));
-  }.
-
-Record I16_I16_record : Type :=
-  {
-    I16_I16_f_I16_v : Core_Base_Spec_Z.t_Z;
-  }.
-
-
-#[export] Instance settable_I16_I16_record : Settable _ :=
-  settable! (Build_I16_I16_record) <I16_I16_f_I16_v>.
-
-Instance t_Constants_583718827 : t_Constants ((t_I16)) :=
-  {
-    implaabbcc_t_Constants_impl_121__f_ZERO := I16_I16 (Core_Base_Spec_Z.Z_ZERO);
-    implaabbcc_t_Constants_impl_121__f_ONE := I16_I16 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH));
-    implaabbcc_t_Constants_impl_121__f_MIN := I16_I16 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_16_);
-    implaabbcc_t_Constants_impl_121__f_MAX := I16_I16 (Core_Base_Spec_Constants.v_POS_WORDSIZE_16_);
-  }.
-
-Definition impl_122__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_16_).
-
-Definition impl_122__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_16_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_797165207 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I16)) :=
-  {
-    implaabbcc_t_Concretization_impl_124__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=>
-      I16_I16 (self);
-  }.
-
-Instance Core_Clone.t_Clone_348968053 : Core_Clone.t_Clone ((t_I16)) :=
-  {
-    implaabbcc_t_Clone_impl_145__f_clone := fun  (self : t_I16)=>
-      I16_I16 (Core_Clone.Clone__f_clone (f_I16_v self));
-  }.
-
-Record I32_I32_record : Type :=
-  {
-    I32_I32_f_I32_v : Core_Base_Spec_Z.t_Z;
-  }.
-
-
-#[export] Instance settable_I32_I32_record : Settable _ :=
-  settable! (Build_I32_I32_record) <I32_I32_f_I32_v>.
-
-Instance t_Constants_346540654 : t_Constants ((t_I32)) :=
-  {
-    implaabbcc_t_Constants_impl_94__f_ZERO := I32_I32 (Core_Base_Spec_Z.Z_ZERO);
-    implaabbcc_t_Constants_impl_94__f_ONE := I32_I32 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH));
-    implaabbcc_t_Constants_impl_94__f_MIN := I32_I32 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_32_);
-    implaabbcc_t_Constants_impl_94__f_MAX := I32_I32 (Core_Base_Spec_Constants.v_POS_WORDSIZE_32_);
-  }.
-
-Definition impl_95__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_32_).
-
-Definition impl_95__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_32_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_142931371 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I32)) :=
-  {
-    implaabbcc_t_Concretization_impl_97__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=>
-      I32_I32 (self);
-  }.
-
-Instance Core_Clone.t_Clone_552196451 : Core_Clone.t_Clone ((t_I32)) :=
-  {
-    implaabbcc_t_Clone_impl_118__f_clone := fun  (self : t_I32)=>
-      I32_I32 (Core_Clone.Clone__f_clone (f_I32_v self));
-  }.
-
-Record I64_I64_record : Type :=
-  {
-    I64_I64_f_I64_v : Core_Base_Spec_Z.t_Z;
-  }.
-
-
-#[export] Instance settable_I64_I64_record : Settable _ :=
-  settable! (Build_I64_I64_record) <I64_I64_f_I64_v>.
-
-Instance t_Constants_545287357 : t_Constants ((t_I64)) :=
-  {
-    implaabbcc_t_Constants_impl_67__f_ZERO := I64_I64 (Core_Base_Spec_Z.Z_ZERO);
-    implaabbcc_t_Constants_impl_67__f_ONE := I64_I64 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH));
-    implaabbcc_t_Constants_impl_67__f_MIN := I64_I64 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_64_);
-    implaabbcc_t_Constants_impl_67__f_MAX := I64_I64 (Core_Base_Spec_Constants.v_POS_WORDSIZE_64_);
-  }.
-
-Definition impl_68__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_64_).
-
-Definition impl_68__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_64_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_181371139 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I64)) :=
-  {
-    implaabbcc_t_Concretization_impl_70__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=>
-      I64_I64 (self);
-  }.
-
-Instance Core_Clone.t_Clone_301990294 : Core_Clone.t_Clone ((t_I64)) :=
-  {
-    implaabbcc_t_Clone_impl_91__f_clone := fun  (self : t_I64)=>
-      I64_I64 (Core_Clone.Clone__f_clone (f_I64_v self));
-  }.
-
-Record I128_I128_record : Type :=
-  {
-    I128_I128_f_I128_v : Core_Base_Spec_Z.t_Z;
-  }.
-
-
-#[export] Instance settable_I128_I128_record : Settable _ :=
-  settable! (Build_I128_I128_record) <I128_I128_f_I128_v>.
-
-Instance t_Constants_6929165 : t_Constants ((t_I128)) :=
-  {
-    implaabbcc_t_Constants_impl_40__f_ZERO := I128_I128 (Core_Base_Spec_Z.Z_ZERO);
-    implaabbcc_t_Constants_impl_40__f_ONE := I128_I128 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH));
-    implaabbcc_t_Constants_impl_40__f_MIN := I128_I128 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_128_);
-    implaabbcc_t_Constants_impl_40__f_MAX := I128_I128 (Core_Base_Spec_Constants.v_POS_WORDSIZE_128_);
-  }.
-
-Definition impl_41__BITS : t_U32 :=
-  U32_U32 (Core_Base_Spec_Constants.v_BITS_128_).
-
-Definition impl_41__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt :=
-  Core_Base_Spec_Constants.v_WORDSIZE_128_.
-
-Instance Core_Base_interface_Coerce.t_Concretization_673046093 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I128)) :=
-  {
-    implaabbcc_t_Concretization_impl_43__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=>
-      I128_I128 (self);
-  }.
-
-Instance Core_Clone.t_Clone_32770525 : Core_Clone.t_Clone ((t_I128)) :=
-  {
-    implaabbcc_t_Clone_impl_64__f_clone := fun  (self : t_I128)=>
-      I128_I128 (Core_Clone.Clone__f_clone (f_I128_v self));
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_694136044 : Core_Base_interface_Coerce.t_Abstraction ((t_U8)) :=
-  {
-    implaabbcc_t_Abstraction_impl_285__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt;
-    implaabbcc_t_Abstraction_impl_285__f_lift := fun  (self : t_U8)=>
-      f_U8_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_882240962 : Core_Base_interface_Coerce.t_Abstraction ((t_U16)) :=
-  {
-    implaabbcc_t_Abstraction_impl_258__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt;
-    implaabbcc_t_Abstraction_impl_258__f_lift := fun  (self : t_U16)=>
-      f_U16_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_362803209 : Core_Base_interface_Coerce.t_Abstraction ((t_U32)) :=
-  {
-    implaabbcc_t_Abstraction_impl_231__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt;
-    implaabbcc_t_Abstraction_impl_231__f_lift := fun  (self : t_U32)=>
-      f_U32_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_219210603 : Core_Base_interface_Coerce.t_Abstraction ((t_U64)) :=
-  {
-    implaabbcc_t_Abstraction_impl_204__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt;
-    implaabbcc_t_Abstraction_impl_204__f_lift := fun  (self : t_U64)=>
-      f_U64_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_282656913 : Core_Base_interface_Coerce.t_Abstraction ((t_U128)) :=
-  {
-    implaabbcc_t_Abstraction_impl_177__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt;
-    implaabbcc_t_Abstraction_impl_177__f_lift := fun  (self : t_U128)=>
-      f_U128_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_598094958 : Core_Base_interface_Coerce.t_Abstraction ((t_I8)) :=
-  {
-    implaabbcc_t_Abstraction_impl_150__f_AbstractType := Core_Base_Spec_Z.t_Z;
-    implaabbcc_t_Abstraction_impl_150__f_lift := fun  (self : t_I8)=>
-      f_I8_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_455206451 : Core_Base_interface_Coerce.t_Abstraction ((t_I16)) :=
-  {
-    implaabbcc_t_Abstraction_impl_123__f_AbstractType := Core_Base_Spec_Z.t_Z;
-    implaabbcc_t_Abstraction_impl_123__f_lift := fun  (self : t_I16)=>
-      f_I16_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_1031023691 : Core_Base_interface_Coerce.t_Abstraction ((t_I32)) :=
-  {
-    implaabbcc_t_Abstraction_impl_96__f_AbstractType := Core_Base_Spec_Z.t_Z;
-    implaabbcc_t_Abstraction_impl_96__f_lift := fun  (self : t_I32)=>
-      f_I32_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_513929121 : Core_Base_interface_Coerce.t_Abstraction ((t_I64)) :=
-  {
-    implaabbcc_t_Abstraction_impl_69__f_AbstractType := Core_Base_Spec_Z.t_Z;
-    implaabbcc_t_Abstraction_impl_69__f_lift := fun  (self : t_I64)=>
-      f_I64_v self;
-  }.
-
-Instance Core_Base_interface_Coerce.t_Abstraction_733551703 : Core_Base_interface_Coerce.t_Abstraction ((t_I128)) :=
-  {
-    implaabbcc_t_Abstraction_impl_42__f_AbstractType := Core_Base_Spec_Z.t_Z;
-    implaabbcc_t_Abstraction_impl_42__f_lift := fun  (self : t_I128)=>
-      f_I128_v self;
-  }.
-
-Instance Core_Convert.t_From_390804224 : Core_Convert.t_From ((t_U16)) ((t_U8)) :=
-  {
-    implaabbcc_t_From_impl__f_from := fun  (x : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_1004883337 : Core_Convert.t_From ((t_U32)) ((t_U8)) :=
-  {
-    implaabbcc_t_From_impl_1__f_from := fun  (x : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_88086663 : Core_Convert.t_From ((t_U64)) ((t_U8)) :=
-  {
-    implaabbcc_t_From_impl_2__f_from := fun  (x : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_482179413 : Core_Convert.t_From ((t_U128)) ((t_U8)) :=
-  {
-    implaabbcc_t_From_impl_3__f_from := fun  (x : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_669109509 : Core_Convert.t_From ((t_U8)) ((t_U16)) :=
-  {
-    implaabbcc_t_From_impl_4__f_from := fun  (x : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_227048902 : Core_Convert.t_From ((t_U32)) ((t_U16)) :=
-  {
-    implaabbcc_t_From_impl_5__f_from := fun  (x : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_1044732707 : Core_Convert.t_From ((t_U64)) ((t_U16)) :=
-  {
-    implaabbcc_t_From_impl_6__f_from := fun  (x : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_964352653 : Core_Convert.t_From ((t_U128)) ((t_U16)) :=
-  {
-    implaabbcc_t_From_impl_7__f_from := fun  (x : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_901828890 : Core_Convert.t_From ((t_U8)) ((t_U32)) :=
-  {
-    implaabbcc_t_From_impl_8__f_from := fun  (x : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_257173445 : Core_Convert.t_From ((t_U16)) ((t_U32)) :=
-  {
-    implaabbcc_t_From_impl_9__f_from := fun  (x : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_589695960 : Core_Convert.t_From ((t_U64)) ((t_U32)) :=
-  {
-    implaabbcc_t_From_impl_10__f_from := fun  (x : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_617099116 : Core_Convert.t_From ((t_U128)) ((t_U32)) :=
-  {
-    implaabbcc_t_From_impl_11__f_from := fun  (x : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_33882284 : Core_Convert.t_From ((t_U8)) ((t_U64)) :=
-  {
-    implaabbcc_t_From_impl_12__f_from := fun  (x : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_204638720 : Core_Convert.t_From ((t_U16)) ((t_U64)) :=
-  {
-    implaabbcc_t_From_impl_13__f_from := fun  (x : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_1048202027 : Core_Convert.t_From ((t_U32)) ((t_U64)) :=
-  {
-    implaabbcc_t_From_impl_14__f_from := fun  (x : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_510239774 : Core_Convert.t_From ((t_U128)) ((t_U64)) :=
-  {
-    implaabbcc_t_From_impl_15__f_from := fun  (x : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_707957356 : Core_Convert.t_From ((t_U8)) ((t_U128)) :=
-  {
-    implaabbcc_t_From_impl_16__f_from := fun  (x : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_697340552 : Core_Convert.t_From ((t_U16)) ((t_U128)) :=
-  {
-    implaabbcc_t_From_impl_17__f_from := fun  (x : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_1038172637 : Core_Convert.t_From ((t_U32)) ((t_U128)) :=
-  {
-    implaabbcc_t_From_impl_18__f_from := fun  (x : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_212792583 : Core_Convert.t_From ((t_U64)) ((t_U128)) :=
-  {
-    implaabbcc_t_From_impl_19__f_from := fun  (x : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_415870363 : Core_Convert.t_From ((t_I16)) ((t_I8)) :=
-  {
-    implaabbcc_t_From_impl_20__f_from := fun  (x : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_328900970 : Core_Convert.t_From ((t_I32)) ((t_I8)) :=
-  {
-    implaabbcc_t_From_impl_21__f_from := fun  (x : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_479541755 : Core_Convert.t_From ((t_I64)) ((t_I8)) :=
-  {
-    implaabbcc_t_From_impl_22__f_from := fun  (x : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_927811147 : Core_Convert.t_From ((t_I128)) ((t_I8)) :=
-  {
-    implaabbcc_t_From_impl_23__f_from := fun  (x : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_819153677 : Core_Convert.t_From ((t_I8)) ((t_I16)) :=
-  {
-    implaabbcc_t_From_impl_24__f_from := fun  (x : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_607481849 : Core_Convert.t_From ((t_I32)) ((t_I16)) :=
-  {
-    implaabbcc_t_From_impl_25__f_from := fun  (x : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_514297986 : Core_Convert.t_From ((t_I64)) ((t_I16)) :=
-  {
-    implaabbcc_t_From_impl_26__f_from := fun  (x : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_769963634 : Core_Convert.t_From ((t_I128)) ((t_I16)) :=
-  {
-    implaabbcc_t_From_impl_27__f_from := fun  (x : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_881854114 : Core_Convert.t_From ((t_I8)) ((t_I32)) :=
-  {
-    implaabbcc_t_From_impl_28__f_from := fun  (x : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_39869387 : Core_Convert.t_From ((t_I16)) ((t_I32)) :=
-  {
-    implaabbcc_t_From_impl_29__f_from := fun  (x : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_271937612 : Core_Convert.t_From ((t_I64)) ((t_I32)) :=
-  {
-    implaabbcc_t_From_impl_30__f_from := fun  (x : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_905182586 : Core_Convert.t_From ((t_I128)) ((t_I32)) :=
-  {
-    implaabbcc_t_From_impl_31__f_from := fun  (x : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_161709171 : Core_Convert.t_From ((t_I8)) ((t_I64)) :=
-  {
-    implaabbcc_t_From_impl_32__f_from := fun  (x : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_434651441 : Core_Convert.t_From ((t_I16)) ((t_I64)) :=
-  {
-    implaabbcc_t_From_impl_33__f_from := fun  (x : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_392339040 : Core_Convert.t_From ((t_I32)) ((t_I64)) :=
-  {
-    implaabbcc_t_From_impl_34__f_from := fun  (x : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_901525746 : Core_Convert.t_From ((t_I128)) ((t_I64)) :=
-  {
-    implaabbcc_t_From_impl_35__f_from := fun  (x : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_685474488 : Core_Convert.t_From ((t_I8)) ((t_I128)) :=
-  {
-    implaabbcc_t_From_impl_36__f_from := fun  (x : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_423551677 : Core_Convert.t_From ((t_I16)) ((t_I128)) :=
-  {
-    implaabbcc_t_From_impl_37__f_from := fun  (x : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_341651614 : Core_Convert.t_From ((t_I32)) ((t_I128)) :=
-  {
-    implaabbcc_t_From_impl_38__f_from := fun  (x : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Convert.t_From_963376985 : Core_Convert.t_From ((t_I64)) ((t_I128)) :=
-  {
-    implaabbcc_t_From_impl_39__f_from := fun  (x : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x));
-  }.
-
-Instance Core_Cmp.t_PartialEq_99615800 : Core_Cmp.t_PartialEq ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_PartialEq_impl_308__f_eq := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_308__f_ne := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_553148071 : Core_Cmp.t_PartialOrd ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_309__f_partial_cmp := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_309__f_lt := fun  (self : t_U8) (rhs : t_U8)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_309__f_le := fun  (self : t_U8) (rhs : t_U8)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_309__f_gt := fun  (self : t_U8) (rhs : t_U8)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_309__f_ge := fun  (self : t_U8) (rhs : t_U8)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_40709887 : Core_Cmp.t_PartialEq ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_PartialEq_impl_281__f_eq := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_281__f_ne := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_579664919 : Core_Cmp.t_PartialOrd ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_282__f_partial_cmp := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_282__f_lt := fun  (self : t_U16) (rhs : t_U16)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_282__f_le := fun  (self : t_U16) (rhs : t_U16)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_282__f_gt := fun  (self : t_U16) (rhs : t_U16)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_282__f_ge := fun  (self : t_U16) (rhs : t_U16)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_758145504 : Core_Cmp.t_PartialEq ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_PartialEq_impl_254__f_eq := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_254__f_ne := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_142171754 : Core_Cmp.t_PartialOrd ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_255__f_partial_cmp := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_255__f_lt := fun  (self : t_U32) (rhs : t_U32)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_255__f_le := fun  (self : t_U32) (rhs : t_U32)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_255__f_gt := fun  (self : t_U32) (rhs : t_U32)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_255__f_ge := fun  (self : t_U32) (rhs : t_U32)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_476930700 : Core_Cmp.t_PartialEq ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_PartialEq_impl_227__f_eq := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_227__f_ne := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_107168997 : Core_Cmp.t_PartialOrd ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_228__f_partial_cmp := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_228__f_lt := fun  (self : t_U64) (rhs : t_U64)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_228__f_le := fun  (self : t_U64) (rhs : t_U64)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_228__f_gt := fun  (self : t_U64) (rhs : t_U64)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_228__f_ge := fun  (self : t_U64) (rhs : t_U64)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_394950240 : Core_Cmp.t_PartialEq ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_PartialEq_impl_200__f_eq := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_200__f_ne := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_204873282 : Core_Cmp.t_PartialOrd ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_201__f_partial_cmp := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_201__f_lt := fun  (self : t_U128) (rhs : t_U128)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_201__f_le := fun  (self : t_U128) (rhs : t_U128)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_201__f_gt := fun  (self : t_U128) (rhs : t_U128)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_201__f_ge := fun  (self : t_U128) (rhs : t_U128)=>
-      match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_881944191 : Core_Cmp.t_PartialEq ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_PartialEq_impl_173__f_eq := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_173__f_ne := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_17951096 : Core_Cmp.t_PartialOrd ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_174__f_partial_cmp := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_174__f_lt := fun  (self : t_I8) (rhs : t_I8)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_174__f_le := fun  (self : t_I8) (rhs : t_I8)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_174__f_gt := fun  (self : t_I8) (rhs : t_I8)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_174__f_ge := fun  (self : t_I8) (rhs : t_I8)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_166363327 : Core_Cmp.t_PartialEq ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_PartialEq_impl_146__f_eq := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_146__f_ne := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_1036256246 : Core_Cmp.t_PartialOrd ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_147__f_partial_cmp := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_147__f_lt := fun  (self : t_I16) (rhs : t_I16)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_147__f_le := fun  (self : t_I16) (rhs : t_I16)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_147__f_gt := fun  (self : t_I16) (rhs : t_I16)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_147__f_ge := fun  (self : t_I16) (rhs : t_I16)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_472204838 : Core_Cmp.t_PartialEq ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_PartialEq_impl_119__f_eq := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_119__f_ne := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_676471310 : Core_Cmp.t_PartialOrd ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_120__f_partial_cmp := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_120__f_lt := fun  (self : t_I32) (rhs : t_I32)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_120__f_le := fun  (self : t_I32) (rhs : t_I32)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_120__f_gt := fun  (self : t_I32) (rhs : t_I32)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_120__f_ge := fun  (self : t_I32) (rhs : t_I32)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_667790166 : Core_Cmp.t_PartialEq ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_PartialEq_impl_92__f_eq := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_92__f_ne := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_5117809 : Core_Cmp.t_PartialOrd ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_93__f_partial_cmp := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_93__f_lt := fun  (self : t_I64) (rhs : t_I64)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_93__f_le := fun  (self : t_I64) (rhs : t_I64)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_93__f_gt := fun  (self : t_I64) (rhs : t_I64)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_93__f_ge := fun  (self : t_I64) (rhs : t_I64)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Cmp.t_PartialEq_511424149 : Core_Cmp.t_PartialEq ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_PartialEq_impl_65__f_eq := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-    implaabbcc_t_PartialEq_impl_65__f_ne := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal);
-  }.
-
-Instance Core_Cmp.t_PartialOrd_229968400 : Core_Cmp.t_PartialOrd ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_PartialOrd_impl_66__f_partial_cmp := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))));
-    implaabbcc_t_PartialOrd_impl_66__f_lt := fun  (self : t_I128) (rhs : t_I128)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_66__f_le := fun  (self : t_I128) (rhs : t_I128)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Less
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_66__f_gt := fun  (self : t_I128) (rhs : t_I128)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-    implaabbcc_t_PartialOrd_impl_66__f_ge := fun  (self : t_I128) (rhs : t_I128)=>
-      match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with
-      | Core_Cmp.Ordering_Greater
-      | Core_Cmp.Ordering_Equal =>
-        (true : bool)
-      | _ =>
-        (false : bool)
-      end;
-  }.
-
-Instance Core_Ops_Arith.t_Mul_739468969 : Core_Ops_Arith.t_Mul ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Mul_impl_290__f_Output := t_U8;
-    implaabbcc_t_Mul_impl_290__f_mul := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_11796974 : Core_Ops_Arith.t_Rem ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Rem_impl_291__f_Output := t_U8;
-    implaabbcc_t_Rem_impl_291__f_rem := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_722564932 : Core_Ops_Arith.t_Add ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Add_impl_292__f_Output := t_U8;
-    implaabbcc_t_Add_impl_292__f_add := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_421096087 : Core_Ops_Arith.t_Div ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Div_impl_293__f_Output := t_U8;
-    implaabbcc_t_Div_impl_293__f_div := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_119673410 : Core_Ops_Arith.t_Neg ((t_U8)) :=
-  {
-    implaabbcc_t_Neg_impl_287__f_Output := t_U8;
-    implaabbcc_t_Neg_impl_287__f_neg := fun  (self : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_8_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_8_)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_147302523 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shl_impl_294__f_Output := t_U8;
-    implaabbcc_t_Shl_impl_294__f_shl := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_552843641 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shl_impl_295__f_Output := t_U8;
-    implaabbcc_t_Shl_impl_295__f_shl := fun  (self : t_U8) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1029067931 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shl_impl_296__f_Output := t_U8;
-    implaabbcc_t_Shl_impl_296__f_shl := fun  (self : t_U8) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_858482607 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shl_impl_297__f_Output := t_U8;
-    implaabbcc_t_Shl_impl_297__f_shl := fun  (self : t_U8) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_850374583 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shl_impl_298__f_Output := t_U8;
-    implaabbcc_t_Shl_impl_298__f_shl := fun  (self : t_U8) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_649114101 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shr_impl_299__f_Output := t_U8;
-    implaabbcc_t_Shr_impl_299__f_shr := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_151731961 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shr_impl_300__f_Output := t_U8;
-    implaabbcc_t_Shr_impl_300__f_shr := fun  (self : t_U8) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_62999646 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shr_impl_301__f_Output := t_U8;
-    implaabbcc_t_Shr_impl_301__f_shr := fun  (self : t_U8) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1013645823 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shr_impl_302__f_Output := t_U8;
-    implaabbcc_t_Shr_impl_302__f_shr := fun  (self : t_U8) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_591801947 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shr_impl_303__f_Output := t_U8;
-    implaabbcc_t_Shr_impl_303__f_shr := fun  (self : t_U8) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_467590830 : Core_Ops_Bit.t_BitXor ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_BitXor_impl_304__f_Output := t_U8;
-    implaabbcc_t_BitXor_impl_304__f_bitxor := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_101789241 : Core_Ops_Bit.t_BitAnd ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_BitAnd_impl_305__f_Output := t_U8;
-    implaabbcc_t_BitAnd_impl_305__f_bitand := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_170480459 : Core_Ops_Bit.t_BitOr ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_BitOr_impl_306__f_Output := t_U8;
-    implaabbcc_t_BitOr_impl_306__f_bitor := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_218256686 : Core_Ops_Arith.t_Mul ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Mul_impl_263__f_Output := t_U16;
-    implaabbcc_t_Mul_impl_263__f_mul := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_279097188 : Core_Ops_Arith.t_Rem ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Rem_impl_264__f_Output := t_U16;
-    implaabbcc_t_Rem_impl_264__f_rem := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_213069101 : Core_Ops_Arith.t_Add ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Add_impl_265__f_Output := t_U16;
-    implaabbcc_t_Add_impl_265__f_add := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_3555313 : Core_Ops_Arith.t_Div ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Div_impl_266__f_Output := t_U16;
-    implaabbcc_t_Div_impl_266__f_div := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_507469799 : Core_Ops_Arith.t_Neg ((t_U16)) :=
-  {
-    implaabbcc_t_Neg_impl_260__f_Output := t_U16;
-    implaabbcc_t_Neg_impl_260__f_neg := fun  (self : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_16_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_16_)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1039374414 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shl_impl_267__f_Output := t_U16;
-    implaabbcc_t_Shl_impl_267__f_shl := fun  (self : t_U16) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_848017981 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shl_impl_268__f_Output := t_U16;
-    implaabbcc_t_Shl_impl_268__f_shl := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_55981901 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shl_impl_269__f_Output := t_U16;
-    implaabbcc_t_Shl_impl_269__f_shl := fun  (self : t_U16) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_642009701 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shl_impl_270__f_Output := t_U16;
-    implaabbcc_t_Shl_impl_270__f_shl := fun  (self : t_U16) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1043221441 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shl_impl_271__f_Output := t_U16;
-    implaabbcc_t_Shl_impl_271__f_shl := fun  (self : t_U16) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_15286456 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shr_impl_272__f_Output := t_U16;
-    implaabbcc_t_Shr_impl_272__f_shr := fun  (self : t_U16) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1067566649 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shr_impl_273__f_Output := t_U16;
-    implaabbcc_t_Shr_impl_273__f_shr := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_319063591 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shr_impl_274__f_Output := t_U16;
-    implaabbcc_t_Shr_impl_274__f_shr := fun  (self : t_U16) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_941307102 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shr_impl_275__f_Output := t_U16;
-    implaabbcc_t_Shr_impl_275__f_shr := fun  (self : t_U16) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1003636416 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shr_impl_276__f_Output := t_U16;
-    implaabbcc_t_Shr_impl_276__f_shr := fun  (self : t_U16) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_946629289 : Core_Ops_Bit.t_BitXor ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_BitXor_impl_277__f_Output := t_U16;
-    implaabbcc_t_BitXor_impl_277__f_bitxor := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_988132460 : Core_Ops_Bit.t_BitAnd ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_BitAnd_impl_278__f_Output := t_U16;
-    implaabbcc_t_BitAnd_impl_278__f_bitand := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_561260088 : Core_Ops_Bit.t_BitOr ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_BitOr_impl_279__f_Output := t_U16;
-    implaabbcc_t_BitOr_impl_279__f_bitor := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_244794649 : Core_Ops_Arith.t_Mul ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Mul_impl_236__f_Output := t_U32;
-    implaabbcc_t_Mul_impl_236__f_mul := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_932604688 : Core_Ops_Arith.t_Rem ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Rem_impl_237__f_Output := t_U32;
-    implaabbcc_t_Rem_impl_237__f_rem := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_187008402 : Core_Ops_Arith.t_Add ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Add_impl_238__f_Output := t_U32;
-    implaabbcc_t_Add_impl_238__f_add := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_704950227 : Core_Ops_Arith.t_Div ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Div_impl_239__f_Output := t_U32;
-    implaabbcc_t_Div_impl_239__f_div := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_768279738 : Core_Ops_Arith.t_Neg ((t_U32)) :=
-  {
-    implaabbcc_t_Neg_impl_233__f_Output := t_U32;
-    implaabbcc_t_Neg_impl_233__f_neg := fun  (self : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_32_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_32_)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_734707672 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shl_impl_240__f_Output := t_U32;
-    implaabbcc_t_Shl_impl_240__f_shl := fun  (self : t_U32) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_243096202 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shl_impl_241__f_Output := t_U32;
-    implaabbcc_t_Shl_impl_241__f_shl := fun  (self : t_U32) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_740009739 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shl_impl_242__f_Output := t_U32;
-    implaabbcc_t_Shl_impl_242__f_shl := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_126513851 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shl_impl_243__f_Output := t_U32;
-    implaabbcc_t_Shl_impl_243__f_shl := fun  (self : t_U32) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_923918929 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shl_impl_244__f_Output := t_U32;
-    implaabbcc_t_Shl_impl_244__f_shl := fun  (self : t_U32) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_941707737 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shr_impl_245__f_Output := t_U32;
-    implaabbcc_t_Shr_impl_245__f_shr := fun  (self : t_U32) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_207361529 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shr_impl_246__f_Output := t_U32;
-    implaabbcc_t_Shr_impl_246__f_shr := fun  (self : t_U32) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_610922320 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shr_impl_247__f_Output := t_U32;
-    implaabbcc_t_Shr_impl_247__f_shr := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_546064969 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shr_impl_248__f_Output := t_U32;
-    implaabbcc_t_Shr_impl_248__f_shr := fun  (self : t_U32) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_879328570 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shr_impl_249__f_Output := t_U32;
-    implaabbcc_t_Shr_impl_249__f_shr := fun  (self : t_U32) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_106210830 : Core_Ops_Bit.t_BitXor ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_BitXor_impl_250__f_Output := t_U32;
-    implaabbcc_t_BitXor_impl_250__f_bitxor := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_880899768 : Core_Ops_Bit.t_BitAnd ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_BitAnd_impl_251__f_Output := t_U32;
-    implaabbcc_t_BitAnd_impl_251__f_bitand := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_722198191 : Core_Ops_Bit.t_BitOr ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_BitOr_impl_252__f_Output := t_U32;
-    implaabbcc_t_BitOr_impl_252__f_bitor := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_832015787 : Core_Ops_Arith.t_Mul ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Mul_impl_209__f_Output := t_U64;
-    implaabbcc_t_Mul_impl_209__f_mul := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_472472360 : Core_Ops_Arith.t_Rem ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Rem_impl_210__f_Output := t_U64;
-    implaabbcc_t_Rem_impl_210__f_rem := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_398748324 : Core_Ops_Arith.t_Add ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Add_impl_211__f_Output := t_U64;
-    implaabbcc_t_Add_impl_211__f_add := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_119124993 : Core_Ops_Arith.t_Div ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Div_impl_212__f_Output := t_U64;
-    implaabbcc_t_Div_impl_212__f_div := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_1055196925 : Core_Ops_Arith.t_Neg ((t_U64)) :=
-  {
-    implaabbcc_t_Neg_impl_206__f_Output := t_U64;
-    implaabbcc_t_Neg_impl_206__f_neg := fun  (self : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_64_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_64_)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_626198177 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shl_impl_213__f_Output := t_U64;
-    implaabbcc_t_Shl_impl_213__f_shl := fun  (self : t_U64) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1053180111 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shl_impl_214__f_Output := t_U64;
-    implaabbcc_t_Shl_impl_214__f_shl := fun  (self : t_U64) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_712250 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shl_impl_215__f_Output := t_U64;
-    implaabbcc_t_Shl_impl_215__f_shl := fun  (self : t_U64) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_332132599 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shl_impl_216__f_Output := t_U64;
-    implaabbcc_t_Shl_impl_216__f_shl := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_499060141 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shl_impl_217__f_Output := t_U64;
-    implaabbcc_t_Shl_impl_217__f_shl := fun  (self : t_U64) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_380528067 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shr_impl_218__f_Output := t_U64;
-    implaabbcc_t_Shr_impl_218__f_shr := fun  (self : t_U64) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_104550441 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shr_impl_219__f_Output := t_U64;
-    implaabbcc_t_Shr_impl_219__f_shr := fun  (self : t_U64) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_972891085 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shr_impl_220__f_Output := t_U64;
-    implaabbcc_t_Shr_impl_220__f_shr := fun  (self : t_U64) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_222074135 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shr_impl_221__f_Output := t_U64;
-    implaabbcc_t_Shr_impl_221__f_shr := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_550176806 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shr_impl_222__f_Output := t_U64;
-    implaabbcc_t_Shr_impl_222__f_shr := fun  (self : t_U64) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_636393919 : Core_Ops_Bit.t_BitXor ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_BitXor_impl_223__f_Output := t_U64;
-    implaabbcc_t_BitXor_impl_223__f_bitxor := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_22071289 : Core_Ops_Bit.t_BitAnd ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_BitAnd_impl_224__f_Output := t_U64;
-    implaabbcc_t_BitAnd_impl_224__f_bitand := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_624638860 : Core_Ops_Bit.t_BitOr ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_BitOr_impl_225__f_Output := t_U64;
-    implaabbcc_t_BitOr_impl_225__f_bitor := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_122335953 : Core_Ops_Arith.t_Mul ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Mul_impl_182__f_Output := t_U128;
-    implaabbcc_t_Mul_impl_182__f_mul := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_531714227 : Core_Ops_Arith.t_Rem ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Rem_impl_183__f_Output := t_U128;
-    implaabbcc_t_Rem_impl_183__f_rem := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_960182017 : Core_Ops_Arith.t_Add ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Add_impl_184__f_Output := t_U128;
-    implaabbcc_t_Add_impl_184__f_add := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_167702008 : Core_Ops_Arith.t_Div ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Div_impl_185__f_Output := t_U128;
-    implaabbcc_t_Div_impl_185__f_div := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_48502464 : Core_Ops_Arith.t_Neg ((t_U128)) :=
-  {
-    implaabbcc_t_Neg_impl_179__f_Output := t_U128;
-    implaabbcc_t_Neg_impl_179__f_neg := fun  (self : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_128_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_128_)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_43107595 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shl_impl_186__f_Output := t_U128;
-    implaabbcc_t_Shl_impl_186__f_shl := fun  (self : t_U128) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_310395977 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shl_impl_187__f_Output := t_U128;
-    implaabbcc_t_Shl_impl_187__f_shl := fun  (self : t_U128) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_377670273 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U32)) :=
-  {
-    implaabbcc_t_Shl_impl_188__f_Output := t_U128;
-    implaabbcc_t_Shl_impl_188__f_shl := fun  (self : t_U128) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_529604166 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shl_impl_189__f_Output := t_U128;
-    implaabbcc_t_Shl_impl_189__f_shl := fun  (self : t_U128) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_55456991 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shl_impl_190__f_Output := t_U128;
-    implaabbcc_t_Shl_impl_190__f_shl := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_318169277 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U8)) :=
-  {
-    implaabbcc_t_Shr_impl_191__f_Output := t_U128;
-    implaabbcc_t_Shr_impl_191__f_shr := fun  (self : t_U128) (rhs : t_U8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_443804107 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U16)) :=
-  {
-    implaabbcc_t_Shr_impl_192__f_Output := t_U128;
-    implaabbcc_t_Shr_impl_192__f_shr := fun  (self : t_U128) (rhs : t_U16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_486264094 : Core_Clone.t_Clone ((t_U8)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_307__f_clone := fun  (self : t_U8)=> *)
+(*       U8_U8 (Core_Clone.Clone__f_clone (f_U8_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shr_344515446 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U32)) :=
+Record t_U16 : Type :=
   {
-    implaabbcc_t_Shr_impl_193__f_Output := t_U128;
-    implaabbcc_t_Shr_impl_193__f_shr := fun  (self : t_U128) (rhs : t_U32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_U16_v : Core_Base_Spec_Haxint.t_HaxInt;
   }.
 
-Instance Core_Ops_Bit.t_Shr_573757200 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U64)) :=
-  {
-    implaabbcc_t_Shr_impl_194__f_Output := t_U128;
-    implaabbcc_t_Shr_impl_194__f_shr := fun  (self : t_U128) (rhs : t_U64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_1001493510 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Shr_impl_195__f_Output := t_U128;
-    implaabbcc_t_Shr_impl_195__f_shr := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_74092795 : Core_Ops_Bit.t_BitXor ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_BitXor_impl_196__f_Output := t_U128;
-    implaabbcc_t_BitXor_impl_196__f_bitxor := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_262162952 : Core_Ops_Bit.t_BitAnd ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_BitAnd_impl_197__f_Output := t_U128;
-    implaabbcc_t_BitAnd_impl_197__f_bitand := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_553862406 : Core_Ops_Bit.t_BitOr ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_BitOr_impl_198__f_Output := t_U128;
-    implaabbcc_t_BitOr_impl_198__f_bitor := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_135460119 : Core_Ops_Arith.t_Mul ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Mul_impl_153__f_Output := t_I8;
-    implaabbcc_t_Mul_impl_153__f_mul := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_14042166 : Core_Ops_Arith.t_Rem ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Rem_impl_154__f_Output := t_I8;
-    implaabbcc_t_Rem_impl_154__f_rem := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_520853936 : Core_Ops_Arith.t_Add ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Add_impl_155__f_Output := t_I8;
-    implaabbcc_t_Add_impl_155__f_add := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_357257531 : Core_Ops_Arith.t_Div ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Div_impl_156__f_Output := t_I8;
-    implaabbcc_t_Div_impl_156__f_div := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_832009210 : Core_Ops_Arith.t_Neg ((t_I8)) :=
-  {
-    implaabbcc_t_Neg_impl_157__f_Output := t_I8;
-    implaabbcc_t_Neg_impl_157__f_neg := fun  (self : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self)));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_729652689 : Core_Ops_Arith.t_Sub ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Sub_impl_158__f_Output := t_I8;
-    implaabbcc_t_Sub_impl_158__f_sub := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_225238942 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shl_impl_159__f_Output := t_I8;
-    implaabbcc_t_Shl_impl_159__f_shl := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_204151360 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shl_impl_160__f_Output := t_I8;
-    implaabbcc_t_Shl_impl_160__f_shl := fun  (self : t_I8) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_508545673 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shl_impl_161__f_Output := t_I8;
-    implaabbcc_t_Shl_impl_161__f_shl := fun  (self : t_I8) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_1019695740 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shl_impl_162__f_Output := t_I8;
-    implaabbcc_t_Shl_impl_162__f_shl := fun  (self : t_I8) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_752137067 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shl_impl_163__f_Output := t_I8;
-    implaabbcc_t_Shl_impl_163__f_shl := fun  (self : t_I8) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_841647917 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shr_impl_164__f_Output := t_I8;
-    implaabbcc_t_Shr_impl_164__f_shr := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_902850520 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shr_impl_165__f_Output := t_I8;
-    implaabbcc_t_Shr_impl_165__f_shr := fun  (self : t_I8) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_464834928 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shr_impl_166__f_Output := t_I8;
-    implaabbcc_t_Shr_impl_166__f_shr := fun  (self : t_I8) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_771077753 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shr_impl_167__f_Output := t_I8;
-    implaabbcc_t_Shr_impl_167__f_shr := fun  (self : t_I8) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_502209694 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shr_impl_168__f_Output := t_I8;
-    implaabbcc_t_Shr_impl_168__f_shr := fun  (self : t_I8) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_232723092 : Core_Ops_Bit.t_BitXor ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_BitXor_impl_169__f_Output := t_I8;
-    implaabbcc_t_BitXor_impl_169__f_bitxor := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_55639079 : Core_Ops_Bit.t_BitAnd ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_BitAnd_impl_170__f_Output := t_I8;
-    implaabbcc_t_BitAnd_impl_170__f_bitand := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitOr_990927128 : Core_Ops_Bit.t_BitOr ((t_I8)) ((t_I8)) :=
-  {
-    implaabbcc_t_BitOr_impl_171__f_Output := t_I8;
-    implaabbcc_t_BitOr_impl_171__f_bitor := fun  (self : t_I8) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Not_601125715 : Core_Ops_Bit.t_Not ((t_I8)) :=
-  {
-    implaabbcc_t_Not_impl_152__f_Output := t_I8;
-    implaabbcc_t_Not_impl_152__f_not := fun  (self : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE));
-  }.
-
-Instance Core_Ops_Arith.t_Mul_273911951 : Core_Ops_Arith.t_Mul ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Mul_impl_126__f_Output := t_I16;
-    implaabbcc_t_Mul_impl_126__f_mul := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Rem_576688298 : Core_Ops_Arith.t_Rem ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Rem_impl_127__f_Output := t_I16;
-    implaabbcc_t_Rem_impl_127__f_rem := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Add_855050090 : Core_Ops_Arith.t_Add ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Add_impl_128__f_Output := t_I16;
-    implaabbcc_t_Add_impl_128__f_add := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Div_564577343 : Core_Ops_Arith.t_Div ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Div_impl_129__f_Output := t_I16;
-    implaabbcc_t_Div_impl_129__f_div := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Arith.t_Neg_655189408 : Core_Ops_Arith.t_Neg ((t_I16)) :=
-  {
-    implaabbcc_t_Neg_impl_130__f_Output := t_I16;
-    implaabbcc_t_Neg_impl_130__f_neg := fun  (self : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self)));
-  }.
-
-Instance Core_Ops_Arith.t_Sub_914010601 : Core_Ops_Arith.t_Sub ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Sub_impl_131__f_Output := t_I16;
-    implaabbcc_t_Sub_impl_131__f_sub := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_638763785 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shl_impl_132__f_Output := t_I16;
-    implaabbcc_t_Shl_impl_132__f_shl := fun  (self : t_I16) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_622821117 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shl_impl_133__f_Output := t_I16;
-    implaabbcc_t_Shl_impl_133__f_shl := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_997235840 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shl_impl_134__f_Output := t_I16;
-    implaabbcc_t_Shl_impl_134__f_shl := fun  (self : t_I16) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_982032177 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shl_impl_135__f_Output := t_I16;
-    implaabbcc_t_Shl_impl_135__f_shl := fun  (self : t_I16) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shl_339202508 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shl_impl_136__f_Output := t_I16;
-    implaabbcc_t_Shl_impl_136__f_shl := fun  (self : t_I16) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_39522593 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shr_impl_137__f_Output := t_I16;
-    implaabbcc_t_Shr_impl_137__f_shr := fun  (self : t_I16) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_596363530 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shr_impl_138__f_Output := t_I16;
-    implaabbcc_t_Shr_impl_138__f_shr := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_793399525 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shr_impl_139__f_Output := t_I16;
-    implaabbcc_t_Shr_impl_139__f_shr := fun  (self : t_I16) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_373835202 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shr_impl_140__f_Output := t_I16;
-    implaabbcc_t_Shr_impl_140__f_shr := fun  (self : t_I16) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Shr_293539279 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shr_impl_141__f_Output := t_I16;
-    implaabbcc_t_Shr_impl_141__f_shr := fun  (self : t_I16) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitXor_646543401 : Core_Ops_Bit.t_BitXor ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_BitXor_impl_142__f_Output := t_I16;
-    implaabbcc_t_BitXor_impl_142__f_bitxor := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_BitAnd_589546786 : Core_Ops_Bit.t_BitAnd ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_BitAnd_impl_143__f_Output := t_I16;
-    implaabbcc_t_BitAnd_impl_143__f_bitand := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Bit.t_BitOr_929134148 : Core_Ops_Bit.t_BitOr ((t_I16)) ((t_I16)) :=
-  {
-    implaabbcc_t_BitOr_impl_144__f_Output := t_I16;
-    implaabbcc_t_BitOr_impl_144__f_bitor := fun  (self : t_I16) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
-
-Instance Core_Ops_Bit.t_Not_678376922 : Core_Ops_Bit.t_Not ((t_I16)) :=
-  {
-    implaabbcc_t_Not_impl_125__f_Output := t_I16;
-    implaabbcc_t_Not_impl_125__f_not := fun  (self : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE));
-  }.
+(* #[export] Instance settable_U16_U16_record : Settable _ := *)
+(*   settable! (Build_U16_U16_record) <U16_U16_f_U16_v>. *)
 
-Instance Core_Ops_Arith.t_Mul_908302232 : Core_Ops_Arith.t_Mul ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Mul_impl_99__f_Output := t_I32;
-    implaabbcc_t_Mul_impl_99__f_mul := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Constants_1008862138 : t_Constants ((t_U16)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_256__f_ZERO := U16_U16 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_256__f_ONE := U16_U16 (Core_Base_Spec_Haxint.v_HaxInt_ONE); *)
+(*     Core_Base_interface_Int.Constants_impl_256__f_MIN := U16_U16 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_256__f_MAX := U16_U16 (Core_Base_Spec_Constants.v_WORDSIZE_16_SUB_1_); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Rem_393249809 : Core_Ops_Arith.t_Rem ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Rem_impl_100__f_Output := t_I32;
-    implaabbcc_t_Rem_impl_100__f_rem := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_257__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_16_. *)
 
-Instance Core_Ops_Arith.t_Add_427383343 : Core_Ops_Arith.t_Add ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Add_impl_101__f_Output := t_I32;
-    implaabbcc_t_Add_impl_101__f_add := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Concretization_667551646 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_259__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       U16_U16 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_16_)); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Div_384705126 : Core_Ops_Arith.t_Div ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Div_impl_102__f_Output := t_I32;
-    implaabbcc_t_Div_impl_102__f_div := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_716402593 : Core_Clone.t_Clone ((t_U16)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_280__f_clone := fun  (self : t_U16)=> *)
+(*       U16_U16 (Core_Clone.Clone__f_clone (f_U16_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Neg_527623365 : Core_Ops_Arith.t_Neg ((t_I32)) :=
+Record t_U32 : Type :=
   {
-    implaabbcc_t_Neg_impl_103__f_Output := t_I32;
-    implaabbcc_t_Neg_impl_103__f_neg := fun  (self : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self)));
+    f_U32_v : Core_Base_Spec_Haxint.t_HaxInt;
   }.
 
-Instance Core_Ops_Arith.t_Sub_872716359 : Core_Ops_Arith.t_Sub ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Sub_impl_104__f_Output := t_I32;
-    implaabbcc_t_Sub_impl_104__f_sub := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Bit.t_Shl_730568083 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shl_impl_105__f_Output := t_I32;
-    implaabbcc_t_Shl_impl_105__f_shl := fun  (self : t_I32) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* #[export] Instance settable_U32_U32_record : Settable _ := *)
+(*   settable! (Build_U32_U32_record) <U32_U32_f_U32_v>. *)
 
-Instance Core_Ops_Bit.t_Shl_910088866 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shl_impl_106__f_Output := t_I32;
-    implaabbcc_t_Shl_impl_106__f_shl := fun  (self : t_I32) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_284__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_8_). *)
 
-Instance Core_Ops_Bit.t_Shl_559763055 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shl_impl_107__f_Output := t_I32;
-    implaabbcc_t_Shl_impl_107__f_shl := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_257__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_16_). *)
 
-Instance Core_Ops_Bit.t_Shl_278646895 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shl_impl_108__f_Output := t_I32;
-    implaabbcc_t_Shl_impl_108__f_shl := fun  (self : t_I32) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Constants_443398799 : t_Constants ((t_U32)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_229__f_ZERO := U32_U32 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_229__f_ONE := U32_U32 (Core_Base_Spec_Haxint.v_HaxInt_ONE); *)
+(*     Core_Base_interface_Int.Constants_impl_229__f_MIN := U32_U32 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_229__f_MAX := U32_U32 (Core_Base_Spec_Constants.v_WORDSIZE_32_SUB_1_); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shl_412655554 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shl_impl_109__f_Output := t_I32;
-    implaabbcc_t_Shl_impl_109__f_shl := fun  (self : t_I32) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_230__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_32_). *)
 
-Instance Core_Ops_Bit.t_Shr_308848638 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shr_impl_110__f_Output := t_I32;
-    implaabbcc_t_Shr_impl_110__f_shr := fun  (self : t_I32) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_230__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_32_. *)
 
-Instance Core_Ops_Bit.t_Shr_393753403 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shr_impl_111__f_Output := t_I32;
-    implaabbcc_t_Shr_impl_111__f_shr := fun  (self : t_I32) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Concretization_272579079 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_232__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       U32_U32 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_32_)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shr_24771957 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shr_impl_112__f_Output := t_I32;
-    implaabbcc_t_Shr_impl_112__f_shr := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_974027832 : Core_Clone.t_Clone ((t_U32)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_253__f_clone := fun  (self : t_U32)=> *)
+(*       U32_U32 (Core_Clone.Clone__f_clone (f_U32_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shr_667254724 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I64)) :=
+Record t_U64 : Type :=
   {
-    implaabbcc_t_Shr_impl_113__f_Output := t_I32;
-    implaabbcc_t_Shr_impl_113__f_shr := fun  (self : t_I32) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_U64_v : Core_Base_Spec_Haxint.t_HaxInt;
   }.
 
-Instance Core_Ops_Bit.t_Shr_233512491 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shr_impl_114__f_Output := t_I32;
-    implaabbcc_t_Shr_impl_114__f_shr := fun  (self : t_I32) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Bit.t_BitXor_858403630 : Core_Ops_Bit.t_BitXor ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_BitXor_impl_115__f_Output := t_I32;
-    implaabbcc_t_BitXor_impl_115__f_bitxor := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* #[export] Instance settable_U64_U64_record : Settable _ := *)
+(*   settable! (Build_U64_U64_record) <U64_U64_f_U64_v>. *)
 
-Instance Core_Ops_Bit.t_BitAnd_296303925 : Core_Ops_Bit.t_BitAnd ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_BitAnd_impl_116__f_Output := t_I32;
-    implaabbcc_t_BitAnd_impl_116__f_bitand := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Constants_1057979424 : t_Constants ((t_U64)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_202__f_ZERO := U64_U64 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_202__f_ONE := U64_U64 (Core_Base_Spec_Haxint.v_HaxInt_ONE); *)
+(*     Core_Base_interface_Int.Constants_impl_202__f_MIN := U64_U64 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_202__f_MAX := U64_U64 (Core_Base_Spec_Constants.v_WORDSIZE_64_SUB_1_); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_BitOr_881580594 : Core_Ops_Bit.t_BitOr ((t_I32)) ((t_I32)) :=
-  {
-    implaabbcc_t_BitOr_impl_117__f_Output := t_I32;
-    implaabbcc_t_BitOr_impl_117__f_bitor := fun  (self : t_I32) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_203__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_64_). *)
 
-Instance Core_Ops_Bit.t_Not_730964962 : Core_Ops_Bit.t_Not ((t_I32)) :=
-  {
-    implaabbcc_t_Not_impl_98__f_Output := t_I32;
-    implaabbcc_t_Not_impl_98__f_not := fun  (self : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE));
-  }.
+(* Definition impl_203__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_64_. *)
 
-Instance Core_Ops_Arith.t_Mul_598389246 : Core_Ops_Arith.t_Mul ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_Mul_impl_72__f_Output := t_I64;
-    implaabbcc_t_Mul_impl_72__f_mul := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Concretization_783203595 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_205__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       U64_U64 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_64_)); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Rem_639064997 : Core_Ops_Arith.t_Rem ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_Rem_impl_73__f_Output := t_I64;
-    implaabbcc_t_Rem_impl_73__f_rem := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_826195165 : Core_Clone.t_Clone ((t_U64)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_226__f_clone := fun  (self : t_U64)=> *)
+(*       U64_U64 (Core_Clone.Clone__f_clone (f_U64_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Add_591387563 : Core_Ops_Arith.t_Add ((t_I64)) ((t_I64)) :=
+Record t_U128 : Type :=
   {
-    implaabbcc_t_Add_impl_74__f_Output := t_I64;
-    implaabbcc_t_Add_impl_74__f_add := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_U128_v : Core_Base_Spec_Haxint.t_HaxInt;
   }.
 
-Instance Core_Ops_Arith.t_Div_312372789 : Core_Ops_Arith.t_Div ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_Div_impl_75__f_Output := t_I64;
-    implaabbcc_t_Div_impl_75__f_div := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Arith.t_Neg_784993849 : Core_Ops_Arith.t_Neg ((t_I64)) :=
-  {
-    implaabbcc_t_Neg_impl_76__f_Output := t_I64;
-    implaabbcc_t_Neg_impl_76__f_neg := fun  (self : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self)));
-  }.
+(* #[export] Instance settable_U128_U128_record : Settable _ := *)
+(*   settable! (Build_U128_U128_record) <U128_U128_f_U128_v>. *)
 
-Instance Core_Ops_Arith.t_Sub_489165029 : Core_Ops_Arith.t_Sub ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_Sub_impl_77__f_Output := t_I64;
-    implaabbcc_t_Sub_impl_77__f_sub := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Constants_748983978 : t_Constants ((t_U128)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_175__f_ZERO := U128_U128 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_175__f_ONE := U128_U128 (Core_Base_Spec_Haxint.v_HaxInt_ONE); *)
+(*     Core_Base_interface_Int.Constants_impl_175__f_MIN := U128_U128 (Core_Base_Spec_Haxint.v_HaxInt_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_175__f_MAX := U128_U128 (Core_Base_Spec_Constants.v_WORDSIZE_128_SUB_1_); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shl_47817788 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shl_impl_78__f_Output := t_I64;
-    implaabbcc_t_Shl_impl_78__f_shl := fun  (self : t_I64) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_176__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_128_). *)
 
-Instance Core_Ops_Bit.t_Shl_244115675 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shl_impl_79__f_Output := t_I64;
-    implaabbcc_t_Shl_impl_79__f_shl := fun  (self : t_I64) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_176__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_128_. *)
 
-Instance Core_Ops_Bit.t_Shl_984453638 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shl_impl_80__f_Output := t_I64;
-    implaabbcc_t_Shl_impl_80__f_shl := fun  (self : t_I64) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Concretization_775057436 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Haxint.t_HaxInt)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_178__f_concretize := fun  (self : Core_Base_Spec_Haxint.t_HaxInt)=> *)
+(*       U128_U128 (Core_Base_Pos.haxint_rem (self) (Core_Base_Spec_Constants.v_WORDSIZE_128_)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shl_863585124 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shl_impl_81__f_Output := t_I64;
-    implaabbcc_t_Shl_impl_81__f_shl := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_684082468 : Core_Clone.t_Clone ((t_U128)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_199__f_clone := fun  (self : t_U128)=> *)
+(*       U128_U128 (Core_Clone.Clone__f_clone (f_U128_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shl_570786006 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shl_impl_82__f_Output := t_I64;
-    implaabbcc_t_Shl_impl_82__f_shl := fun  (self : t_I64) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* (* NotImplementedYet *) *)
 
-Instance Core_Ops_Bit.t_Shr_846435395 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shr_impl_83__f_Output := t_I64;
-    implaabbcc_t_Shr_impl_83__f_shr := fun  (self : t_I64) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* (* NotImplementedYet *) *)
 
-Instance Core_Ops_Bit.t_Shr_64104894 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shr_impl_84__f_Output := t_I64;
-    implaabbcc_t_Shr_impl_84__f_shr := fun  (self : t_I64) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* (* NotImplementedYet *) *)
 
-Instance Core_Ops_Bit.t_Shr_692136493 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I32)) :=
+Record t_I8 : Type :=
   {
-    implaabbcc_t_Shr_impl_85__f_Output := t_I64;
-    implaabbcc_t_Shr_impl_85__f_shr := fun  (self : t_I64) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_I8_v : Core_Base_Spec_Z.t_Z;
   }.
 
-Instance Core_Ops_Bit.t_Shr_873905561 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shr_impl_86__f_Output := t_I64;
-    implaabbcc_t_Shr_impl_86__f_shr := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Bit.t_Shr_773411341 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shr_impl_87__f_Output := t_I64;
-    implaabbcc_t_Shr_impl_87__f_shr := fun  (self : t_I64) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* #[export] Instance settable_I8_I8_record : Settable _ := *)
+(*   settable! (Build_I8_I8_record) <I8_I8_f_I8_v>. *)
 
-Instance Core_Ops_Bit.t_BitXor_235543421 : Core_Ops_Bit.t_BitXor ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_BitXor_impl_88__f_Output := t_I64;
-    implaabbcc_t_BitXor_impl_88__f_bitxor := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Constants_54856411 : t_Constants ((t_I8)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_148__f_ZERO := I8_I8 (Core_Base_Spec_Z.Z_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_148__f_ONE := I8_I8 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH)); *)
+(*     Core_Base_interface_Int.Constants_impl_148__f_MIN := I8_I8 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_8_); *)
+(*     Core_Base_interface_Int.Constants_impl_148__f_MAX := I8_I8 (Core_Base_Spec_Constants.v_POS_WORDSIZE_8_); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_BitAnd_784589252 : Core_Ops_Bit.t_BitAnd ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_BitAnd_impl_89__f_Output := t_I64;
-    implaabbcc_t_BitAnd_impl_89__f_bitand := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_149__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_8_). *)
 
-Instance Core_Ops_Bit.t_BitOr_875198672 : Core_Ops_Bit.t_BitOr ((t_I64)) ((t_I64)) :=
-  {
-    implaabbcc_t_BitOr_impl_90__f_Output := t_I64;
-    implaabbcc_t_BitOr_impl_90__f_bitor := fun  (self : t_I64) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_149__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_8_. *)
 
-Instance Core_Ops_Bit.t_Not_626865540 : Core_Ops_Bit.t_Not ((t_I64)) :=
-  {
-    implaabbcc_t_Not_impl_71__f_Output := t_I64;
-    implaabbcc_t_Not_impl_71__f_not := fun  (self : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE));
-  }.
+(* Instance t_Concretization_340267805 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_151__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=> *)
+(*       I8_I8 (self); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Mul_641825555 : Core_Ops_Arith.t_Mul ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_Mul_impl_45__f_Output := t_I128;
-    implaabbcc_t_Mul_impl_45__f_mul := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_597304004 : Core_Clone.t_Clone ((t_I8)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_172__f_clone := fun  (self : t_I8)=> *)
+(*       I8_I8 (Core_Clone.Clone__f_clone (f_I8_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Rem_996999806 : Core_Ops_Arith.t_Rem ((t_I128)) ((t_I128)) :=
+Record t_I16 : Type :=
   {
-    implaabbcc_t_Rem_impl_46__f_Output := t_I128;
-    implaabbcc_t_Rem_impl_46__f_rem := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_I16_v : Core_Base_Spec_Z.t_Z;
   }.
 
-Instance Core_Ops_Arith.t_Add_926579300 : Core_Ops_Arith.t_Add ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_Add_impl_47__f_Output := t_I128;
-    implaabbcc_t_Add_impl_47__f_add := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Arith.t_Div_638352727 : Core_Ops_Arith.t_Div ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_Div_impl_48__f_Output := t_I128;
-    implaabbcc_t_Div_impl_48__f_div := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* #[export] Instance settable_I16_I16_record : Settable _ := *)
+(*   settable! (Build_I16_I16_record) <I16_I16_f_I16_v>. *)
 
-Instance Core_Ops_Arith.t_Neg_507730293 : Core_Ops_Arith.t_Neg ((t_I128)) :=
-  {
-    implaabbcc_t_Neg_impl_49__f_Output := t_I128;
-    implaabbcc_t_Neg_impl_49__f_neg := fun  (self : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self)));
-  }.
+(* Instance t_Constants_583718827 : t_Constants ((t_I16)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_121__f_ZERO := I16_I16 (Core_Base_Spec_Z.Z_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_121__f_ONE := I16_I16 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH)); *)
+(*     Core_Base_interface_Int.Constants_impl_121__f_MIN := I16_I16 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_16_); *)
+(*     Core_Base_interface_Int.Constants_impl_121__f_MAX := I16_I16 (Core_Base_Spec_Constants.v_POS_WORDSIZE_16_); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Sub_886251542 : Core_Ops_Arith.t_Sub ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_Sub_impl_50__f_Output := t_I128;
-    implaabbcc_t_Sub_impl_50__f_sub := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_122__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_16_). *)
 
-Instance Core_Ops_Bit.t_Shl_984302111 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shl_impl_51__f_Output := t_I128;
-    implaabbcc_t_Shl_impl_51__f_shl := fun  (self : t_I128) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_122__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_16_. *)
 
-Instance Core_Ops_Bit.t_Shl_164997643 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shl_impl_52__f_Output := t_I128;
-    implaabbcc_t_Shl_impl_52__f_shl := fun  (self : t_I128) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Concretization_797165207 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_124__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=> *)
+(*       I16_I16 (self); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shl_1052885176 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shl_impl_53__f_Output := t_I128;
-    implaabbcc_t_Shl_impl_53__f_shl := fun  (self : t_I128) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_348968053 : Core_Clone.t_Clone ((t_I16)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_145__f_clone := fun  (self : t_I16)=> *)
+(*       I16_I16 (Core_Clone.Clone__f_clone (f_I16_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shl_603410085 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I64)) :=
+Record t_I32 : Type :=
   {
-    implaabbcc_t_Shl_impl_54__f_Output := t_I128;
-    implaabbcc_t_Shl_impl_54__f_shl := fun  (self : t_I128) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_I32_v : Core_Base_Spec_Z.t_Z;
   }.
 
-Instance Core_Ops_Bit.t_Shl_858072160 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shl_impl_55__f_Output := t_I128;
-    implaabbcc_t_Shl_impl_55__f_shl := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Bit.t_Shr_463366903 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I8)) :=
-  {
-    implaabbcc_t_Shr_impl_56__f_Output := t_I128;
-    implaabbcc_t_Shr_impl_56__f_shr := fun  (self : t_I128) (rhs : t_I8)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* #[export] Instance settable_I32_I32_record : Settable _ := *)
+(*   settable! (Build_I32_I32_record) <I32_I32_f_I32_v>. *)
 
-Instance Core_Ops_Bit.t_Shr_1069710985 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I16)) :=
-  {
-    implaabbcc_t_Shr_impl_57__f_Output := t_I128;
-    implaabbcc_t_Shr_impl_57__f_shr := fun  (self : t_I128) (rhs : t_I16)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Constants_346540654 : t_Constants ((t_I32)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_94__f_ZERO := I32_I32 (Core_Base_Spec_Z.Z_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_94__f_ONE := I32_I32 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH)); *)
+(*     Core_Base_interface_Int.Constants_impl_94__f_MIN := I32_I32 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_32_); *)
+(*     Core_Base_interface_Int.Constants_impl_94__f_MAX := I32_I32 (Core_Base_Spec_Constants.v_POS_WORDSIZE_32_); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Shr_520276901 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I32)) :=
-  {
-    implaabbcc_t_Shr_impl_58__f_Output := t_I128;
-    implaabbcc_t_Shr_impl_58__f_shr := fun  (self : t_I128) (rhs : t_I32)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_95__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_32_). *)
 
-Instance Core_Ops_Bit.t_Shr_855575754 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I64)) :=
-  {
-    implaabbcc_t_Shr_impl_59__f_Output := t_I128;
-    implaabbcc_t_Shr_impl_59__f_shr := fun  (self : t_I128) (rhs : t_I64)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Definition impl_95__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_32_. *)
 
-Instance Core_Ops_Bit.t_Shr_851652046 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_Shr_impl_60__f_Output := t_I128;
-    implaabbcc_t_Shr_impl_60__f_shr := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Concretization_142931371 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_97__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=> *)
+(*       I32_I32 (self); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_BitXor_647313045 : Core_Ops_Bit.t_BitXor ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_BitXor_impl_61__f_Output := t_I128;
-    implaabbcc_t_BitXor_impl_61__f_bitxor := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
+(* Instance t_Clone_552196451 : Core_Clone.t_Clone ((t_I32)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_118__f_clone := fun  (self : t_I32)=> *)
+(*       I32_I32 (Core_Clone.Clone__f_clone (f_I32_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_BitAnd_156167702 : Core_Ops_Bit.t_BitAnd ((t_I128)) ((t_I128)) :=
+Record t_I64 : Type :=
   {
-    implaabbcc_t_BitAnd_impl_62__f_Output := t_I128;
-    implaabbcc_t_BitAnd_impl_62__f_bitand := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
+    f_I64_v : Core_Base_Spec_Z.t_Z;
   }.
 
-Instance Core_Ops_Bit.t_BitOr_77964130 : Core_Ops_Bit.t_BitOr ((t_I128)) ((t_I128)) :=
-  {
-    implaabbcc_t_BitOr_impl_63__f_Output := t_I128;
-    implaabbcc_t_BitOr_impl_63__f_bitor := fun  (self : t_I128) (rhs : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs)));
-  }.
 
-Instance Core_Ops_Bit.t_Not_521690238 : Core_Ops_Bit.t_Not ((t_I128)) :=
-  {
-    implaabbcc_t_Not_impl_44__f_Output := t_I128;
-    implaabbcc_t_Not_impl_44__f_not := fun  (self : t_I128)=>
-      Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE));
-  }.
+(* #[export] Instance settable_I64_I64_record : Settable _ := *)
+(*   settable! (Build_I64_I64_record) <I64_I64_f_I64_v>. *)
 
-Instance Core_Ops_Arith.t_Sub_861515055 : Core_Ops_Arith.t_Sub ((t_U8)) ((t_U8)) :=
-  {
-    implaabbcc_t_Sub_impl_288__f_Output := t_U8;
-    implaabbcc_t_Sub_impl_288__f_sub := fun  (self : t_U8) (rhs : t_U8)=>
-      Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs));
-  }.
+(* Instance t_Constants_545287357 : t_Constants ((t_I64)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_67__f_ZERO := I64_I64 (Core_Base_Spec_Z.Z_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_67__f_ONE := I64_I64 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH)); *)
+(*     Core_Base_interface_Int.Constants_impl_67__f_MIN := I64_I64 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_64_); *)
+(*     Core_Base_interface_Int.Constants_impl_67__f_MAX := I64_I64 (Core_Base_Spec_Constants.v_POS_WORDSIZE_64_); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Not_564807407 : Core_Ops_Bit.t_Not ((t_U8)) :=
-  {
-    implaabbcc_t_Not_impl_289__f_Output := t_U8;
-    implaabbcc_t_Not_impl_289__f_not := fun  (self : t_U8)=>
-      Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX);
-  }.
+(* Definition impl_68__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_64_). *)
 
-Instance Core_Ops_Arith.t_Sub_48277321 : Core_Ops_Arith.t_Sub ((t_U16)) ((t_U16)) :=
-  {
-    implaabbcc_t_Sub_impl_261__f_Output := t_U16;
-    implaabbcc_t_Sub_impl_261__f_sub := fun  (self : t_U16) (rhs : t_U16)=>
-      Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs));
-  }.
+(* Definition impl_68__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_64_. *)
 
-Instance Core_Ops_Bit.t_Not_1072656690 : Core_Ops_Bit.t_Not ((t_U16)) :=
-  {
-    implaabbcc_t_Not_impl_262__f_Output := t_U16;
-    implaabbcc_t_Not_impl_262__f_not := fun  (self : t_U16)=>
-      Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX);
-  }.
+(* Instance t_Concretization_181371139 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_70__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=> *)
+(*       I64_I64 (self); *)
+(*   }. *)
 
-Instance Core_Ops_Arith.t_Sub_1029712545 : Core_Ops_Arith.t_Sub ((t_U32)) ((t_U32)) :=
-  {
-    implaabbcc_t_Sub_impl_234__f_Output := t_U32;
-    implaabbcc_t_Sub_impl_234__f_sub := fun  (self : t_U32) (rhs : t_U32)=>
-      Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs));
-  }.
+(* Instance t_Clone_301990294 : Core_Clone.t_Clone ((t_I64)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_91__f_clone := fun  (self : t_I64)=> *)
+(*       I64_I64 (Core_Clone.Clone__f_clone (f_I64_v self)); *)
+(*   }. *)
 
-Instance Core_Ops_Bit.t_Not_67714611 : Core_Ops_Bit.t_Not ((t_U32)) :=
+Record t_I128 : Type :=
   {
-    implaabbcc_t_Not_impl_235__f_Output := t_U32;
-    implaabbcc_t_Not_impl_235__f_not := fun  (self : t_U32)=>
-      Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX);
+    f_I128_v : Core_Base_Spec_Z.t_Z;
   }.
 
-Instance Core_Ops_Arith.t_Sub_1022464478 : Core_Ops_Arith.t_Sub ((t_U64)) ((t_U64)) :=
-  {
-    implaabbcc_t_Sub_impl_207__f_Output := t_U64;
-    implaabbcc_t_Sub_impl_207__f_sub := fun  (self : t_U64) (rhs : t_U64)=>
-      Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs));
-  }.
 
-Instance Core_Ops_Bit.t_Not_794767082 : Core_Ops_Bit.t_Not ((t_U64)) :=
-  {
-    implaabbcc_t_Not_impl_208__f_Output := t_U64;
-    implaabbcc_t_Not_impl_208__f_not := fun  (self : t_U64)=>
-      Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX);
-  }.
+(* #[export] Instance settable_I128_I128_record : Settable _ := *)
+(*   settable! (Build_I128_I128_record) <I128_I128_f_I128_v>. *)
 
-Instance Core_Ops_Arith.t_Sub_151770474 : Core_Ops_Arith.t_Sub ((t_U128)) ((t_U128)) :=
-  {
-    implaabbcc_t_Sub_impl_180__f_Output := t_U128;
-    implaabbcc_t_Sub_impl_180__f_sub := fun  (self : t_U128) (rhs : t_U128)=>
-      Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs));
-  }.
+(* Instance t_Constants_6929165 : t_Constants ((t_I128)) := *)
+(*   { *)
+(*     Core_Base_interface_Int.Constants_impl_40__f_ZERO := I128_I128 (Core_Base_Spec_Z.Z_ZERO); *)
+(*     Core_Base_interface_Int.Constants_impl_40__f_ONE := I128_I128 (Core_Base_Spec_Z.Z_POS (Core_Base_Spec_Binary_Positive.xH)); *)
+(*     Core_Base_interface_Int.Constants_impl_40__f_MIN := I128_I128 (Core_Base_Spec_Constants.v_NEG_WORDSIZE_128_); *)
+(*     Core_Base_interface_Int.Constants_impl_40__f_MAX := I128_I128 (Core_Base_Spec_Constants.v_POS_WORDSIZE_128_); *)
+(*   }. *)
+
+(* Definition impl_41__BITS : t_U32 := *)
+(*   U32_U32 (Core_Base_Spec_Constants.v_BITS_128_). *)
 
-Instance Core_Ops_Bit.t_Not_237389510 : Core_Ops_Bit.t_Not ((t_U128)) :=
-  {
-    implaabbcc_t_Not_impl_181__f_Output := t_U128;
-    implaabbcc_t_Not_impl_181__f_not := fun  (self : t_U128)=>
-      Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX);
-  }.
+(* Definition impl_41__WORDSIZE : Core_Base_Spec_Haxint.t_HaxInt := *)
+(*   Core_Base_Spec_Constants.v_WORDSIZE_128_. *)
+
+(* Instance t_Concretization_673046093 : Core_Base_interface_Coerce.t_Concretization ((Core_Base_Spec_Z.t_Z)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Concretization_impl_43__f_concretize := fun  (self : Core_Base_Spec_Z.t_Z)=> *)
+(*       I128_I128 (self); *)
+(*   }. *)
+
+(* Instance t_Clone_32770525 : Core_Clone.t_Clone ((t_I128)) := *)
+(*   { *)
+(*     Core_Clone.Clone_impl_64__f_clone := fun  (self : t_I128)=> *)
+(*       I128_I128 (Core_Clone.Clone__f_clone (f_I128_v self)); *)
+(*   }. *)
+
+(* Instance t_Abstraction_694136044 : Core_Base_interface_Coerce.t_Abstraction ((t_U8)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_285__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_285__f_lift := fun  (self : t_U8)=> *)
+(*       f_U8_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_882240962 : Core_Base_interface_Coerce.t_Abstraction ((t_U16)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_258__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_258__f_lift := fun  (self : t_U16)=> *)
+(*       f_U16_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_362803209 : Core_Base_interface_Coerce.t_Abstraction ((t_U32)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_231__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_231__f_lift := fun  (self : t_U32)=> *)
+(*       f_U32_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_219210603 : Core_Base_interface_Coerce.t_Abstraction ((t_U64)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_204__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_204__f_lift := fun  (self : t_U64)=> *)
+(*       f_U64_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_282656913 : Core_Base_interface_Coerce.t_Abstraction ((t_U128)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_177__f_AbstractType := Core_Base_Spec_Haxint.t_HaxInt; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_177__f_lift := fun  (self : t_U128)=> *)
+(*       f_U128_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_598094958 : Core_Base_interface_Coerce.t_Abstraction ((t_I8)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_150__f_AbstractType := Core_Base_Spec_Z.t_Z; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_150__f_lift := fun  (self : t_I8)=> *)
+(*       f_I8_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_455206451 : Core_Base_interface_Coerce.t_Abstraction ((t_I16)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_123__f_AbstractType := Core_Base_Spec_Z.t_Z; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_123__f_lift := fun  (self : t_I16)=> *)
+(*       f_I16_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_1031023691 : Core_Base_interface_Coerce.t_Abstraction ((t_I32)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_96__f_AbstractType := Core_Base_Spec_Z.t_Z; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_96__f_lift := fun  (self : t_I32)=> *)
+(*       f_I32_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_513929121 : Core_Base_interface_Coerce.t_Abstraction ((t_I64)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_69__f_AbstractType := Core_Base_Spec_Z.t_Z; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_69__f_lift := fun  (self : t_I64)=> *)
+(*       f_I64_v self; *)
+(*   }. *)
+
+(* Instance t_Abstraction_733551703 : Core_Base_interface_Coerce.t_Abstraction ((t_I128)) := *)
+(*   { *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_42__f_AbstractType := Core_Base_Spec_Z.t_Z; *)
+(*     Core_Base_interface_Coerce.Abstraction_impl_42__f_lift := fun  (self : t_I128)=> *)
+(*       f_I128_v self; *)
+(*   }. *)
+
+(* Instance t_From_390804224 : Core_Convert.t_From ((t_U16)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Convert.From_f_from := fun  (x : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_1004883337 : Core_Convert.t_From ((t_U32)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_1__f_from := fun  (x : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_88086663 : Core_Convert.t_From ((t_U64)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_2__f_from := fun  (x : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_482179413 : Core_Convert.t_From ((t_U128)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_3__f_from := fun  (x : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_669109509 : Core_Convert.t_From ((t_U8)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_4__f_from := fun  (x : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_227048902 : Core_Convert.t_From ((t_U32)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_5__f_from := fun  (x : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_1044732707 : Core_Convert.t_From ((t_U64)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_6__f_from := fun  (x : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_964352653 : Core_Convert.t_From ((t_U128)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_7__f_from := fun  (x : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_901828890 : Core_Convert.t_From ((t_U8)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_8__f_from := fun  (x : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_257173445 : Core_Convert.t_From ((t_U16)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_9__f_from := fun  (x : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_589695960 : Core_Convert.t_From ((t_U64)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_10__f_from := fun  (x : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_617099116 : Core_Convert.t_From ((t_U128)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_11__f_from := fun  (x : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_33882284 : Core_Convert.t_From ((t_U8)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_12__f_from := fun  (x : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_204638720 : Core_Convert.t_From ((t_U16)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_13__f_from := fun  (x : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_1048202027 : Core_Convert.t_From ((t_U32)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_14__f_from := fun  (x : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_510239774 : Core_Convert.t_From ((t_U128)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_15__f_from := fun  (x : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_707957356 : Core_Convert.t_From ((t_U8)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_16__f_from := fun  (x : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_697340552 : Core_Convert.t_From ((t_U16)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_17__f_from := fun  (x : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_1038172637 : Core_Convert.t_From ((t_U32)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_18__f_from := fun  (x : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_212792583 : Core_Convert.t_From ((t_U64)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_19__f_from := fun  (x : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_415870363 : Core_Convert.t_From ((t_I16)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_20__f_from := fun  (x : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_328900970 : Core_Convert.t_From ((t_I32)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_21__f_from := fun  (x : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_479541755 : Core_Convert.t_From ((t_I64)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_22__f_from := fun  (x : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_927811147 : Core_Convert.t_From ((t_I128)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_23__f_from := fun  (x : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_819153677 : Core_Convert.t_From ((t_I8)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_24__f_from := fun  (x : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_607481849 : Core_Convert.t_From ((t_I32)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_25__f_from := fun  (x : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_514297986 : Core_Convert.t_From ((t_I64)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_26__f_from := fun  (x : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_769963634 : Core_Convert.t_From ((t_I128)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_27__f_from := fun  (x : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_881854114 : Core_Convert.t_From ((t_I8)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_28__f_from := fun  (x : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_39869387 : Core_Convert.t_From ((t_I16)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_29__f_from := fun  (x : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_271937612 : Core_Convert.t_From ((t_I64)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_30__f_from := fun  (x : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_905182586 : Core_Convert.t_From ((t_I128)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_31__f_from := fun  (x : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_161709171 : Core_Convert.t_From ((t_I8)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_32__f_from := fun  (x : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_434651441 : Core_Convert.t_From ((t_I16)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_33__f_from := fun  (x : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_392339040 : Core_Convert.t_From ((t_I32)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_34__f_from := fun  (x : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_901525746 : Core_Convert.t_From ((t_I128)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_35__f_from := fun  (x : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_685474488 : Core_Convert.t_From ((t_I8)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_36__f_from := fun  (x : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_423551677 : Core_Convert.t_From ((t_I16)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_37__f_from := fun  (x : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_341651614 : Core_Convert.t_From ((t_I32)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_38__f_from := fun  (x : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_From_963376985 : Core_Convert.t_From ((t_I64)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Convert.From_impl_39__f_from := fun  (x : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (x)); *)
+(*   }. *)
+
+(* Instance t_PartialEq_99615800 : Core_Cmp.t_PartialEq ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_308__f_eq := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_308__f_ne := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_553148071 : Core_Cmp.t_PartialOrd ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_309__f_partial_cmp := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_309__f_lt := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_309__f_le := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_309__f_gt := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_309__f_ge := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_40709887 : Core_Cmp.t_PartialEq ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_281__f_eq := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_281__f_ne := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_579664919 : Core_Cmp.t_PartialOrd ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_282__f_partial_cmp := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_282__f_lt := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_282__f_le := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_282__f_gt := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_282__f_ge := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_758145504 : Core_Cmp.t_PartialEq ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_254__f_eq := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_254__f_ne := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_142171754 : Core_Cmp.t_PartialOrd ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_255__f_partial_cmp := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_255__f_lt := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_255__f_le := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_255__f_gt := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_255__f_ge := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_476930700 : Core_Cmp.t_PartialEq ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_227__f_eq := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_227__f_ne := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_107168997 : Core_Cmp.t_PartialOrd ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_228__f_partial_cmp := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_228__f_lt := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_228__f_le := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_228__f_gt := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_228__f_ge := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_394950240 : Core_Cmp.t_PartialEq ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_200__f_eq := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_200__f_ne := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_204873282 : Core_Cmp.t_PartialOrd ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_201__f_partial_cmp := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Option.Option_Some (Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_201__f_lt := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_201__f_le := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_201__f_gt := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_201__f_ge := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       match Core_Base_Pos.haxint_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_881944191 : Core_Cmp.t_PartialEq ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_173__f_eq := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_173__f_ne := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_17951096 : Core_Cmp.t_PartialOrd ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_174__f_partial_cmp := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_174__f_lt := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_174__f_le := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_174__f_gt := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_174__f_ge := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_166363327 : Core_Cmp.t_PartialEq ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_146__f_eq := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_146__f_ne := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_1036256246 : Core_Cmp.t_PartialOrd ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_147__f_partial_cmp := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_147__f_lt := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_147__f_le := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_147__f_gt := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_147__f_ge := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_472204838 : Core_Cmp.t_PartialEq ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_119__f_eq := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_119__f_ne := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_676471310 : Core_Cmp.t_PartialOrd ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_120__f_partial_cmp := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_120__f_lt := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_120__f_le := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_120__f_gt := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_120__f_ge := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_667790166 : Core_Cmp.t_PartialEq ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_92__f_eq := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_92__f_ne := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_5117809 : Core_Cmp.t_PartialOrd ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_93__f_partial_cmp := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_93__f_lt := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_93__f_le := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_93__f_gt := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_93__f_ge := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_PartialEq_511424149 : Core_Cmp.t_PartialEq ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialEq_impl_65__f_eq := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Cmp.PartialEq__f_eq (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*     Core_Cmp.PartialEq_impl_65__f_ne := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Cmp.PartialEq__f_ne (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))) (Core_Cmp.Ordering_Equal); *)
+(*   }. *)
+
+(* Instance t_PartialOrd_229968400 : Core_Cmp.t_PartialOrd ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Cmp.PartialOrd_impl_66__f_partial_cmp := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Option.Option_Some (Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs)))); *)
+(*     Core_Cmp.PartialOrd_impl_66__f_lt := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_66__f_le := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Less *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_66__f_gt := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*     Core_Cmp.PartialOrd_impl_66__f_ge := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       match Core_Base_Z.z_cmp (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (self))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (rhs))) with *)
+(*       | Core_Cmp.Ordering_Greater *)
+(*       | Core_Cmp.Ordering_Equal => *)
+(*         (true : bool) *)
+(*       | _ => *)
+(*         (false : bool) *)
+(*       end; *)
+(*   }. *)
+
+(* Instance t_Mul_739468969 : Core_Ops_Arith.t_Mul ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_290__f_Output := t_U8; *)
+(*     Core_Ops_Arith.Mul_impl_290__f_mul := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_11796974 : Core_Ops_Arith.t_Rem ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_291__f_Output := t_U8; *)
+(*     Core_Ops_Arith.Rem_impl_291__f_rem := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_722564932 : Core_Ops_Arith.t_Add ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_292__f_Output := t_U8; *)
+(*     Core_Ops_Arith.Add_impl_292__f_add := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_421096087 : Core_Ops_Arith.t_Div ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_293__f_Output := t_U8; *)
+(*     Core_Ops_Arith.Div_impl_293__f_div := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_119673410 : Core_Ops_Arith.t_Neg ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_287__f_Output := t_U8; *)
+(*     Core_Ops_Arith.Neg_impl_287__f_neg := fun  (self : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_8_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_8_))); *)
+(*   }. *)
+
+(* Instance t_Shl_147302523 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_294__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shl_impl_294__f_shl := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_552843641 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_295__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shl_impl_295__f_shl := fun  (self : t_U8) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_1029067931 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_296__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shl_impl_296__f_shl := fun  (self : t_U8) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_858482607 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_297__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shl_impl_297__f_shl := fun  (self : t_U8) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_850374583 : Core_Ops_Bit.t_Shl ((t_U8)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_298__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shl_impl_298__f_shl := fun  (self : t_U8) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_649114101 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_299__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shr_impl_299__f_shr := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_151731961 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_300__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shr_impl_300__f_shr := fun  (self : t_U8) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_62999646 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_301__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shr_impl_301__f_shr := fun  (self : t_U8) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_1013645823 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_302__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shr_impl_302__f_shr := fun  (self : t_U8) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_591801947 : Core_Ops_Bit.t_Shr ((t_U8)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_303__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Shr_impl_303__f_shr := fun  (self : t_U8) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_467590830 : Core_Ops_Bit.t_BitXor ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_304__f_Output := t_U8; *)
+(*     Core_Ops_Bit.BitXor_impl_304__f_bitxor := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_101789241 : Core_Ops_Bit.t_BitAnd ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_305__f_Output := t_U8; *)
+(*     Core_Ops_Bit.BitAnd_impl_305__f_bitand := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_170480459 : Core_Ops_Bit.t_BitOr ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_306__f_Output := t_U8; *)
+(*     Core_Ops_Bit.BitOr_impl_306__f_bitor := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Mul_218256686 : Core_Ops_Arith.t_Mul ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_263__f_Output := t_U16; *)
+(*     Core_Ops_Arith.Mul_impl_263__f_mul := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_279097188 : Core_Ops_Arith.t_Rem ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_264__f_Output := t_U16; *)
+(*     Core_Ops_Arith.Rem_impl_264__f_rem := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_213069101 : Core_Ops_Arith.t_Add ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_265__f_Output := t_U16; *)
+(*     Core_Ops_Arith.Add_impl_265__f_add := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_3555313 : Core_Ops_Arith.t_Div ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_266__f_Output := t_U16; *)
+(*     Core_Ops_Arith.Div_impl_266__f_div := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_507469799 : Core_Ops_Arith.t_Neg ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_260__f_Output := t_U16; *)
+(*     Core_Ops_Arith.Neg_impl_260__f_neg := fun  (self : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_16_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_16_))); *)
+(*   }. *)
+
+(* Instance t_Shl_1039374414 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_267__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shl_impl_267__f_shl := fun  (self : t_U16) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_848017981 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_268__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shl_impl_268__f_shl := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_55981901 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_269__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shl_impl_269__f_shl := fun  (self : t_U16) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_642009701 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_270__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shl_impl_270__f_shl := fun  (self : t_U16) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_1043221441 : Core_Ops_Bit.t_Shl ((t_U16)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_271__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shl_impl_271__f_shl := fun  (self : t_U16) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_15286456 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_272__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shr_impl_272__f_shr := fun  (self : t_U16) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_1067566649 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_273__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shr_impl_273__f_shr := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_319063591 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_274__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shr_impl_274__f_shr := fun  (self : t_U16) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_941307102 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_275__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shr_impl_275__f_shr := fun  (self : t_U16) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_1003636416 : Core_Ops_Bit.t_Shr ((t_U16)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_276__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Shr_impl_276__f_shr := fun  (self : t_U16) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_946629289 : Core_Ops_Bit.t_BitXor ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_277__f_Output := t_U16; *)
+(*     Core_Ops_Bit.BitXor_impl_277__f_bitxor := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_988132460 : Core_Ops_Bit.t_BitAnd ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_278__f_Output := t_U16; *)
+(*     Core_Ops_Bit.BitAnd_impl_278__f_bitand := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_561260088 : Core_Ops_Bit.t_BitOr ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_279__f_Output := t_U16; *)
+(*     Core_Ops_Bit.BitOr_impl_279__f_bitor := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Mul_244794649 : Core_Ops_Arith.t_Mul ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_236__f_Output := t_U32; *)
+(*     Core_Ops_Arith.Mul_impl_236__f_mul := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_932604688 : Core_Ops_Arith.t_Rem ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_237__f_Output := t_U32; *)
+(*     Core_Ops_Arith.Rem_impl_237__f_rem := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_187008402 : Core_Ops_Arith.t_Add ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_238__f_Output := t_U32; *)
+(*     Core_Ops_Arith.Add_impl_238__f_add := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_704950227 : Core_Ops_Arith.t_Div ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_239__f_Output := t_U32; *)
+(*     Core_Ops_Arith.Div_impl_239__f_div := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_768279738 : Core_Ops_Arith.t_Neg ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_233__f_Output := t_U32; *)
+(*     Core_Ops_Arith.Neg_impl_233__f_neg := fun  (self : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_32_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_32_))); *)
+(*   }. *)
+
+(* Instance t_Shl_734707672 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_240__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shl_impl_240__f_shl := fun  (self : t_U32) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_243096202 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_241__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shl_impl_241__f_shl := fun  (self : t_U32) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_740009739 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_242__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shl_impl_242__f_shl := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_126513851 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_243__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shl_impl_243__f_shl := fun  (self : t_U32) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_923918929 : Core_Ops_Bit.t_Shl ((t_U32)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_244__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shl_impl_244__f_shl := fun  (self : t_U32) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_941707737 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_245__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shr_impl_245__f_shr := fun  (self : t_U32) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_207361529 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_246__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shr_impl_246__f_shr := fun  (self : t_U32) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_610922320 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_247__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shr_impl_247__f_shr := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_546064969 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_248__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shr_impl_248__f_shr := fun  (self : t_U32) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_879328570 : Core_Ops_Bit.t_Shr ((t_U32)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_249__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Shr_impl_249__f_shr := fun  (self : t_U32) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_106210830 : Core_Ops_Bit.t_BitXor ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_250__f_Output := t_U32; *)
+(*     Core_Ops_Bit.BitXor_impl_250__f_bitxor := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_880899768 : Core_Ops_Bit.t_BitAnd ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_251__f_Output := t_U32; *)
+(*     Core_Ops_Bit.BitAnd_impl_251__f_bitand := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_722198191 : Core_Ops_Bit.t_BitOr ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_252__f_Output := t_U32; *)
+(*     Core_Ops_Bit.BitOr_impl_252__f_bitor := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Mul_832015787 : Core_Ops_Arith.t_Mul ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_209__f_Output := t_U64; *)
+(*     Core_Ops_Arith.Mul_impl_209__f_mul := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_472472360 : Core_Ops_Arith.t_Rem ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_210__f_Output := t_U64; *)
+(*     Core_Ops_Arith.Rem_impl_210__f_rem := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_398748324 : Core_Ops_Arith.t_Add ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_211__f_Output := t_U64; *)
+(*     Core_Ops_Arith.Add_impl_211__f_add := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_119124993 : Core_Ops_Arith.t_Div ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_212__f_Output := t_U64; *)
+(*     Core_Ops_Arith.Div_impl_212__f_div := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_1055196925 : Core_Ops_Arith.t_Neg ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_206__f_Output := t_U64; *)
+(*     Core_Ops_Arith.Neg_impl_206__f_neg := fun  (self : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_64_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_64_))); *)
+(*   }. *)
+
+(* Instance t_Shl_626198177 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_213__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shl_impl_213__f_shl := fun  (self : t_U64) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_1053180111 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_214__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shl_impl_214__f_shl := fun  (self : t_U64) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_712250 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_215__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shl_impl_215__f_shl := fun  (self : t_U64) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_332132599 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_216__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shl_impl_216__f_shl := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_499060141 : Core_Ops_Bit.t_Shl ((t_U64)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_217__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shl_impl_217__f_shl := fun  (self : t_U64) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_380528067 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_218__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shr_impl_218__f_shr := fun  (self : t_U64) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_104550441 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_219__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shr_impl_219__f_shr := fun  (self : t_U64) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_972891085 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_220__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shr_impl_220__f_shr := fun  (self : t_U64) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_222074135 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_221__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shr_impl_221__f_shr := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_550176806 : Core_Ops_Bit.t_Shr ((t_U64)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_222__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Shr_impl_222__f_shr := fun  (self : t_U64) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_636393919 : Core_Ops_Bit.t_BitXor ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_223__f_Output := t_U64; *)
+(*     Core_Ops_Bit.BitXor_impl_223__f_bitxor := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_22071289 : Core_Ops_Bit.t_BitAnd ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_224__f_Output := t_U64; *)
+(*     Core_Ops_Bit.BitAnd_impl_224__f_bitand := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_624638860 : Core_Ops_Bit.t_BitOr ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_225__f_Output := t_U64; *)
+(*     Core_Ops_Bit.BitOr_impl_225__f_bitor := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Mul_122335953 : Core_Ops_Arith.t_Mul ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_182__f_Output := t_U128; *)
+(*     Core_Ops_Arith.Mul_impl_182__f_mul := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_531714227 : Core_Ops_Arith.t_Rem ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_183__f_Output := t_U128; *)
+(*     Core_Ops_Arith.Rem_impl_183__f_rem := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_960182017 : Core_Ops_Arith.t_Add ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_184__f_Output := t_U128; *)
+(*     Core_Ops_Arith.Add_impl_184__f_add := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_167702008 : Core_Ops_Arith.t_Div ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_185__f_Output := t_U128; *)
+(*     Core_Ops_Arith.Div_impl_185__f_div := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_48502464 : Core_Ops_Arith.t_Neg ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_179__f_Output := t_U128; *)
+(*     Core_Ops_Arith.Neg_impl_179__f_neg := fun  (self : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_sub (Core_Base_Spec_Constants.v_WORDSIZE_128_) (Core_Base_Pos.haxint_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_Spec_Constants.v_WORDSIZE_128_))); *)
+(*   }. *)
+
+(* Instance t_Shl_43107595 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_186__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shl_impl_186__f_shl := fun  (self : t_U128) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_310395977 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_187__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shl_impl_187__f_shl := fun  (self : t_U128) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_377670273 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_188__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shl_impl_188__f_shl := fun  (self : t_U128) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_529604166 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_189__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shl_impl_189__f_shl := fun  (self : t_U128) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_55456991 : Core_Ops_Bit.t_Shl ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_190__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shl_impl_190__f_shl := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_318169277 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_191__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shr_impl_191__f_shr := fun  (self : t_U128) (rhs : t_U8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_443804107 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_192__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shr_impl_192__f_shr := fun  (self : t_U128) (rhs : t_U16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_344515446 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_193__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shr_impl_193__f_shr := fun  (self : t_U128) (rhs : t_U32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_573757200 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_194__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shr_impl_194__f_shr := fun  (self : t_U128) (rhs : t_U64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_1001493510 : Core_Ops_Bit.t_Shr ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_195__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Shr_impl_195__f_shr := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_74092795 : Core_Ops_Bit.t_BitXor ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_196__f_Output := t_U128; *)
+(*     Core_Ops_Bit.BitXor_impl_196__f_bitxor := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_262162952 : Core_Ops_Bit.t_BitAnd ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_197__f_Output := t_U128; *)
+(*     Core_Ops_Bit.BitAnd_impl_197__f_bitand := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_553862406 : Core_Ops_Bit.t_BitOr ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_198__f_Output := t_U128; *)
+(*     Core_Ops_Bit.BitOr_impl_198__f_bitor := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Pos.haxint_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Mul_135460119 : Core_Ops_Arith.t_Mul ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_153__f_Output := t_I8; *)
+(*     Core_Ops_Arith.Mul_impl_153__f_mul := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_14042166 : Core_Ops_Arith.t_Rem ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_154__f_Output := t_I8; *)
+(*     Core_Ops_Arith.Rem_impl_154__f_rem := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_520853936 : Core_Ops_Arith.t_Add ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_155__f_Output := t_I8; *)
+(*     Core_Ops_Arith.Add_impl_155__f_add := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_357257531 : Core_Ops_Arith.t_Div ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_156__f_Output := t_I8; *)
+(*     Core_Ops_Arith.Div_impl_156__f_div := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_832009210 : Core_Ops_Arith.t_Neg ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_157__f_Output := t_I8; *)
+(*     Core_Ops_Arith.Neg_impl_157__f_neg := fun  (self : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))); *)
+(*   }. *)
+
+(* Instance t_Sub_729652689 : Core_Ops_Arith.t_Sub ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_158__f_Output := t_I8; *)
+(*     Core_Ops_Arith.Sub_impl_158__f_sub := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_225238942 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_159__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shl_impl_159__f_shl := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_204151360 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_160__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shl_impl_160__f_shl := fun  (self : t_I8) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_508545673 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_161__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shl_impl_161__f_shl := fun  (self : t_I8) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_1019695740 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_162__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shl_impl_162__f_shl := fun  (self : t_I8) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_752137067 : Core_Ops_Bit.t_Shl ((t_I8)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_163__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shl_impl_163__f_shl := fun  (self : t_I8) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_841647917 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_164__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shr_impl_164__f_shr := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_902850520 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_165__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shr_impl_165__f_shr := fun  (self : t_I8) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_464834928 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_166__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shr_impl_166__f_shr := fun  (self : t_I8) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_771077753 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_167__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shr_impl_167__f_shr := fun  (self : t_I8) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_502209694 : Core_Ops_Bit.t_Shr ((t_I8)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_168__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Shr_impl_168__f_shr := fun  (self : t_I8) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_232723092 : Core_Ops_Bit.t_BitXor ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_169__f_Output := t_I8; *)
+(*     Core_Ops_Bit.BitXor_impl_169__f_bitxor := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_55639079 : Core_Ops_Bit.t_BitAnd ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_170__f_Output := t_I8; *)
+(*     Core_Ops_Bit.BitAnd_impl_170__f_bitand := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_990927128 : Core_Ops_Bit.t_BitOr ((t_I8)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_171__f_Output := t_I8; *)
+(*     Core_Ops_Bit.BitOr_impl_171__f_bitor := fun  (self : t_I8) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Not_601125715 : Core_Ops_Bit.t_Not ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_152__f_Output := t_I8; *)
+(*     Core_Ops_Bit.Not_impl_152__f_not := fun  (self : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE)); *)
+(*   }. *)
+
+(* Instance t_Mul_273911951 : Core_Ops_Arith.t_Mul ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_126__f_Output := t_I16; *)
+(*     Core_Ops_Arith.Mul_impl_126__f_mul := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_576688298 : Core_Ops_Arith.t_Rem ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_127__f_Output := t_I16; *)
+(*     Core_Ops_Arith.Rem_impl_127__f_rem := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_855050090 : Core_Ops_Arith.t_Add ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_128__f_Output := t_I16; *)
+(*     Core_Ops_Arith.Add_impl_128__f_add := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_564577343 : Core_Ops_Arith.t_Div ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_129__f_Output := t_I16; *)
+(*     Core_Ops_Arith.Div_impl_129__f_div := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_655189408 : Core_Ops_Arith.t_Neg ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_130__f_Output := t_I16; *)
+(*     Core_Ops_Arith.Neg_impl_130__f_neg := fun  (self : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))); *)
+(*   }. *)
+
+(* Instance t_Sub_914010601 : Core_Ops_Arith.t_Sub ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_131__f_Output := t_I16; *)
+(*     Core_Ops_Arith.Sub_impl_131__f_sub := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_638763785 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_132__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shl_impl_132__f_shl := fun  (self : t_I16) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_622821117 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_133__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shl_impl_133__f_shl := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_997235840 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_134__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shl_impl_134__f_shl := fun  (self : t_I16) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_982032177 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_135__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shl_impl_135__f_shl := fun  (self : t_I16) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_339202508 : Core_Ops_Bit.t_Shl ((t_I16)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_136__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shl_impl_136__f_shl := fun  (self : t_I16) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_39522593 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_137__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shr_impl_137__f_shr := fun  (self : t_I16) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_596363530 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_138__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shr_impl_138__f_shr := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_793399525 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_139__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shr_impl_139__f_shr := fun  (self : t_I16) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_373835202 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_140__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shr_impl_140__f_shr := fun  (self : t_I16) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_293539279 : Core_Ops_Bit.t_Shr ((t_I16)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_141__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Shr_impl_141__f_shr := fun  (self : t_I16) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_646543401 : Core_Ops_Bit.t_BitXor ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_142__f_Output := t_I16; *)
+(*     Core_Ops_Bit.BitXor_impl_142__f_bitxor := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_589546786 : Core_Ops_Bit.t_BitAnd ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_143__f_Output := t_I16; *)
+(*     Core_Ops_Bit.BitAnd_impl_143__f_bitand := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_929134148 : Core_Ops_Bit.t_BitOr ((t_I16)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_144__f_Output := t_I16; *)
+(*     Core_Ops_Bit.BitOr_impl_144__f_bitor := fun  (self : t_I16) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Not_678376922 : Core_Ops_Bit.t_Not ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_125__f_Output := t_I16; *)
+(*     Core_Ops_Bit.Not_impl_125__f_not := fun  (self : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE)); *)
+(*   }. *)
+
+(* Instance t_Mul_908302232 : Core_Ops_Arith.t_Mul ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_99__f_Output := t_I32; *)
+(*     Core_Ops_Arith.Mul_impl_99__f_mul := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_393249809 : Core_Ops_Arith.t_Rem ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_100__f_Output := t_I32; *)
+(*     Core_Ops_Arith.Rem_impl_100__f_rem := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_427383343 : Core_Ops_Arith.t_Add ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_101__f_Output := t_I32; *)
+(*     Core_Ops_Arith.Add_impl_101__f_add := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_384705126 : Core_Ops_Arith.t_Div ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_102__f_Output := t_I32; *)
+(*     Core_Ops_Arith.Div_impl_102__f_div := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_527623365 : Core_Ops_Arith.t_Neg ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_103__f_Output := t_I32; *)
+(*     Core_Ops_Arith.Neg_impl_103__f_neg := fun  (self : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))); *)
+(*   }. *)
+
+(* Instance t_Sub_872716359 : Core_Ops_Arith.t_Sub ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_104__f_Output := t_I32; *)
+(*     Core_Ops_Arith.Sub_impl_104__f_sub := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_730568083 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_105__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shl_impl_105__f_shl := fun  (self : t_I32) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_910088866 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_106__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shl_impl_106__f_shl := fun  (self : t_I32) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_559763055 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_107__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shl_impl_107__f_shl := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_278646895 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_108__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shl_impl_108__f_shl := fun  (self : t_I32) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_412655554 : Core_Ops_Bit.t_Shl ((t_I32)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_109__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shl_impl_109__f_shl := fun  (self : t_I32) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_308848638 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_110__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shr_impl_110__f_shr := fun  (self : t_I32) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_393753403 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_111__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shr_impl_111__f_shr := fun  (self : t_I32) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_24771957 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_112__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shr_impl_112__f_shr := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_667254724 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_113__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shr_impl_113__f_shr := fun  (self : t_I32) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_233512491 : Core_Ops_Bit.t_Shr ((t_I32)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_114__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Shr_impl_114__f_shr := fun  (self : t_I32) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_858403630 : Core_Ops_Bit.t_BitXor ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_115__f_Output := t_I32; *)
+(*     Core_Ops_Bit.BitXor_impl_115__f_bitxor := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_296303925 : Core_Ops_Bit.t_BitAnd ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_116__f_Output := t_I32; *)
+(*     Core_Ops_Bit.BitAnd_impl_116__f_bitand := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_881580594 : Core_Ops_Bit.t_BitOr ((t_I32)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_117__f_Output := t_I32; *)
+(*     Core_Ops_Bit.BitOr_impl_117__f_bitor := fun  (self : t_I32) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Not_730964962 : Core_Ops_Bit.t_Not ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_98__f_Output := t_I32; *)
+(*     Core_Ops_Bit.Not_impl_98__f_not := fun  (self : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE)); *)
+(*   }. *)
+
+(* Instance t_Mul_598389246 : Core_Ops_Arith.t_Mul ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_72__f_Output := t_I64; *)
+(*     Core_Ops_Arith.Mul_impl_72__f_mul := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_639064997 : Core_Ops_Arith.t_Rem ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_73__f_Output := t_I64; *)
+(*     Core_Ops_Arith.Rem_impl_73__f_rem := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_591387563 : Core_Ops_Arith.t_Add ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_74__f_Output := t_I64; *)
+(*     Core_Ops_Arith.Add_impl_74__f_add := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_312372789 : Core_Ops_Arith.t_Div ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_75__f_Output := t_I64; *)
+(*     Core_Ops_Arith.Div_impl_75__f_div := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_784993849 : Core_Ops_Arith.t_Neg ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_76__f_Output := t_I64; *)
+(*     Core_Ops_Arith.Neg_impl_76__f_neg := fun  (self : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))); *)
+(*   }. *)
+
+(* Instance t_Sub_489165029 : Core_Ops_Arith.t_Sub ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_77__f_Output := t_I64; *)
+(*     Core_Ops_Arith.Sub_impl_77__f_sub := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_47817788 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_78__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shl_impl_78__f_shl := fun  (self : t_I64) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_244115675 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_79__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shl_impl_79__f_shl := fun  (self : t_I64) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_984453638 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_80__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shl_impl_80__f_shl := fun  (self : t_I64) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_863585124 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_81__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shl_impl_81__f_shl := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_570786006 : Core_Ops_Bit.t_Shl ((t_I64)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_82__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shl_impl_82__f_shl := fun  (self : t_I64) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_846435395 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_83__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shr_impl_83__f_shr := fun  (self : t_I64) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_64104894 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_84__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shr_impl_84__f_shr := fun  (self : t_I64) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_692136493 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_85__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shr_impl_85__f_shr := fun  (self : t_I64) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_873905561 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_86__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shr_impl_86__f_shr := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_773411341 : Core_Ops_Bit.t_Shr ((t_I64)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_87__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Shr_impl_87__f_shr := fun  (self : t_I64) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_235543421 : Core_Ops_Bit.t_BitXor ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_88__f_Output := t_I64; *)
+(*     Core_Ops_Bit.BitXor_impl_88__f_bitxor := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_784589252 : Core_Ops_Bit.t_BitAnd ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_89__f_Output := t_I64; *)
+(*     Core_Ops_Bit.BitAnd_impl_89__f_bitand := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_875198672 : Core_Ops_Bit.t_BitOr ((t_I64)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_90__f_Output := t_I64; *)
+(*     Core_Ops_Bit.BitOr_impl_90__f_bitor := fun  (self : t_I64) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Not_626865540 : Core_Ops_Bit.t_Not ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_71__f_Output := t_I64; *)
+(*     Core_Ops_Bit.Not_impl_71__f_not := fun  (self : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE)); *)
+(*   }. *)
+
+(* Instance t_Mul_641825555 : Core_Ops_Arith.t_Mul ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Mul_impl_45__f_Output := t_I128; *)
+(*     Core_Ops_Arith.Mul_impl_45__f_mul := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_mul (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Rem_996999806 : Core_Ops_Arith.t_Rem ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Rem_impl_46__f_Output := t_I128; *)
+(*     Core_Ops_Arith.Rem_impl_46__f_rem := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_rem (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Add_926579300 : Core_Ops_Arith.t_Add ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Add_impl_47__f_Output := t_I128; *)
+(*     Core_Ops_Arith.Add_impl_47__f_add := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_add (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Div_638352727 : Core_Ops_Arith.t_Div ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Div_impl_48__f_Output := t_I128; *)
+(*     Core_Ops_Arith.Div_impl_48__f_div := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_div (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Neg_507730293 : Core_Ops_Arith.t_Neg ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Neg_impl_49__f_Output := t_I128; *)
+(*     Core_Ops_Arith.Neg_impl_49__f_neg := fun  (self : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))); *)
+(*   }. *)
+
+(* Instance t_Sub_886251542 : Core_Ops_Arith.t_Sub ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_50__f_Output := t_I128; *)
+(*     Core_Ops_Arith.Sub_impl_50__f_sub := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_984302111 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_51__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shl_impl_51__f_shl := fun  (self : t_I128) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_164997643 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_52__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shl_impl_52__f_shl := fun  (self : t_I128) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_1052885176 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_53__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shl_impl_53__f_shl := fun  (self : t_I128) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_603410085 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_54__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shl_impl_54__f_shl := fun  (self : t_I128) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shl_858072160 : Core_Ops_Bit.t_Shl ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shl_impl_55__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shl_impl_55__f_shl := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shl (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_463366903 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_56__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shr_impl_56__f_shr := fun  (self : t_I128) (rhs : t_I8)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_1069710985 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_57__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shr_impl_57__f_shr := fun  (self : t_I128) (rhs : t_I16)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_520276901 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_58__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shr_impl_58__f_shr := fun  (self : t_I128) (rhs : t_I32)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_855575754 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_59__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shr_impl_59__f_shr := fun  (self : t_I128) (rhs : t_I64)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Shr_851652046 : Core_Ops_Bit.t_Shr ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Shr_impl_60__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Shr_impl_60__f_shr := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_shr (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitXor_647313045 : Core_Ops_Bit.t_BitXor ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitXor_impl_61__f_Output := t_I128; *)
+(*     Core_Ops_Bit.BitXor_impl_61__f_bitxor := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitxor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitAnd_156167702 : Core_Ops_Bit.t_BitAnd ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitAnd_impl_62__f_Output := t_I128; *)
+(*     Core_Ops_Bit.BitAnd_impl_62__f_bitand := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitand (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_BitOr_77964130 : Core_Ops_Bit.t_BitOr ((t_I128)) ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.BitOr_impl_63__f_Output := t_I128; *)
+(*     Core_Ops_Bit.BitOr_impl_63__f_bitor := fun  (self : t_I128) (rhs : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_bitor (Core_Base_interface_Coerce.Abstraction__f_lift (self)) (Core_Base_interface_Coerce.Abstraction__f_lift (rhs))); *)
+(*   }. *)
+
+(* Instance t_Not_521690238 : Core_Ops_Bit.t_Not ((t_I128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_44__f_Output := t_I128; *)
+(*     Core_Ops_Bit.Not_impl_44__f_not := fun  (self : t_I128)=> *)
+(*       Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_Z.z_sub (Core_Base_Z.z_neg (Core_Base_interface_Coerce.Abstraction__f_lift (self))) (Core_Base_Spec_Z.v_Z_ONE)); *)
+(*   }. *)
+
+(* Instance t_Sub_861515055 : Core_Ops_Arith.t_Sub ((t_U8)) ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_288__f_Output := t_U8; *)
+(*     Core_Ops_Arith.Sub_impl_288__f_sub := fun  (self : t_U8) (rhs : t_U8)=> *)
+(*       Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs)); *)
+(*   }. *)
+
+(* Instance t_Not_564807407 : Core_Ops_Bit.t_Not ((t_U8)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_289__f_Output := t_U8; *)
+(*     Core_Ops_Bit.Not_impl_289__f_not := fun  (self : t_U8)=> *)
+(*       Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX); *)
+(*   }. *)
+
+(* Instance t_Sub_48277321 : Core_Ops_Arith.t_Sub ((t_U16)) ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_261__f_Output := t_U16; *)
+(*     Core_Ops_Arith.Sub_impl_261__f_sub := fun  (self : t_U16) (rhs : t_U16)=> *)
+(*       Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs)); *)
+(*   }. *)
+
+(* Instance t_Not_1072656690 : Core_Ops_Bit.t_Not ((t_U16)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_262__f_Output := t_U16; *)
+(*     Core_Ops_Bit.Not_impl_262__f_not := fun  (self : t_U16)=> *)
+(*       Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX); *)
+(*   }. *)
+
+(* Instance t_Sub_1029712545 : Core_Ops_Arith.t_Sub ((t_U32)) ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_234__f_Output := t_U32; *)
+(*     Core_Ops_Arith.Sub_impl_234__f_sub := fun  (self : t_U32) (rhs : t_U32)=> *)
+(*       Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs)); *)
+(*   }. *)
+
+(* Instance t_Not_67714611 : Core_Ops_Bit.t_Not ((t_U32)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_235__f_Output := t_U32; *)
+(*     Core_Ops_Bit.Not_impl_235__f_not := fun  (self : t_U32)=> *)
+(*       Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX); *)
+(*   }. *)
+
+(* Instance t_Sub_1022464478 : Core_Ops_Arith.t_Sub ((t_U64)) ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_207__f_Output := t_U64; *)
+(*     Core_Ops_Arith.Sub_impl_207__f_sub := fun  (self : t_U64) (rhs : t_U64)=> *)
+(*       Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs)); *)
+(*   }. *)
+
+(* Instance t_Not_794767082 : Core_Ops_Bit.t_Not ((t_U64)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_208__f_Output := t_U64; *)
+(*     Core_Ops_Bit.Not_impl_208__f_not := fun  (self : t_U64)=> *)
+(*       Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX); *)
+(*   }. *)
+
+(* Instance t_Sub_151770474 : Core_Ops_Arith.t_Sub ((t_U128)) ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Arith.Sub_impl_180__f_Output := t_U128; *)
+(*     Core_Ops_Arith.Sub_impl_180__f_sub := fun  (self : t_U128) (rhs : t_U128)=> *)
+(*       Core_Ops_Arith.Add__f_add (self) (Core_Ops_Arith.Neg__f_neg (rhs)); *)
+(*   }. *)
+
+(* Instance t_Not_237389510 : Core_Ops_Bit.t_Not ((t_U128)) := *)
+(*   { *)
+(*     Core_Ops_Bit.Not_impl_181__f_Output := t_U128; *)
+(*     Core_Ops_Bit.Not_impl_181__f_not := fun  (self : t_U128)=> *)
+(*       Core_Ops_Bit.BitXor__f_bitxor (self) (Constants__f_MAX); *)
+(*   }. *)

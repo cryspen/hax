@@ -40,21 +40,21 @@ Definition impl_IndexRange__next_unchecked (self : t_IndexRange) : (t_IndexRange
   let hax_temp_output := value in
   (self,hax_temp_output).
 
-Instance Core_Iter_Traits_Iterator.t_Iterator_1000831689 : Core_Iter_Traits_Iterator.t_Iterator ((t_IndexRange)) :=
+Instance t_Iterator_1000831689 : Core_Iter_Traits_Iterator.t_Iterator ((t_IndexRange)) :=
   {
-    implaabbcc_t_Iterator_impl_1__f_Item := t_usize;
-    implaabbcc_t_Iterator_impl_1__f_next := fun  (self : t_IndexRange)=>
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_Item := t_usize;
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_next := fun  (self : t_IndexRange)=>
       let hax_temp_output := Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))) in
       (self,hax_temp_output);
-    implaabbcc_t_Iterator_impl_1__f_size_hint := fun  (self : t_IndexRange)=>
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_size_hint := fun  (self : t_IndexRange)=>
       let len := impl_IndexRange__len (self) in
       (len,Core_Option.Option_Some (len));
-    implaabbcc_t_Iterator_impl_1__f_fold := fun  (self : t_IndexRange) (init : v_B) (f : v_F)=>
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_fold := fun  (self : t_IndexRange) (init : v_B) (f : v_F)=>
       Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
   }.
 
-Instance Core_Iter_Traits_Exact_size.t_ExactSizeIterator_338933472 : Core_Iter_Traits_Exact_size.t_ExactSizeIterator ((t_IndexRange)) :=
+Instance t_ExactSizeIterator_338933472 : Core_Iter_Traits_Exact_size.t_ExactSizeIterator ((t_IndexRange)) :=
   {
-    implaabbcc_t_ExactSizeIterator_impl_2__f_len := fun  (self : t_IndexRange)=>
+    Core_Iter_Traits_Exact_size.ExactSizeIterator_impl_2__f_len := fun  (self : t_IndexRange)=>
       impl_IndexRange__len (self);
   }.

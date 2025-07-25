@@ -40,14 +40,14 @@ Arguments t_Step (_) {_} {_} {_}.
 
 Instance t_Step_676092016 : t_Step ((Core_Primitive_Primitive_definitions.t_u8)) :=
   {
-    implaabbcc_t_Step_impl_2__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u8) (v_end : Core_Primitive_Primitive_definitions.t_u8)=>
+    Core_Iter_Range.Step_impl_2__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u8) (v_end : Core_Primitive_Primitive_definitions.t_u8)=>
       if
         Core_Cmp.PartialOrd__f_le (start) (v_end)
       then
         Core_Option.Option_Some (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (v_end)) (Core_Clone.Clone__f_clone (start))))
       else
         Core_Option.Option_None;
-    implaabbcc_t_Step_impl_2__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u8) (n : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_2__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u8) (n : Core_Primitive_Primitive_definitions.t_usize)=>
       match Core_Convert.TryFrom__f_try_from (n) with
       | Core_Result.Result_Ok (n) =>
         Core_Num.impl_6__checked_add (start) (n)
@@ -58,14 +58,14 @@ Instance t_Step_676092016 : t_Step ((Core_Primitive_Primitive_definitions.t_u8))
 
 Instance t_Step_641489040 : t_Step ((Core_Primitive_Primitive_definitions.t_u16)) :=
   {
-    implaabbcc_t_Step_impl_3__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u16) (v_end : Core_Primitive_Primitive_definitions.t_u16)=>
+    Core_Iter_Range.Step_impl_3__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u16) (v_end : Core_Primitive_Primitive_definitions.t_u16)=>
       if
         Core_Cmp.PartialOrd__f_le (start) (v_end)
       then
         Core_Option.Option_Some (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (v_end)) (Core_Clone.Clone__f_clone (start))))
       else
         Core_Option.Option_None;
-    implaabbcc_t_Step_impl_3__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u16) (n : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_3__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u16) (n : Core_Primitive_Primitive_definitions.t_usize)=>
       match Core_Convert.TryFrom__f_try_from (n) with
       | Core_Result.Result_Ok (n) =>
         Core_Num.impl_7__checked_add (start) (n)
@@ -76,14 +76,14 @@ Instance t_Step_641489040 : t_Step ((Core_Primitive_Primitive_definitions.t_u16)
 
 Instance t_Step_225701987 : t_Step ((Core_Primitive_Primitive_definitions.t_u32)) :=
   {
-    implaabbcc_t_Step_impl_4__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u32) (v_end : Core_Primitive_Primitive_definitions.t_u32)=>
+    Core_Iter_Range.Step_impl_4__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u32) (v_end : Core_Primitive_Primitive_definitions.t_u32)=>
       if
         Core_Cmp.PartialOrd__f_le (start) (v_end)
       then
         Core_Option.Option_Some (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (v_end)) (Core_Clone.Clone__f_clone (start))))
       else
         Core_Option.Option_None;
-    implaabbcc_t_Step_impl_4__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u32) (n : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_4__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u32) (n : Core_Primitive_Primitive_definitions.t_usize)=>
       match Core_Convert.TryFrom__f_try_from (n) with
       | Core_Result.Result_Ok (n) =>
         Core_Num.impl_8__checked_add (start) (n)
@@ -94,14 +94,14 @@ Instance t_Step_225701987 : t_Step ((Core_Primitive_Primitive_definitions.t_u32)
 
 Instance t_Step_492796240 : t_Step ((Core_Primitive_Primitive_definitions.t_u64)) :=
   {
-    implaabbcc_t_Step_impl_5__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u64) (v_end : Core_Primitive_Primitive_definitions.t_u64)=>
+    Core_Iter_Range.Step_impl_5__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u64) (v_end : Core_Primitive_Primitive_definitions.t_u64)=>
       if
         Core_Cmp.PartialOrd__f_le (start) (v_end)
       then
         Core_Option.Option_Some (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (v_end)) (Core_Clone.Clone__f_clone (start))))
       else
         Core_Option.Option_None;
-    implaabbcc_t_Step_impl_5__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u64) (n : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_5__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u64) (n : Core_Primitive_Primitive_definitions.t_usize)=>
       match Core_Convert.TryFrom__f_try_from (n) with
       | Core_Result.Result_Ok (n) =>
         Core_Num.impl_9__checked_add (start) (n)
@@ -112,14 +112,14 @@ Instance t_Step_492796240 : t_Step ((Core_Primitive_Primitive_definitions.t_u64)
 
 Instance t_Step_118315388 : t_Step ((Core_Primitive_Primitive_definitions.t_usize)) :=
   {
-    implaabbcc_t_Step_impl_6__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_usize) (v_end : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_6__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_usize) (v_end : Core_Primitive_Primitive_definitions.t_usize)=>
       if
         Core_Cmp.PartialOrd__f_le (start) (v_end)
       then
         Core_Option.Option_Some (Core_Convert.Into__f_into (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (v_end)) (Core_Clone.Clone__f_clone (start))))
       else
         Core_Option.Option_None;
-    implaabbcc_t_Step_impl_6__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_usize) (n : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_6__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_usize) (n : Core_Primitive_Primitive_definitions.t_usize)=>
       match Core_Convert.TryFrom__f_try_from (n) with
       | Core_Result.Result_Ok (n) =>
         Core_Num.impl_11__checked_add (start) (n)
@@ -130,32 +130,32 @@ Instance t_Step_118315388 : t_Step ((Core_Primitive_Primitive_definitions.t_usiz
 
 Instance t_Step_591306384 : t_Step ((Core_Primitive_Primitive_definitions.t_u128)) :=
   {
-    implaabbcc_t_Step_impl_7__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u128) (v_end : Core_Primitive_Primitive_definitions.t_u128)=>
+    Core_Iter_Range.Step_impl_7__f_steps_between := fun  (start : Core_Primitive_Primitive_definitions.t_u128) (v_end : Core_Primitive_Primitive_definitions.t_u128)=>
       if
         Core_Cmp.PartialOrd__f_le (start) (v_end)
       then
         Core_Result.impl__ok (Core_Convert.TryFrom__f_try_from (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (v_end)) (Core_Clone.Clone__f_clone (start))))
       else
         Core_Option.Option_None;
-    implaabbcc_t_Step_impl_7__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u128) (n : Core_Primitive_Primitive_definitions.t_usize)=>
+    Core_Iter_Range.Step_impl_7__f_forward_checked := fun  (start : Core_Primitive_Primitive_definitions.t_u128) (n : Core_Primitive_Primitive_definitions.t_usize)=>
       Core_Option.Option_None;
   }.
 
 Class t_RangeIteratorImpl (v_Self : Type) : Type :=
   {
     RangeIteratorImpl__f_Item : Type;
-    _ :: `{Core_Marker.t_Sized (RangeIteratorImpl__f_Item)};
-    RangeIteratorImpl__f_spec_next : v_Self -> (v_Self*Core_Option.t_Option ((RangeIteratorImpl__f_Item)));
+    _ :: `{Core_Marker.t_Sized (RangeIteratorImpl__f_Itemt_item)};
+    RangeIteratorImpl__f_spec_next : v_Self -> (v_Self*Core_Option.t_Option ((RangeIteratorImpl__f_Itemt_item)));
   }.
 Arguments t_RangeIteratorImpl (_).
 
-Instance Core_Iter_Traits_Iterator.t_Iterator_300452680 `{v_A : Type} `{Core_Marker.t_Sized (v_A)} `{t_Step (v_A)} : Core_Iter_Traits_Iterator.t_Iterator ((Core_Ops_Range.t_Range ((v_A)))) :=
+Instance t_Iterator_300452680 `{v_A : Type} `{Core_Marker.t_Sized (v_A)} `{t_Step (v_A)} : Core_Iter_Traits_Iterator.t_Iterator ((Core_Ops_Range.t_Range ((v_A)))) :=
   {
-    implaabbcc_t_Iterator_impl_1__f_Item := v_A;
-    implaabbcc_t_Iterator_impl_1__f_next := fun  (self : Core_Ops_Range.t_Range ((v_A)))=>
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_Item := v_A;
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_next := fun  (self : Core_Ops_Range.t_Range ((v_A)))=>
       let hax_temp_output := Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))) in
       (self,hax_temp_output);
-    implaabbcc_t_Iterator_impl_1__f_size_hint := fun  (self : Core_Ops_Range.t_Range ((v_A)))=>
+    Core_Iter_Traits_Iterator.Iterator_impl_1__f_size_hint := fun  (self : Core_Ops_Range.t_Range ((v_A)))=>
       if
         Core_Cmp.PartialOrd__f_lt (Core_Ops_Range.f_Range_start self) (Core_Ops_Range.f_Range_end self)
       then
@@ -167,8 +167,8 @@ Instance Core_Iter_Traits_Iterator.t_Iterator_300452680 `{v_A : Type} `{Core_Mar
 
 Instance t_RangeIteratorImpl_145693917 `{v_A : Type} `{Core_Marker.t_Sized (v_A)} `{t_Step (v_A)} : t_RangeIteratorImpl ((Core_Ops_Range.t_Range ((v_A)))) :=
   {
-    implaabbcc_t_RangeIteratorImpl_impl__f_Item := v_A;
-    implaabbcc_t_RangeIteratorImpl_impl__f_spec_next := fun  (self : Core_Ops_Range.t_Range ((v_A)))=>
+    Core_Iter_Range.RangeIteratorImpl_f_Item := v_A;
+    Core_Iter_Range.RangeIteratorImpl_f_spec_next := fun  (self : Core_Ops_Range.t_Range ((v_A)))=>
       let hax_temp_output := Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([]))) in
       (self,hax_temp_output);
   }.

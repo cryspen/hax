@@ -31,9 +31,9 @@ Inductive t_UNARY : Type :=
 
 
 
-Instance Core_Clone.t_Clone_648246659 : Core_Clone.t_Clone ((t_Unary)) :=
+Instance t_Clone_648246659 : Core_Clone.t_Clone ((t_Unary)) :=
   {
-    implaabbcc_t_Clone_impl__f_clone := fun  (self : t_Unary)=>
+    Core_Clone.Clone_f_clone := fun  (self : t_Unary)=>
       Rust_primitives_Hax.never_to_any (Core_Panicking.panic_fmt (Core_Fmt_Rt.impl_1__new_v1 ([("not yet implemented: specification needed"%string : string)]) ([])));
   }.
 

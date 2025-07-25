@@ -12,6 +12,7 @@ Import RecordSetNotations.
 From Core Require Import Core_Marker.
 From Core Require Import Core_Ops_Function.
 From Core Require Import Core_Panicking.
+From Core Require Import Core_Clone.
 
 (* NotImplementedYet *)
 
@@ -35,36 +36,32 @@ Definition impl_1__is_some `{v_T : Type} `{Core_Marker.t_Sized (v_T)} (self : t_
     (false : bool)
   end.
 
-Definition impl_1__map `{v_T : Type} `{v_U : Type} `{v_F : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Sized (v_U)} `{Core_Marker.t_Sized (v_F)} `{Core_Ops_Function.t_FnOnce (v_F) ((v_T))} `{_.(Core_Ops_Function.FnOnce__f_Output) = v_U} (self : t_Option ((v_T))) (f : v_F) : t_Option ((v_U)).
-  refine (match self with
+Definition impl_1__map `{v_T : Type} `{v_U : Type} `{v_F : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Sized (v_U)} `{Core_Marker.t_Sized (v_F)} `{Core_Ops_Function.t_FnOnce (v_F) ((v_T))} `{_.(Core_Ops_Function.FnOnce__f_Output) = v_U} (self : t_Option ((v_T))) (f : v_F) : t_Option ((v_U)) :=
+  match self with
   | Option_Some (x) =>
-    _
+      Option_Some
+        (@eq_rect
+           Type
+           (@FnOnce__f_Output v_F v_T H2 H3 H4)
+           (fun T : Type => T)
+           (@FnOnce__f_call_once v_F v_T H2 H3 H4 f x) v_U H5)
   | Option_None =>
     Option_None
-          end).
-  epose (Option_Some (Core_Ops_Function.FnOnce__f_call_once (f) ((x)))).
-  Unshelve.
-  2:{
-    rewrite H5.
-    apply H0.
-  }
-  rewrite H5 in t.
-  apply t.
-Defined.
+  end.
 
 Definition unwrap_failed (_ : unit) `{HFalse : t_Never} : t_Never :=
   Core_Panicking.panic (H := Core_Panicking.never_sized) (HFalse := HFalse) (("called `Option::unwrap()` on a `None` value"%string : string)).
 
 Definition impl_1__unwrap `{v_T : Type} `{Core_Marker.t_Sized (v_T)} (self : t_Option ((v_T))) `{impl_1__is_some (self) = true} : v_T :=
-  match self return impl_1__is_some self = true -> _ with
+  match self return impl_1__is_some (self) = true -> _ with
   | Option_Some (val) =>
     fun _ => val
   | Option_None =>
-    fun HFalse => Core_Panicking.never_to_any (unwrap_failed (tt) (HFalse := (False_rect _ (Bool.diff_false_true HFalse))))
+    fun HFalse => never_to_any (unwrap_failed (tt) (HFalse := (False_rect _ (Bool.diff_false_true HFalse))))
   end H0.
 
-(* Definition expect_failed (msg : string) `{HFalse : t_Never} : t_Never := *)
-(*   Core_Panicking.panic_display (HFalse := _) (msg). *)
+(* Definition expect_failed (msg : string) : t_Never := *)
+(*   Core_Panicking.panic_display (msg). *)
 
 (* Definition impl_1__expect `{v_T : Type} `{Core_Marker.t_Sized (v_T)} (self : t_Option ((v_T))) (msg : string) : v_T := *)
 (*   match self with *)
@@ -74,9 +71,9 @@ Definition impl_1__unwrap `{v_T : Type} `{Core_Marker.t_Sized (v_T)} (self : t_O
 (*     Rust_primitives_Hax.never_to_any (expect_failed (msg)) *)
 (*   end. *)
 
-Instance Core_Clone_t_Clone_56373662 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Option ((v_T)))) :=
+Instance t_Clone_56373662 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Option ((v_T)))) :=
   {
-    implaabbcc_t_Clone_impl__f_clone := fun  (self : t_Option ((v_T)))=>
+    Core_Clone.Clone__f_clone := fun  (self : t_Option ((v_T)))=>
       match self with
       | Option_Some (x) =>
         Option_Some (Core_Clone.Clone__f_clone (x))

@@ -31,8 +31,8 @@ Arguments Iter_Iter_f_Iter_e_marker {_} {_}.
 Definition impl__new `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} (slice : Core_Primitive_Primitive_definitions.t_Slice ((v_T))) : t_Iter ((v_T)) :=
   Iter_Iter (Core_Clone.Clone__f_clone (slice)) (Core_Marker.PhantomData_PhantomData).
 
-Instance Core_Clone.t_Clone_942369049 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Iter ((v_T)))) :=
+Instance t_Clone_942369049 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Clone.t_Clone (v_T)} : Core_Clone.t_Clone ((t_Iter ((v_T)))) :=
   {
-    implaabbcc_t_Clone_impl_1__f_clone := fun  (self : t_Iter ((v_T)))=>
+    Core_Clone.Clone_impl_1__f_clone := fun  (self : t_Iter ((v_T)))=>
       Iter_Iter (Core_Clone.Clone__f_clone (f_Iter_data self)) (f_Iter_e_marker self);
   }.

@@ -13,6 +13,7 @@ Import RecordSetNotations.
 (* From Core Require Import Core. *)
 
 Notation "'t_HaxInt'" := N.
+Notation "'Core_Base_Spec_Haxint.t_HaxInt'" := N.
 
 Definition v_HaxInt_ONE : t_HaxInt := 1.
 Definition v_HaxInt_TWO : t_HaxInt := 2.

@@ -24,9 +24,9 @@ From Core Require Import Core.
 Class t_Iterator (v_Self : Type) : Type :=
   {
     Iterator__f_Item : Type;
-    _ :: `{Core_Marker.t_Sized (Iterator__f_Item)};
-    Iterator__f_next : v_Self -> (v_Self*Core_Option.t_Option ((Iterator__f_Item)));
+    _ :: `{Core_Marker.t_Sized (Iterator__f_Itemt_item)};
+    Iterator__f_next : v_Self -> (v_Self*Core_Option.t_Option ((Iterator__f_Itemt_item)));
     Iterator__f_size_hint : v_Self -> (t_usize*Core_Option.t_Option ((t_usize)));
-    Iterator__f_fold v_B : Type v_F : Type `{Core_Marker.t_Sized (v_B)} `{Core_Marker.t_Sized (v_F)} `{Core_Marker.t_Sized (v_Self)} `{Core_Ops_Function.t_FnMut (v_F) ((v_B*Iterator__f_Item))} `{_.(Core_Ops_Function.FnOnce__f_Output) = v_B} : v_Self -> v_B -> v_F -> v_B;
+    Iterator__f_fold v_B : Type v_F : Type `{Core_Marker.t_Sized (v_B)} `{Core_Marker.t_Sized (v_F)} `{Core_Marker.t_Sized (v_Self)} `{Core_Ops_Function.t_FnMut (v_F) ((v_B*Iterator__f_Itemt_item))} `{_.(Core_Ops_Function.FnOnce__f_Output) = v_B} : v_Self -> v_B -> v_F -> v_B;
   }.
 Arguments t_Iterator (_).

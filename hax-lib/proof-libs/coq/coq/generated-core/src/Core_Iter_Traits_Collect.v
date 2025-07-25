@@ -18,11 +18,11 @@ From Core Require Import Core.
 Class t_IntoIterator (v_Self : Type) : Type :=
   {
     IntoIterator__f_Item : Type;
-    _ :: `{Core_Marker.t_Sized (IntoIterator__f_Item)};
-    IntoIterator__f_IntoIter `{_.(Core_Iter_Traits_Iterator.Iterator__f_Item) = IntoIterator__f_Item} : Type;
-    _ :: `{Core_Marker.t_Sized (IntoIterator__f_IntoIter)};
-    _ :: `{Core_Iter_Traits_Iterator.t_Iterator (IntoIterator__f_IntoIter)};
-    IntoIterator__f_into_iter : v_Self -> IntoIterator__f_IntoIter;
+    _ :: `{Core_Marker.t_Sized (IntoIterator__f_Itemt_item)};
+    IntoIterator__f_IntoIter `{_.(Core_Iter_Traits_Iterator.Iterator__f_Item) = IntoIterator__f_Itemt_item} : Type;
+    _ :: `{Core_Marker.t_Sized (IntoIterator__f_IntoItert_item)};
+    _ :: `{Core_Iter_Traits_Iterator.t_Iterator (IntoIterator__f_IntoItert_item)};
+    IntoIterator__f_into_iter : v_Self -> IntoIterator__f_IntoItert_item;
   }.
 Arguments t_IntoIterator (_).
 
@@ -34,8 +34,8 @@ Arguments t_FromIterator (_) (_) {_} {_}.
 
 Instance t_IntoIterator_225021885 `{v_I : Type} `{Core_Marker.t_Sized (v_I)} `{Core_Iter_Traits_Iterator.t_Iterator (v_I)} : t_IntoIterator ((v_I)) :=
   {
-    implaabbcc_t_IntoIterator_impl__f_Item := Core_Iter_Traits_Iterator.Iterator__f_Item;
-    implaabbcc_t_IntoIterator_impl__f_IntoIter := v_I;
-    implaabbcc_t_IntoIterator_impl__f_into_iter := fun  (self : v_I)=>
+    Core_Iter_Traits_Collect.IntoIterator_f_Item := Core_Iter_Traits_Iterator.Iterator__f_Itemt_item;
+    Core_Iter_Traits_Collect.IntoIterator_f_IntoIter := v_I;
+    Core_Iter_Traits_Collect.IntoIterator_f_into_iter := fun  (self : v_I)=>
       self;
   }.

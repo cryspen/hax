@@ -21,6 +21,12 @@ Notation "'t_UNARY'" := nat.
 Notation "'UNARY_ZERO'" := O.
 Notation "'UNARY_SUCC'" := S.
 
+Notation "'Core_Base_Spec_Unary.t_Unary'" := nat.
+
+Notation "'Core_Base_Spec_Unary.t_UNARY'" := nat.
+Notation "'Core_Base_Spec_Unary.UNARY_ZERO'" := O.
+Notation "'Core_Base_Spec_Unary.UNARY_SUCC'" := S.
+
 Definition unary_from_int (x : t_HaxInt) : t_Unary := N.to_nat x.
 Definition unary_to_int (s : t_Unary) : t_HaxInt := N.of_nat s.
 

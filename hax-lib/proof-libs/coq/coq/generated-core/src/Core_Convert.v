@@ -9,7 +9,8 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+From Core Require Import Core_Marker.
+(* From Core Require Import Core_Convert. *)
 
 (* NotImplementedYet *)
 
@@ -27,12 +28,12 @@ Arguments t_From (_) (_) {_} {_}.
 
 Instance t_Into_352590089 `{v_T : Type} `{v_U : Type} `{Core_Marker.t_Sized (v_T)} `{Core_Marker.t_Sized (v_U)} `{t_From (v_U) (v_T)} : t_Into ((v_T)) ((v_U)) :=
   {
-    implaabbcc_t_Into_impl__f_into := fun  (self : v_T)=>
+    Core_Convert.Into__f_into := fun  (self : v_T)=>
       From__f_from (self);
   }.
 
 Instance t_From_581002014 `{v_T : Type} `{Core_Marker.t_Sized (v_T)} : t_From ((v_T)) ((v_T)) :=
   {
-    implaabbcc_t_From_impl_1__f_from := fun  (t : v_T)=>
+    Core_Convert.From__f_from := fun  (t : v_T)=>
       t;
   }.

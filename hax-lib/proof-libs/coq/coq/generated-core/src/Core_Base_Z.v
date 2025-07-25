@@ -9,7 +9,11 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
+From Core Require Import Core_Base_Spec_Z.
+From Core Require Import Core_Cmp.
+From Core Require Import Core_Base_Binary.
+From Core Require Import Core_Base_Spec_Unary.
+From Core Require Import Core_Base_Pos.
 
 (* NotImplementedYet *)
 
@@ -157,8 +161,8 @@ Definition n_succ (x : Core_Base_Spec_Binary_Pos.t_POS) : Core_Base_Spec_Binary_
   | Core_Base_Spec_Binary_Pos.POS_ZERO =>
     Core_Base_Spec_Binary_Positive.xH
   | Core_Base_Spec_Binary_Pos.POS_POS (p) =>
-    Core_Base_Spec_Binary_Positive.positive_from_int (Core_Base_Spec_Unary.unary_to_int (Core_Base_Spec_Unary.succ (Core_Base_Spec_Unary.unary_from_int (Core_Base_Spec_Binary_Positive.positive_to_int (p)))))
-  end.
+      Core_Base_Spec_Binary_Positive.positive_from_int (Core_Base_Spec_Unary.unary_to_int (Core_Base_Spec_Unary.succ (Core_Base_Spec_Unary.unary_from_int (Core_Base_Spec_Binary_Positive.positive_to_int (p))))) (Hpos := ltac:(easy))
+         end.
 
 Definition positive_pred_N (x : Core_Base_Spec_Binary_Positive.t_Positive) : Core_Base_Spec_Binary_Pos.t_POS :=
   match Core_Base_Spec_Binary_Positive.match_positive (x) with

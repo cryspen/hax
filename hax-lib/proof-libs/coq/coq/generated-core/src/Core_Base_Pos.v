@@ -9,8 +9,12 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-From Core Require Import Core.
-
+From Core Require Import Core_Base_Spec_Binary_Positive.
+From Core Require Import Core_Base_Spec_Haxint.
+From Core Require Import Core_Cmp.
+From Core Require Import Core_Base_Spec_Binary_Pos.
+From Core Require Import Core_Base_Binary.
+From Core Require Import Core_Base_Spec_Unary.
 (* NotImplementedYet *)
 
 
@@ -146,6 +150,53 @@ Definition haxint_shr__half (s : Core_Base_Spec_Haxint.t_HaxInt) : Core_Base_Spe
       Core_Base_Spec_Binary_Positive.positive_to_int (p)
     | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
       Core_Base_Spec_Binary_Positive.positive_to_int (p)
+    end
+  end.
+
+Fixpoint haxint_sub__sub_binary (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : t_Mask :=
+  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    Mask_IsNeg
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Mask_IsPos (Core_Base_Binary.positive_pred_double (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      haxint_sub__double_mask (haxint_sub__sub_binary (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      haxint_sub__succ_double_mask (haxint_sub__sub_carry (p) (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Mask_IsPos (Core_Base_Spec_Binary_Positive.xO (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      haxint_sub__succ_double_mask (haxint_sub__sub_binary (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      haxint_sub__double_mask (haxint_sub__sub_binary (p) (q))
+    end
+  end
+with haxint_sub__sub_carry (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : t_Mask :=
+  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+    Mask_IsNeg
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      haxint_sub__double_pred_mask (p)
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      haxint_sub__succ_double_mask (haxint_sub__sub_carry (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      haxint_sub__double_mask (haxint_sub__sub_carry (p) (q))
+    end
+  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
+    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
+      Mask_IsPos (Core_Base_Binary.positive_pred_double (p))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
+      haxint_sub__double_mask (haxint_sub__sub_binary (p) (q))
+    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
+      haxint_sub__succ_double_mask (haxint_sub__sub_carry (p) (q))
     end
   end.
 
@@ -386,51 +437,3 @@ Definition haxint_div (lhs : Core_Base_Spec_Haxint.t_HaxInt) (rhs : Core_Base_Sp
 Definition haxint_rem (lhs : Core_Base_Spec_Haxint.t_HaxInt) (rhs : Core_Base_Spec_Haxint.t_HaxInt) : Core_Base_Spec_Haxint.t_HaxInt :=
   let (_,r) := haxint_divmod (lhs) (rhs) in
   r.
-
-Fixpoint haxint_sub__sub_carry (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : t_Mask :=
-  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    Mask_IsNeg
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-      haxint_sub__double_pred_mask (p)
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
-      haxint_sub__succ_double_mask (haxint_sub__sub_carry (p) (q))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
-      haxint_sub__double_mask (haxint_sub__sub_carry (p) (q))
-    end
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-      Mask_IsPos (Core_Base_Binary.positive_pred_double (p))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
-      haxint_sub__double_mask (haxint_sub__sub_binary (p) (q))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
-      haxint_sub__succ_double_mask (haxint_sub__sub_carry (p) (q))
-    end
-  end.
-
-Fixpoint haxint_sub__sub_binary (lhs : Core_Base_Spec_Binary_Positive.t_Positive) (rhs : Core_Base_Spec_Binary_Positive.t_Positive) : t_Mask :=
-  match Core_Base_Spec_Binary_Positive.match_positive (lhs) with
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-    Mask_IsNeg
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XO (p) =>
-    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-      Mask_IsPos (Core_Base_Binary.positive_pred_double (p))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
-      haxint_sub__double_mask (haxint_sub__sub_binary (p) (q))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
-      haxint_sub__succ_double_mask (haxint_sub__sub_carry (p) (q))
-    end
-  | Core_Base_Spec_Binary_Positive.POSITIVE_XI (p) =>
-    match Core_Base_Spec_Binary_Positive.match_positive (rhs) with
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XH =>
-      Mask_IsPos (Core_Base_Spec_Binary_Positive.xO (p))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XO (q) =>
-      haxint_sub__succ_double_mask (haxint_sub__sub_binary (p) (q))
-    | Core_Base_Spec_Binary_Positive.POSITIVE_XI (q) =>
-      haxint_sub__double_mask (haxint_sub__sub_binary (p) (q))
-    end
-  end.

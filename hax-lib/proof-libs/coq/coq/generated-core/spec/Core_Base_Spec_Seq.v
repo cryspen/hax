@@ -15,10 +15,19 @@ Import RecordSetNotations.
 Notation "'t_Seq'" := list.
 
 Notation "'t_LIST'" := list.
-Notation "'LIST_NIL'" := nil.
-Notation "'LIST_CONS'" := cons.
+Notation "'LIST_NIL'" := List.nil.
+Notation "'LIST_CONS'" := List.cons.
 
-Notation "'nil'" := nil.
-Notation "'cons'" := (fun x y => cons y x).
+Notation "'nil'" := List.nil.
+Notation "'cons'" := (fun x y => List.cons y x).
+
+Notation "'Core_Base_Spec_Seq.t_Seq'" := list.
+
+Notation "'Core_Base_Spec_Seq.t_LIST'" := list.
+Notation "'Core_Base_Spec_Seq.LIST_NIL'" := List.nil.
+Notation "'Core_Base_Spec_Seq.LIST_CONS'" := List.cons.
+
+Notation "'Core_Base_Spec_Seq.nil'" := List.nil.
+Notation "'Core_Base_Spec_Seq.cons'" := (fun x y => List.cons y x).
 
 Definition match_list {T} (x : t_Seq T) : t_LIST T := x.

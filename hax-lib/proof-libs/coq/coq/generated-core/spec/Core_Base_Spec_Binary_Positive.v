@@ -24,6 +24,12 @@ Notation "'POSITIVE_XH'" := xH.
 Notation "'POSITIVE_XO'" := xO.
 Notation "'POSITIVE_XI'" := xI.
 
+Notation "'Core_Base_Spec_Binary_Positive.t_Positive'" := positive.
+Notation "'Core_Base_Spec_Binary_Positive.t_POSITIVE'" := positive.
+Notation "'Core_Base_Spec_Binary_Positive.POSITIVE_XH'" := xH.
+Notation "'Core_Base_Spec_Binary_Positive.POSITIVE_XO'" := xO.
+Notation "'Core_Base_Spec_Binary_Positive.POSITIVE_XI'" := xI.
+
 Definition positive_from_int (x : t_HaxInt) `{Hpos : x <> N0} : t_Positive :=
   match x return x <> N0 -> _ with | N0 => fun Hpos => False_rect _ (Hpos eq_refl) | Npos p => fun _ => p end Hpos.
 
