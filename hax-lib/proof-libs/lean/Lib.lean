@@ -119,14 +119,19 @@ class ToNat (α: Type) where
   toNat : α -> Nat
 
 -- should use a macro here
+@[simp]
 instance : ToNat USize where
   toNat x := x.toNat
+@[simp]
 instance : ToNat u64 where
   toNat x := x.toNat
+@[simp]
 instance : ToNat u32 where
   toNat x := x.toNat
+@[simp]
 instance : ToNat u16 where
   toNat x := x.toNat
+@[simp]
 instance : ToNat Nat where
   toNat x := x
 
@@ -167,50 +172,218 @@ instance : OfNat (Result Nat) n where
 -- Arithmetic
 section Arithmetic
 
-/--
-The notation typeclass for homogeneous addition that returns a Result.
-This enables the notation `a +? b : α` where `a : α`, `b : α`. For now, there is
-no heterogeneous version
--/
+/-- The notation typeclass for homogeneous addition that returns a Result.  This
+enables the notation `a +? b : α` where `a : α`, `b : α`. For now, there is no
+heterogeneous version -/
 class HaxAdd α where
-  /-- `a +? b` computes the panicking sum of `a` and `b`.
-  The meaning of this notation is type-dependent. -/
+  /-- `a +? b` computes the panicking sum of `a` and `b`.  The meaning of this
+  notation is type-dependent. -/
   add : α → α → Result α
 
-@[inherit_doc] infixl:65 " +? " => HaxAdd.add
-
-/--
-The notation typeclass for homogeneous substraction that returns a Result.
+/-- The notation typeclass for homogeneous substraction that returns a Result.
 This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
-no heterogeneous version
--/
+no heterogeneous version -/
 class HaxSub α where
   /-- `a -? b` computes the panicking substraction of `a` and `b`.
   The meaning of this notation is type-dependent. -/
   sub : α → α → Result α
 
-@[inherit_doc] infixl:65 " -? " => HaxSub.sub
-
-/--
-The notation typeclass for homogeneous multiplication that returns a Result.
-This enables the notation `a *? b : α` where `a : α`, `b : α`. For now, there is
-no heterogeneous version
--/
+/-- The notation typeclass for homogeneous multiplication that returns a Result.
+This enables the notation `a *? b : Result α` where `a b : α`. For now, there is
+no heterogeneous version -/
 class HaxMul α where
-  /-- `a -? b` computes the panicking multiplication of `a` and `b`.
-  The meaning of this notation is type-dependent. -/
+  /-- `a -? b` computes the panicking multiplication of `a` and `b`.  The
+  meaning of this notation is type-dependent. -/
   mul : α → α → Result α
 
-@[inherit_doc] infixl:70 " *? " => HaxMul.mul
+/-- The notation typeclass for homogeneous division that returns a Result.  This
+enables the notation `a /? b : Result α` where `a b : α`. For now, there is no
+heterogeneous version -/
+class HaxDiv α where
+  /-- `a -? b` computes the panicking multiplication of `a` and `b`.  The
+  meaning of this notation is type-dependent. -/
+  div : α → α → Result α
 
-/-- The typeclass behind the notation `a >>>? b : α` where `a b : α`. -/
+/-- The typeclass behind the notation `a >>>? b : Result α` where `a b : α`. -/
 class HaxShiftRight α where
   /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
-  of this notation is type-dependent. It panics if `b` exceeds the size of
-  `a`. -/
+  of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
+  -/
   shiftRight : α → α → Result α
 
+/-- The notation typeclass for remainder.  This enables the notation `a %? b :
+Result α` where `a b : α`.  -/
+class HaxRem α where
+  /-- `a %? b` computes the panicking remainder upon dividing `a` by `b`.  The
+  meaning of this notation is type-dependent. It panics if b is zero -/
+  rem : α → α → Result α
+
+@[inherit_doc] infixl:65 " +? " => HaxAdd.add
+@[inherit_doc] infixl:65 " -? " => HaxSub.sub
+@[inherit_doc] infixl:70 " *? " => HaxMul.mul
 @[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
+@[inherit_doc] infixl:70 " %? "   => HaxRem.rem
+@[inherit_doc] infixl:70 " /? "   => HaxDiv.div
+
+-- Overflowing operations
+@[simp, spec]
+def hax_machine_int_add {α} [HaxAdd α] (x y: α) : Result α := x +? y
+@[simp, spec]
+def hax_machine_int_sub {α} [HaxSub α] (x y: α) : Result α := x -? y
+@[simp, spec]
+def hax_machine_int_mul {α} [HaxMul α] (x y: α) : Result α := x *? y
+@[simp]
+def hax_machine_int_div {α} [HaxDiv α] (x y: α) : Result α := x /? y
+@[simp]
+def hax_machine_int_rem {α} [HaxRem α] (x y: α) : Result α := x %? y
+@[simp, spec]
+def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
+@[simp]
+def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := Result.pure (a ^^^ b)
+@[simp]
+def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
+
+@[simp]
+def hax_machine_int_eq {α} (x y: α) [BEq α] : Bool := x == y
+@[simp]
+def hax_machine_int_ne {α} (x y: α) [BEq α] : Bool := x != y
+@[simp]
+def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Bool := x < y
+@[simp]
+def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Bool := x ≤ y
+@[simp]
+def hax_machine_int_gt {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Bool := x ≥ y
+@[simp]
+def hax_machine_int_ge {α} (x y: α) [(LT α)] [Decidable (x > y)] : Bool := x > y
+
+
+
+namespace USize
+
+instance instHaxAdd : HaxAdd USize where
+  add x y :=
+    if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x + y)
+
+@[spec]
+theorem HaxAdd_spec_bv (x y: usize) :
+  ⦃ ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) ⦄
+  (x +? y)
+  ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
+
+instance instHaxSub : HaxSub USize where
+  sub x y :=
+    if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x - y)
+
+@[spec]
+theorem HaxSub_spec_bv (x y: usize) :
+  ⦃ ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) ⦄
+  (x -? y)
+  ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
+
+instance instHaxMul : HaxMul USize where
+  mul x y :=
+    if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+@[spec]
+theorem HaxMul_spec_bv (x y: usize) :
+  ⦃ ¬ (BitVec.smulOverflow x.toBitVec y.toBitVec) ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+instance instHaxShiftRight : HaxShiftRight USize where
+  shiftRight x y :=
+    if (y ≤ USize.size) then pure (x >>> y)
+    else .fail .integerOverflow
+
+@[spec]
+theorem HaxShiftRight_spec_bv (x y: usize) :
+  ⦃ y ≤ USize.size ⦄
+  ( x >>>? y)
+  ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
+
+instance instHaxDiv : HaxDiv usize where
+  div x y :=
+    if y = 0 then .fail .divisionByZero
+    else if (BitVec.sdivOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x / y)
+
+@[spec]
+theorem HaxDiv_spec_bv (x y : usize) :
+  ⦃ y != 0 ∧ ¬ BitVec.sdivOverflow x.toBitVec y.toBitVec⦄
+  ( x /? y)
+  ⦃ ⇓ r => r = x / y ⦄ := by
+  mvcgen [instHaxDiv] <;> simp <;> try grind
+  have ⟨ _ , h ⟩ := h
+  apply h; assumption
+
+instance instHaxRem : HaxRem usize where
+  rem x y :=
+    if y = 0 then .fail .divisionByZero
+    else if (BitVec.sdivOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x % y)
+
+@[spec]
+theorem HaxRem_spec_bv (x y : usize) :
+  ⦃ y != 0 ∧ ¬ BitVec.sdivOverflow x.toBitVec y.toBitVec⦄
+  ( x %? y)
+  ⦃ ⇓ r => r = x % y ⦄ := by
+  mvcgen [instHaxRem] <;> simp <;> try grind
+  have ⟨ _ , h ⟩ := h
+  apply h; assumption
+
+
+end USize
+
+namespace ISize
+
+instance instHaxAdd : HaxAdd ISize where
+  add x y :=
+    if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x + y)
+
+@[spec]
+theorem HaxAdd_spec_bv (x y: isize) :
+  ⦃ ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) ⦄
+  (x +? y)
+  ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
+
+instance instHaxSub : HaxSub ISize where
+  sub x y :=
+    if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x - y)
+
+@[spec]
+theorem HaxSub_spec_bv (x y: isize) :
+  ⦃ ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) ⦄
+  (x -? y)
+  ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
+
+instance instHaxMul : HaxMul ISize where
+  mul x y :=
+    if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+@[spec]
+theorem HaxMul_spec_bv (x y: isize) :
+  ⦃ ¬ (BitVec.smulOverflow x.toBitVec y.toBitVec) ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+instance instHaxShiftRight : HaxShiftRight ISize where
+  shiftRight x y :=
+    if (y ≤ ISize.size.toISize) then pure (x >>> y)
+    else .fail .integerOverflow
+
+@[spec]
+theorem HaxShiftRight_spec_bv (x y: isize) :
+  ⦃ y ≤ ISize.size.toISize ⦄
+  ( x >>>? y)
+  ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
+
+end ISize
 
 namespace Int64
 
@@ -249,12 +422,12 @@ theorem HaxMul_spec_bv (x y: i64) :
 
 instance instHaxShiftRight : HaxShiftRight Int64 where
   shiftRight x y :=
-    if (y ≤ 32) then pure (x >>> y)
+    if (y ≤ 64) then pure (x >>> y)
     else .fail .integerOverflow
 
 @[spec]
 theorem HaxShiftRight_spec_bv (x y: i64) :
-  ⦃ y ≤ 32 ⦄
+  ⦃ y ≤ 64 ⦄
   ( x >>>? y)
   ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
 
@@ -308,37 +481,6 @@ theorem HaxMul_spec_bv (x y: i32) :
 
 end Int32
 
--- Overflowing operations
-@[simp, spec]
-def hax_machine_int_add {α} [HaxAdd α] (x y: α) : Result α := x +? y
-@[simp, spec]
-def hax_machine_int_sub {α} [HaxSub α] (x y: α) : Result α := x -? y
-@[simp, spec]
-def hax_machine_int_mul {α} [HaxMul α] (x y: α) : Result α := x *? y
-@[simp]
-def hax_machine_int_div {α} [Div α] (x y: α) : Result α := pure (x / y)
-@[simp]
-def hax_machine_int_rem {α} [Mod α] (x y: α) : Result α := pure (x % y)
-@[simp, spec]
-def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := (a >>>? b)
-@[simp]
-def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := Result.pure (a ^^^ b)
-@[simp]
-def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
-
-@[simp]
-def hax_machine_int_eq {α} (x y: α) [BEq α] : Bool := x == y
-@[simp]
-def hax_machine_int_ne {α} (x y: α) [BEq α] : Bool := x != y
-@[simp]
-def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Bool := x < y
-@[simp]
-def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Bool := x ≤ y
-@[simp]
-def hax_machine_int_gt {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Bool := x ≥ y
-@[simp]
-def hax_machine_int_ge {α} (x y: α) [(LT α)] [Decidable (x > y)] : Bool := x > y
-
 
 abbrev hax__autogenerated_refinement__BoundedUsize_BoundedUsize
   (lo: USize) (hi: USize) := USize
@@ -369,6 +511,12 @@ set_option pp.coercions false
 @[simp]
 def num_impl_wrapping_add {α} [Add α] (x y: α) : Result α := pure (x + y)
 
+@[spec]
+theorem num_impl_wrapping_add_spec {α} [Add α] (x y : α) :
+  ⦃⌜True⌝⦄
+  (num_impl_wrapping_add x y)
+  ⦃ ⇓ r => r = x + y ⦄
+:= by mvcgen [num_impl_wrapping_add]
 
 class RotateLeft (α: Type) where
   rotateLeft : α -> Nat -> α
@@ -421,6 +569,10 @@ class Cast (α β: Type) where
 instance : Cast i64 i32 where
   cast x := pure (Int64.toInt32 x)
 
+@[spec]
+instance : Cast usize u32 where
+  cast x := pure (USize.toUInt32 x)
+
 @[simp, spec]
 def hax_cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
 
@@ -465,6 +617,7 @@ def hax_monomorphized_update_at_update_at_usize {α n}
   else
     .fail (.arrayOutOfBounds)
 
+@[spec]
 def hax_update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector α n) :=
   if i < n then
     pure ( Vector.setIfInBounds m i v)
@@ -525,18 +678,20 @@ instance {α n} [tn: ToNat β]:
     else
       pure ( (Vector.extract xs s e ).toArray)
 
-
 instance GetElemResult [tn: ToNat β] : GetElem (Array α) β (Result α) (fun _ _ => True) where
   getElem xs i _ := Result.ofOption (xs[tn.toNat i]?) .arrayOutOfBounds
 
-instance : GetElem (Array α) usize (Result α) (fun _ _ => True) :=
+instance USize.instGetElemArrayResult {α} : GetElem (Array α) (usize) (Result α) (fun _ _ => True) :=
   GetElemResult
+
 instance : GetElem (Array α) Nat (Result α) (fun _ _ => True) :=
   GetElemResult
 
+@[simp]
 instance {α β : Type} {n : Nat} [tn: ToNat β]: GetElem (Vector α n) β (Result α) (fun _ _ => True) where
   getElem xs i _ := Result.ofOption (xs[tn.toNat i]?) .arrayOutOfBounds
 
+@[simp]
 instance {α : Type} {n : Nat}: GetElem (Vector α n) Nat (Result α) (fun _ _ => True) where
   getElem xs i _ := Result.ofOption xs[i]? .arrayOutOfBounds
 
