@@ -9,8 +9,9 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core_Marker.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
 Inductive t_Never : Type :=
 .
@@ -19,12 +20,14 @@ Definition t_Never_cast_to_repr (x : t_Never) : t_Never :=
   match x with
   end.
 
-Definition never_to_any `{v_T : Type} (x : t_Never) : v_T :=
+Definition never_to_any `{v_T : Type} `{Core_Marker.t_Sized (v_T)} (x : t_Never) : v_T :=
   (match x with
   end).
 
-Definition panic (expr : string) {HFalse : t_Never} : t_Never :=
+Definition panic (expr : string) `{Core_Marker.t_Sized _} {HFalse : t_Never} : t_Never :=
   never_to_any HFalse.
 
-Definition panic_explicit '(_ : unit) `{HFalse : t_Never} : t_Never :=
+Definition panic_explicit '(_ : unit) `{Core_Marker.t_Sized _} `{HFalse : t_Never} : t_Never :=
   never_to_any HFalse.
+
+Instance never_sized : t_Sized t_Never := {}.

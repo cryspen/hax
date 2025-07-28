@@ -9,11 +9,9 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
-
 (* From Core Require Import Core. *)
 
-From Core Require Import Core_Primitive.
-Export Core_Primitive.
+
 
 (* NotImplementedYet *)
 
@@ -25,47 +23,15 @@ Export Core_Primitive.
 
 (* NotImplementedYet *)
 
-(* NotImplementedYet *)
 
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
-
-(* NotImplementedYet *)
+From Core Require Import Core_Marker.
+Export Core_Marker.
 
 From Core Require Import Core_Option.
 Export Core_Option.
 
-From Core Require Import Core_Array_Rec_bundle_579704328.
-Export Core_Array_Rec_bundle_579704328.
+(* From Core Require Import Core_Array_Rec_bundle_579704328. *)
+(* Export Core_Array_Rec_bundle_579704328. *)
 
 From Core Require Import Core_Ops.
 Export Core_Ops.
