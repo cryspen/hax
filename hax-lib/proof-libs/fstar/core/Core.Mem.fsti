@@ -6,3 +6,5 @@ val size_of (#[FStar.Tactics.exact (`eqtype_as_type unit)]t:Type): unit -> usize
 val size_of_val (#t:Type) : t -> usize
 
 val drop (#t: Type) (x:t) : Prims.unit
+
+val take (#t: Type) (x:t) : t & t

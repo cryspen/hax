@@ -81,7 +81,14 @@ let while_loop #acc_t
       while_loop_internal next
     else current in 
   while_loop_internal init
-  
+
+assume val while_loop_return #acc_t #ret_t (condition: acc_t -> bool) 
+  (inv: acc_t -> Type0)
+  (fuel: (a:acc_t -> nat))
+  (init: acc_t ) 
+  (f: (acc_t -> Core.Ops.Control_flow.t_ControlFlow 
+  (Core.Ops.Control_flow.t_ControlFlow ret_t (Prims.unit & acc_t)) acc_t))
+  : Core.Ops.Control_flow.t_ControlFlow ret_t acc_t
 
 /// Represents backend failures
 let failure #t (_error: string) (_ast: string): Pure t False (fun _ -> True) = ()

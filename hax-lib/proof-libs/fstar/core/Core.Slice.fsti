@@ -53,4 +53,5 @@ val impl__copy_within
 
 val impl__binary_search #t (s: t_Slice t) (v: t): Core.Result.t_Result usize usize
 
-val impl__get #t (s: t_Slice t) (i: usize): Core.Option.t_Option t
+val impl__get #t #index {|i1: t_Index (t_Slice t) index|} 
+  (s: t_Slice t) (i: index): Core.Option.t_Option i1.f_Output

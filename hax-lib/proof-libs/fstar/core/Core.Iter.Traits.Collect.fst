@@ -37,3 +37,27 @@ class t_Extend
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume val extend_slice (t: eqtype): t_Extend (t_Slice t) t
+
+class t_FromIterator (v_Self: Type0) (v_A: Type0) =
+  {
+    f_from_iter_pre: #v_T: Type0 ->
+      {| i1:
+          Core.Iter.Traits.Collect.t_IntoIterator
+          v_T |} ->
+      v_T -> Type0;
+    f_from_iter_post: #v_T: Type0 ->
+      {| i1:
+          Core.Iter.Traits.Collect.t_IntoIterator
+          v_T |} ->
+      v_T -> v_Self -> Type0;
+    f_from_iter: #v_T: Type0 ->
+      {| i1:
+          Core.Iter.Traits.Collect.t_IntoIterator
+          v_T |} ->
+      v_T -> v_Self
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume val from_iterator_vec #t: 
+  Core.Iter.Traits.Collect.t_FromIterator 
+  (Alloc.Vec.t_Vec t Alloc.Alloc.t_Global) t

@@ -53,6 +53,17 @@ class t_TryFrom self t = {
   f_try_from: t -> Core.Result.t_Result self f_Error;
 }
 
+instance integer_try_from (t:inttype) (t':inttype) : t_TryFrom (int_t t) (int_t t') = {
+  f_Error = Core.Num.Error.t_TryFromIntError;
+  f_try_from_pre = (fun _ -> true);
+  f_try_from_post = (fun _ _ -> true);
+  f_try_from = (fun (x: int_t t') ->
+    if range (v #t' x) t
+    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #t' #t x)
+    else Core.Result.Result_Err ()
+  )
+}
+
 instance integer_into
   (t:inttype) (t':inttype { minint t >= minint t' /\ maxint t <= maxint t' })
   : t_From (int_t t') (int_t t)
