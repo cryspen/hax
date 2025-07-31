@@ -123,12 +123,19 @@ pub mod global_id {
                     .clone()
                     .path
                     .into_iter()
-                    .map(|def| match def.clone().data {
-                        hax_frontend_exporter::DefPathItem::ValueNs(s)
-                        | hax_frontend_exporter::DefPathItem::MacroNs(s)
-                        | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
-                        hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
-                        other => unimplemented!("{other:?}"),
+                    .map(|def| {
+                        let data = match def.clone().data {
+                            hax_frontend_exporter::DefPathItem::ValueNs(s)
+                            | hax_frontend_exporter::DefPathItem::MacroNs(s)
+                            | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
+                            hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
+                            other => unimplemented!("{other:?}"),
+                        };
+                        if def.disambiguator != 0 {
+                            format!("{}_{}", def.disambiguator, data)
+                        } else {
+                            data
+                        }
                     })
                     .collect::<Vec<String>>()
                     .join("_"),
