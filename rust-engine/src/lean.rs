@@ -293,6 +293,29 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
             ExprKind::App {
                 head,
                 args,
+                generic_args: _,
+                bounds_impls: _,
+                trait_: _,
+            } if match &*head.kind {
+                ExprKind::GlobalId(name) => {
+                    *name == crate::names::rust_primitives::hax::machine_int::add()
+                }
+                _ => false,
+            } && args.len() == 2 =>
+            {
+                docs![
+                    allocator,
+                    "← ",
+                    args.get(0),
+                    allocator.reflow(" +? "),
+                    args.get(1),
+                ]
+                .parens()
+                .group()
+            }
+            ExprKind::App {
+                head,
+                args,
                 generic_args,
                 bounds_impls: _,
                 trait_: _,
