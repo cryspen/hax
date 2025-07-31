@@ -78,10 +78,23 @@ instance into_from_from a b {| t_From a b |}: t_Into b a = {
   f_into_post = (fun _ _ -> true);
   f_into = (fun x -> f_from x)
 }
-instance try_into_from_try_from a b {| i1: t_TryFrom a b |}: t_TryInto b a = {
+
+type t_Infallible = _:unit{False}
+
+instance try_from_from_from a b {| t_From a b |}: t_TryFrom a b = {
+  f_Error = t_Infallible;
+  f_try_from_pre = (fun _ -> true);
+  f_try_from_post = (fun _ _ -> true);
+  f_try_from = (fun x -> Core.Result.Result_Ok (f_from x))
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let try_into_from_try_from a b {| i1: t_TryFrom a b |}: t_TryInto b a = {
   f_Error = i1.f_Error;
   f_try_into = (fun x -> f_try_from x)
 }
+
+(* let type_class_resolution_hint a b {| i1: t_TryFrom a b |} = assert ((try_into_from_try_from a b i1) = i1.f_Error) *)
 
 instance from_id a: t_From a a = {
   f_from_pre = (fun _ -> true);
@@ -100,5 +113,3 @@ instance as_ref_id a: t_AsRef a a = {
   f_as_ref_post = (fun _ _ -> true);
   f_as_ref = (fun x -> x)
 }
-
-type t_Infallible = _:unit{False}

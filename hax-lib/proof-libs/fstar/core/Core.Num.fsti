@@ -117,7 +117,7 @@ val impl_usize__to_be_bytes: usize -> t_Array u8 (sz 8)
 val impl_u8__to_be_bytes: u8 -> t_Array u8 (sz 1)
 val impl_u16__from_be_bytes: t_Array u8 (sz 2) -> u16
 val impl_u8__from_be_bytes: t_Array u8 (sz 1) -> u8
-val impl_usize__from_be_bytes: t_Array usize (sz 8) -> usize
+val impl_usize__from_be_bytes: t_Array u8 (sz 8) -> usize
 
 let impl_i8__abs (a:i8{minint i8_inttype < v a}) : i8 = abs_int a
 let impl_i16__abs (a:i16{minint i16_inttype < v a}) : i16 = abs_int a
