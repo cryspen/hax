@@ -26,7 +26,10 @@ pub struct Lean;
 
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Item {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
-        self.kind.pretty(allocator)
+        self.kind
+            .pretty(allocator)
+            .append(allocator.hardline())
+            .append(allocator.hardline())
     }
 }
 
@@ -51,62 +54,77 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                 params,
                 safety: _,
             } => {
-                let generics = if generics.params.is_empty() {
-                    None
-                } else {
-                    Some(
+                match &*body.kind {
+                    ExprKind::Literal(l) => {
+                        // Literal consts, printed without monadic encoding
+                        // Todo: turn it into a proper refactor (see Hax issue #1542)
                         docs![
                             allocator,
+                            "def ",
+                            name,
+                            allocator.reflow(" : "),
+                            &body.ty,
+                            allocator.reflow(" :="),
                             allocator.line(),
-                            allocator
-                                .intersperse(&generics.params, allocator.softline())
-                                .braces()
-                                .group()
+                            l
                         ]
-                        .group(),
-                    )
-                };
-                let args = if params.is_empty() {
-                    allocator.nil()
-                } else {
-                    docs![
-                        allocator,
-                        allocator.line(),
-                        allocator.intersperse(params, allocator.softline()),
-                    ]
-                    .nest(INDENT)
-                    .group()
-                };
-                docs![
-                    allocator,
-                    "def ",
-                    name,
-                    generics,
-                    args,
-                    docs![
-                        allocator,
-                        allocator.line(),
-                        ": ",
-                        docs![allocator, "Result ", &body.ty].group()
-                    ]
-                    .group(),
-                    " := do",
-                    allocator.line(),
-                    docs![allocator, &*body.kind].group()
-                ]
-                .nest(INDENT)
-                .group()
-                .append(allocator.hardline())
-                .append(allocator.hardline())
+                        .group()
+                    }
+                    _ => {
+                        // Normal definition
+                        let generics = if generics.params.is_empty() {
+                            None
+                        } else {
+                            Some(
+                                docs![
+                                    allocator,
+                                    allocator.line(),
+                                    allocator
+                                        .intersperse(&generics.params, allocator.softline())
+                                        .braces()
+                                        .group()
+                                ]
+                                .group(),
+                            )
+                        };
+                        let args = if params.is_empty() {
+                            allocator.nil()
+                        } else {
+                            docs![
+                                allocator,
+                                allocator.line(),
+                                allocator.intersperse(params, allocator.softline()),
+                            ]
+                            .nest(INDENT)
+                            .group()
+                        };
+                        docs![
+                            allocator,
+                            "def ",
+                            name,
+                            generics,
+                            args,
+                            docs![
+                                allocator,
+                                allocator.line(),
+                                ": ",
+                                docs![allocator, "Result ", &body.ty].group()
+                            ]
+                            .group(),
+                            " := do",
+                            allocator.line(),
+                            docs![allocator, &*body.kind].group()
+                        ]
+                        .nest(INDENT)
+                        .group()
+                    }
+                }
             }
             ItemKind::TyAlias {
                 name,
                 generics: _,
                 ty,
-            } => docs![allocator, "abbrev ", name, allocator.reflow(" := "), ty]
-                .group()
-                .append(allocator.hardline())
-                .append(allocator.hardline()),
+            } => docs![allocator, "abbrev ", name, allocator.reflow(" := "), ty].group(),
             ItemKind::Type {
                 name: _,
                 generics: _,
@@ -422,7 +440,8 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 "let ",
                 lhs,
                 " ←",
-                docs![allocator, allocator.line(), "pure", allocator.line(), rhs]
+                allocator.softline(),
+                docs![allocator, "pure", allocator.line(), rhs]
                     .group()
                     .nest(INDENT),
                 ";",
