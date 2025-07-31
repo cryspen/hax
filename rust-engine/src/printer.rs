@@ -5,38 +5,11 @@ pub use allocator::Allocator;
 
 use crate::ast;
 use pretty::Pretty;
-pub mod dynable_visitors {
-    //! This modules provides a `dyn`able trait for mapper visitors.
-    use super::*;
-
-    /// Helper trait for [`ErasedAstVisitorMut`].
-    pub trait ErasedAstVisitorMutHelper<'a, T: ?Sized> {
-        /// Visit a value with the visitor.
-        fn visit(&mut self, _: &'a mut T);
-    }
-
-    macro_rules! derive_erased_ast_visitor_mut {
-        ($($ty:ty),*) => {
-            /// Erased version of the trait [`AstVisitorMut`].
-            pub trait ErasedAstVisitorMut<'a>:
-                $(ErasedAstVisitorMutHelper<'a, $ty> + )*
-            {}
-            $(impl<'a, V: ast::visitors::AstVisitorMut> ErasedAstVisitorMutHelper<'a, $ty> for V {
-                fn visit(&mut self, e: &'a mut $ty) {
-                    <Self as ast::visitors::AstVisitorMut>::visit(self, e)
-                }
-            })*
-        };
-    }
-
-    derive_erased_ast_visitor_mut!(ast::Expr, ast::Item, ast::Ty, ast::Pat);
-    impl<'a, V: ast::visitors::AstVisitorMut> ErasedAstVisitorMut<'a> for V {}
-}
 
 /// A resugaring is an erased mapper visitor with a name.
 /// A resugaring is a *local* transformation on the AST that produces exclusively `ast::resugared` nodes.
 /// Any involved or non-local transformation should be a phase, not a resugaring.
-pub trait Resugaring: for<'a> dynable_visitors::ErasedAstVisitorMut<'a> {
+pub trait Resugaring: for<'a> ast::visitors::dyn_compatible::AstVisitorMut<'a> {
     /// Get the name of the resugar.
     fn name(&self) -> String;
 }
