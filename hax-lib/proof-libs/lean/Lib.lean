@@ -1,13 +1,14 @@
 -- This library provides a monadic encoding over Hax primitives
-import Std.Tactic.Do
-import Std.Do.Triple
-import Std.Tactic.Do.Syntax
 import Std
+import Std.Do.Triple
+import Std.Tactic.Do
+import Std.Tactic.Do.Syntax
 
 open Std.Do
 open Std.Tactic
 
 -- Aeneas errors
+-- see https://github.com/AeneasVerif/aeneas/
 inductive Error where
    | assertionFailure: Error
    | integerOverflow: Error
