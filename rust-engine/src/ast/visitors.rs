@@ -301,6 +301,34 @@ mod faillible {
     pub trait AstVisitable {}
 }
 
+/// This modules provides `dyn` compatible trait for visitors.
+pub mod dyn_compatible {
+    use crate::ast;
+
+    /// Helper trait for [`AstVisitorMut`].
+    pub trait ErasedAstVisitorMutHelper<'a, T: ?Sized> {
+        /// Visit a value with the visitor.
+        fn visit(&mut self, _: &'a mut T);
+    }
+
+    macro_rules! derive_erased_ast_visitor_mut {
+        ($($ty:ty),*) => {
+            /// Erased version of the trait [`AstVisitorMut`].
+            pub trait AstVisitorMut<'a>:
+                $(ErasedAstVisitorMutHelper<'a, $ty> + )*
+            {}
+            $(impl<'a, V: ast::visitors::AstVisitorMut> ErasedAstVisitorMutHelper<'a, $ty> for V {
+                fn visit(&mut self, e: &'a mut $ty) {
+                    <Self as ast::visitors::AstVisitorMut>::visit(self, e)
+                }
+            })*
+        };
+    }
+
+    derive_erased_ast_visitor_mut!(ast::Expr, ast::Item, ast::Ty, ast::Pat);
+    impl<'a, V: ast::visitors::AstVisitorMut> AstVisitorMut<'a> for V {}
+}
+
 pub use faillible::{AstVisitable as AstVisitableFaillible, AstVisitableWrapper, VisitEarlyExit};
 pub use hax_rust_engine_macros::setup_error_handling_struct;
 pub use infaillible::{
