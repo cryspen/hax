@@ -96,6 +96,7 @@ instance Result.instWPMonad : WPMonad Result (.except Error .pure) where
     ext Q
     cases x <;> simp [PredTrans.bind, PredTrans.const, Bind.bind]
 
+@[default_instance]
 instance Result.instCoe {α} : Coe α (Result α) where
   coe x := pure x
 
@@ -233,9 +234,9 @@ def hax_machine_int_add {α} [HaxAdd α] (x y: α) : Result α := x +? y
 def hax_machine_int_sub {α} [HaxSub α] (x y: α) : Result α := x -? y
 @[simp, spec]
 def hax_machine_int_mul {α} [HaxMul α] (x y: α) : Result α := x *? y
-@[simp]
+@[simp, spec]
 def hax_machine_int_div {α} [HaxDiv α] (x y: α) : Result α := x /? y
-@[simp]
+@[simp, spec]
 def hax_machine_int_rem {α} [HaxRem α] (x y: α) : Result α := x %? y
 @[simp, spec]
 def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
@@ -245,17 +246,17 @@ def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := Result.pure (a
 def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 @[simp]
-def hax_machine_int_eq {α} (x y: α) [BEq α] : Bool := x == y
+def hax_machine_int_eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
 @[simp]
-def hax_machine_int_ne {α} (x y: α) [BEq α] : Bool := x != y
+def hax_machine_int_ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
 @[simp]
-def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Bool := x < y
+def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool := pure (x < y)
 @[simp]
-def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Bool := x ≤ y
+def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool := pure (x ≤ y)
 @[simp]
-def hax_machine_int_gt {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Bool := x ≥ y
+def hax_machine_int_gt {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool := pure (x ≥ y)
 @[simp]
-def hax_machine_int_ge {α} (x y: α) [(LT α)] [Decidable (x > y)] : Bool := x > y
+def hax_machine_int_ge {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool := pure (x > y)
 
 
 
