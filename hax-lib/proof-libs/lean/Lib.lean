@@ -598,13 +598,75 @@ def prop_constructors_from_bool (b :Bool) : Prop := (b = true)
 
 -- Hax
 
--- To extend with invariants
 def hax_folds_fold_range {α}
   (s e : Nat)
-  (_inv : α -> Nat -> Result Bool)
+  (inv : α -> Nat -> Result Bool)
   (init: α)
-  (f : α -> Nat -> Result α) : Result α :=
-  Array.foldlM f init (Array.range e) s e
+  (f : α -> Nat -> Result α) : Result α := do
+  if e ≤ s then pure init
+  else hax_folds_fold_range (s+1) e inv (← f init s) f
+
+theorem induction_decreasing {e} {P: Nat  → Prop}
+  (init: P e)
+  (rec: ∀ n, n < e → P (n+1) → P n) :
+  ∀ n, n ≤ e → P n
+:= by
+  intros n h
+  by_cases (n = 0)
+  . subst_vars
+    induction e <;> try grind
+  generalize h: (e - n) = d
+  have : n = e - d := by omega
+  have hlt : d < e := by omega
+  rw [this] ; clear h this
+  induction d with
+  | zero => simp ; grind
+  | succ d ih =>
+    apply rec <;> try omega
+    suffices e - (d + 1) + 1 = e - d by grind
+    omega
+
+def induction_decreasing_range {s e} {P: Nat → Nat → Prop} :
+  s ≤ e →
+  (init: P e e) →
+  (rec: ∀ (n : Nat), n < e → s ≤ n → P (n + 1) e → P n e) →
+  P s e
+:= by intros; apply induction_decreasing (P := fun n => (s ≤ n → P n e)) (e := e) <;> try grind
+
+@[spec]
+theorem hax_folds_fold_range_spec {α}
+  (s e : Nat)
+  (inv : α -> Nat -> Result Bool)
+  (init: α)
+  (f : α -> Nat -> Result α) :
+  ⦃ inv init s = pure true ∧
+    s ≤ e ∧
+    ∀ (acc:α) (i:Nat), s ≤ i → i < e →
+             ⦃ inv acc i = pure true ⦄
+             (f acc i)
+             ⦃ ⇓ res => inv res (i+1) = pure true ⦄
+  ⦄
+  (hax_folds_fold_range s e inv init f)
+  ⦃ ⇓ r => inv r e = pure true ⦄
+:= by
+  intro ⟨ h_inv_s, h_s_le_e , h_f ⟩
+  revert h_inv_s init
+  have :=  induction_decreasing_range (s := s) (e := e)
+    (P := fun s e =>
+      ∀ acc, inv acc s = pure true →
+      wp⟦hax_folds_fold_range s e inv acc f⟧ ⇓ r => inv r e = pure true)
+  apply this <;> clear this <;> try omega
+  . simp [hax_folds_fold_range]
+  . intros n _ _ ih acc h_acc
+    unfold hax_folds_fold_range
+    mvcgen <;> try grind
+    specialize h_f acc n (by omega) (by omega)
+    mspec h_f
+    intro h_r
+    apply (ih _ h_r)
+
+instance : Coe USize Nat where
+  coe x := x.toNat
 
 -- Arrays
 
@@ -629,45 +691,45 @@ def result_impl_unwrap (α: Type) (β:Type) (x: result_Result α β) : (Result �
   | .err _ => .fail .panic
 
 -- Vectors
+@[spec]
 def hax_repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
-  pure (Eq.mp (congrArg (Vector α) (@Array.size_replicate α n v))
-    (Array.replicate n v).toVector)
+  pure (Vector.replicate n v)
 
 -- Ranges
 
 inductive ops_range_Range (α: Type)  where
-| constr_ops_range_Range
-  {ops_range_Range_start: α}
-  {ops_range_Range_end: α} : ops_range_Range α
+| range (r_start r_end : α) : ops_range_Range α
 
+@[simp, spec]
 def constr_ops_range_Range {α} {ops_range_Range_start : α} {ops_range_Range_end : α} :=
-  ops_range_Range.constr_ops_range_Range
-    (ops_range_Range_start := ops_range_Range_start)
-    (ops_range_Range_end := ops_range_Range_end)
+  ops_range_Range.range ops_range_Range_start ops_range_Range_end
 
+@[simp, spec]
 def ops_index_Index_index {α β γ} (a: α) (i:β)
   [GetElem α β (Result γ) (fun _ _ => True) ] : (Result γ) := a[i]
 
+@[simp]
 instance :
   GetElem
     (Array α)
     (ops_range_Range usize)
     (Result (Array α)) (fun _ _ => True) where
   getElem xs i _ := match i with
-  | @ops_range_Range.constr_ops_range_Range _ s e =>
+  | ops_range_Range.range s e =>
     let size := xs.size;
     if (s > e || e > size || s > size) then
       Result.fail Error.arrayOutOfBounds
     else
       pure ( xs.extract s e )
 
+@[simp]
 instance {α n} [tn: ToNat β]:
   GetElem
     (Vector α n)
     (ops_range_Range β)
     (Result (Array α)) (fun _ _ => True) where
   getElem xs i _ := match i with
-  | @ops_range_Range.constr_ops_range_Range _ s e =>
+  | ops_range_Range.range s e =>
     let e := tn.toNat e;
     let s := tn.toNat s;
     let size := xs.size;
@@ -692,6 +754,53 @@ instance {α β : Type} {n : Nat} [tn: ToNat β]: GetElem (Vector α n) β (Resu
 @[simp]
 instance {α : Type} {n : Nat}: GetElem (Vector α n) Nat (Result α) (fun _ _ => True) where
   getElem xs i _ := Result.ofOption xs[i]? .arrayOutOfBounds
+
+@[spec]
+theorem ops_index_Index_index_usize_range_vector_spec
+  (α : Type) (v: Vector α n ) (s e: usize) :
+  ⦃ s ≤ e ∧ e < n ⦄
+  ( v[ ops_range_Range.range s e] : Result (Array α))
+  ⦃ ⇓ r => r = (Vector.extract v s e).toArray ⦄
+:= by
+  mvcgen
+  simp
+  split <;> try split at * <;> try grind
+  all_goals simp [Vector.size] at *  <;> try grind
+  intros
+  expose_names
+  cases h
+  . expose_names
+    cases h <;> try omega
+    . rw [← USize.lt_iff_toNat_lt] at * ; bv_decide
+    . sorry
+  . sorry
+
+@[spec]
+theorem ops_index_Index_index_usize_range_array_spec
+  (α : Type) (a: Array α) (s e: usize) :
+  ⦃ s ≤ e ∧ e ≤ a.size ⦄
+  (a[ (ops_range_Range.range s e)])
+  ⦃ ⇓ r => r = Array.extract a s e ⦄
+:= by
+  mvcgen [ops_index_Index_index,
+          USize.instGetElemArrayResult,
+          GetElemResult, Result.ofOption] <;> expose_names
+  simp [GetElem.getElem]
+  intros
+  split <;> try simp
+  . split at *
+    . grind
+    injections
+    subst_eqs
+    constructor
+  . split at * <;> injections
+    subst_eqs
+    expose_names
+    cases h_2 <;> try bv_decide
+    simp [USize.le_iff_toNat_le, USize.lt_iff_toNat_lt] at *
+    omega
+  . split at * <;> try grind
+
 
 -- Arrays
 section Arrays
