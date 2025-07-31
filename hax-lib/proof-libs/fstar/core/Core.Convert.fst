@@ -24,15 +24,6 @@ instance impl_6_refined (t: Type0) (len: usize): t_TryInto (s: t_Slice t {Core.S
   )
 }
 
-instance integer_try_into (t:inttype) (t':inttype) : t_TryInto (int_t t) (int_t t') = {
-  f_Error = Core.Num.Error.t_TryFromIntError;
-  f_try_into = (fun (x: int_t t) ->
-    if range (v #t x) t'
-    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #t #t' x)
-    else Core.Result.Result_Err ()
-  )
-}
-
 class t_Into self t = {
   f_into_pre: self -> bool;
   f_into_post: self -> t -> bool;
@@ -94,7 +85,14 @@ let try_into_from_try_from a b {| i1: t_TryFrom a b |}: t_TryInto b a = {
   f_try_into = (fun x -> f_try_from x)
 }
 
-(* let type_class_resolution_hint a b {| i1: t_TryFrom a b |} = assert ((try_into_from_try_from a b i1) = i1.f_Error) *)
+instance integer_try_into (t:inttype) (t':inttype) : t_TryInto (int_t t) (int_t t') = {
+  f_Error = Core.Num.Error.t_TryFromIntError;
+  f_try_into = (fun (x: int_t t) ->
+    if range (v #t x) t'
+    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #t #t' x)
+    else Core.Result.Result_Err ()
+  )
+}
 
 instance from_id a: t_From a a = {
   f_from_pre = (fun _ -> true);
