@@ -7,13 +7,16 @@
 use super::*;
 use derive_generic_visitor::*;
 
-mod wrappers {
+pub mod wrappers {
+    //! Visitors wrapper.
     use std::ops::Deref;
 
     use super::{infaillible::AstVisitable as AstVisitableInfaillible, *};
     use diagnostics::*;
 
-    /// A visitor wrapper that provides span information.
+    /// A visitor wrapper that tracks span while visiting the AST. Whenever a
+    /// AST node that carries a span is visited, using this wrapper, the ambiant
+    /// span is mutated and accisble via the `HasSpan` trait.
     pub struct SpanWrapper<'a, V>(pub &'a mut V);
 
     impl<'a, V: HasSpan> SpanWrapper<'a, V> {
@@ -70,6 +73,9 @@ mod wrappers {
     }
 
     /// A visitor wrapper that automatically collects errors in `ErrorNode`s.
+    /// Coupled with the trait `VisitorWithErrors`, this provides an `error`
+    /// method on a visitor that can be used to throw errors, which will be
+    /// automatically inlined in the AST on the closest error-capable node.
     pub struct ErrorWrapper<'a, V>(pub &'a mut V);
     #[derive(Default)]
     pub struct ErrorVault(Vec<Diagnostic>);
@@ -79,6 +85,8 @@ mod wrappers {
         }
     }
 
+    /// Helper struct that contains error-handling related state information.
+    /// This is used internally by [`setup_error_handling`].
     pub struct ErrorHandlingState(pub Span, pub ErrorVault);
     impl Default for ErrorHandlingState {
         fn default() -> Self {
@@ -86,7 +94,26 @@ mod wrappers {
         }
     }
 
+    #[macro_export]
+    /// Use this macro in an implementation of `AstVisitorMut` to get automatic spans and error handling.
+    macro_rules! setup_error_handling_impl {
+        () => {
+            fn visit<'a, T: $crate::ast::visitors::AstVisitableInfaillible>(
+                &'a mut self,
+                x: &mut T,
+            ) {
+                $crate::ast::visitors::wrappers::SpanWrapper(
+                    &mut $crate::ast::visitors::wrappers::ErrorWrapper(self),
+                )
+                .visit(x)
+            }
+        };
+    }
+    pub use setup_error_handling_impl;
+
+    /// Mark a visitor with a specific diagnostic context.
     pub trait VisitorWithContext {
+        /// Returns the diagnostic context for this visitor.
         fn context(&self) -> Context;
     }
 
@@ -100,6 +127,7 @@ mod wrappers {
         }
     }
 
+    /// A visitor that can throw errors.
     pub trait VisitorWithErrors: HasSpan + VisitorWithContext {
         fn error_vault(&mut self) -> &mut ErrorVault;
         fn error(&mut self, node: impl Into<Fragment>, kind: DiagnosticInfoKind) {
@@ -160,20 +188,6 @@ mod wrappers {
     }
 }
 
-#[macro_export]
-/// Use this macro in an implementation of `AstVisitorMut` to get automatic spans and error handling.
-macro_rules! setup_error_handling {
-    () => {
-        fn visit<'a, T: $crate::ast::visitors::infaillible::AstVisitable>(&'a mut self, x: &mut T) {
-            $crate::ast::visitors::wrappers::SpanWrapper(
-                &mut $crate::ast::visitors::wrappers::ErrorWrapper(self),
-            )
-            .visit(x)
-        }
-    };
-}
-
-pub use setup_error_handling;
 mod infaillible {
     use super::*;
     use diagnostics::*;
@@ -185,6 +199,25 @@ mod infaillible {
     #[visitable_group(
         visitor(drive_map(
             /// An mutable visitor that visits the AST for hax.
+            /// 
+            /// ```rust,ignore
+            /// use crate::ast::{diagnostics::*, visitors::*};
+            /// #[setup_error_handling_struct]
+            /// #[derive(Default)]
+            /// struct MyVisitor;
+            ///
+            /// impl VisitorWithContext for MyVisitor {
+            ///     fn context(&self) -> Context {
+            ///         Context::Import
+            ///     }
+            /// }
+            ///
+            /// impl AstVisitorMut for MyVisitor {
+            ///     setup_error_handling_impl!();
+            /// }
+            /// 
+            /// // MyVisitor::visit(my_ast_node)
+            /// ```
             &mut AstVisitorMut
         ), infaillible),
         visitor(drive(
@@ -219,6 +252,7 @@ mod infaillible {
             Span, Fragment, GlobalId, Diagnostic,
         ),
     )]
+    /// Helper trait to drive visitor.
     pub trait AstVisitable {}
 }
 #[allow(missing_docs)]
@@ -263,18 +297,23 @@ mod faillible {
             Span, Fragment, GlobalId, Diagnostic,
         ),
     )]
+    /// Helper trait to drive visitor.
     pub trait AstVisitable {}
 }
 
-pub use faillible::{AstVisitableWrapper, VisitEarlyExit};
-pub use infaillible::{AstVisitableInfaillibleWrapper, AstVisitor, AstVisitorMut};
-pub use wrappers::{VisitorWithContext, VisitorWithErrors};
+pub use faillible::{AstVisitable as AstVisitableFaillible, AstVisitableWrapper, VisitEarlyExit};
+pub use hax_rust_engine_macros::setup_error_handling_struct;
+pub use infaillible::{
+    AstVisitable as AstVisitableInfaillible, AstVisitableInfaillibleWrapper, AstVisitor,
+    AstVisitorMut,
+};
+pub use wrappers::{setup_error_handling_impl, VisitorWithContext, VisitorWithErrors};
 
 #[test]
 fn double_literals_in_ast() {
     use crate::ast::diagnostics::*;
 
-    #[hax_rust_engine_macros::setup_derive_handling]
+    #[setup_error_handling_struct]
     #[derive(Default)]
     struct DoubleU8Literals;
 
@@ -285,7 +324,7 @@ fn double_literals_in_ast() {
     }
 
     impl AstVisitorMut for DoubleU8Literals {
-        setup_error_handling!();
+        setup_error_handling_impl!();
 
         fn visit_literal(&mut self, x: &mut Literal) {
             let Literal::Int { value, .. } = x else {

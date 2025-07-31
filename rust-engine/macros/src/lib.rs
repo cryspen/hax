@@ -72,7 +72,7 @@ pub fn derive_group_for_ast_base(_attr: TokenStream, item: TokenStream) -> Token
 }
 
 #[proc_macro_attribute]
-pub fn setup_derive_handling(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut item: syn::ItemStruct = parse_macro_input!(item);
     if let fields @ syn::Fields::Unit = &mut item.fields {
         let span = Group::new(proc_macro2::Delimiter::Brace, fields.to_token_stream()).delim_span();
