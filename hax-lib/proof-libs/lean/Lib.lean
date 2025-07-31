@@ -481,6 +481,21 @@ theorem HaxMul_spec_bv (x y: i32) :
   (x *? y : Result i32)
   ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
 
+instance instHaxRem : HaxRem i32 where
+  rem x y :=
+    if y = 0 then .fail .divisionByZero
+    else if (BitVec.sdivOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x % y)
+
+@[spec]
+theorem HaxRem_spec_bv (x y : i32) :
+  ⦃ y != 0 ∧ ¬ BitVec.sdivOverflow x.toBitVec y.toBitVec⦄
+  ( x %? y)
+  ⦃ ⇓ r => r = x % y ⦄ := by
+  mvcgen [instHaxRem] <;> simp <;> try grind
+  have ⟨ _ , h ⟩ := h
+  apply h; assumption
+
 end Int32
 
 
