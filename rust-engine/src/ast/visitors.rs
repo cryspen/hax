@@ -10,7 +10,7 @@ use derive_generic_visitor::*;
 mod wrappers {
     use std::ops::Deref;
 
-    use super::*;
+    use super::{infaillible::AstVisitable as AstVisitableInfaillible, *};
     use diagnostics::*;
 
     /// A visitor wrapper that provides span information.
@@ -164,7 +164,7 @@ mod wrappers {
 /// Use this macro in an implementation of `AstVisitorMut` to get automatic spans and error handling.
 macro_rules! setup_error_handling {
     () => {
-        fn visit<'a, T: $crate::ast::visitors::AstVisitableInfaillible>(&'a mut self, x: &mut T) {
+        fn visit<'a, T: $crate::ast::visitors::infaillible::AstVisitable>(&'a mut self, x: &mut T) {
             $crate::ast::visitors::wrappers::SpanWrapper(
                 &mut $crate::ast::visitors::wrappers::ErrorWrapper(self),
             )
@@ -174,8 +174,6 @@ macro_rules! setup_error_handling {
 }
 
 pub use setup_error_handling;
-
-#[allow(missing_docs)]
 mod infaillible {
     use super::*;
     use diagnostics::*;
@@ -223,7 +221,6 @@ mod infaillible {
     )]
     pub trait AstVisitable {}
 }
-
 #[allow(missing_docs)]
 mod faillible {
     use super::*;
@@ -269,16 +266,13 @@ mod faillible {
     pub trait AstVisitable {}
 }
 
-pub use faillible::{AstVisitable as AstVisitableFaillible, AstVisitableWrapper, VisitEarlyExit};
-pub use infaillible::{
-    AstVisitable as AstVisitableInfaillible, AstVisitableInfaillibleWrapper, AstVisitor,
-    AstVisitorMut,
-};
+pub use faillible::{AstVisitableWrapper, VisitEarlyExit};
+pub use infaillible::{AstVisitableInfaillibleWrapper, AstVisitor, AstVisitorMut};
+pub use wrappers::{VisitorWithContext, VisitorWithErrors};
 
 #[test]
 fn double_literals_in_ast() {
     use crate::ast::diagnostics::*;
-    use wrappers::*;
 
     #[hax_rust_engine_macros::setup_derive_handling]
     #[derive(Default)]

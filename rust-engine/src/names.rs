@@ -124,7 +124,6 @@ pub use root::*;
 pub mod codegen {
     use itertools::*;
     use std::iter;
-    use std::ops::DerefMut;
 
     use crate::ast::Item;
     use crate::{
