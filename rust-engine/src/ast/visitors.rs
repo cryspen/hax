@@ -298,13 +298,20 @@ fn double_literals_in_ast() {
                 return;
             };
             let Ok(n): Result<u8, _> = str::parse(value) else {
-                return self.error(x.clone(), DiagnosticInfoKind::Custom("Bad literal".into()));
+                return self.error(
+                    x.clone(),
+                    DiagnosticInfoKind::AssertionFailure {
+                        details: "Bad literal".into(),
+                    },
+                );
             };
             let n = (n as u16) * 2;
             if n >= u8::MAX as u16 {
                 return self.error(
                     x.clone(),
-                    DiagnosticInfoKind::Custom("Literal too big".into()),
+                    DiagnosticInfoKind::AssertionFailure {
+                        details: "Literal too big".into(),
+                    },
                 );
             }
             *value = Symbol::new(&format!("{}", n));
@@ -357,7 +364,9 @@ fn double_literals_in_ast() {
             DiagnosticInfo {
                 span: lit_expr_200.span(),
                 context: Context::Import,
-                kind: DiagnosticInfoKind::Custom("Literal too big".into()),
+                kind: DiagnosticInfoKind::AssertionFailure {
+                    details: "Literal too big".into(),
+                },
             },
         )],
     });
