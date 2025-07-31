@@ -119,29 +119,40 @@ pub fn setup_derive_handling(_attr: TokenStream, item: TokenStream) -> TokenStre
         )
     };
 
+    let krate = {
+        use proc_macro_crate::{FoundCrate, crate_name};
+        match crate_name("hax-rust-engine").unwrap() {
+            FoundCrate::Itself => quote!(crate),
+            FoundCrate::Name(name) => {
+                let ident = Ident::new(&name, Span::call_site());
+                quote!( #ident )
+            }
+        }
+    };
+
     fields.push(Field {
         attrs: vec![],
         vis: syn::Visibility::Inherited,
         mutability: syn::FieldMutability::None,
         ident: extra_field_ident,
         colon_token: named.then_some(Token![:](Span::call_site())),
-        ty: parse_quote! {crate::ast::visitors::wrappers::ErrorHandlingState},
+        ty: parse_quote! {#krate::ast::visitors::wrappers::ErrorHandlingState},
     });
 
     let struct_name = &item.ident;
     let generics = &item.generics;
     quote! {
         #item
-        impl #generics crate::ast::HasSpan for #struct_name #generics {
-            fn span(&self) -> crate::ast::span::Span {
+        impl #generics #krate::ast::HasSpan for #struct_name #generics {
+            fn span(&self) -> #krate::ast::span::Span {
                 self.#extra_field_ident_ts.0.clone()
             }
-            fn span_mut(&mut self) -> &mut crate::ast::span::Span {
+            fn span_mut(&mut self) -> &mut #krate::ast::span::Span {
                 &mut self.#extra_field_ident_ts.0
             }
         }
-        impl #generics crate::ast::visitors::wrappers::VisitorWithErrors for #struct_name #generics {
-            fn error_vault(&mut self) -> &mut crate::ast::visitors::wrappers::ErrorVault {
+        impl #generics #krate::ast::visitors::wrappers::VisitorWithErrors for #struct_name #generics {
+            fn error_vault(&mut self) -> &mut #krate::ast::visitors::wrappers::ErrorVault {
                 &mut self.#extra_field_ident_ts.1
             }
         }
