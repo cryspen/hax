@@ -199,7 +199,7 @@ mod infaillible {
     #[visitable_group(
         visitor(drive_map(
             /// An mutable visitor that visits the AST for hax.
-            /// 
+            ///
             /// ```rust,ignore
             /// use crate::ast::{diagnostics::*, visitors::*};
             /// #[setup_error_handling_struct]
@@ -215,7 +215,7 @@ mod infaillible {
             /// impl AstVisitorMut for MyVisitor {
             ///     setup_error_handling_impl!();
             /// }
-            /// 
+            ///
             /// // MyVisitor::visit(my_ast_node)
             /// ```
             &mut AstVisitorMut

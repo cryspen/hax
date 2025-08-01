@@ -147,7 +147,11 @@ pub mod global_id {
     impl PartialEq<DefId> for GlobalId {
         fn eq(&self, other: &DefId) -> bool {
             if let Self::Concrete(concrete) = self {
-                &concrete.def_id.def_id == other
+                let mut lhs = concrete.def_id.def_id.clone();
+                let mut rhs = other.clone();
+                lhs.parent = None;
+                rhs.parent = None;
+                lhs == rhs
             } else {
                 false
             }
