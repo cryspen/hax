@@ -13,13 +13,29 @@
 
 use hax_rust_engine_macros::*;
 
+use super::identifiers::GlobalId;
+use super::*;
+
 /// Resugared variants for items. This represent extra printing-only items, see [`super::ItemKind::Resugared`].
 #[derive_group_for_ast]
 pub enum ResugaredItemKind {}
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredExprKind {}
+pub enum ResugaredExprKind {
+    BinOp {
+        op: GlobalId,
+        lhs: Expr,
+        rhs: Expr,
+        /// The generic arguments applied to the function.
+        generic_args: Vec<GenericValue>,
+        /// If the function requires generic bounds to be called, `bounds_impls`
+        /// is a vector of impl. expressions for those bounds.
+        bounds_impls: Vec<ImplExpr>,
+        /// If we apply an associated function, contains the impl. expr used.
+        trait_: Option<(ImplExpr, Vec<GenericValue>)>,
+    },
+}
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
 #[derive_group_for_ast]

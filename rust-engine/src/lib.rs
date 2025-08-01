@@ -15,3 +15,4 @@ pub mod names;
 pub mod ocaml_engine;
 pub mod printer;
 pub mod symbol;
+pub mod resugarings;

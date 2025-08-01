@@ -2,10 +2,9 @@ use hax_rust_engine::{
     ast::{span::Span, Item},
     lean::Lean,
     ocaml_engine::{ExtendedToEngine, Response},
-    printer::Allocator,
+    printer::{Allocator, self, Print},
 };
 use hax_types::{cli_options::Backend, engine_api::File};
-
 use pretty::{DocAllocator, DocBuilder};
 
 fn krate_name(items: &Vec<Item>) -> String {
@@ -16,26 +15,9 @@ fn krate_name(items: &Vec<Item>) -> String {
 fn lean_backend(items: Vec<Item>) {
     let krate = krate_name(&items);
 
-    // For now, the main function always calls the Lean backend
-    let allocator = Allocator::new(Lean);
-
-    let header = allocator
-        .intersperse(
-            vec![
-            "-- Experimental lean backend for Hax",
-            "-- Comment the following line to not import the prelude (requires the Lib.lean file) : ",
-            "import Lib",
-        ],
-            allocator.hardline(),
-        )
-        .append(allocator.hardline())
-        .append(allocator.hardline());
-
-    let item_docs: DocBuilder<_, Span> = header.append(allocator.concat(items.iter()));
-
     hax_rust_engine::hax_io::write(&hax_types::engine_api::protocol::FromEngine::File(File {
         path: krate + ".lean",
-        contents: item_docs.pretty(80).to_string(),
+        contents: <Lean as printer::Print<_>>::print(Lean, printer::File (items)).unwrap().0,
         sourcemap: None,
     }));
 }

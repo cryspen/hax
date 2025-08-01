@@ -6,6 +6,8 @@
 
 use crate::ast::span::Span;
 use crate::printer::Allocator;
+use crate::printer::Printer;
+use crate::resugarings::BinOp;
 
 use pretty::{docs, DocAllocator, DocBuilder, Pretty};
 
@@ -21,15 +23,45 @@ macro_rules! print_todo {
 
 const INDENT: isize = 2;
 
+mod binops {
+    pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
+    pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
+}
+
 /// Placeholder structure for lean printer
 pub struct Lean;
 
+impl Printer for Lean {
+    fn resugaring_phases() -> Vec<Box<dyn crate::printer::Resugaring>> {
+        vec![Box::new(BinOp::new(&[
+            binops::add(),
+            binops::sub(),
+            binops::mul(),
+            binops::rem(),
+            binops::div(),
+            binops::shr(),
+            binops::logical_op_and(),
+            binops::logical_op_or(),
+        ]))]
+    }
+
+    const HEADER: &str = "
+-- Experimental lean backend for Hax
+-- Comment the following line to not import the prelude (requires the Lib.lean file) :
+import Lib
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option linter.unusedVariables false
+";
+}
+
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Item {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
-        self.kind
-            .pretty(allocator)
-            .append(allocator.hardline())
-            .append(allocator.hardline())
+        self.kind.pretty(allocator)
     }
 }
 
@@ -311,29 +343,6 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
             ExprKind::App {
                 head,
                 args,
-                generic_args: _,
-                bounds_impls: _,
-                trait_: _,
-            } if match &*head.kind {
-                ExprKind::GlobalId(name) => {
-                    *name == crate::names::rust_primitives::hax::machine_int::add()
-                }
-                _ => false,
-            } && args.len() == 2 =>
-            {
-                docs![
-                    allocator,
-                    "← ",
-                    args.get(0),
-                    allocator.reflow(" +? "),
-                    args.get(1),
-                ]
-                .parens()
-                .group()
-            }
-            ExprKind::App {
-                head,
-                args,
                 generic_args,
                 bounds_impls: _,
                 trait_: _,
@@ -441,9 +450,12 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 lhs,
                 " ←",
                 allocator.softline(),
-                docs![allocator, "pure", allocator.line(), rhs]
-                    .group()
-                    .nest(INDENT),
+                docs![
+                    allocator, // "pure", allocator.line(),
+                    rhs
+                ]
+                .group()
+                .nest(INDENT),
                 ";",
                 allocator.line(),
                 body,
@@ -493,7 +505,46 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 safety_mode: _,
             } => print_todo!(allocator),
             ExprKind::Quote { contents: _ } => print_todo!(allocator),
-            ExprKind::Resugared(_resugared_expr_kind) => print_todo!(allocator),
+            ExprKind::Resugared(resugared_expr_kind) => match resugared_expr_kind {
+                resugared::ResugaredExprKind::BinOp {
+                    op,
+                    lhs,
+                    rhs,
+                    generic_args,
+                    bounds_impls,
+                    trait_,
+                } => {
+                    let symbol = if op == &binops::add() {
+                        "+?"
+                    } else if op == &binops::sub() {
+                        "-?"
+                    } else if op == &binops::mul() {
+                        "*?"
+                    } else if op == &binops::div() {
+                        "/?"
+                    } else if op == &binops::rem() {
+                        "%?"
+                    } else if op == &binops::shr() {
+                        ">>>?"
+                    } else if op == &binops::logical_op_and() {
+                        "&&"
+                    } else if op == &binops::logical_op_or() {
+                        "||"
+                    } else {
+                        unreachable!()
+                    };
+                    docs![
+                        allocator,
+                        lhs,
+                        allocator.softline(),
+                        symbol,
+                        allocator.softline(),
+                        rhs
+                    ]
+                    .group()
+                    .parens()
+                }
+            },
             ExprKind::Error(_diagnostic) => print_todo!(allocator),
         }
     }
