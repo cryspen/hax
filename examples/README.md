@@ -73,4 +73,4 @@ For the Lean extracted code, we prove panic freedom, except for
 `chacha20_update` and the `hacspec_...` helpers.
 
 This edit and the proofs of panic freedom can be found in
-`lean_chacha20/proofs/lean/extraction/lean_chacha20_manual_edit.lean`. The
+`lean_chacha20/proofs/lean/extraction/lean_chacha20_manual_edit.lean`.
