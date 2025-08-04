@@ -12,11 +12,11 @@
 
 <details>
   <summary><b>Requirements</b></summary>
-  
+
   First, make sure to have hax installed in PATH. Then:
-  
+
   * With Nix, `nix develop .#examples` setups a shell automatically for you.
-     
+
   * Without Nix:
     1. install F* `v2025.03.25`<!---FSTAR_VERSION--> manually (see https://github.com/FStarLang/FStar/blob/master/INSTALL.md);
        1. make sure to have `fstar.exe` in PATH;
@@ -39,3 +39,38 @@ Note the generated modules live in the
 
 For those examples, we generated Coq modules without typechecking them.
 The `<EXAMPLE>/proofs/coq/extraction` folders contain the generated Coq modules.
+
+## Lean
+
+Two examples are fine-tuned to showcase the Lean backend: `lean_barrett` and
+`lean_chacha20`. For both, the lean extraction can be obtained by running `cargo
+hax into lean`
+
+### Barrett
+
+The *Barrett reduction* allows to compute remainders without using divisions. It
+showcases arithmetic operations, conversions between integer types (namely `i32`
+and `i64`). The Lean backend provides *panicking* arithmetic operations `+?`,
+`-?`, etc, that panic on overflows.
+
+For the Lean extracted code, we prove panic freedom with regards to those
+arithmetic operations, and then we prove that the result is indeed the modulus
+(as long as the absolute value of the input is lower than the bound
+`BARRETT_R`). The proof is made via bit-blasting (using Lean's `bv_decide`). To
+limit the computation time, the bound `BARRETT_R` was lowered compared to the
+normal example in the `barrett` folder.
+
+The proofs are backported in the rust code (in `lean_barrett/src/lib.rs`): doing
+`cargo hax into lean` extracts a valid lean file that contains the proof.
+
+### Chacha20
+
+The Chacha20 example extracts to Lean, but requires a manual edit to be
+wellformed. It showcases array, vector and slices accesses, as well as loops
+(with loop invariants).
+
+For the Lean extracted code, we prove panic freedom, except for
+`chacha20_update` and the `hacspec_...` helpers.
+
+This edit and the proofs of panic freedom can be found in
+`lean_chacha20/proofs/lean/extraction/lean_chacha20_manual_edit.lean`. The
