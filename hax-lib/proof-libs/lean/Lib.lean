@@ -542,6 +542,10 @@ theorem HaxAdd_spec_bv (x y: i32) :
   (x +? y)
   ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
 
+theorem HaxAdd_spec_bv_rw (x y: i32) :
+  ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) →
+  x +? y = Result.ok (x + y) := by simp [instHaxAdd ] <;> grind
+
 instance instHaxSub : HaxSub Int32 where
   sub x y :=
     if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
@@ -552,6 +556,10 @@ theorem HaxSub_spec_bv (x y: i32) :
   ⦃ ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) ⦄
   (x -? y : Result i32)
   ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
+
+theorem HaxSub_spec_bv_rw (x y: i32) :
+  ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) →
+  x -? y = Result.ok (x - y) := by simp [instHaxSub ] <;> grind
 
 instance instHaxMul : HaxMul Int32 where
   mul x y :=
@@ -578,6 +586,13 @@ theorem HaxRem_spec_bv (x y : i32) :
   mvcgen [instHaxRem] <;> simp <;> try grind
   have ⟨ _ , h ⟩ := h
   apply h; assumption
+
+@[simp]
+theorem HaxRem_spec_bv_rw (x y : i32) :
+  y != 0 →
+  ¬ BitVec.sdivOverflow x.toBitVec y.toBitVec →
+  x %? y = Result.ok (x % y)
+:= by simp [instHaxRem] <;> try grind
 
 end Int32
 
