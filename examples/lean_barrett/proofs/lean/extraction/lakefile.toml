@@ -1,10 +1,10 @@
-name = "barrett"
+name = "lean_barrett"
 version = "0.1.0"
-defaultTargets = ["barrett"]
+defaultTargets = ["lean_barrett"]
 
 [[lean_lib]]
-name = "Lib"
+name = "lean_barrett"
 
-[[lean_exe]]
-name = "barrett"
-root = "barrett"
+[[require]]
+name = "Hax"
+path = "../../../../../proof-libs/lean"

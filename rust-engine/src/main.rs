@@ -25,7 +25,7 @@ fn lean_backend(items: Vec<Item>) {
             "
 -- Experimental lean backend for Hax
 -- Lib.lean can be found in hax/proof-libs/lean :
-import Lib
+import Hax
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
