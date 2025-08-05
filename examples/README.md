@@ -63,6 +63,14 @@ normal example in the `barrett` folder.
 The proofs are backported in the rust code (in `lean_barrett/src/lib.rs`): doing
 `cargo hax into lean` extracts a valid lean file that contains the proof.
 
+The proof can be run by doing:
+
+```sh
+cd lean_barrett/proofs/lean/extraction
+cargo hax into lean
+lake build
+```
+
 ### Chacha20
 
 The Chacha20 example extracts to Lean, but requires a manual edit to be
