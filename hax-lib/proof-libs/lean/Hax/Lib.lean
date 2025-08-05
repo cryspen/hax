@@ -12,6 +12,7 @@ import Std
 import Std.Do.Triple
 import Std.Tactic.Do
 import Std.Tactic.Do.Syntax
+import Hax.BitVec
 
 open Std.Do
 open Std.Tactic
@@ -335,13 +336,13 @@ namespace USize
 /-- Partial addition on usize -/
 instance instHaxAdd : HaxAdd USize where
   add x y :=
-    if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    if (BitVec.uaddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x + y)
 
 /-- Bitvec-based specification for rust addition on usize -/
 @[spec]
 theorem HaxAdd_spec_bv (x y: usize) :
-  ⦃ ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) ⦄
+  ⦃ ¬ (BitVec.uaddOverflow x.toBitVec y.toBitVec) ⦄
   (x +? y)
   ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
 
@@ -349,13 +350,13 @@ theorem HaxAdd_spec_bv (x y: usize) :
 /-- Partial substraction on usize -/
 instance instHaxSub : HaxSub USize where
   sub x y :=
-    if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    if (BitVec.usubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x - y)
 
 /-- Bitvec-based specification for rust substraction on usize -/
 @[spec]
 theorem HaxSub_spec_bv (x y: usize) :
-  ⦃ ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) ⦄
+  ⦃ ¬ (BitVec.usubOverflow x.toBitVec y.toBitVec) ⦄
   (x -? y)
   ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
 
@@ -363,15 +364,27 @@ theorem HaxSub_spec_bv (x y: usize) :
 /-- Partial multiplication on usize -/
 instance instHaxMul : HaxMul USize where
   mul x y :=
-    if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x * y)
 
 /-- Bitvec-based specification for rust multiplication on usize -/
 @[spec]
 theorem HaxMul_spec_bv (x y: usize) :
-  ⦃ ¬ (BitVec.smulOverflow x.toBitVec y.toBitVec) ⦄
+  ⦃ ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) ⦄
   (x *? y)
   ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+/-- Nat-based specification for rust multiplication on usize -/
+@[spec]
+theorem HaxMul_spec_nat (x y: usize) :
+  ⦃ ⌜ x.toNat * y.toNat < USize.size ⌝ ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by
+  mvcgen [instHaxMul] ; simp
+  apply eq_false_of_ne_true
+  apply (BitVec.toNat_mul_iff_not_umulOverflow _).mp
+  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
+  . apply System.Platform.numBits_pos
 
 
 /-- Partial right shift on usize -/
@@ -387,40 +400,35 @@ theorem HaxShiftRight_spec_bv (x y: usize) :
   ( x >>>? y)
   ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
 
-
-/-- Partial division on usize -/
+/-- Partial division on usize. As it is unsigned, it only checks that the
+divider is non-zero. -/
 instance instHaxDiv : HaxDiv usize where
   div x y :=
     if y = 0 then .fail .divisionByZero
-    else if (BitVec.sdivOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x / y)
 
 /-- Bitvec-based specification for rust division on usize -/
 @[spec]
 theorem HaxDiv_spec_bv (x y : usize) :
-  ⦃ y != 0 ∧ ¬ BitVec.sdivOverflow x.toBitVec y.toBitVec⦄
+  ⦃ ⌜ y != 0 ⌝ ⦄
   ( x /? y)
-  ⦃ ⇓ r => r = x / y ⦄ := by
-  mvcgen [instHaxDiv] <;> simp <;> try grind
-  have ⟨ _ , h ⟩ := h
-  apply h; assumption
+  ⦃ ⇓ r => r = x / y ⦄
+:= by mvcgen [instHaxDiv] <;> simp <;> try grind
 
-/-- Partial remainder on usize -/
+/-- Partial remainder on usize. As it is unsigned, it only checks that the
+divider is non zero -/
 instance instHaxRem : HaxRem usize where
   rem x y :=
     if y = 0 then .fail .divisionByZero
-    else if (BitVec.sdivOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x % y)
 
 /-- Bitvec-based specification for rust remainder on usize  -/
 @[spec]
 theorem HaxRem_spec_bv (x y : usize) :
-  ⦃ y != 0 ∧ ¬ BitVec.sdivOverflow x.toBitVec y.toBitVec⦄
+  ⦃ ⌜ y != 0 ⌝ ⦄
   ( x %? y)
-  ⦃ ⇓ r => r = x % y ⦄ := by
-  mvcgen [instHaxRem] <;> simp <;> try grind
-  have ⟨ _ , h ⟩ := h
-  apply h; assumption
+  ⦃ ⇓ r => r = x % y ⦄
+:= by mvcgen [instHaxRem] <;> simp <;> try grind
 
 end USize
 
