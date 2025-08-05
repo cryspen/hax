@@ -1,6 +1,6 @@
 -- Experimental lean backend for Hax
 -- Lib.lean can be found in hax/proof-libs/lean :
-import Lib
+import Hax
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -547,6 +547,10 @@ theorem chacha20_encrypt_block_spec (st0 : (Vector u32 16)) (ctr : u32) (plain :
 := by
   mvcgen [chacha20_encrypt_block]
 
+@[simp]
+theorem System.Platform.numBits_ne_zero : ¬ System.Platform.numBits = 0 :=
+by cases (System.Platform.numBits_eq) <;> grind
+
 @[spec]
 theorem chacha20_encrypt_last_spec (st0 : (Vector u32 16)) (ctr : u32) (plain : Array u8) :
   ⦃ plain.size <= 64 ⦄
@@ -554,22 +558,35 @@ theorem chacha20_encrypt_last_spec (st0 : (Vector u32 16)) (ctr : u32) (plain : 
   ⦃ ⇓ _ => True ⦄
 := by
   mvcgen [chacha20_encrypt_last, slice_impl_len]
-  simp [USize.le_iff_toNat_le, USize.toNat_ofNat', USize.toNat_ofNat'] at *
+  <;> (try apply SPred.pure_intro)
+  <;> (try simp)
+  simp [Vector.size, USize.le_iff_toNat_le] at *
   cases System.Platform.numBits_eq with
   | inl h
   | inr h => simp [h, Nat.mod_eq_of_lt] <;> try omega
 
+example : ¬ (0:USize) = (1:USize) := by
+  simp [USize.eq_iff_toBitVec_eq] at *
 
 -- set_option pp.raw true
 @[spec]
 theorem chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u8)) :
-  ⦃ ⌜ True ⌝ ⦄
+  ⦃ m.size ≤ USize.size ⦄
   (chacha20_update st0 m)
   ⦃ ⇓ _ => True ⦄
 := by
-  mvcgen [chacha20_update, vec_impl_new, slice_impl_len]
-  . sorry -- no overflow
-  . sorry -- no overflow
+  open USize.SpecNat in
+  mvcgen [chacha20_update, vec_impl_new, slice_impl_len] <;> subst_vars
+  . -- No division by zero
+    simp [USize.eq_iff_toBitVec_eq, BitVec.toNat_eq]
+    cases System.Platform.numBits_eq with
+    | inl h
+    | inr h => simp [h]
+  . -- No remainder by zero
+    simp [USize.eq_iff_toBitVec_eq, BitVec.toNat_eq]
+    cases System.Platform.numBits_eq with
+    | inl h
+    | inr h => simp [h]
   . -- loop
     apply SPred.and_intro ; simp
     apply SPred.and_intro ; simp
@@ -578,33 +595,100 @@ theorem chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u8)) :
     apply SPred.imp_intro
     apply SPred.imp_intro
     apply SPred.imp_intro
-    mvcgen [convert_TryInto_try_into, result_impl_unwrap, vec__1_impl_len] <;> simp [OfNat.ofNat] at *
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
+    open USize.SpecNat in
+    mvcgen [convert_TryInto_try_into,
+            result_impl_unwrap,
+            vec__1_impl_len]
+    <;> subst_vars
+    <;> try apply SPred.pure_intro
+    . -- No overflow on multiplication
+      simp [USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 h_2 ⊢
+        omega
+    . -- No overflow on multiplication
+      simp [USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 h_2 ⊢
+        omega
+    . -- No overflow on addition
+      simp [USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 h_2 ⊢
+        omega
+    . -- No overflow on addition
+      simp [USize.le_iff_toNat_le, USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 h_2 ⊢
+        omega
+    . -- No overflow on addition
+      simp [USize.le_iff_toNat_le, USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 h_2 ⊢
+        omega
+    . -- No overflow on addition
+      simp [USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 h_2 ⊢
+        omega
+    . simp
+      split at * <;> injections
+      apply_assumption
+      simp [Array.size_extract, USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h => expose_names; rw [h] at h_1 h_2 h_3 ⊢ ; omega
   . mvcgen [vec__1_impl_len, assume, hax_machine_int_eq, hax_machine_int_ne]
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
-    . -- no overflow
-      sorry
-    . -- size
-      sorry
+    <;> (try apply SPred.pure_intro)
+    <;> subst_vars
+    . simp [USize.toNat_div, USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h => expose_names; rw [h] at h_1 ⊢ ; omega
+    . simp [USize.toNat_div, USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h => expose_names; rw [h] at h_1 ⊢ ; omega
+    . simp [USize.le_iff_toNat_le, USize.size] at *
+      cases System.Platform.numBits_eq with
+      | inl h
+      | inr h =>
+        expose_names
+        rw [h] at h_1 ⊢
+        omega
+    . apply USize.le_refl
+    . simp [USize.size] at *
+      cases System.Platform.numBits_eq with
+        | inl h
+        | inr h =>
+          expose_names
+          rw [h] at h_1 ⊢
+          omega
 
 theorem chacha20_spec
   (m : (Array u8)) (key : (Vector u8 32)) (iv : (Vector u8 12)) (ctr : u32) :
+  m.size ≤ USize.size →
   ⦃⌜True⌝⦄
   (chacha20 m key iv ctr)
   ⦃ ⇓ _ => True ⦄
 := by
+  intros
   mvcgen [chacha20]

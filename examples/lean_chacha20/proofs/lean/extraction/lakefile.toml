@@ -1,16 +1,10 @@
 name = "lean_chacha20"
 version = "0.1.0"
 defaultTargets = ["lean_chacha20"]
-lintDriver = "batteries/runLinter"
-
-[[require]]
-name = "batteries"
-scope = "leanprover-community"
-rev = "main"
 
 [[lean_lib]]
-name = "Lib"
-
-[[lean_exe]]
 name = "lean_chacha20"
-root = "lean_chacha20"
+
+[[require]]
+name = "Hax"
+path = "../../../../../proof-libs/lean"
