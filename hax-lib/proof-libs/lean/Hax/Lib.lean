@@ -339,27 +339,11 @@ instance instHaxAdd : HaxAdd USize where
     if (BitVec.uaddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x + y)
 
-/-- Bitvec-based specification for rust addition on usize -/
-@[spec]
-theorem HaxAdd_spec_bv (x y: usize) :
-  ⦃ ¬ (BitVec.uaddOverflow x.toBitVec y.toBitVec) ⦄
-  (x +? y)
-  ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
-
-
 /-- Partial substraction on usize -/
 instance instHaxSub : HaxSub USize where
   sub x y :=
     if (BitVec.usubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x - y)
-
-/-- Bitvec-based specification for rust substraction on usize -/
-@[spec]
-theorem HaxSub_spec_bv (x y: usize) :
-  ⦃ ¬ (BitVec.usubOverflow x.toBitVec y.toBitVec) ⦄
-  (x -? y)
-  ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
-
 
 /-- Partial multiplication on usize -/
 instance instHaxMul : HaxMul USize where
@@ -367,38 +351,11 @@ instance instHaxMul : HaxMul USize where
     if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x * y)
 
-/-- Bitvec-based specification for rust multiplication on usize -/
-@[spec]
-theorem HaxMul_spec_bv (x y: usize) :
-  ⦃ ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) ⦄
-  (x *? y)
-  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
-
-/-- Nat-based specification for rust multiplication on usize -/
-@[spec]
-theorem HaxMul_spec_nat (x y: usize) :
-  ⦃ ⌜ x.toNat * y.toNat < USize.size ⌝ ⦄
-  (x *? y)
-  ⦃ ⇓ r => r = x * y ⦄ := by
-  mvcgen [instHaxMul] ; simp
-  apply eq_false_of_ne_true
-  apply (BitVec.toNat_mul_iff_not_umulOverflow _).mp
-  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
-  . apply System.Platform.numBits_pos
-
-
 /-- Partial right shift on usize -/
 instance instHaxShiftRight : HaxShiftRight USize where
   shiftRight x y :=
     if (y ≤ USize.size) then pure (x >>> y)
     else .fail .integerOverflow
-
-/-- Bitvec-based specification for rust right-shift on usize -/
-@[spec]
-theorem HaxShiftRight_spec_bv (x y: usize) :
-  ⦃ y ≤ USize.size ⦄
-  ( x >>>? y)
-  ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
 
 /-- Partial division on usize. As it is unsigned, it only checks that the
 divider is non-zero. -/
@@ -407,14 +364,6 @@ instance instHaxDiv : HaxDiv usize where
     if y = 0 then .fail .divisionByZero
     else pure (x / y)
 
-/-- Bitvec-based specification for rust division on usize -/
-@[spec]
-theorem HaxDiv_spec_bv (x y : usize) :
-  ⦃ ⌜ y != 0 ⌝ ⦄
-  ( x /? y)
-  ⦃ ⇓ r => r = x / y ⦄
-:= by mvcgen [instHaxDiv] <;> simp <;> try grind
-
 /-- Partial remainder on usize. As it is unsigned, it only checks that the
 divider is non zero -/
 instance instHaxRem : HaxRem usize where
@@ -422,13 +371,92 @@ instance instHaxRem : HaxRem usize where
     if y = 0 then .fail .divisionByZero
     else pure (x % y)
 
+/- # Bitvec specifications -/
+
+/-- Bitvec-based specification for rust addition on usize -/
+theorem HaxAdd_spec_bv (x y: usize) :
+  ¬ (BitVec.uaddOverflow x.toBitVec y.toBitVec) →
+  ⦃ ⌜ True ⌝ ⦄
+  (x +? y)
+  ⦃ ⇓ r => r = x + y ⦄ := by intros; mvcgen [instHaxAdd]
+
+/-- Bitvec-based specification for rust multiplication on usize -/
+theorem HaxMul_spec_bv (x y: usize) :
+  ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) →
+  ⦃ ⌜ True ⌝ ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by intros; mvcgen [instHaxMul]
+
+/-- Bitvec-based specification for rust substraction on usize -/
+@[spec]
+theorem HaxSub_spec_bv (x y: usize) :
+  ¬ (BitVec.usubOverflow x.toBitVec y.toBitVec) →
+  ⦃ ⌜ True ⌝ ⦄
+  (x -? y)
+  ⦃ ⇓ r => r = x - y ⦄ := by intros; mvcgen [instHaxSub]
+
+/-- Bitvec-based specification for rust right-shift on usize -/
+@[spec]
+theorem HaxShiftRight_spec_bv (x y: usize) :
+  y ≤ USize.size →
+  ⦃ ⌜ True ⌝ ⦄
+  ( x >>>? y)
+  ⦃ ⇓ r => r = x >>> y ⦄ := by intros; mvcgen [instHaxShiftRight]
+
+/-- Bitvec-based specification for rust division on usize -/
+@[spec]
+theorem HaxDiv_spec_bv (x y : usize) :
+  y != 0 →
+  ⦃ ⌜ True ⌝ ⦄
+  ( x /? y)
+  ⦃ ⇓ r => r = x / y ⦄
+:= by intros; mvcgen [instHaxDiv] <;> simp <;> try grind
+
 /-- Bitvec-based specification for rust remainder on usize  -/
 @[spec]
 theorem HaxRem_spec_bv (x y : usize) :
-  ⦃ ⌜ y != 0 ⌝ ⦄
+  y != 0 →
+  ⦃ ⌜ True ⌝ ⦄
   ( x %? y)
   ⦃ ⇓ r => r = x % y ⦄
-:= by mvcgen [instHaxRem] <;> simp <;> try grind
+:= by intros; mvcgen [instHaxRem] <;> simp <;> try grind
+
+namespace SpecBV
+attribute [scoped spec] HaxAdd_spec_bv HaxSub_spec_bv HaxSub_spec_bv HaxSub_spec_bv HaxSub_spec_bv HaxSub_spec_bv
+end SpecBV
+
+/- # Nat specifications -/
+
+/-- Nat-based specification for rust addition on usize -/
+theorem HaxAdd_spec_nat (x y: usize) :
+  x.toNat + y.toNat < size →
+  ⦃ ⌜ True ⌝ ⦄
+  (x +? y)
+  ⦃ ⇓ r => r = x + y ⦄ := by
+  intros
+  mvcgen [HaxAdd_spec_bv] ; simp
+  apply eq_false_of_ne_true
+  apply (BitVec.toNat_add_iff_not_uaddOverflow _).mp
+  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
+  . apply System.Platform.numBits_pos
+
+
+/-- Nat-based specification for rust multiplication on usize -/
+theorem HaxMul_spec_nat (x y: usize) :
+  x.toNat * y.toNat < size →
+  ⦃ ⌜ True ⌝ ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by
+  intros
+  mvcgen [HaxMul_spec_bv] ; simp
+  apply eq_false_of_ne_true
+  apply (BitVec.toNat_mul_iff_not_umulOverflow _).mp
+  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
+  . apply System.Platform.numBits_pos
+
+namespace SpecNat
+attribute [scoped spec] HaxAdd_spec_nat HaxMul_spec_nat
+end SpecNat
 
 end USize
 
@@ -976,60 +1004,58 @@ instance Nat.instGetElemResultVector {α n} : GetElemResult (Vector α n) Nat α
 
 @[spec]
 theorem Nat.getElemArrayResult_spec
-  (α : Type) (a: Array α) (i: Nat):
-  ⦃ i < a.size ⦄
+  (α : Type) (a: Array α) (i: Nat) (h: i < a.size) :
+  ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => a[i]? = some r ⦄
-:= by
-  mvcgen [Result.ofOption, Nat.instGetElemResultArray]
-  simp
+  ⦃ ⇓ r => r = a[i] ⦄ :=
+  by mvcgen [Result.ofOption, Nat.instGetElemResultArray]
 
 @[spec]
 theorem Nat.getElemVectorResult_spec
-  (α : Type) (n:Nat) (a: Vector α n) (i: Nat):
-  ⦃ i < n ⦄
+  (α : Type) (n:Nat) (a: Vector α n) (i: Nat) (h : i < n) :
+  ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => a[i]? = some r ⦄
-:= by
-  mvcgen [Nat.instGetElemResultVector]
-  simp
+  ⦃ ⇓ r => r = a[i] ⦄ :=
+  by mvcgen [Nat.instGetElemResultVector]
 
 @[spec]
 theorem USize.getElemArrayResult_spec
-  (α : Type) (a: Array α) (i: usize):
-  ⦃ i.toNat < a.size ⦄
+  (α : Type) (a: Array α) (i: usize) (h: i.toNat < a.size) :
+  ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => a[i.toNat]? = some r ⦄
-:= by
-  mvcgen [USize.instGetElemResultArray]
-  simp
+  ⦃ ⇓ r => r = a[i.toNat]⦄ :=
+  by mvcgen [USize.instGetElemResultArray]
 
 @[spec]
 theorem USize.getElemVectorResult_spec
-  (α : Type) (n:Nat) (a: Vector α n) (i: usize):
-  ⦃ i.toNat < n ⦄
+  (α : Type) (n:Nat) (a: Vector α n) (i: usize) (h: i.toNat < n) :
+  ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => a[i.toNat]? = some r ⦄
-:= by
-  mvcgen [USize.instGetElemResultVector]
-  simp
+  ⦃ ⇓ r => r = a[i.toNat]⦄ :=
+  by mvcgen [USize.instGetElemResultVector]
 
 @[spec]
 theorem Range.getElemArrayUSize_spec
   (α : Type) (a: Array α) (s e: usize) :
-  ⦃ s ≤ e ∧ e ≤ a.size ⦄
+  s ≤ e →
+  e ≤ a.size →
+  ⦃ ⌜ True ⌝ ⦄
   ( a[(ops_range_Range.range s e)]_? )
   ⦃ ⇓ r => r = Array.extract a s e ⦄
 := by
+  intros
   mvcgen [ops_index_Index_index, Range.instGetElemResultArrayUSize] <;> grind
 
 @[spec]
 theorem Range.getElemVectorUSize_spec
   (α : Type) (n: Nat) (a: Vector α n) (s e: usize) :
-  ⦃ s ≤ e ∧ e ≤ n ⦄
+  s ≤ e →
+  e ≤ a.size →
+  ⦃ ⌜ True ⌝ ⦄
   ( a[(ops_range_Range.range s e)]_? )
   ⦃ ⇓ r => r = (Vector.extract a s e).toArray ⦄
 := by
+  intros
   mvcgen [ops_index_Index_index, Range.instGetElemResultVectorUSize] <;> grind
 
 
