@@ -74,10 +74,8 @@ make
 
 The Chacha20 example extracts to Lean, but requires a manual edit to be
 wellformed. It showcases array, vector and slices accesses, as well as loops
-(with loop invariants).
-
-For the Lean extracted code, we prove panic freedom, except for the
-`hacspec_...` helpers.
+(with loop invariants). For the Lean extracted code, we prove panic freedom,
+which involves arithmetic on size of arrays.
 
 This edit and the proofs of panic freedom can be found in
 `lean_chacha20/proofs/lean/extraction/lean_chacha20_manual_edit.lean`.
