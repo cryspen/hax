@@ -278,12 +278,13 @@ class HaxRem α where
   meaning of this notation is type-dependent. It panics if b is zero -/
   rem : α → α → Result α
 
-@[inherit_doc] infixl:65 " +? " => HaxAdd.add
-@[inherit_doc] infixl:65 " -? " => HaxSub.sub
-@[inherit_doc] infixl:70 " *? " => HaxMul.mul
+@[inherit_doc] infixl:65 " +? "   => HaxAdd.add
+@[inherit_doc] infixl:65 " -? "   => HaxSub.sub
+@[inherit_doc] infixl:70 " *? "   => HaxMul.mul
 @[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
 @[inherit_doc] infixl:70 " %? "   => HaxRem.rem
 @[inherit_doc] infixl:70 " /? "   => HaxDiv.div
+infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 
 /- Until notations are not introduced by the Lean backend, explicit hax-names
   are also provided -/
@@ -299,27 +300,27 @@ def hax_machine_int_div {α} [HaxDiv α] (x y: α) : Result α := x /? y
 def hax_machine_int_rem {α} [HaxRem α] (x y: α) : Result α := x %? y
 @[simp, spec]
 def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
-@[simp]
-def hax_machine_int_bitxor {α} [Xor α] (a b: α) : Result α := pure (a ^^^ b)
+@[simp, spec]
+def hax_machine_int_bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
 @[simp]
 def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
-@[simp]
+@[simp, spec]
 def hax_machine_int_eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
-@[simp]
+@[simp, spec]
 def hax_machine_int_ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
-@[simp]
+@[simp, spec]
 def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool :=
   pure (x < y)
-@[simp]
+@[simp, spec]
 def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool :=
   pure (x ≤ y)
-@[simp]
-def hax_machine_int_gt {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
-  pure (x ≥ y)
-@[simp]
-def hax_machine_int_ge {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
+@[simp, spec]
+def hax_machine_int_gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
   pure (x > y)
+@[simp, spec]
+def hax_machine_int_ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
+  pure (x ≥ y)
 
 
 /-
