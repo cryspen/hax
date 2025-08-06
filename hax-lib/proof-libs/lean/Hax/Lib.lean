@@ -422,9 +422,6 @@ theorem HaxRem_spec_bv (x y : usize) :
   ⦃ ⇓ r => r = x % y ⦄
 := by intros; mvcgen [instHaxRem] <;> simp <;> try grind
 
-namespace SpecBV
-attribute [scoped spec] HaxAdd_spec_bv HaxSub_spec_bv HaxSub_spec_bv HaxSub_spec_bv HaxSub_spec_bv HaxSub_spec_bv
-end SpecBV
 
 /- # Nat specifications -/
 
@@ -455,11 +452,23 @@ theorem HaxMul_spec_nat (x y: usize) :
   . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
   . apply System.Platform.numBits_pos
 
+end USize
+
 namespace SpecNat
-attribute [scoped spec] HaxAdd_spec_nat HaxMul_spec_nat
+attribute [scoped spec]
+  USize.HaxAdd_spec_nat
+  USize.HaxMul_spec_nat
 end SpecNat
 
-end USize
+namespace SpecBV
+attribute [scoped spec]
+  USize.HaxAdd_spec_bv
+  USize.HaxSub_spec_bv
+  USize.HaxMul_spec_bv
+  USize.HaxDiv_spec_bv
+  USize.HaxRem_spec_bv
+  USize.HaxShiftRight_spec_bv
+end SpecBV
 
 
 namespace ISize
