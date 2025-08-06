@@ -768,6 +768,16 @@ def result_impl_unwrap (α: Type) (β:Type) (x: result_Result α β) : (Result �
   | .ok v => pure v
   | .err _ => .fail .panic
 
+theorem result_impl_unwrap_spec {α β} (x: result_Result α β) v :
+  x = result_Result.ok v →
+  ⦃ True ⦄
+  (result_impl_unwrap α β x)
+  ⦃ ⇓ r => r = v ⦄ := by
+  intros
+  mvcgen [result_impl_unwrap]
+  simp ; injections
+
+
 end RustResult
 
 
@@ -840,32 +850,35 @@ theorem hax_folds_fold_range_spec {α}
   (inv : α -> Nat -> Result Bool)
   (init: α)
   (body : α -> Nat -> Result α) :
-  ⦃ inv init s = pure true ∧
-    s ≤ e ∧
-    ∀ (acc:α) (i:Nat), s ≤ i → i < e →
-             ⦃ inv acc i = pure true ⦄
-             (body acc i)
-             ⦃ ⇓ res => inv res (i+1) = pure true ⦄
-  ⦄
+  inv init s = pure true →
+  s ≤ e →
+  (∀ (acc:α) (i:Nat),
+    s ≤ i →
+    i < e →
+    inv acc i = pure true →
+    ⦃ True ⦄
+    (body acc i)
+    ⦃ ⇓ res => inv res (i+1) = pure true ⦄) →
+  ⦃ True ⦄
   (hax_folds_fold_range s e inv init body)
   ⦃ ⇓ r => inv r e = pure true ⦄
 := by
-  intro ⟨ h_inv_s, h_s_le_e , h_body ⟩
+  intro h_inv_s h_s_le_e h_body
   revert h_inv_s init
-  have :=  induction_decreasing_range (s := s) (e := e)
-    (P := fun s e =>
-      ∀ acc, inv acc s = pure true →
-      wp⟦hax_folds_fold_range s e inv acc body⟧ ⇓ r => inv r e = pure true)
-  apply this <;> clear this <;> try omega
-  . simp [hax_folds_fold_range]
+  apply induction_decreasing_range (s := s) (e := e) <;> try grind
+  . intros
+    unfold hax_folds_fold_range
+    mvcgen
+    omega
   . intros n _ _ ih acc h_acc
     unfold hax_folds_fold_range
-    mvcgen <;> try grind
+    mvcgen <;> (try grind) <;> try omega
     specialize h_body acc n (by omega) (by omega)
     mspec h_body
-    intro h_r
-    apply (ih _ h_r)
-
+    . assumption
+    . intro h_r
+      apply (ih _ h_r)
+      grind
 
 end Fold
 
@@ -889,6 +902,15 @@ def hax_monomorphized_update_at_update_at_usize {α n}
     .fail (.arrayOutOfBounds)
 
 @[spec]
+theorem hax_monomorphized_update_at_update_at_usize_spec
+  {α n} (a: Vector α n) (i:Nat) (v:α) (h: i < a.size) :
+  ⦃ True ⦄
+  (hax_monomorphized_update_at_update_at_usize a i v)
+  ⦃ ⇓ r => r = Vector.set a i v ⦄ := by
+  mvcgen [hax_monomorphized_update_at_update_at_usize]
+
+
+@[spec]
 def hax_update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector α n) :=
   if i < n then
     pure ( Vector.setIfInBounds m i v)
@@ -899,6 +921,8 @@ def hax_update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector �
 def hax_repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
   pure (Vector.replicate n v)
 
+
+/- Warning : this function has been specialized, it should be turned into a typeclass -/
 def convert_TryInto_try_into {α n} (a: Array α) :
    Result (result_Result (Vector α n) array_TryFromSliceError) :=
    pure (
@@ -907,6 +931,17 @@ def convert_TryInto_try_into {α n} (a: Array α) :
      else
        .err .array_TryFromSliceError
      )
+
+theorem convert_TryInto_try_success_spec {α n} (a: Array α) :
+  (h: a.size = n) →
+  ⦃ True ⦄
+  ( convert_TryInto_try_into a)
+  ⦃ ⇓ r => r = .ok (Eq.mp (congrArg _ h) a.toVector) ⦄ := by
+  intro h
+  mvcgen [result_impl_unwrap_spec, convert_TryInto_try_into]
+  apply SPred.pure_intro
+  split <;> grind
+
 
 end Array
 
@@ -1086,6 +1121,7 @@ Rust slices are represented as Lean Arrays (variable size)
 def unsize {α n} (a: Vector α n) : Result (Array α) :=
   pure (a.toArray)
 
+@[simp, spec]
 def slice_impl_len α (a: Array α) : Result usize := pure a.size
 
 /-
