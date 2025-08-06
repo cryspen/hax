@@ -79,3 +79,11 @@ which involves arithmetic on size of arrays.
 
 This edit and the proofs of panic freedom can be found in
 `lean_chacha20/proofs/lean/extraction/lean_chacha20_manual_edit.lean`.
+
+The extraction (in `lean_chacha20.lean`) and rerun of the proofs (in
+`lean_chacha20_manual_edit.lean`) can be done by doing (requires `lake`):
+
+```sh
+cd lean_chacha20/
+make
+```
