@@ -38,20 +38,19 @@ import Lib
 
 def FORTYTWO  : usize := 42
 
-def returns42 (_ : hax_Tuple0) : usize := FORTYTWO
+def returns42 (_ : tuple0) : usize := FORTYTWO
 
 def add_two_numbers (x : usize) (y : usize) : usize := (hax_machine_int_add x y)
 
 def letBinding (x : usize) (y : usize) : usize :=
-  let useless := (.constr_hax_Tuple0 : hax_Tuple0);
+  let useless := (.constr_Tuple0 : tuple0);
   let result1 := (hax_machine_int_add x y);
   let result2 := (hax_machine_int_add result1 2);
   (hax_machine_int_add result2 1)
 
-def closure (_ : hax_Tuple0) : i32 :=
+def closure (_ : tuple0) : i32 :=
   let x := 41;
   let f := (fun y => (hax_machine_int_add y x));
-  (ops_function_Fn_call f
-    (.constr_hax_Tuple1 {hax_Tuple1_Tuple0 := 1} : (hax_Tuple1 i32)))
+  (ops_function_Fn_call f (.constr_Tuple1 {Tuple1.0 := 1} : (tuple1 i32)))
 
 abbrev UsizeAlias := usize'''
