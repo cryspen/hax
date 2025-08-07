@@ -105,6 +105,10 @@ end
 let module_name (ns : string list) : string =
   String.concat ~sep:"." (List.map ~f:(map_first_letter String.uppercase) ns)
 
+let hax_core_models_extraction =
+  Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
+  |> [%equal: string option] (Some "on")
+
 module Make
     (Attrs : Attrs.WITH_ITEMS)
     (Ctx : sig
@@ -403,7 +407,7 @@ struct
 
   and pimpl_expr span (ie : impl_expr) =
     let some = Option.some in
-    let hax_unstable_impl_exprs = false in
+    let hax_unstable_impl_exprs = hax_core_models_extraction in
     match ie.kind with
     | Concrete tr -> c_trait_goal span tr |> some
     | LocalBound { id } ->
@@ -413,6 +417,10 @@ struct
         F.term @@ F.AST.Var (F.lid_of_id @@ plocal_ident local_ident) |> some
     | ImplApp { impl; _ } when not hax_unstable_impl_exprs ->
         pimpl_expr span impl
+    | Parent { impl; ident }
+      when hax_unstable_impl_exprs && [%matches? Self _] impl.kind ->
+        let trait = "_super_" ^ ident.name in
+        F.term_of_lid [ trait ] |> some
     | Parent { impl; ident } when hax_unstable_impl_exprs ->
         let* impl = pimpl_expr span impl in
         let trait = "_super_" ^ ident.name in
@@ -1905,10 +1913,6 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
   in
   ( string_for (function `Impl s -> Some (replace s) | _ -> None),
     string_for (function `Intf s -> Some (replace s) | _ -> None) )
-
-let hax_core_models_extraction =
-  Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
-  |> [%equal: string option] (Some "on")
 
 let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   let opts =
