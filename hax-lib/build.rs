@@ -43,6 +43,7 @@ pub mod {backend} {{
             code("fstar", FSTAR_EXTRA),
             code("proverif", ""),
             code("coq", ""),
+            code("lean", ""),
         ]
         .join("\n"),
     )

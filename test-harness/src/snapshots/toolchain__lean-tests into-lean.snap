@@ -28,30 +28,42 @@ diagnostics = []
 
 [stdout.files]
 "lean_tests.lean" = '''
+
 -- Experimental lean backend for Hax
--- Comment the following line to not import the prelude (requires the Lib.lean file) : 
+-- Lib.lean can be found in hax/proof-libs/lean :
 import Lib
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
 
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
 
+def FORTYTWO : usize := 42
+def returns42 (_ : hax_Tuple0) : Result usize := do FORTYTWO
 
--- unimplemented yet
+def add_two_numbers (x : usize) (y : usize) : Result usize := do (← x +? y)
 
-def FORTYTWO  : usize := 42
+def letBinding (x : usize) (y : usize) : Result usize := do
+  let (useless : hax_Tuple0) ← pure (constr_hax_Tuple0);
+  let (result1 : usize) ← pure (← x +? y);
+  let (result2 : usize) ← pure (← result1 +? 2); (← result2 +? 1)
 
-def returns42 (_ : hax_Tuple0) : usize := FORTYTWO
+def closure (_ : hax_Tuple0) : Result i32 := do
+  let (x : i32) ← pure 41;
+  let (f1 : (i32 -> Result i32)) ← pure (fun (y : i32)=> do (← y +? x));
+  let (f2 : (i32 -> i32 -> Result i32)) ← pure
+    (fun (y : i32) (z : i32)=> do (← (← y +? x) +? z));
+  (← (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1))) +?
+  (← ops_function_Fn_call
+  f2
+    (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
 
-def add_two_numbers (x : usize) (y : usize) : usize := (hax_machine_int_add x y)
+@[spec]
+def test_before_verbatime_single_line : u8 := 42
 
-def letBinding (x : usize) (y : usize) : usize :=
-  let useless := (.constr_hax_Tuple0 : hax_Tuple0);
-  let result1 := (hax_machine_int_add x y);
-  let result2 := (hax_machine_int_add result1 2);
-  (hax_machine_int_add result2 1)
+def multiline : Unit := ()
 
-def closure (_ : hax_Tuple0) : i32 :=
-  let x := 41;
-  let f := (fun y => (hax_machine_int_add y x));
-  (ops_function_Fn_call f
-    (.constr_hax_Tuple1 {hax_Tuple1_Tuple0 := 1} : (hax_Tuple1 i32)))
-
-abbrev UsizeAlias := usize'''
+def test_before_verbatim_multi_line : u8 := 32'''

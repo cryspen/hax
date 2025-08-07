@@ -36,15 +36,19 @@ identity_proc_macro_attribute!(
     refinement_type,
     fstar_replace,
     coq_replace,
+    lean_replace,
     proverif_replace,
     fstar_replace_body,
     coq_replace_body,
+    lean_replace_body,
     proverif_replace_body,
     fstar_before,
     coq_before,
+    lean_before,
     proverif_before,
     fstar_after,
     coq_after,
+    lean_after,
     proverif_after,
     fstar_smt_pat,
     fstar_postprocess_with,
@@ -56,6 +60,10 @@ pub fn fstar_expr(_payload: TokenStream) -> TokenStream {
 }
 #[proc_macro]
 pub fn coq_expr(_payload: TokenStream) -> TokenStream {
+    quote! { () }.into()
+}
+#[proc_macro]
+pub fn lean_expr(_payload: TokenStream) -> TokenStream {
     quote! { () }.into()
 }
 #[proc_macro]
@@ -84,6 +92,10 @@ pub fn coq_unsafe_expr(_payload: TokenStream) -> TokenStream {
     unsafe_expr()
 }
 #[proc_macro]
+pub fn lean_unsafe_expr(_payload: TokenStream) -> TokenStream {
+    unsafe_expr()
+}
+#[proc_macro]
 pub fn proverif_unsafe_expr(_payload: TokenStream) -> TokenStream {
     unsafe_expr()
 }
@@ -94,6 +106,10 @@ pub fn fstar_prop_expr(_payload: TokenStream) -> TokenStream {
 }
 #[proc_macro]
 pub fn coq_prop_expr(_payload: TokenStream) -> TokenStream {
+    quote! {::hax_lib::Prop::from_bool(true)}.into()
+}
+#[proc_macro]
+pub fn lean_prop_expr(_payload: TokenStream) -> TokenStream {
     quote! {::hax_lib::Prop::from_bool(true)}.into()
 }
 #[proc_macro]
