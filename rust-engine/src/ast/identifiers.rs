@@ -102,6 +102,11 @@ pub mod global_id {
             }
         }
 
+        /// Returns true if the GlobalId is actually empty (reduced to "_")
+        pub fn is_empty(&self) -> bool {
+            self.to_debug_string() == "_".to_string()
+        }
+
         /// Raw printing of identifier separated by underscore. Used for testing
         pub fn to_debug_string(&self) -> String {
             match self {
@@ -111,12 +116,20 @@ pub mod global_id {
                     .clone()
                     .path
                     .into_iter()
-                    .map(|def| match def.clone().data {
-                        hax_frontend_exporter::DefPathItem::ValueNs(s)
-                        | hax_frontend_exporter::DefPathItem::MacroNs(s)
-                        | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
-                        hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
-                        other => unimplemented!("{other:?}"),
+                    .map(|def| {
+                        let data = match def.clone().data {
+                            hax_frontend_exporter::DefPathItem::ValueNs(s)
+                            | hax_frontend_exporter::DefPathItem::MacroNs(s)
+                            | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
+                            hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
+                            other => unimplemented!("{other:?}"),
+                        };
+                        if def.disambiguator != 0 && !data.is_empty() && data != "_" {
+                            // Don't print disambiguator of empty data
+                            format!("_{}_{}", def.disambiguator, data)
+                        } else {
+                            data
+                        }
                     })
                     .collect::<Vec<String>>()
                     .join("_"),

@@ -10,6 +10,7 @@ impl ToTokens for HaxQuantifiers {
         quote! {
             use ::hax_lib::fstar::prop as fstar;
             use ::hax_lib::coq::prop as coq;
+            use ::hax_lib::lean::prop as lean;
             use ::hax_lib::proverif::prop as proverif;
         }
         .to_tokens(tokens)
