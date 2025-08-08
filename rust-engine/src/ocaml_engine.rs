@@ -80,12 +80,13 @@ impl Query {
             };
         }
 
-        let mut engine_subprocess = Command::new("hax-engine")
-            .arg("driver_rust_engine")
-            .stdin(std::process::Stdio::piped())
-            .stdout(std::process::Stdio::piped())
-            .spawn()
-            .unwrap();
+        let mut engine_subprocess =
+            Command::new(std::env::var("HAX_ENGINE_BINARY").unwrap_or("hax-engine".into()))
+                .arg("driver_rust_engine")
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::piped())
+                .spawn()
+                .unwrap();
 
         let mut stdin = std::io::BufWriter::new(
             engine_subprocess

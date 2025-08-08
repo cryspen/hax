@@ -1,12 +1,12 @@
 use crate::prelude::*;
 
 #[cfg(feature = "rustc")]
-mod resolution;
+pub mod resolution;
 #[cfg(feature = "rustc")]
 mod utils;
 #[cfg(feature = "rustc")]
 pub use utils::{
-    ToPolyTraitRef, erase_and_norm, implied_predicates, is_sized_related_trait,
+    Predicates, ToPolyTraitRef, erase_and_norm, erase_free_regions, implied_predicates, normalize,
     predicates_defined_on, required_predicates, self_predicate,
 };
 
@@ -16,6 +16,9 @@ pub use resolution::PredicateSearcher;
 use rustc_middle::ty;
 #[cfg(feature = "rustc")]
 use rustc_span::def_id::DefId as RDefId;
+
+#[cfg(feature = "rustc")]
+pub use utils::is_sized_related_trait;
 
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
@@ -52,19 +55,12 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ImplExprPathChunk> for resolution:
             resolution::PathChunk::AssocItem {
                 item,
                 generic_args,
-                impl_exprs,
                 predicate,
                 index,
                 ..
             } => ImplExprPathChunk::AssocItem {
-                item: ItemRef::new(
-                    s,
-                    item.def_id.sinto(s),
-                    generic_args.sinto(s),
-                    impl_exprs.sinto(s),
-                    None,
-                ),
-                assoc_item: item.sinto(s),
+                item: translate_item_ref(s, item.def_id, generic_args),
+                assoc_item: AssocItem::sfrom(s, item),
                 predicate: predicate.sinto(s),
                 predicate_id: <_ as SInto<_, Clause>>::sinto(predicate, s).id,
                 index: index.sinto(s),
@@ -88,14 +84,8 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ImplExprPathChunk> for resolution:
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
 pub enum ImplExprAtom {
     /// A concrete `impl Trait for Type {}` item.
-    #[custom_arm(FROM_TYPE::Concrete { def_id, generics, impl_exprs } => TO_TYPE::Concrete(
-        ItemRef::new(
-            s,
-            def_id.sinto(s),
-            generics.sinto(s),
-            impl_exprs.sinto(s),
-            None,
-        )
+    #[custom_arm(FROM_TYPE::Concrete { def_id, generics } => TO_TYPE::Concrete(
+        translate_item_ref(s, *def_id, generics),
     ),)]
     Concrete(ItemRef),
     /// A context-bound clause like `where T: Trait`.
@@ -125,25 +115,35 @@ pub enum ImplExprAtom {
     /// `dyn Trait` implements `Trait` using a built-in implementation; this refers to that
     /// built-in implementation.
     Dyn,
-    /// A virtual `Drop` implementation.
-    /// `Drop` doesn't work like a real trait but we want to pretend it does. If a type has a
-    /// user-defined `impl Drop for X` we just use the `Concrete` variant, but if it doesn't we use
-    /// this variant to supply the data needed to know what code will run on drop.
-    Drop(DropData),
     /// A built-in trait whose implementation is computed by the compiler, such as `FnMut`. This
     /// morally points to an invisible `impl` block; as such it contains the information we may
     /// need from one.
     Builtin {
-        r#trait: Binder<TraitRef>,
+        /// Extra data for the given trait.
+        trait_data: BuiltinTraitData,
         /// The `ImplExpr`s required to satisfy the implied predicates on the trait declaration.
         /// E.g. since `FnMut: FnOnce`, a built-in `T: FnMut` impl would have an `ImplExpr` for `T:
         /// FnOnce`.
         impl_exprs: Vec<ImplExpr>,
         /// The values of the associated types for this trait.
-        types: Vec<(DefId, Ty)>,
+        types: Vec<(DefId, Ty, Vec<ImplExpr>)>,
     },
     /// An error happened while resolving traits.
     Error(String),
+}
+
+#[derive(AdtInto)]
+#[args(<'tcx, S: UnderOwnerState<'tcx> >, from: resolution::BuiltinTraitData<'tcx>, state: S as s)]
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
+pub enum BuiltinTraitData {
+    /// A virtual `Drop` implementation.
+    /// `Drop` doesn't work like a real trait but we want to pretend it does. If a type has a
+    /// user-defined `impl Drop for X` we just use the `Concrete` variant, but if it doesn't we use
+    /// this variant to supply the data needed to know what code will run on drop.
+    Drop(DropData),
+    /// Some other builtin trait.
+    Other,
 }
 
 #[derive(AdtInto)]
@@ -200,7 +200,7 @@ pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
     let original_predicate_id = {
         // We don't want the id of the substituted clause id, but the
         // original clause id (with, i.e., `Self`)
-        let s = &with_owner_id(s.base(), (), (), impl_trait_ref.def_id());
+        let s = &s.with_owner_id(impl_trait_ref.def_id());
         clause.sinto(s).id
     };
     let new_clause = clause.instantiate_supertrait(tcx, impl_trait_ref);
@@ -219,7 +219,7 @@ pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
 /// This is the entrypoint of the solving.
 #[cfg(feature = "rustc")]
 #[tracing::instrument(level = "trace", skip(s))]
-pub fn solve_trait<'tcx, S: BaseState<'tcx> + HasOwnerId>(
+pub fn solve_trait<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     trait_ref: rustc_middle::ty::PolyTraitRef<'tcx>,
 ) -> ImplExpr {
@@ -231,18 +231,8 @@ pub fn solve_trait<'tcx, S: BaseState<'tcx> + HasOwnerId>(
     if let Some(impl_expr) = s.with_cache(|cache| cache.impl_exprs.get(&trait_ref).cloned()) {
         return impl_expr;
     }
-    let resolved = s.with_cache(|cache| {
-        cache
-            .predicate_searcher
-            .get_or_insert_with(|| {
-                PredicateSearcher::new_for_owner(
-                    s.base().tcx,
-                    s.owner_id(),
-                    s.base().options.bounds_options,
-                )
-            })
-            .resolve(&trait_ref, &warn)
-    });
+    let resolved =
+        s.with_predicate_searcher(|pred_searcher| pred_searcher.resolve(&trait_ref, &warn));
     let impl_expr = match resolved {
         Ok(x) => x.sinto(s),
         Err(e) => crate::fatal!(s, "{}", e),
@@ -259,51 +249,7 @@ pub fn translate_item_ref<'tcx, S: UnderOwnerState<'tcx>>(
     def_id: RDefId,
     generics: ty::GenericArgsRef<'tcx>,
 ) -> ItemRef {
-    let key = (def_id, generics);
-    if let Some(item) = s.with_cache(|cache| cache.item_refs.get(&key).cloned()) {
-        return item;
-    }
-    let mut impl_exprs = solve_item_required_traits(s, def_id, generics);
-    let mut generic_args = generics.sinto(s);
-
-    // If this is an associated item, resolve the trait reference.
-    let trait_info = self_clause_for_item(s, def_id, generics);
-    // Fixup the generics.
-    if let Some(tinfo) = &trait_info {
-        // The generics are split in two: the arguments of the trait and the arguments of the
-        // method.
-        //
-        // For instance, if we have:
-        // ```
-        // trait Foo<T> {
-        //     fn baz<U>(...) { ... }
-        // }
-        //
-        // fn test<T : Foo<u32>(x: T) {
-        //     x.baz(...);
-        //     ...
-        // }
-        // ```
-        // The generics for the call to `baz` will be the concatenation: `<T, u32, U>`, which we
-        // split into `<T, u32>` and `<U>`.
-        let trait_ref = tinfo.r#trait.hax_skip_binder_ref();
-        let num_trait_generics = trait_ref.generic_args.len();
-        generic_args.drain(0..num_trait_generics);
-        let num_trait_trait_clauses = trait_ref.impl_exprs.len();
-        impl_exprs.drain(0..num_trait_trait_clauses);
-    }
-
-    let content = ItemRefContents {
-        def_id: def_id.sinto(s),
-        generic_args,
-        impl_exprs,
-        in_trait: trait_info,
-    };
-    let item = content.intern(s);
-    s.with_cache(|cache| {
-        cache.item_refs.insert(key, item.clone());
-    });
-    item
+    ItemRef::translate(s, def_id, generics)
 }
 
 /// Solve the trait obligations for a specific item use (for example, a method call, an ADT, etc.)
@@ -358,12 +304,11 @@ pub fn solve_item_implied_traits<'tcx, S: UnderOwnerState<'tcx>>(
 fn solve_item_traits_inner<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     generics: ty::GenericArgsRef<'tcx>,
-    predicates: ty::GenericPredicates<'tcx>,
+    predicates: utils::Predicates<'tcx>,
 ) -> Vec<ImplExpr> {
     let tcx = s.base().tcx;
     let typing_env = s.typing_env();
     predicates
-        .predicates
         .iter()
         .map(|(clause, _span)| *clause)
         .filter_map(|clause| clause.as_trait_clause())
@@ -387,7 +332,6 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
     def_id: RDefId,
     generics: rustc_middle::ty::GenericArgsRef<'tcx>,
 ) -> Option<ImplExpr> {
-    use rustc_middle::ty::EarlyBinder;
     let tcx = s.base().tcx;
 
     let tr_def_id = tcx.trait_of_item(def_id)?;
@@ -395,7 +339,7 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
     let self_pred = self_predicate(tcx, tr_def_id);
     // Substitute to be in the context of the current item.
     let generics = generics.truncate_to(tcx, tcx.generics_of(tr_def_id));
-    let self_pred = EarlyBinder::bind(self_pred).instantiate(tcx, generics);
+    let self_pred = ty::EarlyBinder::bind(self_pred).instantiate(tcx, generics);
 
     // Resolve
     Some(solve_trait(s, self_pred))
