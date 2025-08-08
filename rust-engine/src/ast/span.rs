@@ -30,6 +30,24 @@ pub struct Span {
     owner_hint: Option<OwnerId>,
 }
 
+impl Span {
+    /// Creates a dummy span.
+    pub fn dummy() -> Self {
+        let lo: hax_frontend_exporter::Loc = hax_frontend_exporter::Loc { line: 0, col: 0 };
+        let hi = lo.clone();
+        Span {
+            data: vec![hax_frontend_exporter::Span {
+                lo,
+                hi,
+                filename: hax_frontend_exporter::FileName::Custom("dumny".into()),
+                rust_span_data: None,
+            }],
+            id: 0,
+            owner_hint: None,
+        }
+    }
+}
+
 impl From<hax_frontend_exporter::Span> for Span {
     fn from(span: hax_frontend_exporter::Span) -> Self {
         Self {

@@ -16,6 +16,7 @@ pub mod identifiers;
 pub mod literals;
 pub mod resugared;
 pub mod span;
+pub mod visitors;
 
 use crate::symbol::Symbol;
 use diagnostics::Diagnostic;
@@ -67,7 +68,7 @@ pub struct Region;
 
 /// A indirection for the representation of types.
 #[derive_group_for_ast]
-pub struct Ty(Box<TyKind>);
+pub struct Ty(pub Box<TyKind>);
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
@@ -179,7 +180,16 @@ pub enum TyKind {
     Resugared(ResugaredTyKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
+}
+
+#[derive_group_for_ast]
+/// Represent a node of the AST where an error occured.
+pub struct ErrorNode {
+    /// The node from the AST at the time something failed
+    pub fragment: Box<Fragment>,
+    /// The error(s) encountered.
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 /// A `dyn` trait. The generic arguments are known but the actual type
@@ -381,7 +391,7 @@ pub enum PatKind {
     Resugared(ResugaredPatKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 }
 
 /// Represents the various kinds of pattern guards.
@@ -1047,7 +1057,7 @@ pub enum ExprKind {
     Resugared(ResugaredExprKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 }
 
 /// Represents the kinds of generic parameters
@@ -1413,7 +1423,7 @@ pub enum ItemKind {
     },
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 
     /// A resugared item.
     /// This variant is introduced before printing only.
@@ -1442,11 +1452,15 @@ pub mod traits {
     pub trait HasMetadata {
         /// Get metadata
         fn metadata(&self) -> &Metadata;
+        /// Get mutable borrow on metadata
+        fn metadata_mut(&mut self) -> &mut Metadata;
     }
     /// Marks AST data types that carry a span
     pub trait HasSpan {
         /// Get span
         fn span(&self) -> Span;
+        /// Mutable borrow on the span
+        fn span_mut(&mut self) -> &mut Span;
     }
     /// Marks AST data types that carry a Type
     pub trait Typed {
@@ -1456,6 +1470,9 @@ pub mod traits {
     impl<T: HasMetadata> HasSpan for T {
         fn span(&self) -> Span {
             self.metadata().span.clone()
+        }
+        fn span_mut(&mut self) -> &mut Span {
+            &mut self.metadata_mut().span
         }
     }
 
@@ -1472,6 +1489,9 @@ pub mod traits {
             $(impl HasMetadata for $ty {
                 fn metadata(&self) -> &Metadata {
                     &self.meta
+                }
+                fn metadata_mut(&mut self) -> &mut Metadata {
+                    &mut self.meta
                 }
             })*
         };
@@ -1506,6 +1526,9 @@ pub mod traits {
         fn span(&self) -> Span {
             self.span.clone()
         }
+        fn span_mut(&mut self) -> &mut Span {
+            &mut self.span
+        }
     }
 
     impl Typed for Expr {
@@ -1528,6 +1551,9 @@ pub mod traits {
         fn span(&self) -> Span {
             self.span.clone()
         }
+        fn span_mut(&mut self) -> &mut Span {
+            &mut self.span
+        }
     }
 
     impl ExprKind {
@@ -1547,7 +1573,34 @@ pub mod traits {
         type Kind = TyKind;
 
         fn kind(&self) -> &Self::Kind {
-            &(*self.0)
+            &self.0
+        }
+    }
+
+    /// Fragments of the AST on which we can store an `ErrorNode`.
+    pub trait HasErrorNode {
+        /// Replace the current node with an error.
+        fn set_error(&mut self, error_node: ErrorNode);
+    }
+
+    impl HasErrorNode for Item {
+        fn set_error(&mut self, error_node: ErrorNode) {
+            self.kind = ItemKind::Error(error_node)
+        }
+    }
+    impl HasErrorNode for Pat {
+        fn set_error(&mut self, error_node: ErrorNode) {
+            self.kind = Box::new(PatKind::Error(error_node))
+        }
+    }
+    impl HasErrorNode for Expr {
+        fn set_error(&mut self, error_node: ErrorNode) {
+            self.kind = Box::new(ExprKind::Error(error_node))
+        }
+    }
+    impl HasErrorNode for Ty {
+        fn set_error(&mut self, error_node: ErrorNode) {
+            self.0 = Box::new(TyKind::Error(error_node))
         }
     }
 }

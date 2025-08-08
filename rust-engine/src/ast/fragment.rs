@@ -140,6 +140,11 @@ impl From<LoopKind> for Fragment {
         Self::LoopKind(item)
     }
 }
+impl From<Literal> for Fragment {
+    fn from(item: Literal) -> Self {
+        Self::Literal(item)
+    }
+}
 impl From<ControlFlowKind> for Fragment {
     fn from(item: ControlFlowKind) -> Self {
         Self::ControlFlowKind(item)
@@ -267,6 +272,7 @@ pub enum Fragment {
     ItemQuoteOriginKind(ItemQuoteOriginKind),
     ItemQuoteOriginPosition(ItemQuoteOriginPosition),
     LoopKind(LoopKind),
+    Literal(Literal),
     ControlFlowKind(ControlFlowKind),
     LoopState(LoopState),
     ExprKind(ExprKind),
