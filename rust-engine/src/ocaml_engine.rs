@@ -33,6 +33,8 @@ pub enum QueryKind {
     ImportThir {
         /// The input THIR items
         input: Vec<hax_frontend_exporter::Item<ThirBody>>,
+        /// Temporary option to enable a set of default phases
+        apply_phases: bool,
     },
 }
 
