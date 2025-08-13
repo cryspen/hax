@@ -8,6 +8,7 @@
   hax-env,
   jq,
   proverif,
+  lean4,
 }: let
   commonArgs = import ./commonArgs.nix {inherit craneLib lib;};
   cargoArtifacts = craneLib.buildDepsOnly commonArgs;
@@ -29,7 +30,7 @@ in
         make
       '';
       buildInputs = [
-        hax hax-env fstar jq
+        hax hax-env fstar jq lean4
         (proverif.overrideDerivation (_: {
           patches = [ ./proverif-psk/pv_div_by_zero_fix.diff ];
         }))
