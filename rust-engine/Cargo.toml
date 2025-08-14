@@ -20,3 +20,4 @@ serde_stacker = "0.1.12"
 pretty = "0.12"
 itertools.workspace = true
 derive_generic_visitor = { git = "https://github.com/W95Psp/derive-generic-visitor.git", branch = "visitable-group-add-attrs" }
+pastey = "0.1.0"

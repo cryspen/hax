@@ -7,8 +7,7 @@
 //!
 //! We provide four main visitors.
 //!  - [`AstVisitor`] and [`AstVisitorMut`]: visitor that never early exit.
-//!  - [`AstEarlyExitVisitor`] and [`AstEarlyExitVisitorMut`]: visitor that can
-//!        early exit.
+//!  - [`AstEarlyExitVisitor`] and [`AstEarlyExitVisitorMut`]: visitor that can early exit.
 //!
 //! Each trait provides methods `visit_expr`, `visit_ty`, etc. enabling easy AST
 //! traversal.
@@ -225,21 +224,7 @@ pub mod wrappers {
     }
 }
 
-#[hax_rust_engine_macros::replace(AstNodes =>
-    Expr, Pat, ExprKind, PatKind, Ty, TyKind, Metadata, Literal,
-    LocalId, Lhs, Symbol, LoopKind, SafetyKind, Quote,
-    SpannedTy, BindingMode, PrimitiveTy, Region, ImplExpr,
-    IntKind, FloatKind, GenericValue, Arm, LoopState, ControlFlowKind,
-    DynTraitGoal, Attribute, QuoteContent, BorrowKind,
-    TraitGoal, ImplExprKind, IntSize, Signedness, Guard, AttributeKind,
-    GuardKind, ImplItem, ImplItemKind, TraitItem, TraitItemKind,
-    ItemQuoteOrigin, ItemQuoteOriginKind, ItemQuoteOriginPosition, GenericParamKind, ImplIdent,
-    ProjectionPredicate, GenericParam, Generics, DocCommentKind, Param, Variant, ItemKind, Item,
-    GenericConstraint, ErrorNode, Module,
-
-    ResugaredExprKind, ResugaredTyKind, ResugaredPatKind,
-    ResugaredImplItemKind, ResugaredTraitItemKind, ResugaredItemKind
-)]
+#[hax_rust_engine_macros::replace(AstNodes => include(VisitableAstNodes))]
 mod replaced {
     use super::*;
     pub mod infallible {
@@ -290,6 +275,7 @@ mod replaced {
         /// Helper trait to drive visitor.
         pub trait AstVisitable {}
     }
+
     #[allow(missing_docs)]
     pub mod fallible {
         use super::*;
@@ -403,7 +389,7 @@ mod replaced {
 }
 
 pub use replaced::dyn_compatible;
-pub(self) use replaced::{fallible, infallible};
+use replaced::{fallible, infallible};
 
 pub use fallible::{
     AstEarlyExitVisitor, AstEarlyExitVisitorMut, AstVisitable as AstVisitableFallible,

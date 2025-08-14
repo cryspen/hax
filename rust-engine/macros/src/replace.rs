@@ -2,8 +2,13 @@ extern crate proc_macro;
 
 use proc_macro::TokenStream;
 use proc_macro2::{Group, TokenStream as TokenStream2, TokenTree};
+use quote::quote;
 use syn::parse::{Parse, ParseStream, Result};
 use syn::{Ident, Token, parse_macro_input};
+
+mod kw {
+    syn::custom_keyword!(include);
+}
 
 fn replace_in_stream(
     stream: TokenStream2,
@@ -37,9 +42,41 @@ impl Parse for AttributeArgs {
     fn parse(input: ParseStream) -> Result<Self> {
         let target: Ident = input.parse()?;
         input.parse::<Token![=>]>()?;
+        let include_clause = |input: ParseStream| -> Result<Ident> {
+            input.parse::<kw::include>()?;
+            let content;
+            syn::parenthesized!(content in input);
+            content.parse()
+        }(input)
+        .ok();
         Ok(AttributeArgs {
             target,
-            replacement: input.parse::<TokenStream2>()?,
+            replacement: match include_clause {
+                Some(clause) => match clause.to_string().as_str() {
+                    "VisitableAstNodes" => quote! {
+                        Expr, Pat, ExprKind, PatKind, Ty, TyKind, Metadata, Literal,
+                        LocalId, Lhs, Symbol, LoopKind, SafetyKind, Quote,
+                        SpannedTy, BindingMode, PrimitiveTy, Region, ImplExpr,
+                        IntKind, FloatKind, GenericValue, Arm, LoopState, ControlFlowKind,
+                        DynTraitGoal, Attribute, QuoteContent, BorrowKind,
+                        TraitGoal, ImplExprKind, IntSize, Signedness, Guard, AttributeKind,
+                        GuardKind, ImplItem, ImplItemKind, TraitItem, TraitItemKind,
+                        ItemQuoteOrigin, ItemQuoteOriginKind, ItemQuoteOriginPosition, GenericParamKind, ImplIdent,
+                        ProjectionPredicate, GenericParam, Generics, DocCommentKind, Param, Variant, ItemKind, Item,
+                        GenericConstraint, ErrorNode, Module,
+
+                        ResugaredExprKind, ResugaredTyKind, ResugaredPatKind,
+                        ResugaredImplItemKind, ResugaredTraitItemKind, ResugaredItemKind
+                    }.into(),
+                    _ => {
+                        return Err(syn::Error::new_spanned(
+                            clause,
+                            format!("This is not a recognized include pragma."),
+                        ));
+                    }
+                },
+                None => input.parse::<TokenStream2>()?,
+            },
         })
     }
 }
