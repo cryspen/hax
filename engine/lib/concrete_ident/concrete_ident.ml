@@ -578,16 +578,13 @@ module MakeRenderAPI (NP : NAME_POLICY) : RENDER_API = struct
          * Types.impl_infos option*)
       | `AssociatedItem
           ((`Type n | `Const n | `Fn n), `Impl (d, `Trait, impl_infos))
-        when not final ->
+        when (not final) || NP.prefix_associated_item_with_trait_name ->
           Concat
-            (prefix "f" (dstr n), render_impl_name ~always:true d impl_infos)
+            ( render_impl_name ~always:(not final) d impl_infos,
+              prefix "f" (dstr n) )
       (* Print the name of an associated item in a trait impl *)
-      | `AssociatedItem
-          ((`Type n | `Const n | `Fn n), `Impl (d, `Trait, impl_infos)) ->
-          if NP.prefix_associated_item_with_trait_name then
-            Concat
-              (render_impl_name ~always:true d impl_infos, prefix "f" (dstr n))
-          else prefix "f" (dstr n)
+      | `AssociatedItem ((`Type n | `Const n | `Fn n), `Impl (_, `Trait, _)) ->
+          prefix "f" (dstr n)
       | `AssociatedItem ((`Type n | `Const n | `Fn n), `Trait (trait_name, _))
         ->
           if NP.prefix_associated_item_with_trait_name then
