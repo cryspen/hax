@@ -24,9 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: DeterminateSystems/nix-installer-action@main
     - name: Run Rust formatter
       run: |
-        nix shell .#rustfmt -c \
-          rustfmt --edition 2021 --check $(find . -name '*.rs')
-
+        cargo fmt --check

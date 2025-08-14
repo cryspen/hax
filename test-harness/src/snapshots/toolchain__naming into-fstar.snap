@@ -175,21 +175,21 @@ type t_Arity1 (v_T: Type0) = | Arity1 : v_T -> t_Arity1 v_T
 class t_T1 (v_Self: Type0) = { __marker_trait_t_T1:Prims.unit }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_T1_for_Foo: t_T1 t_Foo = { __marker_trait = () }
+let impl_T1_for_Foo: t_T1 t_Foo = { __marker_trait_t_T1 = () }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_T1_for_tuple_Foo_u8: t_T1 (t_Foo & u8) = { __marker_trait = () }
+let impl_T1_for_tuple_Foo_u8: t_T1 (t_Foo & u8) = { __marker_trait_t_T1 = () }
 
 class t_T2_for_a (v_Self: Type0) = { __marker_trait_t_T2_for_a:Prims.unit }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_T2_ee_for_a_for_Arity1_of_tuple_Foo_u8: t_T2_for_a (t_Arity1 (t_Foo & u8)) =
-  { __marker_trait = () }
+  { __marker_trait_t_T2_for_a = () }
 
 class t_T3_ee_for_a (v_Self: Type0) = { __marker_trait_t_T3_ee_for_a:Prims.unit }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_T3_ee_e_for_a_for_Foo: t_T3_ee_for_a t_Foo = { __marker_trait = () }
+let impl_T3_ee_e_for_a_for_Foo: t_T3_ee_for_a t_Foo = { __marker_trait_t_T3_ee_for_a = () }
 
 type t_StructA = { f_a:usize }
 
@@ -218,7 +218,7 @@ class t_FooTrait (v_Self: Type0) = { f_ASSOCIATED_CONSTANT:usize }
 
 let constants
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_FooTrait v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_FooTrait v_T)
       (_: Prims.unit)
     : usize =
   (f_ASSOCIATED_CONSTANT #FStar.Tactics.Typeclasses.solve <: usize) +! v_INHERENT_CONSTANT

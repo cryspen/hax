@@ -6,9 +6,8 @@
 
 use crate::ast::span::Span;
 use crate::printer::Allocator;
-use std::iter::once;
 
-use pretty::{docs, DocAllocator, DocBuilder, Pretty};
+use pretty::{DocAllocator, DocBuilder, Pretty, docs};
 
 use crate::ast::identifiers::*;
 use crate::ast::literals::*;
@@ -16,7 +15,12 @@ use crate::ast::*;
 
 macro_rules! print_todo {
     ($allocator:ident) => {
-        $allocator.text(format!("Todo at {}", line!())).parens()
+        $allocator
+            .text(format!(
+                "/- Unsupported by the Lean Backend (line {}) -/",
+                line!()
+            ))
+            .parens()
     };
 }
 
@@ -24,6 +28,35 @@ const INDENT: isize = 2;
 
 /// Placeholder structure for lean printer
 pub struct Lean;
+
+impl Lean {
+    /// A filter for items blacklisted by the Lean backend : returns false if
+    /// the item is definitely not printable, but might return true on
+    /// unsupported items
+    pub fn printable_item(item: &Item) -> bool {
+        match &item.kind {
+            // Anonymous consts
+            ItemKind::Fn {
+                name,
+                generics: _,
+                body: _,
+                params: _,
+                safety: _,
+            } if name.is_empty() => false,
+            // Other unprintable items
+            ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
+            // Printable items
+            ItemKind::Fn { .. }
+            | ItemKind::TyAlias { .. }
+            | ItemKind::Type { .. }
+            | ItemKind::Trait { .. }
+            | ItemKind::Impl { .. }
+            | ItemKind::Alias { .. }
+            | ItemKind::Resugared(_)
+            | ItemKind::Quote { .. } => true,
+        }
+    }
+}
 
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Item {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
@@ -36,28 +69,77 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
         match self {
             ItemKind::Fn {
                 name,
-                generics: _,
+                generics,
                 body,
                 params,
                 safety: _,
             } => {
-                // Generics are ignored for now
-                docs![
-                    allocator,
-                    "def ",
-                    name,
-                    allocator.softline(),
-                    allocator
-                        .intersperse(params, allocator.line())
-                        .align()
-                        .group(),
-                    docs![allocator, allocator.line(), ": ", &body.ty].group(),
-                    " :=",
-                    allocator.line(),
-                    docs![allocator, &*body.kind].group()
-                ]
-                .nest(INDENT)
-                .group()
+                match &*body.kind {
+                    ExprKind::Literal(l) => {
+                        // Literal consts, printed without monadic encoding
+                        // Todo: turn it into a proper refactor (see Hax issue #1542)
+                        docs![
+                            allocator,
+                            "def ",
+                            name,
+                            allocator.reflow(" : "),
+                            &body.ty,
+                            allocator.reflow(" :="),
+                            allocator.line(),
+                            l
+                        ]
+                        .group()
+                    }
+                    _ => {
+                        // Normal definition
+                        let generics = if generics.params.is_empty() {
+                            None
+                        } else {
+                            Some(
+                                docs![
+                                    allocator,
+                                    allocator.line(),
+                                    allocator
+                                        .intersperse(&generics.params, allocator.softline())
+                                        .braces()
+                                        .group()
+                                ]
+                                .group(),
+                            )
+                        };
+                        let args = if params.is_empty() {
+                            allocator.nil()
+                        } else {
+                            docs![
+                                allocator,
+                                allocator.line(),
+                                allocator.intersperse(params, allocator.softline()),
+                            ]
+                            .nest(INDENT)
+                            .group()
+                        };
+                        docs![
+                            allocator,
+                            "def ",
+                            name,
+                            generics,
+                            args,
+                            docs![
+                                allocator,
+                                allocator.line(),
+                                ": ",
+                                docs![allocator, "Result ", &body.ty].group()
+                            ]
+                            .group(),
+                            " := do",
+                            allocator.line(),
+                            docs![allocator, &*body.kind].group()
+                        ]
+                        .nest(INDENT)
+                        .group()
+                        .append(allocator.hardline())
+                    }
+                }
             }
             ItemKind::TyAlias {
                 name,
@@ -89,13 +171,10 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ItemKind {
                 is_external: _,
                 rename: _,
             } => allocator.nil(),
-            ItemKind::Quote {
-                quote: _,
-                origin: _,
-            } => print_todo!(allocator),
+            ItemKind::Quote { quote, origin: _ } => quote.pretty(allocator),
             ItemKind::Error(_diagnostic) => print_todo!(allocator),
             ItemKind::Resugared(_resugared_ty_kind) => print_todo!(allocator),
-            ItemKind::NotImplementedYet => allocator.text("-- unimplemented yet"),
+            ItemKind::NotImplementedYet => allocator.text("/- unsupported by Hax engine (yet) -/"),
         }
     }
 }
@@ -118,16 +197,21 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b TyKind {
                     head.pretty(allocator)
                         .append(allocator.softline())
                         .append(allocator.intersperse(args, allocator.softline()))
-                        .group()
                         .parens()
+                        .group()
                 }
             }
-            TyKind::Arrow { inputs, output } => allocator
-                .intersperse(
-                    inputs.into_iter().chain(once(output)),
-                    allocator.softline().append("-> "),
-                )
-                .parens(),
+            TyKind::Arrow { inputs, output } => docs![
+                allocator,
+                allocator.concat(inputs.into_iter().map(|input| docs![
+                    allocator,
+                    input,
+                    allocator.reflow(" -> ")
+                ])),
+                "Result ",
+                output
+            ]
+            .parens(),
             TyKind::Ref {
                 inner: _,
                 mutable: _,
@@ -176,7 +260,14 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Expr {
 
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Pat {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
-        (self.kind).pretty(allocator)
+        docs![
+            allocator,
+            self.kind.pretty(allocator),
+            allocator.reflow(" : "),
+            &self.ty
+        ]
+        .parens()
+        .group()
     }
 }
 
@@ -184,11 +275,7 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b PatKind {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
         match self {
             PatKind::Wild => allocator.text("_"),
-            PatKind::Ascription { pat, ty } => {
-                docs![allocator, pat, allocator.softline(), ": ", ty]
-                    .nest(INDENT)
-                    .group()
-            }
+            PatKind::Ascription { pat, ty: _ } => pat.kind.pretty(allocator),
             PatKind::Or { sub_pats: _ } => print_todo!(allocator),
             PatKind::Array { args: _ } => print_todo!(allocator),
             PatKind::Deref { sub_pat: _ } => print_todo!(allocator),
@@ -228,16 +315,29 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 then,
                 else_,
             } => match else_ {
-                Some(else_branch) => allocator
-                    .concat([
-                        allocator.text("if"),
-                        allocator.softline().append(condition).nest(INDENT),
-                        allocator.line().append("then"),
-                        allocator.softline().append(then).nest(INDENT),
-                        allocator.line().append("else"),
-                        allocator.softline().append(else_branch).nest(INDENT),
-                    ])
-                    .group(),
+                Some(else_branch) => docs![
+                    allocator,
+                    allocator
+                        .text("if")
+                        .append(allocator.line())
+                        .append(condition)
+                        .group(),
+                    allocator.line(),
+                    allocator
+                        .text("then")
+                        .append(allocator.line())
+                        .append(then)
+                        .group()
+                        .nest(INDENT),
+                    allocator.line(),
+                    allocator
+                        .text("else")
+                        .append(allocator.line())
+                        .append(else_branch)
+                        .group()
+                        .nest(INDENT),
+                ]
+                .group(),
                 None => print_todo!(allocator),
             },
             ExprKind::App {
@@ -246,18 +346,58 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 generic_args: _,
                 bounds_impls: _,
                 trait_: _,
+            } if match &*head.kind {
+                ExprKind::GlobalId(name) => {
+                    *name == crate::names::rust_primitives::hax::machine_int::add()
+                }
+                _ => false,
+            } && args.len() == 2 =>
+            {
+                docs![
+                    allocator,
+                    "← ",
+                    args.get(0),
+                    allocator.reflow(" +? "),
+                    args.get(1),
+                ]
+                .parens()
+                .group()
+            }
+            ExprKind::App {
+                head,
+                args,
+                generic_args,
+                bounds_impls: _,
+                trait_: _,
             } => {
-                let separator = allocator.line();
-                head.pretty(allocator)
-                    .append(allocator.softline())
-                    .append(allocator.intersperse(args, separator).nest(INDENT))
+                let generic_args = (!generic_args.is_empty()).then_some(
+                    allocator
+                        .line()
+                        .append(
+                            allocator
+                                .intersperse(generic_args, allocator.line())
+                                .nest(INDENT),
+                        )
+                        .group(),
+                );
+                let args = if args.is_empty() {
+                    None
+                } else {
+                    Some(
+                        allocator
+                            .line()
+                            .append(allocator.intersperse(args, allocator.line()).nest(INDENT))
+                            .group(),
+                    )
+                };
+                docs![allocator, "← ", head, generic_args, args]
                     .parens()
                     .group()
             }
             ExprKind::Literal(literal) => literal.pretty(allocator),
             ExprKind::Array(exprs) => docs![
                 allocator,
-                "#[",
+                "#v[",
                 allocator
                     .intersperse(exprs, allocator.text(",").append(allocator.line()))
                     .nest(INDENT),
@@ -272,31 +412,30 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 base: _,
             } => {
                 // Should be turned into a resugaring once https://github.com/cryspen/hax/pull/1528 have been merged
-                let record_args = if fields.len() > 0 {
-                    Some(
-                        allocator.softline().append(
+                let record_args = (fields.len() > 0).then_some(
+                    allocator
+                        .line()
+                        .append(
                             allocator
                                 .intersperse(
                                     fields.iter().map(|field: &(GlobalId, Expr)| {
                                         docs![
                                             allocator,
                                             &field.0,
-                                            " ",
-                                            allocator.reflow(":= "),
+                                            allocator.reflow(" := "),
                                             &field.1
                                         ]
+                                        .parens()
                                         .group()
                                     }),
-                                    allocator.reflow(", "),
+                                    allocator.line(),
                                 )
-                                .group()
-                                .braces(),
-                        ),
-                    )
-                } else {
-                    None
-                };
-                docs![allocator, ".constr_", constructor, record_args]
+                                .group(),
+                        )
+                        .group(),
+                );
+                docs![allocator, "constr_", constructor, record_args]
+                    .parens()
                     .group()
                     .nest(INDENT)
             }
@@ -314,25 +453,31 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
                 inner: _,
             } => print_todo!(allocator),
             ExprKind::Deref(_expr) => print_todo!(allocator),
-            ExprKind::Let { lhs, rhs, body } => {
-                docs![
-                    allocator,
-                    "let ",
-                    lhs,
-                    " :=",
-                    allocator.softline(),
-                    docs![allocator, rhs].group(),
-                    ";",
-                    allocator.line(),
-                    body,
-                ]
-            }
+            ExprKind::Let { lhs, rhs, body } => docs![
+                allocator,
+                "let ",
+                lhs,
+                " ←",
+                allocator.softline(),
+                docs![allocator, "pure", allocator.line(), rhs]
+                    .group()
+                    .nest(INDENT),
+                ";",
+                allocator.line(),
+                body,
+            ]
+            .group(),
             ExprKind::GlobalId(global_id) => global_id.pretty(allocator),
             ExprKind::LocalId(local_id) => local_id.pretty(allocator),
-            ExprKind::Ascription { e, ty } => docs![allocator, e, allocator.reflow(" : "), ty]
-                .nest(INDENT)
-                .parens()
-                .group(),
+            ExprKind::Ascription { e, ty } => {
+                let monadic_encoding = match *e.kind {
+                    ExprKind::Literal(_) | ExprKind::Construct { .. } => None,
+                    _ => Some("← "),
+                };
+                docs![allocator, monadic_encoding, e, allocator.reflow(" : "), ty]
+                    .parens()
+                    .group()
+            }
             ExprKind::Assign { lhs: _, value: _ } => print_todo!(allocator),
             ExprKind::Loop {
                 body: _,
@@ -351,19 +496,19 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b ExprKind {
             } => docs![
                 allocator,
                 allocator.reflow("fun "),
-                allocator.intersperse(params, allocator.line()),
-                allocator.reflow(" =>"),
+                allocator.intersperse(params, allocator.softline()).group(),
+                allocator.reflow("=> do"),
                 allocator.line(),
                 body
             ]
-            .nest(INDENT)
+            .parens()
             .group()
-            .parens(),
+            .nest(INDENT),
             ExprKind::Block {
                 body: _,
                 safety_mode: _,
             } => print_todo!(allocator),
-            ExprKind::Quote { contents: _ } => print_todo!(allocator),
+            ExprKind::Quote { contents } => allocator.concat(&contents.0),
             ExprKind::Resugared(_resugared_expr_kind) => print_todo!(allocator),
             ExprKind::Error(_diagnostic) => print_todo!(allocator),
         }
@@ -450,9 +595,31 @@ impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b GlobalId {
 
 impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Param {
     fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
-        docs![allocator, &self.pat, allocator.softline(), ": ", &self.ty]
-            .nest(INDENT)
-            .parens()
-            .group()
+        self.pat.pretty(allocator)
+    }
+}
+
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b GenericParam {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
+        self.ident.pretty(allocator)
+    }
+}
+
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b Quote {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
+        allocator.concat(&self.0)
+    }
+}
+
+impl<'a, 'b> Pretty<'a, Allocator<Lean>, Span> for &'b QuoteContent {
+    fn pretty(self, allocator: &'a Allocator<Lean>) -> DocBuilder<'a, Allocator<Lean>, Span> {
+        match self {
+            QuoteContent::Verbatim(s) => {
+                allocator.intersperse(s.lines().map(|x| x.to_string()), allocator.hardline())
+            }
+            QuoteContent::Expr(expr) => expr.pretty(allocator),
+            QuoteContent::Pattern(pat) => pat.pretty(allocator),
+            QuoteContent::Ty(ty) => ty.pretty(allocator),
+        }
     }
 }

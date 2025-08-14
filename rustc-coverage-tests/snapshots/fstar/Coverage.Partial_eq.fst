@@ -9,7 +9,8 @@ type t_Version = {
   f_patch:usize
 }
 
-let impl_1: Core.Clone.t_Clone t_Version = { f_clone = (fun x -> x) }
+let impl_1: Core.Clone.t_Clone t_Version =
+  { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume

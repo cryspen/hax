@@ -2,7 +2,7 @@
 //! strings for u128 and i128: those types are not well supported in
 //! serde (see https://github.com/serde-rs/json/issues/625).
 
-use serde::{de::Visitor, ser::Serialize, Deserializer, Serializer};
+use serde::{Deserializer, Serializer, de::Visitor, ser::Serialize};
 
 pub mod unsigned {
     use super::*;

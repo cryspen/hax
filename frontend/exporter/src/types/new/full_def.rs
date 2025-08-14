@@ -232,7 +232,7 @@ pub enum FullDefKind<Body> {
         parent: DefId,
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.bounds_options).sinto(s))]
         implied_predicates: GenericPredicates,
         #[value(s.base().tcx.associated_item(s.owner_id()).sinto(s))]
         associated_item: AssocItem,
@@ -253,7 +253,7 @@ pub enum FullDefKind<Body> {
     Trait {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.bounds_options).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
         #[value(get_self_predicate(s))]
@@ -277,7 +277,7 @@ pub enum FullDefKind<Body> {
     TraitAlias {
         #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.resolve_drop_bounds).sinto(s))]
+        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.bounds_options).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
         #[value(get_self_predicate(s))]
@@ -1000,6 +1000,6 @@ fn get_param_env<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> ParamEnv {
     let s = &with_owner_id(s.base(), (), (), def_id);
     ParamEnv {
         generics: tcx.generics_of(def_id).sinto(s),
-        predicates: required_predicates(tcx, def_id, s.base().options.resolve_drop_bounds).sinto(s),
+        predicates: required_predicates(tcx, def_id, s.base().options.bounds_options).sinto(s),
     }
 }

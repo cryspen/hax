@@ -76,7 +76,7 @@ impl std::fmt::Display for Diagnostics {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq, Ord, PartialOrd, JsonSchema)]
 #[repr(u16)]
 pub enum Kind {
     /// Unsafe code is not supported

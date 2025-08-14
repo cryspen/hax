@@ -7,7 +7,7 @@ let length (#v_T: Type0) (xs: t_Slice v_T) : usize = Core.Slice.impl__len #v_T x
 
 let swap
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
       (xs: t_Slice v_T)
       (i j: usize)
     : t_Slice v_T =
@@ -20,7 +20,7 @@ let swap
 
 let display
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Display v_T)
       (xs: t_Slice v_T)
     : Prims.unit =
   let _:Prims.unit =
@@ -52,8 +52,8 @@ let error (_: Prims.unit) : Prims.unit =
 
 let rec permutate
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Marker.t_Copy v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
       (xs: t_Slice v_T)
       (k: usize)
     : t_Slice v_T =
@@ -88,8 +88,8 @@ let rec permutate
 
 let permutations
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Marker.t_Copy v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
       (xs: t_Slice v_T)
     : Prims.unit =
   let ys:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global =

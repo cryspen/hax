@@ -16,14 +16,62 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
+      - name: ⤵ Extract libcrux version from PR body
+        id: extract_version
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            let extractLibcruxRef = body => body.match(/libcrux-ref:\s*([a-zA-Z0-9._\/-]+)/)?.[1];
+            const refMap = new Map();
+            if (context.eventName === 'pull_request') {
+              const ref = extractLibcruxRef(context.payload.pull_request?.body || '') ?? 'main';
+              core.notice(`Using libcrux ref: ${resolved}`);
+              return resolved;
+            } else if (context.eventName === 'merge_group') {
+              const mergeGroupPRs = context.payload.merge_group?.pull_requests || [];
+              for (const prInfo of mergeGroupPRs) {
+                const pull_number = prInfo.number;
+                const pr = await github.rest.pulls.get({...context.repo, pull_number}).data;
+                const ref = extractLibcruxRef(pr.body);
+                ref && refMap.set(pull_number, ref);
+              }
+              if (refMap.size === 0) {
+                core.notice('No libcrux-ref specified, defaulting to "main"');
+                return 'main';
+              }
+              const uniqueRefs = new Set(refMap.values());
+              if (uniqueRefs.size > 1) {
+                let errorMessage = 'Error: Multiple different libcrux refs detected:\n';
+                for (const [prNum, ref] of refMap.entries())
+                  errorMessage += `- PR #${prNum}: ${ref}\n`;
+                core.setFailed(errorMessage);
+                return;
+              }
+
+              const [ref] = uniqueRefs;
+              core.notice(`Using libcrux ref: ${ref}`);
+              return ref;
+            }
+            core.warning(`Unsupported event type: ${context.eventName}, default to main`);
+            return 'main';
+
       - name: ⤵ Clone Libcrux repository
         uses: actions/checkout@v4
         with:
           repository: cryspen/libcrux
+          path: libcrux
+          ref: ${{ steps.extract_version.outputs.result }}
 
       - uses: actions/checkout@v4
         with:
           path: hax
+
+      - name: Use local hax-lib
+        working-directory: libcrux
+        run: |
+          cargo remove hax-lib -v -p libcrux-ml-kem
+          cargo add hax-lib --path "../hax/hax-lib" -v -p libcrux-ml-kem
 
       - uses: DeterminateSystems/nix-installer-action@main
       - name: Set up Cachix
@@ -39,20 +87,14 @@ jobs:
       - name: ⤵ Install FStar
         run: nix profile install github:FStarLang/FStar/v2025.02.17
 
-      - name: ⤵ Clone HACL-star repository
-        uses: actions/checkout@v4
-        with:
-          repository: hacl-star/hacl-star
-          path: hacl-star
       - name: 🏃 Extract ML-KEM crate
-        working-directory: libcrux-ml-kem
+        working-directory: libcrux/libcrux-ml-kem
         run: ./hax.py extract
   
       - name: 🏃 Lax ML-KEM crate
-        working-directory: libcrux-ml-kem
+        working-directory: libcrux/libcrux-ml-kem
         run: |
           env FSTAR_HOME=${{ github.workspace }}/fstar \
-              HACL_HOME=${{ github.workspace }}/hacl-star \
               HAX_HOME=${{ github.workspace }}/hax \
               PATH="${PATH}:${{ github.workspace }}/fstar/bin" \
               ./hax.py prove --admit

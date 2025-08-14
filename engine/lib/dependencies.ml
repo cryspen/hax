@@ -540,8 +540,6 @@ module Make (F : Features.T) = struct
                    (inspect_view_last from_id) ->
               None
           | Quote _ -> None
-          (* This is temporary: see https://github.com/cryspen/hax/issues/1285 *)
-          | Trait { name; _ } when [%equal: concrete_ident] name from_id -> None
           | _ -> Some { attrs; span = origin_item.span; ident = from_id; v })
     in
     let rename =

@@ -3,14 +3,14 @@ module Coverage.Generics
 open Core
 open FStar.Mul
 
-type t_Firework (v_T: Type0) {| i1: Core.Marker.t_Copy v_T |} {| i2: Core.Fmt.t_Display v_T |} = {
+type t_Firework (v_T: Type0) {| i0: Core.Marker.t_Copy v_T |} {| i1: Core.Fmt.t_Display v_T |} = {
   f_strength:v_T
 }
 
 let impl__set_strength
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Marker.t_Copy v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
       (self: t_Firework v_T)
       (new_strength: v_T)
     : t_Firework v_T =
@@ -20,8 +20,8 @@ let impl__set_strength
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_1
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Marker.t_Copy v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
     : Core.Ops.Drop.t_Drop (t_Firework v_T) =
   {
     f_drop_pre = (fun (self: t_Firework v_T) -> true);

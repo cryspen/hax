@@ -378,6 +378,9 @@ pub enum ImplItemKind<Body: IsBody> {
                 .skip_binder() // Skips an `EarlyBinder`, likely for GATs
                 .iter()
                 .copied()
+                .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
+                    !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
+                }))
                 .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, impl_did, clause, span))
                 .collect::<Vec<_>>()
         };
@@ -419,6 +422,9 @@ pub struct Impl<Body: IsBody> {
         if let Some(trait_did) = trait_did {
             tcx.explicit_super_predicates_of(trait_did)
                 .iter_identity_copied()
+                .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
+                    !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
+                }))
                 .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, owner_id, clause, span))
                 .collect::<Vec<_>>()
         } else {
@@ -826,7 +832,15 @@ fn region_bounds_at_current_owner<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> Gene
             .copied()
             .collect()
     };
-    clauses.sinto(s)
+    clauses
+        .into_iter()
+        .filter(|clause| {
+            clause.as_trait_clause().is_some_and(|trait_predicate| {
+                !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
+            })
+        })
+        .collect::<Vec<_>>()
+        .sinto(s)
 }
 
 #[cfg(feature = "rustc")]

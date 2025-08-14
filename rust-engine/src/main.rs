@@ -1,12 +1,12 @@
 use hax_rust_engine::{
-    ast::{span::Span, Item},
+    ast::{Item, span::Span},
     lean::Lean,
     ocaml_engine::{ExtendedToEngine, Response},
     printer::Allocator,
 };
 use hax_types::{cli_options::Backend, engine_api::File};
 
-use pretty::{DocAllocator, DocBuilder};
+use pretty::{DocAllocator, DocBuilder, docs};
 
 fn krate_name(items: &Vec<Item>) -> String {
     let head_item = items.get(0).unwrap();
@@ -17,24 +17,35 @@ fn lean_backend(items: Vec<Item>) {
     let krate = krate_name(&items);
 
     // For now, the main function always calls the Lean backend
-    let allocator = Allocator::new(Lean);
+    let allocator = &Allocator::new(Lean);
 
-    let header = allocator
-        .intersperse(
-            vec![
-            "-- Experimental lean backend for Hax",
-            "-- Comment the following line to not import the prelude (requires the Lib.lean file) : ",
-            "import Lib",
-        ],
+    let header = docs![
+        allocator,
+        allocator.intersperse(
+            "
+-- Experimental lean backend for Hax
+-- Lib.lean can be found in hax/proof-libs/lean :
+import Lib
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false"
+                .lines(),
             allocator.hardline(),
-        )
-        .append(allocator.hardline())
-        .append(allocator.hardline());
+        ),
+        allocator.hardline(),
+        allocator.hardline()
+    ];
 
-    let item_docs: DocBuilder<_, Span> = header.append(allocator.intersperse(
-        items.iter(),
-        allocator.hardline().append(allocator.hardline()),
-    ));
+    let items = items
+        .iter()
+        .filter(|item: &&hax_rust_engine::ast::Item| Lean::printable_item(*item));
+    let item_docs: DocBuilder<_, Span> =
+        header.append(allocator.intersperse(items, allocator.hardline()));
 
     hax_rust_engine::hax_io::write(&hax_types::engine_api::protocol::FromEngine::File(File {
         path: krate + ".lean",
@@ -52,7 +63,10 @@ fn main() {
     let query = hax_rust_engine::ocaml_engine::Query {
         hax_version: value.hax_version,
         impl_infos: value.impl_infos,
-        kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir { input: value.input },
+        kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
+            input: value.input,
+            apply_phases: !matches!(&value.backend.backend, Backend::GenerateRustEngineNames),
+        },
     };
 
     let Some(Response::ImportThir { output: items }) = query.execute() else {

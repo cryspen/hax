@@ -47,7 +47,7 @@ fn name_of_local(
 /// Enumerates the kinds of Mir bodies. TODO: use const generics
 /// instead of an open list of types.
 pub mod mir_kinds {
-    use crate::prelude::{derive_group, JsonSchema};
+    use crate::prelude::{JsonSchema, derive_group};
 
     #[derive_group(Serializers)]
     #[derive(Clone, Copy, Debug, JsonSchema)]
@@ -235,8 +235,8 @@ fn translate_mir_const<'tcx, S: UnderOwnerState<'tcx>>(
     span: rustc_span::Span,
     konst: mir::Const<'tcx>,
 ) -> ConstOperandKind {
-    use rustc_middle::mir::Const;
     use ConstOperandKind::{Promoted, Value};
+    use rustc_middle::mir::Const;
     let tcx = s.base().tcx;
     match konst {
         Const::Val(const_value, ty) => {

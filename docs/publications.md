@@ -3,13 +3,11 @@ weight: 5
 ---
 
 To cite hax, please use
-
-<center>
-[**hax: Verifying Security-Critical Rust Software using Multiple Provers**](https://eprint.iacr.org/2025/142).
-</center>
+**[hax: Verifying Security-Critical Rust Software using Multiple Provers](https://eprint.iacr.org/2025/142)**.
 
 # Publications
 
+* [Formal Security and Functional Verification of Cryptographic Protocol Implementations in Rust](https://eprint.iacr.org/2025/980)
 * [hax: Verifying Security-Critical Rust Software using Multiple Provers](https://eprint.iacr.org/2025/142)
 * [hacspec Tech report](https://hal.inria.fr/hal-03176482)
 * [HACSpec: A gateway to high-assurance cryptography](https://github.com/hacspec/hacspec/blob/master/rwc2023-abstract.pdf)

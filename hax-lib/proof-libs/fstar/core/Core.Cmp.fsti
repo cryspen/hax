@@ -28,7 +28,7 @@ type t_Ordering =
 
 
 class t_PartialOrd (v_Self: Type) (v_Rhs:Type) = {
-  _super_7951719793721949255: t_PartialEq v_Self v_Rhs;
+  _super_17767811571638026139: t_PartialEq v_Self v_Rhs;
   f_partial_cmp_pre: v_Self -> v_Rhs -> Type0;
   f_partial_cmp_post: v_Self -> v_Rhs -> Core.Option.t_Option t_Ordering -> Type0;
   f_partial_cmp:v_Self -> v_Rhs -> Core.Option.t_Option t_Ordering;
@@ -55,8 +55,8 @@ let f_ge #v_Self #v_Rhs {| t_PartialOrd v_Self v_Rhs |} (self: v_Self) (rhs: v_R
   | _ -> true
 
 class t_Ord (v_Self: Type) = {
-  _super_641474646876120386: t_Eq v_Self;
-  _super_12012119932897234219: t_PartialOrd v_Self v_Self;
+  _super_8562072132021960682: t_Eq v_Self;
+  _super_17650760217149814164: t_PartialOrd v_Self v_Self;
   f_cmp_pre: v_Self -> v_Self -> Type0;
   f_cmp_post: v_Self -> v_Self -> t_Ordering -> Type0;
   f_cmp:v_Self -> v_Self -> t_Ordering;
@@ -86,7 +86,7 @@ instance eq_int_t t : t_Eq (int_t t) = {
 }
 
 instance partialOrd_int t : (t_PartialOrd (int_t t) (int_t t)) = {
-  _super_7951719793721949255 = (FStar.Tactics.Typeclasses.solve);
+  _super_17767811571638026139 = (FStar.Tactics.Typeclasses.solve);
 
   f_partial_cmp_pre = (fun x y -> True);
   f_partial_cmp_post = (fun x y z -> match z with
@@ -104,8 +104,8 @@ instance partialOrd_int t : (t_PartialOrd (int_t t) (int_t t)) = {
 
 [@FStar.Tactics.Typeclasses.tcinstance]
 instance ord_int t : t_Ord (int_t t) = {
-  _super_641474646876120386 = (FStar.Tactics.Typeclasses.solve);
-  _super_12012119932897234219 = (FStar.Tactics.Typeclasses.solve);
+  _super_8562072132021960682 = (FStar.Tactics.Typeclasses.solve);
+  _super_17650760217149814164 = (FStar.Tactics.Typeclasses.solve);
   f_cmp_pre = (fun x y -> True) ;
   f_cmp_post = (fun x y r ->
     match r with

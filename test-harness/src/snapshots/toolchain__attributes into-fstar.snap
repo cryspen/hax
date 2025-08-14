@@ -129,7 +129,8 @@ open FStar.Mul
 
 unfold type t_Int = int
 
-let impl_1: Core.Clone.t_Clone t_Int = { f_clone = (fun x -> x) }
+let impl_1: Core.Clone.t_Clone t_Int =
+  { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
@@ -314,7 +315,7 @@ class t_TraitWithRequiresAndEnsures (v_Self: Type0) = {
 
 let test
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_TraitWithRequiresAndEnsures v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_TraitWithRequiresAndEnsures v_T)
       (x: v_T)
     : u8 = (f_method #v_T #FStar.Tactics.Typeclasses.solve x (mk_u8 99) <: u8) -! mk_u8 88
 '''
@@ -471,7 +472,8 @@ let t_BoundedAbsI16 (v_B: usize) =
       (Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) <=
       (Rust_primitives.Hax.Int.from_machine v_B <: Hax_lib.Int.t_Int) }
 
-let impl (v_B: usize) : Core.Clone.t_Clone (t_BoundedAbsI16 v_B) = { f_clone = (fun x -> x) }
+let impl (v_B: usize) : Core.Clone.t_Clone (t_BoundedAbsI16 v_B) =
+  { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume

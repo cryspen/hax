@@ -1,5 +1,5 @@
 pub use crate::*;
-pub use schemars::{schema_for, JsonSchema};
+pub use schemars::{JsonSchema, schema_for};
 pub use serde::{Deserialize, Serialize};
 pub use std::collections::HashMap;
 pub use std::path::PathBuf;

@@ -1,6 +1,6 @@
 //! Reconstruct structured expressions from rustc's various constant representations.
 use super::*;
-use rustc_const_eval::interpret::{interp_ok, InterpResult};
+use rustc_const_eval::interpret::{InterpResult, interp_ok};
 use rustc_middle::mir::interpret;
 use rustc_middle::{mir, ty};
 
@@ -55,7 +55,7 @@ pub(crate) fn scalar_int_to_constant_literal<'tcx, S: UnderOwnerState<'tcx>>(
 
 /// Converts a bit-representation of a float of type `ty` to a constant literal
 fn bits_and_type_to_float_constant_literal(bits: u128, ty: FloatTy) -> ConstantLiteral {
-    use rustc_apfloat::{ieee, Float};
+    use rustc_apfloat::{Float, ieee};
     let string = match &ty {
         FloatTy::F16 => ieee::Half::from_bits(bits).to_string(),
         FloatTy::F32 => ieee::Single::from_bits(bits).to_string(),

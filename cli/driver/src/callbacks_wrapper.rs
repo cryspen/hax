@@ -1,4 +1,4 @@
-use hax_types::cli_options::{Command, Options, ENV_VAR_OPTIONS_FRONTEND};
+use hax_types::cli_options::{Command, ENV_VAR_OPTIONS_FRONTEND, Options};
 
 use rustc_ast::Crate;
 use rustc_driver::{Callbacks, Compilation};

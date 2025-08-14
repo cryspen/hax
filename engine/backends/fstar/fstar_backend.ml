@@ -155,7 +155,12 @@ struct
   let pnegative = function true -> "-" | false -> ""
 
   let dummy_clone_impl =
-    StringToFStar.term Span.default "{f_clone = (fun x -> x);}"
+    StringToFStar.term Span.default
+      {fstar|{
+        f_clone = (fun x -> x);
+        f_clone_pre = (fun _ -> True);
+        f_clone_post = (fun _ _ -> True);
+      }|fstar}
 
   (* Print a literal as an F* constant *)
   let rec pliteral_as_const span (e : literal) =
@@ -1553,19 +1558,39 @@ struct
             [ (F.id marker_field, None, [], pty e.span U.unit_typ) ]
           else fields
         in
-        let tcdef =
-          (* Binders are explicit on class definitions *)
-          let bds =
-            List.map
-              ~f:
-                FStarBinder.(
-                  of_generic_param e.span >> implicit_to_explicit >> to_binder)
-              generics.params
-          in
-          F.AST.TyconRecord (name_id, bds, None, [], fields)
+        (* Binders are explicit on class definitions *)
+        let bds =
+          List.map
+            ~f:
+              FStarBinder.(
+                of_generic_param e.span >> implicit_to_explicit >> to_binder)
+            generics.params
         in
+        let tcdef = F.AST.TyconRecord (name_id, bds, None, [], fields) in
         let d = F.AST.Tycon (false, true, [ tcdef ]) in
-        [ `Intf { d; drange = F.dummyRange; quals = []; attrs = [] } ]
+        (* This helps f* in type class resolution *)
+        let constraints_export =
+          constraints_fields
+          |> List.map ~f:(fun (super_name, _, _, typ) ->
+                 let super_name = FStar_Ident.string_of_id super_name in
+                 let tc_name = FStar_Ident.string_of_id name_id in
+                 let typ = FStar_Parser_AST.term_to_string typ in
+                 let binders = FStar_Parser_AST.binders_to_string ") (" bds in
+                 let tc_instance =
+                   name_id
+                   :: FStar_Parser_AST.idents_of_binders bds
+                        FStar_Compiler_Range.dummyRange
+                   |> List.map ~f:FStar_Ident.string_of_id
+                   |> String.concat ~sep:" "
+                 in
+                 `VerbatimIntf
+                   ( "[@@ FStar.Tactics.Typeclasses.tcinstance]\nlet _ = fun ("
+                     ^ binders ^ ") {|i: " ^ tc_instance ^ "|} -> i."
+                     ^ super_name,
+                     `Newline ))
+        in
+        `Intf { d; drange = F.dummyRange; quals = []; attrs = [] }
+        :: constraints_export
     | Impl
         {
           generics;
@@ -1622,7 +1647,14 @@ struct
         let fields = parent_bounds_fields @ fields in
         let fields =
           if List.is_empty fields then
-            [ (F.lid [ "__marker_trait" ], pexpr (U.unit_expr e.span)) ]
+            [
+              ( F.lid
+                  [
+                    "__marker_trait_"
+                    ^ FStar_Ident.string_of_lid (pconcrete_ident trait);
+                  ],
+                pexpr (U.unit_expr e.span) );
+            ]
           else fields
         in
         let body = F.term @@ F.AST.Record (None, fields) in
@@ -1911,7 +1943,6 @@ module DepGraphR = Dependencies.Make (Features.Rust)
 module TransformToInputLanguage =
   [%functor_application
     Phases.Reject.RawOrMutPointer(Features.Rust)
-  |> Phases.Drop_metasized
   |> Phases.Transform_hax_lib_inline
   |> Phases.Specialize
   |> Phases.Drop_sized_trait

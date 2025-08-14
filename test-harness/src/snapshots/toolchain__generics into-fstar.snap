@@ -59,9 +59,9 @@ type t_Test = | Test : t_Test
 
 let impl_Test__set_ciphersuites
       (#v_S #iimpl_995885649_: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef v_S string)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Convert.t_AsRef v_S string)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i3:
+          i1:
           Core.Iter.Traits.Collect.t_IntoIterator iimpl_995885649_)
       (self: t_Test)
       (ciphers: iimpl_995885649_)
@@ -70,9 +70,9 @@ let impl_Test__set_ciphersuites
 
 let impl_Test__set_alpn_protocols
       (#v_S #iimpl_995885649_: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core.Convert.t_AsRef v_S string)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Convert.t_AsRef v_S string)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i3:
+          i1:
           Core.Iter.Traits.Collect.t_IntoIterator iimpl_995885649_)
       (self: t_Test)
       (e_protocols: iimpl_995885649_)
@@ -87,7 +87,7 @@ open FStar.Mul
 
 let dup
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Clone.t_Clone v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Clone.t_Clone v_T)
       (x: v_T)
     : (v_T & v_T) =
   Core.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x,
@@ -115,7 +115,7 @@ let foo (v_LEN: usize) (arr: t_Array usize v_LEN) : usize =
 let repeat
       (v_LEN: usize)
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
       (x: v_T)
     : t_Array v_T v_LEN = Rust_primitives.Hax.repeat x v_LEN
 
@@ -126,7 +126,7 @@ let call_f (_: Prims.unit) : usize = (f (mk_usize 10) (mk_usize 3) <: usize) +! 
 let g
       (v_N: usize)
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Convert.t_Into v_T (t_Array usize v_N))
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Convert.t_Into v_T (t_Array usize v_N))
       (arr: v_T)
     : usize =
   (Core.Option.impl__unwrap_or #usize

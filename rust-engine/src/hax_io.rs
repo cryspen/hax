@@ -2,7 +2,7 @@
 
 use crate::ocaml_engine::ExtendedToEngine;
 use hax_types::engine_api::protocol::FromEngine;
-use std::io::{stdin, stdout, BufReader, Stdin};
+use std::io::{BufReader, Stdin, stdin, stdout};
 use std::sync::{LazyLock, Mutex};
 
 static STDIN: LazyLock<Mutex<serde_jsonlines::JsonLinesIter<BufReader<Stdin>, ExtendedToEngine>>> =
