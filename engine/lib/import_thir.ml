@@ -1174,7 +1174,7 @@ end) : EXPR = struct
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
     | Builtin { trait; _ } -> Builtin (c_trait_ref span trait.value)
     | Drop _ -> failwith @@ "impl_expr_atom: Drop"
-    | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
+    | Error _str -> Dyn (* TEMPORARY FIX, TO REMOVE *)
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value
       =
