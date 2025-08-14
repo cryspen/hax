@@ -1,0 +1,2 @@
+[jobs.clippy]
+command = ["cargo", "clippy", "--no-deps"]

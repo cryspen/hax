@@ -19,7 +19,9 @@ pub enum ResugaredItemKind {}
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredExprKind {}
+pub enum ResugaredExprKind {
+    Delimiter(super::Expr),
+}
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
 #[derive_group_for_ast]
