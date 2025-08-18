@@ -82,6 +82,7 @@ fn main() {
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),
+        Backend::TemplateBackend => todo!(),
         Backend::Lean => lean_backend(items),
         Backend::GenerateRustEngineNames => hax_rust_engine::hax_io::write(
             &hax_types::engine_api::protocol::FromEngine::File(File {

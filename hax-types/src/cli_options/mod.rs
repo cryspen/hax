@@ -172,6 +172,10 @@ pub struct FStarOptions<E: Extension> {
 #[derive_group(Serializers)]
 #[derive(JsonSchema, Subcommand, Debug, Clone)]
 pub enum Backend<E: Extension> {
+    #[clap(hide = true)]
+    /// An dummy template backend.
+    /// This backend serves as an example of backend that can be easily duplicated to create a new backend.
+    TemplateBackend,
     /// Use the F* backend
     Fstar(FStarOptions<E>),
     /// Use the Coq backend
@@ -194,6 +198,7 @@ pub enum Backend<E: Extension> {
 impl fmt::Display for Backend<()> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Backend::TemplateBackend { .. } => write!(f, "the_name_of_your_backend"),
             Backend::Fstar { .. } => write!(f, "fstar"),
             Backend::Coq { .. } => write!(f, "coq"),
             Backend::Ssprove { .. } => write!(f, "ssprove"),
