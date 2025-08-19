@@ -82,6 +82,9 @@ fn main() {
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),
+        Backend::TemplateBackend => {
+            backends::apply_backend(backends::template::TemplateBackend, items)
+        }
         Backend::Lean => lean_backend(items),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
         Backend::GenerateRustEngineNames => vec![File {

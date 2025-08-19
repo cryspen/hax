@@ -16,6 +16,7 @@
 
 pub mod lean;
 pub mod rust;
+pub mod template;
 
 use crate::{
     ast::{Item, Metadata, Module, span::Span},
