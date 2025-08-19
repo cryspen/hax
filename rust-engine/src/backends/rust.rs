@@ -30,8 +30,8 @@ impl Backend for RustBackend {
 }
 
 #[prepend_associated_functions_with(install_pretty_helpers!(self: Self))]
-// Note: the `const` wrapping makes my IDE and LSP happy. Otherwise, I don't get
-// autocompletion of methods in the impl block below.
+// Tagging the `impl` directly with `prepend_associated_functions_with` prevent
+// auto completion from Rust Analyzer, thus we have this `const`.
 const _: () = {
     // Boilerplate: define local macros to disambiguate otherwise `std` macros.
     #[allow(unused)]
