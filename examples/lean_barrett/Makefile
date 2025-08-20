@@ -2,7 +2,6 @@
 default:
 	cargo hax into lean
 	(cd proofs/lean/extraction && \
-   elan self update && \
    lake update && \
    lake build)
 
