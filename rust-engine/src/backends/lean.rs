@@ -180,32 +180,44 @@ set_option linter.unusedVariables false
                 }
                 ExprKind::Construct {
                     constructor,
-                    is_record: _,
-                    is_struct: _,
+                    is_record,
+                    is_struct,
                     fields,
                     base: _,
                 } => {
-                    let record_args = (!fields.is_empty()).then_some(
+                    if fields.is_empty() {
+                        if *is_struct {
+                            docs!["()"]
+                        } else {
+                            docs![".", constructor.to_head_debug_string()]
+                        }
+                    } else if *is_record {
                         docs![
+                            ".",
+                            constructor.to_head_debug_string(),
                             line!(),
                             intersperse!(
-                                fields.iter().map(|field: &(GlobalId, Expr)| docs![
-                                    &field.0,
-                                    reflow!(" := "),
-                                    &field.1
-                                ]
-                                .parens()
-                                .group()),
+                                fields.iter().map(|field: &(GlobalId, Expr)| {
+                                    let head = field.0.to_head_debug_string().clone();
+                                    docs![head, reflow!(" := "), &field.1].parens().group()
+                                }),
                                 line!()
                             )
                             .group()
                         ]
-                        .group(),
-                    );
-                    docs!["constr_", constructor, record_args]
                         .parens()
                         .group()
                         .nest(INDENT)
+                    } else {
+                        docs![
+                            ".",
+                            constructor.to_head_debug_string(),
+                            line!(),
+                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!())
+                        ]
+                        .parens()
+                        .group()
+                    }
                 }
                 ExprKind::Let { lhs, rhs, body } => docs![
                     "let ",
@@ -280,7 +292,22 @@ set_option linter.unusedVariables false
                             .parens()
                     }
                 },
+                ExprKind::Match { scrutinee, arms } => docs![
+                    docs!["match", line!(), scrutinee, reflow!(" with")].group(),
+                    line!(),
+                    intersperse!(arms, line!())
+                ]
+                .group()
+                .nest(INDENT),
                 _ => todo!(),
+            }
+        }
+
+        fn arm(&'a self, arm: &'b Arm) -> DocBuilder<'a, Self, A> {
+            if let Some(_guard) = &arm.guard {
+                todo!()
+            } else {
+                docs!["| ", &*arm.pat.kind, reflow!(" => "), &arm.body].group()
             }
         }
 
@@ -297,7 +324,52 @@ set_option linter.unusedVariables false
                     (false, BindingMode::ByValue, None) => docs![var],
                     _ => panic!(),
                 },
-                _ => todo!(),
+                PatKind::Or { sub_pats } => docs![intersperse!(sub_pats, reflow!(" | "))].group(),
+                PatKind::Array { args: _ } => todo!(),
+                PatKind::Deref { sub_pat: _ } => todo!(),
+                PatKind::Constant { lit: _ } => todo!(),
+                PatKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct,
+                    fields,
+                } => {
+                    if fields.is_empty() {
+                        if *is_struct {
+                            docs!["()"]
+                        } else {
+                            docs![".", constructor.to_head_debug_string()]
+                        }
+                    } else if *is_record {
+                        docs![
+                            ".",
+                            constructor.to_head_debug_string(),
+                            line!(),
+                            intersperse!(
+                                fields.iter().map(|field: &(GlobalId, _)| {
+                                    let head = field.0.to_head_debug_string().clone();
+                                    docs![head, reflow!(" := "), &field.1].parens().group()
+                                }),
+                                line!()
+                            )
+                            .group()
+                        ]
+                        .parens()
+                        .group()
+                        .nest(INDENT)
+                    } else {
+                        docs![
+                            ".",
+                            constructor.to_head_debug_string(),
+                            line!(),
+                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!())
+                        ]
+                        .parens()
+                        .group()
+                    }
+                }
+                PatKind::Resugared(_resugared_pat_kind) => todo!(),
+                PatKind::Error(_error_node) => todo!(),
             }
         }
 
@@ -469,6 +541,29 @@ set_option linter.unusedVariables false
                 } => nil!(),
                 ItemKind::Quote { quote, origin: _ } => docs![quote],
                 ItemKind::NotImplementedYet => docs!["sorry /- unsupported by the Hax engine -/"],
+                ItemKind::Type {
+                    name,
+                    generics: _,
+                    variants,
+                    is_struct,
+                } => {
+                    if *is_struct {
+                        todo!()
+                    } else {
+                        docs![
+                            "inductive ",
+                            name,
+                            " : Type",
+                            hardline!(),
+                            concat!(variants.iter().map(|variant| docs![
+                                variant,
+                                name,
+                                hardline!()
+                            ])),
+                            hardline!()
+                        ]
+                    }
+                }
                 _ => todo!(),
             }
         }
@@ -479,6 +574,43 @@ set_option linter.unusedVariables false
             } else {
                 nil!()
             }
+        }
+
+        fn variant(&'a self, variant: &'b Variant) -> DocBuilder<'a, Self, A> {
+            docs![
+                "| ",
+                variant.name.to_head_debug_string(),
+                softline!(),
+                if variant.is_record {
+                    // Use named the arguments, keeping only the head of the identifier
+                    docs![
+                        intersperse!(
+                            variant.arguments.iter().map(|(id, ty, _)| {
+                                docs![id.to_head_debug_string(), reflow!(" : "), ty]
+                                    .parens()
+                                    .group()
+                            }),
+                            line!()
+                        )
+                        .align()
+                        .nest(INDENT),
+                        reflow!(" : ")
+                    ]
+                } else {
+                    // Use anonymous arguments
+                    docs![
+                        reflow!(" : "),
+                        concat!(
+                            variant
+                                .arguments
+                                .iter()
+                                .map(|(_, ty, _)| { docs![ty, reflow!(" -> ")] })
+                        )
+                    ]
+                }
+            ]
+            .group()
+            .nest(INDENT)
         }
     }
 };

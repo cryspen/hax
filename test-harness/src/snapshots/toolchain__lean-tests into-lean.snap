@@ -50,7 +50,7 @@ def returns42 (_ : hax_Tuple0) : Result USize := do FORTYTWO
 def add_two_numbers (x : USize) (y : USize) : Result USize := do (← x +? y)
 
 def letBinding (x : USize) (y : USize) : Result USize := do
-  let (useless : hax_Tuple0) ← pure (constr_hax_Tuple0);
+  let (useless : hax_Tuple0) ← pure ();
   let (result1 : USize) ← pure (← x +? y);
   let (result2 : USize) ← pure (← result1 +? 2);
   (← result2 +? 1)
@@ -60,10 +60,9 @@ def closure (_ : hax_Tuple0) : Result Int32 := do
   let (f1 : Int32 -> Result Int32) ← pure (fun (y : Int32) => do (← y +? x));
   let (f2 : Int32 -> Int32 -> Result Int32) ← pure
     (fun (y : Int32) (z : Int32) => do (← (← y +? x) +? z));
-  (← (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1))) +?
-  (← ops_function_Fn_call
+  (← (← ops_function_Fn_call f1 (.Tuple1 1)) +? (← ops_function_Fn_call
   f2
-    (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
+    (.Tuple2 2 3)))
 
 
 @[spec]
@@ -77,4 +76,32 @@ def test_before_verbatim_multi_line (x : UInt8) : Result UInt8 := do 32
 
 def binop_resugarings (x : UInt32) : Result UInt32 := do
   (← (← (← x +? 1) -? (← (← (← 2 *? 3) %? 4) /? 5)) >>>? 1)
+
+inductive WebEvent : Type
+| PageLoad  : WebEvent
+| PageUnload  : WebEvent
+| KeyPress  : Char -> WebEvent
+| Paste  : USize -> WebEvent
+| Click (x : Int64) (y : Int64) : WebEvent
+
+
+def inspect (event : WebEvent) : Result hax_Tuple0 := do
+  match event with
+    | (.PageLoad : WebEvent) | (.PageUnload : WebEvent) => ()
+    | (.KeyPress (c : Char)) => ()
+    | (.Paste (s : USize)) => ()
+    | (.Click (x := (x : Int64)) (y := (y : Int64))) => ()
+
+def main_enum (_ : hax_Tuple0) : Result hax_Tuple0 := do
+  let (pressed : WebEvent) ← pure (.KeyPress 'x');
+  let (pasted : WebEvent) ← pure (.Paste 56);
+  let (click : WebEvent) ← pure (.Click (x := 20) (y := 80));
+  let (load : WebEvent) ← pure .PageLoad;
+  let (unload : WebEvent) ← pure .PageUnload;
+  let (_ : hax_Tuple0) ← pure (← inspect pressed);
+  let (_ : hax_Tuple0) ← pure (← inspect pasted);
+  let (_ : hax_Tuple0) ← pure (← inspect click);
+  let (_ : hax_Tuple0) ← pure (← inspect load);
+  let (_ : hax_Tuple0) ← pure (← inspect unload);
+  ()
 '''
