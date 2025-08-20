@@ -227,6 +227,7 @@
               packages.proverif
               pkgs.jq
               pkgs.lean4
+              pkgs.elan
             ];
           };
           default = pkgs.mkShell {
