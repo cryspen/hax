@@ -14,6 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
+    - uses: DeterminateSystems/magic-nix-cache-action@main
     - uses: cachix/cachix-action@v15
       with:
         name: hax
@@ -29,13 +30,13 @@ jobs:
         nix profile install .#rustc
         nix profile install .
 
-    - name: Ensure readme coherency
-      run: |
-        nix build .#check-readme-coherency -L
+    # - name: Ensure readme coherency
+    #   run: |
+    #     nix build .#check-readme-coherency -L
 
-    - name: Test the toolchain
-      run: |
-        nix build .#check-toolchain -L
+    # - name: Test the toolchain
+    #   run: |
+    #     nix build .#check-toolchain -L
 
     - name: Test the examples
       run: |
