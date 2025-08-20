@@ -40,7 +40,6 @@ jobs:
     - name: Test the examples
       run: |
         cd examples
-        nix-shell -p lean4
         nix develop ..#ci-examples --command make clean
         nix develop ..#ci-examples --command make
 
