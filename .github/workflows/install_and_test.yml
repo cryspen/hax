@@ -15,6 +15,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
     - uses: DeterminateSystems/magic-nix-cache-action@main
+    - uses: mxschmitt/action-tmate@v3
     - uses: cachix/cachix-action@v15
       with:
         name: hax
