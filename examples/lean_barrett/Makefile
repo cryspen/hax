@@ -4,5 +4,5 @@ default:
 	cd proofs/lean/extraction && lake build
 
 clean:
-	rm -f proofs/lean/extraction/lean_barrett.lean
-	cd proofs/lean/extraction && lake clean
+	-rm -f proofs/lean/extraction/lean_barrett.lean
+	-cd proofs/lean/extraction && lake clean

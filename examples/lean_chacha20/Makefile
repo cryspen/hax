@@ -4,4 +4,4 @@ default:
 	cd proofs/lean/extraction && lake build
 
 clean:
-	rm -f proofs/lean/extraction/lean_chacha20.lean
+	-rm -f proofs/lean/extraction/lean_chacha20.lean
