@@ -10,6 +10,7 @@
 //!   emitted code idiomatic for the target language before pretty-printing.
 
 mod allocator;
+mod parens;
 use std::ops::Deref;
 
 pub use allocator::Allocator;
