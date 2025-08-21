@@ -257,7 +257,7 @@ let engine () =
       Printexc.raise_with_backtrace exn bt
 
 module ExportRustAst = Export_ast.Make (Features.Rust)
-module ExportFStarAst = Export_ast.Make (Fstar_backend.InputLanguage)
+module ExportLeanAst = Export_ast.Make (Lean_backend.InputLanguage)
 
 (** Entry point for interacting with the Rust hax engine *)
 let driver_for_rust_engine () : unit =
@@ -270,25 +270,19 @@ let driver_for_rust_engine () : unit =
   Concrete_ident.ImplInfoStore.init
     (Concrete_ident_generated.impl_infos @ query.impl_infos);
   match query.kind with
-  | Types.ImportThir { input } ->
+  | Types.ImportThir { input; apply_phases } ->
+      (* Note: `apply_phases` comes from the type `QueryKind` in
+       `ocaml_engine.rs`. This is a temporary flag that applies some phases while
+       importing THIR. In the future (when #1550 is merged), we will be able to
+       import THIR and then apply phases. *)
       let imported_items = import_thir_items [] input in
-      let imported_items =
-        (* TODO: this let binding is applying the phases from the F* backend *)
-        Fstar_backend.apply_phases
-          {
-            cli_extension = EmptyStructempty_args_extension;
-            fuel = Int64.zero;
-            ifuel = Int64.zero;
-            interfaces = [];
-            line_width = 80;
-            z3rlimit = Int64.zero;
-          }
-          imported_items
-      in
       let rust_ast_items =
-        List.concat_map
-          ~f:(fun item -> ExportFStarAst.ditem item)
-          imported_items
+        if apply_phases then
+          let imported_items = Lean_backend.apply_phases imported_items in
+          List.concat_map
+            ~f:(fun item -> ExportLeanAst.ditem item)
+            imported_items
+        else List.concat_map ~f:ExportRustAst.ditem imported_items
       in
       let response = Rust_engine_types.ImportThir { output = rust_ast_items } in
       Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);

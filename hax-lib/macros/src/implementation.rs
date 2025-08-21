@@ -989,7 +989,7 @@ macro_rules! make_quoting_proc_macro {
     }
 }
 
-make_quoting_proc_macro!(fstar coq proverif);
+make_quoting_proc_macro!(fstar coq proverif lean);
 
 /// Marks a newtype `struct RefinedT(T);` as a refinement type. The
 /// struct should have exactly one unnamed private field.

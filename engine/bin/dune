@@ -5,6 +5,7 @@
  (libraries
   hax_engine
   fstar_backend
+  lean_backend
   coq_backend
   ssprove_backend
   easycrypt_backend

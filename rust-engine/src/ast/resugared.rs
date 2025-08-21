@@ -36,3 +36,34 @@ pub enum ResugaredImplItemKind {}
 /// Resugared variants for trait items. This represent extra printing-only trait items, see [`super::TraitItemKind::Resugared`].
 #[derive_group_for_ast]
 pub enum ResugaredTraitItemKind {}
+
+/// Marks a type as a resugar fragment of the AST.
+pub trait ResugaredFragment {
+    /// What fragment of the AST this resugar is extending?
+    type ParentFragment;
+}
+
+/// Convenience macro which implements [`ResugaredFragment`] on `$ty`, setting
+/// `$parent` as the `ParentFragment`, as well as `From<$ty>` for `$parent`, by
+/// wrapping the `$ty` in `$parent::Resugared(..)`.
+macro_rules! derive_from {
+    ($($ty:ty => $parent:ty),*) => {
+        $(impl ResugaredFragment for $ty {
+            type ParentFragment = $parent;
+        }
+        impl From<$ty> for <$ty as ResugaredFragment>::ParentFragment {
+            fn from(value: $ty) -> Self {
+                Self::Resugared(value)
+            }
+        })*
+    };
+}
+
+derive_from!(
+    ResugaredItemKind => super::ItemKind,
+    ResugaredExprKind => super::ExprKind,
+    ResugaredPatKind => super::PatKind,
+    ResugaredTyKind => super::TyKind,
+    ResugaredImplItemKind => super::ImplItemKind,
+    ResugaredTraitItemKind => super::TraitItemKind
+);

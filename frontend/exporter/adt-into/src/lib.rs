@@ -1,9 +1,9 @@
 use quote::quote;
 use quote::quote_spanned;
-use syn::parse::ParseStream;
 use syn::Token;
-use syn::{parse_macro_input, Data, DeriveInput, Generics};
-use syn::{spanned::Spanned, PathArguments, PathSegment};
+use syn::parse::ParseStream;
+use syn::{Data, DeriveInput, Generics, parse_macro_input};
+use syn::{PathArguments, PathSegment, spanned::Spanned};
 
 fn strip_parenthesis(tokens: proc_macro::TokenStream) -> Option<proc_macro::TokenStream> {
     match tokens.into_iter().collect::<Vec<_>>().as_slice() {

@@ -1,0 +1,12 @@
+name = "Hax"
+version = "0.1.0"
+defaultTargets = ["Hax"]
+lintDriver = "batteries/runLinter"
+
+[[require]]
+name = "batteries"
+scope = "leanprover-community"
+rev = "main"
+
+[[lean_lib]]
+name = "Hax"

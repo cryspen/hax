@@ -16,6 +16,7 @@ pub mod identifiers;
 pub mod literals;
 pub mod resugared;
 pub mod span;
+pub mod visitors;
 
 use crate::symbol::Symbol;
 use diagnostics::Diagnostic;
@@ -179,7 +180,16 @@ pub enum TyKind {
     Resugared(ResugaredTyKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
+}
+
+#[derive_group_for_ast]
+/// Represent a node of the AST where an error occured.
+pub struct ErrorNode {
+    /// The node from the AST at the time something failed
+    pub fragment: Box<Fragment>,
+    /// The error(s) encountered.
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 /// A `dyn` trait. The generic arguments are known but the actual type
@@ -381,7 +391,7 @@ pub enum PatKind {
     Resugared(ResugaredPatKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 }
 
 /// Represents the various kinds of pattern guards.
@@ -1047,7 +1057,7 @@ pub enum ExprKind {
     Resugared(ResugaredExprKind),
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 }
 
 /// Represents the kinds of generic parameters
@@ -1413,7 +1423,7 @@ pub enum ItemKind {
     },
 
     /// Fallback constructor to carry errors.
-    Error(Diagnostic),
+    Error(ErrorNode),
 
     /// A resugared item.
     /// This variant is introduced before printing only.
@@ -1435,6 +1445,17 @@ pub struct Item {
     pub meta: Metadata,
 }
 
+/// A "flat" module: this contains only non-module items.
+#[derive_group_for_ast]
+pub struct Module {
+    /// The global identifier of the module.
+    pub ident: GlobalId,
+    /// The list of items that belongs to this module.
+    pub items: Vec<Item>,
+    /// Source span and attributes.
+    pub meta: Metadata,
+}
+
 /// Traits for utilities on AST data types
 pub mod traits {
     use super::*;
@@ -1442,11 +1463,15 @@ pub mod traits {
     pub trait HasMetadata {
         /// Get metadata
         fn metadata(&self) -> &Metadata;
+        /// Get mutable borrow on metadata
+        fn metadata_mut(&mut self) -> &mut Metadata;
     }
     /// Marks AST data types that carry a span
     pub trait HasSpan {
         /// Get span
         fn span(&self) -> Span;
+        /// Mutable borrow on the span
+        fn span_mut(&mut self) -> &mut Span;
     }
     /// Marks AST data types that carry a Type
     pub trait Typed {
@@ -1457,6 +1482,9 @@ pub mod traits {
         fn span(&self) -> Span {
             self.metadata().span.clone()
         }
+        fn span_mut(&mut self) -> &mut Span {
+            &mut self.metadata_mut().span
+        }
     }
 
     /// Marks types of the AST that carry a kind (an enum for the actual content)
@@ -1465,6 +1493,8 @@ pub mod traits {
         type Kind;
         /// Get kind
         fn kind(&self) -> &Self::Kind;
+        /// Get mutable borrow on kind
+        fn kind_mut(&mut self) -> &mut Self::Kind;
     }
 
     macro_rules! derive_has_metadata {
@@ -1472,6 +1502,9 @@ pub mod traits {
             $(impl HasMetadata for $ty {
                 fn metadata(&self) -> &Metadata {
                     &self.meta
+                }
+                fn metadata_mut(&mut self) -> &mut Metadata {
+                    &mut self.meta
                 }
             })*
         };
@@ -1482,6 +1515,9 @@ pub mod traits {
                 type Kind = $kind;
                 fn kind(&self) -> &Self::Kind {
                     &self.kind
+                }
+                fn kind_mut(&mut self) -> &mut Self::Kind {
+                    &mut self.kind
                 }
             })*
         };
@@ -1506,6 +1542,9 @@ pub mod traits {
         fn span(&self) -> Span {
             self.span.clone()
         }
+        fn span_mut(&mut self) -> &mut Span {
+            &mut self.span
+        }
     }
 
     impl Typed for Expr {
@@ -1528,6 +1567,9 @@ pub mod traits {
         fn span(&self) -> Span {
             self.span.clone()
         }
+        fn span_mut(&mut self) -> &mut Span {
+            &mut self.span
+        }
     }
 
     impl ExprKind {
@@ -1547,8 +1589,39 @@ pub mod traits {
         type Kind = TyKind;
 
         fn kind(&self) -> &Self::Kind {
-            &(*self.0)
+            &self.0
+        }
+        fn kind_mut(&mut self) -> &mut Self::Kind {
+            &mut self.0
         }
     }
+
+    /// Fragments of the AST on which we can store an `ErrorNode`.
+    pub trait FallibleAstNode {
+        /// Replace the current node with an error.
+        fn set_error(&mut self, error_node: ErrorNode);
+        /// Extract an error if any.
+        fn get_error(&self) -> Option<&ErrorNode>;
+    }
+    macro_rules! derive_error_node {
+        ($($ty:ident => $kind:ident),*) => {$(
+            impl FallibleAstNode for $ty {
+                fn set_error(&mut self, mut error_node: ErrorNode) {
+                    if let Some(base) = self.get_error().cloned() {
+                        error_node.diagnostics.extend_from_slice(&base.diagnostics);
+                    }
+                    *self.kind_mut() = $kind::Error(error_node)
+                }
+                fn get_error(&self) -> Option<&ErrorNode> {
+                    match &self.kind() {
+                        $kind::Error(error_node) => Some(error_node),
+                        _ => None,
+                    }
+                }
+            }
+        )*};
+    }
+
+    derive_error_node!(Item => ItemKind, Pat => PatKind, Expr => ExprKind, Ty => TyKind);
 }
 pub use traits::*;

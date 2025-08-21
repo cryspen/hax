@@ -6,6 +6,8 @@
 use crate::ast::*;
 use hax_rust_engine_macros::*;
 
+pub use hax_types::diagnostics::Kind as DiagnosticInfoKind;
+
 /// Error diagnostic
 #[derive_group_for_ast]
 pub struct Diagnostic {
@@ -24,15 +26,6 @@ pub struct DiagnosticInfo {
     pub kind: DiagnosticInfoKind,
 }
 
-/// Description of the error
-#[derive_group_for_ast]
-pub enum DiagnosticInfoKind {
-    /// Custom error
-    Custom(String),
-    /// Import of a parameter without pattern
-    ImportParamWithoutPattern,
-}
-
 impl Diagnostic {
     /// Get diagnostic information
     pub fn info(&self) -> &DiagnosticInfo {
@@ -43,7 +36,8 @@ impl Diagnostic {
         &self.node
     }
     /// Report an error
-    pub fn new(node: Fragment, info: DiagnosticInfo) -> Self {
+    pub fn new(node: impl Into<Fragment>, info: DiagnosticInfo) -> Self {
+        let node = node.into();
         eprintln!("Todo, error reporting");
         eprintln!("node={node:#?}");
         eprintln!("info={info:#?}");

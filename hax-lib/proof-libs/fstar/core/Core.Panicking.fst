@@ -5,7 +5,7 @@ open Rust_primitives.Hax
 
 type t_AssertKind = | AssertKind_Eq
 
-let explicit_panic (_: unit {False}): t_Never
+let panic_explicit (_: unit {False}): t_Never
   = match () with
 
 let panic (message: string {False}): t_Never

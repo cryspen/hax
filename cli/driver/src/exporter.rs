@@ -1,6 +1,6 @@
-use hax_frontend_exporter::state::LocalContextS;
 use hax_frontend_exporter::SInto;
-use hax_types::cli_options::{Backend, PathOrDash, ENV_VAR_OPTIONS_FRONTEND};
+use hax_frontend_exporter::state::LocalContextS;
+use hax_types::cli_options::{Backend, ENV_VAR_OPTIONS_FRONTEND, PathOrDash};
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::interface;
 use rustc_interface::interface::Compiler;
@@ -120,7 +120,7 @@ impl Callbacks for ExtractionCallbacks {
 
         let mut file = BufWriter::new(File::create(&haxmeta_path).unwrap());
 
-        use hax_types::driver_api::{with_kind_type, HaxMeta};
+        use hax_types::driver_api::{HaxMeta, with_kind_type};
         with_kind_type!(
             self.body_types.clone(),
             <Body>|| {

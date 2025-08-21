@@ -1,10 +1,10 @@
-pub use super::root;
+use super::root;
 pub mod alloc {
     #![doc = r##"This is the module [`::alloc`]."##]
-    pub use super::root;
+    use super::root;
     pub mod alloc {
         #![doc = r##"This is the module [`::alloc::alloc`]."##]
-        pub use super::root;
+        use super::root;
         mk!(
             Global,
             r##"This is the struct [`::alloc::alloc::Global`]."##,
@@ -26,20 +26,36 @@ pub mod alloc {
     }
     pub mod boxed {
         #![doc = r##"This is the module [`::alloc::boxed`]."##]
-        pub use super::root;
+        use super::root;
+        pub mod Impl {
+            #![doc = r##"This is an impl block."##]
+            use super::root;
+            mk!(
+                new,
+                r##"This is the associated function [`::alloc::boxed::Impl::new`]."##,
+                r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0],[{"ValueNs":"new"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::alloc::boxed::Impl())
+            );
+        }
         mk!(
             Box,
             r##"This is the struct [`::alloc::boxed::Box`]."##,
             r##"["alloc",[[{"TypeNs":"boxed"},0],[{"TypeNs":"Box"},0]],"Struct"]"##,
             ::core::option::Option::Some(root::alloc::boxed())
         );
+        mk!(
+            Impl,
+            r##"This is an impl block."##,
+            r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            ::core::option::Option::Some(root::alloc::boxed())
+        );
     }
     pub mod slice {
         #![doc = r##"This is the module [`::alloc::slice`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Concat {
             #![doc = r##"This is the trait [`::alloc::slice::Concat`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Output,
                 r##"This is the associated type [`::alloc::slice::Concat::Output`]."##,
@@ -49,7 +65,7 @@ pub mod alloc {
         }
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 concat,
                 r##"This is the associated function [`::alloc::slice::Impl::concat`]."##,
@@ -90,7 +106,7 @@ pub mod alloc {
     }
     pub mod string {
         #![doc = r##"This is the module [`::alloc::string`]."##]
-        pub use super::root;
+        use super::root;
         mk!(
             String,
             r##"This is the struct [`::alloc::string::String`]."##,
@@ -100,10 +116,10 @@ pub mod alloc {
     }
     pub mod vec {
         #![doc = r##"This is the module [`::alloc::vec`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl__1 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 truncate,
                 r##"This is the associated function [`::alloc::vec::Impl__1::truncate`]."##,
@@ -113,7 +129,7 @@ pub mod alloc {
         }
         pub mod Impl__2 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 extend_from_slice,
                 r##"This is the associated function [`::alloc::vec::Impl__2::extend_from_slice`]."##,
@@ -197,10 +213,10 @@ pub mod alloc {
 }
 pub mod core {
     #![doc = r##"This is the module [`::core`]."##]
-    pub use super::root;
+    use super::root;
     pub mod alloc {
         #![doc = r##"This is the module [`::core::alloc`]."##]
-        pub use super::root;
+        use super::root;
         mk!(
             Allocator,
             r##"This is the trait [`::core::alloc::Allocator`]."##,
@@ -210,10 +226,10 @@ pub mod core {
     }
     pub mod array {
         #![doc = r##"This is the module [`::core::array`]."##]
-        pub use super::root;
+        use super::root;
         pub mod iter {
             #![doc = r##"This is the module [`::core::array::iter`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Impl__1,
                 r##"This is an impl block."##,
@@ -236,7 +252,7 @@ pub mod core {
     }
     pub mod borrow {
         #![doc = r##"This is the module [`::core::borrow`]."##]
-        pub use super::root;
+        use super::root;
         mk!(
             Borrow,
             r##"This is the trait [`::core::borrow::Borrow`]."##,
@@ -252,10 +268,10 @@ pub mod core {
     }
     pub mod clone {
         #![doc = r##"This is the module [`::core::clone`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Clone {
             #![doc = r##"This is the trait [`::core::clone::Clone`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 clone,
                 r##"This is the associated function [`::core::clone::Clone::clone`]."##,
@@ -265,7 +281,7 @@ pub mod core {
         }
         pub mod impls {
             #![doc = r##"This is the module [`::core::clone::impls`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Impl__6,
                 r##"This is an impl block."##,
@@ -288,10 +304,10 @@ pub mod core {
     }
     pub mod cmp {
         #![doc = r##"This is the module [`::core::cmp`]."##]
-        pub use super::root;
+        use super::root;
         pub mod PartialEq {
             #![doc = r##"This is the trait [`::core::cmp::PartialEq`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 eq,
                 r##"This is the associated function [`::core::cmp::PartialEq::eq`]."##,
@@ -307,7 +323,7 @@ pub mod core {
         }
         pub mod PartialOrd {
             #![doc = r##"This is the trait [`::core::cmp::PartialOrd`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 ge,
                 r##"This is the associated function [`::core::cmp::PartialOrd::ge`]."##,
@@ -348,10 +364,10 @@ pub mod core {
     }
     pub mod convert {
         #![doc = r##"This is the module [`::core::convert`]."##]
-        pub use super::root;
+        use super::root;
         pub mod From {
             #![doc = r##"This is the trait [`::core::convert::From`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 from,
                 r##"This is the associated function [`::core::convert::From::from`]."##,
@@ -361,7 +377,7 @@ pub mod core {
         }
         pub mod Into {
             #![doc = r##"This is the trait [`::core::convert::Into`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 into,
                 r##"This is the associated function [`::core::convert::Into::into`]."##,
@@ -371,7 +387,7 @@ pub mod core {
         }
         pub mod num {
             #![doc = r##"This is the module [`::core::convert::num`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Impl__64,
                 r##"This is an impl block."##,
@@ -398,6 +414,12 @@ pub mod core {
             ::core::option::Option::Some(root::core::convert())
         );
         mk!(
+            Impl__4,
+            r##"This is an impl block."##,
+            r##"["core",[[{"TypeNs":"convert"},0],["Impl",4]],{"Impl":{"of_trait":true}}]"##,
+            ::core::option::Option::Some(root::core::convert())
+        );
+        mk!(
             Infallible,
             r##"This is the enum [`::core::convert::Infallible`]."##,
             r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Infallible"},0]],"Enum"]"##,
@@ -416,15 +438,47 @@ pub mod core {
             ::core::option::Option::Some(root::core::convert())
         );
     }
+    pub mod fmt {
+        #![doc = r##"This is the module [`::core::fmt`]."##]
+        use super::root;
+        pub mod num {
+            #![doc = r##"This is the module [`::core::fmt::num`]."##]
+            use super::root;
+            mk!(
+                Impl__82,
+                r##"This is an impl block."##,
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",82]],{"Impl":{"of_trait":true}}]"##,
+                ::core::option::Option::Some(root::core::fmt::num())
+            );
+        }
+        mk!(
+            Arguments,
+            r##"This is the struct [`::core::fmt::Arguments`]."##,
+            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Arguments"},0]],"Struct"]"##,
+            ::core::option::Option::Some(root::core::fmt())
+        );
+        mk!(
+            Debug,
+            r##"This is the trait [`::core::fmt::Debug`]."##,
+            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Debug"},0]],"Trait"]"##,
+            ::core::option::Option::Some(root::core::fmt())
+        );
+        mk!(
+            num,
+            r##"This is the module [`::core::fmt::num`]."##,
+            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::core::fmt())
+        );
+    }
     pub mod iter {
         #![doc = r##"This is the module [`::core::iter`]."##]
-        pub use super::root;
+        use super::root;
         pub mod adapters {
             #![doc = r##"This is the module [`::core::iter::adapters`]."##]
-            pub use super::root;
+            use super::root;
             pub mod enumerate {
                 #![doc = r##"This is the module [`::core::iter::adapters::enumerate`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Enumerate,
                     r##"This is the struct [`::core::iter::adapters::enumerate::Enumerate`]."##,
@@ -434,7 +488,7 @@ pub mod core {
             }
             pub mod step_by {
                 #![doc = r##"This is the module [`::core::iter::adapters::step_by`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     StepBy,
                     r##"This is the struct [`::core::iter::adapters::step_by::StepBy`]."##,
@@ -457,13 +511,13 @@ pub mod core {
         }
         pub mod traits {
             #![doc = r##"This is the module [`::core::iter::traits`]."##]
-            pub use super::root;
+            use super::root;
             pub mod collect {
                 #![doc = r##"This is the module [`::core::iter::traits::collect`]."##]
-                pub use super::root;
+                use super::root;
                 pub mod IntoIterator {
                     #![doc = r##"This is the trait [`::core::iter::traits::collect::IntoIterator`]."##]
-                    pub use super::root;
+                    use super::root;
                     mk!(
                         IntoIter,
                         r##"This is the associated type [`::core::iter::traits::collect::IntoIterator::IntoIter`]."##,
@@ -490,10 +544,10 @@ pub mod core {
             }
             pub mod iterator {
                 #![doc = r##"This is the module [`::core::iter::traits::iterator`]."##]
-                pub use super::root;
+                use super::root;
                 pub mod Iterator {
                     #![doc = r##"This is the trait [`::core::iter::traits::iterator::Iterator`]."##]
-                    pub use super::root;
+                    use super::root;
                     mk!(
                         Item,
                         r##"This is the associated type [`::core::iter::traits::iterator::Iterator::Item`]."##,
@@ -560,26 +614,20 @@ pub mod core {
     }
     pub mod marker {
         #![doc = r##"This is the module [`::core::marker`]."##]
-        pub use super::root;
+        use super::root;
         mk!(
             Copy,
             r##"This is the trait [`::core::marker::Copy`]."##,
             r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Copy"},0]],"Trait"]"##,
             ::core::option::Option::Some(root::core::marker())
         );
-        mk!(
-            Sized,
-            r##"This is the trait [`::core::marker::Sized`]."##,
-            r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Sized"},0]],"Trait"]"##,
-            ::core::option::Option::Some(root::core::marker())
-        );
     }
     pub mod num {
         #![doc = r##"This is the module [`::core::num`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl__9 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 to_le_bytes,
                 r##"This is the associated function [`::core::num::Impl__9::to_le_bytes`]."##,
@@ -596,13 +644,13 @@ pub mod core {
     }
     pub mod ops {
         #![doc = r##"This is the module [`::core::ops`]."##]
-        pub use super::root;
+        use super::root;
         pub mod arith {
             #![doc = r##"This is the module [`::core::ops::arith`]."##]
-            pub use super::root;
+            use super::root;
             pub mod Add {
                 #![doc = r##"This is the trait [`::core::ops::arith::Add`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Add::Output`]."##,
@@ -618,7 +666,7 @@ pub mod core {
             }
             pub mod Div {
                 #![doc = r##"This is the trait [`::core::ops::arith::Div`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Div::Output`]."##,
@@ -634,7 +682,7 @@ pub mod core {
             }
             pub mod Mul {
                 #![doc = r##"This is the trait [`::core::ops::arith::Mul`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Mul::Output`]."##,
@@ -650,7 +698,7 @@ pub mod core {
             }
             pub mod Neg {
                 #![doc = r##"This is the trait [`::core::ops::arith::Neg`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Neg::Output`]."##,
@@ -666,7 +714,7 @@ pub mod core {
             }
             pub mod Rem {
                 #![doc = r##"This is the trait [`::core::ops::arith::Rem`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Rem::Output`]."##,
@@ -682,7 +730,7 @@ pub mod core {
             }
             pub mod Sub {
                 #![doc = r##"This is the trait [`::core::ops::arith::Sub`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Sub::Output`]."##,
@@ -735,10 +783,10 @@ pub mod core {
         }
         pub mod bit {
             #![doc = r##"This is the module [`::core::ops::bit`]."##]
-            pub use super::root;
+            use super::root;
             pub mod BitAnd {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitAnd`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::BitAnd::Output`]."##,
@@ -754,7 +802,7 @@ pub mod core {
             }
             pub mod BitOr {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitOr`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::BitOr::Output`]."##,
@@ -770,7 +818,7 @@ pub mod core {
             }
             pub mod BitXor {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitXor`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::BitXor::Output`]."##,
@@ -786,7 +834,7 @@ pub mod core {
             }
             pub mod Not {
                 #![doc = r##"This is the trait [`::core::ops::bit::Not`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::Not::Output`]."##,
@@ -802,7 +850,7 @@ pub mod core {
             }
             pub mod Shl {
                 #![doc = r##"This is the trait [`::core::ops::bit::Shl`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::Shl::Output`]."##,
@@ -818,7 +866,7 @@ pub mod core {
             }
             pub mod Shr {
                 #![doc = r##"This is the trait [`::core::ops::bit::Shr`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::Shr::Output`]."##,
@@ -871,13 +919,13 @@ pub mod core {
         }
         pub mod control_flow {
             #![doc = r##"This is the module [`::core::ops::control_flow`]."##]
-            pub use super::root;
+            use super::root;
             pub mod ControlFlow {
                 #![doc = r##"This is the enum [`::core::ops::control_flow::ControlFlow`]."##]
-                pub use super::root;
+                use super::root;
                 pub mod Break {
                     #![doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break`]."##]
-                    pub use super::root;
+                    use super::root;
                     mk!(
                         _0,
                         r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Break."##,
@@ -889,7 +937,7 @@ pub mod core {
                 }
                 pub mod Continue {
                     #![doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue`]."##]
-                    pub use super::root;
+                    use super::root;
                     mk!(
                         _0,
                         r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Continue."##,
@@ -921,10 +969,10 @@ pub mod core {
         }
         pub mod deref {
             #![doc = r##"This is the module [`::core::ops::deref`]."##]
-            pub use super::root;
+            use super::root;
             pub mod Deref {
                 #![doc = r##"This is the trait [`::core::ops::deref::Deref`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Target,
                     r##"This is the associated type [`::core::ops::deref::Deref::Target`]."##,
@@ -936,6 +984,16 @@ pub mod core {
                     r##"This is the associated function [`::core::ops::deref::Deref::deref`]."##,
                     r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"ValueNs":"deref"},0]],"AssocFn"]"##,
                     ::core::option::Option::Some(root::core::ops::deref::Deref())
+                );
+            }
+            pub mod DerefMut {
+                #![doc = r##"This is the trait [`::core::ops::deref::DerefMut`]."##]
+                use super::root;
+                mk!(
+                    deref_mut,
+                    r##"This is the associated function [`::core::ops::deref::DerefMut::deref_mut`]."##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0],[{"ValueNs":"deref_mut"},0]],"AssocFn"]"##,
+                    ::core::option::Option::Some(root::core::ops::deref::DerefMut())
                 );
             }
             mk!(
@@ -953,7 +1011,7 @@ pub mod core {
         }
         pub mod function {
             #![doc = r##"This is the module [`::core::ops::function`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Fn,
                 r##"This is the trait [`::core::ops::function::Fn`]."##,
@@ -975,10 +1033,10 @@ pub mod core {
         }
         pub mod index {
             #![doc = r##"This is the module [`::core::ops::index`]."##]
-            pub use super::root;
+            use super::root;
             pub mod Index {
                 #![doc = r##"This is the trait [`::core::ops::index::Index`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::index::Index::Output`]."##,
@@ -1001,10 +1059,10 @@ pub mod core {
         }
         pub mod range {
             #![doc = r##"This is the module [`::core::ops::range`]."##]
-            pub use super::root;
+            use super::root;
             pub mod Range {
                 #![doc = r##"This is the struct [`::core::ops::range::Range`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     end,
                     r##"This is the field [`end`] from ::core::ops::range::Range."##,
@@ -1020,7 +1078,7 @@ pub mod core {
             }
             pub mod RangeFrom {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeFrom`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     start,
                     r##"This is the field [`start`] from ::core::ops::range::RangeFrom."##,
@@ -1030,7 +1088,7 @@ pub mod core {
             }
             pub mod RangeTo {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeTo`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     end,
                     r##"This is the field [`end`] from ::core::ops::range::RangeTo."##,
@@ -1065,10 +1123,10 @@ pub mod core {
         }
         pub mod try_trait {
             #![doc = r##"This is the module [`::core::ops::try_trait`]."##]
-            pub use super::root;
+            use super::root;
             pub mod FromResidual {
                 #![doc = r##"This is the trait [`::core::ops::try_trait::FromResidual`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     from_residual,
                     r##"This is the associated function [`::core::ops::try_trait::FromResidual::from_residual`]."##,
@@ -1078,7 +1136,7 @@ pub mod core {
             }
             pub mod Try {
                 #![doc = r##"This is the trait [`::core::ops::try_trait::Try`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::try_trait::Try::Output`]."##,
@@ -1168,10 +1226,10 @@ pub mod core {
     }
     pub mod option {
         #![doc = r##"This is the module [`::core::option`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 is_some,
                 r##"This is the associated function [`::core::option::Impl::is_some`]."##,
@@ -1181,10 +1239,10 @@ pub mod core {
         }
         pub mod Option {
             #![doc = r##"This is the enum [`::core::option::Option`]."##]
-            pub use super::root;
+            use super::root;
             pub mod Some {
                 #![doc = r##"This is the variant [`::core::option::Option::Some`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     _0,
                     r##"This is the field [`_0`] from ::core::option::Option::Some."##,
@@ -1218,12 +1276,74 @@ pub mod core {
             ::core::option::Option::Some(root::core::option())
         );
     }
+    pub mod panicking {
+        #![doc = r##"This is the module [`::core::panicking`]."##]
+        use super::root;
+        pub mod AssertKind {
+            #![doc = r##"This is the enum [`::core::panicking::AssertKind`]."##]
+            use super::root;
+            mk!(
+                Eq,
+                r##"This is the variant [`::core::panicking::AssertKind::Eq`]."##,
+                r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant"]"##,
+                ::core::option::Option::Some(root::core::panicking::AssertKind())
+            );
+        }
+        mk!(
+            AssertKind,
+            r##"This is the enum [`::core::panicking::AssertKind`]."##,
+            r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0]],"Enum"]"##,
+            ::core::option::Option::Some(root::core::panicking())
+        );
+        mk!(
+            assert_failed,
+            r##"This is the function [`::core::panicking::assert_failed`]."##,
+            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"assert_failed"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::core::panicking())
+        );
+        mk!(
+            panic,
+            r##"This is the function [`::core::panicking::panic`]."##,
+            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"panic"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::core::panicking())
+        );
+    }
+    pub mod ptr {
+        #![doc = r##"This is the module [`::core::ptr`]."##]
+        use super::root;
+        pub mod const_ptr {
+            #![doc = r##"This is the module [`::core::ptr::const_ptr`]."##]
+            use super::root;
+            pub mod Impl {
+                #![doc = r##"This is an impl block."##]
+                use super::root;
+                mk!(
+                    offset,
+                    r##"This is the associated function [`::core::ptr::const_ptr::Impl::offset`]."##,
+                    r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0],[{"ValueNs":"offset"},0]],"AssocFn"]"##,
+                    ::core::option::Option::Some(root::core::ptr::const_ptr::Impl())
+                );
+            }
+            mk!(
+                Impl,
+                r##"This is an impl block."##,
+                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+                ::core::option::Option::Some(root::core::ptr::const_ptr())
+            );
+        }
+        mk!(
+            const_ptr,
+            r##"This is the module [`::core::ptr::const_ptr`]."##,
+            r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::core::ptr())
+        );
+    }
     pub mod result {
         #![doc = r##"This is the module [`::core::result`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 map_err,
                 r##"This is the associated function [`::core::result::Impl::map_err`]."##,
@@ -1233,10 +1353,10 @@ pub mod core {
         }
         pub mod Result {
             #![doc = r##"This is the enum [`::core::result::Result`]."##]
-            pub use super::root;
+            use super::root;
             pub mod Err {
                 #![doc = r##"This is the variant [`::core::result::Result::Err`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     _0,
                     r##"This is the field [`_0`] from ::core::result::Result::Err."##,
@@ -1246,7 +1366,7 @@ pub mod core {
             }
             pub mod Ok {
                 #![doc = r##"This is the variant [`::core::result::Result::Ok`]."##]
-                pub use super::root;
+                use super::root;
                 mk!(
                     _0,
                     r##"This is the field [`_0`] from ::core::result::Result::Ok."##,
@@ -1274,6 +1394,12 @@ pub mod core {
             ::core::option::Option::Some(root::core::result())
         );
         mk!(
+            Impl__27,
+            r##"This is an impl block."##,
+            r##"["core",[[{"TypeNs":"result"},0],["Impl",27]],{"Impl":{"of_trait":true}}]"##,
+            ::core::option::Option::Some(root::core::result())
+        );
+        mk!(
             Impl__28,
             r##"This is an impl block."##,
             r##"["core",[[{"TypeNs":"result"},0],["Impl",28]],{"Impl":{"of_trait":true}}]"##,
@@ -1288,10 +1414,10 @@ pub mod core {
     }
     pub mod slice {
         #![doc = r##"This is the module [`::core::slice`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 chunks_exact,
                 r##"This is the associated function [`::core::slice::Impl::chunks_exact`]."##,
@@ -1313,7 +1439,7 @@ pub mod core {
         }
         pub mod index {
             #![doc = r##"This is the module [`::core::slice::index`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Impl__2,
                 r##"This is an impl block."##,
@@ -1335,7 +1461,7 @@ pub mod core {
         }
         pub mod iter {
             #![doc = r##"This is the module [`::core::slice::iter`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 ChunksExact,
                 r##"This is the struct [`::core::slice::iter::ChunksExact`]."##,
@@ -1366,6 +1492,26 @@ pub mod core {
             r##"This is the module [`::core::slice::iter`]."##,
             r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0]],"Mod"]"##,
             ::core::option::Option::Some(root::core::slice())
+        );
+    }
+    pub mod str {
+        #![doc = r##"This is the module [`::core::str`]."##]
+        use super::root;
+        pub mod Impl {
+            #![doc = r##"This is an impl block."##]
+            use super::root;
+            mk!(
+                as_ptr,
+                r##"This is the associated function [`::core::str::Impl::as_ptr`]."##,
+                r##"["core",[[{"TypeNs":"str"},0],["Impl",0],[{"ValueNs":"as_ptr"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::core::str::Impl())
+            );
+        }
+        mk!(
+            Impl,
+            r##"This is an impl block."##,
+            r##"["core",[[{"TypeNs":"str"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            ::core::option::Option::Some(root::core::str())
         );
     }
     mk!(
@@ -1405,6 +1551,12 @@ pub mod core {
         ::core::option::Option::Some(root::core())
     );
     mk!(
+        fmt,
+        r##"This is the module [`::core::fmt`]."##,
+        r##"["core",[[{"TypeNs":"fmt"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::core())
+    );
+    mk!(
         iter,
         r##"This is the module [`::core::iter`]."##,
         r##"["core",[[{"TypeNs":"iter"},0]],"Mod"]"##,
@@ -1435,6 +1587,18 @@ pub mod core {
         ::core::option::Option::Some(root::core())
     );
     mk!(
+        panicking,
+        r##"This is the module [`::core::panicking`]."##,
+        r##"["core",[[{"TypeNs":"panicking"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::core())
+    );
+    mk!(
+        ptr,
+        r##"This is the module [`::core::ptr`]."##,
+        r##"["core",[[{"TypeNs":"ptr"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::core())
+    );
+    mk!(
         result,
         r##"This is the module [`::core::result`]."##,
         r##"["core",[[{"TypeNs":"result"},0]],"Mod"]"##,
@@ -1446,2140 +1610,102 @@ pub mod core {
         r##"["core",[[{"TypeNs":"slice"},0]],"Mod"]"##,
         ::core::option::Option::Some(root::core())
     );
-}
-pub mod hax_engine_names {
-    #![doc = r##"This is the module [`::hax_engine_names`]."##]
-    pub use super::root;
-    pub mod crypto_abstractions {
-        #![doc = r##"This is the module [`::hax_engine_names::crypto_abstractions`]."##]
-        pub use super::root;
-        mk!(
-            Use,
-            r##"This is the use item [`::hax_engine_names::crypto_abstractions::Use`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::crypto_abstractions())
-        );
-        mk!(
-            crypto_abstractions,
-            r##"This is the function [`::hax_engine_names::crypto_abstractions::crypto_abstractions`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::crypto_abstractions())
-        );
-    }
-    pub mod dummy_hax_concrete_ident_wrapper {
-        #![doc = r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper`]."##]
-        pub use super::root;
-        pub mod ___1 {
-            #![doc = r##"This is the const [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::___1`]."##]
-            pub use super::root;
-            mk!(
-                Use,
-                r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::___1::Use`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::___1()
-                )
-            );
-            mk!(
-                f,
-                r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::___1::f`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::___1()
-                )
-            );
-        }
-        pub mod _anonymous {
-            #![doc = r##"This is the const [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
-            pub use super::root;
-            mk!(
-                Use,
-                r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-            mk!(
-                Use__1,
-                r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-            mk!(
-                Use__2,
-                r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-            mk!(
-                arith,
-                r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-        }
-        pub mod props {
-            #![doc = r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::props`]."##]
-            pub use super::root;
-            mk!(
-                Use,
-                r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::props::Use`]."##,
-                r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use"]"##,
-                ::core::option::Option::Some(
-                    root::hax_engine_names::dummy_hax_concrete_ident_wrapper::props()
-                )
-            );
-        }
-        mk!(
-            Use,
-            r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::Use`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__1,
-            r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::Use__1`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__2,
-            r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::Use__2`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__3,
-            r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::Use__3`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__4,
-            r##"This is the use item [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::Use__4`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            ___1,
-            r##"This is the const [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::___1`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            _anonymous,
-            r##"This is the const [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::_anonymous`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            dummy,
-            r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::dummy`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            iterator_functions,
-            r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            props,
-            r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::props`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            question_mark_result,
-            r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::question_mark_result`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            refinements,
-            r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper::refinements`]."##,
-            r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::dummy_hax_concrete_ident_wrapper())
-        );
-    }
-    pub mod hax {
-        #![doc = r##"This is the module [`::hax_engine_names::hax`]."##]
-        pub use super::root;
-        pub mod Tuple2 {
-            #![doc = r##"This is the struct [`::hax_engine_names::hax::Tuple2`]."##]
-            pub use super::root;
-            mk!(
-                _0,
-                r##"This is the field [`_0`] from ::hax_engine_names::hax::Tuple2."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::Tuple2())
-            );
-            mk!(
-                _1,
-                r##"This is the field [`_1`] from ::hax_engine_names::hax::Tuple2."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::Tuple2())
-            );
-        }
-        pub mod control_flow_monad {
-            #![doc = r##"This is the module [`::hax_engine_names::hax::control_flow_monad`]."##]
-            pub use super::root;
-            pub mod mexception {
-                #![doc = r##"This is the module [`::hax_engine_names::hax::control_flow_monad::mexception`]."##]
-                pub use super::root;
-                mk!(
-                    run,
-                    r##"This is the function [`::hax_engine_names::hax::control_flow_monad::mexception::run`]."##,
-                    r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
-                    ::core::option::Option::Some(
-                        root::hax_engine_names::hax::control_flow_monad::mexception()
-                    )
-                );
-            }
-            pub mod moption {
-                #![doc = r##"This is the module [`::hax_engine_names::hax::control_flow_monad::moption`]."##]
-                pub use super::root;
-                mk!(
-                    run,
-                    r##"This is the function [`::hax_engine_names::hax::control_flow_monad::moption::run`]."##,
-                    r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
-                    ::core::option::Option::Some(
-                        root::hax_engine_names::hax::control_flow_monad::moption()
-                    )
-                );
-            }
-            pub mod mresult {
-                #![doc = r##"This is the module [`::hax_engine_names::hax::control_flow_monad::mresult`]."##]
-                pub use super::root;
-                mk!(
-                    run,
-                    r##"This is the function [`::hax_engine_names::hax::control_flow_monad::mresult::run`]."##,
-                    r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
-                    ::core::option::Option::Some(
-                        root::hax_engine_names::hax::control_flow_monad::mresult()
-                    )
-                );
-            }
-            mk!(
-                ControlFlowMonad,
-                r##"This is the trait [`::hax_engine_names::hax::control_flow_monad::ControlFlowMonad`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::control_flow_monad())
-            );
-            mk!(
-                mexception,
-                r##"This is the module [`::hax_engine_names::hax::control_flow_monad::mexception`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::control_flow_monad())
-            );
-            mk!(
-                moption,
-                r##"This is the module [`::hax_engine_names::hax::control_flow_monad::moption`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::control_flow_monad())
-            );
-            mk!(
-                mresult,
-                r##"This is the module [`::hax_engine_names::hax::control_flow_monad::mresult`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::control_flow_monad())
-            );
-        }
-        pub mod folds {
-            #![doc = r##"This is the module [`::hax_engine_names::hax::folds`]."##]
-            pub use super::root;
-            mk!(
-                fold_cf,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_cf`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_chunked_slice,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_chunked_slice`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_chunked_slice_cf,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_chunked_slice_cf`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_chunked_slice_return,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_chunked_slice_return`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_enumerated_chunked_slice,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_enumerated_chunked_slice`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_enumerated_chunked_slice_cf,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_enumerated_chunked_slice_cf`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_enumerated_chunked_slice_return,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_enumerated_chunked_slice_return`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_enumerated_slice,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_enumerated_slice`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_enumerated_slice_cf,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_enumerated_slice_cf`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_enumerated_slice_return,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_enumerated_slice_return`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_range,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_range`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_range_cf,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_range_cf`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_range_return,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_range_return`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_range_step_by,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_range_step_by`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_range_step_by_cf,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_range_step_by_cf`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_range_step_by_return,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_range_step_by_return`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-            mk!(
-                fold_return,
-                r##"This is the function [`::hax_engine_names::hax::folds::fold_return`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::folds())
-            );
-        }
-        pub mod int {
-            #![doc = r##"This is the module [`::hax_engine_names::hax::int`]."##]
-            pub use super::root;
-            mk!(
-                add,
-                r##"This is the function [`::hax_engine_names::hax::int::add`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                div,
-                r##"This is the function [`::hax_engine_names::hax::int::div`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                eq,
-                r##"This is the function [`::hax_engine_names::hax::int::eq`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                from_machine,
-                r##"This is the function [`::hax_engine_names::hax::int::from_machine`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                ge,
-                r##"This is the function [`::hax_engine_names::hax::int::ge`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                gt,
-                r##"This is the function [`::hax_engine_names::hax::int::gt`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                into_machine,
-                r##"This is the function [`::hax_engine_names::hax::int::into_machine`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                le,
-                r##"This is the function [`::hax_engine_names::hax::int::le`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                lt,
-                r##"This is the function [`::hax_engine_names::hax::int::lt`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                mul,
-                r##"This is the function [`::hax_engine_names::hax::int::mul`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                ne,
-                r##"This is the function [`::hax_engine_names::hax::int::ne`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                neg,
-                r##"This is the function [`::hax_engine_names::hax::int::neg`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                rem,
-                r##"This is the function [`::hax_engine_names::hax::int::rem`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-            mk!(
-                sub,
-                r##"This is the function [`::hax_engine_names::hax::int::sub`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
-            );
-        }
-        pub mod machine_int {
-            #![doc = r##"This is the module [`::hax_engine_names::hax::machine_int`]."##]
-            pub use super::root;
-            mk!(
-                add,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::add`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                bitand,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::bitand`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                bitor,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::bitor`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                bitxor,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::bitxor`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                div,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::div`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                eq,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::eq`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                ge,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::ge`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                gt,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::gt`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                le,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::le`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                lt,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::lt`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                mul,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::mul`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                ne,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::ne`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                not,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::not`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                rem,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::rem`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                shl,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::shl`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                shr,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::shr`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-            mk!(
-                sub,
-                r##"This is the function [`::hax_engine_names::hax::machine_int::sub`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
-            );
-        }
-        pub mod monomorphized_update_at {
-            #![doc = r##"This is the module [`::hax_engine_names::hax::monomorphized_update_at`]."##]
-            pub use super::root;
-            mk!(
-                update_at_range,
-                r##"This is the function [`::hax_engine_names::hax::monomorphized_update_at::update_at_range`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_range_from,
-                r##"This is the function [`::hax_engine_names::hax::monomorphized_update_at::update_at_range_from`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_range_full,
-                r##"This is the function [`::hax_engine_names::hax::monomorphized_update_at::update_at_range_full`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_range_to,
-                r##"This is the function [`::hax_engine_names::hax::monomorphized_update_at::update_at_range_to`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_usize,
-                r##"This is the function [`::hax_engine_names::hax::monomorphized_update_at::update_at_usize`]."##,
-                r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::monomorphized_update_at())
-            );
-        }
-        mk!(
-            Failure,
-            r##"This is the struct [`::hax_engine_names::hax::Failure`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            MutRef,
-            r##"This is the enum [`::hax_engine_names::hax::MutRef`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            Never,
-            r##"This is the enum [`::hax_engine_names::hax::Never`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            Tuple0,
-            r##"This is the struct [`::hax_engine_names::hax::Tuple0`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],"Struct"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            Tuple2,
-            r##"This is the struct [`::hax_engine_names::hax::Tuple2`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            array_of_list,
-            r##"This is the function [`::hax_engine_names::hax::array_of_list`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            box_new,
-            r##"This is the function [`::hax_engine_names::hax::box_new`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"box_new"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            cast_op,
-            r##"This is the function [`::hax_engine_names::hax::cast_op`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"cast_op"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            control_flow_monad,
-            r##"This is the module [`::hax_engine_names::hax::control_flow_monad`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            deref_op,
-            r##"This is the function [`::hax_engine_names::hax::deref_op`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"deref_op"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            dropped_body,
-            r##"This is the function [`::hax_engine_names::hax::dropped_body`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            failure,
-            r##"This is the function [`::hax_engine_names::hax::failure`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            folds,
-            r##"This is the module [`::hax_engine_names::hax::folds`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            int,
-            r##"This is the module [`::hax_engine_names::hax::int`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            logical_op_and,
-            r##"This is the function [`::hax_engine_names::hax::logical_op_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            logical_op_or,
-            r##"This is the function [`::hax_engine_names::hax::logical_op_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            machine_int,
-            r##"This is the module [`::hax_engine_names::hax::machine_int`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            monomorphized_update_at,
-            r##"This is the module [`::hax_engine_names::hax::monomorphized_update_at`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            never_to_any,
-            r##"This is the function [`::hax_engine_names::hax::never_to_any`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            repeat,
-            r##"This is the function [`::hax_engine_names::hax::repeat`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            update_at,
-            r##"This is the function [`::hax_engine_names::hax::update_at`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            while_loop,
-            r##"This is the function [`::hax_engine_names::hax::while_loop`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            while_loop_cf,
-            r##"This is the function [`::hax_engine_names::hax::while_loop_cf`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-        mk!(
-            while_loop_return,
-            r##"This is the function [`::hax_engine_names::hax::while_loop_return`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
-        );
-    }
-    pub mod i128 {
-        #![doc = r##"This is the module [`::hax_engine_names::i128`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::i128::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::i128::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::i128::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::i128::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::i128::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::i128::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::i128::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::i128::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::i128::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::i128::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::i128::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::i128::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::i128::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::i128::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::i128::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::i128::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::i128::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i128())
-        );
-    }
-    pub mod i16 {
-        #![doc = r##"This is the module [`::hax_engine_names::i16`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::i16::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::i16::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::i16::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::i16::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::i16::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::i16::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::i16::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::i16::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::i16::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::i16::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::i16::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::i16::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::i16::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::i16::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::i16::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::i16::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::i16::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i16())
-        );
-    }
-    pub mod i32 {
-        #![doc = r##"This is the module [`::hax_engine_names::i32`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::i32::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::i32::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::i32::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::i32::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::i32::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::i32::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::i32::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::i32::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::i32::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::i32::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::i32::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::i32::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::i32::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::i32::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::i32::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::i32::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::i32::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i32())
-        );
-    }
-    pub mod i64 {
-        #![doc = r##"This is the module [`::hax_engine_names::i64`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::i64::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::i64::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::i64::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::i64::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::i64::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::i64::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::i64::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::i64::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::i64::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::i64::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::i64::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::i64::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::i64::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::i64::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::i64::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::i64::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::i64::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i64())
-        );
-    }
-    pub mod i8 {
-        #![doc = r##"This is the module [`::hax_engine_names::i8`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::i8::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::i8::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::i8::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::i8::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::i8::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::i8::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::i8::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::i8::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::i8::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::i8::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::i8::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::i8::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::i8::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::i8::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::i8::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::i8::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::i8::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::i8())
-        );
-    }
-    pub mod isize {
-        #![doc = r##"This is the module [`::hax_engine_names::isize`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::isize::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::isize::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::isize::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::isize::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::isize::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::isize::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::isize::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::isize::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::isize::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::isize::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::isize::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::isize::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::isize::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::isize::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::isize::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::isize::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::isize::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::isize())
-        );
-    }
-    pub mod u128 {
-        #![doc = r##"This is the module [`::hax_engine_names::u128`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::u128::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::u128::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::u128::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::u128::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::u128::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::u128::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::u128::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::u128::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::u128::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::u128::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::u128::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::u128::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::u128::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::u128::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::u128::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::u128::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::u128::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u128())
-        );
-    }
-    pub mod u16 {
-        #![doc = r##"This is the module [`::hax_engine_names::u16`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::u16::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::u16::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::u16::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::u16::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::u16::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::u16::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::u16::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::u16::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::u16::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::u16::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::u16::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::u16::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::u16::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::u16::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::u16::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::u16::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::u16::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u16())
-        );
-    }
-    pub mod u32 {
-        #![doc = r##"This is the module [`::hax_engine_names::u32`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::u32::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::u32::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::u32::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::u32::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::u32::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::u32::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::u32::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::u32::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::u32::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::u32::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::u32::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::u32::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::u32::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::u32::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::u32::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::u32::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::u32::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u32())
-        );
-    }
-    pub mod u64 {
-        #![doc = r##"This is the module [`::hax_engine_names::u64`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::u64::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::u64::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::u64::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::u64::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::u64::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::u64::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::u64::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::u64::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::u64::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::u64::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::u64::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::u64::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::u64::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::u64::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::u64::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::u64::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::u64::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u64())
-        );
-    }
-    pub mod u8 {
-        #![doc = r##"This is the module [`::hax_engine_names::u8`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::u8::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::u8::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::u8::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::u8::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::u8::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::u8::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::u8::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::u8::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::u8::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::u8::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::u8::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::u8::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::u8::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::u8::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::u8::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::u8::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::u8::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::u8())
-        );
-    }
-    pub mod usize {
-        #![doc = r##"This is the module [`::hax_engine_names::usize`]."##]
-        pub use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::hax_engine_names::usize::add`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::hax_engine_names::usize::bit_and`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::hax_engine_names::usize::bit_or`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::hax_engine_names::usize::bit_xor`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::hax_engine_names::usize::div`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::hax_engine_names::usize::eq`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::hax_engine_names::usize::ge`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::hax_engine_names::usize::gt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::hax_engine_names::usize::le`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::hax_engine_names::usize::lt`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::hax_engine_names::usize::mul`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::hax_engine_names::usize::ne`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::hax_engine_names::usize::neg`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::hax_engine_names::usize::rem`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::hax_engine_names::usize::shl`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::hax_engine_names::usize::shr`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::hax_engine_names::usize::sub`]."##,
-            r##"["hax_engine_names",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::usize())
-        );
-    }
     mk!(
-        Use,
-        r##"This is the use item [`::hax_engine_names::Use`]."##,
-        r##"["hax_engine_names",[["Use",0]],"Use"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        alloc,
-        r##"This is the extern crate [`::hax_engine_names::alloc`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"alloc"},0]],"ExternCrate"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        crypto_abstractions,
-        r##"This is the module [`::hax_engine_names::crypto_abstractions`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"crypto_abstractions"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        dummy_hax_concrete_ident_wrapper,
-        r##"This is the function [`::hax_engine_names::dummy_hax_concrete_ident_wrapper`]."##,
-        r##"["hax_engine_names",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        hax,
-        r##"This is the module [`::hax_engine_names::hax`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"hax"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        i128,
-        r##"This is the module [`::hax_engine_names::i128`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"i128"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        i16,
-        r##"This is the module [`::hax_engine_names::i16`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"i16"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        i32,
-        r##"This is the module [`::hax_engine_names::i32`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"i32"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        i64,
-        r##"This is the module [`::hax_engine_names::i64`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"i64"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        i8,
-        r##"This is the module [`::hax_engine_names::i8`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"i8"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        impl_arith,
-        r##"This is the macro [`::hax_engine_names::impl_arith`]."##,
-        r##"["hax_engine_names",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"}]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        isize,
-        r##"This is the module [`::hax_engine_names::isize`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"isize"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        offset,
-        r##"This is the function [`::hax_engine_names::offset`]."##,
-        r##"["hax_engine_names",[[{"ValueNs":"offset"},0]],"Fn"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        std,
-        r##"This is the extern crate [`::hax_engine_names::std`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"std"},0]],"ExternCrate"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        u128,
-        r##"This is the module [`::hax_engine_names::u128`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"u128"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        u16,
-        r##"This is the module [`::hax_engine_names::u16`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"u16"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        u32,
-        r##"This is the module [`::hax_engine_names::u32`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"u32"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        u64,
-        r##"This is the module [`::hax_engine_names::u64`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"u64"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        u8,
-        r##"This is the module [`::hax_engine_names::u8`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"u8"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        unsize,
-        r##"This is the function [`::hax_engine_names::unsize`]."##,
-        r##"["hax_engine_names",[[{"ValueNs":"unsize"},0]],"Fn"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
-    );
-    mk!(
-        usize,
-        r##"This is the module [`::hax_engine_names::usize`]."##,
-        r##"["hax_engine_names",[[{"TypeNs":"usize"},0]],"Mod"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
+        str,
+        r##"This is the module [`::core::str`]."##,
+        r##"["core",[[{"TypeNs":"str"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::core())
     );
 }
 pub mod hax_lib {
     #![doc = r##"This is the module [`::hax_lib`]."##]
-    pub use super::root;
+    use super::root;
+    pub mod RefineAs {
+        #![doc = r##"This is the trait [`::hax_lib::RefineAs`]."##]
+        use super::root;
+        mk!(
+            into_checked,
+            r##"This is the associated function [`::hax_lib::RefineAs::into_checked`]."##,
+            r##"["hax_lib",[[{"TypeNs":"RefineAs"},0],[{"ValueNs":"into_checked"},0]],"AssocFn"]"##,
+            ::core::option::Option::Some(root::hax_lib::RefineAs())
+        );
+    }
+    pub mod Refinement {
+        #![doc = r##"This is the trait [`::hax_lib::Refinement`]."##]
+        use super::root;
+        mk!(
+            InnerType,
+            r##"This is the associated type [`::hax_lib::Refinement::InnerType`]."##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy"]"##,
+            ::core::option::Option::Some(root::hax_lib::Refinement())
+        );
+        mk!(
+            get,
+            r##"This is the associated function [`::hax_lib::Refinement::get`]."##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get"},0]],"AssocFn"]"##,
+            ::core::option::Option::Some(root::hax_lib::Refinement())
+        );
+        mk!(
+            get_mut,
+            r##"This is the associated function [`::hax_lib::Refinement::get_mut`]."##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn"]"##,
+            ::core::option::Option::Some(root::hax_lib::Refinement())
+        );
+        mk!(
+            new,
+            r##"This is the associated function [`::hax_lib::Refinement::new`]."##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn"]"##,
+            ::core::option::Option::Some(root::hax_lib::Refinement())
+        );
+    }
+    pub mod abstraction {
+        #![doc = r##"This is the module [`::hax_lib::abstraction`]."##]
+        use super::root;
+        pub mod Abstraction {
+            #![doc = r##"This is the trait [`::hax_lib::abstraction::Abstraction`]."##]
+            use super::root;
+            mk!(
+                AbstractType,
+                r##"This is the associated type [`::hax_lib::abstraction::Abstraction::AbstractType`]."##,
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"TypeNs":"AbstractType"},0]],"AssocTy"]"##,
+                ::core::option::Option::Some(root::hax_lib::abstraction::Abstraction())
+            );
+            mk!(
+                lift,
+                r##"This is the associated function [`::hax_lib::abstraction::Abstraction::lift`]."##,
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"ValueNs":"lift"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::abstraction::Abstraction())
+            );
+        }
+        pub mod Concretization {
+            #![doc = r##"This is the trait [`::hax_lib::abstraction::Concretization`]."##]
+            use super::root;
+            mk!(
+                concretize,
+                r##"This is the associated function [`::hax_lib::abstraction::Concretization::concretize`]."##,
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0],[{"ValueNs":"concretize"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::abstraction::Concretization())
+            );
+        }
+        mk!(
+            Abstraction,
+            r##"This is the trait [`::hax_lib::abstraction::Abstraction`]."##,
+            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0]],"Trait"]"##,
+            ::core::option::Option::Some(root::hax_lib::abstraction())
+        );
+        mk!(
+            Concretization,
+            r##"This is the trait [`::hax_lib::abstraction::Concretization`]."##,
+            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0]],"Trait"]"##,
+            ::core::option::Option::Some(root::hax_lib::abstraction())
+        );
+    }
     pub mod int {
         #![doc = r##"This is the module [`::hax_lib::int`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl__7 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 _unsafe_from_str,
                 r##"This is the associated function [`::hax_lib::int::Impl__7::_unsafe_from_str`]."##,
@@ -3593,6 +1719,34 @@ pub mod hax_lib {
                 ::core::option::Option::Some(root::hax_lib::int::Impl__7())
             );
         }
+        pub mod ToInt {
+            #![doc = r##"This is the trait [`::hax_lib::int::ToInt`]."##]
+            use super::root;
+            mk!(
+                to_int,
+                r##"This is the associated function [`::hax_lib::int::ToInt::to_int`]."##,
+                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0],[{"ValueNs":"to_int"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::int::ToInt())
+            );
+        }
+        mk!(
+            Impl__16,
+            r##"This is an impl block."##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",16]],{"Impl":{"of_trait":true}}]"##,
+            ::core::option::Option::Some(root::hax_lib::int())
+        );
+        mk!(
+            Impl__17,
+            r##"This is an impl block."##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",17]],{"Impl":{"of_trait":true}}]"##,
+            ::core::option::Option::Some(root::hax_lib::int())
+        );
+        mk!(
+            Impl__44,
+            r##"This is an impl block."##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",44]],{"Impl":{"of_trait":true}}]"##,
+            ::core::option::Option::Some(root::hax_lib::int())
+        );
         mk!(
             Impl__7,
             r##"This is an impl block."##,
@@ -3611,23 +1765,75 @@ pub mod hax_lib {
             r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"Int"},0]],"Struct"]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
+        mk!(
+            ToInt,
+            r##"This is the trait [`::hax_lib::int::ToInt`]."##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0]],"Trait"]"##,
+            ::core::option::Option::Some(root::hax_lib::int())
+        );
     }
     pub mod prop {
         #![doc = r##"This is the module [`::hax_lib::prop`]."##]
-        pub use super::root;
+        use super::root;
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
+            mk!(
+                and,
+                r##"This is the associated function [`::hax_lib::prop::Impl::and`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::Impl())
+            );
+            mk!(
+                eq,
+                r##"This is the associated function [`::hax_lib::prop::Impl::eq`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::Impl())
+            );
             mk!(
                 from_bool,
                 r##"This is the associated function [`::hax_lib::prop::Impl::from_bool`]."##,
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn"]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
+            mk!(
+                implies,
+                r##"This is the associated function [`::hax_lib::prop::Impl::implies`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"implies"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::Impl())
+            );
+            mk!(
+                ne,
+                r##"This is the associated function [`::hax_lib::prop::Impl::ne`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::Impl())
+            );
+            mk!(
+                not,
+                r##"This is the associated function [`::hax_lib::prop::Impl::not`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::Impl())
+            );
+            mk!(
+                or,
+                r##"This is the associated function [`::hax_lib::prop::Impl::or`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::Impl())
+            );
+        }
+        pub mod ToProp {
+            #![doc = r##"This is the trait [`::hax_lib::prop::ToProp`]."##]
+            use super::root;
+            mk!(
+                to_prop,
+                r##"This is the associated function [`::hax_lib::prop::ToProp::to_prop`]."##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0],[{"ValueNs":"to_prop"},0]],"AssocFn"]"##,
+                ::core::option::Option::Some(root::hax_lib::prop::ToProp())
+            );
         }
         pub mod constructors {
             #![doc = r##"This is the module [`::hax_lib::prop::constructors`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 and,
                 r##"This is the function [`::hax_lib::prop::constructors::and`]."##,
@@ -3690,6 +1896,12 @@ pub mod hax_lib {
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
+            Impl__2,
+            r##"This is an impl block."##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",2]],{"Impl":{"of_trait":true}}]"##,
+            ::core::option::Option::Some(root::hax_lib::prop())
+        );
+        mk!(
             Impl__3,
             r##"This is an impl block."##,
             r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",3]],{"Impl":{"of_trait":true}}]"##,
@@ -3702,9 +1914,33 @@ pub mod hax_lib {
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
+            ToProp,
+            r##"This is the trait [`::hax_lib::prop::ToProp`]."##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0]],"Trait"]"##,
+            ::core::option::Option::Some(root::hax_lib::prop())
+        );
+        mk!(
             constructors,
             r##"This is the module [`::hax_lib::prop::constructors`]."##,
             r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::hax_lib::prop())
+        );
+        mk!(
+            exists,
+            r##"This is the function [`::hax_lib::prop::exists`]."##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"exists"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::hax_lib::prop())
+        );
+        mk!(
+            forall,
+            r##"This is the function [`::hax_lib::prop::forall`]."##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"forall"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::hax_lib::prop())
+        );
+        mk!(
+            implies,
+            r##"This is the function [`::hax_lib::prop::implies`]."##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"implies"},0]],"Fn"]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
     }
@@ -3739,6 +1975,12 @@ pub mod hax_lib {
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
+        abstraction,
+        r##"This is the module [`::hax_lib::abstraction`]."##,
+        r##"["hax_lib",[[{"TypeNs":"abstraction"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::hax_lib())
+    );
+    mk!(
         any_to_unit,
         r##"This is the function [`::hax_lib::any_to_unit`]."##,
         r##"["hax_lib",[[{"ValueNs":"any_to_unit"},0]],"Fn"]"##,
@@ -3748,6 +1990,18 @@ pub mod hax_lib {
         assert,
         r##"This is the function [`::hax_lib::assert`]."##,
         r##"["hax_lib",[[{"ValueNs":"assert"},0]],"Fn"]"##,
+        ::core::option::Option::Some(root::hax_lib())
+    );
+    mk!(
+        inline,
+        r##"This is the function [`::hax_lib::inline`]."##,
+        r##"["hax_lib",[[{"ValueNs":"inline"},0]],"Fn"]"##,
+        ::core::option::Option::Some(root::hax_lib())
+    );
+    mk!(
+        inline_unsafe,
+        r##"This is the function [`::hax_lib::inline_unsafe`]."##,
+        r##"["hax_lib",[[{"ValueNs":"inline_unsafe"},0]],"Fn"]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
@@ -3765,13 +2019,13 @@ pub mod hax_lib {
 }
 pub mod hax_lib_protocol {
     #![doc = r##"This is the module [`::hax_lib_protocol`]."##]
-    pub use super::root;
+    use super::root;
     pub mod crypto {
         #![doc = r##"This is the module [`::hax_lib_protocol::crypto`]."##]
-        pub use super::root;
+        use super::root;
         pub mod AEADAlgorithm {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::AEADAlgorithm`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Chacha20Poly1305,
                 r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305`]."##,
@@ -3781,7 +2035,7 @@ pub mod hax_lib_protocol {
         }
         pub mod DHGroup {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::DHGroup`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 X25519,
                 r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519`]."##,
@@ -3791,7 +2045,7 @@ pub mod hax_lib_protocol {
         }
         pub mod HMACAlgorithm {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::HMACAlgorithm`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Sha256,
                 r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256`]."##,
@@ -3801,7 +2055,7 @@ pub mod hax_lib_protocol {
         }
         pub mod HashAlgorithm {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::HashAlgorithm`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Sha256,
                 r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256`]."##,
@@ -3811,7 +2065,7 @@ pub mod hax_lib_protocol {
         }
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl::from_bytes`]."##,
@@ -3821,7 +2075,7 @@ pub mod hax_lib_protocol {
         }
         pub mod Impl__1 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__1::from_bytes`]."##,
@@ -3831,7 +2085,7 @@ pub mod hax_lib_protocol {
         }
         pub mod Impl__4 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__4::from_bytes`]."##,
@@ -3841,7 +2095,7 @@ pub mod hax_lib_protocol {
         }
         pub mod Impl__5 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__5::from_bytes`]."##,
@@ -3851,7 +2105,7 @@ pub mod hax_lib_protocol {
         }
         pub mod Impl__6 {
             #![doc = r##"This is an impl block."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__6::from_bytes`]."##,
@@ -4000,134 +2254,2173 @@ pub mod hax_lib_protocol {
     );
 }
 pub mod rust_primitives {
-    pub use super::root;
+    #![doc = r##"This is the module [`::rust_primitives`]."##]
+    use super::root;
+    pub mod crypto_abstractions {
+        #![doc = r##"This is the module [`::rust_primitives::crypto_abstractions`]."##]
+        use super::root;
+        mk!(
+            Use,
+            r##"This is the use item [`::rust_primitives::crypto_abstractions::Use`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use"]"##,
+            ::core::option::Option::Some(root::rust_primitives::crypto_abstractions())
+        );
+        mk!(
+            crypto_abstractions,
+            r##"This is the function [`::rust_primitives::crypto_abstractions::crypto_abstractions`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::crypto_abstractions())
+        );
+    }
+    pub mod dummy_hax_concrete_ident_wrapper {
+        #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##]
+        use super::root;
+        pub mod ___1 {
+            #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
+            use super::root;
+            mk!(
+                Use,
+                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::___1()
+                )
+            );
+            mk!(
+                f,
+                r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::f`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::___1()
+                )
+            );
+        }
+        pub mod _anonymous {
+            #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
+            use super::root;
+            mk!(
+                Use,
+                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
+                )
+            );
+            mk!(
+                Use__1,
+                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
+                )
+            );
+            mk!(
+                Use__2,
+                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
+                )
+            );
+            mk!(
+                arith,
+                r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
+                )
+            );
+        }
+        pub mod props {
+            #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##]
+            use super::root;
+            mk!(
+                Use,
+                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props::Use`]."##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use"]"##,
+                ::core::option::Option::Some(
+                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::props()
+                )
+            );
+        }
+        mk!(
+            Use,
+            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            Use__1,
+            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__1`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            Use__2,
+            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__2`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            Use__3,
+            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__3`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            Use__4,
+            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__4`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            ___1,
+            r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            _anonymous,
+            r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            dummy,
+            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::dummy`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            iterator_functions,
+            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            props,
+            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            question_mark_result,
+            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::question_mark_result`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+        mk!(
+            refinements,
+            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::refinements`]."##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
+        );
+    }
     pub mod hax {
-        pub use super::root;
+        #![doc = r##"This is the module [`::rust_primitives::hax`]."##]
+        use super::root;
         pub mod Tuple0 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##]
-            pub use super::root;
-            mk!(
-                Tuple1,
-                r##"This is the field [`Tuple1`] from ::rust_primitives::hax::Tuple0."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0],[{"ValueNs":"Tuple1"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::Tuple0())
-            );
+            use super::root;
             mk!(
                 ctor,
                 r##"This is the constructor for [`::rust_primitives::hax::Tuple0`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],{"Ctor":["Struct","Fn"]}]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax())
+                ::core::option::Option::Some(root::rust_primitives::hax())
             );
         }
         pub mod Tuple2 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##]
-            pub use super::root;
+            use super::root;
             mk!(
                 Tuple0,
                 r##"This is the field [`Tuple0`] from ::rust_primitives::hax::Tuple2."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple0"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::Tuple2())
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
             );
             mk!(
                 Tuple1,
                 r##"This is the field [`Tuple1`] from ::rust_primitives::hax::Tuple2."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple1"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::Tuple2())
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
+            );
+            mk!(
+                _0,
+                r##"This is the field [`_0`] from ::rust_primitives::hax::Tuple2."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
+            );
+            mk!(
+                _1,
+                r##"This is the field [`_1`] from ::rust_primitives::hax::Tuple2."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
             );
             mk!(
                 ctor,
                 r##"This is the constructor for [`::rust_primitives::hax::Tuple2`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],{"Ctor":["Struct","Fn"]}]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax())
+                ::core::option::Option::Some(root::rust_primitives::hax())
+            );
+        }
+        pub mod control_flow_monad {
+            #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##]
+            use super::root;
+            pub mod ControlFlowMonad {
+                #![doc = r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##]
+                use super::root;
+                mk!(
+                    lift,
+                    r##"This is the associated function [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad::lift`]."##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn"]"##,
+                    ::core::option::Option::Some(
+                        root::rust_primitives::hax::control_flow_monad::ControlFlowMonad()
+                    )
+                );
+            }
+            pub mod mexception {
+                #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##]
+                use super::root;
+                mk!(
+                    run,
+                    r##"This is the function [`::rust_primitives::hax::control_flow_monad::mexception::run`]."##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
+                    ::core::option::Option::Some(
+                        root::rust_primitives::hax::control_flow_monad::mexception()
+                    )
+                );
+            }
+            pub mod moption {
+                #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##]
+                use super::root;
+                mk!(
+                    run,
+                    r##"This is the function [`::rust_primitives::hax::control_flow_monad::moption::run`]."##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
+                    ::core::option::Option::Some(
+                        root::rust_primitives::hax::control_flow_monad::moption()
+                    )
+                );
+            }
+            pub mod mresult {
+                #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##]
+                use super::root;
+                mk!(
+                    run,
+                    r##"This is the function [`::rust_primitives::hax::control_flow_monad::mresult::run`]."##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
+                    ::core::option::Option::Some(
+                        root::rust_primitives::hax::control_flow_monad::mresult()
+                    )
+                );
+            }
+            mk!(
+                ControlFlowMonad,
+                r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
+            );
+            mk!(
+                mexception,
+                r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
+            );
+            mk!(
+                moption,
+                r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
+            );
+            mk!(
+                mresult,
+                r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
+            );
+        }
+        pub mod folds {
+            #![doc = r##"This is the module [`::rust_primitives::hax::folds`]."##]
+            use super::root;
+            mk!(
+                fold_cf,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_cf`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_chunked_slice,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_chunked_slice_cf,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_cf`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_chunked_slice_return,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_return`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_enumerated_chunked_slice,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_enumerated_chunked_slice_cf,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_cf`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_enumerated_chunked_slice_return,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_return`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_enumerated_slice,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_enumerated_slice_cf,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_cf`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_enumerated_slice_return,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_return`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_range,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_range`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_range_cf,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_range_cf`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_range_return,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_range_return`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_range_step_by,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_range_step_by_cf,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_cf`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_range_step_by_return,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_return`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
+            );
+            mk!(
+                fold_return,
+                r##"This is the function [`::rust_primitives::hax::folds::fold_return`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
         }
         pub mod int {
-            pub use super::root;
+            #![doc = r##"This is the module [`::rust_primitives::hax::int`]."##]
+            use super::root;
+            mk!(
+                add,
+                r##"This is the function [`::rust_primitives::hax::int::add`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                div,
+                r##"This is the function [`::rust_primitives::hax::int::div`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                eq,
+                r##"This is the function [`::rust_primitives::hax::int::eq`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
             mk!(
                 from_machine,
                 r##"This is the function [`::rust_primitives::hax::int::from_machine`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                ge,
+                r##"This is the function [`::rust_primitives::hax::int::ge`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                gt,
+                r##"This is the function [`::rust_primitives::hax::int::gt`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 into_machine,
                 r##"This is the function [`::rust_primitives::hax::int::into_machine`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::int())
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                le,
+                r##"This is the function [`::rust_primitives::hax::int::le`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                lt,
+                r##"This is the function [`::rust_primitives::hax::int::lt`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                mul,
+                r##"This is the function [`::rust_primitives::hax::int::mul`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                ne,
+                r##"This is the function [`::rust_primitives::hax::int::ne`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                neg,
+                r##"This is the function [`::rust_primitives::hax::int::neg`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                rem,
+                r##"This is the function [`::rust_primitives::hax::int::rem`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
+            );
+            mk!(
+                sub,
+                r##"This is the function [`::rust_primitives::hax::int::sub`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
         }
         pub mod machine_int {
-            pub use super::root;
+            #![doc = r##"This is the module [`::rust_primitives::hax::machine_int`]."##]
+            use super::root;
             mk!(
                 add,
                 r##"This is the function [`::rust_primitives::hax::machine_int::add`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                bitand,
+                r##"This is the function [`::rust_primitives::hax::machine_int::bitand`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                bitor,
+                r##"This is the function [`::rust_primitives::hax::machine_int::bitor`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                bitxor,
+                r##"This is the function [`::rust_primitives::hax::machine_int::bitxor`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                div,
+                r##"This is the function [`::rust_primitives::hax::machine_int::div`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 eq,
                 r##"This is the function [`::rust_primitives::hax::machine_int::eq`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::machine_int())
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                ge,
+                r##"This is the function [`::rust_primitives::hax::machine_int::ge`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                gt,
+                r##"This is the function [`::rust_primitives::hax::machine_int::gt`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                le,
+                r##"This is the function [`::rust_primitives::hax::machine_int::le`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                lt,
+                r##"This is the function [`::rust_primitives::hax::machine_int::lt`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                mul,
+                r##"This is the function [`::rust_primitives::hax::machine_int::mul`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                ne,
+                r##"This is the function [`::rust_primitives::hax::machine_int::ne`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                not,
+                r##"This is the function [`::rust_primitives::hax::machine_int::not`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                rem,
+                r##"This is the function [`::rust_primitives::hax::machine_int::rem`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                shl,
+                r##"This is the function [`::rust_primitives::hax::machine_int::shl`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                shr,
+                r##"This is the function [`::rust_primitives::hax::machine_int::shr`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
+            );
+            mk!(
+                sub,
+                r##"This is the function [`::rust_primitives::hax::machine_int::sub`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
         }
         pub mod monomorphized_update_at {
-            pub use super::root;
+            #![doc = r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##]
+            use super::root;
+            mk!(
+                update_at_range,
+                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
+            );
+            mk!(
+                update_at_range_from,
+                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_from`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
+            );
+            mk!(
+                update_at_range_full,
+                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_full`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
+            );
+            mk!(
+                update_at_range_to,
+                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_to`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn"]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
+            );
             mk!(
                 update_at_usize,
                 r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_usize`]."##,
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn"]"##,
-                ::core::option::Option::Some(root::hax_engine_names::hax::monomorphized_update_at())
+                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
             );
         }
+        mk!(
+            Failure,
+            r##"This is the struct [`::rust_primitives::hax::Failure`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            MutRef,
+            r##"This is the enum [`::rust_primitives::hax::MutRef`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
         mk!(
             Never,
             r##"This is the enum [`::rust_primitives::hax::Never`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Tuple0,
             r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],"Struct"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Tuple1,
             r##"This is the struct [`::rust_primitives::hax::Tuple1`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple1"},0]],"Struct"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Tuple2,
             r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            array_of_list,
+            r##"This is the function [`::rust_primitives::hax::array_of_list`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             box_new,
             r##"This is the function [`::rust_primitives::hax::box_new`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"box_new"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            cast_op,
+            r##"This is the function [`::rust_primitives::hax::cast_op`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"cast_op"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            control_flow_monad,
+            r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            deref_op,
+            r##"This is the function [`::rust_primitives::hax::deref_op`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"deref_op"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            dropped_body,
+            r##"This is the function [`::rust_primitives::hax::dropped_body`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             failure,
             r##"This is the function [`::rust_primitives::hax::failure`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            folds,
+            r##"This is the module [`::rust_primitives::hax::folds`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            int,
+            r##"This is the module [`::rust_primitives::hax::int`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             logical_op_and,
             r##"This is the function [`::rust_primitives::hax::logical_op_and`]."##,
             r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn"]"##,
-            ::core::option::Option::Some(root::hax_engine_names::hax())
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            logical_op_or,
+            r##"This is the function [`::rust_primitives::hax::logical_op_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            machine_int,
+            r##"This is the module [`::rust_primitives::hax::machine_int`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            monomorphized_update_at,
+            r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            never_to_any,
+            r##"This is the function [`::rust_primitives::hax::never_to_any`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            repeat,
+            r##"This is the function [`::rust_primitives::hax::repeat`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            update_at,
+            r##"This is the function [`::rust_primitives::hax::update_at`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            while_loop,
+            r##"This is the function [`::rust_primitives::hax::while_loop`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            while_loop_cf,
+            r##"This is the function [`::rust_primitives::hax::while_loop_cf`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
+        );
+        mk!(
+            while_loop_return,
+            r##"This is the function [`::rust_primitives::hax::while_loop_return`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::hax())
         );
     }
+    pub mod i128 {
+        #![doc = r##"This is the module [`::rust_primitives::i128`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::i128::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::i128::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::i128::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::i128::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::i128::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::i128::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::i128::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::i128::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::i128::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::i128::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::i128::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::i128::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::i128::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::i128::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::i128::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::i128::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::i128::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i128())
+        );
+    }
+    pub mod i16 {
+        #![doc = r##"This is the module [`::rust_primitives::i16`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::i16::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::i16::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::i16::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::i16::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::i16::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::i16::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::i16::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::i16::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::i16::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::i16::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::i16::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::i16::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::i16::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::i16::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::i16::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::i16::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::i16::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i16())
+        );
+    }
+    pub mod i32 {
+        #![doc = r##"This is the module [`::rust_primitives::i32`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::i32::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::i32::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::i32::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::i32::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::i32::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::i32::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::i32::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::i32::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::i32::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::i32::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::i32::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::i32::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::i32::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::i32::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::i32::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::i32::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::i32::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i32())
+        );
+    }
+    pub mod i64 {
+        #![doc = r##"This is the module [`::rust_primitives::i64`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::i64::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::i64::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::i64::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::i64::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::i64::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::i64::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::i64::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::i64::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::i64::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::i64::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::i64::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::i64::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::i64::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::i64::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::i64::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::i64::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::i64::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i64())
+        );
+    }
+    pub mod i8 {
+        #![doc = r##"This is the module [`::rust_primitives::i8`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::i8::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::i8::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::i8::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::i8::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::i8::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::i8::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::i8::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::i8::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::i8::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::i8::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::i8::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::i8::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::i8::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::i8::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::i8::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::i8::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::i8::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::i8())
+        );
+    }
+    pub mod isize {
+        #![doc = r##"This is the module [`::rust_primitives::isize`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::isize::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::isize::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::isize::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::isize::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::isize::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::isize::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::isize::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::isize::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::isize::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::isize::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::isize::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::isize::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::isize::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::isize::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::isize::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::isize::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::isize::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::isize())
+        );
+    }
+    pub mod u128 {
+        #![doc = r##"This is the module [`::rust_primitives::u128`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::u128::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::u128::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::u128::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::u128::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::u128::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::u128::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::u128::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::u128::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::u128::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::u128::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::u128::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::u128::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::u128::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::u128::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::u128::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::u128::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::u128::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u128())
+        );
+    }
+    pub mod u16 {
+        #![doc = r##"This is the module [`::rust_primitives::u16`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::u16::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::u16::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::u16::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::u16::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::u16::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::u16::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::u16::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::u16::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::u16::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::u16::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::u16::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::u16::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::u16::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::u16::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::u16::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::u16::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::u16::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u16())
+        );
+    }
+    pub mod u32 {
+        #![doc = r##"This is the module [`::rust_primitives::u32`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::u32::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::u32::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::u32::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::u32::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::u32::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::u32::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::u32::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::u32::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::u32::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::u32::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::u32::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::u32::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::u32::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::u32::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::u32::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::u32::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::u32::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u32())
+        );
+    }
+    pub mod u64 {
+        #![doc = r##"This is the module [`::rust_primitives::u64`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::u64::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::u64::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::u64::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::u64::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::u64::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::u64::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::u64::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::u64::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::u64::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::u64::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::u64::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::u64::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::u64::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::u64::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::u64::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::u64::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::u64::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u64())
+        );
+    }
+    pub mod u8 {
+        #![doc = r##"This is the module [`::rust_primitives::u8`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::u8::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::u8::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::u8::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::u8::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::u8::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::u8::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::u8::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::u8::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::u8::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::u8::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::u8::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::u8::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::u8::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::u8::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::u8::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::u8::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::u8::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::u8())
+        );
+    }
+    pub mod usize {
+        #![doc = r##"This is the module [`::rust_primitives::usize`]."##]
+        use super::root;
+        mk!(
+            add,
+            r##"This is the function [`::rust_primitives::usize::add`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            bit_and,
+            r##"This is the function [`::rust_primitives::usize::bit_and`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            bit_or,
+            r##"This is the function [`::rust_primitives::usize::bit_or`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            bit_xor,
+            r##"This is the function [`::rust_primitives::usize::bit_xor`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            div,
+            r##"This is the function [`::rust_primitives::usize::div`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            eq,
+            r##"This is the function [`::rust_primitives::usize::eq`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            ge,
+            r##"This is the function [`::rust_primitives::usize::ge`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            gt,
+            r##"This is the function [`::rust_primitives::usize::gt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            le,
+            r##"This is the function [`::rust_primitives::usize::le`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            lt,
+            r##"This is the function [`::rust_primitives::usize::lt`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            mul,
+            r##"This is the function [`::rust_primitives::usize::mul`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            ne,
+            r##"This is the function [`::rust_primitives::usize::ne`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            neg,
+            r##"This is the function [`::rust_primitives::usize::neg`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            rem,
+            r##"This is the function [`::rust_primitives::usize::rem`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            shl,
+            r##"This is the function [`::rust_primitives::usize::shl`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            shr,
+            r##"This is the function [`::rust_primitives::usize::shr`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+        mk!(
+            sub,
+            r##"This is the function [`::rust_primitives::usize::sub`]."##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            ::core::option::Option::Some(root::rust_primitives::usize())
+        );
+    }
+    mk!(
+        Use,
+        r##"This is the use item [`::rust_primitives::Use`]."##,
+        r##"["rust_primitives",[["Use",0]],"Use"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        alloc,
+        r##"This is the extern crate [`::rust_primitives::alloc`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        crypto_abstractions,
+        r##"This is the module [`::rust_primitives::crypto_abstractions`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        dummy_hax_concrete_ident_wrapper,
+        r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##,
+        r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        hax,
+        r##"This is the module [`::rust_primitives::hax`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"hax"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        i128,
+        r##"This is the module [`::rust_primitives::i128`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"i128"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        i16,
+        r##"This is the module [`::rust_primitives::i16`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"i16"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        i32,
+        r##"This is the module [`::rust_primitives::i32`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"i32"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        i64,
+        r##"This is the module [`::rust_primitives::i64`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"i64"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        i8,
+        r##"This is the module [`::rust_primitives::i8`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"i8"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        impl_arith,
+        r##"This is the macro [`::rust_primitives::impl_arith`]."##,
+        r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"}]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        isize,
+        r##"This is the module [`::rust_primitives::isize`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"isize"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        offset,
+        r##"This is the function [`::rust_primitives::offset`]."##,
+        r##"["rust_primitives",[[{"ValueNs":"offset"},0]],"Fn"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        std,
+        r##"This is the extern crate [`::rust_primitives::std`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        u128,
+        r##"This is the module [`::rust_primitives::u128`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"u128"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        u16,
+        r##"This is the module [`::rust_primitives::u16`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"u16"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        u32,
+        r##"This is the module [`::rust_primitives::u32`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"u32"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        u64,
+        r##"This is the module [`::rust_primitives::u64`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"u64"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        u8,
+        r##"This is the module [`::rust_primitives::u8`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"u8"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
+    );
     mk!(
         unsize,
         r##"This is the function [`::rust_primitives::unsize`]."##,
         r##"["rust_primitives",[[{"ValueNs":"unsize"},0]],"Fn"]"##,
-        ::core::option::Option::Some(root::hax_engine_names())
+        ::core::option::Option::Some(root::rust_primitives())
+    );
+    mk!(
+        usize,
+        r##"This is the module [`::rust_primitives::usize`]."##,
+        r##"["rust_primitives",[[{"TypeNs":"usize"},0]],"Mod"]"##,
+        ::core::option::Option::Some(root::rust_primitives())
     );
 }
 mk!(
@@ -4143,12 +4436,6 @@ mk!(
     ::core::option::Option::None
 );
 mk!(
-    hax_engine_names,
-    r##"This is the module [`::hax_engine_names`]."##,
-    r##"["hax_engine_names",[],"Mod"]"##,
-    ::core::option::Option::None
-);
-mk!(
     hax_lib,
     r##"This is the module [`::hax_lib`]."##,
     r##"["hax_lib",[],"Mod"]"##,
@@ -4158,5 +4445,11 @@ mk!(
     hax_lib_protocol,
     r##"This is the module [`::hax_lib_protocol`]."##,
     r##"["hax_lib_protocol",[],"Mod"]"##,
+    ::core::option::Option::None
+);
+mk!(
+    rust_primitives,
+    r##"This is the module [`::rust_primitives`]."##,
+    r##"["rust_primitives",[],"Mod"]"##,
     ::core::option::Option::None
 );

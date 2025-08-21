@@ -74,8 +74,7 @@ let variantNameOf = s => {
         return v + "'";
     return v;
 };
-let typeNameOf = s => s.replace(/[A-Z]/g, (l, i) => `${i ? '_' : ''}${l.toLowerCase()}`);
-let fieldNameOf = s => {
+let escapeOCamlKeywords = s => {
     let ocaml_keywords = ["and", "as", "assert", "asr", "begin", "class", "constraint",
         "do", "done", "downto", "else", "end", "exception", "external",
         "false", "for", "fun", "function", "functor", "if", "in",
@@ -85,10 +84,10 @@ let fieldNameOf = s => {
         "private", "rec", "sig", "struct", "then", "to", "true", "try",
         "type", "val", "virtual", "when", "while", "with"
     ];
-    if (ocaml_keywords.includes(s))
-        return s + "'";
-    return s;
-};
+    return ocaml_keywords.includes(s) ? s + "'" : s;
+}
+let typeNameOf = s => escapeOCamlKeywords(s.replace(/[A-Z]/g, (l, i) => `${i ? '_' : ''}${l.toLowerCase()}`));
+let fieldNameOf = s => escapeOCamlKeywords(s);
 
 let ensureUnique = (() => {
     let cache = {};

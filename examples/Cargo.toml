@@ -1,6 +1,8 @@
 [workspace]
 members = [
     "chacha20",
+    "lean_chacha20",
+    "lean_barrett",
     "limited-order-book",
     "sha256",
     "barrett",
@@ -13,4 +15,3 @@ resolver = "2"
 [workspace.dependencies]
 hax-lib = { path = "../hax-lib" }
 hax-bounded-integers = { path = "../hax-bounded-integers" }
-

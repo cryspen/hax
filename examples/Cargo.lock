@@ -252,7 +252,7 @@ checksum = "f93e7192158dbcda357bdec5fb5788eebf8bbac027f3f33e719d29135ae84156"
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -261,7 +261,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -270,7 +270,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro-error2",
@@ -281,7 +281,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -395,6 +395,21 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "lean_barrett"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+]
+
+[[package]]
+name = "lean_chacha20"
+version = "0.1.0"
+dependencies = [
+ "hax-bounded-integers",
+ "hax-lib",
+]
 
 [[package]]
 name = "leb128"

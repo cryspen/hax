@@ -9,6 +9,7 @@
 )]
 
 pub mod ast;
+pub mod backends;
 pub mod hax_io;
 pub mod lean;
 pub mod names;

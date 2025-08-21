@@ -57,9 +57,11 @@
         '';
         ocamlPackages = pkgs.ocamlPackages;
         ocamlformat = ocamlPackages.ocamlformat_0_27_0;
+        proverif = pkgs.proverif.overrideDerivation
+          (_: { patches = [ examples/proverif-psk/pv_div_by_zero_fix.diff ]; });
       in rec {
         packages = {
-          inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs;
+          inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs proverif;
           docs = pkgs.python312Packages.callPackage ./docs {
             hax-frontend-docs = packages.hax-rust-frontend.docs;
             hax-engine-docs = packages.hax-engine.docs;
@@ -170,7 +172,6 @@
             })
             packages.docs
           ];
-        in let
           utils = pkgs.stdenv.mkDerivation {
             name = "hax-dev-scripts";
             phases = [ "installPhase" ];
@@ -179,7 +180,7 @@
               cp ${./.utils/rebuild.sh} $out/bin/rebuild
             '';
           };
-          packages = [
+          defaultPackages = [
             ocamlformat
             ocamlPackages.ocaml-lsp
             ocamlPackages.ocamlformat-rpc-lib
@@ -210,12 +211,27 @@
               export HAX_PROOF_LIBS_HOME="$HAX_ROOT/proof-libs/fstar"
               export HAX_LIBS_HOME="$HAX_ROOT/hax-lib"
             '';
-            packages = packages ++ [ fstar pkgs.proverif ];
+            packages = defaultPackages ++ [ fstar pkgs.proverif ];
+          };
+          ci-examples = pkgs.mkShell {
+            shellHook = ''
+              eval $(hax-env)
+              export CACHE_DIR=$(mktemp -d)
+              export HINT_DIR=$(mktemp -d)
+              export SHELL=${pkgs.bash}/bin/bash
+            '';
+            packages = [
+              packages.hax
+              packages.hax-env
+              packages.fstar
+              packages.proverif
+              pkgs.jq
+              pkgs.elan
+            ];
           };
           default = pkgs.mkShell {
-            inherit packages inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
-            shellHook = ''
-              echo "Commands available: $(ls ${utils}/bin | tr '\n' ' ')" 1>&2'';
+            inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            packages = defaultPackages;
           };
         };
       });
