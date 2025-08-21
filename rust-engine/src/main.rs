@@ -9,8 +9,12 @@ use hax_types::{cli_options::Backend, engine_api::File};
 use pretty::{DocAllocator, DocBuilder, docs};
 
 fn krate_name(items: &Vec<Item>) -> String {
-    let head_item = items.get(0).unwrap();
-    head_item.ident.krate()
+    items
+        .first()
+        .expect("non-empty vector of items")
+        .ident
+        .krate()
+        .expect("non-tuple or projector")
 }
 
 fn lean_backend(items: Vec<Item>) {
