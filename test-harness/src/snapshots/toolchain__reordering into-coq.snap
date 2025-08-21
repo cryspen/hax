@@ -59,18 +59,18 @@ Inductive t_Foo : Type :=
 Definition f '(_ : t_u32) : t_Foo :=
   Foo_A.
 
-Record Bar_record : Type :=
+Record Bar_Bar_record : Type :=
   {
-    Bar_0 : t_Foo;
+    Bar_Bar_0 : t_Foo;
   }.
 
 
-#[export] Instance settable_Bar_record : Settable _ :=
-  settable! (Build_Bar_record) <Bar_0>.
-Notation "'Bar_Bar_record'" := Build_Bar_record.
+#[export] Instance settable_Bar_Bar_record : Settable _ :=
+  settable! (Build_Bar_Bar_record) <Bar_Bar_0>.
+Notation "'Bar_Bar_record'" := Build_Bar_Bar_record.
 
 Definition g '(_ : unit) : t_Bar :=
-  Bar (f ((32 : t_u32))).
+  Bar_Bar (f ((32 : t_u32))).
 
 Definition t_Foo_cast_to_repr (x : t_Foo) : t_isize :=
   match x with
