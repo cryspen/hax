@@ -47,28 +47,23 @@ def FORTYTWO : USize := 42
 def MINUS_FORTYTWO : ISize := -42
 def returns42 (_ : hax_Tuple0) : Result USize := do FORTYTWO
 
-def add_two_numbers (x : USize) (y : USize) : Result USize := do
-  (← hax_machine_int_add x y)
+def add_two_numbers (x : USize) (y : USize) : Result USize := do (← x +? y)
 
 def letBinding (x : USize) (y : USize) : Result USize := do
   let (useless : hax_Tuple0) ← pure (constr_hax_Tuple0);
-  let (result1 : USize) ← pure (← hax_machine_int_add x y);
-  let (result2 : USize) ← pure (← hax_machine_int_add result1 2);
-  (← hax_machine_int_add result2 1)
+  let (result1 : USize) ← pure (← x +? y);
+  let (result2 : USize) ← pure (← result1 +? 2);
+  (← result2 +? 1)
 
 def closure (_ : hax_Tuple0) : Result Int32 := do
   let (x : Int32) ← pure 41;
-  let (f1 : Int32 -> Result Int32) ← pure
-    (fun (y : Int32) => do (← hax_machine_int_add y x));
+  let (f1 : Int32 -> Result Int32) ← pure (fun (y : Int32) => do (← y +? x));
   let (f2 : Int32 -> Int32 -> Result Int32) ← pure
-    (fun (y : Int32) (z : Int32) => do (← hax_machine_int_add
-      (← hax_machine_int_add y x)
-        z));
-  (← hax_machine_int_add
-  (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1)))
-    (← ops_function_Fn_call
-    f2
-      (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
+    (fun (y : Int32) (z : Int32) => do (← (← y +? x) +? z));
+  (← (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1))) +?
+  (← ops_function_Fn_call
+  f2
+    (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
 
 
 @[spec]
@@ -79,4 +74,7 @@ def test_before_verbatime_single_line (x : UInt8) : Result UInt8 := do 42
 def multiline : Unit := ()
 
 def test_before_verbatim_multi_line (x : UInt8) : Result UInt8 := do 32
+
+def binop_resugarings (x : UInt32) : Result UInt32 := do
+  (← (← (← x +? 1) -? (← (← (← 2 *? 3) %? 4) /? 5)) >>>? 1)
 '''
