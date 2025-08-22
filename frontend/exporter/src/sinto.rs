@@ -49,6 +49,14 @@ impl<S, LL, RR, L: SInto<S, LL>, R: SInto<S, RR>> SInto<S, (LL, RR)> for (L, R) 
     }
 }
 
+impl<S, AA, BB, CC, A: SInto<S, AA>, B: SInto<S, BB>, C: SInto<S, CC>> SInto<S, (AA, BB, CC)>
+    for (A, B, C)
+{
+    fn sinto(&self, s: &S) -> (AA, BB, CC) {
+        (self.0.sinto(s), self.1.sinto(s), self.2.sinto(s))
+    }
+}
+
 impl<S, D, T: SInto<S, D>> SInto<S, Option<D>> for Option<T> {
     fn sinto(&self, s: &S) -> Option<D> {
         self.as_ref().map(|x| x.sinto(s))
