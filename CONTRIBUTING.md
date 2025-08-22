@@ -56,6 +56,27 @@ Please add an entry in a subsection (`Added`, `Changed`, `Deprecated`, `Removed`
 
 Please prefix with `engine:`, `frontend:` or similar.
 
+#### Should I add an entry to `CHANGELOG.md`?
+
+**Include in CHANGELOG.md:**
+ - New features and enhancements
+ - Bug fixes
+ - Breaking changes
+ - Security patches
+ - Major documentation updates
+ - Dependency updates that affect users
+
+**Do not include:**
+ - Code refactoring with no user impact
+ - Minor doc fixes (typos, grammar)
+ - CI/CD or tooling changes with no external effect
+ - Linting, formatting, or style-only commits
+ - Reverts or fixup commits
+ - Dependency bumps with no behavioral impact
+
+**Rule of thumb:**
+If a user (developer or customer) wouldn’t notice or need to know, leave it out.
+
 ## Styleguides
 
 ### Git Commit Messages
