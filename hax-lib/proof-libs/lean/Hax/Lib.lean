@@ -696,6 +696,8 @@ abbrev hax_Tuple0 : Type := Unit
 def constr_hax_Tuple0 : hax_Tuple0 := ()
 instance : CoeDep Type hax_Tuple0 (hax_Tuple0) where
   coe := ()
+instance : CoeDep Type hax_Tuple0 (Result hax_Tuple0) where
+  coe := pure ()
 
 
 abbrev hax_Tuple1 (α: Type) : Type := α × Unit
