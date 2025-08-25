@@ -115,8 +115,9 @@ pub mod global_id {
             concrete_id.def_id.def_id.clone()
         }
 
-        /// Raw printing of identifier separated by underscore. Should be used
-        /// only for testing. See https://github.com/cryspen/hax/issues/1599
+        /// Raw printing of full identifier separated by underscore. Should be
+        /// used only for testing. See
+        /// https://github.com/cryspen/hax/issues/1599
         pub fn to_debug_string(&self) -> String {
             match self {
                 GlobalId::Concrete(concrete_id) => concrete_id
@@ -142,6 +143,25 @@ pub mod global_id {
                     })
                     .collect::<Vec<String>>()
                     .join("_"),
+                GlobalId::Projector(_concrete_id) => todo!(),
+            }
+        }
+
+        /// Raw printing of head of identifier. Should be used only for
+        /// testing. See https://github.com/cryspen/hax/issues/1599
+        pub fn to_head_debug_string(&self) -> String {
+            match self {
+                GlobalId::Concrete(concrete_id) => {
+                    let def = concrete_id.def_id.def_id.path.iter().last().unwrap();
+
+                    match &def.data {
+                        hax_frontend_exporter::DefPathItem::ValueNs(s)
+                        | hax_frontend_exporter::DefPathItem::MacroNs(s)
+                        | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
+                        hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
+                        other => unimplemented!("{other:?}"),
+                    }
+                }
                 GlobalId::Projector(_concrete_id) => todo!(),
             }
         }
