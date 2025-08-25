@@ -104,7 +104,6 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
         .collect()
 }
 
-#[allow(unused)]
 mod prelude {
     //! Small "bring-into-scope" set used by backend modules.
     //!
