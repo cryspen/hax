@@ -18,5 +18,11 @@ limitations under the License. -/
 /- Additional results and tactics about BitVectors -/
 import Hax.BitVec
 
+/- Monadic encoding  -/
+import Hax.Result
+
+/- Integer types  -/
+import Hax.Integers
+
 /- Main Prelude library -/
 import Hax.Lib
