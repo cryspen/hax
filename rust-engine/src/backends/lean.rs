@@ -119,7 +119,7 @@ set_option linter.unusedVariables false
                 intersperse!(
                     items
                         .iter()
-                        .filter(|item| LeanPrinter::printable_item(&item)),
+                        .filter(|item| LeanPrinter::printable_item(item)),
                     docs![hardline!(), hardline!()]
                 )
             ]
@@ -390,7 +390,7 @@ set_option linter.unusedVariables false
                 PatKind::Deref { sub_pat: _ } => todo!(),
                 PatKind::Constant { lit: _ } => todo!(),
                 PatKind::Construct {
-                    constructor,
+                    constructor: _,
                     is_record,
                     is_struct,
                     fields,
