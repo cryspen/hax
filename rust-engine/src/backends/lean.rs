@@ -116,7 +116,12 @@ set_option linter.unusedVariables false
                     .lines(),
                     hardline!(),
                 ),
-                intersperse!(items, docs![hardline!(), hardline!()])
+                intersperse!(
+                    items
+                        .iter()
+                        .filter(|item| LeanPrinter::printable_item(&item)),
+                    docs![hardline!(), hardline!()]
+                )
             ]
         }
 
@@ -175,9 +180,14 @@ set_option linter.unusedVariables false
                     docs!["← ", head, generic_args, args].parens().group()
                 }
                 ExprKind::Literal(literal) => docs![literal],
-                ExprKind::Array(exprs) => {
-                    docs!["#v[", intersperse!(exprs, reflow!(", ")).nest(INDENT)].group()
-                }
+                ExprKind::Array(exprs) => docs![
+                    "#v[",
+                    intersperse!(exprs, docs![",", line!()])
+                        .nest(INDENT)
+                        .group(),
+                    "]"
+                ]
+                .group(),
                 ExprKind::Construct {
                     constructor,
                     is_record,
@@ -216,6 +226,7 @@ set_option linter.unusedVariables false
                             line!(),
                             intersperse!(
                                 fields.iter().map(|(id, e)| docs![
+                                    "_",
                                     id.to_head_debug_string(),
                                     reflow!(" := "),
                                     e
@@ -248,7 +259,7 @@ set_option linter.unusedVariables false
                             intersperse!(
                                 fields.iter().map(|field: &(GlobalId, Expr)| {
                                     let head = field.0.to_head_debug_string().clone();
-                                    docs![head, reflow!(" := "), &field.1].parens().group()
+                                    docs!["_", head, reflow!(" := "), &field.1].parens().group()
                                 }),
                                 line!()
                             )
@@ -300,7 +311,8 @@ set_option linter.unusedVariables false
                 } => docs![
                     reflow!("fun "),
                     intersperse!(params, softline!()).group(),
-                    reflow!(" => do "),
+                    reflow!(" => do"),
+                    line!(),
                     body
                 ]
                 .parens()
@@ -382,13 +394,45 @@ set_option linter.unusedVariables false
                     is_record,
                     is_struct,
                     fields,
+                } if *is_struct => {
+                    if !*is_record {
+                        // Tuple-like structure, using positional arguments
+                        docs![
+                            "⟨",
+                            intersperse!(
+                                fields.iter().map(|field| { docs![&field.1] }),
+                                docs![",", line!()]
+                            )
+                            .group(),
+                            "⟩"
+                        ]
+                        .group()
+                    } else {
+                        // Structure-like structure, using named arguments
+                        docs![intersperse!(
+                            fields.iter().map(|field| {
+                                docs![
+                                    "_",
+                                    field.0.to_head_debug_string(),
+                                    reflow!(" := "),
+                                    &field.1
+                                ]
+                                .group()
+                            }),
+                            docs![",", line!()]
+                        )]
+                        .braces()
+                        .group()
+                    }
+                }
+                PatKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct: _,
+                    fields,
                 } => {
                     if fields.is_empty() {
-                        if *is_struct {
-                            docs!["()"]
-                        } else {
-                            docs![".", constructor.to_head_debug_string()]
-                        }
+                        docs![".", constructor.to_head_debug_string()]
                     } else if *is_record {
                         docs![
                             ".",
@@ -397,7 +441,7 @@ set_option linter.unusedVariables false
                             intersperse!(
                                 fields.iter().map(|field: &(GlobalId, _)| {
                                     let head = field.0.to_head_debug_string().clone();
-                                    docs![head, reflow!(" := "), &field.1].parens().group()
+                                    docs!["_", head, reflow!(" := "), &field.1].parens().group()
                                 }),
                                 line!()
                             )
@@ -613,7 +657,7 @@ set_option linter.unusedVariables false
                         // Structure-like structure, using named arguments
                         intersperse!(
                             variant.arguments.iter().map(|(id, ty, _)| {
-                                docs![id.to_head_debug_string(), reflow!(" : "), ty]
+                                docs!["_", id.to_head_debug_string(), reflow!(" : "), ty]
                                     .group()
                                     .nest(INDENT)
                             }),
@@ -670,7 +714,7 @@ set_option linter.unusedVariables false
                     docs![
                         intersperse!(
                             variant.arguments.iter().map(|(id, ty, _)| {
-                                docs![id.to_head_debug_string(), reflow!(" : "), ty]
+                                docs!["_", id.to_head_debug_string(), reflow!(" : "), ty]
                                     .parens()
                                     .group()
                             }),

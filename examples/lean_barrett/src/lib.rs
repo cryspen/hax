@@ -38,15 +38,16 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
       result == valid_result - FIELD_MODULUS)
 })]
 #[hax_lib::lean::before("@[simp, spec]")]
-#[hax_lib::lean::after("
+#[hax_lib::lean::after(
+    "
 theorem barrett_spec (value: i32) :
-  ⦃ __requires (value) = pure true ⦄
+  ⦃ _.requires (value) = pure true ⦄
   (barrett_reduce value)
-  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  ⦃ ⇓ result => _.ensures value result = pure true ⦄
 := by
-  mvcgen [__requires, __ensures]
+  mvcgen [_.requires, _.ensures]
   hax_bv_decide
-  simp [__requires, __ensures] at *
+  simp [_.requires, _.ensures] at *
   rw [Int32.HaxRem_spec_bv_rw] ; simp ;
   rw [Int32.HaxAdd_spec_bv_rw] ; simp ;
   rw [Int32.HaxSub_spec_bv_rw] ; simp
@@ -62,7 +63,8 @@ theorem barrett_spec (value: i32) :
           ] at *
   generalize Int32.toBitVec value = bv_value at * ; clear value
   bv_decide (config := {timeout := 120})
-")]
+"
+)]
 pub fn barrett_reduce(value: FieldElement) -> FieldElement {
     let t = i64::from(value) * BARRETT_MULTIPLIER;
     let t = t + (BARRETT_R >> 1);
