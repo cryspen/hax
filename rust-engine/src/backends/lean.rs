@@ -5,7 +5,7 @@
 //! source maps).
 
 use super::prelude::*;
-use crate::resugarings::BinOp;
+use crate::{printer::pretty_ast::DebugJSON, resugarings::BinOp};
 
 mod binops {
     pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
@@ -649,7 +649,7 @@ set_option linter.unusedVariables false
                         ])),
                     ]
                 }
-                _ => todo!(),
+                _ => todo!("-- to debug missing item run: {}", DebugJSON(item_kind)),
             }
         }
 
