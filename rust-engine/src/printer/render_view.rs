@@ -136,6 +136,11 @@ pub trait RenderView: Sized {
     fn render_strings(&self, view: &View) -> impl Iterator<Item = String> {
         self.rendered_to_strings(self.render(view))
     }
+
+    /// Convenience: renders a [`View`] straight into a string of the last part of the path
+    fn render_last_string(&self, view: &View) -> String {
+        self.render(view).last()
+    }
 }
 
 /// Default rendering helpers used by [`RenderView`]'s blanket implementations.
@@ -200,4 +205,17 @@ pub struct Rendered {
     pub module: Vec<String>,
     /// Non-module atoms (e.g., `["Foo::f", "MyEnum::MyVariant::my_field"]`).
     pub path: Vec<String>,
+}
+
+impl Rendered {
+    /// Returns the last item of the path (the most local part e.g. `my_field`)
+    fn last(self: Self) -> String {
+        match self.path.last() {
+            Some(s) => s.clone(),
+            None => {
+                // The path should always be non-empty
+                panic!()
+            }
+        }
+    }
 }
