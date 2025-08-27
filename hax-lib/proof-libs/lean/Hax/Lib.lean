@@ -127,10 +127,12 @@ end Result
 -/
 section Logic
 
+namespace hax.logical_op
 @[simp, spec]
-abbrev hax_logical_op_and := (fun a b => a && b)
+abbrev and := (fun a b => a && b)
 @[simp, spec]
-abbrev hax_logical_op_or := (fun a b => a || b)
+abbrev or := (fun a b => a || b)
+end hax.logical_op
 
 abbrev assert (b:Bool) : Result Unit :=
   if b then pure ()
@@ -290,39 +292,44 @@ infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 
 /- Until notations are not introduced by the Lean backend, explicit hax-names
   are also provided -/
-@[simp, spec]
-def hax_machine_int_add {α} [HaxAdd α] (x y: α) : Result α := x +? y
-@[simp, spec]
-def hax_machine_int_sub {α} [HaxSub α] (x y: α) : Result α := x -? y
-@[simp, spec]
-def hax_machine_int_mul {α} [HaxMul α] (x y: α) : Result α := x *? y
-@[simp, spec]
-def hax_machine_int_div {α} [HaxDiv α] (x y: α) : Result α := x /? y
-@[simp, spec]
-def hax_machine_int_rem {α} [HaxRem α] (x y: α) : Result α := x %? y
-@[simp, spec]
-def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
-@[simp, spec]
-def hax_machine_int_bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
-@[simp]
-def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
+namespace hax.machine_int
 
 @[simp, spec]
-def hax_machine_int_eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
+def add {α} [HaxAdd α] (x y: α) : Result α := x +? y
 @[simp, spec]
-def hax_machine_int_ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
+def sub {α} [HaxSub α] (x y: α) : Result α := x -? y
 @[simp, spec]
-def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool :=
+def mul {α} [HaxMul α] (x y: α) : Result α := x *? y
+@[simp, spec]
+def div {α} [HaxDiv α] (x y: α) : Result α := x /? y
+@[simp, spec]
+def rem {α} [HaxRem α] (x y: α) : Result α := x %? y
+@[simp, spec]
+def shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
+@[simp, spec]
+def bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
+
+@[simp, spec]
+def eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
+@[simp, spec]
+def ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
+@[simp, spec]
+def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool :=
   pure (x < y)
 @[simp, spec]
-def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool :=
+def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool :=
   pure (x ≤ y)
 @[simp, spec]
-def hax_machine_int_gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
+def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
   pure (x > y)
 @[simp, spec]
-def hax_machine_int_ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
+def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
   pure (x ≥ y)
+
+end hax.machine_int
+
+@[simp]
+def ops.arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 
 /-
@@ -693,20 +700,36 @@ end Arithmetic
 
 -/
 section Tuples
+namespace hax
 
-abbrev hax_Tuple0 : Type := Unit
-def constr_hax_Tuple0 : hax_Tuple0 := ()
-instance : CoeDep Type hax_Tuple0 (hax_Tuple0) where
-  coe := ()
+structure Tuple0
 
+structure Tuple1 (α0: Type) where
+_0 : α0
 
-abbrev hax_Tuple1 (α: Type) : Type := α × Unit
-def constr_hax_Tuple1 {hax_Tuple1_Tuple0: α} : hax_Tuple1 α := (hax_Tuple1_Tuple0, ())
+structure Tuple2 (α0 α1: Type) where
+_0 : α0
+_1 : α1
 
-abbrev hax_Tuple2 (α β: Type) : Type := α × β
-def constr_hax_Tuple2 {α β} {hax_Tuple2_Tuple0: α} {hax_Tuple2_Tuple1 : β} : hax_Tuple2 α β
-  := (hax_Tuple2_Tuple0, hax_Tuple2_Tuple1)
+structure Tuple3 (α0 α1 α2: Type) where
+_0 : α0
+_1 : α1
+_2 : α2
 
+structure Tuple4 (α0 α1 α2 α3: Type) where
+_0 : α0
+_1 : α1
+_2 : α2
+_3 : α3
+
+structure Tuple5 (α0 α1 α2 α3 α4: Type) where
+_0 : α0
+_1 : α1
+_2 : α2
+_3 : α3
+_4 : α4
+
+end hax
 end Tuples
 
 
@@ -719,7 +742,7 @@ section Cast
 
 /-- Hax-introduced explicit cast. It is partial (returns a `Result`) -/
 @[simp, spec]
-def convert_From_from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
+def convert.From.from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
@@ -739,7 +762,7 @@ instance : Cast usize u32 where
   cast x := pure (USize.toUInt32 x)
 
 @[simp, spec]
-def hax_cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
+def hax.cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
 
 end Cast
 
@@ -893,6 +916,7 @@ Rust arrays, are represented as Lean `Vector` (Lean Arrays of known size)
 -/
 section RustArray
 
+
 abbrev RustArray := Vector
 
 inductive array_TryFromSliceError where
@@ -927,7 +951,7 @@ def hax_repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
 
 
 /- Warning : this function has been specialized, it should be turned into a typeclass -/
-def convert_TryInto_try_into {α n} (a: Array α) :
+def convert.TryInto.try_into {α n} (a: Array α) :
    Result (result_Result (Vector α n) array_TryFromSliceError) :=
    pure (
      if h: a.size = n then
@@ -936,13 +960,13 @@ def convert_TryInto_try_into {α n} (a: Array α) :
        .err .array_TryFromSliceError
      )
 
-theorem convert_TryInto_try_success_spec {α n} (a: Array α) :
+theorem convert.TryInto.try_success_spec {α n} (a: Array α) :
   (h: a.size = n) →
   ⦃ True ⦄
-  ( convert_TryInto_try_into a)
+  ( convert.TryInto.try_into a)
   ⦃ ⇓ r => r = .ok (Eq.mp (congrArg _ h) a.toVector) ⦄ := by
   intro h
-  mvcgen [result_impl_unwrap_spec, convert_TryInto_try_into]
+  mvcgen [result_impl_unwrap_spec, convert.TryInto.try_into]
   apply SPred.pure_intro
   split <;> grind
 
@@ -1137,6 +1161,7 @@ Rust vectors are represented as Lean Arrays (variable size)
 -/
 section RustVectors
 
+abbrev RustSlice := Array
 abbrev RustVector := Array
 
 def alloc_Global : Type := Unit
@@ -1181,11 +1206,11 @@ taken care of by the `Fn` class
 class Fn α (β : outParam Type) γ where
   call : α → β → γ
 
-instance {α β} : Fn (α → β) (hax_Tuple1 α) β where
-  call f x := f x.fst
+instance {α β} : Fn (α → β) (hax.Tuple1 α) β where
+  call f x := f x._0
 
-instance {α β γ} : Fn (α → β → γ) (hax_Tuple2 α β) γ where
-  call f x := f x.fst x.snd
+instance {α β γ} : Fn (α → β → γ) (hax.Tuple2 α β) γ where
+  call f x := f x._0 x._1
 
 def ops_function_Fn_call {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.call f x
 
@@ -1194,6 +1219,9 @@ def ops_function_Fn_call {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.cal
 def ops_deref_Deref_deref {α Allocator} (v: vec_Vec α Allocator)
   : Result (Array α)
   := pure v
+
+def string_indirection : Type := String
+def string.String : Type := string_indirection
 
 
 -- Tactics

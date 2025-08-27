@@ -116,7 +116,7 @@ set_option linter.unusedVariables false
                     .lines(),
                     hardline!(),
                 ),
-                intersperse!(items, hardline!())
+                intersperse!(items, docs![hardline!(), hardline!()])
             ]
         }
 
@@ -183,18 +183,67 @@ set_option linter.unusedVariables false
                     is_record,
                     is_struct,
                     fields,
+                    base: _, // Should not ignore base
+                } if *is_struct && !*is_record => {
+                    // Tuple-like structure (numbered fields)
+                    let constructor = docs![constructor, ".mk"];
+                    if fields.is_empty() {
+                        docs![constructor]
+                    } else {
+                        docs![
+                            constructor,
+                            line!(),
+                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!()).group()
+                        ]
+                        .parens()
+                        .group()
+                    }
+                }
+                ExprKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct,
+                    fields,
+                    base: _, // Should not ignore base
+                } if *is_struct && *is_record => {
+                    // Structure-like structure (named fields)
+                    let constructor = docs![constructor, ".mk"];
+                    if fields.is_empty() {
+                        docs![constructor]
+                    } else {
+                        docs![
+                            constructor,
+                            line!(),
+                            intersperse!(
+                                fields.iter().map(|(id, e)| docs![
+                                    id.to_head_debug_string(),
+                                    reflow!(" := "),
+                                    e
+                                ]
+                                .parens()
+                                .group()),
+                                line!()
+                            )
+                            .group()
+                        ]
+                        .parens()
+                        .group()
+                    }
+                }
+                ExprKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct: false,
+                    fields,
                     base: _,
                 } => {
+                    // Constructor of a enum
                     if fields.is_empty() {
-                        if *is_struct {
-                            docs!["()"]
-                        } else {
-                            docs![".", constructor.to_head_debug_string()]
-                        }
+                        docs![constructor]
                     } else if *is_record {
+                        // Record argument : use named arguments
                         docs![
-                            ".",
-                            constructor.to_head_debug_string(),
+                            constructor,
                             line!(),
                             intersperse!(
                                 fields.iter().map(|field: &(GlobalId, Expr)| {
@@ -209,11 +258,11 @@ set_option linter.unusedVariables false
                         .group()
                         .nest(INDENT)
                     } else {
+                        // Non-record, use positional arguments
                         docs![
-                            ".",
-                            constructor.to_head_debug_string(),
+                            constructor,
                             line!(),
-                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!())
+                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!()).group()
                         ]
                         .parens()
                         .group()
@@ -526,7 +575,6 @@ set_option linter.unusedVariables false
                         ]
                         .group()
                         .nest(INDENT)
-                        .append(hardline!())
                     }
                 },
                 ItemKind::TyAlias {
@@ -540,29 +588,66 @@ set_option linter.unusedVariables false
                     rename: _,
                 } => nil!(),
                 ItemKind::Quote { quote, origin: _ } => docs![quote],
-                ItemKind::NotImplementedYet => docs!["sorry /- unsupported by the Hax engine -/"],
+                ItemKind::NotImplementedYet => {
+                    docs!["example : Unit := sorry /- unsupported by the Hax engine -/"]
+                }
+                ItemKind::Type {
+                    name,
+                    generics,
+                    variants,
+                    is_struct,
+                } if *is_struct => {
+                    // Structures
+                    let Some(variant) = variants.first() else {
+                        unreachable!()
+                    };
+                    let args = if !variant.is_record {
+                        // Tuple-like structure, using positional arguments
+                        intersperse!(
+                            variant.arguments.iter().enumerate().map(|(i, (_, ty, _))| {
+                                docs![format!("_{i} :"), line!(), ty].group().nest(INDENT)
+                            }),
+                            hardline!()
+                        )
+                    } else {
+                        // Structure-like structure, using named arguments
+                        intersperse!(
+                            variant.arguments.iter().map(|(id, ty, _)| {
+                                docs![id.to_head_debug_string(), reflow!(" : "), ty]
+                                    .group()
+                                    .nest(INDENT)
+                            }),
+                            hardline!()
+                        )
+                    };
+                    let generics = (!generics.params.is_empty()).then_some(
+                        concat![generics.params.iter().map(|param| docs![param, line!()])].group(),
+                    );
+                    docs![
+                        docs!["structure ", name, line!(), generics, "where"].group(),
+                        docs![hardline!(), args].nest(INDENT),
+                    ]
+                    .group()
+                }
                 ItemKind::Type {
                     name,
                     generics: _,
                     variants,
-                    is_struct,
+                    is_struct: _,
                 } => {
-                    if *is_struct {
-                        todo!()
-                    } else {
-                        docs![
-                            "inductive ",
+                    // Enums
+                    docs![
+                        "inductive ",
+                        name,
+                        " : Type",
+                        hardline!(),
+                        concat!(variants.iter().map(|variant| docs![
+                            "| ",
+                            variant,
                             name,
-                            " : Type",
-                            hardline!(),
-                            concat!(variants.iter().map(|variant| docs![
-                                variant,
-                                name,
-                                hardline!()
-                            ])),
                             hardline!()
-                        ]
-                    }
+                        ])),
+                    ]
                 }
                 _ => todo!(),
             }
@@ -578,7 +663,6 @@ set_option linter.unusedVariables false
 
         fn variant(&'a self, variant: &'b Variant) -> DocBuilder<'a, Self, A> {
             docs![
-                "| ",
                 variant.name.to_head_debug_string(),
                 softline!(),
                 if variant.is_record {
