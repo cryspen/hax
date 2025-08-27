@@ -46,8 +46,22 @@ namespace Spec
 open Int32
 
 variable (x y :i32)
-abbrev max := Int32.maxValue.toInt
-abbrev min := Int32.minValue.toInt
+abbrev max := maxValue.toInt
+abbrev min := minValue.toInt
+
+attribute [scoped simp, spec]
+  max
+  maxValue
+  instHaxAdd
+  instHaxSub
+  instHaxMul
+  instHaxDiv
+  instHaxRem
+  BitVec.saddOverflow
+  BitVec.ssubOverflow
+  BitVec.smulOverflow
+  BitVec.sdivOverflow
+
 
 /- # Bitvec specifications -/
 namespace BitVec.Int32
@@ -56,33 +70,33 @@ namespace BitVec.Int32
 theorem HaxAdd :
   ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) →
   ⦃ True ⦄ (x +? y) ⦃ ⇓ r => r = x + y ⦄ :=
-  by intros; mvcgen [instHaxAdd]
+  by intros; mvcgen
 
 /-- Bitvec-based specification for substraction on i32 -/
 theorem HaxSub :
   ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) →
   ⦃ True ⦄ (x -? y) ⦃ ⇓ r => r = x - y ⦄ :=
-  by intros; mvcgen [instHaxSub]
+  by intros; mvcgen
 
 /-- Bitvec-based specification for multiplication on i32 -/
 theorem HaxMul :
   ¬ (BitVec.smulOverflow x.toBitVec y.toBitVec) →
   ⦃ True ⦄ (x *? y) ⦃ ⇓ r => r = x * y ⦄ :=
-  by intros; mvcgen [instHaxMul]
+  by intros; mvcgen
 
 /-- Bitvec-based specification for division on i32 -/
 theorem HaxDiv :
   y ≠ 0 →
   ¬ (BitVec.sdivOverflow x.toBitVec y.toBitVec) →
   ⦃ True ⦄ (x /? y) ⦃ ⇓ r => r = x / y ⦄ :=
-  by intros; mvcgen [instHaxDiv]
+  by intros; mvcgen
 
 /-- Bitvec-based specification for remainder on i32 -/
 theorem HaxRem :
   y ≠ 0 →
   ¬ (BitVec.sdivOverflow x.toBitVec y.toBitVec) →
   ⦃ True ⦄ (x %? y) ⦃ ⇓ r => r = x % y ⦄ :=
-  by intros; mvcgen [instHaxRem]
+  by intros; mvcgen
 
 end BitVec.Int32
 
@@ -96,14 +110,14 @@ theorem HaxAdd :
   x.toInt + y.toInt ≤ max →
   min ≤ x.toInt + y.toInt →
   ⦃ True ⦄ (x +? y) ⦃⇓ r => r = x + y ⦄ :=
-  by sorry
+  by intros; mvcgen ; simp at * ; omega
 
 /-- Int-based specification for rust substraction on i32 -/
 theorem HaxSub :
   x.toInt - y.toInt ≤ max →
   min ≤ x.toInt - y.toInt →
   ⦃ True ⦄ (x -? y) ⦃⇓ r => r = x - y ⦄ :=
-  by sorry
+  by intros; mvcgen ; simp at * ; omega
 
 /-- Int-based specification for rust multiplication on i32 -/
 theorem HaxMul :
@@ -112,12 +126,12 @@ theorem HaxMul :
   ⦃ ⌜ True ⌝ ⦄
   (x *? y)
   ⦃ ⇓ r => r = x * y ⦄ :=
-  by sorry
+  by intros; mvcgen ; simp at * ; omega
 
 /-- Int-based specification for rust multiplication on i32 -/
 theorem HaxDiv :
   y.toInt ≠ 0 →
-  (y.toInt ≠ -1 ∨ x.toInt ≠ max) →
+  ¬(y.toInt = -1 ∧ x.toInt = max) →
   ⦃ ⌜ True ⌝ ⦄
   (x /? y)
   ⦃ ⇓ r => r = x / y ⦄ :=
