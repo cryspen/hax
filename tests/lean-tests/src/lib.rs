@@ -118,14 +118,13 @@ fn main_tuples() {
 // Structs
 // taken (and adapted) from https://doc.rust-lang.org/rust-by-example/custom_types/structs.html
 
-#[derive(Debug)]
 struct Person {
     name: String,
     age: u8,
 }
 
 // A unit struct
-struct Unit;
+struct MyUnit;
 
 // A tuple struct
 struct Pair(i32, i64);
@@ -155,51 +154,45 @@ fn main_structs() {
     let another_point: Point = Point { x: 10, y: 0 };
 
     // Access the fields of the point
-    let _ = point.x;
-    let _ = point.y;
+    // [UNSUPORTED YET] let _ = point.x;
+    // [UNSUPORTED YET] let _ = point.y;
 
     // Make a new point by using struct update syntax to use the fields of our
     // other one
-    let bottom_right = Point {
-        x: 10,
-        ..another_point
-    };
+    // [UNSUPORTED YET] let bottom_right = Point {
+    //     x: 10,
+    //     ..another_point
+    // };
 
     // `bottom_right.y` will be the same as `another_point.y` because we used that field
     // from `another_point`
 
     // Access the fields of the point
-    let _ = bottom_right.x;
-    let _ = bottom_right.y;
+    // [UNSUPORTED YET] let _ = bottom_right.x;
+    // [UNSUPORTED YET] let _ = bottom_right.y;
 
     // Destructure the point using a `let` binding
-    let Point {
-        x: left_edge,
-        y: top_edge,
-    } = point;
+    // [UNSUPORTED YET] let Point {
+    //     x: left_edge,
+    //     y: top_edge,
+    // } = point;
 
     let _rectangle = Rectangle {
         // struct instantiation is an expression too
-        top_left: Point {
-            x: left_edge,
-            y: top_edge,
-        },
-        bottom_right: bottom_right,
+        top_left: Point { x: 0, y: 1 },
+        bottom_right: point,
     };
 
     // Instantiate a unit struct
-    let _unit = Unit;
+    let _unit = MyUnit;
 
     // Instantiate a tuple struct
     let pair = Pair(1, 0);
 
     // Access the fields of a tuple struct
-    let _ = pair.0;
-    let _ = pair.1;
+    // [UNSUPORTED YET] let _ = pair.0;
+    // [UNSUPORTED YET] let _ = pair.1;
 
     // Destructure a tuple struct
-    let Pair(integer, decimal) = pair;
-
-    let _ = integer;
-    let _ = decimal;
+    // [UNSUPORTED YET] let Pair(integer, decimal) = pair;
 }

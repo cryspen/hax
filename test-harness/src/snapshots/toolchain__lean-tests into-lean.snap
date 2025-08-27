@@ -43,34 +43,42 @@ set_option linter.unusedVariables false
 
 
 
+
+
 def FORTYTWO : USize := 42
+
 def MINUS_FORTYTWO : ISize := -42
-def returns42 (_ : hax_Tuple0) : Result USize := do FORTYTWO
+
+def returns42 (_ : hax.Tuple0) : Result USize := do FORTYTWO
 
 def add_two_numbers (x : USize) (y : USize) : Result USize := do (← x +? y)
 
 def letBinding (x : USize) (y : USize) : Result USize := do
-  let (useless : hax_Tuple0) ← pure ();
+  let (useless : hax.Tuple0) ← pure hax.Tuple0.mk;
   let (result1 : USize) ← pure (← x +? y);
   let (result2 : USize) ← pure (← result1 +? 2);
   (← result2 +? 1)
 
-def closure (_ : hax_Tuple0) : Result Int32 := do
+def closure (_ : hax.Tuple0) : Result Int32 := do
   let (x : Int32) ← pure 41;
   let (f1 : Int32 -> Result Int32) ← pure (fun (y : Int32) => do (← y +? x));
   let (f2 : Int32 -> Int32 -> Result Int32) ← pure
     (fun (y : Int32) (z : Int32) => do (← (← y +? x) +? z));
-  (← (← ops_function_Fn_call f1 (.Tuple1 1)) +? (← ops_function_Fn_call
+  (← (← ops.function.Fn.call f1 (hax.Tuple1.mk 1)) +? (← ops.function.Fn.call
   f2
-    (.Tuple2 2 3)))
+    (hax.Tuple2.mk 2 3)))
+
 
 
 @[spec]
+
 def test_before_verbatime_single_line (x : UInt8) : Result UInt8 := do 42
 
+def _1__ : Result hax.Tuple0 := do hax.Tuple0
 
 
 def multiline : Unit := ()
+
 
 def test_before_verbatim_multi_line (x : UInt8) : Result UInt8 := do 32
 
@@ -81,27 +89,85 @@ inductive WebEvent : Type
 | PageLoad  : WebEvent
 | PageUnload  : WebEvent
 | KeyPress  : Char -> WebEvent
-| Paste  : USize -> WebEvent
+| Paste  : USize -> USize -> WebEvent
 | Click (x : Int64) (y : Int64) : WebEvent
 
 
-def inspect (event : WebEvent) : Result hax_Tuple0 := do
+def inspect (event : WebEvent) : Result hax.Tuple0 := do
   match event with
-    | (.PageLoad : WebEvent) | (.PageUnload : WebEvent) => ()
-    | (.KeyPress (c : Char)) => ()
-    | (.Paste (s : USize)) => ()
-    | (.Click (x := (x : Int64)) (y := (y : Int64))) => ()
+    | (.PageLoad : WebEvent) | (.PageUnload : WebEvent) => hax.Tuple0.mk
+    | (.KeyPress (c : Char)) => hax.Tuple0.mk
+    | (.Paste (s1 : USize) (s2 : USize)) => hax.Tuple0.mk
+    | (.Click (x := (other_name_for_x : Int64)) (y := (y : Int64))) =>
+    hax.Tuple0.mk
 
-def main_enum (_ : hax_Tuple0) : Result hax_Tuple0 := do
-  let (pressed : WebEvent) ← pure (.KeyPress 'x');
-  let (pasted : WebEvent) ← pure (.Paste 56);
-  let (click : WebEvent) ← pure (.Click (x := 20) (y := 80));
-  let (load : WebEvent) ← pure .PageLoad;
-  let (unload : WebEvent) ← pure .PageUnload;
-  let (_ : hax_Tuple0) ← pure (← inspect pressed);
-  let (_ : hax_Tuple0) ← pure (← inspect pasted);
-  let (_ : hax_Tuple0) ← pure (← inspect click);
-  let (_ : hax_Tuple0) ← pure (← inspect load);
-  let (_ : hax_Tuple0) ← pure (← inspect unload);
-  ()
-'''
+def main_enum (_ : hax.Tuple0) : Result hax.Tuple0 := do
+  let (pressed : WebEvent) ← pure (WebEvent.KeyPress 'x');
+  let (pasted : WebEvent) ← pure (WebEvent.Paste 56 42);
+  let (click : WebEvent) ← pure (WebEvent.Click (x := 20) (y := 80));
+  let (load : WebEvent) ← pure WebEvent.PageLoad;
+  let (unload : WebEvent) ← pure WebEvent.PageUnload;
+  let (_ : hax.Tuple0) ← pure (← inspect pressed);
+  let (_ : hax.Tuple0) ← pure (← inspect pasted);
+  let (_ : hax.Tuple0) ← pure (← inspect click);
+  let (_ : hax.Tuple0) ← pure (← inspect load);
+  let (_ : hax.Tuple0) ← pure (← inspect unload);
+  hax.Tuple0.mk
+
+structure T0 where
+
+
+structure T1 A where
+  _0 : A
+
+structure T2 A B where
+  _0 : A
+  _1 : B
+
+def f_manual_tuples (_ : hax.Tuple0) : Result hax.Tuple0 := do
+  let (t0 : T0) ← pure T0.mk;
+  let (t1 : (T1 Int32)) ← pure (T1.mk 32);
+  let (t2 : (T2 Int32 Int32)) ← pure (T2.mk 1 2);
+  hax.Tuple0.mk
+
+def main_tuples (_ : hax.Tuple0) : Result hax.Tuple0 := do
+  let ((t0 : hax.Tuple0) : hax.Tuple0) ← pure hax.Tuple0.mk;
+  let ((t1 : (hax.Tuple1 USize)) : (hax.Tuple1 USize)) ← pure
+    (hax.Tuple1.mk 42);
+  let ((t2 : (hax.Tuple2 USize ISize)) : (hax.Tuple2 USize ISize)) ← pure
+    (hax.Tuple2.mk 42 41);
+  let ((t3 : (hax.Tuple3 UInt32 UInt64 UInt8)) : (hax.Tuple3 UInt32 UInt64
+  UInt8)) ← pure (hax.Tuple3.mk 1 2 3);
+  hax.Tuple0
+
+structure Person where
+  name : string.String
+  age : UInt8
+
+structure MyUnit where
+
+
+structure Pair where
+  _0 : Int32
+  _1 : Int64
+
+structure Point where
+  x : Int64
+  y : Int64
+
+structure Rectangle where
+  top_left : Point
+  bottom_right : Point
+
+def main_structs (_ : hax.Tuple0) : Result hax.Tuple0 := do
+  let (name : string.String) ← pure (← convert.From.from "Peter");
+  let (age : UInt8) ← pure 27;
+  let (peter : Person) ← pure (Person.mk (name := name) (age := age));
+  let ((point : Point) : Point) ← pure (Point.mk (x := 5) (y := 0));
+  let ((another_point : Point) : Point) ← pure (Point.mk (x := 10) (y := 0));
+  let (_rectangle : Rectangle) ← pure
+    (Rectangle.mk
+    (top_left := (Point.mk (x := 0) (y := 1))) (bottom_right := point));
+  let (_unit : MyUnit) ← pure MyUnit.mk;
+  let (pair : Pair) ← pure (Pair.mk 1 0);
+  hax.Tuple0'''
