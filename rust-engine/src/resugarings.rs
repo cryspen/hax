@@ -74,3 +74,48 @@ impl Resugaring for FunctionApplications {
         "function-applications".to_string()
     }
 }
+
+/// Tuples resugaring. Resugars tuple constructors to the dedicated expression variant [`ResugaredExprKind::Tuple`],
+/// and tuple types to the dedicated type variant [`ResugaredTyKind::Tuple`].
+pub struct Tuples;
+
+impl AstVisitorMut for Tuples {
+    fn enter_expr_kind(&mut self, x: &mut ExprKind) {
+        let (constructor, fields) = match x {
+            ExprKind::Construct {
+                constructor,
+                is_record: false,
+                is_struct: true,
+                base: None,
+                fields,
+            } => (constructor, &fields[..]),
+            ExprKind::GlobalId(constructor) => (constructor, &[][..]),
+            _ => return,
+        };
+        if constructor.is_tuple() {
+            let args = fields.iter().map(|(_, e)| e).cloned().collect();
+            *x = ExprKind::Resugared(ResugaredExprKind::Tuple(args))
+        }
+    }
+    fn enter_ty_kind(&mut self, x: &mut TyKind) {
+        let TyKind::App { head, args } = x else {
+            return;
+        };
+        if head.is_tuple() {
+            let Some(args) = args
+                .iter()
+                .map(GenericValue::expect_ty)
+                .collect::<Option<Vec<_>>>()
+            else {
+                return;
+            };
+            *x = TyKind::Resugared(ResugaredTyKind::Tuple(args.into_iter().cloned().collect()))
+        }
+    }
+}
+
+impl Resugaring for Tuples {
+    fn name(&self) -> String {
+        "tuples".to_string()
+    }
+}

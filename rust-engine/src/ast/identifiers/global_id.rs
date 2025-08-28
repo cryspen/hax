@@ -175,6 +175,13 @@ impl GlobalId {
             _ => None,
         }
     }
+
+    /// Returns `true` if self is a tuple constructor or a tuple type.
+    pub fn is_tuple(&self) -> bool {
+        self.to_debug_string()
+            .strip_prefix("hax_Tuple")
+            .is_some_and(|value| value.parse::<usize>().is_ok())
+    }
 }
 
 impl ConcreteId {
