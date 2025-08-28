@@ -280,6 +280,9 @@ set_option linter.unusedVariables false
                             .group()
                             .parens()
                     }
+                    ResugaredExprKind::Tuple(content) if content.len() == 0 => {
+                        docs![&content[0], ", ()"].parens().group()
+                    }
                     ResugaredExprKind::Tuple(content) => {
                         intersperse!(content, reflow!(", ")).parens().group()
                     }
@@ -333,13 +336,11 @@ set_option linter.unusedVariables false
                         .parens()
                         .group()
                 }
-                TyKind::Resugared(ResugaredTyKind::Tuple(items)) => {
-                    if items.is_empty() {
-                        docs!["Unit"]
-                    } else {
-                        intersperse!(items, reflow![" × "]).parens().group()
-                    }
-                }
+                TyKind::Resugared(ResugaredTyKind::Tuple(items)) => match items.len() {
+                    0 => docs!["Unit"],
+                    1 => docs![&items[0], " × Unit"].parens().group(),
+                    _ => intersperse!(items, reflow![" × "]).parens().group(),
+                },
                 _ => todo!(),
             }
         }
