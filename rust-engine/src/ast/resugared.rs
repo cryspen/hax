@@ -39,6 +39,8 @@ pub enum ResugaredExprKind {
         /// If we apply an associated function, contains the impl. expr used.
         trait_: Option<(ImplExpr, Vec<GenericValue>)>,
     },
+    /// Tuple constructor
+    Tuple(Vec<Expr>),
 }
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
@@ -47,7 +49,10 @@ pub enum ResugaredPatKind {}
 
 /// Resugared variants for types. This represent extra printing-only types, see [`super::TyKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredTyKind {}
+pub enum ResugaredTyKind {
+    /// Tuple type
+    Tuple(Vec<Ty>),
+}
 
 /// Resugared variants for impl. items. This represent extra printing-only impl. items, see [`super::ImplItemKind::Resugared`].
 #[derive_group_for_ast]

@@ -65,3 +65,49 @@ impl Resugaring for BinOp {
         "binop".to_string()
     }
 }
+
+/// Tuples resugaring. Resugars tuple constructors to a dedicated expression node,
+/// and tuple types to a dedicated type node
+pub struct Tuples;
+
+impl AstVisitorMut for Tuples {
+    fn enter_expr_kind(&mut self, x: &mut ExprKind) {
+        let (constructor, fields) = match x {
+            ExprKind::Construct {
+                constructor,
+                is_record: false,
+                is_struct: true,
+                base: None,
+                fields,
+            } => (constructor, fields),
+            ExprKind::GlobalId(constructor) => (constructor, &mut Vec::new()),
+            _ => return,
+        };
+        if constructor.is_tuple() {
+            let content = fields.iter().map(|(_, e)| e.clone()).collect::<Vec<_>>();
+            *x = ExprKind::Resugared(ResugaredExprKind::Tuple(content))
+        };
+    }
+    fn enter_ty_kind(&mut self, x: &mut TyKind) {
+        let TyKind::App { head, args } = x else {
+            return;
+        };
+        if head.is_tuple() {
+            let mut content = Vec::new();
+            for arg in args {
+                if let GenericValue::Ty(ty) = arg {
+                    content.push(ty.clone());
+                } else {
+                    return;
+                }
+            }
+            *x = TyKind::Resugared(ResugaredTyKind::Tuple(content))
+        }
+    }
+}
+
+impl Resugaring for Tuples {
+    fn name(&self) -> String {
+        "tuples".to_string()
+    }
+}

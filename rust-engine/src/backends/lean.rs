@@ -5,7 +5,7 @@
 //! source maps).
 
 use super::prelude::*;
-use crate::resugarings::BinOp;
+use crate::resugarings::{BinOp, Tuples};
 
 mod binops {
     pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
@@ -19,16 +19,19 @@ impl_doc_allocator_for!(LeanPrinter);
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(BinOp::new(&[
-            binops::add(),
-            binops::sub(),
-            binops::mul(),
-            binops::rem(),
-            binops::div(),
-            binops::shr(),
-            binops::logical_op_and(),
-            binops::logical_op_or(),
-        ]))]
+        vec![
+            Box::new(BinOp::new(&[
+                binops::add(),
+                binops::sub(),
+                binops::mul(),
+                binops::rem(),
+                binops::div(),
+                binops::shr(),
+                binops::logical_op_and(),
+                binops::logical_op_or(),
+            ])),
+            Box::new(Tuples),
+        ]
     }
 
     const NAME: &str = "Lean";
@@ -277,6 +280,9 @@ set_option linter.unusedVariables false
                             .group()
                             .parens()
                     }
+                    ResugaredExprKind::Tuple(content) => {
+                        intersperse!(content, reflow!(", ")).parens().group()
+                    }
                 },
                 _ => todo!(),
             }
@@ -306,7 +312,6 @@ set_option linter.unusedVariables false
         fn ty_kind(&'a self, ty_kind: &'b TyKind) -> DocBuilder<'a, Self, A> {
             match ty_kind {
                 TyKind::Primitive(primitive_ty) => docs![primitive_ty],
-                TyKind::Tuple(items) => intersperse!(items, reflow![" * "]).parens().group(),
                 TyKind::App { head, args } => {
                     if args.is_empty() {
                         docs![head]
@@ -327,6 +332,13 @@ set_option linter.unusedVariables false
                     docs!["RustArray", line!(), ty, line!(), &(**length)]
                         .parens()
                         .group()
+                }
+                TyKind::Resugared(ResugaredTyKind::Tuple(items)) => {
+                    if items.is_empty() {
+                        docs!["Unit"]
+                    } else {
+                        intersperse!(items, reflow![" × "]).parens().group()
+                    }
                 }
                 _ => todo!(),
             }
