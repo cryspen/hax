@@ -145,6 +145,13 @@ pub mod global_id {
                 GlobalId::Projector(_concrete_id) => todo!(),
             }
         }
+
+        /// Returns `true` if self is a tuple constructor or tuple type GlobalId.
+        pub fn is_tuple(&self) -> bool {
+            self.to_debug_string()
+                .strip_prefix("hax_Tuple")
+                .is_some_and(|value| value.parse::<usize>().is_ok())
+        }
     }
 
     impl PartialEq<DefId> for GlobalId {

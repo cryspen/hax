@@ -5,6 +5,12 @@
 //! source maps).
 
 use super::prelude::*;
+use crate::resugarings::{BinOp, Tuples};
+
+mod binops {
+    pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
+    pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
+}
 
 /// The Lean printer
 #[derive(Default)]
@@ -13,7 +19,19 @@ impl_doc_allocator_for!(LeanPrinter);
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![]
+        vec![
+            Box::new(BinOp::new(&[
+                binops::add(),
+                binops::sub(),
+                binops::mul(),
+                binops::rem(),
+                binops::div(),
+                binops::shr(),
+                binops::logical_op_and(),
+                binops::logical_op_or(),
+            ])),
+            Box::new(Tuples),
+        ]
     }
 
     const NAME: &str = "Lean";
@@ -230,6 +248,47 @@ set_option linter.unusedVariables false
                 .parens()
                 .group()
                 .nest(INDENT),
+                ExprKind::Resugared(resugared_expr_kind) => match resugared_expr_kind {
+                    ResugaredExprKind::BinOp {
+                        op,
+                        lhs,
+                        rhs,
+                        generic_args: _,
+                        bounds_impls: _,
+                        trait_: _,
+                    } => {
+                        let symbol = if op == &binops::add() {
+                            "+?"
+                        } else if op == &binops::sub() {
+                            "-?"
+                        } else if op == &binops::mul() {
+                            "*?"
+                        } else if op == &binops::div() {
+                            "/?"
+                        } else if op == &binops::rem() {
+                            "%?"
+                        } else if op == &binops::shr() {
+                            ">>>?"
+                        } else if op == &binops::logical_op_and() {
+                            "&&"
+                        } else if op == &binops::logical_op_or() {
+                            "||"
+                        } else {
+                            unreachable!()
+                        };
+                        // This monad lifting should be handled by a phase/resugaring, see
+                        // https://github.com/cryspen/hax/issues/1620
+                        docs!["← ", lhs, softline!(), symbol, softline!(), rhs]
+                            .group()
+                            .parens()
+                    }
+                    ResugaredExprKind::Tuple(content) if content.len() == 1 => {
+                        docs![&content[0], ", ()"].parens().group()
+                    }
+                    ResugaredExprKind::Tuple(content) => {
+                        intersperse!(content, reflow!(", ")).parens().group()
+                    }
+                },
                 _ => todo!(),
             }
         }
@@ -258,7 +317,6 @@ set_option linter.unusedVariables false
         fn ty_kind(&'a self, ty_kind: &'b TyKind) -> DocBuilder<'a, Self, A> {
             match ty_kind {
                 TyKind::Primitive(primitive_ty) => docs![primitive_ty],
-                TyKind::Tuple(items) => intersperse!(items, reflow![" * "]).parens().group(),
                 TyKind::App { head, args } => {
                     if args.is_empty() {
                         docs![head]
@@ -280,6 +338,11 @@ set_option linter.unusedVariables false
                         .parens()
                         .group()
                 }
+                TyKind::Resugared(ResugaredTyKind::Tuple(items)) => match items.len() {
+                    0 => docs!["Unit"],
+                    1 => docs![&items[0], " × Unit"].parens().group(),
+                    _ => intersperse!(items, reflow![" × "]).parens().group(),
+                },
                 _ => todo!(),
             }
         }

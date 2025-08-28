@@ -39,3 +39,18 @@ def multiline : Unit := ()
 fn test_before_verbatim_multi_line(x: u8) -> u8 {
     32
 }
+
+
+// BinOp Resugarings
+
+fn binop_resugarings(x:u32) -> u32 {
+    x + 1 - 2 * 3 % 4 / 5 >> 1
+}
+
+// Tuples resugaring
+
+fn tuples_resugaring() {
+  let t: (u8, u16, u32) = (1, 2, 3);
+}
+
+

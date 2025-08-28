@@ -79,12 +79,6 @@ pub enum TyKind {
     /// `i32`, `bool`
     Primitive(PrimitiveTy),
 
-    /// A tuple type.
-    ///
-    /// # Example:
-    /// `(i32, bool)`
-    Tuple(Vec<Ty>),
-
     /// A type application (generic type).
     ///
     /// # Example:
@@ -808,7 +802,7 @@ pub struct LoopState {
     pub body_pat: Pat,
 }
 
-// TODO: Kill some nodes (e.g. `Array`, `Tuple`)?
+// TODO: Kill some nodes (e.g. `Array`)?
 /// Describes the shape of an expression.
 #[derive_group_for_ast]
 pub enum ExprKind {
@@ -889,12 +883,6 @@ pub enum ExprKind {
         /// The arms of the match. (`pat1 => expr1` and `pat2 => expr2` in the example)
         arms: Vec<Arm>,
     },
-
-    /// A tuple literal.
-    ///
-    /// # Example:
-    /// `(a, b)`
-    Tuple(Vec<Expr>),
 
     /// A reference expression.
     ///
