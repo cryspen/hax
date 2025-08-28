@@ -280,7 +280,7 @@ set_option linter.unusedVariables false
                             .group()
                             .parens()
                     }
-                    ResugaredExprKind::Tuple(content) if content.len() == 0 => {
+                    ResugaredExprKind::Tuple(content) if content.len() == 1 => {
                         docs![&content[0], ", ()"].parens().group()
                     }
                     ResugaredExprKind::Tuple(content) => {

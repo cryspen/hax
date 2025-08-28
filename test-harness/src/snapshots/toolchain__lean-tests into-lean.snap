@@ -60,7 +60,7 @@ def closure (_ : Unit) : Result Int32 := do
   let (f1 : Int32 -> Result Int32) ← pure (fun (y : Int32) => do (← y +? x));
   let (f2 : Int32 -> Int32 -> Result Int32) ← pure
     (fun (y : Int32) (z : Int32) => do (← (← y +? x) +? z));
-  (← (← ops_function_Fn_call f1 (1)) +? (← ops_function_Fn_call f2 (2, 3)))
+  (← (← ops_function_Fn_call f1 (1, ())) +? (← ops_function_Fn_call f2 (2, 3)))
 
 
 @[spec]
