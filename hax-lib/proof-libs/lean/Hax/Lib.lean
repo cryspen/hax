@@ -12,7 +12,6 @@ import Std
 import Std.Do.Triple
 import Std.Tactic.Do
 import Std.Tactic.Do.Syntax
-import Hax.BitVec
 
 open Std.Do
 open Std.Tactic
@@ -434,10 +433,7 @@ theorem HaxAdd_spec_nat (x y: usize) :
   ⦃ ⇓ r => r = x + y ⦄ := by
   intros
   mvcgen [HaxAdd_spec_bv] ; simp
-  apply eq_false_of_ne_true
-  apply (BitVec.toNat_add_iff_not_uaddOverflow _).mp
-  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
-  . apply System.Platform.numBits_pos
+  simp [BitVec.uaddOverflow, size] at * ; assumption
 
 
 /-- Nat-based specification for rust multiplication on usize -/
@@ -448,10 +444,9 @@ theorem HaxMul_spec_nat (x y: usize) :
   ⦃ ⇓ r => r = x * y ⦄ := by
   intros
   mvcgen [HaxMul_spec_bv] ; simp
-  apply eq_false_of_ne_true
-  apply (BitVec.toNat_mul_iff_not_umulOverflow _).mp
-  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
-  . apply System.Platform.numBits_pos
+  intros
+  mvcgen [HaxAdd_spec_bv] ; simp
+  simp [BitVec.umulOverflow, size] at * ; assumption
 
 end USize
 
