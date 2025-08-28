@@ -4,6 +4,9 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
+use std::cell::LazyCell;
+use std::collections::HashSet;
+
 use super::prelude::*;
 use crate::{printer::pretty_ast::DebugJSON, resugarings::BinOp};
 
@@ -14,8 +17,43 @@ mod binops {
 
 /// The Lean printer
 #[derive(Default)]
-pub struct LeanPrinter;
+pub struct LeanPrinter {}
 impl_doc_allocator_for!(LeanPrinter);
+
+const INDENT: isize = 2;
+
+const RESERVED_KEYWORDS: LazyCell<HashSet<String>> = LazyCell::new(|| {
+    HashSet::from_iter(
+        vec!["end", "def", "abbrev", "theorem", "example"]
+            .iter()
+            .map(|s| s.to_string()),
+    )
+});
+
+impl RenderView for LeanPrinter {
+    fn separator(&self) -> &str {
+        "."
+    }
+    fn render_path_segment(&self, chunk: &global_id::view::PathSegment) -> Vec<String> {
+        fn uppercase_first(s: &str) -> String {
+            let mut c = s.chars();
+            match c.next() {
+                None => String::new(),
+                Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
+            }
+        }
+        let mut chunks = default::render_path_segment(self, chunk);
+        if matches!(chunk.kind(), AnyKind::Mod) {
+            for chunk in &mut chunks {
+                *chunk = uppercase_first(chunk);
+            }
+        }
+        // if matches!(chunk.kind(), AnyKind::Constructor { .. }) {
+        //     chunks.push("mk".to_string());
+        // }
+        chunks
+    }
+}
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
@@ -34,23 +72,18 @@ impl Printer for LeanPrinter {
     const NAME: &str = "Lean";
 }
 
-const INDENT: isize = 2;
-
 /// The Lean backend
 pub struct LeanBackend;
-
-fn crate_name(items: &[Item]) -> String {
-    // We should have a proper treatment of empty modules, see
-    // https://github.com/cryspen/hax/issues/1617
-    let head_item = items.first().unwrap();
-    head_item.ident.krate()
-}
 
 impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from(format!("{}.lean", crate_name(&module.items)))
+        camino::Utf8PathBuf::from_iter(
+            self.printer()
+                .render_strings(&module.ident.as_concrete().unwrap().view()),
+        )
+        .with_extension("lean")
     }
 }
 
@@ -80,6 +113,34 @@ impl LeanPrinter {
             | ItemKind::Resugared(_)
             | ItemKind::Quote { .. } => true,
         }
+    }
+
+    pub fn render_id(&self, id: &GlobalId) -> String {
+        match id {
+            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                self.render_string(&concrete_id.view())
+            }
+        }
+    }
+
+    pub fn render_last(&self, id: &GlobalId) -> String {
+        self.render(
+            &id.as_concrete()
+                .expect("Rendering a projector as a constructor")
+                .view(),
+        )
+        .path
+        .last()
+        .expect("Segments should always be non-empty")
+        .clone()
+    }
+
+    pub fn render_as_record_field(&self, id: &GlobalId) -> String {
+        self.render_last(id)
+    }
+
+    pub fn render_as_constructor(&self, id: &GlobalId) -> String {
+        format!(".{}", self.render_last(id))
     }
 }
 
@@ -126,9 +187,7 @@ set_option linter.unusedVariables false
         }
 
         fn global_id(&'a self, global_id: &'b GlobalId) -> DocBuilder<'a, Self, A> {
-            // This a temporary fix before a proper treatment of identifiers,
-            // see https://github.com/cryspen/hax/issues/1599
-            docs![global_id.to_debug_string()]
+            docs![self.render_id(global_id)]
         }
 
         fn expr(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
@@ -226,8 +285,7 @@ set_option linter.unusedVariables false
                             line!(),
                             intersperse!(
                                 fields.iter().map(|(id, e)| docs![
-                                    "_",
-                                    id.to_head_debug_string(),
+                                    self.render_as_record_field(id),
                                     reflow!(" := "),
                                     e
                                 ]
@@ -257,9 +315,10 @@ set_option linter.unusedVariables false
                             constructor,
                             line!(),
                             intersperse!(
-                                fields.iter().map(|field: &(GlobalId, Expr)| {
-                                    let head = field.0.to_head_debug_string().clone();
-                                    docs!["_", head, reflow!(" := "), &field.1].parens().group()
+                                fields.iter().map(|(id, e): &(GlobalId, Expr)| {
+                                    docs![self.render_as_constructor(id), reflow!(" := "), e]
+                                        .parens()
+                                        .group()
                                 }),
                                 line!()
                             )
@@ -410,14 +469,8 @@ set_option linter.unusedVariables false
                     } else {
                         // Structure-like structure, using named arguments
                         docs![intersperse!(
-                            fields.iter().map(|field| {
-                                docs![
-                                    "_",
-                                    field.0.to_head_debug_string(),
-                                    reflow!(" := "),
-                                    &field.1
-                                ]
-                                .group()
+                            fields.iter().map(|(id, pat)| {
+                                docs![self.render_as_record_field(id), reflow!(" := "), pat].group()
                             }),
                             docs![",", line!()]
                         )]
@@ -432,16 +485,16 @@ set_option linter.unusedVariables false
                     fields,
                 } => {
                     if fields.is_empty() {
-                        docs![".", constructor.to_head_debug_string()]
+                        docs![self.render_as_constructor(constructor)]
                     } else if *is_record {
                         docs![
-                            ".",
-                            constructor.to_head_debug_string(),
+                            self.render_as_constructor(constructor),
                             line!(),
                             intersperse!(
-                                fields.iter().map(|field: &(GlobalId, _)| {
-                                    let head = field.0.to_head_debug_string().clone();
-                                    docs!["_", head, reflow!(" := "), &field.1].parens().group()
+                                fields.iter().map(|(id, e)| {
+                                    docs![self.render_as_record_field(id), reflow!(" := "), e]
+                                        .parens()
+                                        .group()
                                 }),
                                 line!()
                             )
@@ -452,8 +505,7 @@ set_option linter.unusedVariables false
                         .nest(INDENT)
                     } else {
                         docs![
-                            ".",
-                            constructor.to_head_debug_string(),
+                            self.render_as_constructor(constructor),
                             line!(),
                             intersperse!(fields.iter().map(|(_, e)| docs![e]), line!())
                         ]
@@ -657,7 +709,7 @@ set_option linter.unusedVariables false
                         // Structure-like structure, using named arguments
                         intersperse!(
                             variant.arguments.iter().map(|(id, ty, _)| {
-                                docs!["_", id.to_head_debug_string(), reflow!(" : "), ty]
+                                docs![self.render_as_record_field(id), reflow!(" : "), ty]
                                     .group()
                                     .nest(INDENT)
                             }),
@@ -707,14 +759,14 @@ set_option linter.unusedVariables false
 
         fn variant(&'a self, variant: &'b Variant) -> DocBuilder<'a, Self, A> {
             docs![
-                variant.name.to_head_debug_string(),
+                self.render_last(&variant.name),
                 softline!(),
                 if variant.is_record {
                     // Use named the arguments, keeping only the head of the identifier
                     docs![
                         intersperse!(
                             variant.arguments.iter().map(|(id, ty, _)| {
-                                docs!["_", id.to_head_debug_string(), reflow!(" : "), ty]
+                                docs![self.render_as_record_field(id), reflow!(" : "), ty]
                                     .parens()
                                     .group()
                             }),
