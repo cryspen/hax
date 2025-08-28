@@ -45,25 +45,22 @@ set_option linter.unusedVariables false
 
 def FORTYTWO : USize := 42
 def MINUS_FORTYTWO : ISize := -42
-def returns42 (_ : hax_Tuple0) : Result USize := do FORTYTWO
+def returns42 (_ : Unit) : Result USize := do FORTYTWO
 
 def add_two_numbers (x : USize) (y : USize) : Result USize := do (← x +? y)
 
 def letBinding (x : USize) (y : USize) : Result USize := do
-  let (useless : hax_Tuple0) ← pure (constr_hax_Tuple0);
+  let (useless : Unit) ← pure ();
   let (result1 : USize) ← pure (← x +? y);
   let (result2 : USize) ← pure (← result1 +? 2);
   (← result2 +? 1)
 
-def closure (_ : hax_Tuple0) : Result Int32 := do
+def closure (_ : Unit) : Result Int32 := do
   let (x : Int32) ← pure 41;
   let (f1 : Int32 -> Result Int32) ← pure (fun (y : Int32) => do (← y +? x));
   let (f2 : Int32 -> Int32 -> Result Int32) ← pure
     (fun (y : Int32) (z : Int32) => do (← (← y +? x) +? z));
-  (← (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1))) +?
-  (← ops_function_Fn_call
-  f2
-    (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
+  (← (← ops_function_Fn_call f1 (1)) +? (← ops_function_Fn_call f2 (2, 3)))
 
 
 @[spec]
@@ -77,4 +74,9 @@ def test_before_verbatim_multi_line (x : UInt8) : Result UInt8 := do 32
 
 def binop_resugarings (x : UInt32) : Result UInt32 := do
   (← (← (← x +? 1) -? (← (← (← 2 *? 3) %? 4) /? 5)) >>>? 1)
+
+def tuples_resugaring (_ : Unit) : Result Unit := do
+  let ((t : (UInt8 × UInt16 × UInt32)) : (UInt8 × UInt16 × UInt32)) ← pure
+    (1, 2, 3);
+  ()
 '''
