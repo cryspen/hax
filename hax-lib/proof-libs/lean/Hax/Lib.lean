@@ -638,6 +638,41 @@ theorem HaxRem_spec_bv_rw (x y : i32) :
 
 end Int32
 
+
+namespace UInt32
+
+instance instHaxAdd : HaxAdd UInt32 where
+  add x y :=
+    if (BitVec.uaddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x + y)
+
+instance instHaxSub : HaxSub UInt32 where
+  sub x y :=
+    if (BitVec.usubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x - y)
+
+instance instHaxMul : HaxMul UInt32 where
+  mul x y :=
+    if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+instance instHaxDiv : HaxDiv UInt32 where
+  div x y :=
+    if y = 0 then .fail .divisionByZero
+    else pure (x / y)
+
+instance instHaxRem : HaxRem UInt32 where
+  rem x y :=
+    if y = 0 then .fail .divisionByZero
+    else pure (x % y)
+
+instance instHaxShiftRight : HaxShiftRight UInt32 where
+  shiftRight x y :=
+    if (y > 32) then .fail .integerOverflow
+    else pure (x >>> y)
+
+end UInt32
+
 /-
 
 # Wrapping operations
