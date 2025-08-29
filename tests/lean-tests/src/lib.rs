@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+pub mod structs;
+
 const FORTYTWO: usize = 42;
 const MINUS_FORTYTWO: isize = -42;
 
@@ -93,26 +95,37 @@ fn main_enum() {
     ()
 }
 
-// Tuples
-
-// Manual
-struct T0();
-struct T1<A>(A);
-struct T2<A, B>(A, B);
-
-fn f_manual_tuples() {
-    let t0 = T0();
-    let t1 = T1(32);
-    let t2 = T2(1, 2);
-    ()
-}
-
 // Builtin
 fn main_tuples() {
     let t0: () = ();
     let t1: (usize,) = (42,);
     let t2: (usize, isize) = (42, 41);
     let t3: (u32, u64, u8) = (1, 2, 3);
+}
+
+// Structs
+
+struct TestingEscapeOfReservedKeywords {
+    end: u8,
+    theorem: u8,
+    def: u8,
+    abbrev: u8,
+}
+
+fn test_reserved_keywords() {
+    let t = TestingEscapeOfReservedKeywords {
+        end: 0,
+        theorem: 1,
+        def: 2,
+        abbrev: 3,
+    };
+    let TestingEscapeOfReservedKeywords {
+        end,
+        theorem,
+        def,
+        abbrev,
+    } = t;
+    ()
 }
 
 // Structs

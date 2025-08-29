@@ -8,7 +8,11 @@ use std::cell::LazyCell;
 use std::collections::HashSet;
 
 use super::prelude::*;
-use crate::{printer::pretty_ast::DebugJSON, resugarings::BinOp};
+use crate::{
+    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+    printer::pretty_ast::DebugJSON,
+    resugarings::BinOp,
+};
 
 mod binops {
     pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
@@ -24,9 +28,17 @@ const INDENT: isize = 2;
 
 const RESERVED_KEYWORDS: LazyCell<HashSet<String>> = LazyCell::new(|| {
     HashSet::from_iter(
-        vec!["end", "def", "abbrev", "theorem", "example"]
-            .iter()
-            .map(|s| s.to_string()),
+        vec![
+            "end",
+            "def",
+            "abbrev",
+            "theorem",
+            "example",
+            "inductive",
+            "structure",
+        ]
+        .iter()
+        .map(|s| s.to_string()),
     )
 });
 
@@ -34,7 +46,7 @@ impl RenderView for LeanPrinter {
     fn separator(&self) -> &str {
         "."
     }
-    fn render_path_segment(&self, chunk: &global_id::view::PathSegment) -> Vec<String> {
+    fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         fn uppercase_first(s: &str) -> String {
             let mut c = s.chars();
             match c.next() {
@@ -42,16 +54,46 @@ impl RenderView for LeanPrinter {
                 Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
             }
         }
-        let mut chunks = default::render_path_segment(self, chunk);
-        if matches!(chunk.kind(), AnyKind::Mod) {
-            for chunk in &mut chunks {
-                *chunk = uppercase_first(chunk);
+        // Returning None indicates that the default rendering should be used
+        (match chunk.kind() {
+            AnyKind::Mod => {
+                let mut chunks = default::render_path_segment(self, chunk);
+                for c in &mut chunks {
+                    *c = uppercase_first(c);
+                }
+                Some(chunks)
             }
-        }
-        // if matches!(chunk.kind(), AnyKind::Constructor { .. }) {
-        //     chunks.push("mk".to_string());
-        // }
-        chunks
+            AnyKind::Constructor(ConstructorKind::Constructor { ty })
+                if matches!(ty.kind(), TypeDefKind::Struct) =>
+            {
+                Some(vec![
+                    self.render_path_segment_payload(chunk.payload())
+                        .to_string(),
+                    "mk".to_string(),
+                ])
+            }
+            AnyKind::Field { named: _, parent } => match parent.kind() {
+                ConstructorKind::Constructor { ty }
+                    if matches!(&ty.kind(), TypeDefKind::Struct) =>
+                {
+                    if let Some(parent) = chunk.parent() {
+                        Some(vec![
+                            self.render_path_segment_payload(parent.payload())
+                                .to_string(),
+                            self.escape(
+                                self.render_path_segment_payload(chunk.payload())
+                                    .to_string(),
+                            ),
+                        ])
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
+            },
+            _ => None,
+        })
+        .unwrap_or(default::render_path_segment(self, chunk))
     }
 }
 
@@ -115,6 +157,8 @@ impl LeanPrinter {
         }
     }
 
+    /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
+    /// and projector ids
     pub fn render_id(&self, id: &GlobalId) -> String {
         match id {
             GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
@@ -123,24 +167,56 @@ impl LeanPrinter {
         }
     }
 
+    /// Escapes local identifiers (prefixing reserved keywords with an underscore)
+    pub fn escape(&self, id: String) -> String {
+        if id.is_empty() {
+            format!("_ERROR_EMPTY_ID_")
+        } else if RESERVED_KEYWORDS.contains(&id) || id.starts_with(|c: char| c.is_ascii_digit()) {
+            format!("_{id}")
+        } else {
+            id
+        }
+    }
+
+    /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
-        self.render(
-            &id.as_concrete()
-                .expect("Rendering a projector as a constructor")
-                .view(),
-        )
-        .path
-        .last()
-        .expect("Segments should always be non-empty")
-        .clone()
+        let id = self
+            .render(
+                &id.as_concrete()
+                    .expect("Rendering a projector as a constructor")
+                    .view(),
+            )
+            .path
+            .last()
+            .expect("Segments should always be non-empty")
+            .clone();
+        self.escape(id)
     }
 
-    pub fn render_as_record_field(&self, id: &GlobalId) -> String {
-        self.render_last(id)
-    }
-
-    pub fn render_as_constructor(&self, id: &GlobalId) -> String {
-        format!(".{}", self.render_last(id))
+    /// Prints the fields of a constructor (struct or variant of an enum)
+    pub fn fields<'a, 'b, A: 'a + Clone>(
+        &'a self,
+        fields: &Vec<(GlobalId, Expr)>,
+        is_record: &bool,
+    ) -> DocBuilder<'a, Self, A> {
+        install_pretty_helpers!(self: LeanPrinter);
+        #[allow(unused)]
+        macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
+        if *is_record {
+            // Record fields (named arguments)
+            docs![intersperse!(
+                fields.iter().map(|(id, e)| {
+                    docs![self.render_last(id), reflow!(" := "), e]
+                        .parens()
+                        .group()
+                }),
+                line!()
+            )]
+            .group()
+        } else {
+            // Tuple fields (positional arguments)
+            docs![intersperse!(fields.iter().map(|(_, e)| e), line!())]
+        }
     }
 }
 
@@ -226,6 +302,13 @@ set_option linter.unusedVariables false
                     bounds_impls: _,
                     trait_: _,
                 } => {
+                    let monadic_lift = if let ExprKind::GlobalId(head_id) = head.kind()
+                        && (head_id.is_constructor() || head_id.is_field())
+                    {
+                        None
+                    } else {
+                        Some("← ")
+                    };
                     let generic_args = (!generic_args.is_empty()).then_some(
                         docs![
                             line!(),
@@ -236,7 +319,9 @@ set_option linter.unusedVariables false
                     let args = (!args.is_empty()).then_some(
                         docs![line!(), intersperse!(args, line!()).nest(INDENT)].group(),
                     );
-                    docs!["← ", head, generic_args, args].parens().group()
+                    docs![monadic_lift, head, generic_args, args]
+                        .parens()
+                        .group()
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
@@ -252,98 +337,26 @@ set_option linter.unusedVariables false
                     is_record,
                     is_struct,
                     fields,
-                    base: _, // Should not ignore base
-                } if *is_struct && !*is_record => {
-                    // Tuple-like structure (numbered fields)
-                    let constructor = docs![constructor, ".mk"];
-                    if fields.is_empty() {
-                        docs![constructor]
-                    } else {
-                        docs![
-                            constructor,
-                            line!(),
-                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!()).group()
-                        ]
-                        .parens()
-                        .group()
-                    }
-                }
-                ExprKind::Construct {
-                    constructor,
-                    is_record,
-                    is_struct,
-                    fields,
-                    base: _, // Should not ignore base
-                } if *is_struct && *is_record => {
-                    // Structure-like structure (named fields)
-                    let constructor = docs![constructor, ".mk"];
-                    if fields.is_empty() {
-                        docs![constructor]
-                    } else {
-                        docs![
-                            constructor,
-                            line!(),
-                            intersperse!(
-                                fields.iter().map(|(id, e)| docs![
-                                    self.render_as_record_field(id),
-                                    reflow!(" := "),
-                                    e
-                                ]
-                                .parens()
-                                .group()),
-                                line!()
-                            )
-                            .group()
-                        ]
-                        .parens()
-                        .group()
-                    }
-                }
-                ExprKind::Construct {
-                    constructor,
-                    is_record,
-                    is_struct: false,
-                    fields,
-                    base: _,
+                    base,
                 } => {
-                    // Constructor of a enum
-                    if fields.is_empty() {
+                    if fields.is_empty() && base.is_none() {
                         docs![constructor]
-                    } else if *is_record {
-                        // Record argument : use named arguments
-                        docs![
-                            constructor,
-                            line!(),
-                            intersperse!(
-                                fields.iter().map(|(id, e): &(GlobalId, Expr)| {
-                                    docs![self.render_as_constructor(id), reflow!(" := "), e]
-                                        .parens()
-                                        .group()
-                                }),
-                                line!()
-                            )
-                            .group()
-                        ]
-                        .parens()
-                        .group()
-                        .nest(INDENT)
                     } else {
-                        // Non-record, use positional arguments
-                        docs![
-                            constructor,
-                            line!(),
-                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!()).group()
-                        ]
-                        .parens()
-                        .group()
+                        docs![constructor, line!(), self.fields(fields, is_record)]
+                            .parens()
+                            .group()
                     }
                 }
                 ExprKind::Let { lhs, rhs, body } => docs![
                     "let ",
                     lhs,
-                    " ←",
+                    reflow!(if matches!(*lhs.kind, PatKind::Binding { .. }) {
+                        " ← "
+                    } else {
+                        " := "
+                    }),
                     softline!(),
-                    docs!["pure", line!(), rhs].group().nest(INDENT),
+                    docs![rhs].nest(INDENT),
                     ";",
                     line!(),
                     body,
@@ -462,18 +475,21 @@ set_option linter.unusedVariables false
                                 fields.iter().map(|field| { docs![&field.1] }),
                                 docs![",", line!()]
                             )
+                            .align()
                             .group(),
                             "⟩"
                         ]
+                        .align()
                         .group()
                     } else {
                         // Structure-like structure, using named arguments
                         docs![intersperse!(
                             fields.iter().map(|(id, pat)| {
-                                docs![self.render_as_record_field(id), reflow!(" := "), pat].group()
+                                docs![self.render_last(id), reflow!(" := "), pat].group()
                             }),
                             docs![",", line!()]
                         )]
+                        .align()
                         .braces()
                         .group()
                     }
@@ -481,23 +497,22 @@ set_option linter.unusedVariables false
                 PatKind::Construct {
                     constructor,
                     is_record,
-                    is_struct: _,
+                    is_struct,
                     fields,
                 } => {
-                    if fields.is_empty() {
-                        docs![self.render_as_constructor(constructor)]
-                    } else if *is_record {
+                    if *is_record {
                         docs![
-                            self.render_as_constructor(constructor),
+                            constructor,
                             line!(),
                             intersperse!(
                                 fields.iter().map(|(id, e)| {
-                                    docs![self.render_as_record_field(id), reflow!(" := "), e]
+                                    docs![self.render_last(id), reflow!(" := "), e]
                                         .parens()
                                         .group()
                                 }),
                                 line!()
                             )
+                            .align()
                             .group()
                         ]
                         .parens()
@@ -505,7 +520,7 @@ set_option linter.unusedVariables false
                         .nest(INDENT)
                     } else {
                         docs![
-                            self.render_as_constructor(constructor),
+                            constructor,
                             line!(),
                             intersperse!(fields.iter().map(|(_, e)| docs![e]), line!())
                         ]
@@ -570,7 +585,7 @@ set_option linter.unusedVariables false
         }
 
         fn local_id(&'a self, local_id: &'b LocalId) -> DocBuilder<'a, Self, A> {
-            docs![local_id.0.to_string()]
+            docs![self.escape(local_id.0.to_string())]
         }
 
         fn spanned_ty(&'a self, spanned_ty: &'b SpannedTy) -> DocBuilder<'a, Self, A> {
@@ -695,6 +710,7 @@ set_option linter.unusedVariables false
                 } if *is_struct => {
                     // Structures
                     let Some(variant) = variants.first() else {
+                        // Structures always have a constructor (even empty ones)
                         unreachable!()
                     };
                     let args = if !variant.is_record {
@@ -709,7 +725,7 @@ set_option linter.unusedVariables false
                         // Structure-like structure, using named arguments
                         intersperse!(
                             variant.arguments.iter().map(|(id, ty, _)| {
-                                docs![self.render_as_record_field(id), reflow!(" : "), ty]
+                                docs![self.render_last(id), reflow!(" : "), ty]
                                     .group()
                                     .nest(INDENT)
                             }),
@@ -766,7 +782,7 @@ set_option linter.unusedVariables false
                     docs![
                         intersperse!(
                             variant.arguments.iter().map(|(id, ty, _)| {
-                                docs![self.render_as_record_field(id), reflow!(" : "), ty]
+                                docs![self.render_last(id), reflow!(" : "), ty]
                                     .parens()
                                     .group()
                             }),

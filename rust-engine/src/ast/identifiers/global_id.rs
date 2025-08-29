@@ -168,6 +168,24 @@ impl GlobalId {
             _ => None,
         }
     }
+
+    /// Returns true if the underlying identifier is a constructor
+    pub fn is_constructor(&self) -> bool {
+        match self {
+            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                concrete_id.def_id.is_constructor
+            }
+        }
+    }
+
+    /// Returns true if the underlying identifier is a field
+    pub fn is_field(&self) -> bool {
+        match self {
+            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                matches!(concrete_id.def_id.def_id.kind, DefKind::Field)
+            }
+        }
+    }
 }
 
 impl ConcreteId {
