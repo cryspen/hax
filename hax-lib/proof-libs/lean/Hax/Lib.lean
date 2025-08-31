@@ -118,6 +118,15 @@ instance instWPMonad : WPMonad Result (.except Error .pure) where
 instance instCoe {α} : Coe α (Result α) where
   coe x := pure x
 
+
+@[simp, spec, default_instance]
+instance {α} : Coe (Result (Result α)) (Result α) where
+  coe x := match x with
+  | .ok y => y
+  | .fail e => .fail e
+  | .div => .div
+
+
 end Result
 
 
@@ -1240,6 +1249,7 @@ abbrev RustSlice := Array
 abbrev RustVector := Array
 
 def alloc.Global : Type := Unit
+
 def vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
 
 def vec.impl.new (α: Type) (Allocator:Type) : Result (vec.Vec α Allocator) :=
@@ -1278,6 +1288,8 @@ taken care of by the `Fn` class
 
 -/
 
+namespace Core.Ops.Function
+
 class Fn α (β : outParam Type) γ where
   call : α → β → γ
 
@@ -1287,7 +1299,14 @@ instance {α β} : Fn (α → β) (Tuple1 α) β where
 instance {α β γ} : Fn (α → β → γ) (Tuple2 α β) γ where
   call f x := f x._0 x._1
 
-def ops.function.Fn_call {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.call f x
+instance {α β} : Fn (α → β) (Tuple1 α) (Result β) where
+  call f x := pure (f x._0)
+
+instance {α β γ} : Fn (α → β → γ) (Tuple2 α β) (Result γ) where
+  call f x := pure (f x._0 x._1)
+
+end Core.Ops.Function
+-- def Core.Ops.Function. {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.call f x --
 
 
 -- Miscellaneous
@@ -1300,6 +1319,9 @@ abbrev Alloc.String.String : Type := string_indirection
 
 def Core.Convert.From.from (s: String) : Alloc.String.String := s
 
+
+abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
+inductive Alloc.Alloc.Global : Type where
 
 -- Tactics
 macro "haxbv_decide" : tactic => `(tactic| (

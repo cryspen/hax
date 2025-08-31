@@ -28,7 +28,7 @@ const INDENT: isize = 2;
 
 const RESERVED_KEYWORDS: LazyCell<HashSet<String>> = LazyCell::new(|| {
     HashSet::from_iter(
-        vec![
+        [
             "end",
             "def",
             "abbrev",
@@ -170,7 +170,7 @@ impl LeanPrinter {
     /// Escapes local identifiers (prefixing reserved keywords with an underscore)
     pub fn escape(&self, id: String) -> String {
         if id.is_empty() {
-            format!("_ERROR_EMPTY_ID_")
+            "_ERROR_EMPTY_ID_".to_string()
         } else if RESERVED_KEYWORDS.contains(&id) || id.starts_with(|c: char| c.is_ascii_digit()) {
             format!("_{id}")
         } else {
@@ -217,6 +217,32 @@ impl LeanPrinter {
             // Tuple fields (positional arguments)
             docs![intersperse!(fields.iter().map(|(_, e)| e), line!())]
         }
+    }
+
+    /// Renders expressions with an explicit ascription `(e : ty)`. Used for numeric literals (to
+    /// prevent incorrect inference), etc.
+    fn expr_typed<'a, 'b, A: 'a + Clone>(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
+        install_pretty_helpers!(self: Self);
+        docs![expr.kind(), reflow!(" : "), expr.ty.kind()]
+            .parens()
+            .group()
+    }
+
+    /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
+    /// numeric literals, etc.
+    fn expr_typed_result<'a, 'b, A: 'a + Clone>(
+        &'a self,
+        expr: &'b Expr,
+    ) -> DocBuilder<'a, Self, A> {
+        macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
+        install_pretty_helpers!(self: Self);
+        docs![
+            expr.kind(),
+            reflow!(" : "),
+            docs!["Result", line!(), expr.ty.kind()].group()
+        ]
+        .parens()
+        .group()
     }
 }
 
@@ -266,8 +292,29 @@ set_option linter.unusedVariables false
             docs![self.render_id(global_id)]
         }
 
+        /// Render generics, adding a space after each parameter
+        fn generics(&'a self, generics: &'b Generics) -> DocBuilder<'a, Self, A> {
+            // TODO : do not ignore constraints
+            concat!(generics.params.iter().map(|param| {
+                match param.kind {
+                    GenericParamKind::Lifetime => unreachable!(),
+                    GenericParamKind::Type => docs![param, reflow!(" : Type")]
+                        .parens()
+                        .group()
+                        .append(line!()),
+                    GenericParamKind::Const { .. } => {
+                        todo!("-- to debug const param run: {}", DebugJSON(param))
+                    }
+                }
+            }))
+            .group()
+        }
+
         fn expr(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
-            docs![expr.kind()]
+            match *expr.kind {
+                ExprKind::Literal(Literal::Int { .. }) => self.expr_typed(expr),
+                _ => docs![expr.kind()],
+            }
         }
 
         fn pat(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
@@ -348,16 +395,17 @@ set_option linter.unusedVariables false
                     }
                 }
                 ExprKind::Let { lhs, rhs, body } => docs![
-                    "let ",
-                    lhs,
-                    reflow!(if matches!(*lhs.kind, PatKind::Binding { .. }) {
-                        " ← "
-                    } else {
-                        " := "
-                    }),
-                    softline!(),
-                    docs![rhs].nest(INDENT),
-                    ";",
+                    docs![
+                        "let",
+                        line!(),
+                        lhs,
+                        line!(),
+                        "← ",
+                        docs!["pure", line!(), rhs].parens().group(),
+                        ";"
+                    ]
+                    .nest(INDENT)
+                    .group(),
                     line!(),
                     body,
                 ],
@@ -385,7 +433,7 @@ set_option linter.unusedVariables false
                     intersperse!(params, softline!()).group(),
                     reflow!(" => do"),
                     line!(),
-                    body
+                    self.expr_typed_result(body)
                 ]
                 .parens()
                 .group()
@@ -430,8 +478,9 @@ set_option linter.unusedVariables false
                     line!(),
                     intersperse!(arms, line!())
                 ]
-                .group()
-                .nest(INDENT),
+                .parens()
+                .nest(INDENT)
+                .group(),
                 _ => todo!(),
             }
         }
@@ -707,59 +756,61 @@ set_option linter.unusedVariables false
                     generics,
                     variants,
                     is_struct,
-                } if *is_struct => {
-                    // Structures
-                    let Some(variant) = variants.first() else {
-                        // Structures always have a constructor (even empty ones)
-                        unreachable!()
-                    };
-                    let args = if !variant.is_record {
-                        // Tuple-like structure, using positional arguments
-                        intersperse!(
-                            variant.arguments.iter().enumerate().map(|(i, (_, ty, _))| {
-                                docs![format!("_{i} :"), line!(), ty].group().nest(INDENT)
-                            }),
-                            hardline!()
-                        )
-                    } else {
-                        // Structure-like structure, using named arguments
-                        intersperse!(
-                            variant.arguments.iter().map(|(id, ty, _)| {
-                                docs![self.render_last(id), reflow!(" : "), ty]
-                                    .group()
-                                    .nest(INDENT)
-                            }),
-                            hardline!()
-                        )
-                    };
-                    let generics = (!generics.params.is_empty()).then_some(
-                        concat![generics.params.iter().map(|param| docs![param, line!()])].group(),
-                    );
-                    docs![
-                        docs!["structure ", name, line!(), generics, "where"].group(),
-                        docs![hardline!(), args].nest(INDENT),
-                    ]
-                    .group()
-                }
-                ItemKind::Type {
-                    name,
-                    generics: _,
-                    variants,
-                    is_struct: _,
                 } => {
-                    // Enums
-                    docs![
-                        "inductive ",
-                        name,
-                        " : Type",
-                        hardline!(),
-                        concat!(variants.iter().map(|variant| docs![
-                            "| ",
-                            variant,
+                    if *is_struct {
+                        // Structures
+                        let Some(variant) = variants.first() else {
+                            // Structures always have a constructor (even empty ones)
+                            unreachable!()
+                        };
+                        let args = if !variant.is_record {
+                            // Tuple-like structure, using positional arguments
+                            intersperse!(
+                                variant.arguments.iter().enumerate().map(|(i, (_, ty, _))| {
+                                    docs![format!("_{i} :"), line!(), ty].group().nest(INDENT)
+                                }),
+                                hardline!()
+                            )
+                        } else {
+                            // Structure-like structure, using named arguments
+                            intersperse!(
+                                variant.arguments.iter().map(|(id, ty, _)| {
+                                    docs![self.render_last(id), reflow!(" : "), ty]
+                                        .group()
+                                        .nest(INDENT)
+                                }),
+                                hardline!()
+                            )
+                        };
+                        let generics = (!generics.params.is_empty()).then_some(
+                            concat![generics.params.iter().map(|param| docs![param, line!()])]
+                                .group(),
+                        );
+                        docs![
+                            docs!["structure ", name, line!(), generics, "where"].group(),
+                            docs![hardline!(), args].nest(INDENT),
+                        ]
+                        .group()
+                    } else {
+                        // Enums
+                        let applied_name: DocBuilder<'a, Self, A> = docs![
                             name,
-                            hardline!()
-                        ])),
-                    ]
+                            concat!(generics.params.iter().map(|param| match param.kind {
+                                GenericParamKind::Type => docs![line!(), param],
+                                _ => nil!(),
+                            }))
+                        ]
+                        .group();
+                        docs![
+                            docs!["inductive ", name, line!(), generics, ": Type"].group(),
+                            hardline!(),
+                            concat!(variants.iter().map(|variant| docs![
+                                "| ",
+                                docs![variant, applied_name.clone()].group().nest(INDENT),
+                                hardline!()
+                            ])),
+                        ]
+                    }
                 }
                 _ => todo!("-- to debug missing item run: {}", DebugJSON(item_kind)),
             }
