@@ -135,12 +135,25 @@ end Result
 -/
 section Logic
 
-namespace hax.logical_op
+namespace Rust_primitives.Hax.Logical_op
+
+/-- Boolean conjunction. Cannot panic (always returns .ok ) -/
 @[simp, spec]
-abbrev and := (fun a b => a && b)
+def and (a b: Bool) : Result Bool := pure (a && b)
+
+/-- Boolean disjunction. Cannot panic (always returns .ok )-/
 @[simp, spec]
-abbrev or := (fun a b => a || b)
-end hax.logical_op
+def or (a b: Bool) : Result Bool := pure (a || b)
+
+/-- Boolean negation. Cannot panic (always returns .ok )-/
+@[simp, spec]
+def not (a :Bool) : Result Bool := pure (!a)
+
+@[inherit_doc] infixl:35 " &&? " => and
+@[inherit_doc] infixl:30 " ||? " => or
+@[inherit_doc] notation:max "!?" b:40 => not b
+
+end Rust_primitives.Hax.Logical_op
 
 end Logic
 
@@ -268,12 +281,13 @@ class HaxDiv α where
   meaning of this notation is type-dependent. -/
   div : α → α → Result α
 
-/-- The typeclass behind the notation `a >>>? b : Result α` where `a b : α`. -/
-class HaxShiftRight α where
+/--The notation typeclass for right shift that returns a Result. It enables the
+ notation `a >>>? b : Result α` where `a : α` and `b : β`. -/
+class HaxShiftRight α β where
   /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
   of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
   -/
-  shiftRight : α → α → Result α
+  shiftRight : α → β → Result α
 
 /-- The notation typeclass for remainder.  This enables the notation `a %? b :
 Result α` where `a b : α`.  -/
@@ -292,20 +306,8 @@ infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 
 /- Until notations are not introduced by the Lean backend, explicit hax-names
   are also provided -/
-namespace hax.machine_int
+namespace Rust_primitives.Hax.Machine_int
 
-@[simp, spec]
-def add {α} [HaxAdd α] (x y: α) : Result α := x +? y
-@[simp, spec]
-def sub {α} [HaxSub α] (x y: α) : Result α := x -? y
-@[simp, spec]
-def mul {α} [HaxMul α] (x y: α) : Result α := x *? y
-@[simp, spec]
-def div {α} [HaxDiv α] (x y: α) : Result α := x /? y
-@[simp, spec]
-def rem {α} [HaxRem α] (x y: α) : Result α := x %? y
-@[simp, spec]
-def shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
 @[simp, spec]
 def bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
 
@@ -326,10 +328,10 @@ def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
 def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
   pure (x ≥ y)
 
-end hax.machine_int
+end Rust_primitives.Hax.Machine_int
 
 @[simp]
-def ops.arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
+def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 
 /-
@@ -362,7 +364,7 @@ instance instHaxMul : HaxMul USize where
     else pure (x * y)
 
 /-- Partial right shift on usize -/
-instance instHaxShiftRight : HaxShiftRight USize where
+instance instHaxShiftRight : HaxShiftRight USize USize where
   shiftRight x y :=
     if (y ≤ USize.size) then pure (x >>> y)
     else .fail .integerOverflow
@@ -517,7 +519,7 @@ theorem HaxMul_spec_bv (x y: isize) :
   (x *? y)
   ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
 
-instance instHaxShiftRight : HaxShiftRight ISize where
+instance instHaxShiftRight : HaxShiftRight ISize ISize where
   shiftRight x y :=
     if (y ≤ ISize.size.toISize) then pure (x >>> y)
     else .fail .integerOverflow
@@ -566,7 +568,14 @@ theorem HaxMul_spec_bv (x y: i64) :
   (x *? y)
   ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
 
-instance instHaxShiftRight : HaxShiftRight Int64 where
+instance instHaxHShiftRight : HaxShiftRight Int64 Int32 where
+  shiftRight x y :=
+    if (y ≤ 64) then
+      pure (x >>> (Int32.toInt64 y))
+    else
+      .fail .integerOverflow
+
+instance instHaxShiftRight : HaxShiftRight Int64 Int64 where
   shiftRight x y :=
     if (y ≤ 64) then pure (x >>> y)
     else .fail .integerOverflow
@@ -576,6 +585,12 @@ theorem HaxShiftRight_spec_bv (x y: i64) :
   ⦃ y ≤ 64 ⦄
   ( x >>>? y)
   ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
+
+@[spec]
+theorem HaxHShiftRight_spec_bv (x : i64) (y: i32) :
+  ⦃ y ≤ 64 ⦄
+  ( x >>>? y)
+  ⦃ ⇓ r => r = x >>> y.toInt64 ⦄ := by mvcgen [instHaxHShiftRight]
 
 end Int64
 
@@ -675,7 +690,7 @@ instance instHaxRem : HaxRem UInt32 where
     if y = 0 then .fail .divisionByZero
     else pure (x % y)
 
-instance instHaxShiftRight : HaxShiftRight UInt32 where
+instance instHaxShiftRight : HaxShiftRight UInt32 UInt32 where
   shiftRight x y :=
     if (y > 32) then .fail .integerOverflow
     else pure (x >>> y)
@@ -828,7 +843,7 @@ section Cast
 
 /-- Hax-introduced explicit cast. It is partial (returns a `Result`) -/
 @[simp, spec]
-def convert.From.from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
+def Core.Convert.From.from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
@@ -847,8 +862,12 @@ instance : Cast i64 (Result i32) where
 instance : Cast usize u32 where
   cast x := pure (USize.toUInt32 x)
 
+@[spec]
+instance : Cast String String where
+  cast x := pure x
+
 @[simp, spec]
-def hax.cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
+def Rust_primitives.Hax.cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
 
 end Cast
 
@@ -1317,14 +1336,11 @@ def ops.deref.Deref.deref {α Allocator} (v: vec.Vec α Allocator)
 abbrev string_indirection : Type := String
 abbrev Alloc.String.String : Type := string_indirection
 
-def Core.Convert.From.from (s: String) : Alloc.String.String := s
-
-
 abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
 inductive Alloc.Alloc.Global : Type where
 
 -- Tactics
-macro "haxbv_decide" : tactic => `(tactic| (
+macro "hax_bv_decide" : tactic => `(tactic| (
   any_goals (injections <;> subst_vars)
   all_goals try (
     simp [Int32.eq_iff_toBitVec_eq,

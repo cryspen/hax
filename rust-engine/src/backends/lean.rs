@@ -36,6 +36,7 @@ const RESERVED_KEYWORDS: LazyCell<HashSet<String>> = LazyCell::new(|| {
             "example",
             "inductive",
             "structure",
+            "from",
         ]
         .iter()
         .map(|s| s.to_string()),
@@ -460,9 +461,9 @@ set_option linter.unusedVariables false
                         } else if op == &binops::shr() {
                             ">>>?"
                         } else if op == &binops::logical_op_and() {
-                            "&&"
+                            "&&?"
                         } else if op == &binops::logical_op_or() {
-                            "||"
+                            "||?"
                         } else {
                             unreachable!()
                         };

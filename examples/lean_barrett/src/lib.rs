@@ -41,13 +41,13 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
 #[hax_lib::lean::after(
     "
 theorem barrett_spec (value: i32) :
-  ⦃ _.requires (value) = pure true ⦄
-  (barrett_reduce value)
-  ⦃ ⇓ result => _.ensures value result = pure true ⦄
+  ⦃ Lean_barrett.__4.requires (value) = pure true ⦄
+  (Lean_barrett.barrett_reduce value)
+  ⦃ ⇓ result => Lean_barrett.__5.ensures value result = pure true ⦄
 := by
-  mvcgen [_.requires, _.ensures]
+  mvcgen [Int64.instHaxHShiftRight]
   hax_bv_decide
-  simp [_.requires, _.ensures] at *
+  simp [Lean_barrett.__5.ensures] at *
   rw [Int32.HaxRem_spec_bv_rw] ; simp ;
   rw [Int32.HaxAdd_spec_bv_rw] ; simp ;
   rw [Int32.HaxSub_spec_bv_rw] ; simp
