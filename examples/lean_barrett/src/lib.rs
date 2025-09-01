@@ -45,12 +45,12 @@ theorem barrett_spec (value: i32) :
   (Lean_barrett.barrett_reduce value)
   ⦃ ⇓ result => Lean_barrett.__5.ensures value result = pure true ⦄
 := by
-  mvcgen [Int64.instHaxHShiftRight]
+  mvcgen
   hax_bv_decide
   simp [Lean_barrett.__5.ensures] at *
-  rw [Int32.HaxRem_spec_bv_rw] ; simp ;
-  rw [Int32.HaxAdd_spec_bv_rw] ; simp ;
-  rw [Int32.HaxSub_spec_bv_rw] ; simp
+  rw [i32.HaxRem_spec_bv_rw] ; simp ;
+  rw [i32.HaxAdd_spec_bv_rw] ; simp ;
+  rw [i32.HaxSub_spec_bv_rw] ; simp
   hax_bv_decide
   expose_names
   have ⟨ h1, h2 ⟩ := h; clear h

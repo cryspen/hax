@@ -194,32 +194,6 @@ impl LeanPrinter {
         self.escape(id)
     }
 
-    /// Prints the fields of a constructor (struct or variant of an enum)
-    pub fn fields<'a, 'b, A: 'a + Clone>(
-        &'a self,
-        fields: &Vec<(GlobalId, Expr)>,
-        is_record: &bool,
-    ) -> DocBuilder<'a, Self, A> {
-        install_pretty_helpers!(self: LeanPrinter);
-        #[allow(unused)]
-        macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
-        if *is_record {
-            // Record fields (named arguments)
-            docs![intersperse!(
-                fields.iter().map(|(id, e)| {
-                    docs![self.render_last(id), reflow!(" := "), e]
-                        .parens()
-                        .group()
-                }),
-                line!()
-            )]
-            .group()
-        } else {
-            // Tuple fields (positional arguments)
-            docs![intersperse!(fields.iter().map(|(_, e)| e), line!())]
-        }
-    }
-
     /// Renders expressions with an explicit ascription `(e : ty)`. Used for numeric literals (to
     /// prevent incorrect inference), etc.
     fn expr_typed<'a, 'b, A: 'a + Clone>(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
@@ -242,8 +216,60 @@ impl LeanPrinter {
             reflow!(" : "),
             docs!["Result", line!(), expr.ty.kind()].group()
         ]
-        .parens()
         .group()
+    }
+}
+
+// Methods for handling arguments of variants (or struct constructor)
+#[prepend_associated_functions_with(install_pretty_helpers!(self: Self))]
+impl LeanPrinter {
+    /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
+    /// on the `is_record` flag. Used for both expressions and patterns
+    pub fn arguments<'a, 'b, A: 'a + Clone, D>(
+        &'a self,
+        fields: &'b [(GlobalId, D)],
+        is_record: &bool,
+    ) -> DocBuilder<'a, Self, A>
+    where
+        &'b D: Pretty<'a, Self, A>,
+    {
+        if *is_record {
+            self.named_arguments(fields)
+        } else {
+            self.positional_arguments(fields)
+        }
+    }
+
+    /// Prints named arguments (record) of a variant or constructor of struct
+    fn named_arguments<'a, 'b, A: 'a + Clone, D>(
+        &'a self,
+        fields: &'b [(GlobalId, D)],
+    ) -> DocBuilder<'a, Self, A>
+    where
+        &'b D: Pretty<'a, Self, A>,
+    {
+        macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
+        docs![intersperse!(
+            fields.iter().map(|(id, e)| {
+                docs![self.render_last(id), reflow!(" := "), e]
+                    .parens()
+                    .group()
+            }),
+            line!()
+        )]
+        .group()
+    }
+
+    /// Prints positional arguments (tuple) of a variant or constructor of struct
+    fn positional_arguments<'a, 'b, A: 'a + Clone, D>(
+        &'a self,
+        fields: &'b [(GlobalId, D)],
+    ) -> DocBuilder<'a, Self, A>
+    where
+        &'b D: Pretty<'a, Self, A>,
+    {
+        macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
+        docs![intersperse!(fields.iter().map(|(_, e)| e), line!())].group()
     }
 }
 
@@ -295,7 +321,8 @@ set_option linter.unusedVariables false
 
         /// Render generics, adding a space after each parameter
         fn generics(&'a self, generics: &'b Generics) -> DocBuilder<'a, Self, A> {
-            // TODO : do not ignore constraints
+            // TODO : The lean backend should not ignore constraints on generic params, see
+            // https://github.com/cryspen/hax/issues/1636
             concat!(generics.params.iter().map(|param| {
                 match param.kind {
                     GenericParamKind::Lifetime => unreachable!(),
@@ -331,11 +358,11 @@ set_option linter.unusedVariables false
                 } => {
                     if let Some(else_branch) = else_ {
                         docs![
-                            docs!["if", line!(), condition].group(),
+                            docs!["if", line!(), condition, reflow!(" then")].group(),
+                            docs![line!(), "do", line!(), then].nest(INDENT),
                             line!(),
-                            docs!["then", line!(), then].group().nest(INDENT),
-                            line!(),
-                            docs!["else", line!(), else_branch].group().nest(INDENT)
+                            "else",
+                            docs![line!(), "do", line!(), else_branch].nest(INDENT)
                         ]
                         .group()
                     } else {
@@ -351,21 +378,21 @@ set_option linter.unusedVariables false
                     trait_: _,
                 } => {
                     let monadic_lift = if let ExprKind::GlobalId(head_id) = head.kind()
-                        && (head_id.is_constructor() || head_id.is_field())
+                        && (head_id.is_constructor() || head_id.is_projector())
                     {
                         None
                     } else {
                         Some("← ")
                     };
                     let generic_args = (!generic_args.is_empty()).then_some(
-                        docs![
-                            line!(),
-                            self.intersperse(generic_args, line!()).nest(INDENT)
-                        ]
-                        .group(),
+                        docs![line!(), self.intersperse(generic_args, line!())]
+                            .nest(INDENT)
+                            .group(),
                     );
                     let args = (!args.is_empty()).then_some(
-                        docs![line!(), intersperse!(args, line!()).nest(INDENT)].group(),
+                        docs![line!(), intersperse!(args, line!())]
+                            .nest(INDENT)
+                            .group(),
                     );
                     docs![monadic_lift, head, generic_args, args]
                         .parens()
@@ -383,33 +410,52 @@ set_option linter.unusedVariables false
                 ExprKind::Construct {
                     constructor,
                     is_record,
-                    is_struct,
+                    is_struct: _,
                     fields,
                     base,
                 } => {
                     if fields.is_empty() && base.is_none() {
                         docs![constructor]
+                    } else if base.is_some() {
+                        // TODO : support base expressions. see https://github.com/cryspen/hax/issues/1637
+                        todo!(
+                            "-- Unsupported base expressions for structs. To see the ast of the item run : {}",
+                            DebugJSON(expr_kind)
+                        )
                     } else {
-                        docs![constructor, line!(), self.fields(fields, is_record)]
+                        docs![constructor, line!(), self.arguments(fields, is_record)]
                             .parens()
                             .group()
                     }
                 }
-                ExprKind::Let { lhs, rhs, body } => docs![
+                ExprKind::Let { lhs, rhs, body } => {
                     docs![
-                        "let",
+                        docs![
+                            docs![
+                                "let",
+                                line!(),
+                                match *lhs.kind.clone() {
+                                    PatKind::Binding {
+                                        mutable: false,
+                                        var,
+                                        mode: BindingMode::ByValue,
+                                        sub_pat: None,
+                                    } => docs![&var, reflow!(" : "), &lhs.ty],
+                                    _ => docs![lhs],
+                                },
+                            ]
+                            .group(),
+                            " ←",
+                            line!(),
+                            docs!["pure", line!(), rhs].parens().group(),
+                            ";"
+                        ]
+                        .nest(INDENT)
+                        .group(),
                         line!(),
-                        lhs,
-                        line!(),
-                        "← ",
-                        docs!["pure", line!(), rhs].parens().group(),
-                        ";"
+                        body,
                     ]
-                    .nest(INDENT)
-                    .group(),
-                    line!(),
-                    body,
-                ],
+                }
                 ExprKind::GlobalId(global_id) => docs![global_id],
                 ExprKind::LocalId(local_id) => docs![local_id],
                 ExprKind::Ascription { e, ty } => docs![
@@ -431,10 +477,12 @@ set_option linter.unusedVariables false
                     captures: _,
                 } => docs![
                     reflow!("fun "),
-                    intersperse!(params, softline!()).group(),
-                    reflow!(" => do"),
-                    line!(),
-                    self.expr_typed_result(body)
+                    intersperse!(params, line!()).group(),
+                    reflow!(" =>"),
+                    docs!["do", line!(), self.expr_typed_result(body)]
+                        .nest(INDENT)
+                        .parens()
+                        .group()
                 ]
                 .parens()
                 .group()
@@ -490,14 +538,16 @@ set_option linter.unusedVariables false
             if let Some(_guard) = &arm.guard {
                 todo!()
             } else {
-                docs!["| ", &*arm.pat.kind, reflow!(" => "), &arm.body].group()
+                docs!["| ", &*arm.pat.kind, line!(), "=> ", &arm.body]
+                    .nest(INDENT)
+                    .group()
             }
         }
 
         fn pat_kind(&'a self, pat_kind: &'b PatKind) -> DocBuilder<'a, Self, A> {
             match pat_kind {
                 PatKind::Wild => docs!["_"],
-                PatKind::Ascription { pat, ty: _ } => docs![pat],
+                PatKind::Ascription { pat, ty: _ } => docs![&*pat.kind],
                 PatKind::Binding {
                     mutable,
                     var,
@@ -512,70 +562,48 @@ set_option linter.unusedVariables false
                 PatKind::Deref { sub_pat: _ } => todo!(),
                 PatKind::Constant { lit: _ } => todo!(),
                 PatKind::Construct {
-                    constructor: _,
-                    is_record,
-                    is_struct,
-                    fields,
-                } if *is_struct => {
-                    if !*is_record {
-                        // Tuple-like structure, using positional arguments
-                        docs![
-                            "⟨",
-                            intersperse!(
-                                fields.iter().map(|field| { docs![&field.1] }),
-                                docs![",", line!()]
-                            )
-                            .align()
-                            .group(),
-                            "⟩"
-                        ]
-                        .align()
-                        .group()
-                    } else {
-                        // Structure-like structure, using named arguments
-                        docs![intersperse!(
-                            fields.iter().map(|(id, pat)| {
-                                docs![self.render_last(id), reflow!(" := "), pat].group()
-                            }),
-                            docs![",", line!()]
-                        )]
-                        .align()
-                        .braces()
-                        .group()
-                    }
-                }
-                PatKind::Construct {
                     constructor,
                     is_record,
                     is_struct,
                     fields,
                 } => {
-                    if *is_record {
+                    if *is_struct {
+                        if !*is_record {
+                            // Tuple-like structure, using positional arguments
+                            docs![
+                                "⟨",
+                                intersperse!(
+                                    fields.iter().map(|field| { docs![&field.1] }),
+                                    docs![",", line!()]
+                                )
+                                .align()
+                                .group(),
+                                "⟩"
+                            ]
+                            .align()
+                            .group()
+                        } else {
+                            // Structure-like structure, using named arguments
+                            docs![intersperse!(
+                                fields.iter().map(|(id, pat)| {
+                                    docs![self.render_last(id), reflow!(" := "), pat].group()
+                                }),
+                                docs![",", line!()]
+                            )]
+                            .align()
+                            .braces()
+                            .group()
+                        }
+                    } else {
+                        // Variant
                         docs![
                             constructor,
                             line!(),
-                            intersperse!(
-                                fields.iter().map(|(id, e)| {
-                                    docs![self.render_last(id), reflow!(" := "), e]
-                                        .parens()
-                                        .group()
-                                }),
-                                line!()
-                            )
-                            .align()
-                            .group()
+                            self.arguments(fields, is_record).align()
                         ]
                         .parens()
                         .group()
                         .nest(INDENT)
-                    } else {
-                        docs![
-                            constructor,
-                            line!(),
-                            intersperse!(fields.iter().map(|(_, e)| docs![e]), line!())
-                        ]
-                        .parens()
-                        .group()
                     }
                 }
                 PatKind::Resugared(_resugared_pat_kind) => todo!(),
@@ -608,7 +636,7 @@ set_option linter.unusedVariables false
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
                 TyKind::Array { ty, length } => {
-                    docs!["RustArray", line!(), ty, line!(), &(**length)]
+                    docs!["RustArray", line!(), ty, line!(), &(*length.kind)]
                         .parens()
                         .group()
                 }
@@ -654,18 +682,18 @@ set_option linter.unusedVariables false
 
         fn int_kind(&'a self, int_kind: &'b IntKind) -> DocBuilder<'a, Self, A> {
             docs![match (&int_kind.signedness, &int_kind.size) {
-                (Signedness::Signed, IntSize::S8) => "Int8",
-                (Signedness::Signed, IntSize::S16) => "Int16",
-                (Signedness::Signed, IntSize::S32) => "Int32",
-                (Signedness::Signed, IntSize::S64) => "Int64",
+                (Signedness::Signed, IntSize::S8) => "i8",
+                (Signedness::Signed, IntSize::S16) => "i16",
+                (Signedness::Signed, IntSize::S32) => "i32",
+                (Signedness::Signed, IntSize::S64) => "i64",
                 (Signedness::Signed, IntSize::S128) => todo!(),
-                (Signedness::Signed, IntSize::SSize) => "ISize",
-                (Signedness::Unsigned, IntSize::S8) => "UInt8",
-                (Signedness::Unsigned, IntSize::S16) => "UInt16",
-                (Signedness::Unsigned, IntSize::S32) => "UInt32",
-                (Signedness::Unsigned, IntSize::S64) => "UInt64",
+                (Signedness::Signed, IntSize::SSize) => "isize",
+                (Signedness::Unsigned, IntSize::S8) => "u8",
+                (Signedness::Unsigned, IntSize::S16) => "u16",
+                (Signedness::Unsigned, IntSize::S32) => "u32",
+                (Signedness::Unsigned, IntSize::S64) => "u64",
                 (Signedness::Unsigned, IntSize::S128) => todo!(),
-                (Signedness::Unsigned, IntSize::SSize) => "USize",
+                (Signedness::Unsigned, IntSize::SSize) => "usize",
             }]
         }
 
@@ -716,23 +744,25 @@ set_option linter.unusedVariables false
                     }
                     _ => {
                         let generics = (!generics.params.is_empty()).then_some(
+                            docs![intersperse!(&generics.params, line!()).braces().group()].group(),
+                        );
+                        docs![
                             docs![
+                                "def ",
+                                name,
+                                softline!(),
+                                generics,
+                                softline!(),
+                                docs![intersperse!(params, line!())].group(),
                                 line!(),
-                                intersperse!(&generics.params, softline!()).braces().group()
+                                ": Result ",
+                                &body.ty,
+                                line!(),
+                                ":= do",
                             ]
                             .group(),
-                        );
-                        let args = (!params.is_empty())
-                            .then_some(docs![line!(), intersperse!(params, softline!())].group());
-                        docs![
-                            "def ",
-                            name,
-                            generics,
-                            args,
-                            docs![line!(), ": ", docs!["Result ", &body.ty].group()].group(),
-                            " := do",
                             line!(),
-                            docs![&*body.kind].group()
+                            &*body.kind
                         ]
                         .group()
                         .nest(INDENT)

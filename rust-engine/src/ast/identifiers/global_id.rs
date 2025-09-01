@@ -178,12 +178,11 @@ impl GlobalId {
         }
     }
 
-    /// Returns true if the underlying identifier is a field
-    pub fn is_field(&self) -> bool {
+    /// Returns true if the underlying identifier is a projector
+    pub fn is_projector(&self) -> bool {
         match self {
-            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
-                matches!(concrete_id.def_id.def_id.kind, DefKind::Field)
-            }
+            GlobalId::Projector(_) => true,
+            GlobalId::Concrete(_) => false,
         }
     }
 }
