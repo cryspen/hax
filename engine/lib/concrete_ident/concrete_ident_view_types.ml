@@ -74,6 +74,13 @@ module ModPath = struct
 
   include T
   module Map = Map.M (T)
+
+  let rename_crate (original_name : string) (new_name : string) (mod_path : t) :
+      t =
+    match mod_path with
+    | krate :: path when String.equal krate.data original_name ->
+        { krate with data = new_name } :: path
+    | _ -> mod_path
 end
 
 (** A relational path is a path composed of relational chunks. *)
