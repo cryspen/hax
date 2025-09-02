@@ -4,8 +4,8 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
-use std::cell::LazyCell;
 use std::collections::HashSet;
+use std::sync::LazyLock;
 
 use super::prelude::*;
 use crate::{
@@ -26,7 +26,7 @@ impl_doc_allocator_for!(LeanPrinter);
 
 const INDENT: isize = 2;
 
-const RESERVED_KEYWORDS: LazyCell<HashSet<String>> = LazyCell::new(|| {
+static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     HashSet::from_iter(
         [
             "end",
