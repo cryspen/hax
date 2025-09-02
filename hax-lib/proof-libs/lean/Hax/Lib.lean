@@ -221,6 +221,8 @@ instance {β} : Coe (α -> i32 -> β) (α -> Nat -> β) where
 instance : OfNat (Result Nat) n where
   ofNat := pure (n)
 
+instance {α n} [i: OfNat α n] : OfNat (Result α) n where
+  ofNat := pure (i.ofNat)
 
 /-
 
@@ -889,7 +891,9 @@ end Fold
 Rust arrays, are represented as Lean `Vector` (Lean Arrays of known size)
 
 -/
-section Array
+section RustArray
+
+abbrev RustArray := Vector
 
 inductive array_TryFromSliceError where
   | array_TryFromSliceError
@@ -943,7 +947,7 @@ theorem convert_TryInto_try_success_spec {α n} (a: Array α) :
   split <;> grind
 
 
-end Array
+end RustArray
 
 /-
 
@@ -1132,6 +1136,8 @@ Rust vectors are represented as Lean Arrays (variable size)
 
 -/
 section RustVectors
+
+abbrev RustVector := Array
 
 def alloc_Global : Type := Unit
 def vec_Vec (α: Type) (_Allocator:Type) : Type := Array α

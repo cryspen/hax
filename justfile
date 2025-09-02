@@ -25,6 +25,10 @@ expand *FLAGS:
     $([[ "$(cargo --version)" == *nightly* ]] || echo "+nigthly") \
     expand {{FLAGS}}
 
+# Show debug JSON emitted by the Rust engine
+@show-json N: (_ensure_command_in_path "jless" "jless (https://jless.io/)") (_ensure_command_in_path "jq" "jq (https://jqlang.github.io/jq/)")
+  cat /tmp/hax-ast-debug.json | jq -s '.[{{N}}]' | jless
+
 # Show the generated module `concrete_ident_generated.ml`, that contains all the Rust names the engine knows about. Those names are declared in the `./engine/names` crate.
 @list-names:
   hax-engine-names-extract | sed '/include .val/,$d' | just _pager

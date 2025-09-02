@@ -30,7 +30,7 @@ diagnostics = []
 "lean_tests.lean" = '''
 
 -- Experimental lean backend for Hax
--- Lib.lean can be found in hax/proof-libs/lean :
+-- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
 import Std.Tactic.Do
 import Std.Do.Triple
@@ -41,29 +41,42 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-def FORTYTWO : usize := 42
-def returns42 (_ : hax_Tuple0) : Result usize := do FORTYTWO
 
-def add_two_numbers (x : usize) (y : usize) : Result usize := do (← x +? y)
 
-def letBinding (x : usize) (y : usize) : Result usize := do
+def FORTYTWO : USize := 42
+def MINUS_FORTYTWO : ISize := -42
+def returns42 (_ : hax_Tuple0) : Result USize := do FORTYTWO
+
+def add_two_numbers (x : USize) (y : USize) : Result USize := do
+  (← hax_machine_int_add x y)
+
+def letBinding (x : USize) (y : USize) : Result USize := do
   let (useless : hax_Tuple0) ← pure (constr_hax_Tuple0);
-  let (result1 : usize) ← pure (← x +? y);
-  let (result2 : usize) ← pure (← result1 +? 2); (← result2 +? 1)
+  let (result1 : USize) ← pure (← hax_machine_int_add x y);
+  let (result2 : USize) ← pure (← hax_machine_int_add result1 2);
+  (← hax_machine_int_add result2 1)
 
-def closure (_ : hax_Tuple0) : Result i32 := do
-  let (x : i32) ← pure 41;
-  let (f1 : (i32 -> Result i32)) ← pure (fun (y : i32)=> do (← y +? x));
-  let (f2 : (i32 -> i32 -> Result i32)) ← pure
-    (fun (y : i32) (z : i32)=> do (← (← y +? x) +? z));
-  (← (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1))) +?
-  (← ops_function_Fn_call
-  f2
-    (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
+def closure (_ : hax_Tuple0) : Result Int32 := do
+  let (x : Int32) ← pure 41;
+  let (f1 : Int32 -> Result Int32) ← pure
+    (fun (y : Int32) => do (← hax_machine_int_add y x));
+  let (f2 : Int32 -> Int32 -> Result Int32) ← pure
+    (fun (y : Int32) (z : Int32) => do (← hax_machine_int_add
+      (← hax_machine_int_add y x)
+        z));
+  (← hax_machine_int_add
+  (← ops_function_Fn_call f1 (constr_hax_Tuple1 (hax_Tuple1_Tuple0 := 1)))
+    (← ops_function_Fn_call
+    f2
+      (constr_hax_Tuple2 (hax_Tuple2_Tuple0 := 2) (hax_Tuple2_Tuple1 := 3))))
+
 
 @[spec]
-def test_before_verbatime_single_line : u8 := 42
+def test_before_verbatime_single_line (x : UInt8) : Result UInt8 := do 42
+
+
 
 def multiline : Unit := ()
 
-def test_before_verbatim_multi_line : u8 := 32'''
+def test_before_verbatim_multi_line (x : UInt8) : Result UInt8 := do 32
+'''

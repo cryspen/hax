@@ -18,7 +18,7 @@ pub struct OwnerId(usize);
 pub struct Span {
     /// A vector of spans as defined by the frontend.
     /// This is useful for supporting in a trivial way union of spans.
-    data: Vec<hax_frontend_exporter::Span>,
+    pub data: Vec<hax_frontend_exporter::Span>,
     /// A unique identifier. Since we store spans almost for every node of the
     /// AST, having a unique identifier for spans gives us a fine-grained way of
     /// refering to sub-nodes in debugging context. This id is indeed mostly

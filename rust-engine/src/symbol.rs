@@ -13,8 +13,8 @@ pub struct Symbol(String);
 
 impl Symbol {
     /// Create a new symbol
-    pub fn new(s: &str) -> Self {
-        Self(s.to_string())
+    pub fn new(s: impl AsRef<str>) -> Self {
+        Self(s.as_ref().to_string())
     }
 }
 
@@ -22,6 +22,12 @@ impl Deref for Symbol {
     type Target = str;
 
     fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl AsRef<str> for Symbol {
+    fn as_ref(&self) -> &str {
         &self.0
     }
 }

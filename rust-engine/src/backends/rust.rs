@@ -3,18 +3,32 @@
 
 use super::prelude::*;
 
-/// The Rust backend and printer.
-pub struct Rust;
+/// The Rust printer.
+#[derive(Default)]
+pub struct RustPrinter;
+impl_doc_allocator_for!(RustPrinter);
 
-impl Printer for Rust {
+impl Printer for RustPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![]
     }
 
-    const NAME: &str = "Rust";
+    const NAME: &'static str = "Rust";
 }
 
 const INDENT: isize = 4;
+
+/// The Rust backend.
+pub struct RustBackend;
+
+impl Backend for RustBackend {
+    type Printer = RustPrinter;
+
+    fn module_path(&self, _module: &Module) -> camino::Utf8PathBuf {
+        // TODO: dummy path for now, until we have GlobalId rendering (see #1599).
+        camino::Utf8PathBuf::from("dummy.rs")
+    }
+}
 
 #[prepend_associated_functions_with(install_pretty_helpers!(self: Self))]
 // Note: the `const` wrapping makes my IDE and LSP happy. Otherwise, I don't get
@@ -28,14 +42,14 @@ const _: () = {
     #[allow(unused)]
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
 
-    impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for Allocator<Rust> {
-        fn module(&'a self, module: &'b Module) -> pretty::DocBuilder<'a, Self, A> {
+    impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for RustPrinter {
+        fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
             intersperse!(&module.items, docs![hardline!(), hardline!()])
         }
-        fn item(&'a self, item: &'b Item) -> pretty::DocBuilder<'a, Self, A> {
+        fn item(&'a self, item: &'b Item) -> DocBuilder<'a, Self, A> {
             docs![&item.meta, item.kind()]
         }
-        fn item_kind(&'a self, item_kind: &'b ItemKind) -> pretty::DocBuilder<'a, Self, A> {
+        fn item_kind(&'a self, item_kind: &'b ItemKind) -> DocBuilder<'a, Self, A> {
             match item_kind {
                 ItemKind::Fn {
                     name,
