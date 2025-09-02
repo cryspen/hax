@@ -677,7 +677,6 @@ dependencies = [
  "pretty",
  "schemars",
  "serde",
- "serde-jsonlines",
  "serde_json",
  "serde_stacker",
 ]

@@ -264,9 +264,7 @@ module ExportLeanAst = Export_ast.Make (Lean_backend.InputLanguage)
 (** Entry point for interacting with the Rust hax engine *)
 let driver_for_rust_engine () : unit =
   let query : Rust_engine_types.query =
-    (* TODO: support for table *)
-    (* let json = load_table ~check_version:false in *)
-    let json = Hax_io.read_json () |> Option.value_exn in
+    let json = load_table ~check_version:false in
     [%of_yojson: Rust_engine_types.query] json
   in
   Concrete_ident.ImplInfoStore.init

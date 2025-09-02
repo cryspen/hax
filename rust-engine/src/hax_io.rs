@@ -2,22 +2,29 @@
 
 use crate::ocaml_engine::ExtendedToEngine;
 use hax_types::engine_api::protocol::FromEngine;
-use std::io::{BufReader, Stdin, stdin, stdout};
+use serde::Deserialize;
+use std::io::{BufRead, BufReader, Stdin, stdin, stdout};
 use std::sync::{LazyLock, Mutex};
 
-static STDIN: LazyLock<Mutex<serde_jsonlines::JsonLinesIter<BufReader<Stdin>, ExtendedToEngine>>> =
-    LazyLock::new(|| {
-        use serde_jsonlines::BufReadExt;
-        Mutex::new(BufReader::new(stdin()).json_lines())
-    });
+static STDIN: LazyLock<Mutex<BufReader<Stdin>>> =
+    LazyLock::new(|| Mutex::new(BufReader::new(stdin())));
 
 /// Reads a `ExtendedToEngine` message
 pub fn read() -> ExtendedToEngine {
     let mut stdin = STDIN.lock().unwrap();
+    let mut slice = Vec::new();
     stdin
-        .next()
-        .expect("No message left! Did the engine crash?")
-        .expect("Could not parse as a `ExtendedToEngine` message!")
+        .read_until(b'\n', &mut slice)
+        .expect("No message left! Did the engine crash?");
+    let msg = (|| {
+        let mut de = serde_json::Deserializer::from_slice(&slice);
+        de.disable_recursion_limit();
+        let de = serde_stacker::Deserializer::new(&mut de);
+        let msg = ExtendedToEngine::deserialize(de);
+        msg.ok()
+    })()
+    .expect("Could not parse as a `ExtendedToEngine` message!");
+    msg
 }
 
 /// Writes a `ExtendedFromEngine` message
