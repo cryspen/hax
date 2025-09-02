@@ -60,150 +60,155 @@ structure Lean_tests.Structs.T3p A B C where
   _0 : A
   _1 : (Lean_tests.Structs.T2 B C)
 
-def Lean_tests.Structs.tuple_structs (_ : Rust_primitives.Hax.Tuple0)
-  : Result Rust_primitives.Hax.Tuple0 := do
-  let (t0 : Lean_tests.Structs.T0) ← (pure Lean_tests.Structs.T0.mk);
-  let (t1 : (Lean_tests.Structs.T1 Int32))
-    ← (pure (Lean_tests.Structs.T1.mk (1 : Int32)));
-  let (t2 : (Lean_tests.Structs.T2 Int32 Int32))
-    ← (pure (Lean_tests.Structs.T2.mk (1 : Int32) (2 : Int32)));
+def Lean_tests.Structs.tuple_structs  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let t0 : Lean_tests.Structs.T0 ← (pure Lean_tests.Structs.T0.mk);
+  let t1 : (Lean_tests.Structs.T1 i32) ←
+    (pure (Lean_tests.Structs.T1.mk (1 : i32)));
+  let t2 : (Lean_tests.Structs.T2 i32 i32) ←
+    (pure (Lean_tests.Structs.T2.mk (1 : i32) (2 : i32)));
   let
-    (t3 : (Lean_tests.Structs.T3 Lean_tests.Structs.T0 (Lean_tests.Structs.T1
-    Int32) (Lean_tests.Structs.T2 Int32 Int32)))
-    ← (pure
+    t3 : (Lean_tests.Structs.T3 Lean_tests.Structs.T0 (Lean_tests.Structs.T1
+    i32) (Lean_tests.Structs.T2 i32 i32)) ←
+    (pure
     (Lean_tests.Structs.T3.mk
     Lean_tests.Structs.T0.mk
-    (Lean_tests.Structs.T1.mk (1 : Int32))
-    (Lean_tests.Structs.T2.mk (1 : Int32) (2 : Int32))));
+    (Lean_tests.Structs.T1.mk (1 : i32))
+    (Lean_tests.Structs.T2.mk (1 : i32) (2 : i32))));
   let
-    (t3p : (Lean_tests.Structs.T3p Lean_tests.Structs.T0 (Lean_tests.Structs.T1
-    Int32) (Lean_tests.Structs.T2 Int32 Int32)))
-    ← (pure
+    t3p : (Lean_tests.Structs.T3p Lean_tests.Structs.T0 (Lean_tests.Structs.T1
+    i32) (Lean_tests.Structs.T2 i32 i32)) ←
+    (pure
     (Lean_tests.Structs.T3p.mk
     Lean_tests.Structs.T0.mk
     (Lean_tests.Structs.T2.mk
-    (Lean_tests.Structs.T1.mk (1 : Int32))
-    (Lean_tests.Structs.T2.mk (1 : Int32) (2 : Int32)))));
+    (Lean_tests.Structs.T1.mk (1 : i32))
+    (Lean_tests.Structs.T2.mk (1 : i32) (2 : i32)))));
   let (⟨⟩ : Lean_tests.Structs.T0) ← (pure t0);
-  let (⟨(u1 : Int32)⟩ : (Lean_tests.Structs.T1 Int32)) ← (pure t1);
-  let (⟨(u2 : Int32), (u3 : Int32)⟩ : (Lean_tests.Structs.T2 Int32 Int32))
-    ← (pure t2);
+  let (⟨(u1 : i32)⟩ : (Lean_tests.Structs.T1 i32)) ← (pure t1);
+  let (⟨(u2 : i32), (u3 : i32)⟩ : (Lean_tests.Structs.T2 i32 i32)) ← (pure t2);
   let
     (⟨(⟨⟩ : Lean_tests.Structs.T0),
-      (⟨(_ : Int32)⟩ : (Lean_tests.Structs.T1 Int32)),
-      (⟨(_ : Int32), (_ : Int32)⟩ : (Lean_tests.Structs.T2 Int32 Int32))⟩ :
-    (Lean_tests.Structs.T3 Lean_tests.Structs.T0 (Lean_tests.Structs.T1 Int32)
-    (Lean_tests.Structs.T2 Int32 Int32)))
-    ← (pure t3);
+      (⟨(_ : i32)⟩ : (Lean_tests.Structs.T1 i32)),
+      (⟨(_ : i32), (_ : i32)⟩ : (Lean_tests.Structs.T2 i32 i32))⟩ :
+    (Lean_tests.Structs.T3 Lean_tests.Structs.T0 (Lean_tests.Structs.T1 i32)
+    (Lean_tests.Structs.T2 i32 i32))) ←
+    (pure t3);
   let
     (⟨(⟨⟩ : Lean_tests.Structs.T0),
-      (⟨(⟨(_ : Int32)⟩ : (Lean_tests.Structs.T1 Int32)),
-        (⟨(_ : Int32), (_ : Int32)⟩ : (Lean_tests.Structs.T2 Int32 Int32))⟩ :
-      (Lean_tests.Structs.T2 (Lean_tests.Structs.T1 Int32)
-      (Lean_tests.Structs.T2 Int32 Int32)))⟩ : (Lean_tests.Structs.T3p
-    Lean_tests.Structs.T0 (Lean_tests.Structs.T1 Int32) (Lean_tests.Structs.T2
-    Int32 Int32)))
-    ← (pure t3p);
-  let (_ : Int32) ← (pure (Lean_tests.Structs.T1._0 t1));
-  let (_ : Int32) ← (pure (Lean_tests.Structs.T2._0 t2));
-  let (_ : Int32) ← (pure (Lean_tests.Structs.T2._1 t2));
+      (⟨(⟨(_ : i32)⟩ : (Lean_tests.Structs.T1 i32)),
+        (⟨(_ : i32), (_ : i32)⟩ : (Lean_tests.Structs.T2 i32 i32))⟩ :
+      (Lean_tests.Structs.T2 (Lean_tests.Structs.T1 i32) (Lean_tests.Structs.T2
+      i32 i32)))⟩ : (Lean_tests.Structs.T3p Lean_tests.Structs.T0
+    (Lean_tests.Structs.T1 i32) (Lean_tests.Structs.T2 i32 i32))) ←
+    (pure t3p);
+  let (_ : i32) ← (pure (Lean_tests.Structs.T1._0 t1));
+  let (_ : i32) ← (pure (Lean_tests.Structs.T2._0 t2));
+  let (_ : i32) ← (pure (Lean_tests.Structs.T2._1 t2));
   let (_ : Lean_tests.Structs.T0) ← (pure (Lean_tests.Structs.T3._0 t3));
-  let (_ : (Lean_tests.Structs.T1 Int32))
-    ← (pure (Lean_tests.Structs.T3._1 t3));
-  let (_ : (Lean_tests.Structs.T2 Int32 Int32))
-    ← (pure (Lean_tests.Structs.T3._2 t3));
+  let (_ : (Lean_tests.Structs.T1 i32)) ← (pure (Lean_tests.Structs.T3._1 t3));
+  let (_ : (Lean_tests.Structs.T2 i32 i32)) ←
+    (pure (Lean_tests.Structs.T3._2 t3));
+  let (_ : i32) ←
+    (pure (Lean_tests.Structs.T2._1 (Lean_tests.Structs.T3._2 t3)));
   let (_ : Lean_tests.Structs.T0) ← (pure (Lean_tests.Structs.T3p._0 t3p));
   let
-    (_ : (Lean_tests.Structs.T2 (Lean_tests.Structs.T1 Int32)
-    (Lean_tests.Structs.T2 Int32 Int32)))
-    ← (pure (Lean_tests.Structs.T3p._1 t3p));
-  let (_ : Int32)
-    ← (pure
+    (_ : (Lean_tests.Structs.T2 (Lean_tests.Structs.T1 i32)
+    (Lean_tests.Structs.T2 i32 i32))) ←
+    (pure (Lean_tests.Structs.T3p._1 t3p));
+  let (_ : i32) ←
+    (pure
     (Lean_tests.Structs.T2._0
-    (Lean_tests.Structs.T2._1 (Lean_tests.Structs.T3p._1 t3p))));
-  let (_ : (Lean_tests.Structs.T1 Int32))
-    ← (pure (Lean_tests.Structs.T2._0 (Lean_tests.Structs.T3p._1 t3p)));
-  let (_ : (Lean_tests.Structs.T2 Int32 Int32))
-    ← (pure (Lean_tests.Structs.T2._1 (Lean_tests.Structs.T3p._1 t3p)));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure (match t0 with | ⟨⟩ => Rust_primitives.Hax.Tuple0.mk));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure (match t1 with | ⟨(u1 : Int32)⟩ => Rust_primitives.Hax.Tuple0.mk));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure
+      (Lean_tests.Structs.T2._1 (Lean_tests.Structs.T3p._1 t3p))));
+  let (_ : (Lean_tests.Structs.T1 i32)) ←
+    (pure (Lean_tests.Structs.T2._0 (Lean_tests.Structs.T3p._1 t3p)));
+  let (_ : (Lean_tests.Structs.T2 i32 i32)) ←
+    (pure (Lean_tests.Structs.T2._1 (Lean_tests.Structs.T3p._1 t3p)));
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure (match t0 with | ⟨⟩ => do Rust_primitives.Hax.Tuple0.mk));
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure (match t1 with | ⟨(u1 : i32)⟩ => do Rust_primitives.Hax.Tuple0.mk));
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure
     (match t2 with
-      | ⟨(u2 : Int32), (u3 : Int32)⟩ => Rust_primitives.Hax.Tuple0.mk));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure
+      | ⟨(u2 : i32), (u3 : i32)⟩ => do Rust_primitives.Hax.Tuple0.mk));
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure
     (match t3 with
       | ⟨(⟨⟩ : Lean_tests.Structs.T0),
-         (⟨(u1 : Int32)⟩ : (Lean_tests.Structs.T1 Int32)),
-         (⟨(u2 : Int32), (u3 : Int32)⟩ : (Lean_tests.Structs.T2 Int32 Int32))⟩
-        => Rust_primitives.Hax.Tuple0.mk));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure
+         (⟨(u1 : i32)⟩ : (Lean_tests.Structs.T1 i32)),
+         (⟨(u2 : i32), (u3 : i32)⟩ : (Lean_tests.Structs.T2 i32 i32))⟩
+        => do Rust_primitives.Hax.Tuple0.mk));
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure
     (match t3p with
       | ⟨(⟨⟩ : Lean_tests.Structs.T0),
-         (⟨(⟨(u1 : Int32)⟩ : (Lean_tests.Structs.T1 Int32)),
-           (⟨(u2 : Int32), (u3 : Int32)⟩ : (Lean_tests.Structs.T2 Int32 Int32))⟩
-         : (Lean_tests.Structs.T2 (Lean_tests.Structs.T1 Int32)
-         (Lean_tests.Structs.T2 Int32 Int32)))⟩
-        => Rust_primitives.Hax.Tuple0.mk));
+         (⟨(⟨(u1 : i32)⟩ : (Lean_tests.Structs.T1 i32)),
+           (⟨(u2 : i32), (u3 : i32)⟩ : (Lean_tests.Structs.T2 i32 i32))⟩ :
+         (Lean_tests.Structs.T2 (Lean_tests.Structs.T1 i32)
+         (Lean_tests.Structs.T2 i32 i32)))⟩
+        => do Rust_primitives.Hax.Tuple0.mk));
   Rust_primitives.Hax.Tuple0.mk
 
 structure Lean_tests.Structs.S1 where
-  f1 : USize
-  f2 : USize
+  f1 : usize
+  f2 : usize
 
 structure Lean_tests.Structs.S2 where
   f1 : Lean_tests.Structs.S1
-  f2 : USize
+  f2 : usize
 
 structure Lean_tests.Structs.S3 where
-  _end : USize
-  _def : USize
-  _theorem : USize
-  _structure : USize
-  _inductive : USize
+  _end : usize
+  _def : usize
+  _theorem : usize
+  _structure : usize
+  _inductive : usize
 
-def Lean_tests.Structs.normal_structs (_ : Rust_primitives.Hax.Tuple0)
-  : Result Rust_primitives.Hax.Tuple0 := do
-  let (s1 : Lean_tests.Structs.S1)
-    ← (pure (Lean_tests.Structs.S1.mk (f1 := (0 : USize)) (f2 := (1 : USize))));
-  let (s2 : Lean_tests.Structs.S2)
-    ← (pure
+def Lean_tests.Structs.normal_structs  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let s1 : Lean_tests.Structs.S1 ←
+    (pure (Lean_tests.Structs.S1.mk (f1 := (0 : usize)) (f2 := (1 : usize))));
+  let s2 : Lean_tests.Structs.S2 ←
+    (pure
     (Lean_tests.Structs.S2.mk
-    (f1 := (Lean_tests.Structs.S1.mk (f1 := (2 : USize)) (f2 := (3 : USize))))
-    (f2 := (4 : USize))));
-  let (s3 : Lean_tests.Structs.S3)
-    ← (pure
+    (f1 := (Lean_tests.Structs.S1.mk (f1 := (2 : usize)) (f2 := (3 : usize))))
+    (f2 := (4 : usize))));
+  let s3 : Lean_tests.Structs.S3 ←
+    (pure
     (Lean_tests.Structs.S3.mk
-    (_end := (0 : USize))
-    (_def := (0 : USize))
-    (_theorem := (0 : USize))
-    (_structure := (0 : USize))
-    (_inductive := (0 : USize))));
-  let ({f1 := (f1 : USize), f2 := (f2 : USize)} : Lean_tests.Structs.S1)
-    ← (pure s1);
+    (_end := (0 : usize))
+    (_def := (0 : usize))
+    (_theorem := (0 : usize))
+    (_structure := (0 : usize))
+    (_inductive := (0 : usize))));
+  let ({f1 := (f1 : usize), f2 := (f2 : usize)} : Lean_tests.Structs.S1) ←
+    (pure s1);
   let
-    ({f1 := (f1 : USize), f2 := (other_name_for_f2 : USize)} :
-    Lean_tests.Structs.S1)
-    ← (pure s1);
+    ({f1 := (f1 : usize), f2 := (other_name_for_f2 : usize)} :
+    Lean_tests.Structs.S1) ←
+    (pure s1);
   let
-    ({f1 := ({f1 := (f1 : USize), f2 := (f2 : USize)} : Lean_tests.Structs.S1),
-      f2 := (other_name_for_f2 : USize)} : Lean_tests.Structs.S2)
-    ← (pure s2);
+    ({f1 := ({f1 := (f1 : usize), f2 := (f2 : usize)} : Lean_tests.Structs.S1),
+      f2 := (other_name_for_f2 : usize)} : Lean_tests.Structs.S2) ←
+    (pure s2);
   let
-    ({_end := (_end : USize),
-      _def := (_def : USize),
-      _theorem := (_theorem : USize),
-      _structure := (_structure : USize),
-      _inductive := (_inductive : USize)} : Lean_tests.Structs.S3)
-    ← (pure s3);
+    ({_end := (_end : usize),
+      _def := (_def : usize),
+      _theorem := (_theorem : usize),
+      _structure := (_structure : usize),
+      _inductive := (_inductive : usize)} : Lean_tests.Structs.S3) ←
+    (pure s3);
+  let (_ : (Rust_primitives.Hax.Tuple2 usize usize)) ←
+    (pure
+    (Rust_primitives.Hax.Tuple2.mk
+    (Lean_tests.Structs.S1.f1 s1) (Lean_tests.Structs.S1.f2 s1)));
   let
-    (_ : (Rust_primitives.Hax.Tuple8 USize USize USize USize USize USize USize
-    USize))
-    ← (pure
+    (_ : (Rust_primitives.Hax.Tuple8 usize usize usize usize usize usize usize
+    usize)) ←
+    (pure
     (Rust_primitives.Hax.Tuple8.mk
     (Lean_tests.Structs.S1.f1 s1)
     (Lean_tests.Structs.S1.f2 s1)
@@ -213,33 +218,33 @@ def Lean_tests.Structs.normal_structs (_ : Rust_primitives.Hax.Tuple0)
     (Lean_tests.Structs.S3._end s3)
     (Lean_tests.Structs.S3._def s3)
     (Lean_tests.Structs.S3._theorem s3)));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure
     (match s1 with
-      | {f1 := (f1 : USize), f2 := (f2 : USize)}
-        => Rust_primitives.Hax.Tuple0.mk));
-  let (_ : Rust_primitives.Hax.Tuple0)
-    ← (pure
+      | {f1 := (f1 : usize), f2 := (f2 : usize)}
+        => do Rust_primitives.Hax.Tuple0.mk));
+  let (_ : Rust_primitives.Hax.Tuple0) ←
+    (pure
     (match s2 with
-      | {f1 := ({f1 := (f1 : USize), f2 := (other_name_for_f2 : USize)} :
+      | {f1 := ({f1 := (f1 : usize), f2 := (other_name_for_f2 : usize)} :
          Lean_tests.Structs.S1),
-         f2 := (f2 : USize)}
-        => Rust_primitives.Hax.Tuple0.mk));
+         f2 := (f2 : usize)}
+        => do Rust_primitives.Hax.Tuple0.mk));
   (match s3 with
-    | {_end := (_end : USize),
-       _def := (_def : USize),
-       _theorem := (_theorem : USize),
-       _structure := (_structure : USize),
-       _inductive := (_inductive : USize)}
-      => Rust_primitives.Hax.Tuple0.mk)
+    | {_end := (_end : usize),
+       _def := (_def : usize),
+       _theorem := (_theorem : usize),
+       _structure := (_structure : usize),
+       _inductive := (_inductive : usize)}
+      => do Rust_primitives.Hax.Tuple0.mk)
 
 inductive Lean_tests.Enums.E : Type
 | V1  : Lean_tests.Enums.E
 | V2  : Lean_tests.Enums.E
-| V3  : USize -> Lean_tests.Enums.E
-| V4  : USize -> USize -> USize -> Lean_tests.Enums.E
-| V5 (f1 : USize) (f2 : USize) : Lean_tests.Enums.E
-| V6 (f1 : USize) (f2 : USize) : Lean_tests.Enums.E
+| V3  : usize -> Lean_tests.Enums.E
+| V4  : usize -> usize -> usize -> Lean_tests.Enums.E
+| V5 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
+| V6 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
 
 
 inductive Lean_tests.Enums.MyList (T : Type) : Type
@@ -249,69 +254,88 @@ inductive Lean_tests.Enums.MyList (T : Type) : Type
   Lean_tests.Enums.MyList T
 
 
-def Lean_tests.Enums.enums (_ : Rust_primitives.Hax.Tuple0)
-  : Result Rust_primitives.Hax.Tuple0 := do
-  let (e2_v1 : Lean_tests.Enums.E) ← (pure Lean_tests.Enums.E.V1);
-  let (e2_v2 : Lean_tests.Enums.E) ← (pure Lean_tests.Enums.E.V2);
-  let
-    ((nil : (Lean_tests.Enums.MyList USize)) : (Lean_tests.Enums.MyList USize))
-    ← (pure Lean_tests.Enums.MyList.Nil);
-  Rust_primitives.Hax.Tuple0.mk
+def Lean_tests.Enums.enums  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let e_v1 : Lean_tests.Enums.E ← (pure Lean_tests.Enums.E.V1);
+  let e_v2 : Lean_tests.Enums.E ← (pure Lean_tests.Enums.E.V2);
+  let e_v3 : Lean_tests.Enums.E ← (pure (Lean_tests.Enums.E.V3 (23 : usize)));
+  let e_v4 : Lean_tests.Enums.E ←
+    (pure (Lean_tests.Enums.E.V4 (23 : usize) (12 : usize) (1 : usize)));
+  let e_v5 : Lean_tests.Enums.E ←
+    (pure (Lean_tests.Enums.E.V5 (f1 := (23 : usize)) (f2 := (43 : usize))));
+  let e_v6 : Lean_tests.Enums.E ←
+    (pure (Lean_tests.Enums.E.V6 (f1 := (12 : usize)) (f2 := (13 : usize))));
+  let (nil : (Lean_tests.Enums.MyList usize)) ←
+    (pure Lean_tests.Enums.MyList.Nil);
+  let cons_1 : (Lean_tests.Enums.MyList usize) ←
+    (pure (Lean_tests.Enums.MyList.Cons (hd := (1 : usize)) (tl := nil)));
+  let cons_2_1 : (Lean_tests.Enums.MyList usize) ←
+    (pure (Lean_tests.Enums.MyList.Cons (hd := (2 : usize)) (tl := cons_1)));
+  (match e_v1 with
+    | (Lean_tests.Enums.E.V1 ) => do Rust_primitives.Hax.Tuple0.mk
+    | (Lean_tests.Enums.E.V2 ) => do Rust_primitives.Hax.Tuple0.mk
+    | (Lean_tests.Enums.E.V3 (_ : usize)) => do Rust_primitives.Hax.Tuple0.mk
+    | (Lean_tests.Enums.E.V4 (x1 : usize) (x2 : usize) (x3 : usize))
+      => do
+        let y1 : usize ← (pure (← x1 +? x2));
+        let y2 : usize ← (pure (← y1 -? x2));
+        let y3 : usize ← (pure (← y2 +? x3));
+        Rust_primitives.Hax.Tuple0.mk
+    | (Lean_tests.Enums.E.V5 (f1 := (f1 : usize)) (f2 := (f2 : usize)))
+      => do Rust_primitives.Hax.Tuple0.mk
+    | (Lean_tests.Enums.E.V6
+        (f1 := (f1 : usize)) (f2 := (other_name_for_f2 : usize)))
+      => do Rust_primitives.Hax.Tuple0.mk)
 
-def Lean_tests.FORTYTWO : USize := 42
+def Lean_tests.FORTYTWO : usize := 42
 
-def Lean_tests.MINUS_FORTYTWO : ISize := -42
+def Lean_tests.MINUS_FORTYTWO : isize := -42
 
-def Lean_tests.returns42 (_ : Rust_primitives.Hax.Tuple0) : Result USize := do
+def Lean_tests.returns42  (_ : Rust_primitives.Hax.Tuple0) : Result usize := do
   Lean_tests.FORTYTWO
 
-def Lean_tests.add_two_numbers (x : USize) (y : USize) : Result USize := do
+def Lean_tests.add_two_numbers  (x : usize) (y : usize) : Result usize := do
   (← x +? y)
 
-def Lean_tests.letBinding (x : USize) (y : USize) : Result USize := do
-  let (useless : Rust_primitives.Hax.Tuple0)
-    ← (pure Rust_primitives.Hax.Tuple0.mk);
-  let (result1 : USize) ← (pure (← x +? y));
-  let (result2 : USize) ← (pure (← result1 +? (2 : USize)));
-  (← result2 +? (1 : USize))
+def Lean_tests.letBinding  (x : usize) (y : usize) : Result usize := do
+  let useless : Rust_primitives.Hax.Tuple0 ←
+    (pure Rust_primitives.Hax.Tuple0.mk);
+  let result1 : usize ← (pure (← x +? y));
+  let result2 : usize ← (pure (← result1 +? (2 : usize)));
+  (← result2 +? (1 : usize))
 
-def Lean_tests.closure (_ : Rust_primitives.Hax.Tuple0) : Result Int32 := do
-  let (x : Int32) ← (pure (41 : Int32));
-  let (f1 : Int32 -> Result Int32)
-    ← (pure (fun (y : Int32) => do ((← y +? x) : Result Int32)));
-  let (f2 : Int32 -> Int32 -> Result Int32)
-    ← (pure
-    (fun (y : Int32) (z : Int32) => do ((← (← y +? x) +? z) : Result Int32)));
-  let (res1 : Int32)
-    ← (pure
+def Lean_tests.closure  (_ : Rust_primitives.Hax.Tuple0) : Result i32 := do
+  let x : i32 ← (pure (41 : i32));
+  let f1 : i32 -> Result i32 ←
+    (pure (fun (y : i32) =>(do (← y +? x) : Result i32)));
+  let f2 : i32 -> i32 -> Result i32 ←
+    (pure (fun (y : i32) (z : i32) =>(do (← (← y +? x) +? z) : Result i32)));
+  let res1 : i32 ←
+    (pure
+    (← Core.Ops.Function.Fn.call f1 (Rust_primitives.Hax.Tuple1.mk (1 : i32))));
+  let res2 : i32 ←
+    (pure
     (← Core.Ops.Function.Fn.call
-    f1
-      (Rust_primitives.Hax.Tuple1.mk (1 : Int32))));
-  let (res2 : Int32)
-    ← (pure
-    (← Core.Ops.Function.Fn.call
-    f2
-      (Rust_primitives.Hax.Tuple2.mk (2 : Int32) (3 : Int32))));
+      f2
+      (Rust_primitives.Hax.Tuple2.mk (2 : i32) (3 : i32))));
   (← res1 +? res2)
 
 @[spec]
 
-def Lean_tests.test_before_verbatime_single_line (x : UInt8)
-  : Result UInt8 := do
-  42
+def Lean_tests.test_before_verbatime_single_line  (x : u8) : Result u8 := do 42
 
 
 def multiline : Unit := ()
 
 
-def Lean_tests.test_before_verbatim_multi_line (x : UInt8) : Result UInt8 := do
-  32
+def Lean_tests.test_before_verbatim_multi_line  (x : u8) : Result u8 := do 32
 
-def Lean_tests.binop_resugarings (x : UInt32) : Result UInt32 := do
-  let (add : UInt32) ← (pure (← x +? (1 : UInt32)));
-  let (sub : UInt32) ← (pure (← add -? (2 : UInt32)));
-  let (mul : UInt32) ← (pure (← sub *? (3 : UInt32)));
-  let (rem : UInt32) ← (pure (← mul %? (4 : UInt32)));
-  let (div : UInt32) ← (pure (← rem /? (5 : UInt32)));
-  let (rshift : UInt32) ← (pure (← div >>>? x));
+def Lean_tests.binop_resugarings  (x : u32) : Result u32 := do
+  let add : u32 ← (pure (← x +? (1 : u32)));
+  let sub : u32 ← (pure (← add -? (2 : u32)));
+  let mul : u32 ← (pure (← sub *? (3 : u32)));
+  let rem : u32 ← (pure (← mul %? (4 : u32)));
+  let div : u32 ← (pure (← rem /? (5 : u32)));
+  let rshift : u32 ← (pure (← div >>>? x));
   x'''

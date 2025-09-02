@@ -33,6 +33,7 @@ fn tuple_structs() -> () {
     let _ = t3.0;
     let _ = t3.1;
     let _ = t3.2;
+    let _ = t3.2.1;
     let _ = t3p.0;
     let _ = t3p.1;
     let _ = t3p.1.1.0;
@@ -114,6 +115,7 @@ fn normal_structs() -> () {
     } = s3;
 
     // 4. Accessors
+    let _ = (s1.f1, s1.f2);
     let _ = (
         s1.f1, s1.f2, s2.f1.f1, s2.f1.f2, s2.f2, s3.end, s3.def, s3.theorem,
     );

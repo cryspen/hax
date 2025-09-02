@@ -538,9 +538,14 @@ set_option linter.unusedVariables false
             if let Some(_guard) = &arm.guard {
                 todo!()
             } else {
-                docs!["| ", &*arm.pat.kind, line!(), "=> ", &arm.body]
-                    .nest(INDENT)
-                    .group()
+                docs![
+                    "| ",
+                    &*arm.pat.kind,
+                    line!(),
+                    docs!["=> do", line!(), &arm.body].nest(INDENT).group()
+                ]
+                .nest(INDENT)
+                .group()
             }
         }
 
