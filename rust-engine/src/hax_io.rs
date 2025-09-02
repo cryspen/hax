@@ -16,15 +16,10 @@ pub fn read() -> ExtendedToEngine {
     stdin
         .read_until(b'\n', &mut slice)
         .expect("No message left! Did the engine crash?");
-    let msg = (|| {
-        let mut de = serde_json::Deserializer::from_slice(&slice);
-        de.disable_recursion_limit();
-        let de = serde_stacker::Deserializer::new(&mut de);
-        let msg = ExtendedToEngine::deserialize(de);
-        msg.ok()
-    })()
-    .expect("Could not parse as a `ExtendedToEngine` message!");
-    msg
+    let mut de = serde_json::Deserializer::from_slice(&slice);
+    de.disable_recursion_limit();
+    ExtendedToEngine::deserialize(serde_stacker::Deserializer::new(&mut de))
+        .expect("Could not parse as a `ExtendedToEngine` message!")
 }
 
 /// Writes a `ExtendedFromEngine` message
