@@ -1,0 +1,32 @@
+name: Generate This Month in hax
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 1 * *'
+
+jobs:
+  generate:
+    if: github.repository == 'cryspen/hax'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Run script and capture output
+        id: run_script
+        run: |
+          output="$(bash .utils/this-month-in-hax-skeleton.sh)"
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$output" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat(docs): generated skeleton for 'This Month in hax'"
+          title: "Draft: This Month in hax"
+          body: ${{ steps.run_script.outputs.body }}
+          draft: true
+          branch: this-month-in-hax
