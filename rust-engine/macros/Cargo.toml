@@ -1,14 +1,19 @@
 [package]
 name = "hax-rust-engine-macros"
 description = "This crate provides helpers procedural macros for the `hax-rust-engine`"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+edition.workspace = true
+repository.workspace = true
+readme.workspace = true
 
 [lib]
 proc-macro = true
 
 [dependencies]
-syn = { version = "2.0", features = ["full"] }
+syn = { version = "2.0", features = ["full", "visit-mut"] }
 proc-macro2.workspace = true
 quote.workspace = true
 proc-macro-crate = "3.3.0"
