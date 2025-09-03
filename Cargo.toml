@@ -81,7 +81,8 @@ hax-lib-macros-types = { path = "hax-lib/macros/types", version = "=0.3.3" }
 hax-lib = { path = "hax-lib", version = "=0.3.3" }
 hax-engine-names = { path = "engine/names", version = "=0.3.3" }
 hax-types = { path = "hax-types", version = "=0.3.3" }
-hax-rust-engine = { path = "rust-engine" }
+hax-rust-engine = { path = "rust-engine", version = "=0.3.3" }
+hax-rust-engine-macros = { path = "rust-engine/macros", version = "=0.3.3" }
 
 [workspace.metadata.release]
 owners = ["github:cryspen:tools"]
