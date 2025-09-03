@@ -8,7 +8,7 @@ val impl_10__push: #t:Type -> (#[(Tactics.exact (`()))]_:unit) -> t_BinaryHeap t
 val impl_11__len: #t:Type -> (#[(Tactics.exact (`()))]_:unit) -> t_BinaryHeap t () -> usize
 val impl_11__iter: #t:Type -> (#[(Tactics.exact (`()))]_:unit) -> t_BinaryHeap t () -> t_Slice t
 
-open Core.Option
+open Core_models.Option
 
 val impl_11__peek: #t:Type -> (#[(Tactics.exact (`()))]_:unit) -> t_BinaryHeap t () -> t_Option t
 val impl_10__pop: #t:Type -> (#[(Tactics.exact (`()))]_:unit) -> t_BinaryHeap t () -> t_BinaryHeap t () & t_Option t

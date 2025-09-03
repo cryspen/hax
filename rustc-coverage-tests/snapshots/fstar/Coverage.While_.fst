@@ -1,7 +1,7 @@
 module Coverage.While_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let num:i32 = mk_i32 9 in

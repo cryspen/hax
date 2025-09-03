@@ -1,7 +1,7 @@
 module Coverage.Unused
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let foo (#v_T: Type0) (x: v_T) : (i32 & Prims.unit) =
   let i:i32 = mk_i32 0 in
@@ -63,7 +63,7 @@ let unused_func3 (a: u32) : Prims.unit =
     let a:u32 = a +! mk_u32 1 in
     ()
 
-let main (_: Prims.unit) : Core.Result.t_Result Prims.unit u8 =
+let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit u8 =
   let _:Prims.unit = foo #u32 (mk_u32 0) in
   let _:Prims.unit = foo #float (mk_float "0.0") in
-  Core.Result.Result_Ok (() <: Prims.unit) <: Core.Result.t_Result Prims.unit u8
+  Core_models.Result.Result_Ok (() <: Prims.unit) <: Core_models.Result.t_Result Prims.unit u8

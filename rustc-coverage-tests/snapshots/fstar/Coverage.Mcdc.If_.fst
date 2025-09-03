@@ -1,10 +1,10 @@
 module Coverage.Mcdc.If_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let say (message: string) : Prims.unit =
-  let _:string = Core.Hint.black_box #string message in
+  let _:string = Core_models.Hint.black_box #string message in
   ()
 
 let mcdc_check_neither (a b: bool) : Prims.unit =

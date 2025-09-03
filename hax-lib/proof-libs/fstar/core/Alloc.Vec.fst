@@ -24,9 +24,9 @@ let impl_1__push #t
 let impl_1__pop #t
   (#[(Tactics.exact (`()))]alloc:unit)
   (v: t_Vec t alloc)
-   : t_Vec t alloc & Core.Option.t_Option t = 
-     if Seq.length v = 0 then v, Core.Option.Option_None
-      else (Seq.slice v 0 ((Seq.length v) - 1) ), Core.Option.Option_Some (Seq.last v)
+   : t_Vec t alloc & Core_models.Option.t_Option t = 
+     if Seq.length v = 0 then v, Core_models.Option.Option_None
+      else (Seq.slice v 0 ((Seq.length v) - 1) ), Core_models.Option.Option_Some (Seq.last v)
 
 let impl_1__len #t (#[(Tactics.exact (`()))]alloc:unit) (v: t_Vec t alloc) =
   let n = Seq.length v in
@@ -38,7 +38,7 @@ let impl_1__as_slice #t (#[(Tactics.exact (`()))]alloc:unit) (v: t_Vec t alloc) 
 let from_elem #a (item: a) (len: usize) = Seq.create (v len) item
 
 open Rust_primitives.Hax
-open Core.Ops.Index
+open Core_models.Ops.Index
 instance update_at_tc_array t n: update_at_tc (t_Vec t ()) (int_t n) = {
   super_index = FStar.Tactics.Typeclasses.solve <: t_Index (t_Vec t ()) (int_t n);
   update_at = (fun arr i x -> FStar.Seq.upd arr (v i) x);

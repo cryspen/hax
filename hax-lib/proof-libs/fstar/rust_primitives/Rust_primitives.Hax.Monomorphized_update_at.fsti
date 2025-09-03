@@ -5,7 +5,7 @@ module Rust_primitives.Hax.Monomorphized_update_at
 
 open Rust_primitives
 open Rust_primitives.Hax
-open Core.Ops.Range
+open Core_models.Ops.Range
 
 let update_at_usize
   (#t: Type0)
