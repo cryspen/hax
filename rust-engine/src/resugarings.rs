@@ -11,6 +11,40 @@ use crate::ast::*;
 use crate::printer::*;
 use std::collections::HashSet;
 
+/// Rewrite every expression application node [`ExprKind::App`] into a
+/// [`ResugaredExprKind::App`]. [`ResugaredExprKind::App`] represent known
+/// applications with their arity and matchable names, with a fallback case
+/// [`App::Unknown`] for unknown functions.
+pub struct FunctionApplications;
+
+impl AstVisitorMut for FunctionApplications {
+    fn enter_expr_kind(&mut self, x: &mut ExprKind) {
+        let ExprKind::App {
+            head,
+            args,
+            generic_args,
+            bounds_impls,
+            trait_,
+        }: &mut ExprKind = x
+        else {
+            return;
+        };
+        *x = ExprKind::Resugared(ResugaredExprKind::FunApp {
+            generic_args: generic_args.clone(),
+            bounds_impls: bounds_impls.clone(),
+            trait_: trait_.clone(),
+            app: FunApp::destruct_function_application(head, args.as_slice()),
+            head: head.clone(),
+        });
+    }
+}
+
+impl Resugaring for FunctionApplications {
+    fn name(&self) -> String {
+        "function-applications".to_string()
+    }
+}
+
 /// Binop resugaring. Used to identify expressions of the form `(f e1 e2)` where
 /// `f` is a known identifier.
 pub struct BinOp {

@@ -279,6 +279,7 @@ set_option linter.unusedVariables false
                             .group()
                             .parens()
                     }
+                    _ => todo!(),
                 },
                 _ => todo!(),
             }
