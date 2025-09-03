@@ -4,7 +4,7 @@
 //! [`hax_rust_engine::ast::Resugaring`] for the definition of a
 //! resugaring). Each backend defines its own set of resugaring phases.
 
-use crate::ast::identifiers::global_id::DefId;
+use crate::ast::identifiers::global_id::ExplicitDefId;
 use crate::ast::resugared::*;
 use crate::ast::visitors::*;
 use crate::ast::*;
@@ -19,12 +19,12 @@ pub struct BinOp {
     /// backend can select its own set of identifiers Typically, if the backend
     /// has a special support for addition, `known_ops` will contain
     /// `hax::machine::int::add`
-    pub known_ops: HashSet<DefId>,
+    pub known_ops: HashSet<ExplicitDefId>,
 }
 
 impl BinOp {
     /// Adds a new binary operation from a list of (hax-introduced) names
-    pub fn new(known_ops: &[DefId]) -> Self {
+    pub fn new(known_ops: &[ExplicitDefId]) -> Self {
         Self {
             known_ops: HashSet::from_iter(known_ops.iter().cloned()),
         }
