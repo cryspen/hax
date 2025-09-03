@@ -164,6 +164,13 @@ mod fun_app {
         )*};
     }
 
+    mod binops {
+        pub use crate::names::rust_primitives::hax::machine_int::{
+            add, div, mul, rem, shl, shr, sub,
+        };
+        pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
+    }
+
     mk_enum! {
         #[derive_group_for_ast]
         /// The names corresponding to callable items of arity 0
@@ -178,6 +185,15 @@ mod fun_app {
         #[derive_group_for_ast]
         /// The names corresponding to callable items of arity 2
         pub enum BinaryName {
+            Add = binops::add(),
+            Sub = binops::sub(),
+            Mul = binops::mul(),
+            Rem = binops::rem(),
+            Div = binops::div(),
+            Shr = binops::shr(),
+            Shl = binops::shl(),
+            LogicalAnd = binops::logical_op_and(),
+            LogicalOr = binops::logical_op_or(),
         }
 
         #[derive_group_for_ast]

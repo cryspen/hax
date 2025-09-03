@@ -245,42 +245,46 @@ set_option linter.unusedVariables false
                 .parens()
                 .group()
                 .nest(INDENT),
-                ExprKind::Resugared(resugared_expr_kind) => match resugared_expr_kind {
-                    ResugaredExprKind::BinOp {
-                        op,
-                        lhs,
-                        rhs,
-                        generic_args: _,
-                        bounds_impls: _,
-                        trait_: _,
-                    } => {
-                        let symbol = if op == &binops::add() {
-                            "+?"
-                        } else if op == &binops::sub() {
-                            "-?"
-                        } else if op == &binops::mul() {
-                            "*?"
-                        } else if op == &binops::div() {
-                            "/?"
-                        } else if op == &binops::rem() {
-                            "%?"
-                        } else if op == &binops::shr() {
-                            ">>>?"
-                        } else if op == &binops::logical_op_and() {
-                            "&&"
-                        } else if op == &binops::logical_op_or() {
-                            "||"
-                        } else {
-                            unreachable!()
-                        };
-                        // This monad lifting should be handled by a phase/resugaring, see
-                        // https://github.com/cryspen/hax/issues/1620
-                        docs!["← ", lhs, softline!(), symbol, softline!(), rhs]
-                            .group()
-                            .parens()
-                    }
-                    _ => todo!(),
-                },
+                ExprKind::Resugared(resugared_expr_kind) => docs![resugared_expr_kind],
+                _ => todo!(),
+            }
+        }
+        fn resugared_expr_kind(
+            &'a self,
+            resugared_expr_kind: &'b ResugaredExprKind,
+        ) -> DocBuilder<'a, Self, A> {
+            match resugared_expr_kind {
+                ResugaredExprKind::BinOp {
+                    op,
+                    lhs,
+                    rhs,
+                    generic_args: _,
+                    bounds_impls: _,
+                    trait_: _,
+                } => {
+                    let symbol = if op == &binops::add() {
+                        "+?"
+                    } else if op == &binops::sub() {
+                        "-?"
+                    } else if op == &binops::mul() {
+                        "*?"
+                    } else if op == &binops::div() {
+                        "/?"
+                    } else if op == &binops::rem() {
+                        "%?"
+                    } else if op == &binops::shr() {
+                        ">>>?"
+                    } else if op == &binops::logical_op_and() {
+                        "&&"
+                    } else if op == &binops::logical_op_or() {
+                        "||"
+                    } else {
+                        unreachable!()
+                    };
+                    docs!["← ", lhs, softline!(), symbol, softline!(), rhs]
+                        .group()
+                        .parens()
+                }
                 _ => todo!(),
             }
         }
