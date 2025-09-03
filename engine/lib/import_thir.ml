@@ -359,6 +359,30 @@ end) : EXPR = struct
               ^ [%show: ty] lhs.typ)
       else Concrete_ident.of_name ~value:true @@ overloaded_names_of_binop op
     in
+    let needs_borrow =
+      match op with Lt | Le | Ne | Ge | Gt | Eq -> true | _ -> false
+    in
+    let borrow_if_needed (e : expr) =
+      if needs_borrow then
+        match e.typ with
+        | TRef _ -> e
+        | _ ->
+            {
+              span = e.span;
+              e = Borrow { e; kind = Shared; witness = W.reference };
+              typ =
+                TRef
+                  {
+                    witness = W.reference;
+                    region = "unknown";
+                    typ = e.typ;
+                    mut = Immutable;
+                  };
+            }
+      else e
+    in
+    let lhs = borrow_if_needed lhs in
+    let rhs = borrow_if_needed rhs in
     U.call' (`Concrete name) [ lhs; rhs ] span typ
 
   let binop_of_assignop : Thir.assign_op -> Thir.bin_op = function
