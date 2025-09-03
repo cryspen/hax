@@ -676,8 +676,10 @@ let impl_2__method (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: 
 
 let cclosure_iimpl_expr
       (#v_I: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Iter.Traits.Iterator.t_Iterator v_I)
-      (#_: unit{i0.Core.Iter.Traits.Iterator.f_Item == Prims.unit})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Iter.Traits.Iterator.t_Iterator v_I)
+      (#_: unit{i0.Core_models.Iter.Traits.Iterator.f_Item == Prims.unit})
       (it: v_I)
     : Alloc.Vec.t_Vec Prims.unit Alloc.Alloc.t_Global =
   Core_models.Iter.Traits.Iterator.f_collect #(Core_models.Iter.Adapters.Map.t_Map v_I
@@ -694,9 +696,13 @@ let cclosure_iimpl_expr
 
 let cclosure_iimpl_expr_fngen
       (#v_I #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Iter.Traits.Iterator.t_Iterator v_I)
-      (#_: unit{i0.Core.Iter.Traits.Iterator.f_Item == Prims.unit})
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Ops.Function.t_FnMut v_F Prims.unit)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Iter.Traits.Iterator.t_Iterator v_I)
+      (#_: unit{i0.Core_models.Iter.Traits.Iterator.f_Item == Prims.unit})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i1:
+          Core_models.Ops.Function.t_FnMut v_F Prims.unit)
       (it: v_I)
       (f: v_F)
     : Alloc.Vec.t_Vec Prims.unit Alloc.Alloc.t_Global =
