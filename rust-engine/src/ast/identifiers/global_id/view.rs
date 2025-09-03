@@ -550,6 +550,26 @@ impl<K> PathSegment<K> {
     }
 }
 
+impl PathSegment<ConstructorKind> {
+    /// Lift a `PathSegment` of kind `ConstructorKind` to a `PathSegment` of kind `AnyKind`.
+    pub fn lift(&self) -> PathSegment<AnyKind> {
+        self.clone().map(|kind, _| AnyKind::Constructor(kind))
+    }
+}
+impl PathSegment<TypeDefKind> {
+    /// Lift a `PathSegment` of kind `TypeDefKind` to a `PathSegment` of kind `AnyKind`.
+    pub fn lift(&self) -> PathSegment<AnyKind> {
+        self.clone().map(|kind, _| AnyKind::TypeDef(kind))
+    }
+}
+impl PathSegment<AssocItemContainerKind> {
+    /// Lift a `PathSegment` of kind `AssocItemContainerKind` to a `PathSegment` of kind `AnyKind`.
+    pub fn lift(&self) -> PathSegment<AnyKind> {
+        self.clone()
+            .map(|kind, _| AnyKind::AssocItemContainer(kind))
+    }
+}
+
 impl<T> PathSegment<T> {
     /// Maps the segment's `kind` while preserving all other fields.
     fn map<U>(self, f: impl Fn(T, &DefId) -> U) -> PathSegment<U> {
