@@ -798,9 +798,20 @@ struct
       | GCType { goal; name } ->
           let typ = c_trait_goal span goal in
           Some { kind = Tcresolve; ident = F.id name; typ }
-      | GCProjection _ ->
-          (* TODO: Not yet implemented, see https://github.com/hacspec/hax/issues/785 *)
-          None
+      | GCProjection { impl = { kind = LocalBound { id }; _ }; assoc_item; typ }
+        ->
+          let proj =
+            F.term
+            @@ F.AST.Project
+                 (F.term @@ F.AST.Var (F.lid [ id ]), pconcrete_ident assoc_item)
+          in
+          let typ =
+            F.mk_refined "_" (F.term_of_string "unit") (fun ~x ->
+                F.term
+                @@ F.AST.Op (FStar_Ident.id_of_text "==", [ proj; pty span typ ]))
+          in
+          Some { kind = Implicit; typ; ident = FStar_Ident.id_of_text "_" }
+      | _ -> None
 
     let of_generics span generics : t list =
       List.map ~f:(of_generic_param span) generics.params

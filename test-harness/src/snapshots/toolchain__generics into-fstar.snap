@@ -63,6 +63,7 @@ let impl_Test__set_ciphersuites
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i1:
           Core.Iter.Traits.Collect.t_IntoIterator iimpl_995885649_)
+      (#_: unit{i1.Core.Iter.Traits.Collect.f_Item == v_S})
       (self: t_Test)
       (ciphers: iimpl_995885649_)
     : Core.Result.t_Result Prims.unit Prims.unit =
@@ -74,6 +75,7 @@ let impl_Test__set_alpn_protocols
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i1:
           Core.Iter.Traits.Collect.t_IntoIterator iimpl_995885649_)
+      (#_: unit{i1.Core.Iter.Traits.Collect.f_Item == v_S})
       (self: t_Test)
       (e_protocols: iimpl_995885649_)
     : Core.Result.t_Result Prims.unit Prims.unit =
