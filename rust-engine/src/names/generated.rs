@@ -8,19 +8,19 @@ pub mod alloc {
         mk!(
             Global,
             r##"This is the struct [`::alloc::alloc::Global`]."##,
-            r##"["alloc",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Global"},0]],"Struct"]"##,
+            r##"["alloc",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Global"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::alloc::alloc())
         );
         mk!(
             Impl__1,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",1]],{"Impl":{"of_trait":true}}]"##,
+            r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::alloc::alloc())
         );
         mk!(
             Impl__3,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",3]],{"Impl":{"of_trait":true}}]"##,
+            r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::alloc::alloc())
         );
     }
@@ -33,20 +33,20 @@ pub mod alloc {
             mk!(
                 new,
                 r##"This is the associated function [`::alloc::boxed::Impl::new`]."##,
-                r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0],[{"ValueNs":"new"},0]],"AssocFn"]"##,
+                r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::alloc::boxed::Impl())
             );
         }
         mk!(
             Box,
             r##"This is the struct [`::alloc::boxed::Box`]."##,
-            r##"["alloc",[[{"TypeNs":"boxed"},0],[{"TypeNs":"Box"},0]],"Struct"]"##,
+            r##"["alloc",[[{"TypeNs":"boxed"},0],[{"TypeNs":"Box"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::alloc::boxed())
         );
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::alloc::boxed())
         );
     }
@@ -59,7 +59,7 @@ pub mod alloc {
             mk!(
                 Output,
                 r##"This is the associated type [`::alloc::slice::Concat::Output`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                 ::core::option::Option::Some(root::alloc::slice::Concat())
             );
         }
@@ -69,38 +69,38 @@ pub mod alloc {
             mk!(
                 concat,
                 r##"This is the associated function [`::alloc::slice::Impl::concat`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"concat"},0]],"AssocFn"]"##,
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"concat"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::alloc::slice::Impl())
             );
             mk!(
                 into_vec,
                 r##"This is the associated function [`::alloc::slice::Impl::into_vec`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"into_vec"},0]],"AssocFn"]"##,
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"into_vec"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::alloc::slice::Impl())
             );
             mk!(
                 to_vec,
                 r##"This is the associated function [`::alloc::slice::Impl::to_vec`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"to_vec"},0]],"AssocFn"]"##,
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"to_vec"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::alloc::slice::Impl())
             );
         }
         mk!(
             Concat,
             r##"This is the trait [`::alloc::slice::Concat`]."##,
-            r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0]],"Trait"]"##,
+            r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::alloc::slice())
         );
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::alloc::slice())
         );
         mk!(
             Impl__2,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",2]],{"Impl":{"of_trait":true}}]"##,
+            r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::alloc::slice())
         );
     }
@@ -110,7 +110,7 @@ pub mod alloc {
         mk!(
             String,
             r##"This is the struct [`::alloc::string::String`]."##,
-            r##"["alloc",[[{"TypeNs":"string"},0],[{"TypeNs":"String"},0]],"Struct"]"##,
+            r##"["alloc",[[{"TypeNs":"string"},0],[{"TypeNs":"String"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::alloc::string())
         );
     }
@@ -123,7 +123,7 @@ pub mod alloc {
             mk!(
                 truncate,
                 r##"This is the associated function [`::alloc::vec::Impl__1::truncate`]."##,
-                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1],[{"ValueNs":"truncate"},0]],"AssocFn"]"##,
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1],[{"ValueNs":"truncate"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::alloc::vec::Impl__1())
             );
         }
@@ -133,81 +133,81 @@ pub mod alloc {
             mk!(
                 extend_from_slice,
                 r##"This is the associated function [`::alloc::vec::Impl__2::extend_from_slice`]."##,
-                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2],[{"ValueNs":"extend_from_slice"},0]],"AssocFn"]"##,
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2],[{"ValueNs":"extend_from_slice"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::alloc::vec::Impl__2())
             );
         }
         mk!(
             Impl__1,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1]],{"Impl":{"of_trait":false}}]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
         mk!(
             Impl__11,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",11]],{"Impl":{"of_trait":true}}]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",11]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
         mk!(
             Impl__13,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",13]],{"Impl":{"of_trait":true}}]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",13]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
         mk!(
             Impl__2,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2]],{"Impl":{"of_trait":false}}]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
         mk!(
             Impl__8,
             r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",8]],{"Impl":{"of_trait":true}}]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",8]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
         mk!(
             Vec,
             r##"This is the struct [`::alloc::vec::Vec`]."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],[{"TypeNs":"Vec"},0]],"Struct"]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],[{"TypeNs":"Vec"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
         mk!(
             from_elem,
             r##"This is the function [`::alloc::vec::from_elem`]."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],[{"ValueNs":"from_elem"},0]],"Fn"]"##,
+            r##"["alloc",[[{"TypeNs":"vec"},0],[{"ValueNs":"from_elem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::alloc::vec())
         );
     }
     mk!(
         alloc,
         r##"This is the module [`::alloc::alloc`]."##,
-        r##"["alloc",[[{"TypeNs":"alloc"},0]],"Mod"]"##,
+        r##"["alloc",[[{"TypeNs":"alloc"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::alloc())
     );
     mk!(
         boxed,
         r##"This is the module [`::alloc::boxed`]."##,
-        r##"["alloc",[[{"TypeNs":"boxed"},0]],"Mod"]"##,
+        r##"["alloc",[[{"TypeNs":"boxed"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::alloc())
     );
     mk!(
         slice,
         r##"This is the module [`::alloc::slice`]."##,
-        r##"["alloc",[[{"TypeNs":"slice"},0]],"Mod"]"##,
+        r##"["alloc",[[{"TypeNs":"slice"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::alloc())
     );
     mk!(
         string,
         r##"This is the module [`::alloc::string`]."##,
-        r##"["alloc",[[{"TypeNs":"string"},0]],"Mod"]"##,
+        r##"["alloc",[[{"TypeNs":"string"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::alloc())
     );
     mk!(
         vec,
         r##"This is the module [`::alloc::vec`]."##,
-        r##"["alloc",[[{"TypeNs":"vec"},0]],"Mod"]"##,
+        r##"["alloc",[[{"TypeNs":"vec"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::alloc())
     );
 }
@@ -220,7 +220,7 @@ pub mod core {
         mk!(
             Allocator,
             r##"This is the trait [`::core::alloc::Allocator`]."##,
-            r##"["core",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Allocator"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Allocator"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::alloc())
         );
     }
@@ -233,20 +233,20 @@ pub mod core {
             mk!(
                 Impl__1,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],["Impl",1]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::array::iter())
             );
             mk!(
                 IntoIter,
                 r##"This is the struct [`::core::array::iter::IntoIter`]."##,
-                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"IntoIter"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"IntoIter"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::array::iter())
             );
         }
         mk!(
             iter,
             r##"This is the module [`::core::array::iter`]."##,
-            r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::array())
         );
     }
@@ -256,13 +256,13 @@ pub mod core {
         mk!(
             Borrow,
             r##"This is the trait [`::core::borrow::Borrow`]."##,
-            r##"["core",[[{"TypeNs":"borrow"},0],[{"TypeNs":"Borrow"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"borrow"},0],[{"TypeNs":"Borrow"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::borrow())
         );
         mk!(
             Impl__2,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"borrow"},0],["Impl",2]],{"Impl":{"of_trait":true}}]"##,
+            r##"["core",[[{"TypeNs":"borrow"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::core::borrow())
         );
     }
@@ -275,7 +275,7 @@ pub mod core {
             mk!(
                 clone,
                 r##"This is the associated function [`::core::clone::Clone::clone`]."##,
-                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0],[{"ValueNs":"clone"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0],[{"ValueNs":"clone"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::clone::Clone())
             );
         }
@@ -285,20 +285,20 @@ pub mod core {
             mk!(
                 Impl__6,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0],["Impl",6]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0],["Impl",6]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::clone::impls())
             );
         }
         mk!(
             Clone,
             r##"This is the trait [`::core::clone::Clone`]."##,
-            r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::clone())
         );
         mk!(
             impls,
             r##"This is the module [`::core::clone::impls`]."##,
-            r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::clone())
         );
     }
@@ -311,13 +311,13 @@ pub mod core {
             mk!(
                 eq,
                 r##"This is the associated function [`::core::cmp::PartialEq::eq`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"eq"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::cmp::PartialEq())
             );
             mk!(
                 ne,
                 r##"This is the associated function [`::core::cmp::PartialEq::ne`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"ne"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::cmp::PartialEq())
             );
         }
@@ -327,38 +327,38 @@ pub mod core {
             mk!(
                 ge,
                 r##"This is the associated function [`::core::cmp::PartialOrd::ge`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"ge"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"ge"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::cmp::PartialOrd())
             );
             mk!(
                 gt,
                 r##"This is the associated function [`::core::cmp::PartialOrd::gt`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"gt"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"gt"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::cmp::PartialOrd())
             );
             mk!(
                 le,
                 r##"This is the associated function [`::core::cmp::PartialOrd::le`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"le"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"le"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::cmp::PartialOrd())
             );
             mk!(
                 lt,
                 r##"This is the associated function [`::core::cmp::PartialOrd::lt`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"lt"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"lt"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::cmp::PartialOrd())
             );
         }
         mk!(
             PartialEq,
             r##"This is the trait [`::core::cmp::PartialEq`]."##,
-            r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::cmp())
         );
         mk!(
             PartialOrd,
             r##"This is the trait [`::core::cmp::PartialOrd`]."##,
-            r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::cmp())
         );
     }
@@ -371,7 +371,7 @@ pub mod core {
             mk!(
                 from,
                 r##"This is the associated function [`::core::convert::From::from`]."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0],[{"ValueNs":"from"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0],[{"ValueNs":"from"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::convert::From())
             );
         }
@@ -381,7 +381,7 @@ pub mod core {
             mk!(
                 into,
                 r##"This is the associated function [`::core::convert::Into::into`]."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0],[{"ValueNs":"into"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0],[{"ValueNs":"into"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::convert::Into())
             );
         }
@@ -391,50 +391,50 @@ pub mod core {
             mk!(
                 Impl__64,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",64]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",64]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::convert::num())
             );
             mk!(
                 Impl__88,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",88]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",88]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::convert::num())
             );
         }
         mk!(
             From,
             r##"This is the trait [`::core::convert::From`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::convert())
         );
         mk!(
             Impl__3,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"convert"},0],["Impl",3]],{"Impl":{"of_trait":true}}]"##,
+            r##"["core",[[{"TypeNs":"convert"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::core::convert())
         );
         mk!(
             Impl__4,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"convert"},0],["Impl",4]],{"Impl":{"of_trait":true}}]"##,
+            r##"["core",[[{"TypeNs":"convert"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::core::convert())
         );
         mk!(
             Infallible,
             r##"This is the enum [`::core::convert::Infallible`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Infallible"},0]],"Enum"]"##,
+            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Infallible"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::core::convert())
         );
         mk!(
             Into,
             r##"This is the trait [`::core::convert::Into`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::convert())
         );
         mk!(
             num,
             r##"This is the module [`::core::convert::num`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::convert())
         );
     }
@@ -447,26 +447,26 @@ pub mod core {
             mk!(
                 Impl__82,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",82]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",82]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::fmt::num())
             );
         }
         mk!(
             Arguments,
             r##"This is the struct [`::core::fmt::Arguments`]."##,
-            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Arguments"},0]],"Struct"]"##,
+            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Arguments"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::core::fmt())
         );
         mk!(
             Debug,
             r##"This is the trait [`::core::fmt::Debug`]."##,
-            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Debug"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Debug"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::fmt())
         );
         mk!(
             num,
             r##"This is the module [`::core::fmt::num`]."##,
-            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::fmt())
         );
     }
@@ -482,7 +482,7 @@ pub mod core {
                 mk!(
                     Enumerate,
                     r##"This is the struct [`::core::iter::adapters::enumerate::Enumerate`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0],[{"TypeNs":"Enumerate"},0]],"Struct"]"##,
+                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0],[{"TypeNs":"Enumerate"},0]],"Struct",false]"##,
                     ::core::option::Option::Some(root::core::iter::adapters::enumerate())
                 );
             }
@@ -492,20 +492,20 @@ pub mod core {
                 mk!(
                     StepBy,
                     r##"This is the struct [`::core::iter::adapters::step_by::StepBy`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0],[{"TypeNs":"StepBy"},0]],"Struct"]"##,
+                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0],[{"TypeNs":"StepBy"},0]],"Struct",false]"##,
                     ::core::option::Option::Some(root::core::iter::adapters::step_by())
                 );
             }
             mk!(
                 enumerate,
                 r##"This is the module [`::core::iter::adapters::enumerate`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0]],"Mod"]"##,
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::core::iter::adapters())
             );
             mk!(
                 step_by,
                 r##"This is the module [`::core::iter::adapters::step_by`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0]],"Mod"]"##,
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::core::iter::adapters())
             );
         }
@@ -521,7 +521,7 @@ pub mod core {
                     mk!(
                         IntoIter,
                         r##"This is the associated type [`::core::iter::traits::collect::IntoIterator::IntoIter`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"TypeNs":"IntoIter"},0]],"AssocTy"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"TypeNs":"IntoIter"},0]],"AssocTy",false]"##,
                         ::core::option::Option::Some(
                             root::core::iter::traits::collect::IntoIterator()
                         )
@@ -529,7 +529,7 @@ pub mod core {
                     mk!(
                         into_iter,
                         r##"This is the associated function [`::core::iter::traits::collect::IntoIterator::into_iter`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"ValueNs":"into_iter"},0]],"AssocFn"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"ValueNs":"into_iter"},0]],"AssocFn",false]"##,
                         ::core::option::Option::Some(
                             root::core::iter::traits::collect::IntoIterator()
                         )
@@ -538,7 +538,7 @@ pub mod core {
                 mk!(
                     IntoIterator,
                     r##"This is the trait [`::core::iter::traits::collect::IntoIterator`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0]],"Trait"]"##,
+                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0]],"Trait",false]"##,
                     ::core::option::Option::Some(root::core::iter::traits::collect())
                 );
             }
@@ -551,64 +551,64 @@ pub mod core {
                     mk!(
                         Item,
                         r##"This is the associated type [`::core::iter::traits::iterator::Iterator::Item`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"TypeNs":"Item"},0]],"AssocTy"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"TypeNs":"Item"},0]],"AssocTy",false]"##,
                         ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
                     );
                     mk!(
                         enumerate,
                         r##"This is the associated function [`::core::iter::traits::iterator::Iterator::enumerate`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"enumerate"},0]],"AssocFn"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"enumerate"},0]],"AssocFn",false]"##,
                         ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
                     );
                     mk!(
                         fold,
                         r##"This is the associated function [`::core::iter::traits::iterator::Iterator::fold`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"fold"},0]],"AssocFn"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"fold"},0]],"AssocFn",false]"##,
                         ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
                     );
                     mk!(
                         next,
                         r##"This is the associated function [`::core::iter::traits::iterator::Iterator::next`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"next"},0]],"AssocFn"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"next"},0]],"AssocFn",false]"##,
                         ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
                     );
                     mk!(
                         step_by,
                         r##"This is the associated function [`::core::iter::traits::iterator::Iterator::step_by`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"step_by"},0]],"AssocFn"]"##,
+                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"step_by"},0]],"AssocFn",false]"##,
                         ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
                     );
                 }
                 mk!(
                     Iterator,
                     r##"This is the trait [`::core::iter::traits::iterator::Iterator`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0]],"Trait"]"##,
+                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0]],"Trait",false]"##,
                     ::core::option::Option::Some(root::core::iter::traits::iterator())
                 );
             }
             mk!(
                 collect,
                 r##"This is the module [`::core::iter::traits::collect`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0]],"Mod"]"##,
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::core::iter::traits())
             );
             mk!(
                 iterator,
                 r##"This is the module [`::core::iter::traits::iterator`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0]],"Mod"]"##,
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::core::iter::traits())
             );
         }
         mk!(
             adapters,
             r##"This is the module [`::core::iter::adapters`]."##,
-            r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::iter())
         );
         mk!(
             traits,
             r##"This is the module [`::core::iter::traits`]."##,
-            r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::iter())
         );
     }
@@ -618,7 +618,7 @@ pub mod core {
         mk!(
             Copy,
             r##"This is the trait [`::core::marker::Copy`]."##,
-            r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Copy"},0]],"Trait"]"##,
+            r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Copy"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::core::marker())
         );
     }
@@ -631,14 +631,14 @@ pub mod core {
             mk!(
                 to_le_bytes,
                 r##"This is the associated function [`::core::num::Impl__9::to_le_bytes`]."##,
-                r##"["core",[[{"TypeNs":"num"},0],["Impl",9],[{"ValueNs":"to_le_bytes"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"num"},0],["Impl",9],[{"ValueNs":"to_le_bytes"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::num::Impl__9())
             );
         }
         mk!(
             Impl__9,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"num"},0],["Impl",9]],{"Impl":{"of_trait":false}}]"##,
+            r##"["core",[[{"TypeNs":"num"},0],["Impl",9]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::core::num())
         );
     }
@@ -654,13 +654,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Add::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Add())
                 );
                 mk!(
                     add,
                     r##"This is the associated function [`::core::ops::arith::Add::add`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"ValueNs":"add"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"ValueNs":"add"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Add())
                 );
             }
@@ -670,13 +670,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Div::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Div())
                 );
                 mk!(
                     div,
                     r##"This is the associated function [`::core::ops::arith::Div::div`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"ValueNs":"div"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"ValueNs":"div"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Div())
                 );
             }
@@ -686,13 +686,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Mul::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Mul())
                 );
                 mk!(
                     mul,
                     r##"This is the associated function [`::core::ops::arith::Mul::mul`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"ValueNs":"mul"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"ValueNs":"mul"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Mul())
                 );
             }
@@ -702,13 +702,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Neg::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Neg())
                 );
                 mk!(
                     neg,
                     r##"This is the associated function [`::core::ops::arith::Neg::neg`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"ValueNs":"neg"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"ValueNs":"neg"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Neg())
                 );
             }
@@ -718,13 +718,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Rem::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Rem())
                 );
                 mk!(
                     rem,
                     r##"This is the associated function [`::core::ops::arith::Rem::rem`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"ValueNs":"rem"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"ValueNs":"rem"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Rem())
                 );
             }
@@ -734,50 +734,50 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::arith::Sub::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Sub())
                 );
                 mk!(
                     sub,
                     r##"This is the associated function [`::core::ops::arith::Sub::sub`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"ValueNs":"sub"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"ValueNs":"sub"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::arith::Sub())
                 );
             }
             mk!(
                 Add,
                 r##"This is the trait [`::core::ops::arith::Add`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::arith())
             );
             mk!(
                 Div,
                 r##"This is the trait [`::core::ops::arith::Div`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::arith())
             );
             mk!(
                 Mul,
                 r##"This is the trait [`::core::ops::arith::Mul`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::arith())
             );
             mk!(
                 Neg,
                 r##"This is the trait [`::core::ops::arith::Neg`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::arith())
             );
             mk!(
                 Rem,
                 r##"This is the trait [`::core::ops::arith::Rem`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::arith())
             );
             mk!(
                 Sub,
                 r##"This is the trait [`::core::ops::arith::Sub`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::arith())
             );
         }
@@ -790,13 +790,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::BitAnd::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::BitAnd())
                 );
                 mk!(
                     bitand,
                     r##"This is the associated function [`::core::ops::bit::BitAnd::bitand`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"ValueNs":"bitand"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"ValueNs":"bitand"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::BitAnd())
                 );
             }
@@ -806,13 +806,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::BitOr::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::BitOr())
                 );
                 mk!(
                     bitor,
                     r##"This is the associated function [`::core::ops::bit::BitOr::bitor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"ValueNs":"bitor"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"ValueNs":"bitor"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::BitOr())
                 );
             }
@@ -822,13 +822,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::BitXor::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::BitXor())
                 );
                 mk!(
                     bitxor,
                     r##"This is the associated function [`::core::ops::bit::BitXor::bitxor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"ValueNs":"bitxor"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"ValueNs":"bitxor"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::BitXor())
                 );
             }
@@ -838,13 +838,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::Not::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::Not())
                 );
                 mk!(
                     not,
                     r##"This is the associated function [`::core::ops::bit::Not::not`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"ValueNs":"not"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::Not())
                 );
             }
@@ -854,13 +854,13 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::Shl::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::Shl())
                 );
                 mk!(
                     shl,
                     r##"This is the associated function [`::core::ops::bit::Shl::shl`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"ValueNs":"shl"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"ValueNs":"shl"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::Shl())
                 );
             }
@@ -870,50 +870,50 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::bit::Shr::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::Shr())
                 );
                 mk!(
                     shr,
                     r##"This is the associated function [`::core::ops::bit::Shr::shr`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"ValueNs":"shr"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"ValueNs":"shr"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::bit::Shr())
                 );
             }
             mk!(
                 BitAnd,
                 r##"This is the trait [`::core::ops::bit::BitAnd`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::bit())
             );
             mk!(
                 BitOr,
                 r##"This is the trait [`::core::ops::bit::BitOr`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::bit())
             );
             mk!(
                 BitXor,
                 r##"This is the trait [`::core::ops::bit::BitXor`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::bit())
             );
             mk!(
                 Not,
                 r##"This is the trait [`::core::ops::bit::Not`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::bit())
             );
             mk!(
                 Shl,
                 r##"This is the trait [`::core::ops::bit::Shl`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::bit())
             );
             mk!(
                 Shr,
                 r##"This is the trait [`::core::ops::bit::Shr`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::bit())
             );
         }
@@ -924,46 +924,44 @@ pub mod core {
                 #![doc = r##"This is the enum [`::core::ops::control_flow::ControlFlow`]."##]
                 use super::root;
                 pub mod Break {
-                    #![doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break`]."##]
                     use super::root;
+                    mk!(
+                        Constructor,
+                        r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break::Constructor`]."##,
+                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0]],"Variant",true]"##,
+                        ::core::option::Option::Some(root::core::ops::control_flow::ControlFlow())
+                    );
                     mk!(
                         _0,
                         r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Break."##,
-                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0],[{"ValueNs":"0"},0]],"Field"]"##,
+                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
                         ::core::option::Option::Some(
-                            root::core::ops::control_flow::ControlFlow::Break()
+                            root::core::ops::control_flow::ControlFlow::Break::Constructor()
                         )
                     );
                 }
                 pub mod Continue {
-                    #![doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue`]."##]
                     use super::root;
+                    mk!(
+                        Constructor,
+                        r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue::Constructor`]."##,
+                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0]],"Variant",true]"##,
+                        ::core::option::Option::Some(root::core::ops::control_flow::ControlFlow())
+                    );
                     mk!(
                         _0,
                         r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Continue."##,
-                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0],[{"ValueNs":"0"},0]],"Field"]"##,
+                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
                         ::core::option::Option::Some(
-                            root::core::ops::control_flow::ControlFlow::Continue()
+                            root::core::ops::control_flow::ControlFlow::Continue::Constructor()
                         )
                     );
                 }
-                mk!(
-                    Break,
-                    r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0]],"Variant"]"##,
-                    ::core::option::Option::Some(root::core::ops::control_flow::ControlFlow())
-                );
-                mk!(
-                    Continue,
-                    r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0]],"Variant"]"##,
-                    ::core::option::Option::Some(root::core::ops::control_flow::ControlFlow())
-                );
             }
             mk!(
                 ControlFlow,
                 r##"This is the enum [`::core::ops::control_flow::ControlFlow`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0]],"Enum"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0]],"Enum",false]"##,
                 ::core::option::Option::Some(root::core::ops::control_flow())
             );
         }
@@ -976,13 +974,13 @@ pub mod core {
                 mk!(
                     Target,
                     r##"This is the associated type [`::core::ops::deref::Deref::Target`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"TypeNs":"Target"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"TypeNs":"Target"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::deref::Deref())
                 );
                 mk!(
                     deref,
                     r##"This is the associated function [`::core::ops::deref::Deref::deref`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"ValueNs":"deref"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"ValueNs":"deref"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::deref::Deref())
                 );
             }
@@ -992,20 +990,20 @@ pub mod core {
                 mk!(
                     deref_mut,
                     r##"This is the associated function [`::core::ops::deref::DerefMut::deref_mut`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0],[{"ValueNs":"deref_mut"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0],[{"ValueNs":"deref_mut"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::deref::DerefMut())
                 );
             }
             mk!(
                 Deref,
                 r##"This is the trait [`::core::ops::deref::Deref`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::deref())
             );
             mk!(
                 DerefMut,
                 r##"This is the trait [`::core::ops::deref::DerefMut`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::deref())
             );
         }
@@ -1015,19 +1013,19 @@ pub mod core {
             mk!(
                 Fn,
                 r##"This is the trait [`::core::ops::function::Fn`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"Fn"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"Fn"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::function())
             );
             mk!(
                 FnMut,
                 r##"This is the trait [`::core::ops::function::FnMut`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnMut"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnMut"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::function())
             );
             mk!(
                 FnOnce,
                 r##"This is the trait [`::core::ops::function::FnOnce`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnOnce"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnOnce"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::function())
             );
         }
@@ -1040,20 +1038,20 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::index::Index::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::index::Index())
                 );
                 mk!(
                     index,
                     r##"This is the associated function [`::core::ops::index::Index::index`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"ValueNs":"index"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"ValueNs":"index"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::index::Index())
                 );
             }
             mk!(
                 Index,
                 r##"This is the trait [`::core::ops::index::Index`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::index())
             );
         }
@@ -1064,60 +1062,88 @@ pub mod core {
                 #![doc = r##"This is the struct [`::core::ops::range::Range`]."##]
                 use super::root;
                 mk!(
+                    Constructor,
+                    r##"This is the struct [`::core::ops::range::Range::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",true]"##,
+                    ::core::option::Option::Some(root::core::ops::range())
+                );
+                mk!(
                     end,
                     r##"This is the field [`end`] from ::core::ops::range::Range."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"end"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::ops::range::Range())
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::ops::range::Range::Constructor())
                 );
                 mk!(
                     start,
                     r##"This is the field [`start`] from ::core::ops::range::Range."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"start"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::ops::range::Range())
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::ops::range::Range::Constructor())
                 );
             }
             pub mod RangeFrom {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeFrom`]."##]
                 use super::root;
                 mk!(
+                    Constructor,
+                    r##"This is the struct [`::core::ops::range::RangeFrom::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",true]"##,
+                    ::core::option::Option::Some(root::core::ops::range())
+                );
+                mk!(
                     start,
                     r##"This is the field [`start`] from ::core::ops::range::RangeFrom."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0],[{"ValueNs":"start"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::ops::range::RangeFrom())
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::ops::range::RangeFrom::Constructor())
+                );
+            }
+            pub mod RangeFull {
+                #![doc = r##"This is the struct [`::core::ops::range::RangeFull`]."##]
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the struct [`::core::ops::range::RangeFull::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",true]"##,
+                    ::core::option::Option::Some(root::core::ops::range())
                 );
             }
             pub mod RangeTo {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeTo`]."##]
                 use super::root;
                 mk!(
+                    Constructor,
+                    r##"This is the struct [`::core::ops::range::RangeTo::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",true]"##,
+                    ::core::option::Option::Some(root::core::ops::range())
+                );
+                mk!(
                     end,
                     r##"This is the field [`end`] from ::core::ops::range::RangeTo."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0],[{"ValueNs":"end"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::ops::range::RangeTo())
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::ops::range::RangeTo::Constructor())
                 );
             }
             mk!(
                 Range,
                 r##"This is the struct [`::core::ops::range::Range`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::ops::range())
             );
             mk!(
                 RangeFrom,
                 r##"This is the struct [`::core::ops::range::RangeFrom`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::ops::range())
             );
             mk!(
                 RangeFull,
                 r##"This is the struct [`::core::ops::range::RangeFull`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::ops::range())
             );
             mk!(
                 RangeTo,
                 r##"This is the struct [`::core::ops::range::RangeTo`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::ops::range())
             );
         }
@@ -1130,7 +1156,7 @@ pub mod core {
                 mk!(
                     from_residual,
                     r##"This is the associated function [`::core::ops::try_trait::FromResidual::from_residual`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0],[{"ValueNs":"from_residual"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0],[{"ValueNs":"from_residual"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::try_trait::FromResidual())
                 );
             }
@@ -1140,87 +1166,87 @@ pub mod core {
                 mk!(
                     Output,
                     r##"This is the associated type [`::core::ops::try_trait::Try::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Output"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::try_trait::Try())
                 );
                 mk!(
                     Residual,
                     r##"This is the associated type [`::core::ops::try_trait::Try::Residual`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Residual"},0]],"AssocTy"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Residual"},0]],"AssocTy",false]"##,
                     ::core::option::Option::Some(root::core::ops::try_trait::Try())
                 );
                 mk!(
                     branch,
                     r##"This is the associated function [`::core::ops::try_trait::Try::branch`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"branch"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"branch"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::try_trait::Try())
                 );
                 mk!(
                     from_output,
                     r##"This is the associated function [`::core::ops::try_trait::Try::from_output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"from_output"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"from_output"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ops::try_trait::Try())
                 );
             }
             mk!(
                 FromResidual,
                 r##"This is the trait [`::core::ops::try_trait::FromResidual`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::try_trait())
             );
             mk!(
                 Try,
                 r##"This is the trait [`::core::ops::try_trait::Try`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::ops::try_trait())
             );
         }
         mk!(
             arith,
             r##"This is the module [`::core::ops::arith`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             bit,
             r##"This is the module [`::core::ops::bit`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             control_flow,
             r##"This is the module [`::core::ops::control_flow`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             deref,
             r##"This is the module [`::core::ops::deref`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             function,
             r##"This is the module [`::core::ops::function`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             index,
             r##"This is the module [`::core::ops::index`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             range,
             r##"This is the module [`::core::ops::range`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
         mk!(
             try_trait,
             r##"This is the module [`::core::ops::try_trait`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ops())
         );
     }
@@ -1233,46 +1259,48 @@ pub mod core {
             mk!(
                 is_some,
                 r##"This is the associated function [`::core::option::Impl::is_some`]."##,
-                r##"["core",[[{"TypeNs":"option"},0],["Impl",0],[{"ValueNs":"is_some"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"option"},0],["Impl",0],[{"ValueNs":"is_some"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::option::Impl())
             );
         }
         pub mod Option {
             #![doc = r##"This is the enum [`::core::option::Option`]."##]
             use super::root;
-            pub mod Some {
-                #![doc = r##"This is the variant [`::core::option::Option::Some`]."##]
+            pub mod None {
                 use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::core::option::Option::None::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"None"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::core::option::Option())
+                );
+            }
+            pub mod Some {
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::core::option::Option::Some::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::core::option::Option())
+                );
                 mk!(
                     _0,
                     r##"This is the field [`_0`] from ::core::option::Option::Some."##,
-                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::option::Option::Some())
+                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::option::Option::Some::Constructor())
                 );
             }
-            mk!(
-                None,
-                r##"This is the variant [`::core::option::Option::None`]."##,
-                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"None"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::core::option::Option())
-            );
-            mk!(
-                Some,
-                r##"This is the variant [`::core::option::Option::Some`]."##,
-                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::core::option::Option())
-            );
         }
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"option"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["core",[[{"TypeNs":"option"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::core::option())
         );
         mk!(
             Option,
             r##"This is the enum [`::core::option::Option`]."##,
-            r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0]],"Enum"]"##,
+            r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::core::option())
         );
     }
@@ -1282,29 +1310,32 @@ pub mod core {
         pub mod AssertKind {
             #![doc = r##"This is the enum [`::core::panicking::AssertKind`]."##]
             use super::root;
-            mk!(
-                Eq,
-                r##"This is the variant [`::core::panicking::AssertKind::Eq`]."##,
-                r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::core::panicking::AssertKind())
-            );
+            pub mod Eq {
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::core::panicking::AssertKind::Eq::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::core::panicking::AssertKind())
+                );
+            }
         }
         mk!(
             AssertKind,
             r##"This is the enum [`::core::panicking::AssertKind`]."##,
-            r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0]],"Enum"]"##,
+            r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::core::panicking())
         );
         mk!(
             assert_failed,
             r##"This is the function [`::core::panicking::assert_failed`]."##,
-            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"assert_failed"},0]],"Fn"]"##,
+            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"assert_failed"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::core::panicking())
         );
         mk!(
             panic,
             r##"This is the function [`::core::panicking::panic`]."##,
-            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"panic"},0]],"Fn"]"##,
+            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"panic"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::core::panicking())
         );
     }
@@ -1320,21 +1351,21 @@ pub mod core {
                 mk!(
                     offset,
                     r##"This is the associated function [`::core::ptr::const_ptr::Impl::offset`]."##,
-                    r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0],[{"ValueNs":"offset"},0]],"AssocFn"]"##,
+                    r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0],[{"ValueNs":"offset"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(root::core::ptr::const_ptr::Impl())
                 );
             }
             mk!(
                 Impl,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
                 ::core::option::Option::Some(root::core::ptr::const_ptr())
             );
         }
         mk!(
             const_ptr,
             r##"This is the module [`::core::ptr::const_ptr`]."##,
-            r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::ptr())
         );
     }
@@ -1347,7 +1378,7 @@ pub mod core {
             mk!(
                 map_err,
                 r##"This is the associated function [`::core::result::Impl::map_err`]."##,
-                r##"["core",[[{"TypeNs":"result"},0],["Impl",0],[{"ValueNs":"map_err"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"result"},0],["Impl",0],[{"ValueNs":"map_err"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::result::Impl())
             );
         }
@@ -1355,60 +1386,58 @@ pub mod core {
             #![doc = r##"This is the enum [`::core::result::Result`]."##]
             use super::root;
             pub mod Err {
-                #![doc = r##"This is the variant [`::core::result::Result::Err`]."##]
                 use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::core::result::Result::Err::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::core::result::Result())
+                );
                 mk!(
                     _0,
                     r##"This is the field [`_0`] from ::core::result::Result::Err."##,
-                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0],[{"ValueNs":"0"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::result::Result::Err())
+                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::result::Result::Err::Constructor())
                 );
             }
             pub mod Ok {
-                #![doc = r##"This is the variant [`::core::result::Result::Ok`]."##]
                 use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::core::result::Result::Ok::Constructor`]."##,
+                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::core::result::Result())
+                );
                 mk!(
                     _0,
                     r##"This is the field [`_0`] from ::core::result::Result::Ok."##,
-                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field"]"##,
-                    ::core::option::Option::Some(root::core::result::Result::Ok())
+                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                    ::core::option::Option::Some(root::core::result::Result::Ok::Constructor())
                 );
             }
-            mk!(
-                Err,
-                r##"This is the variant [`::core::result::Result::Err`]."##,
-                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::core::result::Result())
-            );
-            mk!(
-                Ok,
-                r##"This is the variant [`::core::result::Result::Ok`]."##,
-                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::core::result::Result())
-            );
         }
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"result"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["core",[[{"TypeNs":"result"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::core::result())
         );
         mk!(
             Impl__27,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"result"},0],["Impl",27]],{"Impl":{"of_trait":true}}]"##,
+            r##"["core",[[{"TypeNs":"result"},0],["Impl",27]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::core::result())
         );
         mk!(
             Impl__28,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"result"},0],["Impl",28]],{"Impl":{"of_trait":true}}]"##,
+            r##"["core",[[{"TypeNs":"result"},0],["Impl",28]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::core::result())
         );
         mk!(
             Result,
             r##"This is the enum [`::core::result::Result`]."##,
-            r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0]],"Enum"]"##,
+            r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::core::result())
         );
     }
@@ -1421,19 +1450,19 @@ pub mod core {
             mk!(
                 chunks_exact,
                 r##"This is the associated function [`::core::slice::Impl::chunks_exact`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"chunks_exact"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"chunks_exact"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::slice::Impl())
             );
             mk!(
                 iter,
                 r##"This is the associated function [`::core::slice::Impl::iter`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"iter"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"iter"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::slice::Impl())
             );
             mk!(
                 len,
                 r##"This is the associated function [`::core::slice::Impl::len`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"len"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"len"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::slice::Impl())
             );
         }
@@ -1443,19 +1472,19 @@ pub mod core {
             mk!(
                 Impl__2,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",2]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::slice::index())
             );
             mk!(
                 Impl__4,
                 r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",4]],{"Impl":{"of_trait":true}}]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
                 ::core::option::Option::Some(root::core::slice::index())
             );
             mk!(
                 SliceIndex,
                 r##"This is the trait [`::core::slice::index::SliceIndex`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],[{"TypeNs":"SliceIndex"},0]],"Trait"]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],[{"TypeNs":"SliceIndex"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::core::slice::index())
             );
         }
@@ -1465,32 +1494,32 @@ pub mod core {
             mk!(
                 ChunksExact,
                 r##"This is the struct [`::core::slice::iter::ChunksExact`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"ChunksExact"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"ChunksExact"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::slice::iter())
             );
             mk!(
                 Iter,
                 r##"This is the struct [`::core::slice::iter::Iter`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"Iter"},0]],"Struct"]"##,
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"Iter"},0]],"Struct",false]"##,
                 ::core::option::Option::Some(root::core::slice::iter())
             );
         }
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["core",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::core::slice())
         );
         mk!(
             index,
             r##"This is the module [`::core::slice::index`]."##,
-            r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::slice())
         );
         mk!(
             iter,
             r##"This is the module [`::core::slice::iter`]."##,
-            r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0]],"Mod"]"##,
+            r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::core::slice())
         );
     }
@@ -1503,117 +1532,117 @@ pub mod core {
             mk!(
                 as_ptr,
                 r##"This is the associated function [`::core::str::Impl::as_ptr`]."##,
-                r##"["core",[[{"TypeNs":"str"},0],["Impl",0],[{"ValueNs":"as_ptr"},0]],"AssocFn"]"##,
+                r##"["core",[[{"TypeNs":"str"},0],["Impl",0],[{"ValueNs":"as_ptr"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::core::str::Impl())
             );
         }
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"str"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["core",[[{"TypeNs":"str"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::core::str())
         );
     }
     mk!(
         alloc,
         r##"This is the module [`::core::alloc`]."##,
-        r##"["core",[[{"TypeNs":"alloc"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"alloc"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         array,
         r##"This is the module [`::core::array`]."##,
-        r##"["core",[[{"TypeNs":"array"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"array"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         borrow,
         r##"This is the module [`::core::borrow`]."##,
-        r##"["core",[[{"TypeNs":"borrow"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"borrow"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         clone,
         r##"This is the module [`::core::clone`]."##,
-        r##"["core",[[{"TypeNs":"clone"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"clone"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         cmp,
         r##"This is the module [`::core::cmp`]."##,
-        r##"["core",[[{"TypeNs":"cmp"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"cmp"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         convert,
         r##"This is the module [`::core::convert`]."##,
-        r##"["core",[[{"TypeNs":"convert"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"convert"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         fmt,
         r##"This is the module [`::core::fmt`]."##,
-        r##"["core",[[{"TypeNs":"fmt"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"fmt"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         iter,
         r##"This is the module [`::core::iter`]."##,
-        r##"["core",[[{"TypeNs":"iter"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"iter"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         marker,
         r##"This is the module [`::core::marker`]."##,
-        r##"["core",[[{"TypeNs":"marker"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"marker"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         num,
         r##"This is the module [`::core::num`]."##,
-        r##"["core",[[{"TypeNs":"num"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"num"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         ops,
         r##"This is the module [`::core::ops`]."##,
-        r##"["core",[[{"TypeNs":"ops"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"ops"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         option,
         r##"This is the module [`::core::option`]."##,
-        r##"["core",[[{"TypeNs":"option"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"option"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         panicking,
         r##"This is the module [`::core::panicking`]."##,
-        r##"["core",[[{"TypeNs":"panicking"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"panicking"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         ptr,
         r##"This is the module [`::core::ptr`]."##,
-        r##"["core",[[{"TypeNs":"ptr"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"ptr"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         result,
         r##"This is the module [`::core::result`]."##,
-        r##"["core",[[{"TypeNs":"result"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"result"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         slice,
         r##"This is the module [`::core::slice`]."##,
-        r##"["core",[[{"TypeNs":"slice"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"slice"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
     mk!(
         str,
         r##"This is the module [`::core::str`]."##,
-        r##"["core",[[{"TypeNs":"str"},0]],"Mod"]"##,
+        r##"["core",[[{"TypeNs":"str"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::core())
     );
 }
@@ -1626,7 +1655,7 @@ pub mod hax_lib {
         mk!(
             into_checked,
             r##"This is the associated function [`::hax_lib::RefineAs::into_checked`]."##,
-            r##"["hax_lib",[[{"TypeNs":"RefineAs"},0],[{"ValueNs":"into_checked"},0]],"AssocFn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"RefineAs"},0],[{"ValueNs":"into_checked"},0]],"AssocFn",false]"##,
             ::core::option::Option::Some(root::hax_lib::RefineAs())
         );
     }
@@ -1636,25 +1665,25 @@ pub mod hax_lib {
         mk!(
             InnerType,
             r##"This is the associated type [`::hax_lib::Refinement::InnerType`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy"]"##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy",false]"##,
             ::core::option::Option::Some(root::hax_lib::Refinement())
         );
         mk!(
             get,
             r##"This is the associated function [`::hax_lib::Refinement::get`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get"},0]],"AssocFn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get"},0]],"AssocFn",false]"##,
             ::core::option::Option::Some(root::hax_lib::Refinement())
         );
         mk!(
             get_mut,
             r##"This is the associated function [`::hax_lib::Refinement::get_mut`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn",false]"##,
             ::core::option::Option::Some(root::hax_lib::Refinement())
         );
         mk!(
             new,
             r##"This is the associated function [`::hax_lib::Refinement::new`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
             ::core::option::Option::Some(root::hax_lib::Refinement())
         );
     }
@@ -1667,13 +1696,13 @@ pub mod hax_lib {
             mk!(
                 AbstractType,
                 r##"This is the associated type [`::hax_lib::abstraction::Abstraction::AbstractType`]."##,
-                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"TypeNs":"AbstractType"},0]],"AssocTy"]"##,
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"TypeNs":"AbstractType"},0]],"AssocTy",false]"##,
                 ::core::option::Option::Some(root::hax_lib::abstraction::Abstraction())
             );
             mk!(
                 lift,
                 r##"This is the associated function [`::hax_lib::abstraction::Abstraction::lift`]."##,
-                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"ValueNs":"lift"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::abstraction::Abstraction())
             );
         }
@@ -1683,20 +1712,20 @@ pub mod hax_lib {
             mk!(
                 concretize,
                 r##"This is the associated function [`::hax_lib::abstraction::Concretization::concretize`]."##,
-                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0],[{"ValueNs":"concretize"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0],[{"ValueNs":"concretize"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::abstraction::Concretization())
             );
         }
         mk!(
             Abstraction,
             r##"This is the trait [`::hax_lib::abstraction::Abstraction`]."##,
-            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0]],"Trait"]"##,
+            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::hax_lib::abstraction())
         );
         mk!(
             Concretization,
             r##"This is the trait [`::hax_lib::abstraction::Concretization`]."##,
-            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0]],"Trait"]"##,
+            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::hax_lib::abstraction())
         );
     }
@@ -1709,13 +1738,13 @@ pub mod hax_lib {
             mk!(
                 _unsafe_from_str,
                 r##"This is the associated function [`::hax_lib::int::Impl__7::_unsafe_from_str`]."##,
-                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"_unsafe_from_str"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"_unsafe_from_str"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::int::Impl__7())
             );
             mk!(
                 pow2,
                 r##"This is the associated function [`::hax_lib::int::Impl__7::pow2`]."##,
-                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"pow2"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"pow2"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::int::Impl__7())
             );
         }
@@ -1725,50 +1754,50 @@ pub mod hax_lib {
             mk!(
                 to_int,
                 r##"This is the associated function [`::hax_lib::int::ToInt::to_int`]."##,
-                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0],[{"ValueNs":"to_int"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0],[{"ValueNs":"to_int"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::int::ToInt())
             );
         }
         mk!(
             Impl__16,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",16]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",16]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
         mk!(
             Impl__17,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",17]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",17]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
         mk!(
             Impl__44,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",44]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",44]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
         mk!(
             Impl__7,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
         mk!(
             Impl__9,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",9]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",9]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
         mk!(
             Int,
             r##"This is the struct [`::hax_lib::int::Int`]."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"Int"},0]],"Struct"]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"Int"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
         mk!(
             ToInt,
             r##"This is the trait [`::hax_lib::int::ToInt`]."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0]],"Trait"]"##,
+            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::hax_lib::int())
         );
     }
@@ -1781,43 +1810,43 @@ pub mod hax_lib {
             mk!(
                 and,
                 r##"This is the associated function [`::hax_lib::prop::Impl::and`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
             mk!(
                 eq,
                 r##"This is the associated function [`::hax_lib::prop::Impl::eq`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
             mk!(
                 from_bool,
                 r##"This is the associated function [`::hax_lib::prop::Impl::from_bool`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
             mk!(
                 implies,
                 r##"This is the associated function [`::hax_lib::prop::Impl::implies`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"implies"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"implies"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
             mk!(
                 ne,
                 r##"This is the associated function [`::hax_lib::prop::Impl::ne`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
             mk!(
                 not,
                 r##"This is the associated function [`::hax_lib::prop::Impl::not`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
             mk!(
                 or,
                 r##"This is the associated function [`::hax_lib::prop::Impl::or`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::Impl())
             );
         }
@@ -1827,7 +1856,7 @@ pub mod hax_lib {
             mk!(
                 to_prop,
                 r##"This is the associated function [`::hax_lib::prop::ToProp::to_prop`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0],[{"ValueNs":"to_prop"},0]],"AssocFn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0],[{"ValueNs":"to_prop"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::ToProp())
             );
         }
@@ -1837,183 +1866,183 @@ pub mod hax_lib {
             mk!(
                 and,
                 r##"This is the function [`::hax_lib::prop::constructors::and`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"and"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"and"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 eq,
                 r##"This is the function [`::hax_lib::prop::constructors::eq`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 exists,
                 r##"This is the function [`::hax_lib::prop::constructors::exists`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"exists"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 forall,
                 r##"This is the function [`::hax_lib::prop::constructors::forall`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"forall"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 from_bool,
                 r##"This is the function [`::hax_lib::prop::constructors::from_bool`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"from_bool"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"from_bool"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 implies,
                 r##"This is the function [`::hax_lib::prop::constructors::implies`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"implies"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 ne,
                 r##"This is the function [`::hax_lib::prop::constructors::ne`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 not,
                 r##"This is the function [`::hax_lib::prop::constructors::not`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"not"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
             mk!(
                 or,
                 r##"This is the function [`::hax_lib::prop::constructors::or`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"or"},0]],"Fn"]"##,
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"or"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::hax_lib::prop::constructors())
             );
         }
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             Impl__2,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",2]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             Impl__3,
             r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",3]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             Prop,
             r##"This is the struct [`::hax_lib::prop::Prop`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"Prop"},0]],"Struct"]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"Prop"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             ToProp,
             r##"This is the trait [`::hax_lib::prop::ToProp`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0]],"Trait"]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0]],"Trait",false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             constructors,
             r##"This is the module [`::hax_lib::prop::constructors`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0]],"Mod"]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             exists,
             r##"This is the function [`::hax_lib::prop::exists`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"exists"},0]],"Fn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             forall,
             r##"This is the function [`::hax_lib::prop::forall`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"forall"},0]],"Fn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
         mk!(
             implies,
             r##"This is the function [`::hax_lib::prop::implies`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"implies"},0]],"Fn"]"##,
+            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib::prop())
         );
     }
     mk!(
         RefineAs,
         r##"This is the trait [`::hax_lib::RefineAs`]."##,
-        r##"["hax_lib",[[{"TypeNs":"RefineAs"},0]],"Trait"]"##,
+        r##"["hax_lib",[[{"TypeNs":"RefineAs"},0]],"Trait",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         Refinement,
         r##"This is the trait [`::hax_lib::Refinement`]."##,
-        r##"["hax_lib",[[{"TypeNs":"Refinement"},0]],"Trait"]"##,
+        r##"["hax_lib",[[{"TypeNs":"Refinement"},0]],"Trait",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         _internal_loop_decreases,
         r##"This is the function [`::hax_lib::_internal_loop_decreases`]."##,
-        r##"["hax_lib",[[{"ValueNs":"_internal_loop_decreases"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"_internal_loop_decreases"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         _internal_loop_invariant,
         r##"This is the function [`::hax_lib::_internal_loop_invariant`]."##,
-        r##"["hax_lib",[[{"ValueNs":"_internal_loop_invariant"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"_internal_loop_invariant"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         _internal_while_loop_invariant,
         r##"This is the function [`::hax_lib::_internal_while_loop_invariant`]."##,
-        r##"["hax_lib",[[{"ValueNs":"_internal_while_loop_invariant"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"_internal_while_loop_invariant"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         abstraction,
         r##"This is the module [`::hax_lib::abstraction`]."##,
-        r##"["hax_lib",[[{"TypeNs":"abstraction"},0]],"Mod"]"##,
+        r##"["hax_lib",[[{"TypeNs":"abstraction"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         any_to_unit,
         r##"This is the function [`::hax_lib::any_to_unit`]."##,
-        r##"["hax_lib",[[{"ValueNs":"any_to_unit"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"any_to_unit"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         assert,
         r##"This is the function [`::hax_lib::assert`]."##,
-        r##"["hax_lib",[[{"ValueNs":"assert"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"assert"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         inline,
         r##"This is the function [`::hax_lib::inline`]."##,
-        r##"["hax_lib",[[{"ValueNs":"inline"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"inline"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         inline_unsafe,
         r##"This is the function [`::hax_lib::inline_unsafe`]."##,
-        r##"["hax_lib",[[{"ValueNs":"inline_unsafe"},0]],"Fn"]"##,
+        r##"["hax_lib",[[{"ValueNs":"inline_unsafe"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         int,
         r##"This is the module [`::hax_lib::int`]."##,
-        r##"["hax_lib",[[{"TypeNs":"int"},0]],"Mod"]"##,
+        r##"["hax_lib",[[{"TypeNs":"int"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
     mk!(
         prop,
         r##"This is the module [`::hax_lib::prop`]."##,
-        r##"["hax_lib",[[{"TypeNs":"prop"},0]],"Mod"]"##,
+        r##"["hax_lib",[[{"TypeNs":"prop"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::hax_lib())
     );
 }
@@ -2026,42 +2055,54 @@ pub mod hax_lib_protocol {
         pub mod AEADAlgorithm {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::AEADAlgorithm`]."##]
             use super::root;
-            mk!(
-                Chacha20Poly1305,
-                r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0],[{"TypeNs":"Chacha20Poly1305"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::AEADAlgorithm())
-            );
+            pub mod Chacha20Poly1305 {
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305::Constructor`]."##,
+                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0],[{"TypeNs":"Chacha20Poly1305"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::AEADAlgorithm())
+                );
+            }
         }
         pub mod DHGroup {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::DHGroup`]."##]
             use super::root;
-            mk!(
-                X25519,
-                r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0],[{"TypeNs":"X25519"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::DHGroup())
-            );
+            pub mod X25519 {
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519::Constructor`]."##,
+                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0],[{"TypeNs":"X25519"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::DHGroup())
+                );
+            }
         }
         pub mod HMACAlgorithm {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::HMACAlgorithm`]."##]
             use super::root;
-            mk!(
-                Sha256,
-                r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::HMACAlgorithm())
-            );
+            pub mod Sha256 {
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256::Constructor`]."##,
+                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::HMACAlgorithm())
+                );
+            }
         }
         pub mod HashAlgorithm {
             #![doc = r##"This is the enum [`::hax_lib_protocol::crypto::HashAlgorithm`]."##]
             use super::root;
-            mk!(
-                Sha256,
-                r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant"]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::HashAlgorithm())
-            );
+            pub mod Sha256 {
+                use super::root;
+                mk!(
+                    Constructor,
+                    r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256::Constructor`]."##,
+                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
+                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::HashAlgorithm())
+                );
+            }
         }
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
@@ -2069,7 +2110,7 @@ pub mod hax_lib_protocol {
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0],[{"ValueNs":"from_bytes"},0]],"AssocFn"]"##,
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl())
             );
         }
@@ -2079,7 +2120,7 @@ pub mod hax_lib_protocol {
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__1::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1],[{"ValueNs":"from_bytes"},0]],"AssocFn"]"##,
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__1())
             );
         }
@@ -2089,7 +2130,7 @@ pub mod hax_lib_protocol {
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__4::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4],[{"ValueNs":"from_bytes"},0]],"AssocFn"]"##,
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__4())
             );
         }
@@ -2099,7 +2140,7 @@ pub mod hax_lib_protocol {
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__5::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5],[{"ValueNs":"from_bytes"},0]],"AssocFn"]"##,
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__5())
             );
         }
@@ -2109,147 +2150,147 @@ pub mod hax_lib_protocol {
             mk!(
                 from_bytes,
                 r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__6::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6],[{"ValueNs":"from_bytes"},0]],"AssocFn"]"##,
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
                 ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__6())
             );
         }
         mk!(
             AEADAlgorithm,
             r##"This is the enum [`::hax_lib_protocol::crypto::AEADAlgorithm`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0]],"Enum"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             AEADIV,
             r##"This is the struct [`::hax_lib_protocol::crypto::AEADIV`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADIV"},0]],"Struct"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADIV"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             AEADKey,
             r##"This is the struct [`::hax_lib_protocol::crypto::AEADKey`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADKey"},0]],"Struct"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADKey"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             AEADTag,
             r##"This is the struct [`::hax_lib_protocol::crypto::AEADTag`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADTag"},0]],"Struct"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADTag"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             DHElement,
             r##"This is the struct [`::hax_lib_protocol::crypto::DHElement`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHElement"},0]],"Struct"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHElement"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             DHGroup,
             r##"This is the enum [`::hax_lib_protocol::crypto::DHGroup`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0]],"Enum"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             DHScalar,
             r##"This is the struct [`::hax_lib_protocol::crypto::DHScalar`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHScalar"},0]],"Struct"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHScalar"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             HMACAlgorithm,
             r##"This is the enum [`::hax_lib_protocol::crypto::HMACAlgorithm`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0]],"Enum"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             HashAlgorithm,
             r##"This is the enum [`::hax_lib_protocol::crypto::HashAlgorithm`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0]],"Enum"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             Impl,
             r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             Impl__1,
             r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             Impl__4,
             r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             Impl__5,
             r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             Impl__6,
             r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6]],{"Impl":{"of_trait":false}}]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6]],{"Impl":{"of_trait":false}},false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             Impl__9,
             r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",9]],{"Impl":{"of_trait":true}}]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",9]],{"Impl":{"of_trait":true}},false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             aead_decrypt,
             r##"This is the function [`::hax_lib_protocol::crypto::aead_decrypt`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_decrypt"},0]],"Fn"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_decrypt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             aead_encrypt,
             r##"This is the function [`::hax_lib_protocol::crypto::aead_encrypt`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_encrypt"},0]],"Fn"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_encrypt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             dh_scalar_multiply,
             r##"This is the function [`::hax_lib_protocol::crypto::dh_scalar_multiply`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply"},0]],"Fn"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             dh_scalar_multiply_base,
             r##"This is the function [`::hax_lib_protocol::crypto::dh_scalar_multiply_base`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply_base"},0]],"Fn"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply_base"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             hash,
             r##"This is the function [`::hax_lib_protocol::crypto::hash`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hash"},0]],"Fn"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hash"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
         mk!(
             hmac,
             r##"This is the function [`::hax_lib_protocol::crypto::hmac`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hmac"},0]],"Fn"]"##,
+            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hmac"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::hax_lib_protocol::crypto())
         );
     }
     mk!(
         ProtocolError,
         r##"This is the enum [`::hax_lib_protocol::ProtocolError`]."##,
-        r##"["hax_lib_protocol",[[{"TypeNs":"ProtocolError"},0]],"Enum"]"##,
+        r##"["hax_lib_protocol",[[{"TypeNs":"ProtocolError"},0]],"Enum",false]"##,
         ::core::option::Option::Some(root::hax_lib_protocol())
     );
     mk!(
         crypto,
         r##"This is the module [`::hax_lib_protocol::crypto`]."##,
-        r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0]],"Mod"]"##,
+        r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::hax_lib_protocol())
     );
 }
@@ -2262,13 +2303,13 @@ pub mod rust_primitives {
         mk!(
             Use,
             r##"This is the use item [`::rust_primitives::crypto_abstractions::Use`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use",false]"##,
             ::core::option::Option::Some(root::rust_primitives::crypto_abstractions())
         );
         mk!(
             crypto_abstractions,
             r##"This is the function [`::rust_primitives::crypto_abstractions::crypto_abstractions`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::crypto_abstractions())
         );
     }
@@ -2281,7 +2322,7 @@ pub mod rust_primitives {
             mk!(
                 Use,
                 r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::___1()
                 )
@@ -2289,7 +2330,7 @@ pub mod rust_primitives {
             mk!(
                 f,
                 r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::f`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::___1()
                 )
@@ -2301,7 +2342,7 @@ pub mod rust_primitives {
             mk!(
                 Use,
                 r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
                 )
@@ -2309,7 +2350,7 @@ pub mod rust_primitives {
             mk!(
                 Use__1,
                 r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
                 )
@@ -2317,7 +2358,7 @@ pub mod rust_primitives {
             mk!(
                 Use__2,
                 r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
                 )
@@ -2325,7 +2366,7 @@ pub mod rust_primitives {
             mk!(
                 arith,
                 r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
                 )
@@ -2337,7 +2378,7 @@ pub mod rust_primitives {
             mk!(
                 Use,
                 r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props::Use`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use"]"##,
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use",false]"##,
                 ::core::option::Option::Some(
                     root::rust_primitives::dummy_hax_concrete_ident_wrapper::props()
                 )
@@ -2346,121 +2387,144 @@ pub mod rust_primitives {
         mk!(
             Use,
             r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             Use__1,
             r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__1`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             Use__2,
             r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__2`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             Use__3,
             r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__3`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             Use__4,
             r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__4`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             ___1,
             r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             _anonymous,
             r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             dummy,
             r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::dummy`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             iterator_functions,
             r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             props,
             r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             question_mark_result,
             r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::question_mark_result`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
         mk!(
             refinements,
             r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::refinements`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
         );
     }
     pub mod hax {
         #![doc = r##"This is the module [`::rust_primitives::hax`]."##]
         use super::root;
+        pub mod Failure {
+            #![doc = r##"This is the struct [`::rust_primitives::hax::Failure`]."##]
+            use super::root;
+            mk!(
+                Constructor,
+                r##"This is the struct [`::rust_primitives::hax::Failure::Constructor`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",true]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax())
+            );
+        }
         pub mod Tuple0 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##]
             use super::root;
-            mk!(
-                ctor,
-                r##"This is the constructor for [`::rust_primitives::hax::Tuple0`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],{"Ctor":["Struct","Fn"]}]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax())
-            );
+            pub mod Constructor {
+                use super::root;
+                mk!(
+                    ctor,
+                    r##"This is the constructor for [`::rust_primitives::hax::Tuple0::Constructor`]."##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],{"Ctor":["Struct","Fn"]},true]"##,
+                    ::core::option::Option::Some(root::rust_primitives::hax())
+                );
+            }
         }
         pub mod Tuple2 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##]
             use super::root;
+            pub mod Constructor {
+                #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##]
+                use super::root;
+                mk!(
+                    ctor,
+                    r##"This is the constructor for [`::rust_primitives::hax::Tuple2::Constructor`]."##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],{"Ctor":["Struct","Fn"]},true]"##,
+                    ::core::option::Option::Some(root::rust_primitives::hax())
+                );
+            }
+            mk!(
+                Constructor,
+                r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",true]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax())
+            );
             mk!(
                 Tuple0,
                 r##"This is the field [`Tuple0`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple0"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple0"},0]],"Field",false]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
             );
             mk!(
                 Tuple1,
                 r##"This is the field [`Tuple1`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple1"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple1"},0]],"Field",false]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
             );
             mk!(
                 _0,
                 r##"This is the field [`_0`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
             );
             mk!(
                 _1,
                 r##"This is the field [`_1`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field"]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2())
-            );
-            mk!(
-                ctor,
-                r##"This is the constructor for [`::rust_primitives::hax::Tuple2`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],{"Ctor":["Struct","Fn"]}]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax())
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field",false]"##,
+                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
             );
         }
         pub mod control_flow_monad {
@@ -2472,7 +2536,7 @@ pub mod rust_primitives {
                 mk!(
                     lift,
                     r##"This is the associated function [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad::lift`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn"]"##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
                     ::core::option::Option::Some(
                         root::rust_primitives::hax::control_flow_monad::ControlFlowMonad()
                     )
@@ -2484,7 +2548,7 @@ pub mod rust_primitives {
                 mk!(
                     run,
                     r##"This is the function [`::rust_primitives::hax::control_flow_monad::mexception::run`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
                     ::core::option::Option::Some(
                         root::rust_primitives::hax::control_flow_monad::mexception()
                     )
@@ -2496,7 +2560,7 @@ pub mod rust_primitives {
                 mk!(
                     run,
                     r##"This is the function [`::rust_primitives::hax::control_flow_monad::moption::run`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
                     ::core::option::Option::Some(
                         root::rust_primitives::hax::control_flow_monad::moption()
                     )
@@ -2508,7 +2572,7 @@ pub mod rust_primitives {
                 mk!(
                     run,
                     r##"This is the function [`::rust_primitives::hax::control_flow_monad::mresult::run`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn"]"##,
+                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
                     ::core::option::Option::Some(
                         root::rust_primitives::hax::control_flow_monad::mresult()
                     )
@@ -2517,25 +2581,25 @@ pub mod rust_primitives {
             mk!(
                 ControlFlowMonad,
                 r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
             );
             mk!(
                 mexception,
                 r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
             );
             mk!(
                 moption,
                 r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
             );
             mk!(
                 mresult,
                 r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
             );
         }
@@ -2545,103 +2609,103 @@ pub mod rust_primitives {
             mk!(
                 fold_cf,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_chunked_slice,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_chunked_slice_cf,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_chunked_slice_return,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_enumerated_chunked_slice,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_enumerated_chunked_slice_cf,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_enumerated_chunked_slice_return,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_enumerated_slice,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_enumerated_slice_cf,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_enumerated_slice_return,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_range,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_range`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_range_cf,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_range_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_range_return,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_range_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_range_step_by,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_range_step_by_cf,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_range_step_by_return,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
             mk!(
                 fold_return,
                 r##"This is the function [`::rust_primitives::hax::folds::fold_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::folds())
             );
         }
@@ -2651,85 +2715,85 @@ pub mod rust_primitives {
             mk!(
                 add,
                 r##"This is the function [`::rust_primitives::hax::int::add`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 div,
                 r##"This is the function [`::rust_primitives::hax::int::div`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 eq,
                 r##"This is the function [`::rust_primitives::hax::int::eq`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 from_machine,
                 r##"This is the function [`::rust_primitives::hax::int::from_machine`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 ge,
                 r##"This is the function [`::rust_primitives::hax::int::ge`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 gt,
                 r##"This is the function [`::rust_primitives::hax::int::gt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 into_machine,
                 r##"This is the function [`::rust_primitives::hax::int::into_machine`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 le,
                 r##"This is the function [`::rust_primitives::hax::int::le`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 lt,
                 r##"This is the function [`::rust_primitives::hax::int::lt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 mul,
                 r##"This is the function [`::rust_primitives::hax::int::mul`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 ne,
                 r##"This is the function [`::rust_primitives::hax::int::ne`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 neg,
                 r##"This is the function [`::rust_primitives::hax::int::neg`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 rem,
                 r##"This is the function [`::rust_primitives::hax::int::rem`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
             mk!(
                 sub,
                 r##"This is the function [`::rust_primitives::hax::int::sub`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::int())
             );
         }
@@ -2739,103 +2803,103 @@ pub mod rust_primitives {
             mk!(
                 add,
                 r##"This is the function [`::rust_primitives::hax::machine_int::add`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 bitand,
                 r##"This is the function [`::rust_primitives::hax::machine_int::bitand`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 bitor,
                 r##"This is the function [`::rust_primitives::hax::machine_int::bitor`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 bitxor,
                 r##"This is the function [`::rust_primitives::hax::machine_int::bitxor`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 div,
                 r##"This is the function [`::rust_primitives::hax::machine_int::div`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 eq,
                 r##"This is the function [`::rust_primitives::hax::machine_int::eq`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 ge,
                 r##"This is the function [`::rust_primitives::hax::machine_int::ge`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 gt,
                 r##"This is the function [`::rust_primitives::hax::machine_int::gt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 le,
                 r##"This is the function [`::rust_primitives::hax::machine_int::le`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 lt,
                 r##"This is the function [`::rust_primitives::hax::machine_int::lt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 mul,
                 r##"This is the function [`::rust_primitives::hax::machine_int::mul`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 ne,
                 r##"This is the function [`::rust_primitives::hax::machine_int::ne`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 not,
                 r##"This is the function [`::rust_primitives::hax::machine_int::not`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 rem,
                 r##"This is the function [`::rust_primitives::hax::machine_int::rem`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 shl,
                 r##"This is the function [`::rust_primitives::hax::machine_int::shl`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 shr,
                 r##"This is the function [`::rust_primitives::hax::machine_int::shr`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
             mk!(
                 sub,
                 r##"This is the function [`::rust_primitives::hax::machine_int::sub`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
             );
         }
@@ -2845,182 +2909,182 @@ pub mod rust_primitives {
             mk!(
                 update_at_range,
                 r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
             );
             mk!(
                 update_at_range_from,
                 r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_from`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
             );
             mk!(
                 update_at_range_full,
                 r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_full`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
             );
             mk!(
                 update_at_range_to,
                 r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_to`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
             );
             mk!(
                 update_at_usize,
                 r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_usize`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn"]"##,
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn",false]"##,
                 ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
             );
         }
         mk!(
             Failure,
             r##"This is the struct [`::rust_primitives::hax::Failure`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             MutRef,
             r##"This is the enum [`::rust_primitives::hax::MutRef`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Never,
             r##"This is the enum [`::rust_primitives::hax::Never`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Tuple0,
             r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],"Struct"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Tuple1,
             r##"This is the struct [`::rust_primitives::hax::Tuple1`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple1"},0]],"Struct"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple1"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             Tuple2,
             r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             array_of_list,
             r##"This is the function [`::rust_primitives::hax::array_of_list`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             box_new,
             r##"This is the function [`::rust_primitives::hax::box_new`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"box_new"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"box_new"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             cast_op,
             r##"This is the function [`::rust_primitives::hax::cast_op`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"cast_op"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"cast_op"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             control_flow_monad,
             r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             deref_op,
             r##"This is the function [`::rust_primitives::hax::deref_op`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"deref_op"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"deref_op"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             dropped_body,
             r##"This is the function [`::rust_primitives::hax::dropped_body`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             failure,
             r##"This is the function [`::rust_primitives::hax::failure`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             folds,
             r##"This is the module [`::rust_primitives::hax::folds`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             int,
             r##"This is the module [`::rust_primitives::hax::int`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             logical_op_and,
             r##"This is the function [`::rust_primitives::hax::logical_op_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             logical_op_or,
             r##"This is the function [`::rust_primitives::hax::logical_op_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             machine_int,
             r##"This is the module [`::rust_primitives::hax::machine_int`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             monomorphized_update_at,
             r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             never_to_any,
             r##"This is the function [`::rust_primitives::hax::never_to_any`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             repeat,
             r##"This is the function [`::rust_primitives::hax::repeat`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             update_at,
             r##"This is the function [`::rust_primitives::hax::update_at`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             while_loop,
             r##"This is the function [`::rust_primitives::hax::while_loop`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             while_loop_cf,
             r##"This is the function [`::rust_primitives::hax::while_loop_cf`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
         mk!(
             while_loop_return,
             r##"This is the function [`::rust_primitives::hax::while_loop_return`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::hax())
         );
     }
@@ -3030,103 +3094,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::i128::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::i128::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::i128::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::i128::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::i128::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::i128::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::i128::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::i128::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::i128::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::i128::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::i128::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::i128::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::i128::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::i128::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::i128::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::i128::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::i128::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i128())
         );
     }
@@ -3136,103 +3200,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::i16::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::i16::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::i16::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::i16::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::i16::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::i16::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::i16::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::i16::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::i16::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::i16::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::i16::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::i16::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::i16::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::i16::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::i16::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::i16::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::i16::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i16())
         );
     }
@@ -3242,103 +3306,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::i32::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::i32::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::i32::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::i32::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::i32::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::i32::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::i32::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::i32::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::i32::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::i32::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::i32::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::i32::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::i32::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::i32::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::i32::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::i32::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::i32::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i32())
         );
     }
@@ -3348,103 +3412,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::i64::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::i64::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::i64::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::i64::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::i64::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::i64::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::i64::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::i64::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::i64::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::i64::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::i64::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::i64::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::i64::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::i64::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::i64::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::i64::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::i64::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i64())
         );
     }
@@ -3454,103 +3518,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::i8::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::i8::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::i8::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::i8::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::i8::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::i8::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::i8::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::i8::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::i8::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::i8::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::i8::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::i8::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::i8::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::i8::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::i8::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::i8::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::i8::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::i8())
         );
     }
@@ -3560,103 +3624,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::isize::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::isize::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::isize::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::isize::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::isize::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::isize::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::isize::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::isize::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::isize::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::isize::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::isize::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::isize::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::isize::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::isize::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::isize::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::isize::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::isize::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::isize())
         );
     }
@@ -3666,103 +3730,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::u128::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::u128::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::u128::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::u128::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::u128::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::u128::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::u128::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::u128::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::u128::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::u128::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::u128::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::u128::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::u128::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::u128::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::u128::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::u128::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::u128::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u128())
         );
     }
@@ -3772,103 +3836,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::u16::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::u16::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::u16::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::u16::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::u16::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::u16::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::u16::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::u16::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::u16::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::u16::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::u16::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::u16::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::u16::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::u16::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::u16::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::u16::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::u16::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u16())
         );
     }
@@ -3878,103 +3942,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::u32::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::u32::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::u32::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::u32::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::u32::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::u32::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::u32::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::u32::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::u32::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::u32::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::u32::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::u32::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::u32::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::u32::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::u32::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::u32::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::u32::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u32())
         );
     }
@@ -3984,103 +4048,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::u64::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::u64::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::u64::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::u64::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::u64::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::u64::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::u64::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::u64::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::u64::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::u64::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::u64::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::u64::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::u64::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::u64::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::u64::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::u64::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::u64::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u64())
         );
     }
@@ -4090,103 +4154,103 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::u8::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::u8::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::u8::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::u8::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::u8::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::u8::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::u8::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::u8::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::u8::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::u8::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::u8::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::u8::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::u8::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::u8::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::u8::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::u8::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::u8::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::u8())
         );
     }
@@ -4196,260 +4260,260 @@ pub mod rust_primitives {
         mk!(
             add,
             r##"This is the function [`::rust_primitives::usize::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             bit_and,
             r##"This is the function [`::rust_primitives::usize::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             bit_or,
             r##"This is the function [`::rust_primitives::usize::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             bit_xor,
             r##"This is the function [`::rust_primitives::usize::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             div,
             r##"This is the function [`::rust_primitives::usize::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             eq,
             r##"This is the function [`::rust_primitives::usize::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             ge,
             r##"This is the function [`::rust_primitives::usize::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             gt,
             r##"This is the function [`::rust_primitives::usize::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             le,
             r##"This is the function [`::rust_primitives::usize::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             lt,
             r##"This is the function [`::rust_primitives::usize::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             mul,
             r##"This is the function [`::rust_primitives::usize::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             ne,
             r##"This is the function [`::rust_primitives::usize::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             neg,
             r##"This is the function [`::rust_primitives::usize::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             rem,
             r##"This is the function [`::rust_primitives::usize::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             shl,
             r##"This is the function [`::rust_primitives::usize::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             shr,
             r##"This is the function [`::rust_primitives::usize::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
         mk!(
             sub,
             r##"This is the function [`::rust_primitives::usize::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn"]"##,
+            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
             ::core::option::Option::Some(root::rust_primitives::usize())
         );
     }
     mk!(
         Use,
         r##"This is the use item [`::rust_primitives::Use`]."##,
-        r##"["rust_primitives",[["Use",0]],"Use"]"##,
+        r##"["rust_primitives",[["Use",0]],"Use",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         alloc,
         r##"This is the extern crate [`::rust_primitives::alloc`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         crypto_abstractions,
         r##"This is the module [`::rust_primitives::crypto_abstractions`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         dummy_hax_concrete_ident_wrapper,
         r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##,
-        r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn"]"##,
+        r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         hax,
         r##"This is the module [`::rust_primitives::hax`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"hax"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"hax"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         i128,
         r##"This is the module [`::rust_primitives::i128`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i128"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"i128"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         i16,
         r##"This is the module [`::rust_primitives::i16`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i16"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"i16"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         i32,
         r##"This is the module [`::rust_primitives::i32`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i32"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"i32"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         i64,
         r##"This is the module [`::rust_primitives::i64`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i64"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"i64"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         i8,
         r##"This is the module [`::rust_primitives::i8`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i8"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"i8"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         impl_arith,
         r##"This is the macro [`::rust_primitives::impl_arith`]."##,
-        r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"}]"##,
+        r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"},false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         isize,
         r##"This is the module [`::rust_primitives::isize`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"isize"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"isize"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         offset,
         r##"This is the function [`::rust_primitives::offset`]."##,
-        r##"["rust_primitives",[[{"ValueNs":"offset"},0]],"Fn"]"##,
+        r##"["rust_primitives",[[{"ValueNs":"offset"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         std,
         r##"This is the extern crate [`::rust_primitives::std`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         u128,
         r##"This is the module [`::rust_primitives::u128`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u128"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"u128"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         u16,
         r##"This is the module [`::rust_primitives::u16`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u16"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"u16"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         u32,
         r##"This is the module [`::rust_primitives::u32`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u32"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"u32"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         u64,
         r##"This is the module [`::rust_primitives::u64`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u64"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"u64"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         u8,
         r##"This is the module [`::rust_primitives::u8`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u8"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"u8"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         unsize,
         r##"This is the function [`::rust_primitives::unsize`]."##,
-        r##"["rust_primitives",[[{"ValueNs":"unsize"},0]],"Fn"]"##,
+        r##"["rust_primitives",[[{"ValueNs":"unsize"},0]],"Fn",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
     mk!(
         usize,
         r##"This is the module [`::rust_primitives::usize`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"usize"},0]],"Mod"]"##,
+        r##"["rust_primitives",[[{"TypeNs":"usize"},0]],"Mod",false]"##,
         ::core::option::Option::Some(root::rust_primitives())
     );
 }
 mk!(
     alloc,
     r##"This is the module [`::alloc`]."##,
-    r##"["alloc",[],"Mod"]"##,
+    r##"["alloc",[],"Mod",false]"##,
     ::core::option::Option::None
 );
 mk!(
     core,
     r##"This is the module [`::core`]."##,
-    r##"["core",[],"Mod"]"##,
+    r##"["core",[],"Mod",false]"##,
     ::core::option::Option::None
 );
 mk!(
     hax_lib,
     r##"This is the module [`::hax_lib`]."##,
-    r##"["hax_lib",[],"Mod"]"##,
+    r##"["hax_lib",[],"Mod",false]"##,
     ::core::option::Option::None
 );
 mk!(
     hax_lib_protocol,
     r##"This is the module [`::hax_lib_protocol`]."##,
-    r##"["hax_lib_protocol",[],"Mod"]"##,
+    r##"["hax_lib_protocol",[],"Mod",false]"##,
     ::core::option::Option::None
 );
 mk!(
     rust_primitives,
     r##"This is the module [`::rust_primitives`]."##,
-    r##"["rust_primitives",[],"Mod"]"##,
+    r##"["rust_primitives",[],"Mod",false]"##,
     ::core::option::Option::None
 );
