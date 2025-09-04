@@ -354,7 +354,7 @@ checksum = "8a9ee70c43aaf417c914396645a0fa852624801b24ebb7ae78fe8272889ac888"
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.3.2"
+version = "0.3.4"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -363,7 +363,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.3.2"
+version = "0.3.4"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -372,7 +372,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.3.2"
+version = "0.3.4"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro-error2",
@@ -383,7 +383,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.3.2"
+version = "0.3.4"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -394,14 +394,14 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-protocol"
-version = "0.3.2"
+version = "0.3.4"
 dependencies = [
  "libcrux",
 ]
 
 [[package]]
 name = "hax-lib-protocol-macros"
-version = "0.3.2"
+version = "0.3.4"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",
