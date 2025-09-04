@@ -168,6 +168,23 @@ impl GlobalId {
             _ => None,
         }
     }
+
+    /// Returns true if the underlying identifier is a constructor
+    pub fn is_constructor(&self) -> bool {
+        match self {
+            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                concrete_id.def_id.is_constructor
+            }
+        }
+    }
+
+    /// Returns true if the underlying identifier is a projector
+    pub fn is_projector(&self) -> bool {
+        match self {
+            GlobalId::Projector(_) => true,
+            GlobalId::Concrete(_) => false,
+        }
+    }
 }
 
 impl ConcreteId {
