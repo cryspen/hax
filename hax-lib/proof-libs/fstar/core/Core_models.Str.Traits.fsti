@@ -1,6 +1,6 @@
 module Core_models.Str.Traits
 
-open Core_models.Result_Option_bundle
+open Core_models.Result
 
 class t_FromStr (v_Self: Type) = {
   f_Err : Type ;
