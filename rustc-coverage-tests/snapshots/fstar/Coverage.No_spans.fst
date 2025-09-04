@@ -10,10 +10,9 @@ let affected_function (_: Prims.unit) :  Prims.unit -> Prims.unit =
 
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
-    Core.Ops.Function.f_call #_
-      #Prims.unit
+    Core.Ops.Function.f_call #Prims.unit
       #FStar.Tactics.Typeclasses.solve
-      (affected_function () <: _)
+      (affected_function () <: Prims.unit -> Prims.unit)
       (() <: Prims.unit)
   in
   ()
