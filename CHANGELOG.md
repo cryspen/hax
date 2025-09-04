@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Changes to the Rust Engine:
  - The module `names` now produces `ExplicitDefId`s instead of `DefId`s (#1648)
- - Add a new resugaring `KnownApplications`
+ - Add a new resugaring `KnownApplications` (#1656)
 
 ## 0.3.4
 
