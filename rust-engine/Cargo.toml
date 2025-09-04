@@ -19,6 +19,6 @@ schemars.workspace = true
 itertools.workspace = true
 serde_stacker = "0.1.12"
 pretty = "0.12"
-derive_generic_visitor = "0.3.0"
+derive_generic_visitor = { branch = "basic_impls_arrays", git = "https://github.com/W95Psp/derive-generic-visitor.git" }
 pastey = "0.1.0"
 camino = "1.1.11"

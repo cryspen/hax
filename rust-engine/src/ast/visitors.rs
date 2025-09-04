@@ -265,6 +265,7 @@ mod replaced {
                 for<T: AstVisitable> Box<T>, for<T: AstVisitable> Option<T>, for<T: AstVisitable> Vec<T>,
                 for<A: AstVisitable, B: AstVisitable> (A, B),
                 for<A: AstVisitable, B: AstVisitable, C: AstVisitable> (A, B, C),
+                for<T: AstVisitable, const N: usize> [T; N],
                 usize
             ),
             override(AstNodes),
@@ -296,6 +297,7 @@ mod replaced {
                 for<T: AstVisitable> Box<T>, for<T: AstVisitable> Option<T>, for<T: AstVisitable> Vec<T>,
                 for<A: AstVisitable, B: AstVisitable> (A, B),
                 for<A: AstVisitable, B: AstVisitable, C: AstVisitable> (A, B, C),
+                for<T: AstVisitable, const N: usize> [T; N],
                 usize
             ),
             override(AstNodes),
