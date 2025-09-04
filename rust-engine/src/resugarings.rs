@@ -11,6 +11,40 @@ use crate::ast::*;
 use crate::printer::*;
 use std::collections::HashSet;
 
+/// Transforms [`ItemKind::Fn`] of arity zero into [`ResugaredItemKind::Constant`].
+/// Rust `const` items are encoded by the `ImportThir` phase of the hax engine as function of arity zero.
+/// Functions of arity zero themselves are encoded as functions operating on one argument of type `()`.
+#[derive(Copy, Clone, Default)]
+pub struct FunctionsToConstants;
+
+impl AstVisitorMut for FunctionsToConstants {
+    fn enter_item_kind(&mut self, item_kind: &mut ItemKind) {
+        let ItemKind::Fn {
+            name,
+            generics,
+            body,
+            params,
+            safety: SafetyKind::Safe,
+        } = item_kind
+        else {
+            return;
+        };
+        if !(params.is_empty() && generics.constraints.is_empty() && generics.params.is_empty()) {
+            return;
+        }
+        *item_kind = ItemKind::Resugared(ResugaredItemKind::Constant {
+            name: name.clone(),
+            body: body.clone(),
+        });
+    }
+}
+
+impl Resugaring for FunctionsToConstants {
+    fn name(&self) -> String {
+        "functions-to-constants".to_string()
+    }
+}
+
 /// Binop resugaring. Used to identify expressions of the form `(f e1 e2)` where
 /// `f` is a known identifier.
 pub struct BinOp {
