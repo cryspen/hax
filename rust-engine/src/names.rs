@@ -222,6 +222,7 @@ pub mod codegen {
                 None
             })
             .chain(if matches!(id.kind, DefKind::Ctor(..)) {
+                // TODO: get rid of `ctor` #1657
                 Some("ctor".to_string())
             } else {
                 None
