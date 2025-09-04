@@ -9,6 +9,38 @@ use crate::ast::visitors::*;
 use crate::ast::*;
 use crate::printer::*;
 
+/// Makes functions of arity zero into constants.
+#[derive(Copy, Clone, Default)]
+pub struct FunctionsToConstants;
+
+impl AstVisitorMut for FunctionsToConstants {
+    fn enter_item_kind(&mut self, item_kind: &mut ItemKind) {
+        let ItemKind::Fn {
+            name,
+            generics,
+            body,
+            params,
+            safety: SafetyKind::Safe,
+        } = item_kind
+        else {
+            return;
+        };
+        if !(params.is_empty() && generics.constraints.is_empty() && generics.params.is_empty()) {
+            return;
+        }
+        *item_kind = ItemKind::Resugared(ResugaredItemKind::Constant {
+            name: name.clone(),
+            body: body.clone(),
+        });
+    }
+}
+
+impl Resugaring for FunctionsToConstants {
+    fn name(&self) -> String {
+        "functions-to-constants".to_string()
+    }
+}
+
 /// Rewrite every expression application node [`ExprKind::App`] into a
 /// [`ResugaredExprKind::App`]. [`ResugaredExprKind::App`] represent known
 /// applications with their arity and matchable names, with a fallback case
