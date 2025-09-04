@@ -8,8 +8,8 @@ The processes described here is not to pester you but to increase and maintain c
 ## Working with this repository
 
 We use issues to organise and prioritise work items.
-If you start working on an issue, assign it to yourself so everyone knows it's being worked on.
-Unassign yourself if you stop working on it and leave a comment why you stopped.
+
+**Assignee meaning in issues:** The assignee is the person responsible for addressing the issue and is typically the one actively working on it.
 
 After picking up an issue create a branch.
 There can be any number of branches and pull request for one issue.
