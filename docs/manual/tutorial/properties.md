@@ -25,6 +25,29 @@ Such a simple post-condition is automatically proven by F\*. The
 properties of our `square` function are not fascinating. Let's study a
 more interesting example: [Barrett reduction](https://en.wikipedia.org/wiki/Barrett_reduction).
 
+# Proving properties in Lean
+
+Let's try the same in Lean:
+```{.rust .playable .lean-backend}
+#[hax_lib::lean::after("
+theorem square_spec (value: u8) :
+  ⦃ __requires (value) = pure true ⦄
+  (square value)
+  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  := by
+  mvcgen
+  simp [__requires, __ensures, square] at *
+  intros
+  rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
+  all_goals bv_decide")]
+#[hax_lib::requires(x < 16)]
+#[hax_lib::ensures(|res| res >= x)]
+fn square(x: u8) -> u8 {
+    x * x
+}
+```
+This works as well (note that the proof script is slightly modified to apply `bv_decide` to all goals).
+
 ## A concrete example of contract: Barrett reduction
 
 While the correctness of `square` is obvious, the Barrett reduction is
@@ -99,6 +122,10 @@ This example showcases an **intrinsic proof**: the function
 that the post-condition holds. The pre-condition and post-condition
 gives the function a formal specification, which is useful both for
 further formal verification and for documentation purposes.
+
+A Lean version of the Barrett example is available in the 
+[`examples`](https://github.com/cryspen/hax/tree/main/examples/lean_barrett) 
+section of hax. 
 
 ## Extrinsic properties with lemmas
 

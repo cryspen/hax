@@ -35,8 +35,9 @@ async function call_playground(result_block, query, text) {
     let ansi_up = new AnsiUp();
     let first = true;
     let logs = document.createElement('div');
-    logs.style = 'font-size: 80%; background: #00000010; padding: 3px;';
+    logs.style = 'font-size: 80%; background: #00000010; padding: 3px; white-space:pre-wrap;';
     let hax_version = await get_latest_hax_main();
+    let lean_backend = query.startsWith('lean');
     raw_query(
         PLAYGROUND_URL,
         hax_version,
@@ -62,7 +63,7 @@ async function call_playground(result_block, query, text) {
                     if (file.endsWith('.rs'))
                         continue;
                     let contents = json.Done.files[file];
-                    contents = contents.split('open FStar.Mul')[1].trim();
+                    contents = (contents.split(lean_backend?'set_option linter.unusedVariables false':'open FStar.Mul')[1] || contents).trim();
                     contents = contents.replace(/$/gm, ' ').trim();
                     out.push([file, contents]);
                 }
@@ -78,11 +79,11 @@ async function call_playground(result_block, query, text) {
                     result.textContent = out.map(([file, s]) => '(* File: ' + file + ' *) \n' + s).join('\n\n').trim();
                 }
                 result_block.appendChild(result);
-                if (json.Done.success && query.includes('+tc')) {
-                    result_block.innerHTML += '<div style="float: left; padding: 3px; padding-top: 8px; position: relative; top: 6px;"><span style="color: gray;">Status: </span><span style="color: green">✓ F* successfully typechecked!</span></div>';
-                }
                 hljs.highlightBlock(result);
-                result_block.innerHTML += `<br/><a style="float:right; font-family: 'Open Sans', sans-serif; font-size: 70%; cursor: pointer; color: gray; text-transform: uppercase; position: relative; top: -10px;" href='${PLAYGROUND_URL}/#fstar/${hax_version}/${LZString.compressToEncodedURIComponent(text)}'>Open in hax playground ↗</a>`;
+                result_block.innerHTML += `<br/><a style="float:right; font-family: 'Open Sans', sans-serif; font-size: 70%; cursor: pointer; color: gray; text-transform: uppercase; position: relative; top: -10px;" href='${PLAYGROUND_URL}/#${lean_backend?"lean":"fstar"}/${hax_version}/${LZString.compressToEncodedURIComponent(text)}'>Open in hax playground ↗</a>`;
+                if (json.Done.success && query.includes('+tc')) {
+                    result_block.innerHTML += `<div style="float: left; padding: 3px; padding-top: 8px; position: relative; top: 6px;"><span style="color: gray;">Status: </span><span style="color: green">✓ ${lean_backend?"Lean":"F*"} successfully typechecked!</span></div>`;
+                }
             }
         },
     );
@@ -105,6 +106,7 @@ function setup_hax_playground() {
         let w = e.parentElement;
         if (!w.classList.contains("playable"))
             continue;
+        let backend = w.classList.contains("lean-backend")?'lean':'fstar';
 
         code.innerHTML = "<pre></pre>";
         let inner = code.children[0];
@@ -128,6 +130,7 @@ function setup_hax_playground() {
         let header = lines.filter(line => line.startsWith('# ')).map(line => line.slice(2)).join('\n');
         let getCode = () => header + '\n' + editor.state.doc.toString();
 
+
         let button_translate = document.createElement("button");
         button_translate.innerHTML = `<i class="fa-solid fa-play"></i>`;
         button_translate.classList.add('md-icon');
@@ -135,7 +138,7 @@ function setup_hax_playground() {
         button_translate.classList.add('md-hax-playground');
         button_translate.style.right = "2.4em";
         button_translate.onclick = () => {
-            call_playground(result_block, 'fstar', getCode());
+            call_playground(result_block, backend, getCode());
         };
         e.prepend(button_translate);
 
@@ -146,13 +149,10 @@ function setup_hax_playground() {
         button_tc.classList.add('md-hax-playground');
         button_tc.style.right = "4.5em";
         button_tc.onclick = () => {
-            button_tc.onclick = () => {
-                call_playground(result_block, 'fstar+tc', getCode());
-            };
-            e.prepend(button_tc);
+            call_playground(result_block, backend + '+tc', getCode());
+        };
 
-            code.style.padding = "0 0.9em";
-        }
+        e.prepend(button_tc);
     }
 }
 

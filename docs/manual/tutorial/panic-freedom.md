@@ -28,6 +28,43 @@ is just over `255`, the largest integer that fits `u8`. Rust does not
 ensure that functions are *total*: a function might panic at any
 point, or might never terminate.
 
+## Panic freedom with Lean
+
+Let's take the same `square` function and extract it to Lean using `cargo hax into lean`.
+If we run `lake build` on the result, we get a success, but this doesn't mean that the function is 
+panic-free. Indeed, our encoding of Rust code in Lean wraps everything in a result monad. And 
+functions that panic return an error in this monad. To try to prove panic-freedom, we have to 
+specify that the result of `square` is expected not to be an error in this result type. A way
+to do that is the following:
+```{.rust .playable .lean-backend}
+#[hax_lib::lean::after("
+theorem square_spec (value: u8) :
+  ⦃ __requires (value) = pure true ⦄
+  (square value)
+  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  := by
+  mvcgen
+  simp [__requires, __ensures, square] at *
+  intros
+  rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
+  bv_decide")]
+#[hax_lib::requires(true)]
+#[hax_lib::ensures(|res| true)]
+fn square(x: u8) -> u8 {
+    x * x
+}
+```
+The specification is extrinsic to the function, we state a theorem `square_spec` which uses a Hoare
+triple to specify properties on the output, assuming some other properties on the inputs. Here,
+we use the precondition and post-condition defined using the `hax_lib` macro, but we could write
+our specification entirely in the `square_spec` theorem. Here our post-condition is `true` which seems
+trivial, but `__ensures value result = pure true` is false if `result` (and thus `__ensures value result`) 
+is an error in the result monad. So this specification states that `square` should be panic-free. We also 
+have a small proof scripts applying a few tactics to try to prove our theorem. If we try running `lake build`
+after extracting this code, we get an error: 
+`The prover found a counterexample, consider the following assignment: value = 255`. Indeed `square(255)` 
+panics.
+
 ## Rust and panicking code
 Quoting the chapter [To `panic!` or Not to
 `panic!`](https://doc.rust-lang.org/book/ch09-03-to-panic-or-not-to-panic.html)
@@ -106,6 +143,29 @@ With this precondition, F\* is able to prove panic freedom. From now
 on, it is the responsibility of the clients of `square` to respect the
 contact. The next step is thus be to verify, through hax extraction,
 that `square` is used correctly at every call site.
+
+### Lean version of solution B
+Let's try to add the precondition to the Lean version of the `square` function.
+We can modify the Rust precondition:
+```{.rust .playable .lean-backend}
+#[hax_lib::lean::after("
+theorem square_spec (value: u8) :
+  ⦃ __requires (value) = pure true ⦄
+  (square value)
+  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  := by
+  mvcgen
+  simp [__requires, __ensures, square] at *
+  intros
+  rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
+  bv_decide")]
+#[hax_lib::requires(x < 16)]
+#[hax_lib::ensures(|res| true)]
+fn square(x: u8) -> u8 {
+    x * x
+}
+```
+Now, extracting and then running Lean succeeds!
 
 ## Common panicking situations
 Multiplication is not the only panicking function provided by the Rust

@@ -644,6 +644,28 @@ theorem HaxRem_spec_bv_rw (x y : i32) :
 
 end Int32
 
+
+
+namespace UInt8
+
+instance instHaxMul : HaxMul UInt8 where
+  mul x y :=
+    if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+@[spec]
+theorem HaxMul_spec_bv (x y: u8) :
+  ⦃ ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+theorem HaxMul_spec_bv_rw (x y: u8) :
+   ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) →
+   x *? y = Result.ok (x * y)
+:= by simp [instHaxMul]
+
+end UInt8
+
 /-
 
 # Wrapping operations

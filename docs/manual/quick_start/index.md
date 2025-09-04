@@ -2,7 +2,7 @@
 weight: 0
 ---
 
-# Quick start with hax and F\*
+# Quick start with hax and F\* (or Lean)
 
 Do you want to try hax out on a Rust crate of yours? This chapter is
 what you are looking for!
@@ -12,17 +12,33 @@ what you are looking for!
  - <input type="checkbox" class="user-checkable"/> [Install the hax toolchain](https://github.com/hacspec/hax?tab=readme-ov-file#installation).  
    <span style="margin-right:30px;"></span>🪄 Running `cargo hax --version` should print some version info.
  - <input type="checkbox" class="user-checkable"/> [Install F\*](https://github.com/FStarLang/FStar/blob/master/INSTALL.md) *(optional: only if want to run F\*)*
+ - <input type="checkbox" class="user-checkable"/> [Install Lean](https://lean-lang.org/install/) *(optional: only if want to run Lean)*
 
 ## Setup the crate you want to verify
 
 *Note: the instructions below assume you are in the folder of the specific crate (**not workspace!**) you want to extract.*
 
-*Note: this part is useful only if you want to run F\*.*
+*Note: this part is useful only if you want to run F\* or Lean.*
 
 
- - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/fstar/extraction` folder, right next to the `Cargo.toml` of the crate you want to verify.  
+ - <input type="checkbox" class="user-checkable"/> Create the folder `proofs/fstar/extraction` (or `proofs/lean/extraction`) folder, right next to the `Cargo.toml` of the crate you want to verify.  
    <span style="margin-right:30px;"></span>🪄 `mkdir -p proofs/fstar/extraction`
- - <input type="checkbox" class="user-checkable"/> Copy [this makefile](https://gist.github.com/W95Psp/4c304132a1f85c5af4e4959dd6b356c3) to `proofs/fstar/extraction/Makefile`.  
+ - <input type="checkbox" class="user-checkable"/> *Lean only step:* Create `proofs/lean/extraction/lakefile.toml`, and add the following content:  
+```toml
+name = "your_crate_name"
+version = "0.1.0"
+defaultTargets = ["your_crate_name"]
+
+[[lean_lib]]
+name = "your_crate_name"
+
+[[require]]
+name = "Hax"
+git.url = "https://github.com/cryspen/hax"
+git.subDir = "hax-lib/proof-libs/lean"
+rev = "main"
+``` 
+ - <input type="checkbox" class="user-checkable"/> *F\* only step* Copy [this makefile](https://gist.github.com/W95Psp/4c304132a1f85c5af4e4959dd6b356c3) to `proofs/fstar/extraction/Makefile`  
    <span style="margin-right:30px;"></span>🪄 `curl -o proofs/fstar/extraction/Makefile https://gist.githubusercontent.com/W95Psp/4c304132a1f85c5af4e4959dd6b356c3/raw/Makefile`
  - <input type="checkbox" class="user-checkable"/> Add `hax-lib` as a dependency to your crate, enabled only when using hax.  
    <span style="margin-right:30px;"></span>🪄 `cargo add --target 'cfg(hax)' --git https://github.com/hacspec/hax hax-lib`  
@@ -86,5 +102,13 @@ with various F\* modules in the `proofs/fstar/extraction` folder. The
    second step is about panic freedom: if F\* can typecheck your crate,
    it means your code *never* panics, which already is an important
    property.
+
+## Start Lean verification
+After extracting your Rust code to Lean, the result is in the `proofs/lean/extraction` folder. The
+`lakefile.toml` allows you to run Lean on this folder by running `lake build` (or directly in the IDE 
+using the LSP). Contrarily to F\*, successfully building the code doesn't prove panic freedom, this
+happens only if the specifications states that the code is panic-free. However, trying to build without 
+specifications can fail if a definition is missing in our Lean model of the Rust core library. This lives 
+in the sub-directory `hax-lib/proof-libs/lean` of the hax repository. 
 
 To go further, please read the next chapter.
