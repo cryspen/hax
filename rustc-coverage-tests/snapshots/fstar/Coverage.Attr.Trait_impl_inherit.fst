@@ -6,8 +6,8 @@ open FStar.Mul
 (* item error backend: (reject_TraitItemDefault) ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
 Last available AST for this item:
 
-#[<cfg>(any(feature = "json"))]#[feature(coverage_attribute)]#[<cfg>(any(feature = "json", feature = "fstar", feature = "fstar-lax", feature =
-"coq"))]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait t_T<Self_>{fn f_f((self: Self)) -> tuple0{{let _: tuple0 = {std::io::stdio::e_print(core::fmt::rt::impl_1__new_const::<generic_value!(todo)>(["default\n"]))};{let _: tuple0 = {Tuple0};Tuple0}}}}
+#[<cfg>(any(feature = "json"))]#[feature(coverage_attribute)]#[<cfg>(any(feature = "json", feature = "lean", feature = "fstar", feature =
+"fstar-lax", feature = "coq"))]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait t_T<Self_>{fn f_f((self: Self)) -> tuple0{{let _: tuple0 = {std::io::stdio::e_print(core::fmt::rt::impl_1__new_const::<generic_value!(todo)>(["default\n"]))};{let _: tuple0 = {Tuple0};Tuple0}}}}
 
 Last AST:
 /** print_rust: pitem: not implemented  (item: { Concrete_ident.T.def_id =

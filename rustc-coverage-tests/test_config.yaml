@@ -2,108 +2,134 @@ tests:
   attr::impl_:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   attr::module:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   attr::off_on_sandwich:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   attr::trait_impl_inherit:
     - json
+    - lean
   auxiliary::discard_all_helper:
     - json
     - coq
+    - lean
+    - lean-tc
     - fstar
     - fstar-lax
   auxiliary::used_crate:
     - json
     - coq
     - fstar
+    - lean
   auxiliary::used_inline_crate:
     - json
     - coq
     - fstar
+    - lean
   condition::conditions:
     - json
     - coq
     - fstar 
     - fstar-lax
+    - lean
   mcdc::condition_limit:
     - json
+    - lean
   mcdc::if_:
     - json
     - coq
     - fstar 
     - fstar-lax
+    - lean
   mcdc::inlined_expressions:
     - json
     - coq
     - fstar 
     - fstar-lax
+    - lean
   mcdc::nested_if:
     - json
     - coq
     - fstar 
     - fstar-lax
+    - lean
   mcdc::non_control_flow:
     - json
     - coq
     - fstar 
     - fstar-lax
+    - lean
   abort:
     - json
+    - lean
     - fstar
     - fstar-lax
   assert:
     - json
+    - lean
     - fstar
     - fstar-lax
   assert_ne:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   assert_not:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   closure_macro:
     - json
     - coq
     - fstar
+    - lean
   closure_unit_return:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   color:
     - json
+    - lean
   conditions:
     - json
     - coq
     - fstar
+    - lean
   continue_:
     - json
     - fstar
+    - lean
   dead_code:
     - json
     - coq
     - fstar
+    - lean
   drop_trait:
     - json
     - coq
     - fstar
     - fstar-lax
+    - lean
   fn_sig_into_try:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   generics:
@@ -114,83 +140,104 @@ tests:
     - json
     - coq
     - fstar
+    - lean
   if_else:
     - json
     - coq
     - fstar
+    - lean
   if_not:
     - json
+    - lean
   ignore_map:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   ignore_run:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   inline_dead:
     - json
     - coq
     - fstar
+    - lean
   inline:
     - json
+    - lean
   inner_items:
     - json
+    - lean
   issue_83601:
     - json
     - coq
+    - lean
     - fstar
     - fstar-lax
   lazy_boolean:
     - json
     - coq
     - fstar
+    - lean
   let_else_loop:
     - json
+    - lean
   long_and_wide:
     - json
+    - lean
     - fstar
     - fstar-lax
     - coq
 
   loop_break:
     - json
+    - lean
 
   loop_break_value:
     - json
+    - lean
 
   loops_branches:
     - json
+    - lean
 
   macro_in_closure:
     - json
+    - lean
     - fstar
     - fstar-lax
     - coq
 
   match_or_pattern:
     - json
+    - lean
     - fstar
     - coq
 
   nested_loops:
     - json
     - fstar
+    - lean
 
   no_cov_crate:
     - json
+    - lean
     - fstar
     - coq
 
   no_spans:
     - json
+    - lean
     - fstar
     - coq
 
   no_spans_if_not:
     - json
+    - lean
     - fstar
     - fstar-lax
     - coq
@@ -202,6 +249,7 @@ tests:
 
   panic_unwind:
     - json
+    - lean
     - fstar
     - fstar-lax
 
@@ -213,32 +261,39 @@ tests:
 
   simple_loop:
     - json
+    - lean
 
   simple_match:
     - json
+    - lean
 
   sort_groups:
     - json
+    - lean
     - fstar
     - coq
 
   test_harness:
     - json
+    - lean
     - fstar
     - fstar-lax
     - coq
 
   tight_inf_loop:
     - json
+    - lean
 
   trivial:
     - json
+    - lean
     - fstar
     - fstar-lax
     - coq
 
   try_error_result:
     - json
+    - lean
     - fstar
     - coq
 
@@ -248,16 +303,20 @@ tests:
   unused:
     - json
     - fstar
+    - lean
 
   unused_mod:
     - json
+    - lean
     - fstar
     - fstar-lax
     - coq
 
   while_:
     - json
+    - lean
   
   while_early_ret:
     - json
     - fstar
+    - lean
