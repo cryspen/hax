@@ -13,6 +13,8 @@
 
 use hax_rust_engine_macros::*;
 
+use crate::resugarings;
+
 use super::*;
 
 /// Resugared variants for items. This represent extra printing-only items, see [`super::ItemKind::Resugared`].
@@ -173,6 +175,7 @@ mod fun_app {
         /// The names corresponding to callable items of arity 1
         pub enum UnaryName {
             DerefOp = crate::names::rust_primitives::hax::deref_op(),
+            CastOp = crate::names::rust_primitives::hax::cast_op(),
         }
 
         #[derive_group_for_ast]

@@ -91,10 +91,9 @@ impl<T: serde::Serialize> Display for DebugJSON<T> {
             }
         }
 
-        if let Ok(id) = append_line_json(&serde_json::to_value(&self.0).unwrap()) {
-            write!(f, "`just debug-json {id}`")
-        } else {
-            write!(f, "<DebugJSON failed>")
+        match append_line_json(&serde_json::to_value(&self.0).unwrap()) {
+            Ok(id) => write!(f, "`just debug-json {id}`"),
+            Err(e) => write!(f, "<DebugJSON failed {}>", e),
         }
     }
 }
@@ -279,6 +278,9 @@ macro_rules! mk {
     // Special default implementation for specific types
     (@method_body Symbol $meth:ident $self:ident $value:ident) => {
         $self.text($value.to_string())
+    };
+    (@method_body SpannedTy $meth:ident $self:ident $value:ident) => {
+        ::pretty::docs![$self, &$value.ty]
     };
     (@method_body LocalId $meth:ident $self:ident $value:ident) => {
         ::pretty::docs![$self, &$value.0]

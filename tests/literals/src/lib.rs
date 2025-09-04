@@ -1,93 +1,45 @@
-#![allow(dead_code)]
-use hax_lib::*;
+use hax_lib as hax;
 
-#[hax_lib::requires(x > int!(0) && x < int!(16))]
-fn math_integers(x: Int) -> u8 {
-    let _: Int = 3usize.lift();
-    let _neg_dec = int!(-340282366920938463463374607431768211455000);
-    let _pos_dec = int!(340282366920938463463374607431768211455000);
-    let _neg_hex = int!(-0x3E7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFC18);
-    let _pos_hex = int!(0x3E7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFC18);
-    let _neg_octal = int!(-0o7637777777777777777777777777777777777777776030);
-    let _pos_octal = int!(0o7637777777777777777777777777777777777777776030);
-    let _neg_bin = int!(-0b111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110000011000);
-    let _pos_bin = int!(0b111110011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110000011000);
-    let _ = int!(-340282366920938463463374607431768211455000)
-        > int!(340282366920938463463374607431768211455000);
-    let _ = x < x;
-    let _ = x >= x;
-    let _ = x <= x;
-    let _ = x != x;
-    let _ = x == x;
-    let _ = x + x;
-    let _ = x - x;
-    let _ = x * x;
-    let _ = x / x;
-    let _: i16 = x.to_i16();
-    let _: i32 = x.to_i32();
-    let _: i64 = x.to_i64();
-    let _: i128 = x.to_i128();
-    let _: isize = x.to_isize();
-    let _: u16 = x.to_u16();
-    let _: u32 = x.to_u32();
-    let _: u64 = x.to_u64();
-    let _: u128 = x.to_u128();
-    let _: usize = x.to_usize();
-    (x + x * x).to_u8()
+/// Values having this type hold a representative 'x' of the Kyber field.
+/// We use 'fe' as a shorthand for this type.
+pub(crate) type FieldElement = i32;
+
+const BARRETT_SHIFT: i64 = 26;
+const BARRETT_R: i64 = 0x4000000; // 2^26
+
+/// This is calculated as ⌊(BARRETT_R / FIELD_MODULUS) + 1/2⌋
+const BARRETT_MULTIPLIER: i64 = 20159;
+
+pub(crate) const FIELD_MODULUS: i32 = 3329;
+
+/// Signed Barrett Reduction
+///
+/// Given an input `value`, `barrett_reduce` outputs a representative `result`
+/// such that:
+///
+/// - result ≡ value (mod FIELD_MODULUS)
+/// - the absolute value of `result` is bound as follows:
+///
+/// `|result| ≤ FIELD_MODULUS / 2 · (|value|/BARRETT_R + 1)
+///
+/// In particular, if `|value| < BARRETT_R`, then `|result| < FIELD_MODULUS`.
+#[hax_lib::fstar::options("--z3rlimit 100")]
+#[hax::requires((i64::from(value) >= -BARRETT_R && i64::from(value) <= BARRETT_R))]
+#[hax::ensures(|result| result > -FIELD_MODULUS && result < FIELD_MODULUS &&
+                   result % FIELD_MODULUS == value % FIELD_MODULUS)]
+pub fn barrett_reduce(value: FieldElement) -> FieldElement {
+    let t = i64::from(value) * BARRETT_MULTIPLIER;
+    // assert!(9223372036854775807 - (BARRETT_R >> 1) > t);
+    let t = t + (BARRETT_R >> 1);
+
+    let quotient = t >> BARRETT_SHIFT;
+    // assert!(quotient <= 2147483647_i64 || quotient >= -2147483648_i64);
+    let quotient = quotient as i32;
+
+    // assert!(((quotient as i64) * (FIELD_MODULUS as i64)) < 9223372036854775807);
+    let sub = quotient * FIELD_MODULUS;
+
+    hax::fstar!(r"Math.Lemmas.cancel_mul_mod (v $quotient) 3329");
+
+    value - sub
 }
-
-pub fn panic_with_msg() {
-    panic!("with msg")
-}
-
-#[derive(PartialEq, Eq)]
-struct Foo {
-    field: u8,
-}
-
-const CONSTANT: Foo = Foo { field: 3 };
-
-fn numeric() {
-    let _: usize = 123;
-    let _: isize = -42;
-    let _: isize = 42;
-    let _: i32 = -42;
-    let _: u128 = 22222222222222222222;
-}
-
-pub fn patterns() {
-    match 1u8 {
-        2 => (),
-        _ => (),
-    };
-    match ("hello", (123, ["a", "b"])) {
-        ("hello", (123, _todo)) => (),
-        _ => (),
-    };
-    match (Foo { field: 4 }) {
-        CONSTANT => (), // Note [CONSTANT] is not a free variable here, we're really matching against the *value* of CONSTANT
-        _ => (),
-    };
-}
-
-fn casts(x8: u8, x16: u16, x32: u32, x64: u64, xs: usize) {
-    let _: u64 = x8 as u64 + x16 as u64 + x32 as u64 + x64 as u64 + xs as u64;
-    let _: u32 = x8 as u32 + x16 as u32 + x32 as u32 + x64 as u32 + xs as u32;
-    let _: u16 = x8 as u16 + x16 as u16 + x32 as u16 + x64 as u16 + xs as u16;
-    let _: u8 = x8 as u8 + x16 as u8 + x32 as u8 + x64 as u8 + xs as u8;
-    let _: i64 = x8 as i64 + x16 as i64 + x32 as i64 + x64 as i64 + xs as i64;
-    let _: i32 = x8 as i32 + x16 as i32 + x32 as i32 + x64 as i32 + xs as i32;
-    let _: i16 = x8 as i16 + x16 as i16 + x32 as i16 + x64 as i16 + xs as i16;
-    let _: i8 = x8 as i8 + x16 as i8 + x32 as i8 + x64 as i8 + xs as i8;
-}
-
-pub fn empty_array() {
-    let _: &[u8] = &[];
-}
-
-/// https://github.com/hacspec/hax/issues/500
-fn fn_pointer_cast() {
-    let f: fn(&u32) -> &u32 = |x| x;
-}
-
-const null: char = '\0';
