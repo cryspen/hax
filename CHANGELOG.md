@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Change to the Rust Engine:
+ - Add a resugaring `FunctionsToConstants` (#1559)
+
 ## 0.3.4
 
 The release of `0.3.3` got troubles because of the new Rust Engine crates.
