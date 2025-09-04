@@ -179,6 +179,11 @@ impl LeanPrinter {
         }
     }
 
+    /// Renders a single symbol, used for anonymous implementations of typeclasses
+    pub fn render_symbol(&self, symbol: Symbol) -> String {
+        self.escape(symbol.to_string())
+    }
+
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
         let id = self
@@ -325,22 +330,47 @@ set_option linter.unusedVariables false
         }
 
         /// Render generics, adding a space after each parameter
-        fn generics(&'a self, generics: &'b Generics) -> DocBuilder<'a, Self, A> {
+        fn generics(
+            &'a self,
+            Generics {
+                params,
+                constraints,
+            }: &'b Generics,
+        ) -> DocBuilder<'a, Self, A> {
             // TODO : The lean backend should not ignore constraints on generic params, see
             // https://github.com/cryspen/hax/issues/1636
-            concat!(generics.params.iter().map(|param| {
-                match param.kind {
-                    GenericParamKind::Lifetime => unreachable!(),
-                    GenericParamKind::Type => docs![param, reflow!(" : Type")]
-                        .parens()
-                        .group()
-                        .append(line!()),
-                    GenericParamKind::Const { .. } => {
-                        todo!("-- to debug const param run: {}", DebugJSON(param))
+            docs![
+                concat!(params.iter().map(|param| {
+                    match param.kind {
+                        GenericParamKind::Lifetime => unreachable!(),
+                        GenericParamKind::Type => docs![param, reflow!(" : Type")]
+                            .parens()
+                            .group()
+                            .append(line!()),
+                        GenericParamKind::Const { .. } => {
+                            todo!("-- to debug const param run: {}", DebugJSON(param))
+                        }
                     }
-                }
-            }))
+                })),
+                concat!(
+                    constraints
+                        .iter()
+                        .map(|constraint| { docs![constraint].brackets().append(line!()) })
+                )
+                .group(),
+            ]
             .group()
+        }
+
+        fn generic_constraint(
+            &'a self,
+            generic_constraint: &'b GenericConstraint,
+        ) -> DocBuilder<'a, Self, A> {
+            match generic_constraint {
+                GenericConstraint::Lifetime(_) => todo!(),
+                GenericConstraint::Type(impl_ident) => docs![impl_ident],
+                GenericConstraint::Projection(projection_predicate) => todo!(),
+            }
         }
 
         fn expr(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
@@ -658,7 +688,10 @@ set_option linter.unusedVariables false
                         .parens()
                         .group()
                 }
-                _ => todo!(),
+                _ => todo!(
+                    "sorry \n-- unsupported type, to debug run: {}\n",
+                    DebugJSON(ty_kind)
+                ),
             }
         }
 
@@ -758,41 +791,29 @@ set_option linter.unusedVariables false
                 } => match &*body.kind {
                     // TODO: Literal consts. This should be done by a resugaring, see
                     // https://github.com/cryspen/hax/issues/1614
-                    ExprKind::Literal(l) if params.is_empty() => docs![
-                        reflow!("def "),
-                        name,
-                        reflow!(" : "),
-                        &body.ty,
-                        reflow!(" := "),
-                        l
-                    ]
-                    .group(),
-                    _ => {
-                        let generics = (!generics.params.is_empty()).then_some(
-                            docs![intersperse!(&generics.params, line!()).braces().group()].group(),
-                        );
-                        docs![
-                            docs![
-                                reflow!("def "),
-                                name,
-                                softline!(),
-                                generics,
-                                softline!(),
-                                docs![intersperse!(params, line!())].group(),
-                                line!(),
-                                ": Result",
-                                softline!(),
-                                &body.ty,
-                                line!(),
-                                ":= do",
-                            ]
-                            .group(),
-                            line!(),
-                            &*body.kind
-                        ]
-                        .group()
-                        .nest(INDENT)
+                    ExprKind::Literal(l) if params.is_empty() => {
+                        docs!["def ", name, reflow!(" : "), &body.ty, reflow!(" := "), l].group()
                     }
+                    _ => docs![
+                        docs![
+                            reflow!("def "),
+                            name,
+                            softline!(),
+                            generics,
+                            softline!(),
+                            docs![intersperse!(params, line!())].group(),
+                            line!(),
+                            ": Result ",
+                            &body.ty,
+                            line!(),
+                            ":= do",
+                        ]
+                        .group(),
+                        line!(),
+                        &*body.kind
+                    ]
+                    .group()
+                    .nest(INDENT),
                 },
                 ItemKind::TyAlias {
                     name,
@@ -870,6 +891,40 @@ set_option linter.unusedVariables false
                         ]
                     }
                 }
+                ItemKind::Trait {
+                    name,
+                    generics,
+                    items,
+                } => {
+                    docs![
+                        docs!["class", softline!(), name, line!(), generics, "where"]
+                            .nest(INDENT)
+                            .group(),
+                        docs![hardline!(), intersperse!(items, hardline!())].nest(INDENT)
+                    ]
+                }
+                ItemKind::Impl {
+                    generics,
+                    self_ty,
+                    of_trait: (trait_, args),
+                    items,
+                    parent_bounds,
+                    safety,
+                } => docs![
+                    docs![
+                        "instance",
+                        line!(),
+                        generics,
+                        ":",
+                        line!(),
+                        docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))].group(),
+                        line!(),
+                        "where",
+                    ]
+                    .group()
+                    .nest(INDENT),
+                    docs![hardline!(), intersperse!(items, hardline!())].nest(INDENT),
+                ],
                 _ => todo!("-- to debug missing item run: {}", DebugJSON(item_kind)),
             }
         }
@@ -882,15 +937,111 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn variant(&'a self, variant: &'b Variant) -> DocBuilder<'a, Self, A> {
+        fn trait_item(
+            &'a self,
+            TraitItem {
+                meta,
+                kind,
+                generics,
+                ident,
+            }: &'b TraitItem,
+        ) -> DocBuilder<'a, Self, A> {
+            let name = self.render_last(ident);
+            docs![match kind {
+                TraitItemKind::Fn(ty) => {
+                    // TODO: should be treated directly by name rendering, see :
+                    // https://github.com/cryspen/hax/issues/1646
+                    if ident.is_precondition() {
+                        docs!["-- precondition for ", name, " not printed"]
+                    } else if ident.is_postcondition() {
+                        docs!["-- postcondition for ", name, " not printed"]
+                    } else {
+                        docs![name, reflow!(" : "), ty].nest(INDENT)
+                    }
+                }
+                TraitItemKind::Type(constraints) => {
+                    docs![
+                        name.clone(),
+                        reflow!(" : Type"),
+                        concat!(constraints.iter().enumerate().map(|(i, c)| docs![
+                            hardline!(),
+                            format!("_constr_{}_{i}", name),
+                            reflow!(" : "),
+                            c
+                        ]))
+                    ]
+                }
+                _ => todo!("-- to debug missing trait item run: {}", DebugJSON(kind)),
+            }]
+        }
+
+        fn impl_item(
+            &'a self,
+            ImplItem {
+                meta,
+                generics,
+                kind,
+                ident,
+            }: &'b ImplItem,
+        ) -> DocBuilder<'a, Self, A> {
+            let name = self.render_last(ident);
+            match kind {
+                ImplItemKind::Type { ty, parent_bounds } => todo!(),
+                ImplItemKind::Fn { body, params } => {
+                    if ident.is_precondition() {
+                        docs!["-- precondition for ", name, " not printed"]
+                    } else if ident.is_postcondition() {
+                        docs!["-- postcondition for ", name, " not printed"]
+                    } else {
+                        docs![
+                            name,
+                            line!(),
+                            intersperse!(params, line!()).group(),
+                            reflow!(" := do "),
+                            body
+                        ]
+                        .group()
+                        .nest(INDENT)
+                    }
+                }
+                ImplItemKind::Resugared(resugared_impl_item_kind) => todo!(),
+            }
+        }
+
+        fn impl_ident(
+            &'a self,
+            ImplIdent { goal, name }: &'b ImplIdent,
+        ) -> DocBuilder<'a, Self, A> {
+            docs![goal]
+        }
+
+        fn trait_goal(
+            &'a self,
+            TraitGoal { trait_, args }: &'b TraitGoal,
+        ) -> DocBuilder<'a, Self, A> {
+            docs![trait_, concat!(args.iter().map(|arg| docs![line!(), arg]))]
+                .parens()
+                .nest(INDENT)
+                .group()
+        }
+
+        fn variant(
+            &'a self,
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            }: &'b Variant,
+        ) -> DocBuilder<'a, Self, A> {
             docs![
-                self.render_last(&variant.name),
+                self.render_last(&name),
                 softline!(),
-                if variant.is_record {
+                if *is_record {
                     // Use named the arguments, keeping only the head of the identifier
                     docs![
                         intersperse!(
-                            variant.arguments.iter().map(|(id, ty, _)| {
+                            arguments.iter().map(|(id, ty, _)| {
                                 docs![self.render_last(id), reflow!(" : "), ty]
                                     .parens()
                                     .group()
@@ -906,8 +1057,7 @@ set_option linter.unusedVariables false
                     docs![
                         reflow!(" : "),
                         concat!(
-                            variant
-                                .arguments
+                            arguments
                                 .iter()
                                 .map(|(_, ty, _)| { docs![ty, reflow!(" -> ")] })
                         )
