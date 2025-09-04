@@ -67,7 +67,7 @@ impl Parse for AttributeArgs {
 
                         ResugaredExprKind, ResugaredTyKind, ResugaredPatKind,
                         ResugaredImplItemKind, ResugaredTraitItemKind, ResugaredItemKind,
-                        
+
                         FunApp, NullaryName, UnaryName, BinaryName, TernaryName
                     }.into(),
                     _ => {
