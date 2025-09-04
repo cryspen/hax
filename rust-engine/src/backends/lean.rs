@@ -5,12 +5,7 @@
 //! source maps).
 
 use super::prelude::*;
-use crate::resugarings::BinOp;
-
-mod binops {
-    pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
-    pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
-}
+use crate::resugarings;
 
 /// The Lean printer
 #[derive(Default)]
@@ -19,16 +14,7 @@ impl_doc_allocator_for!(LeanPrinter);
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(BinOp::new(&[
-            binops::add(),
-            binops::sub(),
-            binops::mul(),
-            binops::rem(),
-            binops::div(),
-            binops::shr(),
-            binops::logical_op_and(),
-            binops::logical_op_or(),
-        ]))]
+        vec![Box::new(resugarings::FunctionApplications)]
     }
 
     const NAME: &str = "Lean";
@@ -155,25 +141,7 @@ set_option linter.unusedVariables false
                         unreachable!()
                     }
                 }
-                ExprKind::App {
-                    head,
-                    args,
-                    generic_args,
-                    bounds_impls: _,
-                    trait_: _,
-                } => {
-                    let generic_args = (!generic_args.is_empty()).then_some(
-                        docs![
-                            line!(),
-                            self.intersperse(generic_args, line!()).nest(INDENT)
-                        ]
-                        .group(),
-                    );
-                    let args = (!args.is_empty()).then_some(
-                        docs![line!(), intersperse!(args, line!()).nest(INDENT)].group(),
-                    );
-                    docs!["← ", head, generic_args, args].parens().group()
-                }
+                ExprKind::App { .. } => unreachable!("See resugaring [FunctionApplications]"),
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => {
                     docs!["#v[", intersperse!(exprs, reflow!(", ")).nest(INDENT)].group()
@@ -254,38 +222,49 @@ set_option linter.unusedVariables false
             resugared_expr_kind: &'b ResugaredExprKind,
         ) -> DocBuilder<'a, Self, A> {
             match resugared_expr_kind {
-                ResugaredExprKind::BinOp {
-                    op,
-                    lhs,
-                    rhs,
-                    generic_args: _,
+                ResugaredExprKind::FunApp {
+                    app,
+                    head,
+                    generic_args,
                     bounds_impls: _,
                     trait_: _,
-                } => {
-                    let symbol = if op == &binops::add() {
-                        "+?"
-                    } else if op == &binops::sub() {
-                        "-?"
-                    } else if op == &binops::mul() {
-                        "*?"
-                    } else if op == &binops::div() {
-                        "/?"
-                    } else if op == &binops::rem() {
-                        "%?"
-                    } else if op == &binops::shr() {
-                        ">>>?"
-                    } else if op == &binops::logical_op_and() {
-                        "&&"
-                    } else if op == &binops::logical_op_or() {
-                        "||"
-                    } else {
-                        unreachable!()
-                    };
-                    docs!["← ", lhs, softline!(), symbol, softline!(), rhs]
-                        .group()
-                        .parens()
+                } => match app {
+                    FunApp::Binary(op, [lhs, rhs]) => {
+                        let op = match op {
+                            BinaryName::Add => "+?",
+                            BinaryName::Sub => "-?",
+                            BinaryName::Mul => "*?",
+                            BinaryName::Rem => "%?",
+                            BinaryName::Div => "/?",
+                            BinaryName::Shr => ">>>?",
+                            BinaryName::Shl => "<<<?",
+                            BinaryName::LogicalAnd => "&&",
+                            BinaryName::LogicalOr => "||",
+                        };
+                        // This monad lifting should be handled by a phase/resugaring, see
+                        // https://github.com/cryspen/hax/issues/1620
+                        Some(
+                            docs!["← ", lhs, softline!(), op, softline!(), rhs]
+                                .group()
+                                .parens(),
+                        )
+                    }
+                    _ => None,
                 }
-                _ => todo!(),
+                .unwrap_or_else(|| {
+                    let args = app.args();
+                    let generic_args = (!generic_args.is_empty()).then_some(
+                        docs![
+                            line!(),
+                            self.intersperse(generic_args, line!()).nest(INDENT)
+                        ]
+                        .group(),
+                    );
+                    let args = (!args.is_empty()).then_some(
+                        docs![line!(), intersperse!(args, line!()).nest(INDENT)].group(),
+                    );
+                    docs!["← ", head, generic_args, args].parens().group()
+                }),
             }
         }
 
