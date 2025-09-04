@@ -329,7 +329,7 @@ mod rustc_invariant_handling {
 
     impl ErrorDummyValue for DefId {
         fn error_dummy_value(_: Permit) -> Self {
-            names::rust_primitives::hax::failure()
+            names::rust_primitives::hax::failure().def_id
         }
     }
 
@@ -528,7 +528,7 @@ pub struct PathSegment<Kind = AnyKind> {
     kind: Kind,
 }
 
-impl PathSegment {
+impl<K> PathSegment<K> {
     /// Returns the underlying [`DefId`].
     pub fn identifier(&self) -> &DefId {
         &self.identifier
@@ -545,7 +545,7 @@ impl PathSegment {
     }
 
     /// Returns the kind of this segment as an [`AnyKind`].
-    pub fn kind(&self) -> &AnyKind {
+    pub fn kind(&self) -> &K {
         &self.kind
     }
 }
