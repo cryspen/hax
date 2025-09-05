@@ -22,4 +22,8 @@ Notation "'t_POS'" := N.
 Notation "'POS_ZERO'" := N0.
 Notation "'POS_POS'" := Npos.
 
+Notation "'Core_Base_Spec_Binary_Pos.t_POS'" := N.
+Notation "'Core_Base_Spec_Binary_Pos.POS_ZERO'" := N0.
+Notation "'Core_Base_Spec_Binary_Pos.POS_POS'" := Npos.
+
 Definition match_pos (s : t_HaxInt) : t_POS := s.
