@@ -109,14 +109,24 @@ impl<'a, 'b, A: 'a + Clone, P: PrettyAst<'a, 'b, A>, T: 'b + serde::Serialize> P
 
 #[macro_export]
 /// Similar to [`std::todo`], but returns a document instead of panicking with a message.
+/// Also, `todo_document!` accepts a `issue #123` prefix to point to a specific issue number.
 macro_rules! todo_document {
+    ($allocator:ident, issue $issue:literal) => {
+        {return $allocator.todo_document(&format!("TODO_LINE_{}", std::line!()), Some($issue));}
+    };
+    ($allocator:ident, issue $issue:literal, $($tt:tt)*) => {
+        {
+            let message = format!($($tt)*);
+            return $allocator.todo_document(&message, Some($issue));
+        }
+    };
     ($allocator:ident,) => {
-        {return $allocator.todo_document(&format!("TODO_LINE_{}", std::line!()));}
+        {return $allocator.todo_document(&format!("TODO_LINE_{}", std::line!()), None);}
     };
     ($allocator:ident, $($tt:tt)*) => {
         {
             let message = format!($($tt)*);
-            return $allocator.todo_document(&message);
+            return $allocator.todo_document(&message, None);
         }
     };
 }
@@ -157,6 +167,7 @@ macro_rules! install_pretty_helpers {
         $crate::printer::pretty_ast::install_pretty_helpers!(
             @$allocator,
             #[doc = ::std::concat!("Proxy macro for [`", stringify!($crate), "::printer::pretty_ast::todo_document`] that automatically uses `", stringify!($allocator),"` as allocator.")]
+            #[doc = ::std::concat!(r#"Example: `disambiguated_todo!("Error message")` or `disambiguated_todo!(issue #123, "Error message with issue attached")`."#)]
             disambiguated_todo{$crate::printer::pretty_ast::todo_document!},
             #[doc = ::std::concat!("Proxy macro for [`pretty::docs`] that automatically uses `", stringify!($allocator),"` as allocator.")]
             docs{pretty::docs!},
@@ -203,6 +214,28 @@ macro_rules! install_pretty_helpers {
 }
 pub use install_pretty_helpers;
 
+// This module tracks a span information via a global mutex, because our
+// printers cannot really carry information in a nice way. See issue
+// https://github.com/cryspen/hax/issues/1667. Once addressed this can go away.
+mod default_global_span_context {
+    use super::Span;
+
+    use std::sync::{LazyLock, Mutex};
+    static STATE: LazyLock<Mutex<Option<Span>>> = LazyLock::new(|| Mutex::new(None));
+
+    pub(super) fn with_span<T>(span: Span, action: impl Fn() -> T) -> T {
+        let previous_span = STATE.lock().unwrap().clone();
+        *STATE.lock().unwrap() = Some(span);
+        let result = action();
+        *STATE.lock().unwrap() = previous_span;
+        result
+    }
+
+    pub(super) fn get_ambiant_span() -> Option<Span> {
+        STATE.lock().unwrap().clone()
+    }
+}
+
 macro_rules! mk {
     ($($ty:ident),*) => {
         pastey::paste! {
@@ -237,9 +270,32 @@ macro_rules! mk {
             /// that implicitely use `self` as allocator. Take a look at a
             /// printer in the [`backends`] module for an example.
             pub trait PrettyAst<'a, 'b, A: 'a + Clone>: DocAllocator<'a, A> + Sized {
+                /// A name for this instance of `PrettyAst`.
+                /// Useful for diagnostics and debugging.
+                const NAME: &'static str;
+
+                /// Emit a diagnostic with proper context and span.
+                fn emit_diagnostic(&'a self, kind: hax_types::diagnostics::Kind) {
+                    let span = default_global_span_context::get_ambiant_span().unwrap_or_else(|| Span::dummy());
+                    use crate::printer::pretty_ast::diagnostics::{DiagnosticInfo, Context};
+                    (DiagnosticInfo {
+                        context: Context::Printer(Self::NAME.to_string()),
+                        span,
+                        kind
+                    }).emit()
+                }
+
                 /// Produce a non-panicking placeholder document. In general, prefer the use of the helper macro [`todo_document!`].
-                fn todo_document(&'a self, message: &str) -> DocBuilder<'a, Self, A> {
+                fn todo_document(&'a self, message: &str, issue_id: Option<u32>) -> DocBuilder<'a, Self, A> {
+                    self.emit_diagnostic(hax_types::diagnostics::Kind::Unimplemented {
+                        issue_id,
+                        details: Some(message.into()),
+                    });
                     self.as_string(message)
+                }
+                /// Execute an action with a span hint. Useful for errors.
+                fn with_span<T>(&self, span: Span, action: impl Fn(&Self) -> T) -> T {
+                    default_global_span_context::with_span(span, || action(self))
                 }
                 /// Produce a structured error document for an unimplemented
                 /// method.
@@ -250,7 +306,12 @@ macro_rules! mk {
                 /// of text that includes the method name and a JSON handle for
                 /// the AST fragment (via [`DebugJSON`]).
                 fn unimplemented_method(&'a self, method: &str, ast: ast::fragment::FragmentRef<'_>) -> DocBuilder<'a, Self, A> {
-                    self.text(format!("`{method}` unimpl, {}", DebugJSON(ast))).parens()
+                    let debug_json = DebugJSON(ast).to_string();
+                    self.emit_diagnostic(hax_types::diagnostics::Kind::Unimplemented {
+                        issue_id: None,
+                        details: Some(format!("The method `{method}` is not implemented in the backend {}. To show the AST fragment that could not be printed, run {debug_json}.", Self::NAME)),
+                    });
+                    self.text(format!("`{method}` unimpl, {debug_json}", )).parens()
                 }
                 $(
                     #[doc = "Define how the printer formats a value of this AST type."]
