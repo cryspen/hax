@@ -68,7 +68,7 @@ impl Parse for AttributeArgs {
                         ResugaredExprKind, ResugaredTyKind, ResugaredPatKind,
                         ResugaredImplItemKind, ResugaredTraitItemKind, ResugaredItemKind,
 
-                        FunApp, NullaryName, UnaryName, BinaryName, TernaryName
+                        FunApp, UnaryName, BinaryName
                     }.into(),
                     _ => {
                         return Err(syn::Error::new_spanned(

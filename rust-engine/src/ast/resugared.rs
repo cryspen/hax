@@ -48,8 +48,6 @@ mod fun_app {
     /// Symbols recognized by the engine comes with static guarantees about their arity.
     /// This enum encodes a map between list of known names and static aritites.
     pub enum FunApp {
-        /// A nullary application
-        Nullary(NullaryName),
         /// An unary application
         Unary(UnaryName, [Expr; 1]),
         /// A binary application
@@ -70,7 +68,6 @@ mod fun_app {
                     return None;
                 };
                 Some(match args {
-                    [] => Self::Nullary(NullaryName::from_global_id(head.clone())?),
                     [a] => Self::Unary(UnaryName::from_global_id(head.clone())?, [a.clone()]),
                     [a, b] => Self::Binary(
                         BinaryName::from_global_id(head.clone())?,
@@ -87,7 +84,6 @@ mod fun_app {
         /// Reconstruct a list of argument from a `FunApp`.
         pub fn args(&self) -> &[Expr] {
             match self {
-                Self::Nullary(_) => &[],
                 Self::Unary(_, args) => &args[..],
                 Self::Binary(_, args) => &args[..],
                 Self::Unknown { args } => args,
@@ -157,10 +153,6 @@ mod fun_app {
 
     mk_enum! {
         #[derive_group_for_ast]
-        /// The names corresponding to callable items of arity 0
-        pub enum NullaryName {}
-
-        #[derive_group_for_ast]
         /// The names corresponding to callable items of arity 1
         pub enum UnaryName {
             DerefOp = crate::names::rust_primitives::hax::deref_op(),
@@ -178,11 +170,6 @@ mod fun_app {
             Shl = binops::shl(),
             LogicalAnd = binops::logical_op_and(),
             LogicalOr = binops::logical_op_or(),
-        }
-
-        #[derive_group_for_ast]
-        /// The names corresponding to callable items of arity 2
-        pub enum TernaryName {
         }
     }
 }
