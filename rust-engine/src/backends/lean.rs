@@ -30,8 +30,6 @@ impl Printer for LeanPrinter {
             binops::logical_op_or(),
         ]))]
     }
-
-    const NAME: &str = "Lean";
 }
 
 const INDENT: isize = 2;
@@ -94,6 +92,8 @@ const _: () = {
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
 
     impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for LeanPrinter {
+        const NAME: &'static str = "Lean";
+
         fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
             let items = &module.items;
             docs![

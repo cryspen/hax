@@ -68,4 +68,6 @@ pub enum Context {
     Import,
     /// Error during the projection from idenitfiers to views
     NameView,
+    /// Error in a printer
+    Printer(String),
 }

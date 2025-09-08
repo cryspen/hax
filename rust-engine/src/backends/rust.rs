@@ -12,8 +12,6 @@ impl Printer for RustPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![]
     }
-
-    const NAME: &'static str = "Rust";
 }
 
 const INDENT: isize = 4;
@@ -43,6 +41,8 @@ const _: () = {
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
 
     impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for RustPrinter {
+        const NAME: &'static str = "Rust";
+
         fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
             intersperse!(&module.items, docs![hardline!(), hardline!()])
         }
