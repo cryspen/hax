@@ -63,20 +63,22 @@ mod fun_app {
     impl FunApp {
         /// Tries to destruct a function application to produce a `FunApp`.
         pub fn destruct_function_application(head: &Expr, args: &[Expr]) -> Self {
-            (|| {
+            #[inline]
+            fn inner(head: &Expr, args: &[Expr]) -> Option<FunApp> {
                 let ExprKind::GlobalId(head) = &*head.kind else {
                     return None;
                 };
                 Some(match args {
-                    [a] => Self::Unary(UnaryName::from_global_id(head.clone())?, [a.clone()]),
-                    [a, b] => Self::Binary(
+                    [a] => FunApp::Unary(UnaryName::from_global_id(head.clone())?, [a.clone()]),
+                    [a, b] => FunApp::Binary(
                         BinaryName::from_global_id(head.clone())?,
                         [a.clone(), b.clone()],
                     ),
                     _ => return None,
                 })
-            })()
-            .unwrap_or_else(|| Self::Unknown {
+            }
+
+            inner(head, args).unwrap_or_else(|| Self::Unknown {
                 args: args.to_vec(),
             })
         }
