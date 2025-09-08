@@ -1,6 +1,7 @@
 //! The Rust engine of hax.
 
 #![feature(rustc_private)]
+#![feature(box_patterns)]
 #![warn(
     rustdoc::broken_intra_doc_links,
     missing_docs,

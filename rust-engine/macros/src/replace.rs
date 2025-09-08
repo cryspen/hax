@@ -66,7 +66,9 @@ impl Parse for AttributeArgs {
                         GenericConstraint, ErrorNode, Module,
 
                         ResugaredExprKind, ResugaredTyKind, ResugaredPatKind,
-                        ResugaredImplItemKind, ResugaredTraitItemKind, ResugaredItemKind
+                        ResugaredImplItemKind, ResugaredTraitItemKind, ResugaredItemKind,
+
+                        FunApp, UnaryName, BinaryName
                     }.into(),
                     _ => {
                         return Err(syn::Error::new_spanned(
