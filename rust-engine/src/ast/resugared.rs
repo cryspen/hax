@@ -136,6 +136,7 @@ mod fun_app {
                 #[allow(unused_variables)] // in case of empty enums
                 pub fn from_global_id(global_id: GlobalId) -> Option<$enum_name> {
                     $(
+                        // TODO: rewrite as a pattern matching when https://github.com/cryspen/hax/issues/1666 is addressed
                         if global_id == $name {
                             return Some($enum_name::$variant);
                         }
