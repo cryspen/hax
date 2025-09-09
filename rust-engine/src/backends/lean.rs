@@ -220,6 +220,13 @@ impl LeanPrinter {
     }
 }
 
+/// Render parameters, adding a line after each parameter
+impl<'a, 'b, A: 'a + Clone> Pretty<'a, LeanPrinter, A> for &'b Vec<Param> {
+    fn pretty(self, allocator: &'a LeanPrinter) -> DocBuilder<'a, LeanPrinter, A> {
+        allocator.params(self)
+    }
+}
+
 #[prepend_associated_functions_with(install_pretty_helpers!(self: Self))]
 const _: () = {
     // Boilerplate: define local macros to disambiguate otherwise `std` macros.
@@ -233,6 +240,11 @@ const _: () = {
         ($a:expr, $sep:expr) => {
             docs![concat!($a.iter().map(|a| docs![a, $sep]))]
         };
+    }
+    macro_rules! interline {
+        [$($e:expr),*] => {
+            docs![$($e, line!(),)*].group()
+        }
     }
 
     // Methods for handling arguments of variants (or struct constructor)
@@ -284,6 +296,14 @@ const _: () = {
         {
             macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(fields.iter().map(|(_, e)| e), line!())].group()
+        }
+
+        /// Prints parameters of functions (items, trait items, impl items)
+        fn params<'a, 'b, A: 'a + Clone>(
+            &'a self,
+            params: &'b Vec<Param>,
+        ) -> DocBuilder<'a, Self, A> {
+            zip_with!(params, line!())
         }
     }
 
@@ -348,7 +368,7 @@ set_option linter.unusedVariables false
                         }
                     }
                 })),
-                zip_with!(constraints, line!()).group(),
+                zip_with!(constraints, line!()),
             ]
             .group()
         }
@@ -370,7 +390,7 @@ set_option linter.unusedVariables false
             docs![&*pat.kind, reflow!(" : "), &pat.ty].parens().group()
         }
 
-        fn expr(&'a self, Expr { kind, ty, meta }: &'b Expr) -> DocBuilder<'a, Self, A> {
+        fn expr(&'a self, Expr { kind, ty, meta: _ }: &'b Expr) -> DocBuilder<'a, Self, A> {
             match &**kind {
                 ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
                     docs![int_lit, reflow!(" : "), ty].parens().group()
@@ -662,7 +682,7 @@ set_option linter.unusedVariables false
                     }
                 }
                 TyKind::Arrow { inputs, output } => {
-                    docs![zip_with![inputs, reflow!(" -> ")], "Result ", output]
+                    docs![zip_with![inputs, reflow!(" -> ")], "Result ", output].group()
                 }
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
@@ -782,19 +802,14 @@ set_option linter.unusedVariables false
                     }
                     _ => docs![
                         docs![
-                            reflow!("def "),
-                            name,
-                            softline!(),
+                            docs!["def", line!(), name].group(),
+                            line!(),
                             generics,
-                            softline!(),
-                            docs![intersperse!(params, line!())].group(),
+                            params,
+                            docs![": Result", line!(), &body.ty].group(),
                             line!(),
-                            ": Result ",
-                            &body.ty,
-                            line!(),
-                            ":= do",
-                        ]
-                        .group(),
+                            ":= do"
+                        ],
                         line!(),
                         &*body
                     ]
@@ -854,7 +869,8 @@ set_option linter.unusedVariables false
                         .group()
                     } else {
                         // Enums
-                        let applied_name: DocBuilder<'a, Self, A> = docs![name, generics].group();
+                        let applied_name: DocBuilder<'a, Self, A> =
+                            docs![name, line!(), generics].group();
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
@@ -872,11 +888,18 @@ set_option linter.unusedVariables false
                     items,
                 } => {
                     docs![
-                        docs!["class", softline!(), name, line!(), generics, "where"]
-                            .nest(INDENT)
-                            .group(),
-                        docs![hardline!(), intersperse!(items, hardline!())].nest(INDENT)
+                        docs![docs![reflow!("class "), name], line!(), generics, "where"].group(),
+                        hardline!(),
+                        intersperse!(
+                            items.iter().filter(|item| {
+                                // TODO: should be treated directly by name rendering, see :
+                                // https://github.com/cryspen/hax/issues/1646
+                                !(item.ident.is_precondition() || item.ident.is_postcondition())
+                            }),
+                            hardline!()
+                        )
                     ]
+                    .nest(INDENT)
                 }
                 ItemKind::Impl {
                     generics,
@@ -899,7 +922,18 @@ set_option linter.unusedVariables false
                     ]
                     .group()
                     .nest(INDENT),
-                    docs![hardline!(), intersperse!(items, hardline!())].nest(INDENT),
+                    docs![
+                        hardline!(),
+                        intersperse!(
+                            items.iter().filter(|item| {
+                                // TODO: should be treated directly by name rendering, see :
+                                // https://github.com/cryspen/hax/issues/1646
+                                !(item.ident.is_precondition() || item.ident.is_postcondition())
+                            }),
+                            hardline!()
+                        )
+                    ]
+                    .nest(INDENT),
                 ],
                 _ => todo!("-- to debug missing item run: {}", DebugJSON(kind)),
             }
@@ -917,15 +951,7 @@ set_option linter.unusedVariables false
             let name = self.render_last(ident);
             docs![match kind {
                 TraitItemKind::Fn(ty) => {
-                    // TODO: should be treated directly by name rendering, see :
-                    // https://github.com/cryspen/hax/issues/1646
-                    if ident.is_precondition() {
-                        docs!["-- precondition for ", name, " not printed"]
-                    } else if ident.is_postcondition() {
-                        docs!["-- postcondition for ", name, " not printed"]
-                    } else {
-                        docs![name, reflow!(" : "), ty].nest(INDENT)
-                    }
+                    docs![name, reflow!(" : "), ty].nest(INDENT)
                 }
                 TraitItemKind::Type(constraints) => {
                     docs![
@@ -955,28 +981,16 @@ set_option linter.unusedVariables false
             let name = self.render_last(ident);
             match kind {
                 ImplItemKind::Type { ty, parent_bounds } => todo!(),
-                ImplItemKind::Fn { body, params } => {
-                    if ident.is_precondition() {
-                        docs!["-- precondition for ", name, " not printed"]
-                    } else if ident.is_postcondition() {
-                        docs!["-- postcondition for ", name, " not printed"]
-                    } else {
-                        docs![
-                            docs![
-                                name,
-                                line!(),
-                                intersperse!(params, line!()).group(),
-                                line!(),
-                                reflow!(":= do")
-                            ]
-                            .group(),
-                            line!(),
-                            body
-                        ]
-                        .group()
-                        .nest(INDENT)
-                    }
-                }
+                ImplItemKind::Fn { body, params } => docs![
+                    name,
+                    softline!(),
+                    zip_with!(params, line!()).group().align(),
+                    ":= do",
+                    line!(),
+                    body
+                ]
+                .group()
+                .nest(INDENT),
                 ImplItemKind::Resugared(resugared_impl_item_kind) => todo!(),
             }
         }
@@ -1009,7 +1023,8 @@ set_option linter.unusedVariables false
         ) -> DocBuilder<'a, Self, A> {
             docs![
                 self.render_last(&name),
-                softline!(),
+                line!(),
+                // args
                 if *is_record {
                     // Use named the arguments, keeping only the head of the identifier
                     docs![
@@ -1023,12 +1038,14 @@ set_option linter.unusedVariables false
                         )
                         .align()
                         .nest(INDENT),
-                        reflow!(" : ")
+                        line!(),
+                        reflow!(": "),
                     ]
+                    .group()
                 } else {
                     // Use anonymous arguments
                     docs![
-                        reflow!(" : "),
+                        reflow!(": "),
                         concat!(
                             arguments
                                 .iter()
