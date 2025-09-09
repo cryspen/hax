@@ -37,11 +37,11 @@ function msg() {
 
 
 function help() {
-    echo "Libcrux script to extract Rust to F* via hax."
+    echo "Script to extract to F* and place the result in proof-libs"
     echo ""
     echo "Usage: $0 [COMMAND]"
     echo ""
-    echo "Comands:"
+    echo "Commands:"
     echo ""
     grep '[#]>' "$SCRIPT_PATH" | sed 's/[)] #[>]/\t/g'
     echo ""
