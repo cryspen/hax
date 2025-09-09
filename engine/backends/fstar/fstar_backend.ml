@@ -105,6 +105,8 @@ end
 let module_name (ns : string list) : string =
   String.concat ~sep:"." (List.map ~f:(map_first_letter String.uppercase) ns)
 
+(** Set to true when extracting core_models (HAX_CORE_MODELS_EXTRACTION_MODE set
+    to 'on') *)
 let hax_core_models_extraction =
   Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
   |> [%equal: string option] (Some "on")
