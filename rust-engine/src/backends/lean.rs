@@ -232,19 +232,15 @@ const _: () = {
     // Boilerplate: define local macros to disambiguate otherwise `std` macros.
     #[allow(unused)]
     macro_rules! todo {($($tt:tt)*) => {disambiguated_todo!($($tt)*)};}
-    #[allow(unused)]
+
     macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
-    #[allow(unused)]
+
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
+
     macro_rules! zip_with {
         ($a:expr, $sep:expr) => {
-            docs![concat!($a.iter().map(|a| docs![a, $sep]))]
+            docs![concat!($a.into_iter().map(|a| docs![a, $sep]))]
         };
-    }
-    macro_rules! interline {
-        [$($e:expr),*] => {
-            docs![$($e, line!(),)*].group()
-        }
     }
 
     // Methods for handling arguments of variants (or struct constructor)
@@ -887,9 +883,34 @@ set_option linter.unusedVariables false
                     generics,
                     items,
                 } => {
+                    // Type parameters are also parameters of the class, but constraints are fields of the class
                     docs![
-                        docs![docs![reflow!("class "), name], line!(), generics, "where"].group(),
+                        docs![
+                            docs![reflow!("class "), name],
+                            line!(),
+                            zip_with!(&generics.params, line!()).group(),
+                            "where"
+                        ]
+                        .group(),
                         hardline!(),
+                        zip_with!(
+                            generics.constraints.iter().enumerate().map(|(i, c)| {
+                                match c {
+                                    GenericConstraint::Type(tc_constraint) => docs![
+                                        format!("_constr_{}_{i}", tc_constraint.name),
+                                        reflow!(" :"),
+                                        line!(),
+                                        &tc_constraint.goal
+                                    ]
+                                    .nest(INDENT)
+                                    .group()
+                                    .brackets(),
+                                    GenericConstraint::Lifetime(_) => unreachable!(),
+                                    GenericConstraint::Projection(projection_predicate) => todo!(),
+                                }
+                            }),
+                            hardline!()
+                        ),
                         intersperse!(
                             items.iter().filter(|item| {
                                 // TODO: should be treated directly by name rendering, see :
@@ -910,11 +931,7 @@ set_option linter.unusedVariables false
                     safety,
                 } => docs![
                     docs![
-                        "instance",
-                        line!(),
-                        generics,
-                        ident,
-                        " :",
+                        docs![reflow!("instance "), ident, line!(), generics, ":"].group(),
                         line!(),
                         docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))].group(),
                         line!(),
@@ -957,12 +974,15 @@ set_option linter.unusedVariables false
                     docs![
                         name.clone(),
                         reflow!(" : Type"),
-                        concat!(constraints.iter().enumerate().map(|(i, c)| docs![
-                            hardline!(),
-                            format!("_constr_{}_{i}", name),
-                            reflow!(" : "),
-                            c
-                        ]))
+                        zip_with!(
+                            constraints.iter().enumerate().map(|(i, c)| docs![
+                                format!("_constr_{}_{i}", c.name),
+                                reflow!(" : "),
+                                &c.goal
+                            ]
+                            .brackets()),
+                            hardline!()
+                        ),
                     ]
                 }
                 _ => todo!("-- to debug missing trait item run: {}", DebugJSON(kind)),
@@ -993,13 +1013,6 @@ set_option linter.unusedVariables false
                 .nest(INDENT),
                 ImplItemKind::Resugared(resugared_impl_item_kind) => todo!(),
             }
-        }
-
-        fn impl_ident(
-            &'a self,
-            ImplIdent { goal, name }: &'b ImplIdent,
-        ) -> DocBuilder<'a, Self, A> {
-            docs![goal]
         }
 
         fn trait_goal(
