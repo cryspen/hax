@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Changes to the Rust Engine:
  - Printers now emit proper diagnostics (PR #1669)
+ - The module `names` now produces `ExplicitDefId`s instead of `DefId`s (#1648)
+ - Add a resugaring `FunctionsToConstants` (#1559)
+ - Drop the tuple nodes of the AST, add resugaring node for tuples (#1662)
+ - Add support for enums and structs to the Lean backend (type definitions,
+   expressions, pattern-matching) (#1623)
+ - Update name rendering infrastructure in the Lean backend (#1623, #1624)
+
+Miscellaneous:
+ - A lean tutorial has been added to the hax website.
 
 ## 0.3.4
 

@@ -465,15 +465,15 @@ fn double_literals_in_ast() {
         )))),
         meta: meta.clone(),
     };
-    let mk_tuple = |exprs| Expr {
-        kind: Box::new(ExprKind::Tuple(exprs)),
+    let mk_array = |exprs| Expr {
+        kind: Box::new(ExprKind::Array(exprs)),
         ty: Ty(Box::new(TyKind::RawPointer)), // wrong type, but this is not important for this test.
         meta: meta.clone(),
     };
     let mut lit_expr_200 = mk_lit_expr(200);
 
     // Creates the expression `[50u8, 100u8, 200u8]`: the last one cannot be doubled, and will cause an error.
-    let mut e = mk_tuple(vec![
+    let mut e = mk_array(vec![
         mk_lit_expr(50),
         mk_lit_expr(100),
         lit_expr_200.clone(),
@@ -500,6 +500,6 @@ fn double_literals_in_ast() {
     // Check that the visitor works as expected
     assert_eq!(
         e,
-        mk_tuple(vec![mk_lit_expr(100), mk_lit_expr(200), lit_expr_200])
+        mk_array(vec![mk_lit_expr(100), mk_lit_expr(200), lit_expr_200])
     );
 }

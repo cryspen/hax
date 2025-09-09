@@ -1,0 +1,1 @@
+This section introduces the Lean backend of hax. It shows the basic setup to use hax and Lean on a Rust crate, and gives an introduction to the basic features that can be used to make Lean proofs about Rust code.

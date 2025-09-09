@@ -81,6 +81,7 @@ plugins:
   - glightbox
   - search
   - blog
+  - awesome-nav
   - mkdocs-nav-weight
   - tags:
       tags_file: RFCs/index.md

@@ -5,19 +5,19 @@ weight: -5
 # Introduction
 
 hax is a tool for high assurance translations of a large subset of
-Rust into formal languages such as [F\*](https://www.fstar-lang.org/) or [Rocq](https://rocq-prover.org/).
+Rust into formal languages such as [F\*](https://www.fstar-lang.org/), [Lean](https://lean-lang.org/) or [Rocq](https://rocq-prover.org/).
 
 ## Usage
 
 Hax is a cargo subcommand. 
 The command `cargo hax` accepts the following subcommands:
 
-* **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`).
+* **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`, `lean`).
 * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
  
 Note:
 
-* `BACKEND` can be `fstar`, `coq`, `easycrypt` or `pro-verif`. `cargo hax into --help`
+* `BACKEND` can be `fstar`, `coq`, `lean`, `easycrypt` or `pro-verif`. `cargo hax into --help`
    gives the full list of supported backends.
 * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
    <BACKEND>` takes options. For instance, you can `cargo hax into

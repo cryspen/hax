@@ -54,7 +54,7 @@ large enough provided by Rust is `u16`.
 Let's define `F` a
 ["newtype"](https://matklad.github.io/2018/06/04/newtype-index-pattern.html):
 a [struct](https://doc.rust-lang.org/book/ch05-00-structs.html) with
-one `u16` field `v`. Notice the refinment annotation on `v`: the
+one `u16` field `v`. Notice the refinement annotation on `v`: the
 extraction of this type `F` via hax will result in a type enforcing
 `v` small enough.
 
