@@ -12,12 +12,12 @@ pub mod index {
         fn index(&self, i: usize) -> &Self::Output;
     }
 
-    impl<T: Clone> Index for crate::primitives::array::Slice<T> {
+    /* impl<T: Clone> Index for crate::primitives::array::Slice<T> {
         type Output = T;
         fn index(&self, i: usize) -> &T {
             crate::primitives::array::slice_index(self, i)
         }
-    }
+    } */
 }
 
 pub mod function {

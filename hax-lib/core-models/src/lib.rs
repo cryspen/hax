@@ -27,33 +27,16 @@
 
 #![allow(dead_code)]
 
-#[path = "core/array.rs"]
-pub mod array;
-pub mod base;
-#[path = "core/borrow.rs"]
-pub mod borrow;
-#[path = "core/clone.rs"]
-pub mod clone;
-#[path = "core/cmp.rs"]
-pub mod cmp;
-#[path = "core/convert.rs"]
-pub mod convert;
+
 #[path = "core/default.rs"]
 pub mod default;
-#[path = "core/error.rs"]
-pub mod error;
 #[path = "core/fmt.rs"]
 pub mod fmt;
-#[path = "core/hash.rs"]
-pub mod hash;
 #[path = "core/ops.rs"]
 pub mod ops;
 #[path = "core/option.rs"]
 pub mod option;
 #[path = "core/panicking.rs"]
 pub mod panicking;
-pub mod primitives;
 #[path = "core/result.rs"]
 pub mod result;
-#[path = "core/slice.rs"]
-pub mod slice;
