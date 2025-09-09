@@ -28,6 +28,7 @@ is just over `255`, the largest integer that fits `u8`. Rust does not
 ensure that functions are *total*: a function might panic at any
 point, or might never terminate.
 
+
 ## Rust and panicking code
 Quoting the chapter [To `panic!` or Not to
 `panic!`](https://doc.rust-lang.org/book/ch09-03-to-panic-or-not-to-panic.html)
@@ -91,9 +92,9 @@ erase your disk, or anything.
 
 The helper crate
 [hax-lib](https://github.com/hacspec/hax/tree/main/hax-lib)
-provdes the `requires`
+provides the `requires`
 [proc-macro](https://doc.rust-lang.org/reference/procedural-macros.html)
-which lets user writting pre-conditions directly in Rust.
+which lets user writing pre-conditions directly in Rust.
 
 ```{.rust .playable}
 #[hax_lib::requires(x < 16)]

@@ -10,9 +10,12 @@ on:
 jobs:
   clippy:
     name: clippy
-    runs-on: linux
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - name: Install clippy
+      run: |
+        rustup component add clippy
     - name: Run clippy
       run: |
         cargo clippy -p hax-rust-engine -- -D warnings --no-deps
