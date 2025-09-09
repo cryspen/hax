@@ -190,15 +190,6 @@ impl LeanPrinter {
         self.escape(id)
     }
 
-    /// Renders expressions with an explicit ascription `(e : ty)`. Used for numeric literals (to
-    /// prevent incorrect inference), etc.
-    fn expr_typed<'a, 'b, A: 'a + Clone>(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
-        install_pretty_helpers!(self: Self);
-        docs![expr.kind(), reflow!(" : "), expr.ty.kind()]
-            .parens()
-            .group()
-    }
-
     /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
     /// numeric literals, etc.
     fn expr_typed_result<'a, 'b, A: 'a + Clone>(
@@ -208,9 +199,9 @@ impl LeanPrinter {
         macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
         install_pretty_helpers!(self: Self);
         docs![
-            expr.kind(),
+            expr,
             reflow!(" : "),
-            docs!["Result", line!(), expr.ty.kind()].group()
+            docs!["Result", line!(), &expr.ty].group()
         ]
         .group()
     }
@@ -225,6 +216,11 @@ const _: () = {
     macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
     #[allow(unused)]
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
+    macro_rules! zip_with {
+        ($a:expr, $sep:expr) => {
+            docs![concat!($a.iter().map(|a| docs![a, $sep]))]
+        };
+    }
 
     // Methods for handling arguments of variants (or struct constructor)
     impl LeanPrinter {
@@ -339,12 +335,7 @@ set_option linter.unusedVariables false
                         }
                     }
                 })),
-                concat!(
-                    constraints
-                        .iter()
-                        .map(|constraint| { docs![constraint].brackets().append(line!()) })
-                )
-                .group(),
+                zip_with!(constraints, line!()).group(),
             ]
             .group()
         }
@@ -354,16 +345,11 @@ set_option linter.unusedVariables false
             generic_constraint: &'b GenericConstraint,
         ) -> DocBuilder<'a, Self, A> {
             match generic_constraint {
-                GenericConstraint::Lifetime(_) => todo!(),
-                GenericConstraint::Type(impl_ident) => docs![impl_ident],
-                GenericConstraint::Projection(projection_predicate) => todo!(),
-            }
-        }
-
-        fn expr(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
-            match *expr.kind {
-                ExprKind::Literal(Literal::Int { .. }) => self.expr_typed(expr),
-                _ => docs![expr.kind()],
+                GenericConstraint::Type(impl_ident) => docs![impl_ident].brackets(),
+                _ => todo!(
+                    "-- to debug generic constraint run: {}",
+                    DebugJSON(generic_constraint)
+                ),
             }
         }
 
@@ -371,8 +357,11 @@ set_option linter.unusedVariables false
             docs![&*pat.kind, reflow!(" : "), &pat.ty].parens().group()
         }
 
-        fn expr_kind(&'a self, expr_kind: &'b ExprKind) -> DocBuilder<'a, Self, A> {
-            match expr_kind {
+        fn expr(&'a self, Expr { kind, ty, meta }: &'b Expr) -> DocBuilder<'a, Self, A> {
+            match &**kind {
+                ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
+                    docs![int_lit, reflow!(" : "), ty].parens().group()
+                }
                 ExprKind::If {
                     condition,
                     then,
@@ -445,7 +434,7 @@ set_option linter.unusedVariables false
                         // TODO : support base expressions. see https://github.com/cryspen/hax/issues/1637
                         todo!(
                             "-- Unsupported base expressions for structs. To see the ast of the item run : {}",
-                            DebugJSON(expr_kind)
+                            DebugJSON(&**kind)
                         )
                     } else {
                         docs![constructor, line!(), self.arguments(fields, is_record)]
@@ -641,11 +630,7 @@ set_option linter.unusedVariables false
         }
 
         fn ty(&'a self, ty: &'b Ty) -> DocBuilder<'a, Self, A> {
-            docs![ty.kind()]
-        }
-
-        fn ty_kind(&'a self, ty_kind: &'b TyKind) -> DocBuilder<'a, Self, A> {
-            match ty_kind {
+            match ty.kind() {
                 TyKind::Primitive(primitive_ty) => docs![primitive_ty],
                 TyKind::App { head, args } => {
                     if args.is_empty() {
@@ -656,11 +641,9 @@ set_option linter.unusedVariables false
                             .group()
                     }
                 }
-                TyKind::Arrow { inputs, output } => docs![
-                    concat![inputs.iter().map(|input| docs![input, reflow!(" -> ")])],
-                    "Result ",
-                    output
-                ],
+                TyKind::Arrow { inputs, output } => {
+                    docs![zip_with![inputs, reflow!(" -> ")], "Result ", output]
+                }
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
                 TyKind::Array { ty, length } => {
@@ -670,7 +653,7 @@ set_option linter.unusedVariables false
                 }
                 _ => todo!(
                     "sorry \n-- unsupported type, to debug run: {}\n",
-                    DebugJSON(ty_kind)
+                    DebugJSON(ty)
                 ),
             }
         }
@@ -760,8 +743,11 @@ set_option linter.unusedVariables false
             docs![&generic_param.ident]
         }
 
-        fn item_kind(&'a self, item_kind: &'b ItemKind) -> DocBuilder<'a, Self, A> {
-            match item_kind {
+        fn item(&'a self, item @ Item { ident, kind, meta }: &'b Item) -> DocBuilder<'a, Self, A> {
+            if !LeanPrinter::printable_item(item) {
+                return nil!();
+            };
+            match kind {
                 ItemKind::Fn {
                     name,
                     generics,
@@ -790,7 +776,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         line!(),
-                        &*body.kind
+                        &*body
                     ]
                     .group()
                     .nest(INDENT),
@@ -841,10 +827,6 @@ set_option linter.unusedVariables false
                                 hardline!()
                             )
                         };
-                        let generics = (!generics.params.is_empty()).then_some(
-                            concat![generics.params.iter().map(|param| docs![param, line!()])]
-                                .group(),
-                        );
                         docs![
                             docs!["structure ", name, line!(), generics, "where"].group(),
                             docs![hardline!(), args].nest(INDENT),
@@ -852,14 +834,7 @@ set_option linter.unusedVariables false
                         .group()
                     } else {
                         // Enums
-                        let applied_name: DocBuilder<'a, Self, A> = docs![
-                            name,
-                            concat!(generics.params.iter().map(|param| match param.kind {
-                                GenericParamKind::Type => docs![line!(), param],
-                                _ => nil!(),
-                            }))
-                        ]
-                        .group();
+                        let applied_name: DocBuilder<'a, Self, A> = docs![name, generics].group();
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
@@ -895,7 +870,8 @@ set_option linter.unusedVariables false
                         "instance",
                         line!(),
                         generics,
-                        ":",
+                        ident,
+                        " :",
                         line!(),
                         docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))].group(),
                         line!(),
@@ -905,15 +881,7 @@ set_option linter.unusedVariables false
                     .nest(INDENT),
                     docs![hardline!(), intersperse!(items, hardline!())].nest(INDENT),
                 ],
-                _ => todo!("-- to debug missing item run: {}", DebugJSON(item_kind)),
-            }
-        }
-
-        fn item(&'a self, item: &'b Item) -> DocBuilder<'a, Self, A> {
-            if LeanPrinter::printable_item(item) {
-                docs![item.kind()]
-            } else {
-                nil!()
+                _ => todo!("-- to debug missing item run: {}", DebugJSON(kind)),
             }
         }
 
@@ -974,10 +942,15 @@ set_option linter.unusedVariables false
                         docs!["-- postcondition for ", name, " not printed"]
                     } else {
                         docs![
-                            name,
+                            docs![
+                                name,
+                                line!(),
+                                intersperse!(params, line!()).group(),
+                                line!(),
+                                reflow!(":= do")
+                            ]
+                            .group(),
                             line!(),
-                            intersperse!(params, line!()).group(),
-                            reflow!(" := do "),
                             body
                         ]
                         .group()
