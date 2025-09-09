@@ -14,8 +14,8 @@ module Make (F : Features.T) =
         let ctx = Diagnostics.Context.Phase phase_id
       end)
 
-      let discard (trait : Ast.concrete_ident) =
-        Concrete_ident.eq_name Core__marker__Sized trait
+let ident_is_sized: Ast.concrete_ident -> bool  =
+   Concrete_ident.eq_name Core__marker__Sized
 
       let visitor =
         let keep (ii : impl_ident) = discard ii.goal.trait |> not in
