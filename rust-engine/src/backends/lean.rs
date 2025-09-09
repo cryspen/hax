@@ -19,16 +19,19 @@ impl_doc_allocator_for!(LeanPrinter);
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(BinOp::new(&[
-            binops::add(),
-            binops::sub(),
-            binops::mul(),
-            binops::rem(),
-            binops::div(),
-            binops::shr(),
-            binops::logical_op_and(),
-            binops::logical_op_or(),
-        ]))]
+        vec![
+            Box::new(BinOp::new(&[
+                binops::add(),
+                binops::sub(),
+                binops::mul(),
+                binops::rem(),
+                binops::div(),
+                binops::shr(),
+                binops::logical_op_and(),
+                binops::logical_op_or(),
+            ])),
+            Box::new(crate::resugarings::Errors),
+        ]
     }
 
     const NAME: &str = "Lean";

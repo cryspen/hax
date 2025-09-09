@@ -196,6 +196,17 @@ impl ConcreteId {
     pub fn into_concrete(self) -> GlobalId {
         GlobalId::Concrete(self)
     }
+
+    pub fn from_def_id(def_id: DefId) -> ConcreteId {
+        ConcreteId {
+            def_id: ExplicitDefId {
+                is_constructor: false,
+                def_id,
+            },
+            moved: None,
+            suffix: None,
+        }
+    }
 }
 
 impl PartialEq<DefId> for GlobalId {

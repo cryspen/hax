@@ -65,3 +65,44 @@ impl Resugaring for BinOp {
         "binop".to_string()
     }
 }
+
+/// Errors resugaring. Transforms error nodes into applications
+/// of the `hax_error` function. This is actually a desugaring
+/// but it is useful at the same time as the resugarings so we
+/// keep it here.
+pub struct Errors;
+
+impl AstVisitorMut for Errors {
+    fn enter_expr(&mut self, x: &mut Expr) {
+        if let ExprKind::Error(ErrorNode { fragment, .. }) = x.kind() {
+            let error_fn = identifiers::global_id::ConcreteId::from_def_id(
+                crate::names::rust_primitives::hax::Failure(),
+            )
+            .into_concrete();
+            let head = Expr {
+                kind: Box::new(ExprKind::GlobalId(error_fn)),
+                ty: x.ty.clone(),
+                meta: x.meta.clone(),
+            };
+            let args = vec![
+                ExprKind::Literal(literals::Literal::String(crate::symbol::Symbol::new(
+                    format!("{:?}", fragment),
+                )))
+                .into_expr(x.meta.span.clone(), x.ty.clone(), Vec::new()),
+            ];
+            *x.kind = ExprKind::App {
+                head,
+                args,
+                generic_args: Vec::new(),
+                bounds_impls: Vec::new(),
+                trait_: None,
+            };
+        }
+    }
+}
+
+impl Resugaring for Errors {
+    fn name(&self) -> String {
+        "errors".to_string()
+    }
+}
