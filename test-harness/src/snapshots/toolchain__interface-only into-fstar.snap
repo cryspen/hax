@@ -30,8 +30,8 @@ diagnostics = []
 "Interface_only.fst" = '''
 module Interface_only
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// This item contains unsafe blocks and raw references, two features
 /// not supported by hax. Thanks to the `-i` flag and the `+:`
@@ -57,7 +57,7 @@ type t_Bar = | Bar : t_Bar
 /// https://github.com/hacspec/hax/issues/616.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl': Core.Convert.t_From t_Bar Prims.unit
+val impl': Core_models.Convert.t_From t_Bar Prims.unit
 
 unfold
 let impl = impl'
@@ -65,7 +65,7 @@ let impl = impl'
 /// If you need to drop the body of a method, please hoist it:
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1': Core.Convert.t_From t_Bar u8
+val impl_1': Core_models.Convert.t_From t_Bar u8
 
 unfold
 let impl_1 = impl_1'
@@ -80,7 +80,7 @@ type t_Holder (v_T: Type0) = { f_value:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global 
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_2': #v_T: Type0 -> Core.Convert.t_From (t_Holder v_T) Prims.unit
+val impl_2': #v_T: Type0 -> Core_models.Convert.t_From (t_Holder v_T) Prims.unit
 
 unfold
 let impl_2 (#v_T: Type0) = impl_2' #v_T
@@ -89,7 +89,7 @@ type t_Param (v_SIZE: usize) = { f_value:t_Array u8 v_SIZE }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_3': v_SIZE: usize -> Core.Convert.t_From (t_Param v_SIZE) Prims.unit
+val impl_3': v_SIZE: usize -> Core_models.Convert.t_From (t_Param v_SIZE) Prims.unit
 
 unfold
 let impl_3 (v_SIZE: usize) = impl_3' v_SIZE
@@ -135,7 +135,7 @@ let impl_T2_for_u8: t_T2 u8 =
 assume
 val padlen': b: t_Slice u8 -> n: usize
   -> Prims.Pure usize
-      (requires (Core.Slice.impl__len #u8 b <: usize) >=. n)
+      (requires (Core_models.Slice.impl__len #u8 b <: usize) >=. n)
       (ensures
         fun out ->
           let out:usize = out in

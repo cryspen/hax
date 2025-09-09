@@ -29,8 +29,8 @@ diagnostics = []
 "Reordering.Independent_cycles.fst" = '''
 module Reordering.Independent_cycles
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let rec c (_: Prims.unit) : Prims.unit = a ()
 
@@ -43,8 +43,8 @@ and b (_: Prims.unit) : Prims.unit = d ()
 "Reordering.Mut_rec.fst" = '''
 module Reordering.Mut_rec
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let rec g (_: Prims.unit) : Prims.unit = f ()
 
@@ -55,8 +55,8 @@ let ff_2_ (_: Prims.unit) : Prims.unit = f ()
 "Reordering.fst" = '''
 module Reordering
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let no_dependency_1_ (_: Prims.unit) : Prims.unit = ()
 

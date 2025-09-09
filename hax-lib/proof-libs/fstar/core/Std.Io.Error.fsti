@@ -1,6 +1,6 @@
 module Std.Io.Error
 
-open Core
+open Core_models
 open FStar.Mul
 
 type t_Error = { f__hax_placeholder:Prims.unit }

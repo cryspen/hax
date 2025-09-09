@@ -1,7 +1,7 @@
 module Coverage.No_spans
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let affected_function (_: Prims.unit) :  Prims.unit -> Prims.unit =
   fun temp_0_ ->
@@ -10,7 +10,7 @@ let affected_function (_: Prims.unit) :  Prims.unit -> Prims.unit =
 
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
-    Core.Ops.Function.f_call #_
+    Core_models.Ops.Function.f_call #_
       #Prims.unit
       #FStar.Tactics.Typeclasses.solve
       (affected_function () <: _)

@@ -234,6 +234,10 @@ module MakeToString (R : VIEW_RENDERER) = struct
 
   let render (i : t) : rendered =
     let Concrete_ident_view.{ mod_path; rel_path } = to_view i in
+    let mod_path =
+      Concrete_ident_view.ModPath.rename_crate "core" "core_models" mod_path
+    in
+
     let path = List.map ~f:R.render_module mod_path in
     (* Retrieve the various maps. *)
     let name_set, memo =

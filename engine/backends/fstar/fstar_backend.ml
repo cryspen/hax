@@ -105,6 +105,12 @@ end
 let module_name (ns : string list) : string =
   String.concat ~sep:"." (List.map ~f:(map_first_letter String.uppercase) ns)
 
+(** Set to true when extracting core_models (HAX_CORE_MODELS_EXTRACTION_MODE set
+    to 'on') *)
+let hax_core_models_extraction =
+  Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
+  |> [%equal: string option] (Some "on")
+
 module Make
     (Attrs : Attrs.WITH_ITEMS)
     (Ctx : sig
@@ -404,7 +410,7 @@ struct
 
   and pimpl_expr span (ie : impl_expr) =
     let some = Option.some in
-    let hax_unstable_impl_exprs = false in
+    let hax_unstable_impl_exprs = hax_core_models_extraction in
     match ie.kind with
     | Concrete tr -> c_trait_goal span tr |> some
     | LocalBound { id } ->
@@ -414,6 +420,10 @@ struct
         F.term @@ F.AST.Var (F.lid_of_id @@ plocal_ident local_ident) |> some
     | ImplApp { impl; _ } when not hax_unstable_impl_exprs ->
         pimpl_expr span impl
+    | Parent { impl; ident }
+      when hax_unstable_impl_exprs && [%matches? Self _] impl.kind ->
+        let trait = "_super_" ^ ident.name in
+        F.term_of_lid [ trait ] |> some
     | Parent { impl; ident } when hax_unstable_impl_exprs ->
         let* impl = pimpl_expr span impl in
         let trait = "_super_" ^ ident.name in
@@ -1815,7 +1825,7 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
       |> Set.to_list
       |> List.filter ~f:(fun m ->
              (* Special treatment for modules handled specifically in our F* libraries *)
-             String.is_prefix ~prefix:"Core." m |> not
+             String.is_prefix ~prefix:"Core_models." m |> not
              && String.is_prefix ~prefix:"Alloc." m |> not
              && String.equal "Hax_lib.Int" m |> not)
       |> List.map ~f:(fun mod_path -> "let open " ^ mod_path ^ " in")
@@ -1907,12 +1917,19 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
   ( string_for (function `Impl s -> Some (replace s) | _ -> None),
     string_for (function `Intf s -> Some (replace s) | _ -> None) )
 
-let fstar_headers (bo : BackendOptions.t) =
+let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   let opts =
     Printf.sprintf {|#set-options "--fuel %Ld --ifuel %Ld --z3rlimit %Ld"|}
       bo.fuel bo.ifuel bo.z3rlimit
   in
-  [ opts; "open Core"; "open FStar.Mul" ] |> String.concat ~sep:"\n"
+
+  List.append [ opts; "open FStar.Mul" ]
+    (if
+       hax_core_models_extraction
+       && String.is_prefix ~prefix:"Core_models" mod_name
+     then [ "open Rust_primitives" ]
+     else [ "open Core_models" ])
+  |> String.concat ~sep:"\n"
 
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
@@ -1933,8 +1950,8 @@ let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
                  {
                    path = mod_name ^ "." ^ ext;
                    contents =
-                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo ^ "\n\n"
-                     ^ body ^ "\n";
+                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo mod_name
+                     ^ "\n\n" ^ body ^ "\n";
                    sourcemap = None;
                  }
          in

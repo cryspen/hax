@@ -29,16 +29,16 @@ diagnostics = []
 "Cyclic_modules.B.fst" = '''
 module Cyclic_modules.B
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle {g as g}
 '''
 "Cyclic_modules.Bundle.fst" = '''
 module Cyclic_modules.Bundle
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let f (_: Prims.unit) : Prims.unit = ()
 
@@ -53,8 +53,8 @@ let h (_: Prims.unit) : Prims.unit =
 "Cyclic_modules.Bundle_d.fst" = '''
 module Cyclic_modules.Bundle_d
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let d1 (_: Prims.unit) : Prims.unit = ()
 
@@ -67,8 +67,8 @@ let d2 (_: Prims.unit) : Prims.unit = de1 ()
 "Cyclic_modules.Bundle_disjoint_cycle_a.fst" = '''
 module Cyclic_modules.Bundle_disjoint_cycle_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let g (_: Prims.unit) : Prims.unit = ()
 
@@ -81,8 +81,8 @@ let i (_: Prims.unit) : Prims.unit = g ()
 "Cyclic_modules.Bundle_enums_a.fst" = '''
 module Cyclic_modules.Bundle_enums_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_U =
   | U_A : t_U
@@ -105,8 +105,8 @@ let f (_: Prims.unit) : t_T__from__enums_b = T_A <: t_T__from__enums_b
 "Cyclic_modules.Bundle_late_skip_a.fst" = '''
 module Cyclic_modules.Bundle_late_skip_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let rec f (_: Prims.unit) : Prims.Pure Prims.unit (requires true) (fun _ -> Prims.l_True) =
   f__from__late_skip_a ()
@@ -116,8 +116,8 @@ and f__from__late_skip_a (_: Prims.unit) : Prims.unit = f ()
 "Cyclic_modules.Bundle_m1.fst" = '''
 module Cyclic_modules.Bundle_m1
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let d (_: Prims.unit) : Prims.unit = ()
 
@@ -132,8 +132,8 @@ let b (_: Prims.unit) : Prims.unit =
 "Cyclic_modules.Bundle_rec1_same_name.fst" = '''
 module Cyclic_modules.Bundle_rec1_same_name
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let rec f (x: i32) : i32 =
   if x >. mk_i32 0 then f__from__rec1_same_name (x -! mk_i32 1 <: i32) else mk_i32 0
@@ -143,8 +143,8 @@ and f__from__rec1_same_name (x: i32) : i32 = f x
 "Cyclic_modules.Bundle_typ_a.fst" = '''
 module Cyclic_modules.Bundle_typ_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_T1 = | T1_T1 : t_T1
 
@@ -165,15 +165,15 @@ and t_TRec =
 "Cyclic_modules.Bundle_variant_constructor_a.fst" = '''
 module Cyclic_modules.Bundle_variant_constructor_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Context =
   | Context_A : i32 -> t_Context
   | Context_B : i32 -> t_Context
 
-let impl__test (x: Core.Option.t_Option i32) : Core.Option.t_Option t_Context =
-  Core.Option.impl__map #i32 #t_Context x Context_A
+let impl__test (x: Core_models.Option.t_Option i32) : Core_models.Option.t_Option t_Context =
+  Core_models.Option.impl__map #i32 #t_Context x Context_A
 
 let h (_: Prims.unit) : t_Context = Context_A (mk_i32 1) <: t_Context
 
@@ -182,16 +182,16 @@ let f (_: Prims.unit) : t_Context = h ()
 "Cyclic_modules.C.fst" = '''
 module Cyclic_modules.C
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let i (_: Prims.unit) : Prims.unit = ()
 '''
 "Cyclic_modules.D.fst" = '''
 module Cyclic_modules.D
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_d {d1 as d1}
 
@@ -200,16 +200,16 @@ include Cyclic_modules.Bundle_d {d2 as d2}
 "Cyclic_modules.De.fst" = '''
 module Cyclic_modules.De
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_d {de1 as de1}
 '''
 "Cyclic_modules.Disjoint_cycle_a.fst" = '''
 module Cyclic_modules.Disjoint_cycle_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_disjoint_cycle_a {f as f}
 
@@ -218,8 +218,8 @@ include Cyclic_modules.Bundle_disjoint_cycle_a {g as g}
 "Cyclic_modules.Disjoint_cycle_b.fst" = '''
 module Cyclic_modules.Disjoint_cycle_b
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_disjoint_cycle_a {h as h}
 
@@ -228,16 +228,16 @@ include Cyclic_modules.Bundle_disjoint_cycle_a {i as i}
 "Cyclic_modules.E.fst" = '''
 module Cyclic_modules.E
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_d {e1 as e1}
 '''
 "Cyclic_modules.Enums_a.fst" = '''
 module Cyclic_modules.Enums_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_enums_a {t_T as t_T}
 
@@ -252,8 +252,8 @@ include Cyclic_modules.Bundle_enums_a {T_D as T_D}
 "Cyclic_modules.Enums_b.fst" = '''
 module Cyclic_modules.Enums_b
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_enums_a {t_U as t_U}
 
@@ -276,32 +276,32 @@ include Cyclic_modules.Bundle_enums_a {f as f}
 "Cyclic_modules.Late_skip_a.fst" = '''
 module Cyclic_modules.Late_skip_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_late_skip_a {f__from__late_skip_a as f}
 '''
 "Cyclic_modules.Late_skip_b.fst" = '''
 module Cyclic_modules.Late_skip_b
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_late_skip_a {f as f}
 '''
 "Cyclic_modules.M1.fst" = '''
 module Cyclic_modules.M1
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_m1 {a as a}
 '''
 "Cyclic_modules.M2.fst" = '''
 module Cyclic_modules.M2
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_m1 {d as d}
 
@@ -312,8 +312,8 @@ include Cyclic_modules.Bundle_m1 {c as c}
 "Cyclic_modules.Rec.fst" = '''
 module Cyclic_modules.Rec
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_T =
   | T_t1 : t_T
@@ -342,24 +342,24 @@ and g1 (x: t_T) : t_T =
 "Cyclic_modules.Rec1_same_name.fst" = '''
 module Cyclic_modules.Rec1_same_name
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_rec1_same_name {f__from__rec1_same_name as f}
 '''
 "Cyclic_modules.Rec2_same_name.fst" = '''
 module Cyclic_modules.Rec2_same_name
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_rec1_same_name {f as f}
 '''
 "Cyclic_modules.Typ_a.fst" = '''
 module Cyclic_modules.Typ_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_typ_a {t_TRec as t_TRec}
 
@@ -374,8 +374,8 @@ include Cyclic_modules.Bundle_typ_a {T_T as T_T}
 "Cyclic_modules.Typ_b.fst" = '''
 module Cyclic_modules.Typ_b
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_typ_a {t_T1Rec as t_T1Rec}
 
@@ -398,8 +398,8 @@ include Cyclic_modules.Bundle_typ_a {T2_T2 as T2_T2}
 "Cyclic_modules.Variant_constructor_a.fst" = '''
 module Cyclic_modules.Variant_constructor_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_variant_constructor_a {t_Context as t_Context}
 
@@ -414,16 +414,16 @@ include Cyclic_modules.Bundle_variant_constructor_a {impl__test as impl_Context_
 "Cyclic_modules.Variant_constructor_b.fst" = '''
 module Cyclic_modules.Variant_constructor_b
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle_variant_constructor_a {h as h}
 '''
 "Cyclic_modules.fst" = '''
 module Cyclic_modules
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Cyclic_modules.Bundle {f as f}
 

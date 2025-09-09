@@ -1,7 +1,7 @@
 module Coverage.Let_else_loop
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let loopy (cond: bool) : Prims.unit =
   match cond <: bool with

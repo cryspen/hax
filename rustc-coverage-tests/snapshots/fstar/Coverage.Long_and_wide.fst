@@ -1,7 +1,7 @@
 module Coverage.Long_and_wide
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let wide_function (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = () <: Prims.unit in

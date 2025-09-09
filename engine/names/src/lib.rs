@@ -122,6 +122,8 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
                 + Neg<Output = X>
                 + Not<Output = X>
                 + PartialOrd
+                + Eq
+                + Ord
                 + Copy,
         >(
             x: X,
@@ -149,6 +151,9 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
             let _: &mut _ = { x }.deref_mut();
         }
     };
+
+    #[derive(PartialEq)]
+    struct Foo();
 }
 
 macro_rules! impl_arith {

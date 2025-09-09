@@ -8,25 +8,25 @@ include Rust_primitives.Char
 
 let (let?) 
   (#a #b: Type)
-  (x: Core.Option.t_Option a) (f: a -> Core.Option.t_Option b): Core.Option.t_Option b
+  (x: Core_models.Option.t_Option a) (f: a -> Core_models.Option.t_Option b): Core_models.Option.t_Option b
   = match x with
-  | Core.Option.Option_Some x -> f x
-  | Core.Option.Option_None   -> Core.Option.Option_None
+  | Core_models.Option.Option_Some x -> f x
+  | Core_models.Option.Option_None   -> Core_models.Option.Option_None
 
-let (let|) (#e #a #b: Type) (x: Core.Result.t_Result a e) (f: a -> Core.Result.t_Result b e)
-    : Core.Result.t_Result b e
+let (let|) (#e #a #b: Type) (x: Core_models.Result.t_Result a e) (f: a -> Core_models.Result.t_Result b e)
+    : Core_models.Result.t_Result b e
     = match x with
-    | Core.Result.Result_Ok x -> f x
-    | Core.Result.Result_Err e -> Core.Result.Result_Err e
+    | Core_models.Result.Result_Ok x -> f x
+    | Core_models.Result.Result_Err e -> Core_models.Result.Result_Err e
 
 let (let!)
     #break #continue #continue'
-    (v: Core.Ops.Control_flow.t_ControlFlow break continue)
-    (f: continue -> Core.Ops.Control_flow.t_ControlFlow break continue')
-    : Core.Ops.Control_flow.t_ControlFlow break continue'
+    (v: Core_models.Ops.Control_flow.t_ControlFlow break continue)
+    (f: continue -> Core_models.Ops.Control_flow.t_ControlFlow break continue')
+    : Core_models.Ops.Control_flow.t_ControlFlow break continue'
     = match v with
-    | Core.Ops.Control_flow.ControlFlow_Continue v -> f v
-    | Core.Ops.Control_flow.ControlFlow_Break b -> Core.Ops.Control_flow.ControlFlow_Break b
+    | Core_models.Ops.Control_flow.ControlFlow_Continue v -> f v
+    | Core_models.Ops.Control_flow.ControlFlow_Break b -> Core_models.Ops.Control_flow.ControlFlow_Break b
 
 class cast_tc a b = {
   cast: a -> b; 
