@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Printers now emit proper diagnostics (PR #1669)
  - The module `names` now produces `ExplicitDefId`s instead of `DefId`s (#1648)
  - Add a resugaring `FunctionsToConstants` (#1559)
  - Drop the tuple nodes of the AST, add resugaring node for tuples (#1662)
