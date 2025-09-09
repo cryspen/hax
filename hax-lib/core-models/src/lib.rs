@@ -27,7 +27,6 @@
 
 #![allow(dead_code)]
 
-
 #[path = "core/default.rs"]
 pub mod default;
 #[path = "core/fmt.rs"]

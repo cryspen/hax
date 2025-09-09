@@ -3,8 +3,8 @@ pub enum Result<T, E> {
     Err(E),
 }
 
-use Result::*;
 use super::ops::function::*;
+use Result::*;
 
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
@@ -65,7 +65,7 @@ impl<T, E> Result<T, E> {
     }
     pub fn and_then<U, F>(self, op: F) -> Result<U, E>
     where
-        F:FnOnce<T, Output = Result<U, E>>,
+        F: FnOnce<T, Output = Result<U, E>>,
     {
         match self {
             Ok(t) => op.call_once(t),
