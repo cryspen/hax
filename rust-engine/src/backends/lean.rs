@@ -163,6 +163,7 @@ impl LeanPrinter {
     /// TODO: This should be treated directly in the name rendering engine, see
     /// https://github.com/cryspen/hax/issues/1630
     pub fn escape(&self, id: String) -> String {
+        let id = id.replace(' ', "_").replace('<', "_").replace('>', "_");
         if id.is_empty() {
             "_ERROR_EMPTY_ID_".to_string()
         } else if RESERVED_KEYWORDS.contains(&id) || id.starts_with(|c: char| c.is_ascii_digit()) {
@@ -667,6 +668,13 @@ set_option linter.unusedVariables false
                         .parens()
                         .group()
                 }
+                TyKind::AssociatedType { impl_, item } => {
+                    let kind = impl_.kind();
+                    match &kind {
+                        ImplExprKind::Self_ => docs![self.render_last(item)],
+                        _ => todo!(), // Support only local associated types
+                    }
+                }
                 _ => todo!(
                     "sorry \n-- unsupported type, to debug run: {}\n",
                     DebugJSON(ty)
@@ -785,7 +793,8 @@ set_option linter.unusedVariables false
                             docs![": Result", line!(), &body.ty].group(),
                             line!(),
                             ":= do"
-                        ],
+                        ]
+                        .group(),
                         line!(),
                         &*body
                     ]
@@ -868,16 +877,23 @@ set_option linter.unusedVariables false
                         docs![
                             docs![reflow!("class "), name],
                             line!(),
-                            zip_with!(&generics.params, line!()).group(),
+                            zip_with!(
+                                generics
+                                    .params
+                                    .iter()
+                                    .map(|p| docs![p, reflow!(" : Type")].parens().group()),
+                                line!()
+                            )
+                            .group(),
                             "where"
                         ]
                         .group(),
                         hardline!(),
                         zip_with!(
-                            generics.constraints.iter().enumerate().map(|(i, c)| {
+                            generics.constraints.iter().map(|c| {
                                 match c {
                                     GenericConstraint::Type(tc_constraint) => docs![
-                                        format!("_constr_{}_{i}", tc_constraint.name),
+                                        format!("_constr_{}", tc_constraint.name),
                                         reflow!(" :"),
                                         line!(),
                                         &tc_constraint.goal
@@ -948,21 +964,24 @@ set_option linter.unusedVariables false
             let name = self.render_last(ident);
             docs![match kind {
                 TraitItemKind::Fn(ty) => {
-                    docs![name, reflow!(" : "), ty].nest(INDENT)
+                    docs![name, line!(), generics, line!(), ": ", ty]
+                        .group()
+                        .nest(INDENT)
                 }
                 TraitItemKind::Type(constraints) => {
                     docs![
                         name.clone(),
                         reflow!(" : Type"),
-                        zip_with!(
-                            constraints.iter().enumerate().map(|(i, c)| docs![
-                                format!("_constr_{}_{i}", c.name),
-                                reflow!(" : "),
+                        concat!(constraints.iter().enumerate().map(|(i, c)| docs![
+                                hardline!(),
+                                docs![format!("_constr_{}_{i}", c.name),
+                                reflow!(" :"),
+                                line!(),
                                 &c.goal
                             ]
-                            .brackets()),
-                            hardline!()
-                        ),
+                                .group()
+                                .nest(INDENT)
+                            .brackets()]))
                     ]
                 }
                 _ => todo!("-- to debug missing trait item run: {}", DebugJSON(kind)),
@@ -982,10 +1001,14 @@ set_option linter.unusedVariables false
             match kind {
                 ImplItemKind::Type { ty, parent_bounds } => todo!(),
                 ImplItemKind::Fn { body, params } => docs![
-                    name,
-                    softline!(),
-                    zip_with!(params, line!()).group().align(),
-                    ":= do",
+                    docs![
+                        name,
+                        softline!(),
+                        generics,
+                        zip_with!(params, line!()).group().align(),
+                        ":= do",
+                    ]
+                    .group(),
                     line!(),
                     body
                 ]
@@ -993,6 +1016,13 @@ set_option linter.unusedVariables false
                 .nest(INDENT),
                 ImplItemKind::Resugared(resugared_impl_item_kind) => todo!(),
             }
+        }
+
+        fn impl_ident(
+            &'a self,
+            ImplIdent { goal, name }: &'b ImplIdent,
+        ) -> DocBuilder<'a, Self, A> {
+            docs![goal]
         }
 
         fn trait_goal(
