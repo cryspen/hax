@@ -663,11 +663,9 @@ set_option linter.unusedVariables false
                 }
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
-                TyKind::Array { ty, length } => {
-                    docs!["RustArray", line!(), ty, line!(), &(*length.kind)]
-                        .parens()
-                        .group()
-                }
+                TyKind::Array { ty, length } => docs!["RustArray", line!(), ty, line!(), &**length]
+                    .parens()
+                    .group(),
                 TyKind::AssociatedType { impl_, item } => {
                     let kind = impl_.kind();
                     match &kind {
@@ -725,13 +723,13 @@ set_option linter.unusedVariables false
                 (Signedness::Signed, IntSize::S16) => "i16",
                 (Signedness::Signed, IntSize::S32) => "i32",
                 (Signedness::Signed, IntSize::S64) => "i64",
-                (Signedness::Signed, IntSize::S128) => todo!(),
+                (Signedness::Signed, IntSize::S128) => "i128",
                 (Signedness::Signed, IntSize::SSize) => "isize",
                 (Signedness::Unsigned, IntSize::S8) => "u8",
                 (Signedness::Unsigned, IntSize::S16) => "u16",
                 (Signedness::Unsigned, IntSize::S32) => "u32",
                 (Signedness::Unsigned, IntSize::S64) => "u64",
-                (Signedness::Unsigned, IntSize::S128) => todo!(),
+                (Signedness::Unsigned, IntSize::S128) => "u128",
                 (Signedness::Unsigned, IntSize::SSize) => "usize",
             }]
         }
@@ -848,9 +846,10 @@ set_option linter.unusedVariables false
                             )
                         };
                         docs![
-                            docs!["structure ", name, line!(), generics, "where"].group(),
-                            docs![hardline!(), args].nest(INDENT),
+                            docs![reflow!("structure "), name, line!(), generics, "where"].group(),
+                            docs![hardline!(), args],
                         ]
+                        .nest(INDENT)
                         .group()
                     } else {
                         // Enums
@@ -964,7 +963,7 @@ set_option linter.unusedVariables false
             let name = self.render_last(ident);
             docs![match kind {
                 TraitItemKind::Fn(ty) => {
-                    docs![name, line!(), generics, line!(), ": ", ty]
+                    docs![name, line!(), generics, ": ", ty]
                         .group()
                         .nest(INDENT)
                 }
@@ -972,9 +971,9 @@ set_option linter.unusedVariables false
                     docs![
                         name.clone(),
                         reflow!(" : Type"),
-                        concat!(constraints.iter().enumerate().map(|(i, c)| docs![
+                        concat!(constraints.iter().map(|c| docs![
                                 hardline!(),
-                                docs![format!("_constr_{}_{i}", c.name),
+                                docs![format!("_constr_{}", c.name),
                                 reflow!(" :"),
                                 line!(),
                                 &c.goal
