@@ -60,3 +60,24 @@ mod bounds {
         }
     }
 }
+
+mod associated_types {
+    trait T1 {
+        type T;
+        fn f(&self, x: Self::T) -> Self::T;
+    }
+
+    trait T2 {
+        type T: T1;
+        fn f(&self, x: Self::T) -> usize;
+    }
+
+    trait Foo<T> {}
+    trait Bar {}
+
+    trait T3 {
+        type T: Foo<()>;
+        type Tp<T: Bar>: Foo<T>;
+        fn f<A: Bar>(&self, x: Self::T, y: Self::Tp<A>) -> usize;
+    }
+}

@@ -1531,7 +1531,7 @@ pub mod traits {
     );
     derive_has_kind!(
         Item => ItemKind, Expr => ExprKind, Pat => PatKind, Guard => GuardKind,
-        GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind
+        GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind, ImplExpr => ImplExprKind
     );
 
     impl HasSpan for Attribute {
