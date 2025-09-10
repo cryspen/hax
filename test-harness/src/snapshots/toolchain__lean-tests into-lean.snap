@@ -41,26 +41,115 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+class Lean_tests.Traits.Bounds.T1 (Self : Type) where
+  f1  : Self -> Result usize
+
+class Lean_tests.Traits.Bounds.T2 (Self : Type) where
+  f2  : Self -> Result usize
+
+class Lean_tests.Traits.Bounds.Test (Self : Type) (T : Type) where
+  [_constr_8040238289193487104 : (Lean_tests.Traits.Bounds.T2 Self)]
+  [_constr_7570495343596639253 : (Lean_tests.Traits.Bounds.T1 T)]
+  f_test  : Self -> T -> Result usize
+
+structure Lean_tests.Traits.Bounds.S1 where
+
+
+instance Lean_tests.Traits.Bounds.Impl :
+  Lean_tests.Traits.Bounds.T1 Lean_tests.Traits.Bounds.S1
+  where
+  f1 (self : Lean_tests.Traits.Bounds.S1) := do (0 : usize)
+
+structure Lean_tests.Traits.Bounds.S2 where
+
+
+instance Lean_tests.Traits.Bounds.Impl_1 :
+  Lean_tests.Traits.Bounds.T2 Lean_tests.Traits.Bounds.S2
+  where
+  f2 (self : Lean_tests.Traits.Bounds.S2) := do (1 : usize)
+
+instance Lean_tests.Traits.Bounds.Impl_2 :
+  Lean_tests.Traits.Bounds.Test
+  Lean_tests.Traits.Bounds.S2
+  Lean_tests.Traits.Bounds.S1
+  where
+  f_test (self : Lean_tests.Traits.Bounds.S2)
+         (x : Lean_tests.Traits.Bounds.S1)
+    := do
+    (← (← (← Lean_tests.Traits.Bounds.T1.f1 x) +?
+    (← Lean_tests.Traits.Bounds.T2.f2 self)) +? (1 : usize))
+
+class Lean_tests.Traits.Basic.T1 (Self : Type) where
+  f1  : Self -> Result usize
+  f2  : Self -> Self -> Result usize
+
+structure Lean_tests.Traits.Basic.S where
+
+
+instance Lean_tests.Traits.Basic.Impl :
+  Lean_tests.Traits.Basic.T1 Lean_tests.Traits.Basic.S
+  where
+  f1 (self : Lean_tests.Traits.Basic.S) := do (42 : usize)
+  f2 (self : Lean_tests.Traits.Basic.S)
+     (other : Lean_tests.Traits.Basic.S)
+    := do
+    (43 : usize)
+
+def Lean_tests.Traits.Basic.f
+  (T : Type) [(Lean_tests.Traits.Basic.T1 T)] (x : T)
+  : Result usize
+  := do
+  (← (← Lean_tests.Traits.Basic.T1.f1 x) +? (← Lean_tests.Traits.Basic.T1.f2
+    x
+    x))
+
+class Lean_tests.Traits.Associated_types.Foo (Self : Type) (T : Type) where
+
+
+class Lean_tests.Traits.Associated_types.Bar (Self : Type) where
+
+
+class Lean_tests.Traits.Associated_types.T1 (Self : Type) where
+  T : Type
+  f  : Self -> T -> Result T
+
+class Lean_tests.Traits.Associated_types.T3 (Self : Type) where
+  T : Type
+  [_constr_13086648656846024831_0 :
+    (Lean_tests.Traits.Associated_types.Foo T Rust_primitives.Hax.Tuple0)]
+  Tp : Type
+  [_constr_15450263461214744089_0 :
+    (Lean_tests.Traits.Associated_types.Foo Tp T)]
+  f
+    (A : Type) [(Lean_tests.Traits.Associated_types.Bar A)] 
+    : Self -> T -> Tp -> Result usize
+
+class Lean_tests.Traits.Associated_types.T2 (Self : Type) where
+  T : Type
+  [_constr_18277713886489441014_0 : (Lean_tests.Traits.Associated_types.T1 T)]
+  f  : Self -> T -> Result usize
+
 structure Lean_tests.Structs.T0 where
 
 
-structure Lean_tests.Structs.T1 A where
+structure Lean_tests.Structs.T1 (A : Type) where
   _0 : A
 
-structure Lean_tests.Structs.T2 A B where
+structure Lean_tests.Structs.T2 (A : Type) (B : Type) where
   _0 : A
   _1 : B
 
-structure Lean_tests.Structs.T3 A B C where
+structure Lean_tests.Structs.T3 (A : Type) (B : Type) (C : Type) where
   _0 : A
   _1 : B
   _2 : C
 
-structure Lean_tests.Structs.T3p A B C where
+structure Lean_tests.Structs.T3p (A : Type) (B : Type) (C : Type) where
   _0 : A
   _1 : (Lean_tests.Structs.T2 B C)
 
-def Lean_tests.Structs.tuple_structs  (_ : Rust_primitives.Hax.Tuple0)
+def Lean_tests.Structs.tuple_structs
+  (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
   let t0 : Lean_tests.Structs.T0 ← (pure Lean_tests.Structs.T0.mk);
@@ -166,7 +255,8 @@ structure Lean_tests.Structs.S3 where
   _structure : usize
   _inductive : usize
 
-def Lean_tests.Structs.normal_structs  (_ : Rust_primitives.Hax.Tuple0)
+def Lean_tests.Structs.normal_structs
+  (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
   let s1 : Lean_tests.Structs.S1 ←
@@ -239,22 +329,24 @@ def Lean_tests.Structs.normal_structs  (_ : Rust_primitives.Hax.Tuple0)
       => do Rust_primitives.Hax.Tuple0.mk)
 
 inductive Lean_tests.Enums.E : Type
-| V1  : Lean_tests.Enums.E
-| V2  : Lean_tests.Enums.E
-| V3  : usize -> Lean_tests.Enums.E
-| V4  : usize -> usize -> usize -> Lean_tests.Enums.E
-| V5 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
-| V6 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
+| V1 : Lean_tests.Enums.E 
+| V2 : Lean_tests.Enums.E 
+| V3 : usize -> Lean_tests.Enums.E 
+| V4 : usize -> usize -> usize -> Lean_tests.Enums.E 
+| V5 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E 
+| V6 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E 
 
 
 inductive Lean_tests.Enums.MyList (T : Type) : Type
-| Nil  : Lean_tests.Enums.MyList T
-| Cons (hd : T)
-       (tl : (Alloc.Boxed.Box (Lean_tests.Enums.MyList T) Alloc.Alloc.Global)) :
-  Lean_tests.Enums.MyList T
+| Nil : Lean_tests.Enums.MyList (T : Type) 
+| Cons
+    (hd : T)
+    (tl : (Alloc.Boxed.Box (Lean_tests.Enums.MyList T) Alloc.Alloc.Global))
+    : Lean_tests.Enums.MyList (T : Type) 
 
 
-def Lean_tests.Enums.enums  (_ : Rust_primitives.Hax.Tuple0)
+def Lean_tests.Enums.enums
+  (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
   let e_v1 : Lean_tests.Enums.E ← (pure Lean_tests.Enums.E.V1);
@@ -292,20 +384,20 @@ def Lean_tests.FORTYTWO : usize := 42
 
 def Lean_tests.MINUS_FORTYTWO : isize := -42
 
-def Lean_tests.returns42  (_ : Rust_primitives.Hax.Tuple0) : Result usize := do
+def Lean_tests.returns42 (_ : Rust_primitives.Hax.Tuple0) : Result usize := do
   Lean_tests.FORTYTWO
 
-def Lean_tests.add_two_numbers  (x : usize) (y : usize) : Result usize := do
+def Lean_tests.add_two_numbers (x : usize) (y : usize) : Result usize := do
   (← x +? y)
 
-def Lean_tests.letBinding  (x : usize) (y : usize) : Result usize := do
+def Lean_tests.letBinding (x : usize) (y : usize) : Result usize := do
   let useless : Rust_primitives.Hax.Tuple0 ←
     (pure Rust_primitives.Hax.Tuple0.mk);
   let result1 : usize ← (pure (← x +? y));
   let result2 : usize ← (pure (← result1 +? (2 : usize)));
   (← result2 +? (1 : usize))
 
-def Lean_tests.closure  (_ : Rust_primitives.Hax.Tuple0) : Result i32 := do
+def Lean_tests.closure (_ : Rust_primitives.Hax.Tuple0) : Result i32 := do
   let x : i32 ← (pure (41 : i32));
   let f1 : i32 -> Result i32 ←
     (pure (fun (y : i32) => (do (← y +? x) : Result i32)));
@@ -323,15 +415,17 @@ def Lean_tests.closure  (_ : Rust_primitives.Hax.Tuple0) : Result i32 := do
 
 @[spec]
 
-def Lean_tests.test_before_verbatime_single_line  (x : u8) : Result u8 := do 42
+def Lean_tests.test_before_verbatime_single_line (x : u8) : Result u8 := do
+  (42 : u8)
 
 
 def multiline : Unit := ()
 
 
-def Lean_tests.test_before_verbatim_multi_line  (x : u8) : Result u8 := do 32
+def Lean_tests.test_before_verbatim_multi_line (x : u8) : Result u8 := do
+  (32 : u8)
 
-def Lean_tests.binop_resugarings  (x : u32) : Result u32 := do
+def Lean_tests.binop_resugarings (x : u32) : Result u32 := do
   let add : u32 ← (pure (← x +? (1 : u32)));
   let sub : u32 ← (pure (← add -? (2 : u32)));
   let mul : u32 ← (pure (← sub *? (3 : u32)));
