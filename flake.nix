@@ -64,7 +64,6 @@
           inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs proverif;
           docs = pkgs.python312Packages.callPackage ./docs {
             hax-frontend-docs = packages.hax-rust-frontend.docs;
-            hax-engine-docs = packages.hax-engine.docs;
           };
           hax-engine = pkgs.callPackage ./engine {
             hax-rust-frontend = packages.hax-rust-frontend.unwrapped;

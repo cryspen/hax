@@ -1,6 +1,6 @@
 { stdenv, buildPythonPackage, fetchPypi, setuptools, wheel, mkdocs
 , mkdocs-material, fetchFromGitHub, natsort, wcmatch, hax-frontend-docs
-, hax-engine-docs, mkdocs-awesome-nav }:
+, mkdocs-awesome-nav }:
 let
   mkdocs-glightbox = buildPythonPackage rec {
     pname = "mkdocs-glightbox";
@@ -47,6 +47,6 @@ in stdenv.mkDerivation {
   installPhase = ''
     mv site $out
     cp -rf ${hax-frontend-docs}/share/doc/ $out/frontend/docs
-    cp -rf ${hax-engine-docs} $out/engine/docs
+    echo 'Sorry, this page is temporarily unavailable (see <a href="https://github.com/cryspen/hax/issues/1675">issue</a>)' > $out/engine/docs/hax-engine/index.html
   '';
 }
