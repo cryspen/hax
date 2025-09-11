@@ -21,6 +21,13 @@ let impl_1__push #t
      if Seq.length v >= max_usize then v else
      FStar.Seq.append v (FStar.Seq.create 1 x)
 
+let impl_1__pop #t
+  (#[(Tactics.exact (`()))]alloc:unit)
+  (v: t_Vec t alloc)
+   : t_Vec t alloc & Core.Option.t_Option t = 
+     if Seq.length v = 0 then v, Core.Option.Option_None
+      else (Seq.slice v 0 ((Seq.length v) - 1) ), Core.Option.Option_Some (Seq.last v)
+
 let impl_1__len #t (#[(Tactics.exact (`()))]alloc:unit) (v: t_Vec t alloc) =
   let n = Seq.length v in
   assert (n <= maxint usize_inttype);
@@ -67,3 +74,5 @@ assume val impl_2__resize #t (#[(Tactics.exact (`()))]alloc:unit)  (v: t_Vec t a
 assume val impl_1__remove #t (#[(Tactics.exact (`()))]alloc:unit)  (v: t_Vec t alloc) (index: usize): t_Vec t alloc & t
 
 assume val impl_1__clear #t (#[(Tactics.exact (`()))]alloc:unit)  (v: t_Vec t alloc): t_Vec t alloc
+
+assume val impl_1__append #t (#[(Tactics.exact (`()))]alloc:unit)  (v v': t_Vec t alloc): (t_Vec t alloc) & (t_Vec t alloc)

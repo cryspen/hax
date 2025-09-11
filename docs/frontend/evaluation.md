@@ -43,8 +43,6 @@ To ensure we capture a diverse set of crates:
 - We include the **5,000 most downloaded** crates from crates.io.
 - We also include the **top 1,500 crates** in the **cryptography** category on crates.io, reflecting hax's relevance for verifying critical software like cryptographic libraries.
 
-> **TODO:** the numbers are wrong: I want to get more numbers. Currently we have top 1000k crates only. This is because the tool ran for 10 hours, and handled only 1k crates. The top 1k crates in the corpus `5k top crate \union top 1k5 crypto crates` is actually top 1k crates. (that makes sense)
-
 ### Success Rate
 
 Each crate falls into one of three categories:

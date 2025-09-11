@@ -10,7 +10,14 @@ class t_Read (v_Self: Type0) = {
   f_read:x0: v_Self -> x1: t_Slice u8
     -> Prims.Pure (v_Self & t_Slice u8 & Core.Result.t_Result usize Std.Io.Error.t_Error)
         (f_read_pre x0 x1)
-        (fun result -> f_read_post x0 x1 result)
+        (fun result -> f_read_post x0 x1 result);
+  f_read_exact_pre:v_Self -> t_Slice u8 -> bool;
+  f_read_exact_post:v_Self -> t_Slice u8 -> (v_Self & t_Slice u8 & Core.Result.t_Result unit Std.Io.Error.t_Error)
+    -> bool;
+  f_read_exact:x0: v_Self -> x1: t_Slice u8
+    -> Prims.Pure (v_Self & t_Slice u8 & Core.Result.t_Result unit Std.Io.Error.t_Error)
+        (f_read_exact_pre x0 x1)
+        (fun result -> f_read_exact_post x0 x1 result)
 }
 
 class t_Write (v_Self: Type0) = {
@@ -25,5 +32,11 @@ class t_Write (v_Self: Type0) = {
   f_flush:x0: v_Self
     -> Prims.Pure (v_Self & Core.Result.t_Result Prims.unit Std.Io.Error.t_Error)
         (f_flush_pre x0)
-        (fun result -> f_flush_post x0 result)
+        (fun result -> f_flush_post x0 result);
+  f_write_all_pre:v_Self -> t_Slice u8 -> bool;
+  f_write_all_post:v_Self -> t_Slice u8 -> (v_Self & Core.Result.t_Result unit Std.Io.Error.t_Error) -> bool;
+  f_write_all:x0: v_Self -> x1: t_Slice u8
+    -> Prims.Pure (v_Self & Core.Result.t_Result unit Std.Io.Error.t_Error)
+        (f_write_all_pre x0 x1)
+        (fun result -> f_write_all_post x0 x1 result);
 }

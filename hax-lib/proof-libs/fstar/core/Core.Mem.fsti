@@ -87,4 +87,3 @@ val discriminant (#v_T: Type0) {| i0: Core.Marker.t_Sized v_T |} (v: v_T)
 
 val variant_count: #v_T: Type0 -> {| i0: Core.Marker.t_Sized v_T |} -> Prims.unit
   -> Prims.Pure usize Prims.l_True (fun _ -> Prims.l_True)
-

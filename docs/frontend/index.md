@@ -123,8 +123,7 @@ between all components occurs through **stdout**, **stderr**, or **stdin**,
 using JSON messages defined in the Rust crate
 [`hax-types`](https://hax.cryspen.com/frontend/docs/hax_types/index.html).
 
-This section provides an overview of the workflow of the frontend of hax. The
-section TODO dives into the inner functioning of the components of the frontend.
+This section provides an overview of the workflow of the frontend of hax. 
 
 <!-- 
 ## A Brief Tour of The Rust Compiler

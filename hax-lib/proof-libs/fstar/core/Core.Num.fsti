@@ -113,7 +113,11 @@ let impl_i64__overflowing_mul: i64 -> i64 -> i64 * bool = mul_overflow
 let impl_i128__overflowing_mul: i128 -> i128 -> i128 * bool = mul_overflow
 
 val impl_u16__to_be_bytes: u16 -> t_Array u8 (sz 2)
+val impl_usize__to_be_bytes: usize -> t_Array u8 (sz 8)
+val impl_u8__to_be_bytes: u8 -> t_Array u8 (sz 1)
 val impl_u16__from_be_bytes: t_Array u8 (sz 2) -> u16
+val impl_u8__from_be_bytes: t_Array u8 (sz 1) -> u8
+val impl_usize__from_be_bytes: t_Array u8 (sz 8) -> usize
 
 let impl_i8__abs (a:i8{minint i8_inttype < v a}) : i8 = abs_int a
 let impl_i16__abs (a:i16{minint i16_inttype < v a}) : i16 = abs_int a

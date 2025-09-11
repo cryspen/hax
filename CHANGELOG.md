@@ -25,6 +25,7 @@ Changes to the frontend:
 - Resolve `dyn Trait` predicates (#1559)
 - Many improvements to `FullDef` (#1559)
 - Add infrastructure to get a monomorphized `FullDef`; this is used in charon to monomorphize a crate graph (#1559)
+- Fix a regression affecting projection predicates (#1678)
 
 Miscellaneous:
  - A lean tutorial has been added to the hax website.

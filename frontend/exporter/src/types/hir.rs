@@ -828,7 +828,7 @@ fn region_bounds_at_current_owner<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> Gene
     clauses
         .into_iter()
         .filter(|clause| {
-            clause.as_trait_clause().is_some_and(|trait_predicate| {
+            clause.as_trait_clause().is_none_or(|trait_predicate| {
                 !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
             })
         })

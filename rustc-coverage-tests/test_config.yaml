@@ -261,3 +261,4 @@ tests:
   while_early_ret:
     - json
     - fstar
+    - fstar-lax

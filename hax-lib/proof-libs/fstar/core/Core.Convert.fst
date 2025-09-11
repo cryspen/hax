@@ -24,15 +24,6 @@ instance impl_6_refined (t: Type0) (len: usize): t_TryInto (s: t_Slice t {Core.S
   )
 }
 
-instance integer_try_into (t:inttype) (t':inttype) : t_TryInto (int_t t) (int_t t') = {
-  f_Error = Core.Num.Error.t_TryFromIntError;
-  f_try_into = (fun (x: int_t t) ->
-    if range (v #t x) t'
-    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #t #t' x)
-    else Core.Result.Result_Err ()
-  )
-}
-
 class t_Into self t = {
   f_into_pre: self -> bool;
   f_into_post: self -> t -> bool;
@@ -53,6 +44,17 @@ class t_TryFrom self t = {
   f_try_from: t -> Core.Result.t_Result self f_Error;
 }
 
+instance integer_try_from (t:inttype) (t':inttype) : t_TryFrom (int_t t) (int_t t') = {
+  f_Error = Core.Num.Error.t_TryFromIntError;
+  f_try_from_pre = (fun _ -> true);
+  f_try_from_post = (fun _ _ -> true);
+  f_try_from = (fun (x: int_t t') ->
+    if range (v #t' x) t
+    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #t' #t x)
+    else Core.Result.Result_Err ()
+  )
+}
+
 instance integer_into
   (t:inttype) (t':inttype { minint t >= minint t' /\ maxint t <= maxint t' })
   : t_From (int_t t') (int_t t)
@@ -67,9 +69,29 @@ instance into_from_from a b {| t_From a b |}: t_Into b a = {
   f_into_post = (fun _ _ -> true);
   f_into = (fun x -> f_from x)
 }
-instance try_into_from_try_from a b {| i1: t_TryFrom a b |}: t_TryInto b a = {
+
+type t_Infallible = _:unit{False}
+
+instance try_from_from_from a b {| t_From a b |}: t_TryFrom a b = {
+  f_Error = t_Infallible;
+  f_try_from_pre = (fun _ -> true);
+  f_try_from_post = (fun _ _ -> true);
+  f_try_from = (fun x -> Core.Result.Result_Ok (f_from x))
+}
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let try_into_from_try_from a b {| i1: t_TryFrom a b |}: t_TryInto b a = {
   f_Error = i1.f_Error;
   f_try_into = (fun x -> f_try_from x)
+}
+
+instance integer_try_into (t:inttype) (t':inttype) : t_TryInto (int_t t) (int_t t') = {
+  f_Error = Core.Num.Error.t_TryFromIntError;
+  f_try_into = (fun (x: int_t t) ->
+    if range (v #t x) t'
+    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #t #t' x)
+    else Core.Result.Result_Err ()
+  )
 }
 
 instance from_id a: t_From a a = {
@@ -89,5 +111,3 @@ instance as_ref_id a: t_AsRef a a = {
   f_as_ref_post = (fun _ _ -> true);
   f_as_ref = (fun x -> x)
 }
-
-type t_Infallible = _:unit{False}
