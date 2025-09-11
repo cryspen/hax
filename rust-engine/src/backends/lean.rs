@@ -685,7 +685,10 @@ set_option linter.unusedVariables false
                     let kind = impl_.kind();
                     match &kind {
                         ImplExprKind::Self_ => docs![self.render_last(item)],
-                        _ => todo!(), // Support only local associated types
+                        _ => todo!(
+                            "sorry \n-- support only local associated types: {}\n",
+                            DebugJSON(ty)
+                        ), // Support only local associated types
                     }
                 }
                 _ => todo!(
