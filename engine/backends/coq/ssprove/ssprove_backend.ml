@@ -555,6 +555,7 @@ open Phase_utils
 module TransformToInputLanguage =
   [%functor_application
     Phases.Reject.Unsafe(Features.Rust)
+    |> Phases.Rewrite_local_self
     |> Phases.Reject.RawOrMutPointer
     |> Phases.And_mut_defsite
     |> Phases.Reconstruct_asserts
