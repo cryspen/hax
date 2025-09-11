@@ -163,7 +163,7 @@ impl LeanPrinter {
     /// TODO: This should be treated directly in the name rendering engine, see
     /// https://github.com/cryspen/hax/issues/1630
     pub fn escape(&self, id: String) -> String {
-        let id = id.replace(' ', "_").replace('<', "_").replace('>', "_");
+        let id = id.replace([' ', '<', '>'], "_");
         if id.is_empty() {
             "_ERROR_EMPTY_ID_".to_string()
         } else if RESERVED_KEYWORDS.contains(&id) || id.starts_with(|c: char| c.is_ascii_digit()) {
@@ -209,7 +209,7 @@ impl LeanPrinter {
 }
 
 /// Render parameters, adding a line after each parameter
-impl<'a, 'b, A: 'a + Clone> Pretty<'a, LeanPrinter, A> for &'b Vec<Param> {
+impl<'a, A: 'a + Clone> Pretty<'a, LeanPrinter, A> for &Vec<Param> {
     fn pretty(self, allocator: &'a LeanPrinter) -> DocBuilder<'a, LeanPrinter, A> {
         allocator.params(self)
     }
@@ -780,7 +780,14 @@ set_option linter.unusedVariables false
             docs![&generic_param.ident]
         }
 
-        fn item(&'a self, item @ Item { ident, kind, meta }: &'b Item) -> DocBuilder<'a, Self, A> {
+        fn item(
+            &'a self,
+            item @ Item {
+                ident,
+                kind,
+                meta: _,
+            }: &'b Item,
+        ) -> DocBuilder<'a, Self, A> {
             if !LeanPrinter::printable_item(item) {
                 return nil!();
             };
@@ -809,7 +816,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         line!(),
-                        &*body
+                        body
                     ]
                     .group()
                     .nest(INDENT),
@@ -916,7 +923,7 @@ set_option linter.unusedVariables false
                                     .group()
                                     .brackets(),
                                     GenericConstraint::Lifetime(_) => unreachable!(),
-                                    GenericConstraint::Projection(projection_predicate) => todo!(),
+                                    GenericConstraint::Projection(_projection_predicate) => todo!(),
                                 }
                             }),
                             hardline!()
@@ -934,11 +941,11 @@ set_option linter.unusedVariables false
                 }
                 ItemKind::Impl {
                     generics,
-                    self_ty,
+                    self_ty: _,
                     of_trait: (trait_, args),
                     items,
-                    parent_bounds,
-                    safety,
+                    parent_bounds: _,
+                    safety: _,
                 } => docs![
                     docs![
                         docs![reflow!("instance "), ident, line!(), generics, ":"].group(),
@@ -969,7 +976,7 @@ set_option linter.unusedVariables false
         fn trait_item(
             &'a self,
             TraitItem {
-                meta,
+                meta: _,
                 kind,
                 generics,
                 ident,
@@ -1005,7 +1012,7 @@ set_option linter.unusedVariables false
         fn impl_item(
             &'a self,
             ImplItem {
-                meta,
+                meta: _,
                 generics,
                 kind,
                 ident,
@@ -1013,7 +1020,7 @@ set_option linter.unusedVariables false
         ) -> DocBuilder<'a, Self, A> {
             let name = self.render_last(ident);
             match kind {
-                ImplItemKind::Type { ty, parent_bounds } => todo!(),
+                ImplItemKind::Type { .. } => todo!(),
                 ImplItemKind::Fn { body, params } => docs![
                     docs![
                         name,
@@ -1028,13 +1035,13 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(resugared_impl_item_kind) => todo!(),
+                ImplItemKind::Resugared(_) => todo!(),
             }
         }
 
         fn impl_ident(
             &'a self,
-            ImplIdent { goal, name }: &'b ImplIdent,
+            ImplIdent { goal, name: _ }: &'b ImplIdent,
         ) -> DocBuilder<'a, Self, A> {
             docs![goal]
         }
@@ -1055,11 +1062,11 @@ set_option linter.unusedVariables false
                 name,
                 arguments,
                 is_record,
-                attributes,
+                attributes: _,
             }: &'b Variant,
         ) -> DocBuilder<'a, Self, A> {
             docs![
-                self.render_last(&name),
+                self.render_last(name),
                 softline!(),
                 // args
                 if *is_record {
