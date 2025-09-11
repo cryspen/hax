@@ -206,10 +206,7 @@ impl GlobalId {
     pub fn is_precondition(&self) -> bool {
         match self {
             GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
-                match concrete_id.suffix {
-                    Some(ReservedSuffix::Pre) => true,
-                    _ => false,
-                }
+                matches!(concrete_id.suffix, Some(ReservedSuffix::Pre))
             }
         }
     }
@@ -219,10 +216,7 @@ impl GlobalId {
     pub fn is_postcondition(&self) -> bool {
         match self {
             GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
-                match concrete_id.suffix {
-                    Some(ReservedSuffix::Post) => true,
-                    _ => false,
-                }
+                matches!(concrete_id.suffix, Some(ReservedSuffix::Post))
             }
         }
     }
