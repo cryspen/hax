@@ -28,10 +28,10 @@ let lookup span (impl : Concrete_ident.t) : t option =
   in
   let typ = Import_thir.import_ty span typ in
   let clauses =
-    let f ((binder : Types.clause), span) =
-      Import_thir.import_clause span binder
+    let f i ((binder : Types.clause), span) =
+      Import_thir.import_clause span i binder
     in
-    List.filter_map ~f clauses
+    List.filter_mapi ~f clauses
     |> List.filter_map ~f:(fun (c : Ast.Rust.generic_constraint) ->
            match c with GCType i -> Some i.goal | _ -> None)
   in
