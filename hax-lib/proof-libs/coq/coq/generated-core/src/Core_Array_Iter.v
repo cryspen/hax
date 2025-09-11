@@ -9,42 +9,35 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
-
-From Core Require Import Core_Num.
-Export Core_Num.
+(* NotImplementedYet *)
 
 
 
-From Core Require Import Core_Ops_Index_range.
-Export Core_Ops_Index_range.
 
-From Core Require Import Core_Ops_Range.
-Export Core_Ops_Range.
 
-From Core Require Import Core_Primitive.
-Export Core_Primitive.
 
-(* From Core Require Import Core_Iter (t_IntoIterator). *)
-(* Export Core_Iter (t_IntoIterator). *)
 
-From Core Require Import Core_Clone.
-Export Core_Clone.
 
-From Core Require Import Core_Base.
-Export Core_Base.
 
-(* From Core Require Import hax_lib. *)
-(* Export hax_lib. *)
 
-Record t_IntoIter (v_T : Type) (v_N : t_usize) `{t_Sized (v_T)} : Type :=
+
+
+
+
+
+
+
+
+
+Record IntoIter_IntoIter_record (v_T : Type) (v_N : t_usize) `{Core_Marker.t_Sized (v_T)} : Type :=
   {
-    IntoIter_f_data : t_Array ((v_T)) (v_N);
-    IntoIter_f_alive : t_IndexRange;
+    IntoIter_IntoIter_f_IntoIter_data : Core_Primitive_Primitive_definitions.t_Array ((v_T)) (v_N);
+    IntoIter_IntoIter_f_IntoIter_alive : Core_Ops_Index_range.t_IndexRange;
   }.
-Arguments Build_t_IntoIter (_) (_) {_}.
-Arguments IntoIter_f_data {_} {_} {_}.
-Arguments IntoIter_f_alive {_} {_} {_}.
-#[export] Instance settable_t_IntoIter `{v_T : Type} `{v_N : t_usize} `{t_Sized (v_T)} : Settable _ :=
-  settable! (Build_t_IntoIter v_T v_N) <IntoIter_f_data; IntoIter_f_alive>.
+Arguments Build_IntoIter_IntoIter_record {_} {_} {_}.
+Arguments IntoIter_IntoIter_f_IntoIter_data {_} {_} {_}.
+Arguments IntoIter_IntoIter_f_IntoIter_alive {_} {_} {_}.
+#[export] Instance settable_IntoIter_IntoIter_record `{v_T : Type} `{v_N : t_usize} `{Core_Marker.t_Sized (v_T)} : Settable _ :=
+  settable! (Build_IntoIter_IntoIter_record (v_T := v_T) (v_N := v_N)) <IntoIter_IntoIter_f_IntoIter_data; IntoIter_IntoIter_f_IntoIter_alive>.
