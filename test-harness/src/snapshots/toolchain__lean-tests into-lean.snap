@@ -81,8 +81,8 @@ class Lean_tests.Traits.Bounds.T2 (Self : Type) where
   f2 : Self -> Result usize
 
 class Lean_tests.Traits.Bounds.Test (Self : Type) (T : Type) where
-  [_constr_8040238289193487104 : (Lean_tests.Traits.Bounds.T2 Self)]
-  [_constr_7570495343596639253 : (Lean_tests.Traits.Bounds.T1 T)]
+  [_constr_11094313111027375411 : (Lean_tests.Traits.Bounds.T2 Self)]
+  [_constr_11502165326992889641 : (Lean_tests.Traits.Bounds.T1 T)]
   f_test : Self -> T -> Result usize
 
 structure Lean_tests.Traits.Bounds.S1 where
@@ -156,16 +156,16 @@ class Lean_tests.Traits.Associated_types.T1 (Self : Type) where
 
 class Lean_tests.Traits.Associated_types.T3 (Self : Type) where
   T : Type
-  [_constr_13086648656846024831 :
+  [_constr_14712917225944295424 :
     (Lean_tests.Traits.Associated_types.Foo T Rust_primitives.Hax.Tuple0)]
   Tp : Type
-  [_constr_15450263461214744089 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
+  [_constr_17020143134338090706 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
   f (A : Type) [(Lean_tests.Traits.Associated_types.Bar A)] :
     Self -> T -> Tp -> Result usize
 
 class Lean_tests.Traits.Associated_types.T2 (Self : Type) where
   T : Type
-  [_constr_18277713886489441014 : (Lean_tests.Traits.Associated_types.T1 T)]
+  [_constr_11855681382024687155 : (Lean_tests.Traits.Associated_types.T1 T)]
   f : Self -> T -> Result usize
 
 structure Lean_tests.Structs.Miscellaneous.S where
