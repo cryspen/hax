@@ -1,5 +1,5 @@
 module Core_models.Iter.Adapters.Step_by
-open Rust_primitives
+open Rust_primitives.Integers
 
 type t_StepBy t = { 
   f_iter: t;

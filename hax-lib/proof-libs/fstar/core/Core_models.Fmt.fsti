@@ -30,7 +30,7 @@ val impl_4__new_v1_formatted :
 	 unsafe_arg: Rt.t_UnsafeArg ->
 	 t_Arguments
 
-val impl_11__write_fmt : Core_models.Fmt.t_Formatter -> Core_models.Fmt.t_Arguments -> Core_models.Fmt.t_Formatter & Core_models.Result_Option_bundle.t_Result unit Core_models.Fmt.t_Error
+val impl_11__write_fmt : Core_models.Fmt.t_Formatter -> Core_models.Fmt.t_Arguments -> Core_models.Fmt.t_Formatter & Core_models.Result.t_Result unit Core_models.Fmt.t_Error
 
 [@FStar.Tactics.Typeclasses.tcinstance]
 val impl_t_debug_string : t_Debug Prims.string
