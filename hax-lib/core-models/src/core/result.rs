@@ -8,14 +8,14 @@ use Result::*;
 
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
-    #[hax_lib::requires(fstar!("Result_Ok? self"))]
+    #[hax_lib::requires(self.is_ok())]
     pub fn unwrap(self) -> T {
         match self {
             Ok(t) => t,
             Err(_) => super::panicking::internal::panic(),
         }
     }
-    #[hax_lib::requires(fstar!("Result_Ok? self"))]
+    #[hax_lib::requires(self.is_ok())]
     pub fn expect(self, _msg: &str) -> T {
         match self {
             Ok(t) => t,
@@ -59,7 +59,7 @@ impl<T, E> Result<T, E> {
             Err(e) => Err(op.call_once(e)),
         }
     }
-    #[hax_lib::ensures(|res| hax_lib::Prop::implies(res.into(), fstar!("Result_Ok? self")))]
+
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }

@@ -11,16 +11,11 @@ pub mod index {
         type Output;
         fn index(&self, i: usize) -> &Self::Output;
     }
-
-    /* impl<T: Clone> Index for crate::primitives::array::Slice<T> {
-        type Output = T;
-        fn index(&self, i: usize) -> &T {
-            crate::primitives::array::slice_index(self, i)
-        }
-    } */
 }
 
 pub mod function {
+    /* These instances provide implementations of the F* type classes corresponding to Fn traits for anonymous functions.
+    This ensures that passing a closure where something implementing Fn works when translated to F* */
     #[hax_lib::fstar::after(
         "unfold instance fnonce_arrow t u
   : t_FnOnce (t -> u) t = {

@@ -64,6 +64,11 @@ let impl__map_err
     <:
     t_Result v_T v_F
 
+let impl__is_ok (#v_T #v_E: Type0) (self: t_Result v_T v_E) : bool =
+  match self <: t_Result v_T v_E with
+  | Result_Ok _ -> true
+  | _ -> false
+
 let impl__and_then
       (#v_T #v_E #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
@@ -77,24 +82,13 @@ let impl__and_then
   | Result_Err e -> Result_Err e <: t_Result v_U v_E
 
 let impl__unwrap (#v_T #v_E: Type0) (self: t_Result v_T v_E)
-    : Prims.Pure v_T (requires Result_Ok? self) (fun _ -> Prims.l_True) =
+    : Prims.Pure v_T (requires impl__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> t
   | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
 
 let impl__expect (#v_T #v_E: Type0) (self: t_Result v_T v_E) (e_msg: string)
-    : Prims.Pure v_T (requires Result_Ok? self) (fun _ -> Prims.l_True) =
+    : Prims.Pure v_T (requires impl__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> t
   | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
-
-let impl__is_ok (#v_T #v_E: Type0) (self: t_Result v_T v_E)
-    : Prims.Pure bool
-      Prims.l_True
-      (ensures
-        fun res ->
-          let res:bool = res in
-          b2t res ==> Result_Ok? self) =
-  match self <: t_Result v_T v_E with
-  | Result_Ok _ -> true
-  | _ -> false
