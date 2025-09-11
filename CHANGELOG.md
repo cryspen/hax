@@ -14,6 +14,7 @@ Changes to the Rust Engine:
  - Add support for enums and structs to the Lean backend (type definitions,
    expressions, pattern-matching) (#1623)
  - Update name rendering infrastructure in the Lean backend (#1623, #1624)
+ - Add basic support for traits and impls in the Lean backend (#1679)
 
 Changes to the frontend:
 - Add an explicit `Self: Trait` clause to trait methods and consts (#1559)

@@ -200,6 +200,26 @@ impl GlobalId {
             .strip_prefix("hax_Tuple")
             .is_some_and(|value| value.parse::<usize>().is_ok())
     }
+
+    /// Returns true if the underlying identifier has the precondition suffix
+    /// Should be removed once https://github.com/cryspen/hax/issues/1646 has been fixed
+    pub fn is_precondition(&self) -> bool {
+        match self {
+            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                matches!(concrete_id.suffix, Some(ReservedSuffix::Pre))
+            }
+        }
+    }
+
+    /// Returns true if the underlying identifier has the postcondition suffix
+    /// Should be removed once https://github.com/cryspen/hax/issues/1646 has been fixed
+    pub fn is_postcondition(&self) -> bool {
+        match self {
+            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+                matches!(concrete_id.suffix, Some(ReservedSuffix::Post))
+            }
+        }
+    }
 }
 
 impl ConcreteId {
