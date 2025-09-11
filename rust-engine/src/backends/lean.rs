@@ -225,9 +225,15 @@ const _: () = {
 
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
 
-    macro_rules! zip_with {
+    macro_rules! zip_right {
         ($a:expr, $sep:expr) => {
             docs![concat!($a.into_iter().map(|a| docs![a, $sep]))]
+        };
+    }
+
+    macro_rules! zip_left {
+        ($sep:expr, $a:expr) => {
+            docs![concat!($a.into_iter().map(|a| docs![$sep, a]))]
         };
     }
 
@@ -287,7 +293,7 @@ const _: () = {
             &'a self,
             params: &'b Vec<Param>,
         ) -> DocBuilder<'a, Self, A> {
-            zip_with!(params, line!())
+            zip_right!(params, line!())
         }
     }
 
@@ -352,7 +358,7 @@ set_option linter.unusedVariables false
                         }
                     }
                 })),
-                zip_with!(constraints, line!()),
+                zip_right!(constraints, line!()),
             ]
             .group()
         }
@@ -388,12 +394,13 @@ set_option linter.unusedVariables false
                         // TODO: have a proper monadic resugaring, see
                         // https://github.com/cryspen/hax/issues/1620
                         docs![
-                            docs!["if", line!(), condition, reflow!(" then")].group(),
-                            docs![line!(), "do", line!(), then].nest(INDENT),
+                            docs!["← if", line!(), condition, reflow!(" then do")].group(),
+                            docs![line!(), then].nest(INDENT),
                             line!(),
-                            "else",
-                            docs![line!(), "do", line!(), else_branch].nest(INDENT)
+                            reflow!("else do"),
+                            docs![line!(), else_branch].nest(INDENT)
                         ]
+                        .parens()
                         .group()
                     } else {
                         // The Hax engine should ensure that there is always an else branch
@@ -426,6 +433,7 @@ set_option linter.unusedVariables false
                             .group(),
                     );
                     docs![monadic_lift, head, generic_args, args]
+                        .nest(INDENT)
                         .parens()
                         .group()
                 }
@@ -434,7 +442,8 @@ set_option linter.unusedVariables false
                     "#v[",
                     intersperse!(exprs, docs![",", line!()])
                         .nest(INDENT)
-                        .group(),
+                        .group()
+                        .align(),
                     "]"
                 ]
                 .group(),
@@ -455,6 +464,7 @@ set_option linter.unusedVariables false
                         )
                     } else {
                         docs![constructor, line!(), self.arguments(fields, is_record)]
+                            .nest(INDENT)
                             .parens()
                             .group()
                     }
@@ -479,7 +489,7 @@ set_option linter.unusedVariables false
                             ]
                             .group(),
                             " ←",
-                            line!(),
+                            softline!(),
                             docs!["pure", line!(), rhs].parens().group(),
                             ";"
                         ]
@@ -544,8 +554,9 @@ set_option linter.unusedVariables false
 
                         // TODO: This monad lifting should be handled by a phase/resugaring, see
                         // https://github.com/cryspen/hax/issues/1620
-                        docs!["← ", lhs, softline!(), symbol, softline!(), rhs]
+                        docs!["← ", lhs, line!(), docs![symbol, softline!(), rhs].group()]
                             .group()
+                            .nest(INDENT)
                             .parens()
                     }
                     ResugaredExprKind::Tuple { .. } => {
@@ -653,14 +664,18 @@ set_option linter.unusedVariables false
                     if args.is_empty() {
                         docs![head]
                     } else {
-                        docs![head, softline!(), intersperse!(args, softline!())]
+                        docs![head, zip_left!(line!(), args)]
                             .parens()
                             .group()
+                            .nest(INDENT)
                     }
                 }
-                TyKind::Arrow { inputs, output } => {
-                    docs![zip_with![inputs, reflow!(" -> ")], "Result ", output].group()
-                }
+                TyKind::Arrow { inputs, output } => docs![
+                    zip_right!(inputs, docs![line!(), reflow!("-> ")]),
+                    "Result ",
+                    output
+                ]
+                .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
                 TyKind::Array { ty, length } => docs!["RustArray", line!(), ty, line!(), &**length]
@@ -876,7 +891,7 @@ set_option linter.unusedVariables false
                         docs![
                             docs![reflow!("class "), name],
                             line!(),
-                            zip_with!(
+                            zip_right!(
                                 generics
                                     .params
                                     .iter()
@@ -888,7 +903,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         hardline!(),
-                        zip_with!(
+                        zip_right!(
                             generics.constraints.iter().map(|c| {
                                 match c {
                                     GenericConstraint::Type(tc_constraint) => docs![
@@ -963,7 +978,7 @@ set_option linter.unusedVariables false
             let name = self.render_last(ident);
             docs![match kind {
                 TraitItemKind::Fn(ty) => {
-                    docs![name, line!(), generics, ": ", ty]
+                    docs![name, softline!(), generics, ":", line!(), ty]
                         .group()
                         .nest(INDENT)
                 }
@@ -1004,7 +1019,7 @@ set_option linter.unusedVariables false
                         name,
                         softline!(),
                         generics,
-                        zip_with!(params, line!()).group().align(),
+                        zip_right!(params, line!()).group().align(),
                         ":= do",
                     ]
                     .group(),
@@ -1045,7 +1060,7 @@ set_option linter.unusedVariables false
         ) -> DocBuilder<'a, Self, A> {
             docs![
                 self.render_last(&name),
-                line!(),
+                softline!(),
                 // args
                 if *is_record {
                     // Use named the arguments, keeping only the head of the identifier
