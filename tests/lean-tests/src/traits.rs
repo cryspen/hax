@@ -38,7 +38,7 @@ mod bounds {
     }
 
     trait Test<T: T1>: T2 {
-        fn f_test(&self, x: T) -> usize;
+        fn f_test(&self, x: &T) -> usize;
     }
 
     struct S1;
@@ -54,10 +54,15 @@ mod bounds {
             1
         }
     }
+
     impl Test<S1> for S2 {
-        fn f_test(&self, x: S1) -> usize {
+        fn f_test(&self, x: &S1) -> usize {
             x.f1() + self.f2() + 1
         }
+    }
+
+    fn test(x1: S1, x2: S2) -> usize {
+        x2.f_test(&x1) + x1.f1()
     }
 }
 
@@ -79,5 +84,37 @@ mod associated_types {
         type T: Foo<()>;
         type Tp<T: Bar>: Foo<T>;
         fn f<A: Bar>(&self, x: Self::T, y: Self::Tp<A>) -> usize;
+    }
+}
+
+mod overlapping_methods {
+
+    trait T1 {
+        fn f(&self) -> usize;
+    }
+    trait T2 {
+        fn f(&self) -> usize;
+    }
+    trait T3 {
+        fn f(&self) -> usize;
+    }
+    impl T1 for u32 {
+        fn f(&self) -> usize {
+            0
+        }
+    }
+    impl T2 for u32 {
+        fn f(&self) -> usize {
+            1
+        }
+    }
+    impl T3 for u32 {
+        fn f(&self) -> usize {
+            2
+        }
+    }
+    fn test() -> usize {
+        let x: u32 = 9;
+        T1::f(&x) + T2::f(&x) + T3::f(&x)
     }
 }
