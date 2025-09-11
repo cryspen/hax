@@ -198,3 +198,35 @@ mod inheritance {
         s.f3() + 1
     }
 }
+
+mod overlapping_methods {
+
+    trait T1 {
+        fn f(&self) -> usize;
+    }
+    trait T2 {
+        fn f(&self) -> usize;
+    }
+    trait T3 {
+        fn f(&self) -> usize;
+    }
+    impl T1 for u32 {
+        fn f(&self) -> usize {
+            0
+        }
+    }
+    impl T2 for u32 {
+        fn f(&self) -> usize {
+            1
+        }
+    }
+    impl T3 for u32 {
+        fn f(&self) -> usize {
+            2
+        }
+    }
+    fn test() -> usize {
+        let x: u32 = 9;
+        T1::f(&x) + T2::f(&x) + T3::f(&x)
+    }
+}
