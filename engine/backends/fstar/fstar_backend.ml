@@ -1943,6 +1943,7 @@ module DepGraphR = Dependencies.Make (Features.Rust)
 module TransformToInputLanguage =
   [%functor_application
     Phases.Reject.RawOrMutPointer(Features.Rust)
+  |> Phases.Rewrite_local_self
   |> Phases.Transform_hax_lib_inline
   |> Phases.Specialize
   |> Phases.Drop_sized_trait
@@ -2003,42 +2004,6 @@ let unsize_as_identity =
   in
   visitor#visit_item ()
 
-(** Rewrites, in trait, local bounds refereing to `Self` into the impl expr of
-    kind `Self`. *)
-let local_self_bound_as_self (i : AST.item) : AST.item =
-  match i.v with
-  | Trait { name; generics; _ } ->
-      let generic_eq (param : generic_param) (value : generic_value) =
-        (let* id =
-           match (param.kind, value) with
-           | GPConst _, GConst { e = LocalVar id } -> Some id
-           | GPType, GType (TParam id) -> Some id
-           | GPLifetime _, GLifetime _ -> Some param.ident
-           | _ -> None
-         in
-         Some ([%eq: local_ident] id param.ident))
-        |> Option.value ~default:false
-      in
-      let generics_eq params values =
-        match List.for_all2 ~f:generic_eq params values with
-        | List.Or_unequal_lengths.Ok v -> v
-        | List.Or_unequal_lengths.Unequal_lengths -> false
-      in
-      (object
-         inherit [_] U.Visitors.map as super
-
-         method! visit_impl_expr () ie =
-           match ie with
-           | { kind = LocalBound _; goal = { args; trait } }
-             when [%eq: concrete_ident] trait name
-                  && generics_eq generics.params args ->
-               { ie with kind = Self }
-           | _ -> ie
-      end)
-        #visit_item
-        () i
-  | _ -> i
-
 let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     AST.item list =
   let items =
@@ -2058,7 +2023,6 @@ let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     TransformToInputLanguage.ditems items
     |> List.map ~f:unsize_as_identity
     |> List.map ~f:unsize_as_identity
-    |> List.map ~f:local_self_bound_as_self
     |> List.map ~f:U.Mappers.add_typ_ascription
   in
   items
