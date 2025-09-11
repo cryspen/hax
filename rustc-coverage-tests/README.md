@@ -5,6 +5,8 @@ The following test target are available:
 - `fstar` to test that extraction to F* succeeds
 - `fstar-lax` to test that extraction to F* and lax-checking succeed
 - `coq` to test that extraction to coq succeeds
+- `lean` to test that extraction to Lean succeeds
+- `lean-tc` to test that extraction to Lean succeeds and type checks
 
 ## Running
 

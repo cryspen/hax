@@ -38,7 +38,7 @@ let main__v_IN_CONST: u32 = mk_u32 1234
 (* item error backend: (reject_TraitItemDefault) ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
 Last available AST for this item:
 
-#[<cfg>(any(feature = "json"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;
+#[<cfg>(any(feature = "json", feature = "lean"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;
 #[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_post(_: Self,_: int,_: Self) -> bool;
 fn main__f_trait_func(_: Self,_: int) -> Self;
 fn main__f_default_trait_func((self: Self)) -> Self{{let _: tuple0 = {coverage::inner_items::main__in_func(coverage::inner_items::main__v_IN_CONST)};{let self: Self = {coverage::inner_items::main__f_trait_func(self,coverage::inner_items::main__v_IN_CONST)};self}}}}

@@ -89,6 +89,7 @@ def run_command(cmd):
 def cargo_cmd(test_name, target, feature):
     feature_flag = f"--features {feature}"
     target_filter = f"-i '-** +coverage::{test_name}::**'" if test_name else ""
+    print(f"cargo hax -C {feature_flag} \\; into {target_filter} {target}")
     return f"cargo hax -C {feature_flag} \\; into {target_filter} {target}"
 
 def run_fstar_lax(test_name, include_negative):
@@ -97,6 +98,13 @@ def run_fstar_lax(test_name, include_negative):
     if extraction.returncode != 0:
         return extraction
     return run_command("OTHERFLAGS='--admit_smt_queries true' make -C proofs/fstar/extraction")
+
+def run_lean_tc(test_name, include_negative):
+    cmd = cargo_cmd(test_name, "lean", "json" if include_negative else "lean-tc")
+    extraction = run_command(cmd)
+    if extraction.returncode != 0:
+        return extraction
+    return run_command("lake --dir proofs/lean/extraction build")
 
 def run_json_target():
     return run_command("cargo hax -C --features json \\; json")
@@ -127,7 +135,7 @@ def write_summary(results, stability):
 
 def run_tests(config, target, include_negative, check_stability, update_snapshots):
     results = []
-    all_targets = ["coq", "fstar", "fstar-lax", "json"]
+    all_targets = ["coq", "fstar", "fstar-lax", "lean", "lean-tc" "json"]
 
     applicable_targets = [target] if target != "all" else all_targets
     
@@ -161,6 +169,8 @@ def run_tests(config, target, include_negative, check_stability, update_snapshot
 
             if t == "fstar-lax":
                 command_result = run_fstar_lax(test_name, include_negative)
+            elif t == "lean-tc":
+                command_result = run_lean_tc(test_name, include_negative)
             elif t == "json":
                 command_result = json_result
             else:
@@ -200,7 +210,7 @@ def run_tests(config, target, include_negative, check_stability, update_snapshot
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("target", choices=["coq", "fstar", "fstar-lax", "json", "all"], help="Test target")
+    parser.add_argument("target", choices=["coq", "fstar", "fstar-lax", "lean", "lean-tc", "json", "all"], help="Test target")
     parser.add_argument("--config", help="Path to YAML config file")
     parser.add_argument("--with-negative", action="store_true", help="Also run non-enabled tests and expect them to fail")
     parser.add_argument("--check-stability", action="store_true", help="Compare output files to reference versions, applicable only in conjunction with with-negative")
@@ -212,7 +222,7 @@ def main():
 
     stability = args.check_stability and args.with_negative
 
-    config = load_config(args.config) if args.config else load_config(CONFIG_FILE) if args.with_negative else {"tests" : {"": ["coq", "fstar", "fstar-lax"]}}
+    config = load_config(args.config) if args.config else load_config(CONFIG_FILE) if args.with_negative else {"tests" : {"": ["coq", "fstar", "fstar-lax", "lean", "lean-tc"]}}
     results = run_tests(config, args.target, args.with_negative, stability, args.update_snapshots)
     if args.with_negative:
         write_summary(results, stability)

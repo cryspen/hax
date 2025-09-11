@@ -1,0 +1,10 @@
+name = "Coverage"
+version = "0.1.0"
+defaultTargets = ["Coverage"]
+
+[[lean_lib]]
+name = "Coverage"
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"
