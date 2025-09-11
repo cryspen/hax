@@ -7,9 +7,8 @@ The plan is to slowly deprecate the OCaml engine, rewrite most of its components
 
 ## Usage
 The Rust engine supports only one backend for now: `Lean`.
-The Lean backend is currently empty and produces only a dummy file.
 
-To run it, use the follwing command:
+To run it, use the following command:
 ```bash
 cargo hax into lean
 ```
