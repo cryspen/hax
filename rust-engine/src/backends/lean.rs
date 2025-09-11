@@ -908,6 +908,14 @@ set_option linter.unusedVariables false
                                 intersperse!(&generics.params, line!()).group()
                             ]),
                             line!(),
+                            zip_right!(
+                                generics
+                                    .params
+                                    .iter()
+                                    .map(|p| docs![p, reflow!(" : Type")].parens().group()),
+                                line!()
+                            )
+                            .group(),
                             "where"
                         ]
                         .group(),
@@ -1034,7 +1042,7 @@ set_option linter.unusedVariables false
                         name,
                         softline!(),
                         generics,
-                        zip_right!(params, line!()).group(),
+                        zip_right!(params, line!()).group().align(),
                         ":= do",
                     ]
                     .group(),
