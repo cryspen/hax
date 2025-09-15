@@ -1042,7 +1042,7 @@ set_option linter.unusedVariables false
                         name,
                         softline!(),
                         generics,
-                        zip_right!(params, line!()).group().align(),
+                        zip_right!(params, line!()).group(),
                         ":= do",
                     ]
                     .group(),
