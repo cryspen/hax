@@ -437,6 +437,21 @@ module Make (F : Features.T) = struct
         |> String.concat ~sep:"::")
       ^ "]"
     in
+    let hax_lib_include =
+      let id_to_include =
+        Hashtbl.of_alist_exn
+          (module Concrete_ident)
+          (List.map
+             ~f:(fun it ->
+               ( it.ident,
+                 Attrs.find_unique_attr
+                   ~f:(function Types.ItemStatus is -> Some is | _ -> None)
+                   it.attrs ))
+             items)
+      in
+      Hashtbl.find id_to_include >> Option.join
+    in
+
     let items_drop_body = Hash_set.create (module Concrete_ident) in
     let apply_clause selection' (clause : Types.inclusion_clause) =
       let matches = Concrete_ident.matches_namespace clause.Types.namespace in
@@ -464,7 +479,15 @@ module Make (F : Features.T) = struct
         | Excluded -> Set.diff
       in
       let result = set_op selection' matched in
-      result
+      let forced_include =
+        selection'
+        |> Set.filter
+             ~f:
+               (hax_lib_include
+               >> [%eq: Types.ha_item_status option]
+                    (Some (Included { late_skip = false })))
+      in
+      Set.union forced_include result
     in
     let selection = List.fold ~init:selection ~f:apply_clause clauses in
     Logs.info (fun m ->
