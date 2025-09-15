@@ -449,7 +449,7 @@ module Make (F : Features.T) = struct
                    it.attrs ))
              items)
       in
-      Hashtbl.find_exn id_to_include
+      Hashtbl.find id_to_include >> Option.join
     in
 
     let items_drop_body = Hash_set.create (module Concrete_ident) in
