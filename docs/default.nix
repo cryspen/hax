@@ -47,6 +47,7 @@ in stdenv.mkDerivation {
   installPhase = ''
     mv site $out
     cp -rf ${hax-frontend-docs}/share/doc/ $out/frontend/docs
+    mkdir -p $out/engine/docs/hax-engine
     echo 'Sorry, this page is temporarily unavailable (see <a href="https://github.com/cryspen/hax/issues/1675">issue</a>)' > $out/engine/docs/hax-engine/index.html
   '';
 }
