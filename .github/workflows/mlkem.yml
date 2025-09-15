@@ -32,7 +32,9 @@ jobs:
               const query = 'query {repository(owner:"cryspen", name:"hax") {mergeQueue {entries(first:100) {nodes {pullRequest {body, number}}}}}}';
               const result = await github.graphql(query);
               const mergeQueuePRs = result.repository.mergeQueue.entries.nodes;
-              for (const pr of mergeQueuePRs) {
+              for (const entry of mergeQueuePRs) {
+                const pr = entry.pullRequest
+                core.notice("Found merge queue PR:", pr);
                 const ref = extractLibcruxRef(pr.body);
                 ref && refMap.set(pr.number, ref);
               }
