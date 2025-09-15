@@ -26,6 +26,9 @@ Changes to the frontend:
 - Many improvements to `FullDef` (#1559)
 - Add infrastructure to get a monomorphized `FullDef`; this is used in charon to monomorphize a crate graph (#1559)
 
+Changes to hax-lib:
+- New behavior for`hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
+
 Miscellaneous:
  - A lean tutorial has been added to the hax website.
 
