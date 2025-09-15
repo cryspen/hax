@@ -2,6 +2,8 @@
 #![allow(unused_variables)]
 
 pub mod enums;
+pub mod ite;
+pub mod loops;
 pub mod structs;
 pub mod traits;
 

@@ -205,22 +205,6 @@ impl LeanPrinter {
             .clone();
         self.escape(id)
     }
-
-    /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
-    /// numeric literals, etc.
-    fn expr_typed_result<'a, 'b, A: 'a + Clone>(
-        &'a self,
-        expr: &'b Expr,
-    ) -> DocBuilder<'a, Self, A> {
-        macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
-        install_pretty_helpers!(self: Self);
-        docs![
-            expr,
-            reflow!(" : "),
-            docs!["Result", line!(), &expr.ty].group()
-        ]
-        .group()
-    }
 }
 
 /// Render parameters, adding a line after each parameter
@@ -310,6 +294,26 @@ const _: () = {
         ) -> DocBuilder<'a, Self, A> {
             zip_right!(params, line!())
         }
+
+        /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
+        /// numeric literals, etc.
+        fn expr_typed_result<'a, 'b, A: 'a + Clone>(
+            &'a self,
+            expr: &'b Expr,
+        ) -> DocBuilder<'a, Self, A> {
+            docs![
+                expr,
+                reflow!(" : "),
+                docs!["Result", line!(), &expr.ty].group()
+            ]
+            .group()
+        }
+
+        fn pat_typed<'a, 'b, A: 'a + Clone>(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
+            docs![pat.kind(), reflow!(" :"), line!(), &pat.ty]
+                .parens()
+                .group()
+        }
     }
 
     impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for LeanPrinter {
@@ -387,10 +391,6 @@ set_option linter.unusedVariables false
                     DebugJSON(generic_constraint)
                 ),
             }
-        }
-
-        fn pat(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
-            docs![&*pat.kind, reflow!(" : "), &pat.ty].parens().group()
         }
 
         fn expr(&'a self, Expr { kind, ty, meta: _ }: &'b Expr) -> DocBuilder<'a, Self, A> {
@@ -584,12 +584,18 @@ set_option linter.unusedVariables false
                     }
                 },
                 ExprKind::Match { scrutinee, arms } => docs![
-                    docs!["match", line!(), scrutinee, reflow!(" with")].group(),
-                    line!(),
-                    intersperse!(arms, line!())
+                    docs![
+                        "match",
+                        docs![line!(), scrutinee].nest(INDENT),
+                        line!(),
+                        "with"
+                    ]
+                    .group(),
+                    docs![line!(), intersperse!(arms, line!())]
+                        .group()
+                        .nest(INDENT),
                 ]
                 .parens()
-                .nest(INDENT)
                 .group(),
                 _ => todo!(),
             }
@@ -608,6 +614,10 @@ set_option linter.unusedVariables false
                 .nest(INDENT)
                 .group()
             }
+        }
+
+        fn pat(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
+            docs![pat.kind()] //, reflow!(" : "), &pat.ty].parens().group()
         }
 
         fn pat_kind(&'a self, pat_kind: &'b PatKind) -> DocBuilder<'a, Self, A> {
@@ -705,10 +715,7 @@ set_option linter.unusedVariables false
                     let kind = impl_.kind();
                     match &kind {
                         ImplExprKind::Self_ => docs![self.render_last(item)],
-                        _ => todo!(
-                            "sorry \n-- support only local associated types: {}\n",
-                            DebugJSON(ty)
-                        ), // Support only local associated types
+                        _ => todo!(), // Support only local associated types
                     }
                 }
                 _ => todo!(
@@ -796,7 +803,7 @@ set_option linter.unusedVariables false
         }
 
         fn param(&'a self, param: &'b Param) -> DocBuilder<'a, Self, A> {
-            docs![&param.pat]
+            self.pat_typed(&param.pat)
         }
 
         fn generic_param(&'a self, generic_param: &'b GenericParam) -> DocBuilder<'a, Self, A> {
@@ -1049,7 +1056,7 @@ set_option linter.unusedVariables false
                         name,
                         softline!(),
                         generics,
-                        zip_right!(params, line!()).group().align(),
+                        zip_right!(params, line!()).group(),
                         ":= do",
                     ]
                     .group(),
