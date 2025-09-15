@@ -104,6 +104,28 @@ cargo hax into -i '-** +~mycrate::interesting_function' <BACKEND>
 cargo hax into -i '+:mycrate::not_extracting_function' <BACKEND>
 ```
 
+#### **6. Including anonymous items using `hax_lib::include`**
+Some items like trait impls, or inherent impls have no name so it is impossible to target them specifically using the `-i` flag.
+In this case, one can use `hax_lib::include` to extract these items, and override the default behavior for the rest of the module.
+```rust
+struct S;
+
+#[hax_lib::include]
+impl S {
+    fn f() {}
+}
+
+impl S {
+    #[hax_lib::include]
+    fn g() {}
+    fn h () {}
+}
+```
+To include only `S::f` and `S::g` in the example above, the `hax_lib::include` annotations does the trick, together with the following extraction command:
+```bash
+cargo hax into -i '-**' <BACKEND>
+```
+
 - **Explanation**:
   - `+:mycrate::not_extracting_function`: Includes only the type signature of `mycrate::not_extracting_function` (e.g., as an assumed or axiomatized symbol).
 - **Extracted Items**:
