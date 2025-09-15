@@ -104,9 +104,16 @@ cargo hax into -i '-** +~mycrate::interesting_function' <BACKEND>
 cargo hax into -i '+:mycrate::not_extracting_function' <BACKEND>
 ```
 
+- **Explanation**:
+  - `+:mycrate::not_extracting_function`: Includes only the type signature of `mycrate::not_extracting_function` (e.g., as an assumed or axiomatized symbol).
+- **Extracted Items**:
+  - The type signature of `mycrate::not_extracting_function`, without its body or dependencies.
+
+
+
 #### **6. Including anonymous items using `hax_lib::include`**
-Some items like trait impls, or inherent impls have no name so it is impossible to target them specifically using the `-i` flag.
-In this case, one can use `hax_lib::include` to extract these items, and override the default behavior for the rest of the module.
+Some items like [trait impls](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait), or [inherent impls](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.inherent) have no name so it is impossible to target them specifically using the `-i` flag.
+In this case, one can use [`hax_lib::include`](https://docs.rs/hax-lib/latest/hax_lib/attr.include.html) to extract these items, and override the default behavior for the rest of the module.
 ```rust
 struct S;
 
@@ -125,11 +132,6 @@ To include only `S::f` and `S::g` in the example above, the `hax_lib::include` a
 ```bash
 cargo hax into -i '-**' <BACKEND>
 ```
-
-- **Explanation**:
-  - `+:mycrate::not_extracting_function`: Includes only the type signature of `mycrate::not_extracting_function` (e.g., as an assumed or axiomatized symbol).
-- **Extracted Items**:
-  - The type signature of `mycrate::not_extracting_function`, without its body or dependencies.
 
 ### **Summary**
 The `-i` flag offers powerful control over extraction, allowing fine-grained inclusion and exclusion of items with various dependency handling strategies. Use it to:
