@@ -2,22 +2,36 @@
 use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
 use hax_rust_engine_macros::*;
 
+use crate::interning::{HasGlobal, InternExtTrait, Interned, InterningTable};
+
 pub mod compact_serialization;
 pub mod view;
 
 /// A Rust `DefId`: a lighter version of [`hax_frontend_exporter::DefId`].
 #[derive_group_for_ast]
-pub struct DefId {
+pub struct DefIdInner {
     /// The crate of the definition
     pub krate: String,
     /// The full path for this definition, under the crate `krate`
     pub path: Vec<DisambiguatedDefPathItem>,
     /// The parent `DefId`, if any.
     /// `parent` if node if and only if `path` is empty
-    pub parent: Option<Box<DefId>>,
+    pub parent: Option<DefId>,
     /// What kind is this definition? (e.g. an `enum`, a `const`, an assoc. `fn`...)
     pub kind: DefKind,
 }
+
+use std::sync::{LazyLock, Mutex};
+impl HasGlobal for DefIdInner {
+    fn interning_table() -> &'static Mutex<InterningTable<Self>> {
+        static TABLE: LazyLock<Mutex<InterningTable<DefIdInner>>> =
+            LazyLock::new(|| Mutex::new(InterningTable::default()));
+        &TABLE
+    }
+}
+
+/// An interned Rust `DefId`: a lighter version of [`hax_frontend_exporter::DefId`].
+pub type DefId = Interned<DefIdInner>;
 
 /// An [`ExpliciDefId`] is a Rust [`DefId`] tagged withg some disambiguation metadata.
 ///
@@ -49,13 +63,22 @@ impl ExplicitDefId {
         let is_constructor = matches!(&def_id.kind, DefKind::Field);
         Some(Self {
             is_constructor,
-            def_id: def_id.parent.as_ref()?.as_ref().clone(),
+            def_id: def_id.parent?,
         })
     }
     /// Returns an iterator that yields `self`, then `self.parent()`, etc.
     /// This iterator is non-empty.
     pub fn parents(&self) -> impl Iterator<Item = Self> {
         std::iter::successors(Some(self.clone()), |id| id.parent())
+    }
+
+    // TODO: move `names::generated` under `self`, then make this item private.
+    pub(crate) fn into_global_id_inner(&self) -> GlobalIdInner {
+        GlobalIdInner::Concrete(ConcreteId {
+            def_id: self.clone(),
+            moved: None,
+            suffix: None,
+        })
     }
 }
 
@@ -94,18 +117,21 @@ pub struct ConcreteId {
 
 /// A global identifier in hax.
 #[derive_group_for_ast]
-pub enum GlobalId {
+pub enum GlobalIdInner {
     /// A concrete identifier that exists in Rust.
     Concrete(ConcreteId),
     /// A projector.
     Projector(ConcreteId),
 }
 
-impl GlobalId {
+/// A interned global identifier in hax.
+pub type GlobalId = Interned<GlobalIdInner>;
+
+impl GlobalIdInner {
     /// Extracts the Crate info
     pub fn krate(&self) -> String {
         match self {
-            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+            GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id) => {
                 concrete_id.def_id.def_id.krate.clone()
             }
         }
@@ -120,13 +146,13 @@ impl GlobalId {
     /// Extract the raw `DefId` from a `GlobalId`.
     /// This should never be used for name printing.
     pub fn def_id(&self) -> DefId {
-        self.explicit_def_id().def_id.clone()
+        self.explicit_def_id().def_id
     }
 
     /// Extract the `ExplicitDefId` from a `GlobalId`.
     /// This should never be used for name printing.
     pub fn explicit_def_id(&self) -> ExplicitDefId {
-        let (GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id)) = self;
+        let (GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id)) = self;
         concrete_id.def_id.clone()
     }
 
@@ -134,12 +160,11 @@ impl GlobalId {
     /// only for testing. See https://github.com/cryspen/hax/issues/1599
     pub fn to_debug_string(&self) -> String {
         match self {
-            GlobalId::Concrete(concrete_id) => concrete_id
+            GlobalIdInner::Concrete(concrete_id) => concrete_id
                 .def_id
                 .def_id
-                .clone()
                 .path
-                .into_iter()
+                .iter()
                 .map(|def| {
                     let data = match def.clone().data {
                         hax_frontend_exporter::DefPathItem::ValueNs(s)
@@ -157,21 +182,21 @@ impl GlobalId {
                 })
                 .collect::<Vec<String>>()
                 .join("_"),
-            GlobalId::Projector(_concrete_id) => todo!(),
+            GlobalIdInner::Projector(_concrete_id) => todo!(),
         }
     }
 
     /// Turns a `GlobalId` into a `ConcreteId`: returns `None` on projectors.
     pub fn as_concrete(&self) -> Option<ConcreteId> {
         match self {
-            GlobalId::Concrete(concrete_id) => Some(concrete_id.clone()),
+            GlobalIdInner::Concrete(concrete_id) => Some(concrete_id.clone()),
             _ => None,
         }
     }
     /// Turns a `GlobalId` into a projector `ConcreteId`: returns `Some` only on projectors.
     pub fn as_projector(&self) -> Option<ConcreteId> {
         match self {
-            GlobalId::Projector(concrete_id) => Some(concrete_id.clone()),
+            GlobalIdInner::Projector(concrete_id) => Some(concrete_id.clone()),
             _ => None,
         }
     }
@@ -179,7 +204,7 @@ impl GlobalId {
     /// Returns true if the underlying identifier is a constructor
     pub fn is_constructor(&self) -> bool {
         match self {
-            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+            GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id) => {
                 concrete_id.def_id.is_constructor
             }
         }
@@ -188,8 +213,8 @@ impl GlobalId {
     /// Returns true if the underlying identifier is a projector
     pub fn is_projector(&self) -> bool {
         match self {
-            GlobalId::Projector(_) => true,
-            GlobalId::Concrete(_) => false,
+            GlobalIdInner::Projector(_) => true,
+            GlobalIdInner::Concrete(_) => false,
         }
     }
 
@@ -226,13 +251,13 @@ impl ConcreteId {
 
     /// Turns a ConcreteId into a GlobalId
     pub fn into_concrete(self) -> GlobalId {
-        GlobalId::Concrete(self)
+        GlobalIdInner::Concrete(self).intern()
     }
 }
 
 impl PartialEq<DefId> for GlobalId {
     fn eq(&self, other: &DefId) -> bool {
-        if let Self::Concrete(concrete) = self {
+        if let GlobalIdInner::Concrete(concrete) = self.get() {
             &concrete.def_id.def_id == other
         } else {
             false

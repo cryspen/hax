@@ -329,7 +329,7 @@ mod rustc_invariant_handling {
 
     impl ErrorDummyValue for DefId {
         fn error_dummy_value(_: Permit) -> Self {
-            names::rust_primitives::hax::failure().def_id
+            names::rust_primitives::hax::failure.get().def_id()
         }
     }
 
@@ -621,7 +621,7 @@ impl PathSegment {
             DefKind::Ctor(CtorOf::Struct, _) | DefKind::Struct if def_id.is_constructor => {
                 let parent_def_id = ExplicitDefId {
                     is_constructor: false,
-                    def_id: def_id.def_id.clone(),
+                    def_id: def_id.def_id,
                 };
                 let parent = match Self::from_iterator(&mut std::iter::once(parent_def_id)) {
                     Some(value) => value,
