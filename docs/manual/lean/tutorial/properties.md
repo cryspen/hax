@@ -14,12 +14,12 @@ increasing function:
 ```{.rust .playable .lean-backend}
 #[hax_lib::lean::after("
 theorem square_spec (value: u8) :
-  ⦃ __requires (value) = pure true ⦄
-  (square value)
-  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  ⦃ Playground._.requires (value) = pure true ⦄
+  (${square} value)
+  ⦃ ⇓ result => Playground.__1.ensures value result = pure true ⦄
   := by
   mvcgen
-  simp [__requires, __ensures, square] at *
+  simp [Playground._.requires, Playground.__1.ensures, ${square}] at *
   intros
   rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
   all_goals bv_decide")]
