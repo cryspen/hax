@@ -12,7 +12,7 @@ in which the function `square` is defined.
 *Note: throughout this tutorial, you can edit the snippets of code and
 extract to F\* by clicking the play button (:material-play:), or even typecheck it with the button (:material-check:).*
 
-```{.rust .playable }
+```{.rust .playable .expect-failure }
 fn square(x: u8) -> u8 {
     x * x
 }

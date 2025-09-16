@@ -23,7 +23,7 @@ panic-free. Indeed, our encoding of Rust code in Lean wraps everything in a resu
 functions that panic return an error in this monad. To try to prove panic-freedom, we have to 
 specify that the result of `square` is expected not to be an error in this result type. A way
 to do that is the following:
-```{.rust .playable .lean-backend}
+```{.rust .playable .lean-backend .state-failure}
 #[hax_lib::lean::after("
 theorem square_spec (value: u8) :
   ⦃ Playground._.requires (value) = pure true ⦄
