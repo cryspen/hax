@@ -3,6 +3,4507 @@
 // hax into generate-rust-engine-names` runs the Rust engine, which in turn
 // calls `rust_engine::names::export_def_ids_to_mod`.
 
+static TABLE_AND_INTERNED_GLOBAL_IDS: (
+    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 642>,
+    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 642],
+) = {
+    crate::interning::InterningTable::new_with_values(|| {
+        use crate::ast::identifiers::global_id::ExplicitDefId;
+        use root::compact_serialization::deserialize;
+        fn did_0() -> ExplicitDefId {
+            deserialize(r##"["rust_primitives",[],"Mod",false]"##, None)
+        }
+        fn did_1() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_2() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],"Struct",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_3() -> ExplicitDefId {
+            deserialize(r##"["alloc",[],"Mod",false]"##, None)
+        }
+        fn did_4() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"alloc"},0]],"Mod",false]"##,
+                Some(did_3()),
+            )
+        }
+        fn did_5() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Global"},0]],"Struct",false]"##,
+                Some(did_4()),
+            )
+        }
+        fn did_6() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0]],"Mod",false]"##,
+                Some(did_3()),
+            )
+        }
+        fn did_7() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],[{"TypeNs":"Vec"},0]],"Struct",false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_8() -> ExplicitDefId {
+            deserialize(r##"["core",[],"Mod",false]"##, None)
+        }
+        fn did_9() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"clone"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_10() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0]],"Trait",false]"##,
+                Some(did_9()),
+            )
+        }
+        fn did_11() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0],[{"ValueNs":"clone"},0]],"AssocFn",false]"##,
+                Some(did_10()),
+            )
+        }
+        fn did_12() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0]],"Mod",false]"##,
+                Some(did_9()),
+            )
+        }
+        fn did_13() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0],["Impl",6]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_12()),
+            )
+        }
+        fn did_14() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"alloc"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_15() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Allocator"},0]],"Trait",false]"##,
+                Some(did_14()),
+            )
+        }
+        fn did_16() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_4()),
+            )
+        }
+        fn did_17() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_4()),
+            )
+        }
+        fn did_18() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",11]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_19() -> ExplicitDefId {
+            deserialize(r##"["hax_lib_protocol",[],"Mod",false]"##, None)
+        }
+        fn did_20() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0]],"Mod",false]"##,
+                Some(did_19()),
+            )
+        }
+        fn did_21() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0]],"Enum",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_22() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"deref_op"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_23() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_24() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_25() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0]],"Trait",false]"##,
+                Some(did_24()),
+            )
+        }
+        fn did_26() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"ValueNs":"deref"},0]],"AssocFn",false]"##,
+                Some(did_25()),
+            )
+        }
+        fn did_27() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",8]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_28() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hash"},0]],"Fn",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_29() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_30() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1],[{"ValueNs":"truncate"},0]],"AssocFn",false]"##,
+                Some(did_29()),
+            )
+        }
+        fn did_31() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_32() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2],[{"ValueNs":"extend_from_slice"},0]],"AssocFn",false]"##,
+                Some(did_31()),
+            )
+        }
+        fn did_33() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"box_new"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_34() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"boxed"},0]],"Mod",false]"##,
+                Some(did_3()),
+            )
+        }
+        fn did_35() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"boxed"},0],[{"TypeNs":"Box"},0]],"Struct",false]"##,
+                Some(did_34()),
+            )
+        }
+        fn did_36() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"unsize"},0]],"Fn",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_37() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0]],"Mod",false]"##,
+                Some(did_3()),
+            )
+        }
+        fn did_38() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_37()),
+            )
+        }
+        fn did_39() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"into_vec"},0]],"AssocFn",false]"##,
+                Some(did_38()),
+            )
+        }
+        fn did_40() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0]],"Trait",false]"##,
+                Some(did_37()),
+            )
+        }
+        fn did_41() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"borrow"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_42() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"borrow"},0],[{"TypeNs":"Borrow"},0]],"Trait",false]"##,
+                Some(did_41()),
+            )
+        }
+        fn did_43() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"borrow"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_41()),
+            )
+        }
+        fn did_44() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_37()),
+            )
+        }
+        fn did_45() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"concat"},0]],"AssocFn",false]"##,
+                Some(did_38()),
+            )
+        }
+        fn did_46() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"to_vec"},0]],"AssocFn",false]"##,
+                Some(did_38()),
+            )
+        }
+        fn did_47() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_48() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_47()),
+            )
+        }
+        fn did_49() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"len"},0]],"AssocFn",false]"##,
+                Some(did_48()),
+            )
+        }
+        fn did_50() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_51() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",false]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_52() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
+                Some(did_623()),
+            )
+        }
+        fn did_53() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
+                Some(did_623()),
+            )
+        }
+        fn did_54() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_55() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0]],"Trait",false]"##,
+                Some(did_54()),
+            )
+        }
+        fn did_56() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"ValueNs":"index"},0]],"AssocFn",false]"##,
+                Some(did_55()),
+            )
+        }
+        fn did_57() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0]],"Mod",false]"##,
+                Some(did_47()),
+            )
+        }
+        fn did_58() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],[{"TypeNs":"SliceIndex"},0]],"Trait",false]"##,
+                Some(did_57()),
+            )
+        }
+        fn did_59() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_57()),
+            )
+        }
+        fn did_60() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",13]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_61() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"num"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_62() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"num"},0],["Impl",9]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_61()),
+            )
+        }
+        fn did_63() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"num"},0],["Impl",9],[{"ValueNs":"to_le_bytes"},0]],"AssocFn",false]"##,
+                Some(did_62()),
+            )
+        }
+        fn did_64() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0]],"Enum",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_65() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hmac"},0]],"Fn",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_66() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0]],"Enum",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_67() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHScalar"},0]],"Struct",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_68() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply_base"},0]],"Fn",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_69() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",9]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_70() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHElement"},0]],"Struct",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_71() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply"},0]],"Fn",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_72() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_73() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
+                Some(did_72()),
+            )
+        }
+        fn did_74() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_75() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
+                Some(did_74()),
+            )
+        }
+        fn did_76() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"ProtocolError"},0]],"Enum",false]"##,
+                Some(did_19()),
+            )
+        }
+        fn did_77() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_78() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0]],"Enum",false]"##,
+                Some(did_77()),
+            )
+        }
+        fn did_79() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADKey"},0]],"Struct",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_80() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADIV"},0]],"Struct",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_81() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_82() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
+                Some(did_81()),
+            )
+        }
+        fn did_83() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADTag"},0]],"Struct",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_84() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_decrypt"},0]],"Fn",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_85() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0]],"Enum",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_86() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_87() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
+                Some(did_86()),
+            )
+        }
+        fn did_88() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_89() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
+                Some(did_88()),
+            )
+        }
+        fn did_90() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_91() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple0"},0]],"Field",false]"##,
+                Some(did_624()),
+            )
+        }
+        fn did_92() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple1"},0]],"Field",false]"##,
+                Some(did_624()),
+            )
+        }
+        fn did_93() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_encrypt"},0]],"Fn",false]"##,
+                Some(did_20()),
+            )
+        }
+        fn did_94() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],[{"ValueNs":"from_elem"},0]],"Fn",false]"##,
+                Some(did_6()),
+            )
+        }
+        fn did_95() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ptr"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_96() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0]],"Mod",false]"##,
+                Some(did_95()),
+            )
+        }
+        fn did_97() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_96()),
+            )
+        }
+        fn did_98() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0],[{"ValueNs":"offset"},0]],"AssocFn",false]"##,
+                Some(did_97()),
+            )
+        }
+        fn did_99() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"cast_op"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_100() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"str"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_101() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"str"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_100()),
+            )
+        }
+        fn did_102() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"str"},0],["Impl",0],[{"ValueNs":"as_ptr"},0]],"AssocFn",false]"##,
+                Some(did_101()),
+            )
+        }
+        fn did_103() -> ExplicitDefId {
+            deserialize(r##"["hax_lib",[],"Mod",false]"##, None)
+        }
+        fn did_104() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"any_to_unit"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_105() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"inline_unsafe"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_106() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"inline"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_107() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0]],"Mod",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_108() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"Int"},0]],"Struct",false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_109() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0]],"Mod",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_110() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0]],"Trait",false]"##,
+                Some(did_109()),
+            )
+        }
+        fn did_111() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0],[{"ValueNs":"concretize"},0]],"AssocFn",false]"##,
+                Some(did_110()),
+            )
+        }
+        fn did_112() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",44]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_113() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_114() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"_unsafe_from_str"},0]],"AssocFn",false]"##,
+                Some(did_113()),
+            )
+        }
+        fn did_115() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",9]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_116() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"pow2"},0]],"AssocFn",false]"##,
+                Some(did_113()),
+            )
+        }
+        fn did_117() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0]],"Trait",false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_118() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0],[{"ValueNs":"to_int"},0]],"AssocFn",false]"##,
+                Some(did_117()),
+            )
+        }
+        fn did_119() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",17]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_120() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0]],"Trait",false]"##,
+                Some(did_109()),
+            )
+        }
+        fn did_121() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
+                Some(did_120()),
+            )
+        }
+        fn did_122() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",16]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_107()),
+            )
+        }
+        fn did_123() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_124() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0]],"Enum",false]"##,
+                Some(did_123()),
+            )
+        }
+        fn did_125() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_625()),
+            )
+        }
+        fn did_126() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_626()),
+            )
+        }
+        fn did_127() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",false]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_128() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
+                Some(did_627()),
+            )
+        }
+        fn did_129() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",false]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_130() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",false]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_131() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
+                Some(did_629()),
+            )
+        }
+        fn did_132() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_133() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0]],"Trait",false]"##,
+                Some(did_132()),
+            )
+        }
+        fn did_134() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0],[{"ValueNs":"into"},0]],"AssocFn",false]"##,
+                Some(did_133()),
+            )
+        }
+        fn did_135() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0]],"Trait",false]"##,
+                Some(did_132()),
+            )
+        }
+        fn did_136() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0]],"Mod",false]"##,
+                Some(did_132()),
+            )
+        }
+        fn did_137() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",64]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_136()),
+            )
+        }
+        fn did_138() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_132()),
+            )
+        }
+        fn did_139() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"array"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_140() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
+                Some(did_139()),
+            )
+        }
+        fn did_141() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"IntoIter"},0]],"Struct",false]"##,
+                Some(did_140()),
+            )
+        }
+        fn did_142() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_143() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0]],"Mod",false]"##,
+                Some(did_142()),
+            )
+        }
+        fn did_144() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0]],"Mod",false]"##,
+                Some(did_143()),
+            )
+        }
+        fn did_145() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0]],"Trait",false]"##,
+                Some(did_144()),
+            )
+        }
+        fn did_146() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"ValueNs":"into_iter"},0]],"AssocFn",false]"##,
+                Some(did_145()),
+            )
+        }
+        fn did_147() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_140()),
+            )
+        }
+        fn did_148() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"_internal_loop_decreases"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_149() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0],[{"ValueNs":"from"},0]],"AssocFn",false]"##,
+                Some(did_135()),
+            )
+        }
+        fn did_150() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0]],"Mod",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_151() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"Prop"},0]],"Struct",false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_152() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_153() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"_internal_while_loop_invariant"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_154() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple1"},0]],"Struct",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_155() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_156() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnOnce"},0]],"Trait",false]"##,
+                Some(did_155()),
+            )
+        }
+        fn did_157() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"_internal_loop_invariant"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_158() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"ValueNs":"assert"},0]],"Fn",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_159() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_160() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0]],"Trait",false]"##,
+                Some(did_159()),
+            )
+        }
+        fn did_161() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
+                Some(did_160()),
+            )
+        }
+        fn did_162() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_163() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0]],"Trait",false]"##,
+                Some(did_162()),
+            )
+        }
+        fn did_164() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
+                Some(did_163()),
+            )
+        }
+        fn did_165() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"panicking"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_166() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0]],"Enum",false]"##,
+                Some(did_165()),
+            )
+        }
+        fn did_167() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_168() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0]],"Enum",false]"##,
+                Some(did_167()),
+            )
+        }
+        fn did_169() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"fmt"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_170() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Arguments"},0]],"Struct",false]"##,
+                Some(did_169()),
+            )
+        }
+        fn did_171() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Debug"},0]],"Trait",false]"##,
+                Some(did_169()),
+            )
+        }
+        fn did_172() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0]],"Mod",false]"##,
+                Some(did_169()),
+            )
+        }
+        fn did_173() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",82]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_172()),
+            )
+        }
+        fn did_174() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"assert_failed"},0]],"Fn",false]"##,
+                Some(did_165()),
+            )
+        }
+        fn did_175() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_176() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_177() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"panic"},0]],"Fn",false]"##,
+                Some(did_165()),
+            )
+        }
+        fn did_178() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_630()),
+            )
+        }
+        fn did_179() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_77()),
+            )
+        }
+        fn did_180() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],["Impl",0],[{"ValueNs":"map_err"},0]],"AssocFn",false]"##,
+                Some(did_179()),
+            )
+        }
+        fn did_181() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_167()),
+            )
+        }
+        fn did_182() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],["Impl",0],[{"ValueNs":"is_some"},0]],"AssocFn",false]"##,
+                Some(did_181()),
+            )
+        }
+        fn did_183() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_631()),
+            )
+        }
+        fn did_184() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_34()),
+            )
+        }
+        fn did_185() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
+                Some(did_184()),
+            )
+        }
+        fn did_186() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"string"},0]],"Mod",false]"##,
+                Some(did_3()),
+            )
+        }
+        fn did_187() -> ExplicitDefId {
+            deserialize(
+                r##"["alloc",[[{"TypeNs":"string"},0],[{"TypeNs":"String"},0]],"Struct",false]"##,
+                Some(did_186()),
+            )
+        }
+        fn did_188() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Infallible"},0]],"Enum",false]"##,
+                Some(did_132()),
+            )
+        }
+        fn did_189() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_190() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0]],"Trait",false]"##,
+                Some(did_189()),
+            )
+        }
+        fn did_191() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0],[{"ValueNs":"from_residual"},0]],"AssocFn",false]"##,
+                Some(did_190()),
+            )
+        }
+        fn did_192() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",88]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_136()),
+            )
+        }
+        fn did_193() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],["Impl",28]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_77()),
+            )
+        }
+        fn did_194() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_57()),
+            )
+        }
+        fn did_195() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0]],"Mod",false]"##,
+                Some(did_143()),
+            )
+        }
+        fn did_196() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0]],"Trait",false]"##,
+                Some(did_195()),
+            )
+        }
+        fn did_197() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"next"},0]],"AssocFn",false]"##,
+                Some(did_196()),
+            )
+        }
+        fn did_198() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0]],"Mod",false]"##,
+                Some(did_23()),
+            )
+        }
+        fn did_199() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0]],"Trait",false]"##,
+                Some(did_198()),
+            )
+        }
+        fn did_200() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"ValueNs":"add"},0]],"AssocFn",false]"##,
+                Some(did_199()),
+            )
+        }
+        fn did_201() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnMut"},0]],"Trait",false]"##,
+                Some(did_155()),
+            )
+        }
+        fn did_202() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"fold"},0]],"AssocFn",false]"##,
+                Some(did_196()),
+            )
+        }
+        fn did_203() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_632()),
+            )
+        }
+        fn did_204() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"convert"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_132()),
+            )
+        }
+        fn did_205() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_206() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"Fn"},0]],"Trait",false]"##,
+                Some(did_155()),
+            )
+        }
+        fn did_207() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_208() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_209() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0]],"Trait",false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_210() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0],[{"ValueNs":"to_prop"},0]],"AssocFn",false]"##,
+                Some(did_209()),
+            )
+        }
+        fn did_211() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_212() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_213() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"implies"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_214() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_215() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_216() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_217() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_218() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_219() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn",false]"##,
+                Some(did_212()),
+            )
+        }
+        fn did_220() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0]],"Mod",false]"##,
+                Some(did_150()),
+            )
+        }
+        fn did_221() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_222() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_223() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_224() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_225() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_226() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_227() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"or"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_228() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"and"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_229() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"from_bool"},0]],"Fn",false]"##,
+                Some(did_220()),
+            )
+        }
+        fn did_230() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
+                Some(did_47()),
+            )
+        }
+        fn did_231() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"Iter"},0]],"Struct",false]"##,
+                Some(did_230()),
+            )
+        }
+        fn did_232() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"iter"},0]],"AssocFn",false]"##,
+                Some(did_48()),
+            )
+        }
+        fn did_233() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"ChunksExact"},0]],"Struct",false]"##,
+                Some(did_230()),
+            )
+        }
+        fn did_234() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"chunks_exact"},0]],"AssocFn",false]"##,
+                Some(did_48()),
+            )
+        }
+        fn did_235() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0]],"Mod",false]"##,
+                Some(did_142()),
+            )
+        }
+        fn did_236() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0]],"Mod",false]"##,
+                Some(did_235()),
+            )
+        }
+        fn did_237() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0],[{"TypeNs":"Enumerate"},0]],"Struct",false]"##,
+                Some(did_236()),
+            )
+        }
+        fn did_238() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"enumerate"},0]],"AssocFn",false]"##,
+                Some(did_196()),
+            )
+        }
+        fn did_239() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0]],"Mod",false]"##,
+                Some(did_235()),
+            )
+        }
+        fn did_240() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0],[{"TypeNs":"StepBy"},0]],"Struct",false]"##,
+                Some(did_239()),
+            )
+        }
+        fn did_241() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"step_by"},0]],"AssocFn",false]"##,
+                Some(did_196()),
+            )
+        }
+        fn did_242() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0]],"Trait",false]"##,
+                Some(did_189()),
+            )
+        }
+        fn did_243() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"branch"},0]],"AssocFn",false]"##,
+                Some(did_242()),
+            )
+        }
+        fn did_244() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],["Impl",27]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_77()),
+            )
+        }
+        fn did_245() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"RefineAs"},0]],"Trait",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_246() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"RefineAs"},0],[{"ValueNs":"into_checked"},0]],"AssocFn",false]"##,
+                Some(did_245()),
+            )
+        }
+        fn did_247() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0]],"Trait",false]"##,
+                Some(did_103()),
+            )
+        }
+        fn did_248() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get"},0]],"AssocFn",false]"##,
+                Some(did_247()),
+            )
+        }
+        fn did_249() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy",false]"##,
+                Some(did_247()),
+            )
+        }
+        fn did_250() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
+                Some(did_247()),
+            )
+        }
+        fn did_251() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn",false]"##,
+                Some(did_247()),
+            )
+        }
+        fn did_252() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0]],"Trait",false]"##,
+                Some(did_162()),
+            )
+        }
+        fn did_253() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"ValueNs":"bitand"},0]],"AssocFn",false]"##,
+                Some(did_252()),
+            )
+        }
+        fn did_254() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0]],"Trait",false]"##,
+                Some(did_162()),
+            )
+        }
+        fn did_255() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"ValueNs":"bitxor"},0]],"AssocFn",false]"##,
+                Some(did_254()),
+            )
+        }
+        fn did_256() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0]],"Trait",false]"##,
+                Some(did_198()),
+            )
+        }
+        fn did_257() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"ValueNs":"div"},0]],"AssocFn",false]"##,
+                Some(did_256()),
+            )
+        }
+        fn did_258() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0]],"Trait",false]"##,
+                Some(did_198()),
+            )
+        }
+        fn did_259() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"ValueNs":"mul"},0]],"AssocFn",false]"##,
+                Some(did_258()),
+            )
+        }
+        fn did_260() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0]],"Trait",false]"##,
+                Some(did_198()),
+            )
+        }
+        fn did_261() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"ValueNs":"sub"},0]],"AssocFn",false]"##,
+                Some(did_260()),
+            )
+        }
+        fn did_262() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0]],"Trait",false]"##,
+                Some(did_198()),
+            )
+        }
+        fn did_263() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"ValueNs":"neg"},0]],"AssocFn",false]"##,
+                Some(did_262()),
+            )
+        }
+        fn did_264() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0]],"Trait",false]"##,
+                Some(did_198()),
+            )
+        }
+        fn did_265() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"ValueNs":"rem"},0]],"AssocFn",false]"##,
+                Some(did_264()),
+            )
+        }
+        fn did_266() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0]],"Trait",false]"##,
+                Some(did_162()),
+            )
+        }
+        fn did_267() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"ValueNs":"shl"},0]],"AssocFn",false]"##,
+                Some(did_266()),
+            )
+        }
+        fn did_268() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0]],"Trait",false]"##,
+                Some(did_162()),
+            )
+        }
+        fn did_269() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"ValueNs":"shr"},0]],"AssocFn",false]"##,
+                Some(did_268()),
+            )
+        }
+        fn did_270() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0]],"Trait",false]"##,
+                Some(did_162()),
+            )
+        }
+        fn did_271() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"ValueNs":"bitor"},0]],"AssocFn",false]"##,
+                Some(did_270()),
+            )
+        }
+        fn did_272() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0]],"Trait",false]"##,
+                Some(did_159()),
+            )
+        }
+        fn did_273() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"lt"},0]],"AssocFn",false]"##,
+                Some(did_272()),
+            )
+        }
+        fn did_274() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"gt"},0]],"AssocFn",false]"##,
+                Some(did_272()),
+            )
+        }
+        fn did_275() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_276() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"le"},0]],"AssocFn",false]"##,
+                Some(did_272()),
+            )
+        }
+        fn did_277() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"ge"},0]],"AssocFn",false]"##,
+                Some(did_272()),
+            )
+        }
+        fn did_278() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
+                Some(did_160()),
+            )
+        }
+        fn did_279() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"marker"},0]],"Mod",false]"##,
+                Some(did_8()),
+            )
+        }
+        fn did_280() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Copy"},0]],"Trait",false]"##,
+                Some(did_279()),
+            )
+        }
+        fn did_281() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Residual"},0]],"AssocTy",false]"##,
+                Some(did_242()),
+            )
+        }
+        fn did_282() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"from_output"},0]],"AssocFn",false]"##,
+                Some(did_242()),
+            )
+        }
+        fn did_283() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"TypeNs":"Target"},0]],"AssocTy",false]"##,
+                Some(did_25()),
+            )
+        }
+        fn did_284() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0]],"Trait",false]"##,
+                Some(did_24()),
+            )
+        }
+        fn did_285() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0],[{"ValueNs":"deref_mut"},0]],"AssocFn",false]"##,
+                Some(did_284()),
+            )
+        }
+        fn did_286() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_287() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_288() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_289() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_290() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_291() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_292() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_293() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_294() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_295() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_296() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_297() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_298() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_299() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use",false]"##,
+                Some(did_298()),
+            )
+        }
+        fn did_300() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_301() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_302() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_303() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_304() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_305() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_306() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_307() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_308() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use",false]"##,
+                Some(did_307()),
+            )
+        }
+        fn did_309() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_310() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_311() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_312() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_313() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn",false]"##,
+                Some(did_300()),
+            )
+        }
+        fn did_314() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_315() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_316() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_317() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_318() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_319() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn",false]"##,
+                Some(did_318()),
+            )
+        }
+        fn did_320() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn",false]"##,
+                Some(did_298()),
+            )
+        }
+        fn did_321() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_322() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_323() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_324() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_325() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_326() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn",false]"##,
+                Some(did_318()),
+            )
+        }
+        fn did_327() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_328() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_329() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod",false]"##,
+                Some(did_328()),
+            )
+        }
+        fn did_330() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
+                Some(did_329()),
+            )
+        }
+        fn did_331() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_332() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_333() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_334() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_335() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_336() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_337() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_338() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_339() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_340() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_341() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_342() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_343() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_344() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_345() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_346() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_347() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_348() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_349() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_350() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_351() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_352() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_353() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_354() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_355() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_356() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_357() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn",false]"##,
+                Some(did_318()),
+            )
+        }
+        fn did_358() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_359() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_360() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_361() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0]],"Mod",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_362() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_363() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_364() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_365() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_366() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_367() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_368() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_369() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_370() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_371() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_372() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_373() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_374() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_375() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_376() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_377() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_378() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_379() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_380() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_381() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_382() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_383() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_384() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_385() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn",false]"##,
+                Some(did_318()),
+            )
+        }
+        fn did_386() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_387() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use",false]"##,
+                Some(did_307()),
+            )
+        }
+        fn did_388() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_389() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_390() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_391() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_392() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_393() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_394() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_395() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_396() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_397() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_398() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_399() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_400() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"offset"},0]],"Fn",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_401() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_624()),
+            )
+        }
+        fn did_402() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_403() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_404() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_405() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_406() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[["Use",0]],"Use",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_407() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_408() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_409() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_410() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_411() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field",false]"##,
+                Some(did_624()),
+            )
+        }
+        fn did_412() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_413() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_414() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_415() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_416() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_417() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_418() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_419() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_420() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_421() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_422() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_423() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_424() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_425() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_426() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_427() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_428() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_429() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_430() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_431() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod",false]"##,
+                Some(did_328()),
+            )
+        }
+        fn did_432() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
+                Some(did_431()),
+            )
+        }
+        fn did_433() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_434() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_435() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_436() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_437() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_438() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_439() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_440() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_441() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_442() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_443() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_444() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_445() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_446() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_447() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_448() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_449() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_450() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_451() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_452() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_453() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_454() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_455() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_456() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_457() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_458() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_459() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_460() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_461() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_462() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_463() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_464() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_465() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_466() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_467() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_468() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_469() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_470() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_471() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_472() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_473() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_474() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_475() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_476() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_477() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_478() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_479() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use",false]"##,
+                Some(did_307()),
+            )
+        }
+        fn did_480() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_481() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_482() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_483() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_484() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_485() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait",false]"##,
+                Some(did_328()),
+            )
+        }
+        fn did_486() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
+                Some(did_485()),
+            )
+        }
+        fn did_487() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_488() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_489() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_490() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_491() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_492() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_493() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_494() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_495() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_496() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_497() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_498() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_499() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_500() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_501() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"},false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_502() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_503() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_504() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_505() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_506() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_507() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_508() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_509() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_510() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_511() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_512() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_513() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_514() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_515() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_516() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_517() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_518() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_519() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_520() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_521() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_522() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_302()),
+            )
+        }
+        fn did_523() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_524() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_525() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_526() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_527() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_528() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_529() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod",false]"##,
+                Some(did_328()),
+            )
+        }
+        fn did_530() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use",false]"##,
+                Some(did_300()),
+            )
+        }
+        fn did_531() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_532() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_533() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_534() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_535() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_536() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_537() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn",false]"##,
+                Some(did_307()),
+            )
+        }
+        fn did_538() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_539() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_540() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_541() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_542() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_543() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_544() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_545() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_546() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_547() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_548() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_549() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_550() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_551() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_552() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_553() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_554() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_555() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_556() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_557() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_354()),
+            )
+        }
+        fn did_558() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_559() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
+                Some(did_529()),
+            )
+        }
+        fn did_560() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_561() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn",false]"##,
+                Some(did_295()),
+            )
+        }
+        fn did_562() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_563() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_564() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_565() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_566() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_567() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_568() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_569() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_570() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_571() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_572() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_573() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_574() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_575() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_576() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_577() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_578() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_579() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_580() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_581() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_582() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_583() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use",false]"##,
+                Some(did_582()),
+            )
+        }
+        fn did_584() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_585() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_586() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_587() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_588() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use",false]"##,
+                Some(did_297()),
+            )
+        }
+        fn did_589() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_590() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_591() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_592() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_289()),
+            )
+        }
+        fn did_593() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_594() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_595() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_596() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_597() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_332()),
+            )
+        }
+        fn did_598() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_599() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_600() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_601() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn",false]"##,
+                Some(did_318()),
+            )
+        }
+        fn did_602() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_310()),
+            )
+        }
+        fn did_603() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_604() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_361()),
+            )
+        }
+        fn did_605() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_304()),
+            )
+        }
+        fn did_606() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn",false]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_607() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_316()),
+            )
+        }
+        fn did_608() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_336()),
+            )
+        }
+        fn did_609() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"TypeNs":"Item"},0]],"AssocTy",false]"##,
+                Some(did_196()),
+            )
+        }
+        fn did_610() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_199()),
+            )
+        }
+        fn did_611() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_260()),
+            )
+        }
+        fn did_612() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_258()),
+            )
+        }
+        fn did_613() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_256()),
+            )
+        }
+        fn did_614() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_264()),
+            )
+        }
+        fn did_615() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_254()),
+            )
+        }
+        fn did_616() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_252()),
+            )
+        }
+        fn did_617() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_270()),
+            )
+        }
+        fn did_618() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_266()),
+            )
+        }
+        fn did_619() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_268()),
+            )
+        }
+        fn did_620() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_262()),
+            )
+        }
+        fn did_621() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_163()),
+            )
+        }
+        fn did_622() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_242()),
+            )
+        }
+        fn did_623() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",true]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_624() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",true]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_625() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0]],"Variant",true]"##,
+                Some(did_124()),
+            )
+        }
+        fn did_626() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0]],"Variant",true]"##,
+                Some(did_124()),
+            )
+        }
+        fn did_627() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",true]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_628() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",true]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_629() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",true]"##,
+                Some(did_50()),
+            )
+        }
+        fn did_630() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0]],"Variant",true]"##,
+                Some(did_78()),
+            )
+        }
+        fn did_631() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0]],"Variant",true]"##,
+                Some(did_168()),
+            )
+        }
+        fn did_632() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0]],"Variant",true]"##,
+                Some(did_78()),
+            )
+        }
+        fn did_633() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",true]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_634() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],{"Ctor":["Struct","Fn"]},true]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_635() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
+                Some(did_21()),
+            )
+        }
+        fn did_636() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
+                Some(did_64()),
+            )
+        }
+        fn did_637() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0],[{"TypeNs":"X25519"},0]],"Variant",true]"##,
+                Some(did_66()),
+            )
+        }
+        fn did_638() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0],[{"TypeNs":"Chacha20Poly1305"},0]],"Variant",true]"##,
+                Some(did_85()),
+            )
+        }
+        fn did_639() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],{"Ctor":["Struct","Fn"]},true]"##,
+                Some(did_1()),
+            )
+        }
+        fn did_640() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"None"},0]],"Variant",true]"##,
+                Some(did_168()),
+            )
+        }
+        fn did_641() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant",true]"##,
+                Some(did_166()),
+            )
+        }
+        [
+            did_0().into_global_id_inner(),
+            did_1().into_global_id_inner(),
+            did_2().into_global_id_inner(),
+            did_3().into_global_id_inner(),
+            did_4().into_global_id_inner(),
+            did_5().into_global_id_inner(),
+            did_6().into_global_id_inner(),
+            did_7().into_global_id_inner(),
+            did_8().into_global_id_inner(),
+            did_9().into_global_id_inner(),
+            did_10().into_global_id_inner(),
+            did_11().into_global_id_inner(),
+            did_12().into_global_id_inner(),
+            did_13().into_global_id_inner(),
+            did_14().into_global_id_inner(),
+            did_15().into_global_id_inner(),
+            did_16().into_global_id_inner(),
+            did_17().into_global_id_inner(),
+            did_18().into_global_id_inner(),
+            did_19().into_global_id_inner(),
+            did_20().into_global_id_inner(),
+            did_21().into_global_id_inner(),
+            did_22().into_global_id_inner(),
+            did_23().into_global_id_inner(),
+            did_24().into_global_id_inner(),
+            did_25().into_global_id_inner(),
+            did_26().into_global_id_inner(),
+            did_27().into_global_id_inner(),
+            did_28().into_global_id_inner(),
+            did_29().into_global_id_inner(),
+            did_30().into_global_id_inner(),
+            did_31().into_global_id_inner(),
+            did_32().into_global_id_inner(),
+            did_33().into_global_id_inner(),
+            did_34().into_global_id_inner(),
+            did_35().into_global_id_inner(),
+            did_36().into_global_id_inner(),
+            did_37().into_global_id_inner(),
+            did_38().into_global_id_inner(),
+            did_39().into_global_id_inner(),
+            did_40().into_global_id_inner(),
+            did_41().into_global_id_inner(),
+            did_42().into_global_id_inner(),
+            did_43().into_global_id_inner(),
+            did_44().into_global_id_inner(),
+            did_45().into_global_id_inner(),
+            did_46().into_global_id_inner(),
+            did_47().into_global_id_inner(),
+            did_48().into_global_id_inner(),
+            did_49().into_global_id_inner(),
+            did_50().into_global_id_inner(),
+            did_51().into_global_id_inner(),
+            did_52().into_global_id_inner(),
+            did_53().into_global_id_inner(),
+            did_54().into_global_id_inner(),
+            did_55().into_global_id_inner(),
+            did_56().into_global_id_inner(),
+            did_57().into_global_id_inner(),
+            did_58().into_global_id_inner(),
+            did_59().into_global_id_inner(),
+            did_60().into_global_id_inner(),
+            did_61().into_global_id_inner(),
+            did_62().into_global_id_inner(),
+            did_63().into_global_id_inner(),
+            did_64().into_global_id_inner(),
+            did_65().into_global_id_inner(),
+            did_66().into_global_id_inner(),
+            did_67().into_global_id_inner(),
+            did_68().into_global_id_inner(),
+            did_69().into_global_id_inner(),
+            did_70().into_global_id_inner(),
+            did_71().into_global_id_inner(),
+            did_72().into_global_id_inner(),
+            did_73().into_global_id_inner(),
+            did_74().into_global_id_inner(),
+            did_75().into_global_id_inner(),
+            did_76().into_global_id_inner(),
+            did_77().into_global_id_inner(),
+            did_78().into_global_id_inner(),
+            did_79().into_global_id_inner(),
+            did_80().into_global_id_inner(),
+            did_81().into_global_id_inner(),
+            did_82().into_global_id_inner(),
+            did_83().into_global_id_inner(),
+            did_84().into_global_id_inner(),
+            did_85().into_global_id_inner(),
+            did_86().into_global_id_inner(),
+            did_87().into_global_id_inner(),
+            did_88().into_global_id_inner(),
+            did_89().into_global_id_inner(),
+            did_90().into_global_id_inner(),
+            did_91().into_global_id_inner(),
+            did_92().into_global_id_inner(),
+            did_93().into_global_id_inner(),
+            did_94().into_global_id_inner(),
+            did_95().into_global_id_inner(),
+            did_96().into_global_id_inner(),
+            did_97().into_global_id_inner(),
+            did_98().into_global_id_inner(),
+            did_99().into_global_id_inner(),
+            did_100().into_global_id_inner(),
+            did_101().into_global_id_inner(),
+            did_102().into_global_id_inner(),
+            did_103().into_global_id_inner(),
+            did_104().into_global_id_inner(),
+            did_105().into_global_id_inner(),
+            did_106().into_global_id_inner(),
+            did_107().into_global_id_inner(),
+            did_108().into_global_id_inner(),
+            did_109().into_global_id_inner(),
+            did_110().into_global_id_inner(),
+            did_111().into_global_id_inner(),
+            did_112().into_global_id_inner(),
+            did_113().into_global_id_inner(),
+            did_114().into_global_id_inner(),
+            did_115().into_global_id_inner(),
+            did_116().into_global_id_inner(),
+            did_117().into_global_id_inner(),
+            did_118().into_global_id_inner(),
+            did_119().into_global_id_inner(),
+            did_120().into_global_id_inner(),
+            did_121().into_global_id_inner(),
+            did_122().into_global_id_inner(),
+            did_123().into_global_id_inner(),
+            did_124().into_global_id_inner(),
+            did_125().into_global_id_inner(),
+            did_126().into_global_id_inner(),
+            did_127().into_global_id_inner(),
+            did_128().into_global_id_inner(),
+            did_129().into_global_id_inner(),
+            did_130().into_global_id_inner(),
+            did_131().into_global_id_inner(),
+            did_132().into_global_id_inner(),
+            did_133().into_global_id_inner(),
+            did_134().into_global_id_inner(),
+            did_135().into_global_id_inner(),
+            did_136().into_global_id_inner(),
+            did_137().into_global_id_inner(),
+            did_138().into_global_id_inner(),
+            did_139().into_global_id_inner(),
+            did_140().into_global_id_inner(),
+            did_141().into_global_id_inner(),
+            did_142().into_global_id_inner(),
+            did_143().into_global_id_inner(),
+            did_144().into_global_id_inner(),
+            did_145().into_global_id_inner(),
+            did_146().into_global_id_inner(),
+            did_147().into_global_id_inner(),
+            did_148().into_global_id_inner(),
+            did_149().into_global_id_inner(),
+            did_150().into_global_id_inner(),
+            did_151().into_global_id_inner(),
+            did_152().into_global_id_inner(),
+            did_153().into_global_id_inner(),
+            did_154().into_global_id_inner(),
+            did_155().into_global_id_inner(),
+            did_156().into_global_id_inner(),
+            did_157().into_global_id_inner(),
+            did_158().into_global_id_inner(),
+            did_159().into_global_id_inner(),
+            did_160().into_global_id_inner(),
+            did_161().into_global_id_inner(),
+            did_162().into_global_id_inner(),
+            did_163().into_global_id_inner(),
+            did_164().into_global_id_inner(),
+            did_165().into_global_id_inner(),
+            did_166().into_global_id_inner(),
+            did_167().into_global_id_inner(),
+            did_168().into_global_id_inner(),
+            did_169().into_global_id_inner(),
+            did_170().into_global_id_inner(),
+            did_171().into_global_id_inner(),
+            did_172().into_global_id_inner(),
+            did_173().into_global_id_inner(),
+            did_174().into_global_id_inner(),
+            did_175().into_global_id_inner(),
+            did_176().into_global_id_inner(),
+            did_177().into_global_id_inner(),
+            did_178().into_global_id_inner(),
+            did_179().into_global_id_inner(),
+            did_180().into_global_id_inner(),
+            did_181().into_global_id_inner(),
+            did_182().into_global_id_inner(),
+            did_183().into_global_id_inner(),
+            did_184().into_global_id_inner(),
+            did_185().into_global_id_inner(),
+            did_186().into_global_id_inner(),
+            did_187().into_global_id_inner(),
+            did_188().into_global_id_inner(),
+            did_189().into_global_id_inner(),
+            did_190().into_global_id_inner(),
+            did_191().into_global_id_inner(),
+            did_192().into_global_id_inner(),
+            did_193().into_global_id_inner(),
+            did_194().into_global_id_inner(),
+            did_195().into_global_id_inner(),
+            did_196().into_global_id_inner(),
+            did_197().into_global_id_inner(),
+            did_198().into_global_id_inner(),
+            did_199().into_global_id_inner(),
+            did_200().into_global_id_inner(),
+            did_201().into_global_id_inner(),
+            did_202().into_global_id_inner(),
+            did_203().into_global_id_inner(),
+            did_204().into_global_id_inner(),
+            did_205().into_global_id_inner(),
+            did_206().into_global_id_inner(),
+            did_207().into_global_id_inner(),
+            did_208().into_global_id_inner(),
+            did_209().into_global_id_inner(),
+            did_210().into_global_id_inner(),
+            did_211().into_global_id_inner(),
+            did_212().into_global_id_inner(),
+            did_213().into_global_id_inner(),
+            did_214().into_global_id_inner(),
+            did_215().into_global_id_inner(),
+            did_216().into_global_id_inner(),
+            did_217().into_global_id_inner(),
+            did_218().into_global_id_inner(),
+            did_219().into_global_id_inner(),
+            did_220().into_global_id_inner(),
+            did_221().into_global_id_inner(),
+            did_222().into_global_id_inner(),
+            did_223().into_global_id_inner(),
+            did_224().into_global_id_inner(),
+            did_225().into_global_id_inner(),
+            did_226().into_global_id_inner(),
+            did_227().into_global_id_inner(),
+            did_228().into_global_id_inner(),
+            did_229().into_global_id_inner(),
+            did_230().into_global_id_inner(),
+            did_231().into_global_id_inner(),
+            did_232().into_global_id_inner(),
+            did_233().into_global_id_inner(),
+            did_234().into_global_id_inner(),
+            did_235().into_global_id_inner(),
+            did_236().into_global_id_inner(),
+            did_237().into_global_id_inner(),
+            did_238().into_global_id_inner(),
+            did_239().into_global_id_inner(),
+            did_240().into_global_id_inner(),
+            did_241().into_global_id_inner(),
+            did_242().into_global_id_inner(),
+            did_243().into_global_id_inner(),
+            did_244().into_global_id_inner(),
+            did_245().into_global_id_inner(),
+            did_246().into_global_id_inner(),
+            did_247().into_global_id_inner(),
+            did_248().into_global_id_inner(),
+            did_249().into_global_id_inner(),
+            did_250().into_global_id_inner(),
+            did_251().into_global_id_inner(),
+            did_252().into_global_id_inner(),
+            did_253().into_global_id_inner(),
+            did_254().into_global_id_inner(),
+            did_255().into_global_id_inner(),
+            did_256().into_global_id_inner(),
+            did_257().into_global_id_inner(),
+            did_258().into_global_id_inner(),
+            did_259().into_global_id_inner(),
+            did_260().into_global_id_inner(),
+            did_261().into_global_id_inner(),
+            did_262().into_global_id_inner(),
+            did_263().into_global_id_inner(),
+            did_264().into_global_id_inner(),
+            did_265().into_global_id_inner(),
+            did_266().into_global_id_inner(),
+            did_267().into_global_id_inner(),
+            did_268().into_global_id_inner(),
+            did_269().into_global_id_inner(),
+            did_270().into_global_id_inner(),
+            did_271().into_global_id_inner(),
+            did_272().into_global_id_inner(),
+            did_273().into_global_id_inner(),
+            did_274().into_global_id_inner(),
+            did_275().into_global_id_inner(),
+            did_276().into_global_id_inner(),
+            did_277().into_global_id_inner(),
+            did_278().into_global_id_inner(),
+            did_279().into_global_id_inner(),
+            did_280().into_global_id_inner(),
+            did_281().into_global_id_inner(),
+            did_282().into_global_id_inner(),
+            did_283().into_global_id_inner(),
+            did_284().into_global_id_inner(),
+            did_285().into_global_id_inner(),
+            did_286().into_global_id_inner(),
+            did_287().into_global_id_inner(),
+            did_288().into_global_id_inner(),
+            did_289().into_global_id_inner(),
+            did_290().into_global_id_inner(),
+            did_291().into_global_id_inner(),
+            did_292().into_global_id_inner(),
+            did_293().into_global_id_inner(),
+            did_294().into_global_id_inner(),
+            did_295().into_global_id_inner(),
+            did_296().into_global_id_inner(),
+            did_297().into_global_id_inner(),
+            did_298().into_global_id_inner(),
+            did_299().into_global_id_inner(),
+            did_300().into_global_id_inner(),
+            did_301().into_global_id_inner(),
+            did_302().into_global_id_inner(),
+            did_303().into_global_id_inner(),
+            did_304().into_global_id_inner(),
+            did_305().into_global_id_inner(),
+            did_306().into_global_id_inner(),
+            did_307().into_global_id_inner(),
+            did_308().into_global_id_inner(),
+            did_309().into_global_id_inner(),
+            did_310().into_global_id_inner(),
+            did_311().into_global_id_inner(),
+            did_312().into_global_id_inner(),
+            did_313().into_global_id_inner(),
+            did_314().into_global_id_inner(),
+            did_315().into_global_id_inner(),
+            did_316().into_global_id_inner(),
+            did_317().into_global_id_inner(),
+            did_318().into_global_id_inner(),
+            did_319().into_global_id_inner(),
+            did_320().into_global_id_inner(),
+            did_321().into_global_id_inner(),
+            did_322().into_global_id_inner(),
+            did_323().into_global_id_inner(),
+            did_324().into_global_id_inner(),
+            did_325().into_global_id_inner(),
+            did_326().into_global_id_inner(),
+            did_327().into_global_id_inner(),
+            did_328().into_global_id_inner(),
+            did_329().into_global_id_inner(),
+            did_330().into_global_id_inner(),
+            did_331().into_global_id_inner(),
+            did_332().into_global_id_inner(),
+            did_333().into_global_id_inner(),
+            did_334().into_global_id_inner(),
+            did_335().into_global_id_inner(),
+            did_336().into_global_id_inner(),
+            did_337().into_global_id_inner(),
+            did_338().into_global_id_inner(),
+            did_339().into_global_id_inner(),
+            did_340().into_global_id_inner(),
+            did_341().into_global_id_inner(),
+            did_342().into_global_id_inner(),
+            did_343().into_global_id_inner(),
+            did_344().into_global_id_inner(),
+            did_345().into_global_id_inner(),
+            did_346().into_global_id_inner(),
+            did_347().into_global_id_inner(),
+            did_348().into_global_id_inner(),
+            did_349().into_global_id_inner(),
+            did_350().into_global_id_inner(),
+            did_351().into_global_id_inner(),
+            did_352().into_global_id_inner(),
+            did_353().into_global_id_inner(),
+            did_354().into_global_id_inner(),
+            did_355().into_global_id_inner(),
+            did_356().into_global_id_inner(),
+            did_357().into_global_id_inner(),
+            did_358().into_global_id_inner(),
+            did_359().into_global_id_inner(),
+            did_360().into_global_id_inner(),
+            did_361().into_global_id_inner(),
+            did_362().into_global_id_inner(),
+            did_363().into_global_id_inner(),
+            did_364().into_global_id_inner(),
+            did_365().into_global_id_inner(),
+            did_366().into_global_id_inner(),
+            did_367().into_global_id_inner(),
+            did_368().into_global_id_inner(),
+            did_369().into_global_id_inner(),
+            did_370().into_global_id_inner(),
+            did_371().into_global_id_inner(),
+            did_372().into_global_id_inner(),
+            did_373().into_global_id_inner(),
+            did_374().into_global_id_inner(),
+            did_375().into_global_id_inner(),
+            did_376().into_global_id_inner(),
+            did_377().into_global_id_inner(),
+            did_378().into_global_id_inner(),
+            did_379().into_global_id_inner(),
+            did_380().into_global_id_inner(),
+            did_381().into_global_id_inner(),
+            did_382().into_global_id_inner(),
+            did_383().into_global_id_inner(),
+            did_384().into_global_id_inner(),
+            did_385().into_global_id_inner(),
+            did_386().into_global_id_inner(),
+            did_387().into_global_id_inner(),
+            did_388().into_global_id_inner(),
+            did_389().into_global_id_inner(),
+            did_390().into_global_id_inner(),
+            did_391().into_global_id_inner(),
+            did_392().into_global_id_inner(),
+            did_393().into_global_id_inner(),
+            did_394().into_global_id_inner(),
+            did_395().into_global_id_inner(),
+            did_396().into_global_id_inner(),
+            did_397().into_global_id_inner(),
+            did_398().into_global_id_inner(),
+            did_399().into_global_id_inner(),
+            did_400().into_global_id_inner(),
+            did_401().into_global_id_inner(),
+            did_402().into_global_id_inner(),
+            did_403().into_global_id_inner(),
+            did_404().into_global_id_inner(),
+            did_405().into_global_id_inner(),
+            did_406().into_global_id_inner(),
+            did_407().into_global_id_inner(),
+            did_408().into_global_id_inner(),
+            did_409().into_global_id_inner(),
+            did_410().into_global_id_inner(),
+            did_411().into_global_id_inner(),
+            did_412().into_global_id_inner(),
+            did_413().into_global_id_inner(),
+            did_414().into_global_id_inner(),
+            did_415().into_global_id_inner(),
+            did_416().into_global_id_inner(),
+            did_417().into_global_id_inner(),
+            did_418().into_global_id_inner(),
+            did_419().into_global_id_inner(),
+            did_420().into_global_id_inner(),
+            did_421().into_global_id_inner(),
+            did_422().into_global_id_inner(),
+            did_423().into_global_id_inner(),
+            did_424().into_global_id_inner(),
+            did_425().into_global_id_inner(),
+            did_426().into_global_id_inner(),
+            did_427().into_global_id_inner(),
+            did_428().into_global_id_inner(),
+            did_429().into_global_id_inner(),
+            did_430().into_global_id_inner(),
+            did_431().into_global_id_inner(),
+            did_432().into_global_id_inner(),
+            did_433().into_global_id_inner(),
+            did_434().into_global_id_inner(),
+            did_435().into_global_id_inner(),
+            did_436().into_global_id_inner(),
+            did_437().into_global_id_inner(),
+            did_438().into_global_id_inner(),
+            did_439().into_global_id_inner(),
+            did_440().into_global_id_inner(),
+            did_441().into_global_id_inner(),
+            did_442().into_global_id_inner(),
+            did_443().into_global_id_inner(),
+            did_444().into_global_id_inner(),
+            did_445().into_global_id_inner(),
+            did_446().into_global_id_inner(),
+            did_447().into_global_id_inner(),
+            did_448().into_global_id_inner(),
+            did_449().into_global_id_inner(),
+            did_450().into_global_id_inner(),
+            did_451().into_global_id_inner(),
+            did_452().into_global_id_inner(),
+            did_453().into_global_id_inner(),
+            did_454().into_global_id_inner(),
+            did_455().into_global_id_inner(),
+            did_456().into_global_id_inner(),
+            did_457().into_global_id_inner(),
+            did_458().into_global_id_inner(),
+            did_459().into_global_id_inner(),
+            did_460().into_global_id_inner(),
+            did_461().into_global_id_inner(),
+            did_462().into_global_id_inner(),
+            did_463().into_global_id_inner(),
+            did_464().into_global_id_inner(),
+            did_465().into_global_id_inner(),
+            did_466().into_global_id_inner(),
+            did_467().into_global_id_inner(),
+            did_468().into_global_id_inner(),
+            did_469().into_global_id_inner(),
+            did_470().into_global_id_inner(),
+            did_471().into_global_id_inner(),
+            did_472().into_global_id_inner(),
+            did_473().into_global_id_inner(),
+            did_474().into_global_id_inner(),
+            did_475().into_global_id_inner(),
+            did_476().into_global_id_inner(),
+            did_477().into_global_id_inner(),
+            did_478().into_global_id_inner(),
+            did_479().into_global_id_inner(),
+            did_480().into_global_id_inner(),
+            did_481().into_global_id_inner(),
+            did_482().into_global_id_inner(),
+            did_483().into_global_id_inner(),
+            did_484().into_global_id_inner(),
+            did_485().into_global_id_inner(),
+            did_486().into_global_id_inner(),
+            did_487().into_global_id_inner(),
+            did_488().into_global_id_inner(),
+            did_489().into_global_id_inner(),
+            did_490().into_global_id_inner(),
+            did_491().into_global_id_inner(),
+            did_492().into_global_id_inner(),
+            did_493().into_global_id_inner(),
+            did_494().into_global_id_inner(),
+            did_495().into_global_id_inner(),
+            did_496().into_global_id_inner(),
+            did_497().into_global_id_inner(),
+            did_498().into_global_id_inner(),
+            did_499().into_global_id_inner(),
+            did_500().into_global_id_inner(),
+            did_501().into_global_id_inner(),
+            did_502().into_global_id_inner(),
+            did_503().into_global_id_inner(),
+            did_504().into_global_id_inner(),
+            did_505().into_global_id_inner(),
+            did_506().into_global_id_inner(),
+            did_507().into_global_id_inner(),
+            did_508().into_global_id_inner(),
+            did_509().into_global_id_inner(),
+            did_510().into_global_id_inner(),
+            did_511().into_global_id_inner(),
+            did_512().into_global_id_inner(),
+            did_513().into_global_id_inner(),
+            did_514().into_global_id_inner(),
+            did_515().into_global_id_inner(),
+            did_516().into_global_id_inner(),
+            did_517().into_global_id_inner(),
+            did_518().into_global_id_inner(),
+            did_519().into_global_id_inner(),
+            did_520().into_global_id_inner(),
+            did_521().into_global_id_inner(),
+            did_522().into_global_id_inner(),
+            did_523().into_global_id_inner(),
+            did_524().into_global_id_inner(),
+            did_525().into_global_id_inner(),
+            did_526().into_global_id_inner(),
+            did_527().into_global_id_inner(),
+            did_528().into_global_id_inner(),
+            did_529().into_global_id_inner(),
+            did_530().into_global_id_inner(),
+            did_531().into_global_id_inner(),
+            did_532().into_global_id_inner(),
+            did_533().into_global_id_inner(),
+            did_534().into_global_id_inner(),
+            did_535().into_global_id_inner(),
+            did_536().into_global_id_inner(),
+            did_537().into_global_id_inner(),
+            did_538().into_global_id_inner(),
+            did_539().into_global_id_inner(),
+            did_540().into_global_id_inner(),
+            did_541().into_global_id_inner(),
+            did_542().into_global_id_inner(),
+            did_543().into_global_id_inner(),
+            did_544().into_global_id_inner(),
+            did_545().into_global_id_inner(),
+            did_546().into_global_id_inner(),
+            did_547().into_global_id_inner(),
+            did_548().into_global_id_inner(),
+            did_549().into_global_id_inner(),
+            did_550().into_global_id_inner(),
+            did_551().into_global_id_inner(),
+            did_552().into_global_id_inner(),
+            did_553().into_global_id_inner(),
+            did_554().into_global_id_inner(),
+            did_555().into_global_id_inner(),
+            did_556().into_global_id_inner(),
+            did_557().into_global_id_inner(),
+            did_558().into_global_id_inner(),
+            did_559().into_global_id_inner(),
+            did_560().into_global_id_inner(),
+            did_561().into_global_id_inner(),
+            did_562().into_global_id_inner(),
+            did_563().into_global_id_inner(),
+            did_564().into_global_id_inner(),
+            did_565().into_global_id_inner(),
+            did_566().into_global_id_inner(),
+            did_567().into_global_id_inner(),
+            did_568().into_global_id_inner(),
+            did_569().into_global_id_inner(),
+            did_570().into_global_id_inner(),
+            did_571().into_global_id_inner(),
+            did_572().into_global_id_inner(),
+            did_573().into_global_id_inner(),
+            did_574().into_global_id_inner(),
+            did_575().into_global_id_inner(),
+            did_576().into_global_id_inner(),
+            did_577().into_global_id_inner(),
+            did_578().into_global_id_inner(),
+            did_579().into_global_id_inner(),
+            did_580().into_global_id_inner(),
+            did_581().into_global_id_inner(),
+            did_582().into_global_id_inner(),
+            did_583().into_global_id_inner(),
+            did_584().into_global_id_inner(),
+            did_585().into_global_id_inner(),
+            did_586().into_global_id_inner(),
+            did_587().into_global_id_inner(),
+            did_588().into_global_id_inner(),
+            did_589().into_global_id_inner(),
+            did_590().into_global_id_inner(),
+            did_591().into_global_id_inner(),
+            did_592().into_global_id_inner(),
+            did_593().into_global_id_inner(),
+            did_594().into_global_id_inner(),
+            did_595().into_global_id_inner(),
+            did_596().into_global_id_inner(),
+            did_597().into_global_id_inner(),
+            did_598().into_global_id_inner(),
+            did_599().into_global_id_inner(),
+            did_600().into_global_id_inner(),
+            did_601().into_global_id_inner(),
+            did_602().into_global_id_inner(),
+            did_603().into_global_id_inner(),
+            did_604().into_global_id_inner(),
+            did_605().into_global_id_inner(),
+            did_606().into_global_id_inner(),
+            did_607().into_global_id_inner(),
+            did_608().into_global_id_inner(),
+            did_609().into_global_id_inner(),
+            did_610().into_global_id_inner(),
+            did_611().into_global_id_inner(),
+            did_612().into_global_id_inner(),
+            did_613().into_global_id_inner(),
+            did_614().into_global_id_inner(),
+            did_615().into_global_id_inner(),
+            did_616().into_global_id_inner(),
+            did_617().into_global_id_inner(),
+            did_618().into_global_id_inner(),
+            did_619().into_global_id_inner(),
+            did_620().into_global_id_inner(),
+            did_621().into_global_id_inner(),
+            did_622().into_global_id_inner(),
+            did_623().into_global_id_inner(),
+            did_624().into_global_id_inner(),
+            did_625().into_global_id_inner(),
+            did_626().into_global_id_inner(),
+            did_627().into_global_id_inner(),
+            did_628().into_global_id_inner(),
+            did_629().into_global_id_inner(),
+            did_630().into_global_id_inner(),
+            did_631().into_global_id_inner(),
+            did_632().into_global_id_inner(),
+            did_633().into_global_id_inner(),
+            did_634().into_global_id_inner(),
+            did_635().into_global_id_inner(),
+            did_636().into_global_id_inner(),
+            did_637().into_global_id_inner(),
+            did_638().into_global_id_inner(),
+            did_639().into_global_id_inner(),
+            did_640().into_global_id_inner(),
+            did_641().into_global_id_inner(),
+        ]
+    })
+};
+
+static INTERNED_GLOBAL_IDS: [crate::interning::Interned<
+    crate::ast::identifiers::global_id::GlobalIdInner,
+>; 642] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
+
+impl crate::interning::HasGlobal for crate::ast::identifiers::global_id::GlobalIdInner {
+    fn interning_table() -> &'static std::sync::Mutex<crate::interning::InterningTable<Self>> {
+        &TABLE_AND_INTERNED_GLOBAL_IDS.0
+    }
+}
+
 use super::root;
 pub mod alloc {
     #![doc = r##"This is the module [`::alloc`]."##]
@@ -10,24 +4511,18 @@ pub mod alloc {
     pub mod alloc {
         #![doc = r##"This is the module [`::alloc::alloc`]."##]
         use super::root;
-        mk!(
-            Global,
-            r##"This is the struct [`::alloc::alloc::Global`]."##,
-            r##"["alloc",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Global"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::alloc::alloc())
-        );
-        mk!(
-            Impl__1,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::alloc::alloc())
-        );
-        mk!(
-            Impl__3,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"alloc"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::alloc::alloc())
-        );
+
+        #[doc = r##"This is the struct [`::alloc::alloc::Global`]."##]
+        pub const Global: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[5];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__1: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[16];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__3: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[17];
     }
     pub mod boxed {
         #![doc = r##"This is the module [`::alloc::boxed`]."##]
@@ -35,89 +4530,58 @@ pub mod alloc {
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                new,
-                r##"This is the associated function [`::alloc::boxed::Impl::new`]."##,
-                r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::alloc::boxed::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::alloc::boxed::Impl::new`]."##]
+            pub const new: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[185];
         }
-        mk!(
-            Box,
-            r##"This is the struct [`::alloc::boxed::Box`]."##,
-            r##"["alloc",[[{"TypeNs":"boxed"},0],[{"TypeNs":"Box"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::alloc::boxed())
-        );
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::alloc::boxed())
-        );
+
+        #[doc = r##"This is the struct [`::alloc::boxed::Box`]."##]
+        pub const Box: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[35];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[184];
     }
     pub mod slice {
         #![doc = r##"This is the module [`::alloc::slice`]."##]
         use super::root;
-        pub mod Concat {
-            #![doc = r##"This is the trait [`::alloc::slice::Concat`]."##]
-            use super::root;
-            mk!(
-                Output,
-                r##"This is the associated type [`::alloc::slice::Concat::Output`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                ::core::option::Option::Some(root::alloc::slice::Concat())
-            );
-        }
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                concat,
-                r##"This is the associated function [`::alloc::slice::Impl::concat`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"concat"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::alloc::slice::Impl())
-            );
-            mk!(
-                into_vec,
-                r##"This is the associated function [`::alloc::slice::Impl::into_vec`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"into_vec"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::alloc::slice::Impl())
-            );
-            mk!(
-                to_vec,
-                r##"This is the associated function [`::alloc::slice::Impl::to_vec`]."##,
-                r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"to_vec"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::alloc::slice::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::alloc::slice::Impl::concat`]."##]
+            pub const concat: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[45];
+
+            #[doc = r##"This is the associated function [`::alloc::slice::Impl::into_vec`]."##]
+            pub const into_vec: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[39];
+
+            #[doc = r##"This is the associated function [`::alloc::slice::Impl::to_vec`]."##]
+            pub const to_vec: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[46];
         }
-        mk!(
-            Concat,
-            r##"This is the trait [`::alloc::slice::Concat`]."##,
-            r##"["alloc",[[{"TypeNs":"slice"},0],[{"TypeNs":"Concat"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::alloc::slice())
-        );
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::alloc::slice())
-        );
-        mk!(
-            Impl__2,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"slice"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::alloc::slice())
-        );
+
+        #[doc = r##"This is the trait [`::alloc::slice::Concat`]."##]
+        pub const Concat: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[40];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[38];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[44];
     }
     pub mod string {
         #![doc = r##"This is the module [`::alloc::string`]."##]
         use super::root;
-        mk!(
-            String,
-            r##"This is the struct [`::alloc::string::String`]."##,
-            r##"["alloc",[[{"TypeNs":"string"},0],[{"TypeNs":"String"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::alloc::string())
-        );
+
+        #[doc = r##"This is the struct [`::alloc::string::String`]."##]
+        pub const String: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[187];
     }
     pub mod vec {
         #![doc = r##"This is the module [`::alloc::vec`]."##]
@@ -125,96 +4589,62 @@ pub mod alloc {
         pub mod Impl__1 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                truncate,
-                r##"This is the associated function [`::alloc::vec::Impl__1::truncate`]."##,
-                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1],[{"ValueNs":"truncate"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::alloc::vec::Impl__1())
-            );
+
+            #[doc = r##"This is the associated function [`::alloc::vec::Impl__1::truncate`]."##]
+            pub const truncate: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[30];
         }
         pub mod Impl__2 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                extend_from_slice,
-                r##"This is the associated function [`::alloc::vec::Impl__2::extend_from_slice`]."##,
-                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2],[{"ValueNs":"extend_from_slice"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::alloc::vec::Impl__2())
-            );
+
+            #[doc = r##"This is the associated function [`::alloc::vec::Impl__2::extend_from_slice`]."##]
+            pub const extend_from_slice: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[32];
         }
-        mk!(
-            Impl__1,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
-        mk!(
-            Impl__11,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",11]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
-        mk!(
-            Impl__13,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",13]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
-        mk!(
-            Impl__2,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",2]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
-        mk!(
-            Impl__8,
-            r##"This is an impl block."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",8]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
-        mk!(
-            Vec,
-            r##"This is the struct [`::alloc::vec::Vec`]."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],[{"TypeNs":"Vec"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
-        mk!(
-            from_elem,
-            r##"This is the function [`::alloc::vec::from_elem`]."##,
-            r##"["alloc",[[{"TypeNs":"vec"},0],[{"ValueNs":"from_elem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::alloc::vec())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__1: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[29];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__11: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[18];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__13: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[60];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[31];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__8: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[27];
+
+        #[doc = r##"This is the struct [`::alloc::vec::Vec`]."##]
+        pub const Vec: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[7];
+
+        #[doc = r##"This is the function [`::alloc::vec::from_elem`]."##]
+        pub const from_elem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[94];
     }
-    mk!(
-        alloc,
-        r##"This is the module [`::alloc::alloc`]."##,
-        r##"["alloc",[[{"TypeNs":"alloc"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::alloc())
-    );
-    mk!(
-        boxed,
-        r##"This is the module [`::alloc::boxed`]."##,
-        r##"["alloc",[[{"TypeNs":"boxed"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::alloc())
-    );
-    mk!(
-        slice,
-        r##"This is the module [`::alloc::slice`]."##,
-        r##"["alloc",[[{"TypeNs":"slice"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::alloc())
-    );
-    mk!(
-        string,
-        r##"This is the module [`::alloc::string`]."##,
-        r##"["alloc",[[{"TypeNs":"string"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::alloc())
-    );
-    mk!(
-        vec,
-        r##"This is the module [`::alloc::vec`]."##,
-        r##"["alloc",[[{"TypeNs":"vec"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::alloc())
-    );
+
+    #[doc = r##"This is the module [`::alloc::alloc`]."##]
+    pub const alloc: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[4];
+
+    #[doc = r##"This is the module [`::alloc::boxed`]."##]
+    pub const boxed: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[34];
+
+    #[doc = r##"This is the module [`::alloc::slice`]."##]
+    pub const slice: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[37];
+
+    #[doc = r##"This is the module [`::alloc::string`]."##]
+    pub const string: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[186];
+
+    #[doc = r##"This is the module [`::alloc::vec`]."##]
+    pub const vec: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[6];
 }
 pub mod core {
     #![doc = r##"This is the module [`::core`]."##]
@@ -222,12 +4652,10 @@ pub mod core {
     pub mod alloc {
         #![doc = r##"This is the module [`::core::alloc`]."##]
         use super::root;
-        mk!(
-            Allocator,
-            r##"This is the trait [`::core::alloc::Allocator`]."##,
-            r##"["core",[[{"TypeNs":"alloc"},0],[{"TypeNs":"Allocator"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::alloc())
-        );
+
+        #[doc = r##"This is the trait [`::core::alloc::Allocator`]."##]
+        pub const Allocator: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[15];
     }
     pub mod array {
         #![doc = r##"This is the module [`::core::array`]."##]
@@ -235,41 +4663,31 @@ pub mod core {
         pub mod iter {
             #![doc = r##"This is the module [`::core::array::iter`]."##]
             use super::root;
-            mk!(
-                Impl__1,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::array::iter())
-            );
-            mk!(
-                IntoIter,
-                r##"This is the struct [`::core::array::iter::IntoIter`]."##,
-                r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"IntoIter"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::array::iter())
-            );
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__1: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[147];
+
+            #[doc = r##"This is the struct [`::core::array::iter::IntoIter`]."##]
+            pub const IntoIter: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[141];
         }
-        mk!(
-            iter,
-            r##"This is the module [`::core::array::iter`]."##,
-            r##"["core",[[{"TypeNs":"array"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::array())
-        );
+
+        #[doc = r##"This is the module [`::core::array::iter`]."##]
+        pub const iter: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[140];
     }
     pub mod borrow {
         #![doc = r##"This is the module [`::core::borrow`]."##]
         use super::root;
-        mk!(
-            Borrow,
-            r##"This is the trait [`::core::borrow::Borrow`]."##,
-            r##"["core",[[{"TypeNs":"borrow"},0],[{"TypeNs":"Borrow"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::borrow())
-        );
-        mk!(
-            Impl__2,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"borrow"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::core::borrow())
-        );
+
+        #[doc = r##"This is the trait [`::core::borrow::Borrow`]."##]
+        pub const Borrow: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[42];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[43];
     }
     pub mod clone {
         #![doc = r##"This is the module [`::core::clone`]."##]
@@ -277,35 +4695,27 @@ pub mod core {
         pub mod Clone {
             #![doc = r##"This is the trait [`::core::clone::Clone`]."##]
             use super::root;
-            mk!(
-                clone,
-                r##"This is the associated function [`::core::clone::Clone::clone`]."##,
-                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0],[{"ValueNs":"clone"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::clone::Clone())
-            );
+
+            #[doc = r##"This is the associated function [`::core::clone::Clone::clone`]."##]
+            pub const clone: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[11];
         }
         pub mod impls {
             #![doc = r##"This is the module [`::core::clone::impls`]."##]
             use super::root;
-            mk!(
-                Impl__6,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0],["Impl",6]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::clone::impls())
-            );
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__6: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[13];
         }
-        mk!(
-            Clone,
-            r##"This is the trait [`::core::clone::Clone`]."##,
-            r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"Clone"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::clone())
-        );
-        mk!(
-            impls,
-            r##"This is the module [`::core::clone::impls`]."##,
-            r##"["core",[[{"TypeNs":"clone"},0],[{"TypeNs":"impls"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::clone())
-        );
+
+        #[doc = r##"This is the trait [`::core::clone::Clone`]."##]
+        pub const Clone: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[10];
+
+        #[doc = r##"This is the module [`::core::clone::impls`]."##]
+        pub const impls: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[12];
     }
     pub mod cmp {
         #![doc = r##"This is the module [`::core::cmp`]."##]
@@ -313,59 +4723,43 @@ pub mod core {
         pub mod PartialEq {
             #![doc = r##"This is the trait [`::core::cmp::PartialEq`]."##]
             use super::root;
-            mk!(
-                eq,
-                r##"This is the associated function [`::core::cmp::PartialEq::eq`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::cmp::PartialEq())
-            );
-            mk!(
-                ne,
-                r##"This is the associated function [`::core::cmp::PartialEq::ne`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::cmp::PartialEq())
-            );
+
+            #[doc = r##"This is the associated function [`::core::cmp::PartialEq::eq`]."##]
+            pub const eq: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[161];
+
+            #[doc = r##"This is the associated function [`::core::cmp::PartialEq::ne`]."##]
+            pub const ne: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[278];
         }
         pub mod PartialOrd {
             #![doc = r##"This is the trait [`::core::cmp::PartialOrd`]."##]
             use super::root;
-            mk!(
-                ge,
-                r##"This is the associated function [`::core::cmp::PartialOrd::ge`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"ge"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::cmp::PartialOrd())
-            );
-            mk!(
-                gt,
-                r##"This is the associated function [`::core::cmp::PartialOrd::gt`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"gt"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::cmp::PartialOrd())
-            );
-            mk!(
-                le,
-                r##"This is the associated function [`::core::cmp::PartialOrd::le`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"le"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::cmp::PartialOrd())
-            );
-            mk!(
-                lt,
-                r##"This is the associated function [`::core::cmp::PartialOrd::lt`]."##,
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"lt"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::cmp::PartialOrd())
-            );
+
+            #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::ge`]."##]
+            pub const ge: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[277];
+
+            #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::gt`]."##]
+            pub const gt: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[274];
+
+            #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::le`]."##]
+            pub const le: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[276];
+
+            #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::lt`]."##]
+            pub const lt: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[273];
         }
-        mk!(
-            PartialEq,
-            r##"This is the trait [`::core::cmp::PartialEq`]."##,
-            r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::cmp())
-        );
-        mk!(
-            PartialOrd,
-            r##"This is the trait [`::core::cmp::PartialOrd`]."##,
-            r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::cmp())
-        );
+
+        #[doc = r##"This is the trait [`::core::cmp::PartialEq`]."##]
+        pub const PartialEq: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[160];
+
+        #[doc = r##"This is the trait [`::core::cmp::PartialOrd`]."##]
+        pub const PartialOrd: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[272];
     }
     pub mod convert {
         #![doc = r##"This is the module [`::core::convert`]."##]
@@ -373,75 +4767,55 @@ pub mod core {
         pub mod From {
             #![doc = r##"This is the trait [`::core::convert::From`]."##]
             use super::root;
-            mk!(
-                from,
-                r##"This is the associated function [`::core::convert::From::from`]."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0],[{"ValueNs":"from"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::convert::From())
-            );
+
+            #[doc = r##"This is the associated function [`::core::convert::From::from`]."##]
+            pub const from: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[149];
         }
         pub mod Into {
             #![doc = r##"This is the trait [`::core::convert::Into`]."##]
             use super::root;
-            mk!(
-                into,
-                r##"This is the associated function [`::core::convert::Into::into`]."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0],[{"ValueNs":"into"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::convert::Into())
-            );
+
+            #[doc = r##"This is the associated function [`::core::convert::Into::into`]."##]
+            pub const into: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[134];
         }
         pub mod num {
             #![doc = r##"This is the module [`::core::convert::num`]."##]
             use super::root;
-            mk!(
-                Impl__64,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",64]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::convert::num())
-            );
-            mk!(
-                Impl__88,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",88]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::convert::num())
-            );
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__64: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[137];
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__88: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[192];
         }
-        mk!(
-            From,
-            r##"This is the trait [`::core::convert::From`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"From"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::convert())
-        );
-        mk!(
-            Impl__3,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"convert"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::core::convert())
-        );
-        mk!(
-            Impl__4,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"convert"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::core::convert())
-        );
-        mk!(
-            Infallible,
-            r##"This is the enum [`::core::convert::Infallible`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Infallible"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::core::convert())
-        );
-        mk!(
-            Into,
-            r##"This is the trait [`::core::convert::Into`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Into"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::convert())
-        );
-        mk!(
-            num,
-            r##"This is the module [`::core::convert::num`]."##,
-            r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::convert())
-        );
+
+        #[doc = r##"This is the trait [`::core::convert::From`]."##]
+        pub const From: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[135];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__3: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[138];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__4: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[204];
+
+        #[doc = r##"This is the enum [`::core::convert::Infallible`]."##]
+        pub const Infallible: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[188];
+
+        #[doc = r##"This is the trait [`::core::convert::Into`]."##]
+        pub const Into: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[133];
+
+        #[doc = r##"This is the module [`::core::convert::num`]."##]
+        pub const num: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[136];
     }
     pub mod fmt {
         #![doc = r##"This is the module [`::core::fmt`]."##]
@@ -449,31 +4823,23 @@ pub mod core {
         pub mod num {
             #![doc = r##"This is the module [`::core::fmt::num`]."##]
             use super::root;
-            mk!(
-                Impl__82,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",82]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::fmt::num())
-            );
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__82: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[173];
         }
-        mk!(
-            Arguments,
-            r##"This is the struct [`::core::fmt::Arguments`]."##,
-            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Arguments"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::core::fmt())
-        );
-        mk!(
-            Debug,
-            r##"This is the trait [`::core::fmt::Debug`]."##,
-            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"Debug"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::fmt())
-        );
-        mk!(
-            num,
-            r##"This is the module [`::core::fmt::num`]."##,
-            r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::fmt())
-        );
+
+        #[doc = r##"This is the struct [`::core::fmt::Arguments`]."##]
+        pub const Arguments: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[170];
+
+        #[doc = r##"This is the trait [`::core::fmt::Debug`]."##]
+        pub const Debug: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[171];
+
+        #[doc = r##"This is the module [`::core::fmt::num`]."##]
+        pub const num: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[172];
     }
     pub mod iter {
         #![doc = r##"This is the module [`::core::iter`]."##]
@@ -484,35 +4850,27 @@ pub mod core {
             pub mod enumerate {
                 #![doc = r##"This is the module [`::core::iter::adapters::enumerate`]."##]
                 use super::root;
-                mk!(
-                    Enumerate,
-                    r##"This is the struct [`::core::iter::adapters::enumerate::Enumerate`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0],[{"TypeNs":"Enumerate"},0]],"Struct",false]"##,
-                    ::core::option::Option::Some(root::core::iter::adapters::enumerate())
-                );
+
+                #[doc = r##"This is the struct [`::core::iter::adapters::enumerate::Enumerate`]."##]
+                pub const Enumerate: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[237];
             }
             pub mod step_by {
                 #![doc = r##"This is the module [`::core::iter::adapters::step_by`]."##]
                 use super::root;
-                mk!(
-                    StepBy,
-                    r##"This is the struct [`::core::iter::adapters::step_by::StepBy`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0],[{"TypeNs":"StepBy"},0]],"Struct",false]"##,
-                    ::core::option::Option::Some(root::core::iter::adapters::step_by())
-                );
+
+                #[doc = r##"This is the struct [`::core::iter::adapters::step_by::StepBy`]."##]
+                pub const StepBy: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[240];
             }
-            mk!(
-                enumerate,
-                r##"This is the module [`::core::iter::adapters::enumerate`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::core::iter::adapters())
-            );
-            mk!(
-                step_by,
-                r##"This is the module [`::core::iter::adapters::step_by`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::core::iter::adapters())
-            );
+
+            #[doc = r##"This is the module [`::core::iter::adapters::enumerate`]."##]
+            pub const enumerate: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[236];
+
+            #[doc = r##"This is the module [`::core::iter::adapters::step_by`]."##]
+            pub const step_by: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[239];
         }
         pub mod traits {
             #![doc = r##"This is the module [`::core::iter::traits`]."##]
@@ -523,29 +4881,15 @@ pub mod core {
                 pub mod IntoIterator {
                     #![doc = r##"This is the trait [`::core::iter::traits::collect::IntoIterator`]."##]
                     use super::root;
-                    mk!(
-                        IntoIter,
-                        r##"This is the associated type [`::core::iter::traits::collect::IntoIterator::IntoIter`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"TypeNs":"IntoIter"},0]],"AssocTy",false]"##,
-                        ::core::option::Option::Some(
-                            root::core::iter::traits::collect::IntoIterator()
-                        )
-                    );
-                    mk!(
-                        into_iter,
-                        r##"This is the associated function [`::core::iter::traits::collect::IntoIterator::into_iter`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0],[{"ValueNs":"into_iter"},0]],"AssocFn",false]"##,
-                        ::core::option::Option::Some(
-                            root::core::iter::traits::collect::IntoIterator()
-                        )
-                    );
+
+                    #[doc = r##"This is the associated function [`::core::iter::traits::collect::IntoIterator::into_iter`]."##]
+                    pub const into_iter: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[146];
                 }
-                mk!(
-                    IntoIterator,
-                    r##"This is the trait [`::core::iter::traits::collect::IntoIterator`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0],[{"TypeNs":"IntoIterator"},0]],"Trait",false]"##,
-                    ::core::option::Option::Some(root::core::iter::traits::collect())
-                );
+
+                #[doc = r##"This is the trait [`::core::iter::traits::collect::IntoIterator`]."##]
+                pub const IntoIterator: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[145];
             }
             pub mod iterator {
                 #![doc = r##"This is the module [`::core::iter::traits::iterator`]."##]
@@ -553,79 +4897,57 @@ pub mod core {
                 pub mod Iterator {
                     #![doc = r##"This is the trait [`::core::iter::traits::iterator::Iterator`]."##]
                     use super::root;
-                    mk!(
-                        Item,
-                        r##"This is the associated type [`::core::iter::traits::iterator::Iterator::Item`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"TypeNs":"Item"},0]],"AssocTy",false]"##,
-                        ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
-                    );
-                    mk!(
-                        enumerate,
-                        r##"This is the associated function [`::core::iter::traits::iterator::Iterator::enumerate`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"enumerate"},0]],"AssocFn",false]"##,
-                        ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
-                    );
-                    mk!(
-                        fold,
-                        r##"This is the associated function [`::core::iter::traits::iterator::Iterator::fold`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"fold"},0]],"AssocFn",false]"##,
-                        ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
-                    );
-                    mk!(
-                        next,
-                        r##"This is the associated function [`::core::iter::traits::iterator::Iterator::next`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"next"},0]],"AssocFn",false]"##,
-                        ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
-                    );
-                    mk!(
-                        step_by,
-                        r##"This is the associated function [`::core::iter::traits::iterator::Iterator::step_by`]."##,
-                        r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"step_by"},0]],"AssocFn",false]"##,
-                        ::core::option::Option::Some(root::core::iter::traits::iterator::Iterator())
-                    );
+
+                    #[doc = r##"This is the associated type [`::core::iter::traits::iterator::Iterator::Item`]."##]
+                    pub const Item: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[609];
+
+                    #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::enumerate`]."##]
+                    pub const enumerate: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[238];
+
+                    #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::fold`]."##]
+                    pub const fold: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[202];
+
+                    #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::next`]."##]
+                    pub const next: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[197];
+
+                    #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::step_by`]."##]
+                    pub const step_by: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[241];
                 }
-                mk!(
-                    Iterator,
-                    r##"This is the trait [`::core::iter::traits::iterator::Iterator`]."##,
-                    r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0]],"Trait",false]"##,
-                    ::core::option::Option::Some(root::core::iter::traits::iterator())
-                );
+
+                #[doc = r##"This is the trait [`::core::iter::traits::iterator::Iterator`]."##]
+                pub const Iterator: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[196];
             }
-            mk!(
-                collect,
-                r##"This is the module [`::core::iter::traits::collect`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"collect"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::core::iter::traits())
-            );
-            mk!(
-                iterator,
-                r##"This is the module [`::core::iter::traits::iterator`]."##,
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::core::iter::traits())
-            );
+
+            #[doc = r##"This is the module [`::core::iter::traits::collect`]."##]
+            pub const collect: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[144];
+
+            #[doc = r##"This is the module [`::core::iter::traits::iterator`]."##]
+            pub const iterator: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[195];
         }
-        mk!(
-            adapters,
-            r##"This is the module [`::core::iter::adapters`]."##,
-            r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::iter())
-        );
-        mk!(
-            traits,
-            r##"This is the module [`::core::iter::traits`]."##,
-            r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::iter())
-        );
+
+        #[doc = r##"This is the module [`::core::iter::adapters`]."##]
+        pub const adapters: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[235];
+
+        #[doc = r##"This is the module [`::core::iter::traits`]."##]
+        pub const traits: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[143];
     }
     pub mod marker {
         #![doc = r##"This is the module [`::core::marker`]."##]
         use super::root;
-        mk!(
-            Copy,
-            r##"This is the trait [`::core::marker::Copy`]."##,
-            r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Copy"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::core::marker())
-        );
+
+        #[doc = r##"This is the trait [`::core::marker::Copy`]."##]
+        pub const Copy: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[280];
     }
     pub mod num {
         #![doc = r##"This is the module [`::core::num`]."##]
@@ -633,19 +4955,15 @@ pub mod core {
         pub mod Impl__9 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                to_le_bytes,
-                r##"This is the associated function [`::core::num::Impl__9::to_le_bytes`]."##,
-                r##"["core",[[{"TypeNs":"num"},0],["Impl",9],[{"ValueNs":"to_le_bytes"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::num::Impl__9())
-            );
+
+            #[doc = r##"This is the associated function [`::core::num::Impl__9::to_le_bytes`]."##]
+            pub const to_le_bytes: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[63];
         }
-        mk!(
-            Impl__9,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"num"},0],["Impl",9]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::core::num())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__9: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[62];
     }
     pub mod ops {
         #![doc = r##"This is the module [`::core::ops`]."##]
@@ -656,135 +4974,99 @@ pub mod core {
             pub mod Add {
                 #![doc = r##"This is the trait [`::core::ops::arith::Add`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::arith::Add::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Add())
-                );
-                mk!(
-                    add,
-                    r##"This is the associated function [`::core::ops::arith::Add::add`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"ValueNs":"add"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Add())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::arith::Add::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[610];
+
+                #[doc = r##"This is the associated function [`::core::ops::arith::Add::add`]."##]
+                pub const add: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[200];
             }
             pub mod Div {
                 #![doc = r##"This is the trait [`::core::ops::arith::Div`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::arith::Div::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Div())
-                );
-                mk!(
-                    div,
-                    r##"This is the associated function [`::core::ops::arith::Div::div`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"ValueNs":"div"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Div())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::arith::Div::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[613];
+
+                #[doc = r##"This is the associated function [`::core::ops::arith::Div::div`]."##]
+                pub const div: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[257];
             }
             pub mod Mul {
                 #![doc = r##"This is the trait [`::core::ops::arith::Mul`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::arith::Mul::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Mul())
-                );
-                mk!(
-                    mul,
-                    r##"This is the associated function [`::core::ops::arith::Mul::mul`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"ValueNs":"mul"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Mul())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::arith::Mul::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[612];
+
+                #[doc = r##"This is the associated function [`::core::ops::arith::Mul::mul`]."##]
+                pub const mul: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[259];
             }
             pub mod Neg {
                 #![doc = r##"This is the trait [`::core::ops::arith::Neg`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::arith::Neg::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Neg())
-                );
-                mk!(
-                    neg,
-                    r##"This is the associated function [`::core::ops::arith::Neg::neg`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"ValueNs":"neg"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Neg())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::arith::Neg::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[620];
+
+                #[doc = r##"This is the associated function [`::core::ops::arith::Neg::neg`]."##]
+                pub const neg: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[263];
             }
             pub mod Rem {
                 #![doc = r##"This is the trait [`::core::ops::arith::Rem`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::arith::Rem::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Rem())
-                );
-                mk!(
-                    rem,
-                    r##"This is the associated function [`::core::ops::arith::Rem::rem`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"ValueNs":"rem"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Rem())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::arith::Rem::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[614];
+
+                #[doc = r##"This is the associated function [`::core::ops::arith::Rem::rem`]."##]
+                pub const rem: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[265];
             }
             pub mod Sub {
                 #![doc = r##"This is the trait [`::core::ops::arith::Sub`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::arith::Sub::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Sub())
-                );
-                mk!(
-                    sub,
-                    r##"This is the associated function [`::core::ops::arith::Sub::sub`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"ValueNs":"sub"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::arith::Sub())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::arith::Sub::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[611];
+
+                #[doc = r##"This is the associated function [`::core::ops::arith::Sub::sub`]."##]
+                pub const sub: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[261];
             }
-            mk!(
-                Add,
-                r##"This is the trait [`::core::ops::arith::Add`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::arith())
-            );
-            mk!(
-                Div,
-                r##"This is the trait [`::core::ops::arith::Div`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::arith())
-            );
-            mk!(
-                Mul,
-                r##"This is the trait [`::core::ops::arith::Mul`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::arith())
-            );
-            mk!(
-                Neg,
-                r##"This is the trait [`::core::ops::arith::Neg`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::arith())
-            );
-            mk!(
-                Rem,
-                r##"This is the trait [`::core::ops::arith::Rem`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::arith())
-            );
-            mk!(
-                Sub,
-                r##"This is the trait [`::core::ops::arith::Sub`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::arith())
-            );
+
+            #[doc = r##"This is the trait [`::core::ops::arith::Add`]."##]
+            pub const Add: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[199];
+
+            #[doc = r##"This is the trait [`::core::ops::arith::Div`]."##]
+            pub const Div: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[256];
+
+            #[doc = r##"This is the trait [`::core::ops::arith::Mul`]."##]
+            pub const Mul: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[258];
+
+            #[doc = r##"This is the trait [`::core::ops::arith::Neg`]."##]
+            pub const Neg: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[262];
+
+            #[doc = r##"This is the trait [`::core::ops::arith::Rem`]."##]
+            pub const Rem: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[264];
+
+            #[doc = r##"This is the trait [`::core::ops::arith::Sub`]."##]
+            pub const Sub: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[260];
         }
         pub mod bit {
             #![doc = r##"This is the module [`::core::ops::bit`]."##]
@@ -792,135 +5074,99 @@ pub mod core {
             pub mod BitAnd {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitAnd`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::bit::BitAnd::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::BitAnd())
-                );
-                mk!(
-                    bitand,
-                    r##"This is the associated function [`::core::ops::bit::BitAnd::bitand`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"ValueNs":"bitand"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::BitAnd())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::bit::BitAnd::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[616];
+
+                #[doc = r##"This is the associated function [`::core::ops::bit::BitAnd::bitand`]."##]
+                pub const bitand: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[253];
             }
             pub mod BitOr {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitOr`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::bit::BitOr::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::BitOr())
-                );
-                mk!(
-                    bitor,
-                    r##"This is the associated function [`::core::ops::bit::BitOr::bitor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"ValueNs":"bitor"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::BitOr())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::bit::BitOr::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[617];
+
+                #[doc = r##"This is the associated function [`::core::ops::bit::BitOr::bitor`]."##]
+                pub const bitor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[271];
             }
             pub mod BitXor {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitXor`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::bit::BitXor::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::BitXor())
-                );
-                mk!(
-                    bitxor,
-                    r##"This is the associated function [`::core::ops::bit::BitXor::bitxor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"ValueNs":"bitxor"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::BitXor())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::bit::BitXor::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[615];
+
+                #[doc = r##"This is the associated function [`::core::ops::bit::BitXor::bitxor`]."##]
+                pub const bitxor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[255];
             }
             pub mod Not {
                 #![doc = r##"This is the trait [`::core::ops::bit::Not`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::bit::Not::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::Not())
-                );
-                mk!(
-                    not,
-                    r##"This is the associated function [`::core::ops::bit::Not::not`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::Not())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::bit::Not::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[621];
+
+                #[doc = r##"This is the associated function [`::core::ops::bit::Not::not`]."##]
+                pub const not: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[164];
             }
             pub mod Shl {
                 #![doc = r##"This is the trait [`::core::ops::bit::Shl`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::bit::Shl::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::Shl())
-                );
-                mk!(
-                    shl,
-                    r##"This is the associated function [`::core::ops::bit::Shl::shl`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"ValueNs":"shl"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::Shl())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::bit::Shl::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[618];
+
+                #[doc = r##"This is the associated function [`::core::ops::bit::Shl::shl`]."##]
+                pub const shl: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[267];
             }
             pub mod Shr {
                 #![doc = r##"This is the trait [`::core::ops::bit::Shr`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::bit::Shr::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::Shr())
-                );
-                mk!(
-                    shr,
-                    r##"This is the associated function [`::core::ops::bit::Shr::shr`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"ValueNs":"shr"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::bit::Shr())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::bit::Shr::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[619];
+
+                #[doc = r##"This is the associated function [`::core::ops::bit::Shr::shr`]."##]
+                pub const shr: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[269];
             }
-            mk!(
-                BitAnd,
-                r##"This is the trait [`::core::ops::bit::BitAnd`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::bit())
-            );
-            mk!(
-                BitOr,
-                r##"This is the trait [`::core::ops::bit::BitOr`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::bit())
-            );
-            mk!(
-                BitXor,
-                r##"This is the trait [`::core::ops::bit::BitXor`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::bit())
-            );
-            mk!(
-                Not,
-                r##"This is the trait [`::core::ops::bit::Not`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::bit())
-            );
-            mk!(
-                Shl,
-                r##"This is the trait [`::core::ops::bit::Shl`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::bit())
-            );
-            mk!(
-                Shr,
-                r##"This is the trait [`::core::ops::bit::Shr`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::bit())
-            );
+
+            #[doc = r##"This is the trait [`::core::ops::bit::BitAnd`]."##]
+            pub const BitAnd: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[252];
+
+            #[doc = r##"This is the trait [`::core::ops::bit::BitOr`]."##]
+            pub const BitOr: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[270];
+
+            #[doc = r##"This is the trait [`::core::ops::bit::BitXor`]."##]
+            pub const BitXor: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[254];
+
+            #[doc = r##"This is the trait [`::core::ops::bit::Not`]."##]
+            pub const Not: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[163];
+
+            #[doc = r##"This is the trait [`::core::ops::bit::Shl`]."##]
+            pub const Shl: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[266];
+
+            #[doc = r##"This is the trait [`::core::ops::bit::Shr`]."##]
+            pub const Shr: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[268];
         }
         pub mod control_flow {
             #![doc = r##"This is the module [`::core::ops::control_flow`]."##]
@@ -930,45 +5176,31 @@ pub mod core {
                 use super::root;
                 pub mod Break {
                     use super::root;
-                    mk!(
-                        Constructor,
-                        r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break::Constructor`]."##,
-                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0]],"Variant",true]"##,
-                        ::core::option::Option::Some(root::core::ops::control_flow::ControlFlow())
-                    );
-                    mk!(
-                        _0,
-                        r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Break."##,
-                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                        ::core::option::Option::Some(
-                            root::core::ops::control_flow::ControlFlow::Break::Constructor()
-                        )
-                    );
+
+                    #[doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break::Constructor`]."##]
+                    pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[625];
+
+                    #[doc = r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Break."##]
+                    pub const _0: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[125];
                 }
                 pub mod Continue {
                     use super::root;
-                    mk!(
-                        Constructor,
-                        r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue::Constructor`]."##,
-                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0]],"Variant",true]"##,
-                        ::core::option::Option::Some(root::core::ops::control_flow::ControlFlow())
-                    );
-                    mk!(
-                        _0,
-                        r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Continue."##,
-                        r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                        ::core::option::Option::Some(
-                            root::core::ops::control_flow::ControlFlow::Continue::Constructor()
-                        )
-                    );
+
+                    #[doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue::Constructor`]."##]
+                    pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[626];
+
+                    #[doc = r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Continue."##]
+                    pub const _0: crate::ast::identifiers::global_id::GlobalId =
+                        root::INTERNED_GLOBAL_IDS[126];
                 }
             }
-            mk!(
-                ControlFlow,
-                r##"This is the enum [`::core::ops::control_flow::ControlFlow`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0]],"Enum",false]"##,
-                ::core::option::Option::Some(root::core::ops::control_flow())
-            );
+
+            #[doc = r##"This is the enum [`::core::ops::control_flow::ControlFlow`]."##]
+            pub const ControlFlow: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[124];
         }
         pub mod deref {
             #![doc = r##"This is the module [`::core::ops::deref`]."##]
@@ -976,63 +5208,47 @@ pub mod core {
             pub mod Deref {
                 #![doc = r##"This is the trait [`::core::ops::deref::Deref`]."##]
                 use super::root;
-                mk!(
-                    Target,
-                    r##"This is the associated type [`::core::ops::deref::Deref::Target`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"TypeNs":"Target"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::deref::Deref())
-                );
-                mk!(
-                    deref,
-                    r##"This is the associated function [`::core::ops::deref::Deref::deref`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"ValueNs":"deref"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::deref::Deref())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::deref::Deref::Target`]."##]
+                pub const Target: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[283];
+
+                #[doc = r##"This is the associated function [`::core::ops::deref::Deref::deref`]."##]
+                pub const deref: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[26];
             }
             pub mod DerefMut {
                 #![doc = r##"This is the trait [`::core::ops::deref::DerefMut`]."##]
                 use super::root;
-                mk!(
-                    deref_mut,
-                    r##"This is the associated function [`::core::ops::deref::DerefMut::deref_mut`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0],[{"ValueNs":"deref_mut"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::deref::DerefMut())
-                );
+
+                #[doc = r##"This is the associated function [`::core::ops::deref::DerefMut::deref_mut`]."##]
+                pub const deref_mut: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[285];
             }
-            mk!(
-                Deref,
-                r##"This is the trait [`::core::ops::deref::Deref`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::deref())
-            );
-            mk!(
-                DerefMut,
-                r##"This is the trait [`::core::ops::deref::DerefMut`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::deref())
-            );
+
+            #[doc = r##"This is the trait [`::core::ops::deref::Deref`]."##]
+            pub const Deref: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[25];
+
+            #[doc = r##"This is the trait [`::core::ops::deref::DerefMut`]."##]
+            pub const DerefMut: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[284];
         }
         pub mod function {
             #![doc = r##"This is the module [`::core::ops::function`]."##]
             use super::root;
-            mk!(
-                Fn,
-                r##"This is the trait [`::core::ops::function::Fn`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"Fn"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::function())
-            );
-            mk!(
-                FnMut,
-                r##"This is the trait [`::core::ops::function::FnMut`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnMut"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::function())
-            );
-            mk!(
-                FnOnce,
-                r##"This is the trait [`::core::ops::function::FnOnce`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnOnce"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::function())
-            );
+
+            #[doc = r##"This is the trait [`::core::ops::function::Fn`]."##]
+            pub const Fn: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[206];
+
+            #[doc = r##"This is the trait [`::core::ops::function::FnMut`]."##]
+            pub const FnMut: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[201];
+
+            #[doc = r##"This is the trait [`::core::ops::function::FnOnce`]."##]
+            pub const FnOnce: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[156];
         }
         pub mod index {
             #![doc = r##"This is the module [`::core::ops::index`]."##]
@@ -1040,25 +5256,15 @@ pub mod core {
             pub mod Index {
                 #![doc = r##"This is the trait [`::core::ops::index::Index`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::index::Index::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::index::Index())
-                );
-                mk!(
-                    index,
-                    r##"This is the associated function [`::core::ops::index::Index::index`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"ValueNs":"index"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::index::Index())
-                );
+
+                #[doc = r##"This is the associated function [`::core::ops::index::Index::index`]."##]
+                pub const index: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[56];
             }
-            mk!(
-                Index,
-                r##"This is the trait [`::core::ops::index::Index`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::index())
-            );
+
+            #[doc = r##"This is the trait [`::core::ops::index::Index`]."##]
+            pub const Index: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[55];
         }
         pub mod range {
             #![doc = r##"This is the module [`::core::ops::range`]."##]
@@ -1066,91 +5272,67 @@ pub mod core {
             pub mod Range {
                 #![doc = r##"This is the struct [`::core::ops::range::Range`]."##]
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the struct [`::core::ops::range::Range::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",true]"##,
-                    ::core::option::Option::Some(root::core::ops::range())
-                );
-                mk!(
-                    end,
-                    r##"This is the field [`end`] from ::core::ops::range::Range."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::ops::range::Range::Constructor())
-                );
-                mk!(
-                    start,
-                    r##"This is the field [`start`] from ::core::ops::range::Range."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::ops::range::Range::Constructor())
-                );
+
+                #[doc = r##"This is the struct [`::core::ops::range::Range::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[623];
+
+                #[doc = r##"This is the field [`end`] from ::core::ops::range::Range."##]
+                pub const end: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[53];
+
+                #[doc = r##"This is the field [`start`] from ::core::ops::range::Range."##]
+                pub const start: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[52];
             }
             pub mod RangeFrom {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeFrom`]."##]
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the struct [`::core::ops::range::RangeFrom::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",true]"##,
-                    ::core::option::Option::Some(root::core::ops::range())
-                );
-                mk!(
-                    start,
-                    r##"This is the field [`start`] from ::core::ops::range::RangeFrom."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::ops::range::RangeFrom::Constructor())
-                );
+
+                #[doc = r##"This is the struct [`::core::ops::range::RangeFrom::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[629];
+
+                #[doc = r##"This is the field [`start`] from ::core::ops::range::RangeFrom."##]
+                pub const start: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[131];
             }
             pub mod RangeFull {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeFull`]."##]
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the struct [`::core::ops::range::RangeFull::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",true]"##,
-                    ::core::option::Option::Some(root::core::ops::range())
-                );
+
+                #[doc = r##"This is the struct [`::core::ops::range::RangeFull::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[628];
             }
             pub mod RangeTo {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeTo`]."##]
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the struct [`::core::ops::range::RangeTo::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",true]"##,
-                    ::core::option::Option::Some(root::core::ops::range())
-                );
-                mk!(
-                    end,
-                    r##"This is the field [`end`] from ::core::ops::range::RangeTo."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::ops::range::RangeTo::Constructor())
-                );
+
+                #[doc = r##"This is the struct [`::core::ops::range::RangeTo::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[627];
+
+                #[doc = r##"This is the field [`end`] from ::core::ops::range::RangeTo."##]
+                pub const end: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[128];
             }
-            mk!(
-                Range,
-                r##"This is the struct [`::core::ops::range::Range`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::ops::range())
-            );
-            mk!(
-                RangeFrom,
-                r##"This is the struct [`::core::ops::range::RangeFrom`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::ops::range())
-            );
-            mk!(
-                RangeFull,
-                r##"This is the struct [`::core::ops::range::RangeFull`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::ops::range())
-            );
-            mk!(
-                RangeTo,
-                r##"This is the struct [`::core::ops::range::RangeTo`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::ops::range())
-            );
+
+            #[doc = r##"This is the struct [`::core::ops::range::Range`]."##]
+            pub const Range: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[51];
+
+            #[doc = r##"This is the struct [`::core::ops::range::RangeFrom`]."##]
+            pub const RangeFrom: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[130];
+
+            #[doc = r##"This is the struct [`::core::ops::range::RangeFull`]."##]
+            pub const RangeFull: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[129];
+
+            #[doc = r##"This is the struct [`::core::ops::range::RangeTo`]."##]
+            pub const RangeTo: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[127];
         }
         pub mod try_trait {
             #![doc = r##"This is the module [`::core::ops::try_trait`]."##]
@@ -1158,102 +5340,72 @@ pub mod core {
             pub mod FromResidual {
                 #![doc = r##"This is the trait [`::core::ops::try_trait::FromResidual`]."##]
                 use super::root;
-                mk!(
-                    from_residual,
-                    r##"This is the associated function [`::core::ops::try_trait::FromResidual::from_residual`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0],[{"ValueNs":"from_residual"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::try_trait::FromResidual())
-                );
+
+                #[doc = r##"This is the associated function [`::core::ops::try_trait::FromResidual::from_residual`]."##]
+                pub const from_residual: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[191];
             }
             pub mod Try {
                 #![doc = r##"This is the trait [`::core::ops::try_trait::Try`]."##]
                 use super::root;
-                mk!(
-                    Output,
-                    r##"This is the associated type [`::core::ops::try_trait::Try::Output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::try_trait::Try())
-                );
-                mk!(
-                    Residual,
-                    r##"This is the associated type [`::core::ops::try_trait::Try::Residual`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Residual"},0]],"AssocTy",false]"##,
-                    ::core::option::Option::Some(root::core::ops::try_trait::Try())
-                );
-                mk!(
-                    branch,
-                    r##"This is the associated function [`::core::ops::try_trait::Try::branch`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"branch"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::try_trait::Try())
-                );
-                mk!(
-                    from_output,
-                    r##"This is the associated function [`::core::ops::try_trait::Try::from_output`]."##,
-                    r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"from_output"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ops::try_trait::Try())
-                );
+
+                #[doc = r##"This is the associated type [`::core::ops::try_trait::Try::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[622];
+
+                #[doc = r##"This is the associated type [`::core::ops::try_trait::Try::Residual`]."##]
+                pub const Residual: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[281];
+
+                #[doc = r##"This is the associated function [`::core::ops::try_trait::Try::branch`]."##]
+                pub const branch: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[243];
+
+                #[doc = r##"This is the associated function [`::core::ops::try_trait::Try::from_output`]."##]
+                pub const from_output: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[282];
             }
-            mk!(
-                FromResidual,
-                r##"This is the trait [`::core::ops::try_trait::FromResidual`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::try_trait())
-            );
-            mk!(
-                Try,
-                r##"This is the trait [`::core::ops::try_trait::Try`]."##,
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::ops::try_trait())
-            );
+
+            #[doc = r##"This is the trait [`::core::ops::try_trait::FromResidual`]."##]
+            pub const FromResidual: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[190];
+
+            #[doc = r##"This is the trait [`::core::ops::try_trait::Try`]."##]
+            pub const Try: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[242];
         }
-        mk!(
-            arith,
-            r##"This is the module [`::core::ops::arith`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            bit,
-            r##"This is the module [`::core::ops::bit`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            control_flow,
-            r##"This is the module [`::core::ops::control_flow`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            deref,
-            r##"This is the module [`::core::ops::deref`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            function,
-            r##"This is the module [`::core::ops::function`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            index,
-            r##"This is the module [`::core::ops::index`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            range,
-            r##"This is the module [`::core::ops::range`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
-        mk!(
-            try_trait,
-            r##"This is the module [`::core::ops::try_trait`]."##,
-            r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ops())
-        );
+
+        #[doc = r##"This is the module [`::core::ops::arith`]."##]
+        pub const arith: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[198];
+
+        #[doc = r##"This is the module [`::core::ops::bit`]."##]
+        pub const bit: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[162];
+
+        #[doc = r##"This is the module [`::core::ops::control_flow`]."##]
+        pub const control_flow: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[123];
+
+        #[doc = r##"This is the module [`::core::ops::deref`]."##]
+        pub const deref: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[24];
+
+        #[doc = r##"This is the module [`::core::ops::function`]."##]
+        pub const function: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[155];
+
+        #[doc = r##"This is the module [`::core::ops::index`]."##]
+        pub const index: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[54];
+
+        #[doc = r##"This is the module [`::core::ops::range`]."##]
+        pub const range: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[50];
+
+        #[doc = r##"This is the module [`::core::ops::try_trait`]."##]
+        pub const try_trait: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[189];
     }
     pub mod option {
         #![doc = r##"This is the module [`::core::option`]."##]
@@ -1261,53 +5413,41 @@ pub mod core {
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                is_some,
-                r##"This is the associated function [`::core::option::Impl::is_some`]."##,
-                r##"["core",[[{"TypeNs":"option"},0],["Impl",0],[{"ValueNs":"is_some"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::option::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::core::option::Impl::is_some`]."##]
+            pub const is_some: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[182];
         }
         pub mod Option {
             #![doc = r##"This is the enum [`::core::option::Option`]."##]
             use super::root;
             pub mod None {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::core::option::Option::None::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"None"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::core::option::Option())
-                );
+
+                #[doc = r##"This is the variant [`::core::option::Option::None::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[640];
             }
             pub mod Some {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::core::option::Option::Some::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::core::option::Option())
-                );
-                mk!(
-                    _0,
-                    r##"This is the field [`_0`] from ::core::option::Option::Some."##,
-                    r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::option::Option::Some::Constructor())
-                );
+
+                #[doc = r##"This is the variant [`::core::option::Option::Some::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[631];
+
+                #[doc = r##"This is the field [`_0`] from ::core::option::Option::Some."##]
+                pub const _0: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[183];
             }
         }
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"option"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::core::option())
-        );
-        mk!(
-            Option,
-            r##"This is the enum [`::core::option::Option`]."##,
-            r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::core::option())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[181];
+
+        #[doc = r##"This is the enum [`::core::option::Option`]."##]
+        pub const Option: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[168];
     }
     pub mod panicking {
         #![doc = r##"This is the module [`::core::panicking`]."##]
@@ -1317,32 +5457,24 @@ pub mod core {
             use super::root;
             pub mod Eq {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::core::panicking::AssertKind::Eq::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::core::panicking::AssertKind())
-                );
+
+                #[doc = r##"This is the variant [`::core::panicking::AssertKind::Eq::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[641];
             }
         }
-        mk!(
-            AssertKind,
-            r##"This is the enum [`::core::panicking::AssertKind`]."##,
-            r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::core::panicking())
-        );
-        mk!(
-            assert_failed,
-            r##"This is the function [`::core::panicking::assert_failed`]."##,
-            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"assert_failed"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::core::panicking())
-        );
-        mk!(
-            panic,
-            r##"This is the function [`::core::panicking::panic`]."##,
-            r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"panic"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::core::panicking())
-        );
+
+        #[doc = r##"This is the enum [`::core::panicking::AssertKind`]."##]
+        pub const AssertKind: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[166];
+
+        #[doc = r##"This is the function [`::core::panicking::assert_failed`]."##]
+        pub const assert_failed: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[174];
+
+        #[doc = r##"This is the function [`::core::panicking::panic`]."##]
+        pub const panic: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[177];
     }
     pub mod ptr {
         #![doc = r##"This is the module [`::core::ptr`]."##]
@@ -1353,26 +5485,20 @@ pub mod core {
             pub mod Impl {
                 #![doc = r##"This is an impl block."##]
                 use super::root;
-                mk!(
-                    offset,
-                    r##"This is the associated function [`::core::ptr::const_ptr::Impl::offset`]."##,
-                    r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0],[{"ValueNs":"offset"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(root::core::ptr::const_ptr::Impl())
-                );
+
+                #[doc = r##"This is the associated function [`::core::ptr::const_ptr::Impl::offset`]."##]
+                pub const offset: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[98];
             }
-            mk!(
-                Impl,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-                ::core::option::Option::Some(root::core::ptr::const_ptr())
-            );
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[97];
         }
-        mk!(
-            const_ptr,
-            r##"This is the module [`::core::ptr::const_ptr`]."##,
-            r##"["core",[[{"TypeNs":"ptr"},0],[{"TypeNs":"const_ptr"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::ptr())
-        );
+
+        #[doc = r##"This is the module [`::core::ptr::const_ptr`]."##]
+        pub const const_ptr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[96];
     }
     pub mod result {
         #![doc = r##"This is the module [`::core::result`]."##]
@@ -1380,71 +5506,53 @@ pub mod core {
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                map_err,
-                r##"This is the associated function [`::core::result::Impl::map_err`]."##,
-                r##"["core",[[{"TypeNs":"result"},0],["Impl",0],[{"ValueNs":"map_err"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::result::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::core::result::Impl::map_err`]."##]
+            pub const map_err: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[180];
         }
         pub mod Result {
             #![doc = r##"This is the enum [`::core::result::Result`]."##]
             use super::root;
             pub mod Err {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::core::result::Result::Err::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::core::result::Result())
-                );
-                mk!(
-                    _0,
-                    r##"This is the field [`_0`] from ::core::result::Result::Err."##,
-                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::result::Result::Err::Constructor())
-                );
+
+                #[doc = r##"This is the variant [`::core::result::Result::Err::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[630];
+
+                #[doc = r##"This is the field [`_0`] from ::core::result::Result::Err."##]
+                pub const _0: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[178];
             }
             pub mod Ok {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::core::result::Result::Ok::Constructor`]."##,
-                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::core::result::Result())
-                );
-                mk!(
-                    _0,
-                    r##"This is the field [`_0`] from ::core::result::Result::Ok."##,
-                    r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                    ::core::option::Option::Some(root::core::result::Result::Ok::Constructor())
-                );
+
+                #[doc = r##"This is the variant [`::core::result::Result::Ok::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[632];
+
+                #[doc = r##"This is the field [`_0`] from ::core::result::Result::Ok."##]
+                pub const _0: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[203];
             }
         }
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"result"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::core::result())
-        );
-        mk!(
-            Impl__27,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"result"},0],["Impl",27]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::core::result())
-        );
-        mk!(
-            Impl__28,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"result"},0],["Impl",28]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::core::result())
-        );
-        mk!(
-            Result,
-            r##"This is the enum [`::core::result::Result`]."##,
-            r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::core::result())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[179];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__27: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[244];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__28: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[193];
+
+        #[doc = r##"This is the enum [`::core::result::Result`]."##]
+        pub const Result: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[78];
     }
     pub mod slice {
         #![doc = r##"This is the module [`::core::slice`]."##]
@@ -1452,81 +5560,59 @@ pub mod core {
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                chunks_exact,
-                r##"This is the associated function [`::core::slice::Impl::chunks_exact`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"chunks_exact"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::slice::Impl())
-            );
-            mk!(
-                iter,
-                r##"This is the associated function [`::core::slice::Impl::iter`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"iter"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::slice::Impl())
-            );
-            mk!(
-                len,
-                r##"This is the associated function [`::core::slice::Impl::len`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"len"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::slice::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::core::slice::Impl::chunks_exact`]."##]
+            pub const chunks_exact: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[234];
+
+            #[doc = r##"This is the associated function [`::core::slice::Impl::iter`]."##]
+            pub const iter: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[232];
+
+            #[doc = r##"This is the associated function [`::core::slice::Impl::len`]."##]
+            pub const len: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[49];
         }
         pub mod index {
             #![doc = r##"This is the module [`::core::slice::index`]."##]
             use super::root;
-            mk!(
-                Impl__2,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::slice::index())
-            );
-            mk!(
-                Impl__4,
-                r##"This is an impl block."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
-                ::core::option::Option::Some(root::core::slice::index())
-            );
-            mk!(
-                SliceIndex,
-                r##"This is the trait [`::core::slice::index::SliceIndex`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],[{"TypeNs":"SliceIndex"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::core::slice::index())
-            );
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[194];
+
+            #[doc = r##"This is an impl block."##]
+            pub const Impl__4: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[59];
+
+            #[doc = r##"This is the trait [`::core::slice::index::SliceIndex`]."##]
+            pub const SliceIndex: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[58];
         }
         pub mod iter {
             #![doc = r##"This is the module [`::core::slice::iter`]."##]
             use super::root;
-            mk!(
-                ChunksExact,
-                r##"This is the struct [`::core::slice::iter::ChunksExact`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"ChunksExact"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::slice::iter())
-            );
-            mk!(
-                Iter,
-                r##"This is the struct [`::core::slice::iter::Iter`]."##,
-                r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"Iter"},0]],"Struct",false]"##,
-                ::core::option::Option::Some(root::core::slice::iter())
-            );
+
+            #[doc = r##"This is the struct [`::core::slice::iter::ChunksExact`]."##]
+            pub const ChunksExact: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[233];
+
+            #[doc = r##"This is the struct [`::core::slice::iter::Iter`]."##]
+            pub const Iter: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[231];
         }
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"slice"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::core::slice())
-        );
-        mk!(
-            index,
-            r##"This is the module [`::core::slice::index`]."##,
-            r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::slice())
-        );
-        mk!(
-            iter,
-            r##"This is the module [`::core::slice::iter`]."##,
-            r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::core::slice())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[48];
+
+        #[doc = r##"This is the module [`::core::slice::index`]."##]
+        pub const index: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[57];
+
+        #[doc = r##"This is the module [`::core::slice::iter`]."##]
+        pub const iter: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[230];
     }
     pub mod str {
         #![doc = r##"This is the module [`::core::str`]."##]
@@ -1534,122 +5620,69 @@ pub mod core {
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                as_ptr,
-                r##"This is the associated function [`::core::str::Impl::as_ptr`]."##,
-                r##"["core",[[{"TypeNs":"str"},0],["Impl",0],[{"ValueNs":"as_ptr"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::core::str::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::core::str::Impl::as_ptr`]."##]
+            pub const as_ptr: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[102];
         }
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["core",[[{"TypeNs":"str"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::core::str())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[101];
     }
-    mk!(
-        alloc,
-        r##"This is the module [`::core::alloc`]."##,
-        r##"["core",[[{"TypeNs":"alloc"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        array,
-        r##"This is the module [`::core::array`]."##,
-        r##"["core",[[{"TypeNs":"array"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        borrow,
-        r##"This is the module [`::core::borrow`]."##,
-        r##"["core",[[{"TypeNs":"borrow"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        clone,
-        r##"This is the module [`::core::clone`]."##,
-        r##"["core",[[{"TypeNs":"clone"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        cmp,
-        r##"This is the module [`::core::cmp`]."##,
-        r##"["core",[[{"TypeNs":"cmp"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        convert,
-        r##"This is the module [`::core::convert`]."##,
-        r##"["core",[[{"TypeNs":"convert"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        fmt,
-        r##"This is the module [`::core::fmt`]."##,
-        r##"["core",[[{"TypeNs":"fmt"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        iter,
-        r##"This is the module [`::core::iter`]."##,
-        r##"["core",[[{"TypeNs":"iter"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        marker,
-        r##"This is the module [`::core::marker`]."##,
-        r##"["core",[[{"TypeNs":"marker"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        num,
-        r##"This is the module [`::core::num`]."##,
-        r##"["core",[[{"TypeNs":"num"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        ops,
-        r##"This is the module [`::core::ops`]."##,
-        r##"["core",[[{"TypeNs":"ops"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        option,
-        r##"This is the module [`::core::option`]."##,
-        r##"["core",[[{"TypeNs":"option"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        panicking,
-        r##"This is the module [`::core::panicking`]."##,
-        r##"["core",[[{"TypeNs":"panicking"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        ptr,
-        r##"This is the module [`::core::ptr`]."##,
-        r##"["core",[[{"TypeNs":"ptr"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        result,
-        r##"This is the module [`::core::result`]."##,
-        r##"["core",[[{"TypeNs":"result"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        slice,
-        r##"This is the module [`::core::slice`]."##,
-        r##"["core",[[{"TypeNs":"slice"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
-    mk!(
-        str,
-        r##"This is the module [`::core::str`]."##,
-        r##"["core",[[{"TypeNs":"str"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::core())
-    );
+
+    #[doc = r##"This is the module [`::core::alloc`]."##]
+    pub const alloc: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[14];
+
+    #[doc = r##"This is the module [`::core::array`]."##]
+    pub const array: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[139];
+
+    #[doc = r##"This is the module [`::core::borrow`]."##]
+    pub const borrow: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[41];
+
+    #[doc = r##"This is the module [`::core::clone`]."##]
+    pub const clone: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[9];
+
+    #[doc = r##"This is the module [`::core::cmp`]."##]
+    pub const cmp: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[159];
+
+    #[doc = r##"This is the module [`::core::convert`]."##]
+    pub const convert: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[132];
+
+    #[doc = r##"This is the module [`::core::fmt`]."##]
+    pub const fmt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[169];
+
+    #[doc = r##"This is the module [`::core::iter`]."##]
+    pub const iter: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[142];
+
+    #[doc = r##"This is the module [`::core::marker`]."##]
+    pub const marker: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[279];
+
+    #[doc = r##"This is the module [`::core::num`]."##]
+    pub const num: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[61];
+
+    #[doc = r##"This is the module [`::core::ops`]."##]
+    pub const ops: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[23];
+
+    #[doc = r##"This is the module [`::core::option`]."##]
+    pub const option: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[167];
+
+    #[doc = r##"This is the module [`::core::panicking`]."##]
+    pub const panicking: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[165];
+
+    #[doc = r##"This is the module [`::core::ptr`]."##]
+    pub const ptr: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[95];
+
+    #[doc = r##"This is the module [`::core::result`]."##]
+    pub const result: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[77];
+
+    #[doc = r##"This is the module [`::core::slice`]."##]
+    pub const slice: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[47];
+
+    #[doc = r##"This is the module [`::core::str`]."##]
+    pub const str: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[100];
 }
 pub mod hax_lib {
     #![doc = r##"This is the module [`::hax_lib`]."##]
@@ -1657,40 +5690,30 @@ pub mod hax_lib {
     pub mod RefineAs {
         #![doc = r##"This is the trait [`::hax_lib::RefineAs`]."##]
         use super::root;
-        mk!(
-            into_checked,
-            r##"This is the associated function [`::hax_lib::RefineAs::into_checked`]."##,
-            r##"["hax_lib",[[{"TypeNs":"RefineAs"},0],[{"ValueNs":"into_checked"},0]],"AssocFn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::RefineAs())
-        );
+
+        #[doc = r##"This is the associated function [`::hax_lib::RefineAs::into_checked`]."##]
+        pub const into_checked: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[246];
     }
     pub mod Refinement {
         #![doc = r##"This is the trait [`::hax_lib::Refinement`]."##]
         use super::root;
-        mk!(
-            InnerType,
-            r##"This is the associated type [`::hax_lib::Refinement::InnerType`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy",false]"##,
-            ::core::option::Option::Some(root::hax_lib::Refinement())
-        );
-        mk!(
-            get,
-            r##"This is the associated function [`::hax_lib::Refinement::get`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get"},0]],"AssocFn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::Refinement())
-        );
-        mk!(
-            get_mut,
-            r##"This is the associated function [`::hax_lib::Refinement::get_mut`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::Refinement())
-        );
-        mk!(
-            new,
-            r##"This is the associated function [`::hax_lib::Refinement::new`]."##,
-            r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::Refinement())
-        );
+
+        #[doc = r##"This is the associated type [`::hax_lib::Refinement::InnerType`]."##]
+        pub const InnerType: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[249];
+
+        #[doc = r##"This is the associated function [`::hax_lib::Refinement::get`]."##]
+        pub const get: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[248];
+
+        #[doc = r##"This is the associated function [`::hax_lib::Refinement::get_mut`]."##]
+        pub const get_mut: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[251];
+
+        #[doc = r##"This is the associated function [`::hax_lib::Refinement::new`]."##]
+        pub const new: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[250];
     }
     pub mod abstraction {
         #![doc = r##"This is the module [`::hax_lib::abstraction`]."##]
@@ -1698,41 +5721,27 @@ pub mod hax_lib {
         pub mod Abstraction {
             #![doc = r##"This is the trait [`::hax_lib::abstraction::Abstraction`]."##]
             use super::root;
-            mk!(
-                AbstractType,
-                r##"This is the associated type [`::hax_lib::abstraction::Abstraction::AbstractType`]."##,
-                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"TypeNs":"AbstractType"},0]],"AssocTy",false]"##,
-                ::core::option::Option::Some(root::hax_lib::abstraction::Abstraction())
-            );
-            mk!(
-                lift,
-                r##"This is the associated function [`::hax_lib::abstraction::Abstraction::lift`]."##,
-                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::abstraction::Abstraction())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib::abstraction::Abstraction::lift`]."##]
+            pub const lift: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[121];
         }
         pub mod Concretization {
             #![doc = r##"This is the trait [`::hax_lib::abstraction::Concretization`]."##]
             use super::root;
-            mk!(
-                concretize,
-                r##"This is the associated function [`::hax_lib::abstraction::Concretization::concretize`]."##,
-                r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0],[{"ValueNs":"concretize"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::abstraction::Concretization())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib::abstraction::Concretization::concretize`]."##]
+            pub const concretize: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[111];
         }
-        mk!(
-            Abstraction,
-            r##"This is the trait [`::hax_lib::abstraction::Abstraction`]."##,
-            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Abstraction"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::hax_lib::abstraction())
-        );
-        mk!(
-            Concretization,
-            r##"This is the trait [`::hax_lib::abstraction::Concretization`]."##,
-            r##"["hax_lib",[[{"TypeNs":"abstraction"},0],[{"TypeNs":"Concretization"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::hax_lib::abstraction())
-        );
+
+        #[doc = r##"This is the trait [`::hax_lib::abstraction::Abstraction`]."##]
+        pub const Abstraction: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[120];
+
+        #[doc = r##"This is the trait [`::hax_lib::abstraction::Concretization`]."##]
+        pub const Concretization: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[110];
     }
     pub mod int {
         #![doc = r##"This is the module [`::hax_lib::int`]."##]
@@ -1740,71 +5749,51 @@ pub mod hax_lib {
         pub mod Impl__7 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                _unsafe_from_str,
-                r##"This is the associated function [`::hax_lib::int::Impl__7::_unsafe_from_str`]."##,
-                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"_unsafe_from_str"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::int::Impl__7())
-            );
-            mk!(
-                pow2,
-                r##"This is the associated function [`::hax_lib::int::Impl__7::pow2`]."##,
-                r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7],[{"ValueNs":"pow2"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::int::Impl__7())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib::int::Impl__7::_unsafe_from_str`]."##]
+            pub const _unsafe_from_str: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[114];
+
+            #[doc = r##"This is the associated function [`::hax_lib::int::Impl__7::pow2`]."##]
+            pub const pow2: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[116];
         }
         pub mod ToInt {
             #![doc = r##"This is the trait [`::hax_lib::int::ToInt`]."##]
             use super::root;
-            mk!(
-                to_int,
-                r##"This is the associated function [`::hax_lib::int::ToInt::to_int`]."##,
-                r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0],[{"ValueNs":"to_int"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::int::ToInt())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib::int::ToInt::to_int`]."##]
+            pub const to_int: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[118];
         }
-        mk!(
-            Impl__16,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",16]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
-        mk!(
-            Impl__17,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",17]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
-        mk!(
-            Impl__44,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",44]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
-        mk!(
-            Impl__7,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",7]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
-        mk!(
-            Impl__9,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],["Impl",9]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
-        mk!(
-            Int,
-            r##"This is the struct [`::hax_lib::int::Int`]."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"Int"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
-        mk!(
-            ToInt,
-            r##"This is the trait [`::hax_lib::int::ToInt`]."##,
-            r##"["hax_lib",[[{"TypeNs":"int"},0],[{"TypeNs":"ToInt"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::hax_lib::int())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__16: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[122];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__17: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[119];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__44: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[112];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__7: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[113];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__9: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[115];
+
+        #[doc = r##"This is the struct [`::hax_lib::int::Int`]."##]
+        pub const Int: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[108];
+
+        #[doc = r##"This is the trait [`::hax_lib::int::ToInt`]."##]
+        pub const ToInt: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[117];
     }
     pub mod prop {
         #![doc = r##"This is the module [`::hax_lib::prop`]."##]
@@ -1812,244 +5801,164 @@ pub mod hax_lib {
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                and,
-                r##"This is the associated function [`::hax_lib::prop::Impl::and`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
-            mk!(
-                eq,
-                r##"This is the associated function [`::hax_lib::prop::Impl::eq`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
-            mk!(
-                from_bool,
-                r##"This is the associated function [`::hax_lib::prop::Impl::from_bool`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
-            mk!(
-                implies,
-                r##"This is the associated function [`::hax_lib::prop::Impl::implies`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"implies"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
-            mk!(
-                ne,
-                r##"This is the associated function [`::hax_lib::prop::Impl::ne`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
-            mk!(
-                not,
-                r##"This is the associated function [`::hax_lib::prop::Impl::not`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
-            mk!(
-                or,
-                r##"This is the associated function [`::hax_lib::prop::Impl::or`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::and`]."##]
+            pub const and: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[218];
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::eq`]."##]
+            pub const eq: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[215];
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::from_bool`]."##]
+            pub const from_bool: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[219];
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::implies`]."##]
+            pub const implies: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[213];
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::ne`]."##]
+            pub const ne: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[214];
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::not`]."##]
+            pub const not: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[216];
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::or`]."##]
+            pub const or: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[217];
         }
         pub mod ToProp {
             #![doc = r##"This is the trait [`::hax_lib::prop::ToProp`]."##]
             use super::root;
-            mk!(
-                to_prop,
-                r##"This is the associated function [`::hax_lib::prop::ToProp::to_prop`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0],[{"ValueNs":"to_prop"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::ToProp())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib::prop::ToProp::to_prop`]."##]
+            pub const to_prop: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[210];
         }
         pub mod constructors {
             #![doc = r##"This is the module [`::hax_lib::prop::constructors`]."##]
             use super::root;
-            mk!(
-                and,
-                r##"This is the function [`::hax_lib::prop::constructors::and`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"and"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                eq,
-                r##"This is the function [`::hax_lib::prop::constructors::eq`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                exists,
-                r##"This is the function [`::hax_lib::prop::constructors::exists`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                forall,
-                r##"This is the function [`::hax_lib::prop::constructors::forall`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                from_bool,
-                r##"This is the function [`::hax_lib::prop::constructors::from_bool`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"from_bool"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                implies,
-                r##"This is the function [`::hax_lib::prop::constructors::implies`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                ne,
-                r##"This is the function [`::hax_lib::prop::constructors::ne`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                not,
-                r##"This is the function [`::hax_lib::prop::constructors::not`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
-            mk!(
-                or,
-                r##"This is the function [`::hax_lib::prop::constructors::or`]."##,
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"or"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::hax_lib::prop::constructors())
-            );
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::and`]."##]
+            pub const and: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[228];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::eq`]."##]
+            pub const eq: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[225];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::exists`]."##]
+            pub const exists: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[221];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::forall`]."##]
+            pub const forall: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[222];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::from_bool`]."##]
+            pub const from_bool: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[229];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::implies`]."##]
+            pub const implies: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[223];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::ne`]."##]
+            pub const ne: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[224];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::not`]."##]
+            pub const not: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[226];
+
+            #[doc = r##"This is the function [`::hax_lib::prop::constructors::or`]."##]
+            pub const or: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[227];
         }
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            Impl__2,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            Impl__3,
-            r##"This is an impl block."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",3]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            Prop,
-            r##"This is the struct [`::hax_lib::prop::Prop`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"Prop"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            ToProp,
-            r##"This is the trait [`::hax_lib::prop::ToProp`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0]],"Trait",false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            constructors,
-            r##"This is the module [`::hax_lib::prop::constructors`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            exists,
-            r##"This is the function [`::hax_lib::prop::exists`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            forall,
-            r##"This is the function [`::hax_lib::prop::forall`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
-        mk!(
-            implies,
-            r##"This is the function [`::hax_lib::prop::implies`]."##,
-            r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib::prop())
-        );
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[212];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[211];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__3: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[152];
+
+        #[doc = r##"This is the struct [`::hax_lib::prop::Prop`]."##]
+        pub const Prop: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[151];
+
+        #[doc = r##"This is the trait [`::hax_lib::prop::ToProp`]."##]
+        pub const ToProp: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[209];
+
+        #[doc = r##"This is the module [`::hax_lib::prop::constructors`]."##]
+        pub const constructors: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[220];
+
+        #[doc = r##"This is the function [`::hax_lib::prop::exists`]."##]
+        pub const exists: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[207];
+
+        #[doc = r##"This is the function [`::hax_lib::prop::forall`]."##]
+        pub const forall: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[208];
+
+        #[doc = r##"This is the function [`::hax_lib::prop::implies`]."##]
+        pub const implies: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[205];
     }
-    mk!(
-        RefineAs,
-        r##"This is the trait [`::hax_lib::RefineAs`]."##,
-        r##"["hax_lib",[[{"TypeNs":"RefineAs"},0]],"Trait",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        Refinement,
-        r##"This is the trait [`::hax_lib::Refinement`]."##,
-        r##"["hax_lib",[[{"TypeNs":"Refinement"},0]],"Trait",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        _internal_loop_decreases,
-        r##"This is the function [`::hax_lib::_internal_loop_decreases`]."##,
-        r##"["hax_lib",[[{"ValueNs":"_internal_loop_decreases"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        _internal_loop_invariant,
-        r##"This is the function [`::hax_lib::_internal_loop_invariant`]."##,
-        r##"["hax_lib",[[{"ValueNs":"_internal_loop_invariant"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        _internal_while_loop_invariant,
-        r##"This is the function [`::hax_lib::_internal_while_loop_invariant`]."##,
-        r##"["hax_lib",[[{"ValueNs":"_internal_while_loop_invariant"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        abstraction,
-        r##"This is the module [`::hax_lib::abstraction`]."##,
-        r##"["hax_lib",[[{"TypeNs":"abstraction"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        any_to_unit,
-        r##"This is the function [`::hax_lib::any_to_unit`]."##,
-        r##"["hax_lib",[[{"ValueNs":"any_to_unit"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        assert,
-        r##"This is the function [`::hax_lib::assert`]."##,
-        r##"["hax_lib",[[{"ValueNs":"assert"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        inline,
-        r##"This is the function [`::hax_lib::inline`]."##,
-        r##"["hax_lib",[[{"ValueNs":"inline"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        inline_unsafe,
-        r##"This is the function [`::hax_lib::inline_unsafe`]."##,
-        r##"["hax_lib",[[{"ValueNs":"inline_unsafe"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        int,
-        r##"This is the module [`::hax_lib::int`]."##,
-        r##"["hax_lib",[[{"TypeNs":"int"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
-    mk!(
-        prop,
-        r##"This is the module [`::hax_lib::prop`]."##,
-        r##"["hax_lib",[[{"TypeNs":"prop"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::hax_lib())
-    );
+
+    #[doc = r##"This is the trait [`::hax_lib::RefineAs`]."##]
+    pub const RefineAs: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[245];
+
+    #[doc = r##"This is the trait [`::hax_lib::Refinement`]."##]
+    pub const Refinement: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[247];
+
+    #[doc = r##"This is the function [`::hax_lib::_internal_loop_decreases`]."##]
+    pub const _internal_loop_decreases: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[148];
+
+    #[doc = r##"This is the function [`::hax_lib::_internal_loop_invariant`]."##]
+    pub const _internal_loop_invariant: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[157];
+
+    #[doc = r##"This is the function [`::hax_lib::_internal_while_loop_invariant`]."##]
+    pub const _internal_while_loop_invariant: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[153];
+
+    #[doc = r##"This is the module [`::hax_lib::abstraction`]."##]
+    pub const abstraction: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[109];
+
+    #[doc = r##"This is the function [`::hax_lib::any_to_unit`]."##]
+    pub const any_to_unit: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[104];
+
+    #[doc = r##"This is the function [`::hax_lib::assert`]."##]
+    pub const assert: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[158];
+
+    #[doc = r##"This is the function [`::hax_lib::inline`]."##]
+    pub const inline: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[106];
+
+    #[doc = r##"This is the function [`::hax_lib::inline_unsafe`]."##]
+    pub const inline_unsafe: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[105];
+
+    #[doc = r##"This is the module [`::hax_lib::int`]."##]
+    pub const int: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[107];
+
+    #[doc = r##"This is the module [`::hax_lib::prop`]."##]
+    pub const prop: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[150];
 }
 pub mod hax_lib_protocol {
     #![doc = r##"This is the module [`::hax_lib_protocol`]."##]
@@ -2062,12 +5971,10 @@ pub mod hax_lib_protocol {
             use super::root;
             pub mod Chacha20Poly1305 {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305::Constructor`]."##,
-                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0],[{"TypeNs":"Chacha20Poly1305"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::AEADAlgorithm())
-                );
+
+                #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[638];
             }
         }
         pub mod DHGroup {
@@ -2075,12 +5982,10 @@ pub mod hax_lib_protocol {
             use super::root;
             pub mod X25519 {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519::Constructor`]."##,
-                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0],[{"TypeNs":"X25519"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::DHGroup())
-                );
+
+                #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[637];
             }
         }
         pub mod HMACAlgorithm {
@@ -2088,12 +5993,10 @@ pub mod hax_lib_protocol {
             use super::root;
             pub mod Sha256 {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256::Constructor`]."##,
-                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::HMACAlgorithm())
-                );
+
+                #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[636];
             }
         }
         pub mod HashAlgorithm {
@@ -2101,203 +6004,144 @@ pub mod hax_lib_protocol {
             use super::root;
             pub mod Sha256 {
                 use super::root;
-                mk!(
-                    Constructor,
-                    r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256::Constructor`]."##,
-                    r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
-                    ::core::option::Option::Some(root::hax_lib_protocol::crypto::HashAlgorithm())
-                );
+
+                #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256::Constructor`]."##]
+                pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[635];
             }
         }
         pub mod Impl {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                from_bytes,
-                r##"This is the associated function [`::hax_lib_protocol::crypto::Impl::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib_protocol::crypto::Impl::from_bytes`]."##]
+            pub const from_bytes: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[73];
         }
         pub mod Impl__1 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                from_bytes,
-                r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__1::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__1())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__1::from_bytes`]."##]
+            pub const from_bytes: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[75];
         }
         pub mod Impl__4 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                from_bytes,
-                r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__4::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__4())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__4::from_bytes`]."##]
+            pub const from_bytes: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[87];
         }
         pub mod Impl__5 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                from_bytes,
-                r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__5::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__5())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__5::from_bytes`]."##]
+            pub const from_bytes: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[89];
         }
         pub mod Impl__6 {
             #![doc = r##"This is an impl block."##]
             use super::root;
-            mk!(
-                from_bytes,
-                r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__6::from_bytes`]."##,
-                r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6],[{"ValueNs":"from_bytes"},0]],"AssocFn",false]"##,
-                ::core::option::Option::Some(root::hax_lib_protocol::crypto::Impl__6())
-            );
+
+            #[doc = r##"This is the associated function [`::hax_lib_protocol::crypto::Impl__6::from_bytes`]."##]
+            pub const from_bytes: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[82];
         }
-        mk!(
-            AEADAlgorithm,
-            r##"This is the enum [`::hax_lib_protocol::crypto::AEADAlgorithm`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            AEADIV,
-            r##"This is the struct [`::hax_lib_protocol::crypto::AEADIV`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADIV"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            AEADKey,
-            r##"This is the struct [`::hax_lib_protocol::crypto::AEADKey`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADKey"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            AEADTag,
-            r##"This is the struct [`::hax_lib_protocol::crypto::AEADTag`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADTag"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            DHElement,
-            r##"This is the struct [`::hax_lib_protocol::crypto::DHElement`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHElement"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            DHGroup,
-            r##"This is the enum [`::hax_lib_protocol::crypto::DHGroup`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            DHScalar,
-            r##"This is the struct [`::hax_lib_protocol::crypto::DHScalar`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHScalar"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            HMACAlgorithm,
-            r##"This is the enum [`::hax_lib_protocol::crypto::HMACAlgorithm`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            HashAlgorithm,
-            r##"This is the enum [`::hax_lib_protocol::crypto::HashAlgorithm`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            Impl,
-            r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            Impl__1,
-            r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",1]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            Impl__4,
-            r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",4]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            Impl__5,
-            r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",5]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            Impl__6,
-            r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",6]],{"Impl":{"of_trait":false}},false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            Impl__9,
-            r##"This is an impl block."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],["Impl",9]],{"Impl":{"of_trait":true}},false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            aead_decrypt,
-            r##"This is the function [`::hax_lib_protocol::crypto::aead_decrypt`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_decrypt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            aead_encrypt,
-            r##"This is the function [`::hax_lib_protocol::crypto::aead_encrypt`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"aead_encrypt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            dh_scalar_multiply,
-            r##"This is the function [`::hax_lib_protocol::crypto::dh_scalar_multiply`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            dh_scalar_multiply_base,
-            r##"This is the function [`::hax_lib_protocol::crypto::dh_scalar_multiply_base`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"dh_scalar_multiply_base"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            hash,
-            r##"This is the function [`::hax_lib_protocol::crypto::hash`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hash"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
-        mk!(
-            hmac,
-            r##"This is the function [`::hax_lib_protocol::crypto::hmac`]."##,
-            r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"ValueNs":"hmac"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::hax_lib_protocol::crypto())
-        );
+
+        #[doc = r##"This is the enum [`::hax_lib_protocol::crypto::AEADAlgorithm`]."##]
+        pub const AEADAlgorithm: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[85];
+
+        #[doc = r##"This is the struct [`::hax_lib_protocol::crypto::AEADIV`]."##]
+        pub const AEADIV: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[80];
+
+        #[doc = r##"This is the struct [`::hax_lib_protocol::crypto::AEADKey`]."##]
+        pub const AEADKey: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[79];
+
+        #[doc = r##"This is the struct [`::hax_lib_protocol::crypto::AEADTag`]."##]
+        pub const AEADTag: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[83];
+
+        #[doc = r##"This is the struct [`::hax_lib_protocol::crypto::DHElement`]."##]
+        pub const DHElement: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[70];
+
+        #[doc = r##"This is the enum [`::hax_lib_protocol::crypto::DHGroup`]."##]
+        pub const DHGroup: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[66];
+
+        #[doc = r##"This is the struct [`::hax_lib_protocol::crypto::DHScalar`]."##]
+        pub const DHScalar: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[67];
+
+        #[doc = r##"This is the enum [`::hax_lib_protocol::crypto::HMACAlgorithm`]."##]
+        pub const HMACAlgorithm: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[64];
+
+        #[doc = r##"This is the enum [`::hax_lib_protocol::crypto::HashAlgorithm`]."##]
+        pub const HashAlgorithm: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[21];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[72];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__1: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[74];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__4: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[86];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__5: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[88];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__6: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[81];
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__9: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[69];
+
+        #[doc = r##"This is the function [`::hax_lib_protocol::crypto::aead_decrypt`]."##]
+        pub const aead_decrypt: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[84];
+
+        #[doc = r##"This is the function [`::hax_lib_protocol::crypto::aead_encrypt`]."##]
+        pub const aead_encrypt: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[93];
+
+        #[doc = r##"This is the function [`::hax_lib_protocol::crypto::dh_scalar_multiply`]."##]
+        pub const dh_scalar_multiply: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[71];
+
+        #[doc = r##"This is the function [`::hax_lib_protocol::crypto::dh_scalar_multiply_base`]."##]
+        pub const dh_scalar_multiply_base: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[68];
+
+        #[doc = r##"This is the function [`::hax_lib_protocol::crypto::hash`]."##]
+        pub const hash: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[28];
+
+        #[doc = r##"This is the function [`::hax_lib_protocol::crypto::hmac`]."##]
+        pub const hmac: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[65];
     }
-    mk!(
-        ProtocolError,
-        r##"This is the enum [`::hax_lib_protocol::ProtocolError`]."##,
-        r##"["hax_lib_protocol",[[{"TypeNs":"ProtocolError"},0]],"Enum",false]"##,
-        ::core::option::Option::Some(root::hax_lib_protocol())
-    );
-    mk!(
-        crypto,
-        r##"This is the module [`::hax_lib_protocol::crypto`]."##,
-        r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::hax_lib_protocol())
-    );
+
+    #[doc = r##"This is the enum [`::hax_lib_protocol::ProtocolError`]."##]
+    pub const ProtocolError: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[76];
+
+    #[doc = r##"This is the module [`::hax_lib_protocol::crypto`]."##]
+    pub const crypto: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[20];
 }
 pub mod rust_primitives {
     #![doc = r##"This is the module [`::rust_primitives`]."##]
@@ -2305,18 +6149,14 @@ pub mod rust_primitives {
     pub mod crypto_abstractions {
         #![doc = r##"This is the module [`::rust_primitives::crypto_abstractions`]."##]
         use super::root;
-        mk!(
-            Use,
-            r##"This is the use item [`::rust_primitives::crypto_abstractions::Use`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::crypto_abstractions())
-        );
-        mk!(
-            crypto_abstractions,
-            r##"This is the function [`::rust_primitives::crypto_abstractions::crypto_abstractions`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::crypto_abstractions())
-        );
+
+        #[doc = r##"This is the use item [`::rust_primitives::crypto_abstractions::Use`]."##]
+        pub const Use: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[530];
+
+        #[doc = r##"This is the function [`::rust_primitives::crypto_abstractions::crypto_abstractions`]."##]
+        pub const crypto_abstractions: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[313];
     }
     pub mod dummy_hax_concrete_ident_wrapper {
         #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##]
@@ -2324,143 +6164,91 @@ pub mod rust_primitives {
         pub mod ___1 {
             #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
             use super::root;
-            mk!(
-                Use,
-                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::___1()
-                )
-            );
-            mk!(
-                f,
-                r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::f`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::___1()
-                )
-            );
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use`]."##]
+            pub const Use: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[299];
+
+            #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::f`]."##]
+            pub const f: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[320];
         }
         pub mod _anonymous {
             #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
             use super::root;
-            mk!(
-                Use,
-                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-            mk!(
-                Use__1,
-                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-            mk!(
-                Use__2,
-                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
-            mk!(
-                arith,
-                r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous()
-                )
-            );
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##]
+            pub const Use: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[479];
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##]
+            pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[308];
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##]
+            pub const Use__2: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[387];
+
+            #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##]
+            pub const arith: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[537];
         }
         pub mod props {
             #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##]
             use super::root;
-            mk!(
-                Use,
-                r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props::Use`]."##,
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use",false]"##,
-                ::core::option::Option::Some(
-                    root::rust_primitives::dummy_hax_concrete_ident_wrapper::props()
-                )
-            );
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props::Use`]."##]
+            pub const Use: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[583];
         }
-        mk!(
-            Use,
-            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__1,
-            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__1`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__2,
-            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__2`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__3,
-            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__3`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            Use__4,
-            r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__4`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            ___1,
-            r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            _anonymous,
-            r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            dummy,
-            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::dummy`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            iterator_functions,
-            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            props,
-            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            question_mark_result,
-            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::question_mark_result`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
-        mk!(
-            refinements,
-            r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::refinements`]."##,
-            r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::dummy_hax_concrete_ident_wrapper())
-        );
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use`]."##]
+        pub const Use: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[524];
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__1`]."##]
+        pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[588];
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__2`]."##]
+        pub const Use__2: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[408];
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__3`]."##]
+        pub const Use__3: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[363];
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__4`]."##]
+        pub const Use__4: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[349];
+
+        #[doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
+        pub const ___1: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[298];
+
+        #[doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
+        pub const _anonymous: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[307];
+
+        #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::dummy`]."##]
+        pub const dummy: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[301];
+
+        #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##]
+        pub const iterator_functions: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[489];
+
+        #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##]
+        pub const props: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[582];
+
+        #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::question_mark_result`]."##]
+        pub const question_mark_result: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[574];
+
+        #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::refinements`]."##]
+        pub const refinements: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[443];
     }
     pub mod hax {
         #![doc = r##"This is the module [`::rust_primitives::hax`]."##]
@@ -2468,24 +6256,20 @@ pub mod rust_primitives {
         pub mod Failure {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Failure`]."##]
             use super::root;
-            mk!(
-                Constructor,
-                r##"This is the struct [`::rust_primitives::hax::Failure::Constructor`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",true]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax())
-            );
+
+            #[doc = r##"This is the struct [`::rust_primitives::hax::Failure::Constructor`]."##]
+            pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[633];
         }
         pub mod Tuple0 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##]
             use super::root;
             pub mod Constructor {
                 use super::root;
-                mk!(
-                    ctor,
-                    r##"This is the constructor for [`::rust_primitives::hax::Tuple0::Constructor`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],{"Ctor":["Struct","Fn"]},true]"##,
-                    ::core::option::Option::Some(root::rust_primitives::hax())
-                );
+
+                #[doc = r##"This is the constructor for [`::rust_primitives::hax::Tuple0::Constructor`]."##]
+                pub const ctor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[634];
             }
         }
         pub mod Tuple2 {
@@ -2494,43 +6278,31 @@ pub mod rust_primitives {
             pub mod Constructor {
                 #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##]
                 use super::root;
-                mk!(
-                    ctor,
-                    r##"This is the constructor for [`::rust_primitives::hax::Tuple2::Constructor`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],{"Ctor":["Struct","Fn"]},true]"##,
-                    ::core::option::Option::Some(root::rust_primitives::hax())
-                );
+
+                #[doc = r##"This is the constructor for [`::rust_primitives::hax::Tuple2::Constructor`]."##]
+                pub const ctor: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[639];
             }
-            mk!(
-                Constructor,
-                r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",true]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax())
-            );
-            mk!(
-                Tuple0,
-                r##"This is the field [`Tuple0`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple0"},0]],"Field",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
-            );
-            mk!(
-                Tuple1,
-                r##"This is the field [`Tuple1`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"Tuple1"},0]],"Field",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
-            );
-            mk!(
-                _0,
-                r##"This is the field [`_0`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
-            );
-            mk!(
-                _1,
-                r##"This is the field [`_1`] from ::rust_primitives::hax::Tuple2."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::Tuple2::Constructor())
-            );
+
+            #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##]
+            pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[624];
+
+            #[doc = r##"This is the field [`Tuple0`] from ::rust_primitives::hax::Tuple2."##]
+            pub const Tuple0: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[91];
+
+            #[doc = r##"This is the field [`Tuple1`] from ::rust_primitives::hax::Tuple2."##]
+            pub const Tuple1: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[92];
+
+            #[doc = r##"This is the field [`_0`] from ::rust_primitives::hax::Tuple2."##]
+            pub const _0: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[401];
+
+            #[doc = r##"This is the field [`_1`] from ::rust_primitives::hax::Tuple2."##]
+            pub const _1: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[411];
         }
         pub mod control_flow_monad {
             #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##]
@@ -2538,1987 +6310,1254 @@ pub mod rust_primitives {
             pub mod ControlFlowMonad {
                 #![doc = r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##]
                 use super::root;
-                mk!(
-                    lift,
-                    r##"This is the associated function [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad::lift`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
-                    ::core::option::Option::Some(
-                        root::rust_primitives::hax::control_flow_monad::ControlFlowMonad()
-                    )
-                );
+
+                #[doc = r##"This is the associated function [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad::lift`]."##]
+                pub const lift: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[486];
             }
             pub mod mexception {
                 #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##]
                 use super::root;
-                mk!(
-                    run,
-                    r##"This is the function [`::rust_primitives::hax::control_flow_monad::mexception::run`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
-                    ::core::option::Option::Some(
-                        root::rust_primitives::hax::control_flow_monad::mexception()
-                    )
-                );
+
+                #[doc = r##"This is the function [`::rust_primitives::hax::control_flow_monad::mexception::run`]."##]
+                pub const run: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[559];
             }
             pub mod moption {
                 #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##]
                 use super::root;
-                mk!(
-                    run,
-                    r##"This is the function [`::rust_primitives::hax::control_flow_monad::moption::run`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
-                    ::core::option::Option::Some(
-                        root::rust_primitives::hax::control_flow_monad::moption()
-                    )
-                );
+
+                #[doc = r##"This is the function [`::rust_primitives::hax::control_flow_monad::moption::run`]."##]
+                pub const run: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[330];
             }
             pub mod mresult {
                 #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##]
                 use super::root;
-                mk!(
-                    run,
-                    r##"This is the function [`::rust_primitives::hax::control_flow_monad::mresult::run`]."##,
-                    r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
-                    ::core::option::Option::Some(
-                        root::rust_primitives::hax::control_flow_monad::mresult()
-                    )
-                );
+
+                #[doc = r##"This is the function [`::rust_primitives::hax::control_flow_monad::mresult::run`]."##]
+                pub const run: crate::ast::identifiers::global_id::GlobalId =
+                    root::INTERNED_GLOBAL_IDS[432];
             }
-            mk!(
-                ControlFlowMonad,
-                r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
-            );
-            mk!(
-                mexception,
-                r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
-            );
-            mk!(
-                moption,
-                r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
-            );
-            mk!(
-                mresult,
-                r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::control_flow_monad())
-            );
+
+            #[doc = r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##]
+            pub const ControlFlowMonad: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[485];
+
+            #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##]
+            pub const mexception: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[529];
+
+            #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##]
+            pub const moption: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[329];
+
+            #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##]
+            pub const mresult: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[431];
         }
         pub mod folds {
             #![doc = r##"This is the module [`::rust_primitives::hax::folds`]."##]
             use super::root;
-            mk!(
-                fold_cf,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_chunked_slice,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_chunked_slice_cf,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_chunked_slice_return,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_enumerated_chunked_slice,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_enumerated_chunked_slice_cf,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_enumerated_chunked_slice_return,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_enumerated_slice,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_enumerated_slice_cf,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_enumerated_slice_return,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_range,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_range`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_range_cf,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_range_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_range_return,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_range_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_range_step_by,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_range_step_by_cf,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_cf`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_range_step_by_return,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
-            mk!(
-                fold_return,
-                r##"This is the function [`::rust_primitives::hax::folds::fold_return`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::folds())
-            );
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_cf`]."##]
+            pub const fold_cf: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[480];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice`]."##]
+            pub const fold_chunked_slice: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[460];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_cf`]."##]
+            pub const fold_chunked_slice_cf: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[393];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_return`]."##]
+            pub const fold_chunked_slice_return: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[494];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice`]."##]
+            pub const fold_enumerated_chunked_slice: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[386];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_cf`]."##]
+            pub const fold_enumerated_chunked_slice_cf:
+                crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[510];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_return`]."##]
+            pub const fold_enumerated_chunked_slice_return:
+                crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[547];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice`]."##]
+            pub const fold_enumerated_slice: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[426];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_cf`]."##]
+            pub const fold_enumerated_slice_cf: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[365];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_return`]."##]
+            pub const fold_enumerated_slice_return: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[528];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range`]."##]
+            pub const fold_range: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[377];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_cf`]."##]
+            pub const fold_range_cf: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[452];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_return`]."##]
+            pub const fold_range_return: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[312];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by`]."##]
+            pub const fold_range_step_by: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[296];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_cf`]."##]
+            pub const fold_range_step_by_cf: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[561];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_return`]."##]
+            pub const fold_range_step_by_return: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[525];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_return`]."##]
+            pub const fold_return: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[453];
         }
         pub mod int {
             #![doc = r##"This is the module [`::rust_primitives::hax::int`]."##]
             use super::root;
-            mk!(
-                add,
-                r##"This is the function [`::rust_primitives::hax::int::add`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                div,
-                r##"This is the function [`::rust_primitives::hax::int::div`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                eq,
-                r##"This is the function [`::rust_primitives::hax::int::eq`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                from_machine,
-                r##"This is the function [`::rust_primitives::hax::int::from_machine`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                ge,
-                r##"This is the function [`::rust_primitives::hax::int::ge`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                gt,
-                r##"This is the function [`::rust_primitives::hax::int::gt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                into_machine,
-                r##"This is the function [`::rust_primitives::hax::int::into_machine`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                le,
-                r##"This is the function [`::rust_primitives::hax::int::le`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                lt,
-                r##"This is the function [`::rust_primitives::hax::int::lt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                mul,
-                r##"This is the function [`::rust_primitives::hax::int::mul`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                ne,
-                r##"This is the function [`::rust_primitives::hax::int::ne`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                neg,
-                r##"This is the function [`::rust_primitives::hax::int::neg`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                rem,
-                r##"This is the function [`::rust_primitives::hax::int::rem`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
-            mk!(
-                sub,
-                r##"This is the function [`::rust_primitives::hax::int::sub`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::int())
-            );
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::add`]."##]
+            pub const add: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[497];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::div`]."##]
+            pub const div: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[392];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::eq`]."##]
+            pub const eq: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[557];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::from_machine`]."##]
+            pub const from_machine: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[513];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::ge`]."##]
+            pub const ge: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[425];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::gt`]."##]
+            pub const gt: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[481];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::into_machine`]."##]
+            pub const into_machine: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[464];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::le`]."##]
+            pub const le: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[373];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::lt`]."##]
+            pub const lt: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[531];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::mul`]."##]
+            pub const mul: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[383];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::ne`]."##]
+            pub const ne: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[437];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::neg`]."##]
+            pub const neg: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[506];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::rem`]."##]
+            pub const rem: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[498];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::int::sub`]."##]
+            pub const sub: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[355];
         }
         pub mod machine_int {
             #![doc = r##"This is the module [`::rust_primitives::hax::machine_int`]."##]
             use super::root;
-            mk!(
-                add,
-                r##"This is the function [`::rust_primitives::hax::machine_int::add`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                bitand,
-                r##"This is the function [`::rust_primitives::hax::machine_int::bitand`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                bitor,
-                r##"This is the function [`::rust_primitives::hax::machine_int::bitor`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                bitxor,
-                r##"This is the function [`::rust_primitives::hax::machine_int::bitxor`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                div,
-                r##"This is the function [`::rust_primitives::hax::machine_int::div`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                eq,
-                r##"This is the function [`::rust_primitives::hax::machine_int::eq`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                ge,
-                r##"This is the function [`::rust_primitives::hax::machine_int::ge`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                gt,
-                r##"This is the function [`::rust_primitives::hax::machine_int::gt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                le,
-                r##"This is the function [`::rust_primitives::hax::machine_int::le`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                lt,
-                r##"This is the function [`::rust_primitives::hax::machine_int::lt`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                mul,
-                r##"This is the function [`::rust_primitives::hax::machine_int::mul`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                ne,
-                r##"This is the function [`::rust_primitives::hax::machine_int::ne`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                not,
-                r##"This is the function [`::rust_primitives::hax::machine_int::not`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                rem,
-                r##"This is the function [`::rust_primitives::hax::machine_int::rem`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                shl,
-                r##"This is the function [`::rust_primitives::hax::machine_int::shl`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                shr,
-                r##"This is the function [`::rust_primitives::hax::machine_int::shr`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
-            mk!(
-                sub,
-                r##"This is the function [`::rust_primitives::hax::machine_int::sub`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::machine_int())
-            );
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::add`]."##]
+            pub const add: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[477];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::bitand`]."##]
+            pub const bitand: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[542];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::bitor`]."##]
+            pub const bitor: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[595];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::bitxor`]."##]
+            pub const bitxor: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[370];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::div`]."##]
+            pub const div: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[412];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::eq`]."##]
+            pub const eq: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[394];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::ge`]."##]
+            pub const ge: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[311];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::gt`]."##]
+            pub const gt: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[520];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::le`]."##]
+            pub const le: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[461];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::lt`]."##]
+            pub const lt: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[515];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::mul`]."##]
+            pub const mul: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[602];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::ne`]."##]
+            pub const ne: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[488];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::not`]."##]
+            pub const not: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[335];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::rem`]."##]
+            pub const rem: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[504];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::shl`]."##]
+            pub const shl: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[518];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::shr`]."##]
+            pub const shr: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[499];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::sub`]."##]
+            pub const sub: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[555];
         }
         pub mod monomorphized_update_at {
             #![doc = r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##]
             use super::root;
-            mk!(
-                update_at_range,
-                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_range_from,
-                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_from`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_range_full,
-                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_full`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_range_to,
-                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_to`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
-            );
-            mk!(
-                update_at_usize,
-                r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_usize`]."##,
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn",false]"##,
-                ::core::option::Option::Some(root::rust_primitives::hax::monomorphized_update_at())
-            );
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range`]."##]
+            pub const update_at_range: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[357];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_from`]."##]
+            pub const update_at_range_from: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[326];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_full`]."##]
+            pub const update_at_range_full: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[385];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_to`]."##]
+            pub const update_at_range_to: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[601];
+
+            #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_usize`]."##]
+            pub const update_at_usize: crate::ast::identifiers::global_id::GlobalId =
+                root::INTERNED_GLOBAL_IDS[319];
         }
-        mk!(
-            Failure,
-            r##"This is the struct [`::rust_primitives::hax::Failure`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            MutRef,
-            r##"This is the enum [`::rust_primitives::hax::MutRef`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            Never,
-            r##"This is the enum [`::rust_primitives::hax::Never`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            Tuple0,
-            r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple0"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            Tuple1,
-            r##"This is the struct [`::rust_primitives::hax::Tuple1`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple1"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            Tuple2,
-            r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            array_of_list,
-            r##"This is the function [`::rust_primitives::hax::array_of_list`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            box_new,
-            r##"This is the function [`::rust_primitives::hax::box_new`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"box_new"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            cast_op,
-            r##"This is the function [`::rust_primitives::hax::cast_op`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"cast_op"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            control_flow_monad,
-            r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            deref_op,
-            r##"This is the function [`::rust_primitives::hax::deref_op`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"deref_op"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            dropped_body,
-            r##"This is the function [`::rust_primitives::hax::dropped_body`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            failure,
-            r##"This is the function [`::rust_primitives::hax::failure`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            folds,
-            r##"This is the module [`::rust_primitives::hax::folds`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            int,
-            r##"This is the module [`::rust_primitives::hax::int`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            logical_op_and,
-            r##"This is the function [`::rust_primitives::hax::logical_op_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            logical_op_or,
-            r##"This is the function [`::rust_primitives::hax::logical_op_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            machine_int,
-            r##"This is the module [`::rust_primitives::hax::machine_int`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            monomorphized_update_at,
-            r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            never_to_any,
-            r##"This is the function [`::rust_primitives::hax::never_to_any`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            repeat,
-            r##"This is the function [`::rust_primitives::hax::repeat`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            update_at,
-            r##"This is the function [`::rust_primitives::hax::update_at`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            while_loop,
-            r##"This is the function [`::rust_primitives::hax::while_loop`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            while_loop_cf,
-            r##"This is the function [`::rust_primitives::hax::while_loop_cf`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
-        mk!(
-            while_loop_return,
-            r##"This is the function [`::rust_primitives::hax::while_loop_return`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::hax())
-        );
+
+        #[doc = r##"This is the struct [`::rust_primitives::hax::Failure`]."##]
+        pub const Failure: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[376];
+
+        #[doc = r##"This is the enum [`::rust_primitives::hax::MutRef`]."##]
+        pub const MutRef: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[342];
+
+        #[doc = r##"This is the enum [`::rust_primitives::hax::Never`]."##]
+        pub const Never: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[175];
+
+        #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple0`]."##]
+        pub const Tuple0: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[2];
+
+        #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple1`]."##]
+        pub const Tuple1: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[154];
+
+        #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##]
+        pub const Tuple2: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[90];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::array_of_list`]."##]
+        pub const array_of_list: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[381];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::box_new`]."##]
+        pub const box_new: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[33];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::cast_op`]."##]
+        pub const cast_op: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[99];
+
+        #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##]
+        pub const control_flow_monad: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[328];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::deref_op`]."##]
+        pub const deref_op: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[22];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::dropped_body`]."##]
+        pub const dropped_body: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[562];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::failure`]."##]
+        pub const failure: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[568];
+
+        #[doc = r##"This is the module [`::rust_primitives::hax::folds`]."##]
+        pub const folds: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[295];
+
+        #[doc = r##"This is the module [`::rust_primitives::hax::int`]."##]
+        pub const int: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[354];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::logical_op_and`]."##]
+        pub const logical_op_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[275];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::logical_op_or`]."##]
+        pub const logical_op_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[560];
+
+        #[doc = r##"This is the module [`::rust_primitives::hax::machine_int`]."##]
+        pub const machine_int: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[310];
+
+        #[doc = r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##]
+        pub const monomorphized_update_at: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[318];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::never_to_any`]."##]
+        pub const never_to_any: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[176];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::repeat`]."##]
+        pub const repeat: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[433];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::update_at`]."##]
+        pub const update_at: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[380];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::while_loop`]."##]
+        pub const while_loop: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[445];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::while_loop_cf`]."##]
+        pub const while_loop_cf: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[573];
+
+        #[doc = r##"This is the function [`::rust_primitives::hax::while_loop_return`]."##]
+        pub const while_loop_return: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[606];
     }
     pub mod i128 {
         #![doc = r##"This is the module [`::rust_primitives::i128`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::i128::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::i128::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::i128::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::i128::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::i128::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::i128::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::i128::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::i128::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::i128::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::i128::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::i128::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::i128::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::i128::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::i128::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::i128::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::i128::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::i128::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i128())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[397];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[549];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[603];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[575];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[476];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[600];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[589];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[422];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[551];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[533];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[604];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[598];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[587];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[364];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[362];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[374];
+
+        #[doc = r##"This is the function [`::rust_primitives::i128::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[404];
     }
     pub mod i16 {
         #![doc = r##"This is the module [`::rust_primitives::i16`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::i16::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::i16::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::i16::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::i16::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::i16::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::i16::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::i16::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::i16::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::i16::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::i16::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::i16::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::i16::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::i16::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::i16::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::i16::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::i16::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::i16::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i16())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[344];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[541];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[339];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[594];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[571];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[584];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[340];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[581];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[552];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[550];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[421];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[399];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[366];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[536];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[324];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[368];
+
+        #[doc = r##"This is the function [`::rust_primitives::i16::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[493];
     }
     pub mod i32 {
         #![doc = r##"This is the module [`::rust_primitives::i32`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::i32::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::i32::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::i32::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::i32::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::i32::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::i32::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::i32::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::i32::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::i32::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::i32::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::i32::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::i32::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::i32::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::i32::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::i32::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::i32::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::i32::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i32())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[371];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[478];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[505];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[517];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[436];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[527];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[607];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[532];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[341];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[331];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[471];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[491];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[317];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[351];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[580];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[378];
+
+        #[doc = r##"This is the function [`::rust_primitives::i32::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[359];
     }
     pub mod i64 {
         #![doc = r##"This is the module [`::rust_primitives::i64`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::i64::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::i64::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::i64::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::i64::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::i64::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::i64::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::i64::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::i64::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::i64::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::i64::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::i64::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::i64::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::i64::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::i64::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::i64::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::i64::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::i64::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i64())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[514];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[608];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[500];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[337];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[449];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[591];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[572];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[450];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[586];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[459];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[507];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[427];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[410];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[446];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[473];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[495];
+
+        #[doc = r##"This is the function [`::rust_primitives::i64::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[545];
     }
     pub mod i8 {
         #![doc = r##"This is the module [`::rust_primitives::i8`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::i8::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::i8::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::i8::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::i8::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::i8::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::i8::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::i8::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::i8::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::i8::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::i8::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::i8::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::i8::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::i8::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::i8::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::i8::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::i8::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::i8::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::i8())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[597];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[546];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[348];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[570];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[333];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[424];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[418];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[356];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[596];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[430];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[448];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[360];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[396];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[569];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[367];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[442];
+
+        #[doc = r##"This is the function [`::rust_primitives::i8::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[414];
     }
     pub mod isize {
         #![doc = r##"This is the module [`::rust_primitives::isize`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::isize::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::isize::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::isize::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::isize::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::isize::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::isize::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::isize::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::isize::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::isize::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::isize::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::isize::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::isize::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::isize::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::isize::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::isize::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::isize::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::isize::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::isize())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[523];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[423];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[375];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[509];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[429];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[534];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[451];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[548];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[593];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[294];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[353];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[398];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[567];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[599];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[325];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[516];
+
+        #[doc = r##"This is the function [`::rust_primitives::isize::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[487];
     }
     pub mod u128 {
         #![doc = r##"This is the module [`::rust_primitives::u128`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::u128::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::u128::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::u128::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::u128::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::u128::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::u128::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::u128::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::u128::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::u128::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::u128::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::u128::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::u128::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::u128::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::u128::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::u128::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::u128::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::u128::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u128())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[526];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[440];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[544];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[566];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[539];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[578];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[512];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[458];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[346];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[565];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[395];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[463];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[590];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[287];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[334];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[407];
+
+        #[doc = r##"This is the function [`::rust_primitives::u128::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[419];
     }
     pub mod u16 {
         #![doc = r##"This is the module [`::rust_primitives::u16`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::u16::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::u16::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::u16::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::u16::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::u16::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::u16::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::u16::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::u16::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::u16::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::u16::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::u16::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::u16::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::u16::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::u16::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::u16::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::u16::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::u16::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u16())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[343];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[306];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[543];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[490];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[553];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[554];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[352];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[416];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[592];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[457];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[321];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[441];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[290];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[435];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[538];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[462];
+
+        #[doc = r##"This is the function [`::rust_primitives::u16::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[558];
     }
     pub mod u32 {
         #![doc = r##"This is the module [`::rust_primitives::u32`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::u32::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::u32::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::u32::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::u32::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::u32::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::u32::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::u32::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::u32::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::u32::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::u32::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::u32::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::u32::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::u32::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::u32::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::u32::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::u32::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::u32::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u32())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[347];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[605];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[576];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[470];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[474];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[338];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[511];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[413];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[345];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[577];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[502];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[315];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[322];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[305];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[467];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[579];
+
+        #[doc = r##"This is the function [`::rust_primitives::u32::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[389];
     }
     pub mod u64 {
         #![doc = r##"This is the module [`::rust_primitives::u64`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::u64::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::u64::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::u64::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::u64::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::u64::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::u64::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::u64::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::u64::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::u64::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::u64::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::u64::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::u64::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::u64::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::u64::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::u64::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::u64::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::u64::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u64())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[503];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[465];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[384];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[372];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[369];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[563];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[402];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[309];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[482];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[314];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[292];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[508];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[496];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[564];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[438];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[521];
+
+        #[doc = r##"This is the function [`::rust_primitives::u64::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[444];
     }
     pub mod u8 {
         #![doc = r##"This is the module [`::rust_primitives::u8`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::u8::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::u8::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::u8::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::u8::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::u8::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::u8::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::u8::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::u8::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::u8::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::u8::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::u8::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::u8::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::u8::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::u8::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::u8::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::u8::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::u8::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::u8())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[358];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[522];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[434];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[469];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[379];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[390];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[403];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[420];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[382];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[519];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[415];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[388];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[475];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[447];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[484];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[303];
+
+        #[doc = r##"This is the function [`::rust_primitives::u8::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[405];
     }
     pub mod usize {
         #![doc = r##"This is the module [`::rust_primitives::usize`]."##]
         use super::root;
-        mk!(
-            add,
-            r##"This is the function [`::rust_primitives::usize::add`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            bit_and,
-            r##"This is the function [`::rust_primitives::usize::bit_and`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            bit_or,
-            r##"This is the function [`::rust_primitives::usize::bit_or`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            bit_xor,
-            r##"This is the function [`::rust_primitives::usize::bit_xor`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            div,
-            r##"This is the function [`::rust_primitives::usize::div`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            eq,
-            r##"This is the function [`::rust_primitives::usize::eq`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            ge,
-            r##"This is the function [`::rust_primitives::usize::ge`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            gt,
-            r##"This is the function [`::rust_primitives::usize::gt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            le,
-            r##"This is the function [`::rust_primitives::usize::le`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            lt,
-            r##"This is the function [`::rust_primitives::usize::lt`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            mul,
-            r##"This is the function [`::rust_primitives::usize::mul`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            ne,
-            r##"This is the function [`::rust_primitives::usize::ne`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            neg,
-            r##"This is the function [`::rust_primitives::usize::neg`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            rem,
-            r##"This is the function [`::rust_primitives::usize::rem`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            shl,
-            r##"This is the function [`::rust_primitives::usize::shl`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            shr,
-            r##"This is the function [`::rust_primitives::usize::shr`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
-        mk!(
-            sub,
-            r##"This is the function [`::rust_primitives::usize::sub`]."##,
-            r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-            ::core::option::Option::Some(root::rust_primitives::usize())
-        );
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::add`]."##]
+        pub const add: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[391];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::bit_and`]."##]
+        pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[492];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::bit_or`]."##]
+        pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[535];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::bit_xor`]."##]
+        pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[417];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::div`]."##]
+        pub const div: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[540];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::eq`]."##]
+        pub const eq: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[585];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::ge`]."##]
+        pub const ge: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[350];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::gt`]."##]
+        pub const gt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[466];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::le`]."##]
+        pub const le: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[483];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::lt`]."##]
+        pub const lt: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[439];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::mul`]."##]
+        pub const mul: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[472];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::ne`]."##]
+        pub const ne: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[556];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::neg`]."##]
+        pub const neg: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[409];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::rem`]."##]
+        pub const rem: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[456];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::shl`]."##]
+        pub const shl: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[455];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::shr`]."##]
+        pub const shr: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[428];
+
+        #[doc = r##"This is the function [`::rust_primitives::usize::sub`]."##]
+        pub const sub: crate::ast::identifiers::global_id::GlobalId =
+            root::INTERNED_GLOBAL_IDS[454];
     }
-    mk!(
-        Use,
-        r##"This is the use item [`::rust_primitives::Use`]."##,
-        r##"["rust_primitives",[["Use",0]],"Use",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        alloc,
-        r##"This is the extern crate [`::rust_primitives::alloc`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        crypto_abstractions,
-        r##"This is the module [`::rust_primitives::crypto_abstractions`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        dummy_hax_concrete_ident_wrapper,
-        r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##,
-        r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        hax,
-        r##"This is the module [`::rust_primitives::hax`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"hax"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        i128,
-        r##"This is the module [`::rust_primitives::i128`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i128"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        i16,
-        r##"This is the module [`::rust_primitives::i16`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i16"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        i32,
-        r##"This is the module [`::rust_primitives::i32`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i32"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        i64,
-        r##"This is the module [`::rust_primitives::i64`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i64"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        i8,
-        r##"This is the module [`::rust_primitives::i8`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"i8"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        impl_arith,
-        r##"This is the macro [`::rust_primitives::impl_arith`]."##,
-        r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"},false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        isize,
-        r##"This is the module [`::rust_primitives::isize`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"isize"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        offset,
-        r##"This is the function [`::rust_primitives::offset`]."##,
-        r##"["rust_primitives",[[{"ValueNs":"offset"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        std,
-        r##"This is the extern crate [`::rust_primitives::std`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        u128,
-        r##"This is the module [`::rust_primitives::u128`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u128"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        u16,
-        r##"This is the module [`::rust_primitives::u16`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u16"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        u32,
-        r##"This is the module [`::rust_primitives::u32`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u32"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        u64,
-        r##"This is the module [`::rust_primitives::u64`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u64"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        u8,
-        r##"This is the module [`::rust_primitives::u8`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"u8"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        unsize,
-        r##"This is the function [`::rust_primitives::unsize`]."##,
-        r##"["rust_primitives",[[{"ValueNs":"unsize"},0]],"Fn",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
-    mk!(
-        usize,
-        r##"This is the module [`::rust_primitives::usize`]."##,
-        r##"["rust_primitives",[[{"TypeNs":"usize"},0]],"Mod",false]"##,
-        ::core::option::Option::Some(root::rust_primitives())
-    );
+
+    #[doc = r##"This is the use item [`::rust_primitives::Use`]."##]
+    pub const Use: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[406];
+
+    #[doc = r##"This is the extern crate [`::rust_primitives::alloc`]."##]
+    pub const alloc: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[468];
+
+    #[doc = r##"This is the module [`::rust_primitives::crypto_abstractions`]."##]
+    pub const crypto_abstractions: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[300];
+
+    #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##]
+    pub const dummy_hax_concrete_ident_wrapper: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[297];
+
+    #[doc = r##"This is the module [`::rust_primitives::hax`]."##]
+    pub const hax: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[1];
+
+    #[doc = r##"This is the module [`::rust_primitives::i128`]."##]
+    pub const i128: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[361];
+
+    #[doc = r##"This is the module [`::rust_primitives::i16`]."##]
+    pub const i16: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[323];
+
+    #[doc = r##"This is the module [`::rust_primitives::i32`]."##]
+    pub const i32: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[316];
+
+    #[doc = r##"This is the module [`::rust_primitives::i64`]."##]
+    pub const i64: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[336];
+
+    #[doc = r##"This is the module [`::rust_primitives::i8`]."##]
+    pub const i8: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[332];
+
+    #[doc = r##"This is the macro [`::rust_primitives::impl_arith`]."##]
+    pub const impl_arith: crate::ast::identifiers::global_id::GlobalId =
+        root::INTERNED_GLOBAL_IDS[501];
+
+    #[doc = r##"This is the module [`::rust_primitives::isize`]."##]
+    pub const isize: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[293];
+
+    #[doc = r##"This is the function [`::rust_primitives::offset`]."##]
+    pub const offset: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[400];
+
+    #[doc = r##"This is the extern crate [`::rust_primitives::std`]."##]
+    pub const std: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[288];
+
+    #[doc = r##"This is the module [`::rust_primitives::u128`]."##]
+    pub const u128: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[286];
+
+    #[doc = r##"This is the module [`::rust_primitives::u16`]."##]
+    pub const u16: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[289];
+
+    #[doc = r##"This is the module [`::rust_primitives::u32`]."##]
+    pub const u32: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[304];
+
+    #[doc = r##"This is the module [`::rust_primitives::u64`]."##]
+    pub const u64: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[291];
+
+    #[doc = r##"This is the module [`::rust_primitives::u8`]."##]
+    pub const u8: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[302];
+
+    #[doc = r##"This is the function [`::rust_primitives::unsize`]."##]
+    pub const unsize: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[36];
+
+    #[doc = r##"This is the module [`::rust_primitives::usize`]."##]
+    pub const usize: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[327];
 }
-mk!(
-    alloc,
-    r##"This is the module [`::alloc`]."##,
-    r##"["alloc",[],"Mod",false]"##,
-    ::core::option::Option::None
-);
-mk!(
-    core,
-    r##"This is the module [`::core`]."##,
-    r##"["core",[],"Mod",false]"##,
-    ::core::option::Option::None
-);
-mk!(
-    hax_lib,
-    r##"This is the module [`::hax_lib`]."##,
-    r##"["hax_lib",[],"Mod",false]"##,
-    ::core::option::Option::None
-);
-mk!(
-    hax_lib_protocol,
-    r##"This is the module [`::hax_lib_protocol`]."##,
-    r##"["hax_lib_protocol",[],"Mod",false]"##,
-    ::core::option::Option::None
-);
-mk!(
-    rust_primitives,
-    r##"This is the module [`::rust_primitives`]."##,
-    r##"["rust_primitives",[],"Mod",false]"##,
-    ::core::option::Option::None
-);
+
+#[doc = r##"This is the module [`::alloc`]."##]
+pub const alloc: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[3];
+
+#[doc = r##"This is the module [`::core`]."##]
+pub const core: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[8];
+
+#[doc = r##"This is the module [`::hax_lib`]."##]
+pub const hax_lib: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[103];
+
+#[doc = r##"This is the module [`::hax_lib_protocol`]."##]
+pub const hax_lib_protocol: crate::ast::identifiers::global_id::GlobalId =
+    root::INTERNED_GLOBAL_IDS[19];
+
+#[doc = r##"This is the module [`::rust_primitives`]."##]
+pub const rust_primitives: crate::ast::identifiers::global_id::GlobalId =
+    root::INTERNED_GLOBAL_IDS[0];
