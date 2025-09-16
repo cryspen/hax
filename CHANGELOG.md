@@ -31,7 +31,7 @@ Changes to hax-lib:
 - New behavior for`hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag (#1685)
 
 Miscellaneous:
- - A lean tutorial has been added to the hax website.
+ - A lean tutorial has been added to the hax website (#1626)
 
 ## 0.3.4
 
