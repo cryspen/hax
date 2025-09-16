@@ -122,9 +122,3 @@ a vector is a partial operation: the index might be out of range.
 In the example folder of hax, you can find the [`chacha20`
 example](https://github.com/hacspec/hax/blob/main/examples/chacha20/src/lib.rs)
 that makes use of pre-conditions to prove panic freedom.
-
-Another solution for safe indexing is to use the [newtype index
-pattern](https://matklad.github.io/2018/06/04/newtype-index-pattern.html),
-which is [also supported by
-hax](https://github.com/hacspec/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
-
