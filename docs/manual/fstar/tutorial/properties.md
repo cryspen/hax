@@ -48,7 +48,7 @@ const BARRETT_SHIFT: i64 = 26;
 const BARRETT_R: i64 = 0x4000000; // 2^26
 const BARRETT_MULTIPLIER: i64 = 20159; // ⌊(BARRETT_R / FIELD_MODULUS) + 1/2⌋
 
-#[hax_lib::fstar::options("--z3rlimit 100")]
+#[hax_lib::fstar::options("--z3rlimit 500")]
 #[hax_lib::requires((i64::from(value) >= -BARRETT_R && i64::from(value) <= BARRETT_R))]
 #[hax_lib::ensures(|result| result > -FIELD_MODULUS && result < FIELD_MODULUS
                      && result %  FIELD_MODULUS ==  value % FIELD_MODULUS)]
