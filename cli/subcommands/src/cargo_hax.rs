@@ -150,6 +150,17 @@ use hax_types::diagnostics::report::ReportCtx;
 #[extension_traits::extension(trait ExtHaxMessage)]
 impl HaxMessage {
     fn report(self, message_format: MessageFormat, rctx: Option<&mut ReportCtx>) {
+        let rctx = if let Some(rctx) = rctx {
+            if let HaxMessage::Diagnostic { diagnostic, .. } = &self
+                && rctx.seen_already(diagnostic.clone())
+            {
+                return;
+            } else {
+                Some(rctx)
+            }
+        } else {
+            None
+        };
         match message_format {
             MessageFormat::Json => println!("{}", serde_json::to_string(&self).unwrap()),
             MessageFormat::Human => self.report_styled(rctx),

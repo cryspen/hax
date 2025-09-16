@@ -5,7 +5,7 @@ pub mod message;
 pub mod report;
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Eq, PartialEq, Hash)]
 pub struct Diagnostics {
     pub kind: Kind,
     pub span: Vec<hax_frontend_exporter::Span>,
