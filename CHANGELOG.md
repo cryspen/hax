@@ -28,10 +28,10 @@ Changes to the frontend:
 - Fix a regression affecting projection predicates (#1678)
 
 Changes to hax-lib:
-- New behavior for`hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
+- New behavior for`hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag (#1685)
 
 Miscellaneous:
- - A lean tutorial has been added to the hax website.
+ - A lean tutorial has been added to the hax website (#1626)
 
 ## 0.3.4
 
