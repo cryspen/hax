@@ -7,7 +7,7 @@ async function get_latest_hax_main() {
 }
 
 // Call into the API of the hax playground
-async function call_playground(result_block, query, text) {
+async function call_playground(result_block, query, text, parent_node) {
     let raw_query = async (API_URL, hax_version, query, files, on_line_received) => {
         let response = await fetch(`${API_URL}/query/${hax_version}/${query}`, {
             method: "POST",
@@ -63,7 +63,7 @@ async function call_playground(result_block, query, text) {
                     if (file.endsWith('.rs'))
                         continue;
                     let contents = json.Done.files[file];
-                    contents = (contents.split(lean_backend?'set_option linter.unusedVariables false':'open FStar.Mul')[1] || contents).trim();
+                    contents = (contents.split(lean_backend ? 'set_option linter.unusedVariables false' : 'open FStar.Mul')[1] || contents).trim();
                     contents = contents.replace(/$/gm, ' ').trim();
                     out.push([file, contents]);
                 }
@@ -80,9 +80,11 @@ async function call_playground(result_block, query, text) {
                 }
                 result_block.appendChild(result);
                 hljs.highlightBlock(result);
-                result_block.innerHTML += `<br/><a style="float:right; font-family: 'Open Sans', sans-serif; font-size: 70%; cursor: pointer; color: gray; text-transform: uppercase; position: relative; top: -10px;" href='${PLAYGROUND_URL}/#${lean_backend?"lean":"fstar"}/${hax_version}/${LZString.compressToEncodedURIComponent(text)}'>Open in hax playground ↗</a>`;
+                result_block.innerHTML += `<br/><a style="float:right; font-family: 'Open Sans', sans-serif; font-size: 70%; cursor: pointer; color: gray; text-transform: uppercase; position: relative; top: -10px;" href='${PLAYGROUND_URL}/#${lean_backend ? "lean" : "fstar"}/${hax_version}/${LZString.compressToEncodedURIComponent(text)}'>Open in hax playground ↗</a>`;
+                parent_node.classList.remove("state-success", "state-failure");
+                parent_node.classList.add("state-" + (json.Done.success ? "success" : "failure"));
                 if (json.Done.success && query.includes('+tc')) {
-                    result_block.innerHTML += `<div style="float: left; padding: 3px; padding-top: 8px; position: relative; top: 6px;"><span style="color: gray;">Status: </span><span style="color: green">✓ ${lean_backend?"Lean":"F*"} successfully typechecked!</span></div>`;
+                    result_block.innerHTML += `<div style="float: left; padding: 3px; padding-top: 8px; position: relative; top: 6px;"><span style="color: gray;">Status: </span><span style="color: green">✓ ${lean_backend ? "Lean" : "F*"} successfully typechecked!</span></div>`;
                 }
             }
         },
@@ -106,7 +108,7 @@ function setup_hax_playground() {
         let w = e.parentElement;
         if (!w.classList.contains("playable"))
             continue;
-        let backend = w.classList.contains("lean-backend")?'lean':'fstar';
+        let backend = w.classList.contains("lean-backend") ? 'lean' : 'fstar';
 
         code.innerHTML = "<pre></pre>";
         let inner = code.children[0];
@@ -138,7 +140,7 @@ function setup_hax_playground() {
         button_translate.classList.add('md-hax-playground');
         button_translate.style.right = "2.4em";
         button_translate.onclick = () => {
-            call_playground(result_block, backend, getCode());
+            call_playground(result_block, backend, getCode(), w);
         };
         e.prepend(button_translate);
 
@@ -149,7 +151,7 @@ function setup_hax_playground() {
         button_tc.classList.add('md-hax-playground');
         button_tc.style.right = "4.5em";
         button_tc.onclick = () => {
-            call_playground(result_block, backend + '+tc', getCode());
+            call_playground(result_block, backend + '+tc', getCode(), w);
         };
 
         e.prepend(button_tc);
