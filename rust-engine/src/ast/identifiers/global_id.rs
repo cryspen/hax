@@ -4,22 +4,22 @@ use hax_rust_engine_macros::*;
 
 use crate::interning::{HasGlobal, InternExtTrait, Interned, InterningTable};
 
-pub mod compact_serialization;
+mod compact_serialization;
 pub(crate) mod generated_names;
 pub mod view;
 
 /// A Rust `DefId`: a lighter version of [`hax_frontend_exporter::DefId`].
 #[derive_group_for_ast]
-pub struct DefIdInner {
+struct DefIdInner {
     /// The crate of the definition
-    pub krate: String,
+    krate: String,
     /// The full path for this definition, under the crate `krate`
-    pub path: Vec<DisambiguatedDefPathItem>,
+    path: Vec<DisambiguatedDefPathItem>,
     /// The parent `DefId`, if any.
     /// `parent` if node if and only if `path` is empty
-    pub parent: Option<DefId>,
+    parent: Option<DefId>,
     /// What kind is this definition? (e.g. an `enum`, a `const`, an assoc. `fn`...)
-    pub kind: DefKind,
+    kind: DefKind,
 }
 
 use std::sync::{LazyLock, Mutex};
@@ -32,7 +32,7 @@ impl HasGlobal for DefIdInner {
 }
 
 /// An interned Rust `DefId`: a lighter version of [`hax_frontend_exporter::DefId`].
-pub type DefId = Interned<DefIdInner>;
+type DefId = Interned<DefIdInner>;
 
 /// An [`ExpliciDefId`] is a Rust [`DefId`] tagged withg some disambiguation metadata.
 ///
@@ -50,16 +50,16 @@ pub type DefId = Interned<DefIdInner>;
 ///
 /// Also, an [`ExplicitDefId`] always points to an item: an [`ExplicitDefId`] is never pointing to a crate alone.
 #[derive_group_for_ast]
-pub struct ExplicitDefId {
+struct ExplicitDefId {
     /// Is this `DefId` a constructor?
-    pub is_constructor: bool,
+    is_constructor: bool,
     /// The `DefId` itself
-    pub def_id: DefId,
+    def_id: DefId,
 }
 
 impl ExplicitDefId {
     /// Get the parent of an `ExplicitDefId`.
-    pub fn parent(&self) -> Option<Self> {
+    fn parent(&self) -> Option<Self> {
         let def_id = &self.def_id;
         let is_constructor = matches!(&def_id.kind, DefKind::Field);
         Some(Self {
@@ -69,12 +69,12 @@ impl ExplicitDefId {
     }
     /// Returns an iterator that yields `self`, then `self.parent()`, etc.
     /// This iterator is non-empty.
-    pub fn parents(&self) -> impl Iterator<Item = Self> {
+    fn parents(&self) -> impl Iterator<Item = Self> {
         std::iter::successors(Some(self.clone()), |id| id.parent())
     }
 
-    // TODO: move `names::generated` under `self`, then make this item private.
-    pub(crate) fn into_global_id_inner(&self) -> GlobalIdInner {
+    /// Helper to get a `GlobalIdInner` out of an `ExplicitDefId`.
+    fn into_global_id_inner(&self) -> GlobalIdInner {
         GlobalIdInner::Concrete(ConcreteId {
             def_id: self.clone(),
             moved: None,
@@ -109,11 +109,11 @@ pub enum ReservedSuffix {
 #[derive_group_for_ast]
 pub struct ConcreteId {
     /// The explicit `def_id`.
-    pub def_id: ExplicitDefId,
+    def_id: ExplicitDefId,
     /// A fresh module if this definition was moved to a fresh module.
-    pub moved: Option<FreshModule>,
+    moved: Option<FreshModule>,
     /// An optional suffix.
-    pub suffix: Option<ReservedSuffix>,
+    suffix: Option<ReservedSuffix>,
 }
 
 /// A global identifier in hax.
@@ -146,13 +146,13 @@ impl GlobalIdInner {
 
     /// Extract the raw `DefId` from a `GlobalId`.
     /// This should never be used for name printing.
-    pub fn def_id(&self) -> DefId {
+    fn def_id(&self) -> DefId {
         self.explicit_def_id().def_id
     }
 
     /// Extract the `ExplicitDefId` from a `GlobalId`.
     /// This should never be used for name printing.
-    pub fn explicit_def_id(&self) -> ExplicitDefId {
+    fn explicit_def_id(&self) -> ExplicitDefId {
         let (GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id)) = self;
         concrete_id.def_id.clone()
     }
