@@ -26,12 +26,12 @@ to do that is the following:
 ```{.rust .playable .lean-backend}
 #[hax_lib::lean::after("
 theorem square_spec (value: u8) :
-  ⦃ __requires (value) = pure true ⦄
-  (square value)
-  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  ⦃ Playground._.requires (value) = pure true ⦄
+  (${square} value)
+  ⦃ ⇓ result => Playground.__1.ensures value result = pure true ⦄
   := by
   mvcgen
-  simp [__requires, __ensures, square] at *
+  simp [Playground._.requires, Playground.__1.ensures, ${square}] at *
   intros
   rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
   bv_decide")]
@@ -45,7 +45,8 @@ The specification is extrinsic to the function, we state a theorem `square_spec`
 triple to specify properties on the output, assuming some other properties on the inputs. Here,
 we use the precondition and post-condition defined using the `hax_lib` macro, but we could write
 our specification entirely in the `square_spec` theorem. Here our post-condition is `true` which seems
-trivial, but the condition `__ensures value result = pure true` is false if `result` (and thus `__ensures value result`) 
+trivial, but the condition `Playground.__1.ensures value result = pure true` is false if `result` 
+(and thus `Playground.__1.ensures value result`) 
 is an error in the result monad. So this specification states that `square` should be panic-free. We also 
 have a small proof script applying a few tactics to try to prove our theorem. If we try running `lake build`
 after extracting this code, we get an error: 
@@ -89,12 +90,12 @@ We already added a pre-condition to specify panic-freedom but we can turn it int
 ```{.rust .playable .lean-backend}
 #[hax_lib::lean::after("
 theorem square_spec (value: u8) :
-  ⦃ __requires (value) = pure true ⦄
-  (square value)
-  ⦃ ⇓ result => __ensures value result = pure true ⦄
+  ⦃ Playground._.requires (value) = pure true ⦄
+  (${square} value)
+  ⦃ ⇓ result => Playground.__1.ensures value result = pure true ⦄
   := by
   mvcgen
-  simp [__requires, __ensures, square] at *
+  simp [Playground._.requires, Playground.__1.ensures, ${square}] at *
   intros
   rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
   bv_decide")]
