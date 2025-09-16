@@ -529,11 +529,6 @@ pub struct PathSegment<Kind = AnyKind> {
 }
 
 impl<K> PathSegment<K> {
-    /// Returns the underlying [`DefId`].
-    pub fn identifier(&self) -> &DefId {
-        &self.identifier
-    }
-
     /// Returns the payload of this path segment (named vs. unnamed and why).
     pub fn payload(&self) -> PathSegmentPayload {
         self.payload.clone()
