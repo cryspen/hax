@@ -71,7 +71,7 @@ pub trait Backend {
         modules
             .into_iter()
             .map(|(ident, items)| Module {
-                ident: ident.clone().into_concrete(),
+                ident: ident.into_concrete(),
                 items,
                 meta: Metadata {
                     span: Span::dummy(),

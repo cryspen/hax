@@ -973,7 +973,7 @@ pub enum ExprKind {
         /// The body of the loop.
         body: Expr,
         /// The kind of loop (e.g. `while`, `loop`, `for`...).
-        kind: LoopKind,
+        kind: Box<LoopKind>,
         /// An optional loop state, that makes explicit the state mutated by the
         /// loop.
         state: Option<LoopState>,

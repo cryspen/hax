@@ -9,7 +9,10 @@ use std::sync::LazyLock;
 
 use super::prelude::*;
 use crate::{
-    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+    ast::identifiers::global_id::{
+        GlobalIdInner,
+        view::{ConstructorKind, PathSegment, TypeDefKind},
+    },
     printer::pretty_ast::DebugJSON,
     resugarings::BinOp,
 };
@@ -101,14 +104,14 @@ impl RenderView for LeanPrinter {
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![Box::new(BinOp::new(&[
-            binops::add(),
-            binops::sub(),
-            binops::mul(),
-            binops::rem(),
-            binops::div(),
-            binops::shr(),
-            binops::logical_op_and(),
-            binops::logical_op_or(),
+            binops::add,
+            binops::sub,
+            binops::mul,
+            binops::rem,
+            binops::div,
+            binops::shr,
+            binops::logical_op_and,
+            binops::logical_op_or,
         ]))]
     }
 
@@ -161,8 +164,8 @@ impl LeanPrinter {
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
     /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
-        match id {
-            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
+        match id.get() {
+            GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id) => {
                 self.render_string(&concrete_id.view())
             }
         }
@@ -507,25 +510,18 @@ set_option linter.unusedVariables false
                         bounds_impls: _,
                         trait_: _,
                     } => {
-                        let symbol = if op == &binops::add() {
-                            "+?"
-                        } else if op == &binops::sub() {
-                            "-?"
-                        } else if op == &binops::mul() {
-                            "*?"
-                        } else if op == &binops::div() {
-                            "/?"
-                        } else if op == &binops::rem() {
-                            "%?"
-                        } else if op == &binops::shr() {
-                            ">>>?"
-                        } else if op == &binops::logical_op_and() {
-                            "&&?"
-                        } else if op == &binops::logical_op_or() {
-                            "||?"
-                        } else {
-                            unreachable!()
+                        let symbol = match *op {
+                            binops::add => "+?",
+                            binops::sub => "-?",
+                            binops::mul => "*?",
+                            binops::div => "/?",
+                            binops::rem => "%?",
+                            binops::shr => ">>>?",
+                            binops::logical_op_and => "&&?",
+                            binops::logical_op_or => "||?",
+                            _ => unreachable!(),
                         };
+
                         // TODO: This monad lifting should be handled by a phase/resugaring, see
                         // https://github.com/cryspen/hax/issues/1620
                         docs!["← ", lhs, softline!(), symbol, softline!(), rhs]
