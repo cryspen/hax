@@ -6,9 +6,10 @@
 //! It provides a bijection from the fields `krate`, `path`, and `kind` of `DefId` and `Repr`.
 //! The choice of `Repr` itself is irrelevant. Anything that produces compact JSON is good.
 
+use crate::interning::InternExtTrait;
 use hax_frontend_exporter::{DefKind, DefPathItem, DisambiguatedDefPathItem};
 
-use super::{DefId, ExplicitDefId};
+use super::{DefIdInner, ExplicitDefId};
 /// The compact reperesentation: a tuple (krate name, path, defkind, is_constructor)
 /// The path is a vector of tuples (DefPathItem, disambiguator).
 type Repr = (String, Vec<(DefPathItem, u32)>, DefKind, bool);
@@ -41,8 +42,8 @@ pub fn serialize(edid: &ExplicitDefId) -> String {
 pub fn deserialize(s: &str, parent: Option<ExplicitDefId>) -> ExplicitDefId {
     let (krate, path, kind, is_constructor): Repr = serde_json::from_str(s).unwrap();
     ExplicitDefId {
-        def_id: DefId {
-            parent: parent.map(|parent| Box::new(parent.def_id.clone())),
+        def_id: DefIdInner {
+            parent: parent.map(|parent| parent.def_id),
             krate,
             path: path
                 .into_iter()
@@ -52,7 +53,8 @@ pub fn deserialize(s: &str, parent: Option<ExplicitDefId>) -> ExplicitDefId {
                 })
                 .collect(),
             kind,
-        },
+        }
+        .intern(),
         is_constructor,
     }
 }
