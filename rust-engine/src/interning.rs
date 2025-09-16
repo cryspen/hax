@@ -119,11 +119,6 @@ impl<T: Eq + PartialEq + Send + HasGlobal + Clone + Debug + Hash> Debug for Inte
             .field("value", self.get())
             .finish()
     }
-
-    // fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-
-    //     // Debug::fmt((*self).get(), f)
-    // }
 }
 
 impl<T> Clone for Interned<T> {
@@ -230,7 +225,13 @@ impl<T: Hash + Eq + PartialEq + Clone + HasGlobal + Send> Interned<T> {
     /// If an equal value has been interned before, this returns the existing
     /// handle; otherwise it inserts the value into the global table.
     pub fn intern(value: &T) -> Self {
-        let mut table = T::interning_table().lock().unwrap();
+        // Invariant: the interning mutex is only locked here, and InterningTable::intern
+        // is panic-free (and does not invoke user code that may panic). Therefore, no
+        // panic can occur while the mutex is held, so the mutex cannot be poisoned.
+        // If this ever panics, our invariant was broken elsewhere.
+        let mut table = T::interning_table()
+            .lock()
+            .expect("interning table mutex poisoned");
         table.intern(value)
     }
 
