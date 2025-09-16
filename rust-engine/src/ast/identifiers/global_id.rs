@@ -5,6 +5,7 @@ use hax_rust_engine_macros::*;
 use crate::interning::{HasGlobal, InternExtTrait, Interned, InterningTable};
 
 pub mod compact_serialization;
+pub(crate) mod generated_names;
 pub mod view;
 
 /// A Rust `DefId`: a lighter version of [`hax_frontend_exporter::DefId`].

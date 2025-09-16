@@ -8,8 +8,8 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
     [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 642],
 ) = {
     crate::interning::InterningTable::new_with_values(|| {
+        use crate::ast::identifiers::global_id::compact_serialization::deserialize;
         use crate::ast::identifiers::global_id::ExplicitDefId;
-        use root::compact_serialization::deserialize;
         fn did_0() -> ExplicitDefId {
             deserialize(r##"["rust_primitives",[],"Mod",false]"##, None)
         }
