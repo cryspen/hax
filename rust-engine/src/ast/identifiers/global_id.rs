@@ -74,7 +74,7 @@ impl ExplicitDefId {
     }
 
     /// Helper to get a `GlobalIdInner` out of an `ExplicitDefId`.
-    fn into_global_id_inner(&self) -> GlobalIdInner {
+    fn into_global_id_inner(self) -> GlobalIdInner {
         GlobalIdInner::Concrete(ConcreteId {
             def_id: self.clone(),
             moved: None,
