@@ -9,10 +9,7 @@ use std::sync::LazyLock;
 
 use super::prelude::*;
 use crate::{
-    ast::identifiers::global_id::{
-        GlobalIdInner,
-        view::{ConstructorKind, PathSegment, TypeDefKind},
-    },
+    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
     printer::pretty_ast::DebugJSON,
     resugarings::BinOp,
 };
@@ -125,11 +122,8 @@ impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from_iter(
-            self.printer()
-                .render_strings(&module.ident.as_concrete().unwrap().view()),
-        )
-        .with_extension("lean")
+        camino::Utf8PathBuf::from_iter(self.printer().render_strings(&module.ident.view()))
+            .with_extension("lean")
     }
 }
 
@@ -164,11 +158,7 @@ impl LeanPrinter {
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
     /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
-        match id.get() {
-            GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id) => {
-                self.render_string(&concrete_id.view())
-            }
-        }
+        self.render_string(&id.view())
     }
 
     /// Escapes local identifiers (prefixing reserved keywords with an underscore).
@@ -187,13 +177,7 @@ impl LeanPrinter {
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
         let id = self
-            .render(
-                &id.as_concrete()
-                    // TODO: Should be ensured by the rendering engine; see
-                    // https://github.com/cryspen/hax/issues/1660
-                    .expect("Rendering a projector as a constructor")
-                    .view(),
-            )
+            .render(&id.view())
             .path
             .last()
             // TODO: Should be ensured by the rendering engine; see
