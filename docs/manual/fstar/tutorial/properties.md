@@ -132,7 +132,7 @@ proof itself are not relevant, at this stage, we only care about the
 statement. The proof will be completed manually in the proof
 assistant.
 
-```{.rust .playable}
+```{.rust .playable .expect-failure}
 # fn encrypt(plaintext: u32, key: u32) -> u32 {
 #     plaintext ^ key
 # }
