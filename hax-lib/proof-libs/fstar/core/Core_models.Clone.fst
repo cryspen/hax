@@ -1,6 +1,5 @@
 module Core_models.Clone
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
 
 class t_Clone (v_Self: Type0) = {

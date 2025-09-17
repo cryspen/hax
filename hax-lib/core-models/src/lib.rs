@@ -31,6 +31,8 @@
 pub mod borrow;
 #[path = "core/clone.rs"]
 pub mod clone;
+#[path = "core/cmp.rs"]
+pub mod cmp;
 #[path = "core/convert.rs"]
 pub mod convert;
 #[path = "core/default.rs"]

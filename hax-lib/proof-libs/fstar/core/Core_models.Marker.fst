@@ -1,14 +1,14 @@
 module Core_models.Marker
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
 
 class t_Copy (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_14156401398203956914:Core.Clone.t_Clone v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_15837849249852401974:Core_models.Clone.t_Clone
+  v_Self
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Copy v_Self|} -> i._super_14156401398203956914
+let _ = fun (v_Self:Type0) {|i: t_Copy v_Self|} -> i._super_15837849249852401974
 
 class t_Send (v_Self: Type0) = { __marker_trait_t_Send:Prims.unit }
 

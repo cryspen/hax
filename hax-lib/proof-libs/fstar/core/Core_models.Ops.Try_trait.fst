@@ -1,6 +1,5 @@
 module Core_models.Ops.Try_trait
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
 
 class t_FromResidual (v_Self: Type0) (v_R: Type0) = {

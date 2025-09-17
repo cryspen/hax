@@ -1,6 +1,5 @@
 module Core_models.Panicking
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
 
 assume
@@ -30,7 +29,7 @@ unfold
 let panic__panic_cold_explicit = panic__panic_cold_explicit'
 
 assume
-val panic_fmt': e_fmt: Core_models.Fmt.Rt.t_Argument
+val panic_fmt': e_fmt: Core_models.Fmt.t_Arguments
   -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 unfold

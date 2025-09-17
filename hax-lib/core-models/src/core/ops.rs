@@ -49,17 +49,17 @@ pub mod bit {
 }
 
 pub mod control_flow {
-    pub enum ControlFlow<C, B> {
+    pub enum ControlFlow<B, C> {
         Continue(C),
         Break(B),
     }
 }
 
 pub mod index {
-
-    trait Index {
+    #[hax_lib::fstar::before("open Rust_primitives.Integers")]
+    trait Index<Idx> {
         type Output;
-        fn index(&self, i: usize) -> &Self::Output;
+        fn index(&self, i: Idx) -> &Self::Output;
     }
 }
 
