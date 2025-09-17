@@ -114,7 +114,9 @@ module Make (FA : Features.T) = struct
     match fk with F16 -> F16 | F32 -> F32 | F64 -> F64 | F128 -> F128
 
   and dglobal_ident (gi : global_ident) : B.global_id =
-    let concrete c : B.global_id = B.Concrete (Concrete_ident.to_rust_ast c) in
+    let concrete c : B.global_id =
+      Types.Newtypeglobal_id (B.Concrete (Concrete_ident.to_rust_ast c))
+    in
     let of_name n = concrete (Concrete_ident.of_name ~value:true n) in
     match gi with
     | `Concrete c -> concrete c
@@ -125,10 +127,11 @@ module Make (FA : Features.T) = struct
     | `Primitive Cast -> of_name Rust_primitives__hax__cast_op
     | `Primitive (LogicalOp And) -> of_name Rust_primitives__hax__logical_op_and
     | `Primitive (LogicalOp Or) -> of_name Rust_primitives__hax__logical_op_or
-    | `Projector (`Concrete c) -> Projector (Concrete_ident.to_rust_ast c)
+    | `Projector (`Concrete c) ->
+        Types.Newtypeglobal_id (Projector (Concrete_ident.to_rust_ast c))
     | `Projector (`TupleField (nth, len)) ->
         let c = SpecialNames.tuple_field len nth in
-        Projector (Concrete_ident.to_rust_ast c)
+        Types.Newtypeglobal_id (Projector (Concrete_ident.to_rust_ast c))
 
   and dlocal_ident (li : local_ident) : B.local_id =
     Newtypelocal_id (Newtypesymbol li.name)

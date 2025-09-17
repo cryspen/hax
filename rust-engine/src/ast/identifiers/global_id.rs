@@ -118,7 +118,7 @@ pub struct ConcreteId {
 
 /// A global identifier in hax.
 #[derive_group_for_ast]
-pub enum GlobalIdInner {
+enum GlobalIdInner {
     /// A concrete identifier that exists in Rust.
     Concrete(ConcreteId),
     /// A projector.
@@ -126,7 +126,54 @@ pub enum GlobalIdInner {
 }
 
 /// A interned global identifier in hax.
-pub type GlobalId = Interned<GlobalIdInner>;
+#[derive_group_for_ast]
+#[derive(Copy)]
+pub struct GlobalId(Interned<GlobalIdInner>);
+
+impl GlobalId {
+    /// Extracts the Crate info
+    pub fn krate(self) -> String {
+        self.0.get().krate()
+    }
+
+    /// Tests if the raw output is reduced to "_". Should be used only for
+    /// testing. See https://github.com/cryspen/hax/issues/1599
+    pub fn is_empty(self) -> bool {
+        self.0.get().is_empty()
+    }
+
+    /// Raw printing of identifier separated by underscore. Should be used
+    /// only for testing. See https://github.com/cryspen/hax/issues/1599
+    pub fn to_debug_string(self) -> String {
+        self.0.get().to_debug_string()
+    }
+
+    /// Returns true if the underlying identifier is a constructor
+    pub fn is_constructor(self) -> bool {
+        self.0.get().is_constructor()
+    }
+
+    /// Returns true if the underlying identifier is a projector
+    pub fn is_projector(self) -> bool {
+        self.0.get().is_projector()
+    }
+
+    /// Renders a view of the concrete identifier.
+    pub fn view(self) -> view::View {
+        self.0.get().view()
+    }
+
+    /// Returns `true` if self is a tuple constructor or a tuple type.
+    // TODO: this is a hack, see issue https://github.com/cryspen/hax/issues/1671.
+    pub fn is_tuple(self) -> bool {
+        self.0.get().is_tuple()
+    }
+
+    /// Gets the closest mod-only parent.
+    pub fn mod_only_closest_parent(self) -> GlobalId {
+        self.0.get().mod_only_closest_parent()
+    }
+}
 
 impl GlobalIdInner {
     /// Extracts the Crate info
@@ -187,21 +234,6 @@ impl GlobalIdInner {
         }
     }
 
-    /// Turns a `GlobalId` into a `ConcreteId`: returns `None` on projectors.
-    pub fn as_concrete(&self) -> Option<ConcreteId> {
-        match self {
-            GlobalIdInner::Concrete(concrete_id) => Some(concrete_id.clone()),
-            _ => None,
-        }
-    }
-    /// Turns a `GlobalId` into a projector `ConcreteId`: returns `Some` only on projectors.
-    pub fn as_projector(&self) -> Option<ConcreteId> {
-        match self {
-            GlobalIdInner::Projector(concrete_id) => Some(concrete_id.clone()),
-            _ => None,
-        }
-    }
-
     /// Returns true if the underlying identifier is a constructor
     pub fn is_constructor(&self) -> bool {
         match self {
@@ -213,10 +245,13 @@ impl GlobalIdInner {
 
     /// Returns true if the underlying identifier is a projector
     pub fn is_projector(&self) -> bool {
-        match self {
-            GlobalIdInner::Projector(_) => true,
-            GlobalIdInner::Concrete(_) => false,
-        }
+        matches!(self, GlobalIdInner::Projector(_))
+    }
+
+    /// Renders a view of the concrete identifier.
+    pub fn view(&self) -> view::View {
+        let (GlobalIdInner::Concrete(id) | GlobalIdInner::Projector(id)) = self;
+        id.def_id.clone().into()
     }
 
     /// Returns `true` if self is a tuple constructor or a tuple type.
@@ -225,6 +260,12 @@ impl GlobalIdInner {
         self.to_debug_string()
             .strip_prefix("hax_Tuple")
             .is_some_and(|value| value.parse::<usize>().is_ok())
+    }
+
+    /// Gets the closest mod-only parent.
+    pub fn mod_only_closest_parent(&self) -> GlobalId {
+        let (GlobalIdInner::Concrete(id) | GlobalIdInner::Projector(id)) = self;
+        id.mod_only_closest_parent().into_concrete()
     }
 }
 
@@ -252,13 +293,13 @@ impl ConcreteId {
 
     /// Turns a ConcreteId into a GlobalId
     pub fn into_concrete(self) -> GlobalId {
-        GlobalIdInner::Concrete(self).intern()
+        GlobalId(GlobalIdInner::Concrete(self).intern())
     }
 }
 
 impl PartialEq<DefId> for GlobalId {
     fn eq(&self, other: &DefId) -> bool {
-        if let GlobalIdInner::Concrete(concrete) = self.get() {
+        if let GlobalIdInner::Concrete(concrete) = self.0.get() {
             &concrete.def_id.def_id == other
         } else {
             false

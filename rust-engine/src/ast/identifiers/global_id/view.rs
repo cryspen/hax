@@ -329,7 +329,7 @@ mod rustc_invariant_handling {
 
     impl ErrorDummyValue for DefId {
         fn error_dummy_value(_: Permit) -> Self {
-            names::rust_primitives::hax::failure.get().def_id()
+            names::rust_primitives::hax::failure.0.get().def_id()
         }
     }
 
