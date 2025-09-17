@@ -6,6 +6,8 @@ async function get_latest_hax_main() {
     return commits.match(/(.*);refs\/remotes\/origin\/main;/).pop();
 }
 
+const HAX_PLAYGROUND_FORCED_VERSION = false;
+
 // Call into the API of the hax playground
 async function call_playground(result_block, query, text, parent_node) {
     let raw_query = async (API_URL, hax_version, query, files, on_line_received) => {
@@ -36,7 +38,7 @@ async function call_playground(result_block, query, text, parent_node) {
     let first = true;
     let logs = document.createElement('div');
     logs.style = 'font-size: 80%; background: #00000010; padding: 3px; white-space:pre-wrap;';
-    let hax_version = await get_latest_hax_main();
+    let hax_version = HAX_PLAYGROUND_FORCED_VERSION || await get_latest_hax_main();
     let lean_backend = query.startsWith('lean');
     raw_query(
         PLAYGROUND_URL,
