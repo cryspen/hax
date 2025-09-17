@@ -2,7 +2,7 @@
 
 pub struct Error;
 
-type Result = super::result::Result<(), Error>;
+pub type Result = super::result::Result<(), Error>;
 
 pub struct Formatter;
 

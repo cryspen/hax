@@ -37,7 +37,7 @@ impl<T, E> Result<T, E> {
     {
         match self {
             Ok(t) => f.call_once(t),
-            Err(e) => default,
+            Err(_e) => default,
         }
     }
     pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U

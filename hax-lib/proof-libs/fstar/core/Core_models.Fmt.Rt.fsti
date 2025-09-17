@@ -1,36 +1,44 @@
 module Core_models.Fmt.Rt
-open Rust_primitives
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open Core
+open FStar.Mul
 
-val t_Argument: Type0
-val impl_1__new_display (#t:Type0) (x: t): t_Argument
-val impl_1__new_debug (#t:Type0) (x: t): t_Argument
-val impl_4__new_v1_formatted (#t:Type0) (x: t) : t_Argument
-val impl_1__new_binary (#t:Type0) (x: t) : t_Argument
-val impl_1__new_lower_hex (#t:Type0) (x: t) : t_Argument
-val impl__new_lower_hex (#t:Type0) (x: t) : t_Argument
-val impl_1__new_const (#t:Type0) (#u:Type0) (xconst: t) (yconst: u): t_Argument
-val impl_1__new_v1 (#t1:Type0) (#t2:Type0) (#t3:Type0) (#t4:Type0) 
-  (x1: t1) (x2: t2) (x3: t3) (x4: t4) : t_Argument
-val impl_1__new_v1_formatted (#t1:Type0) (#t2:Type0) (#t3:Type0) 
-  (x1: t1) (x2: t2) (x3: t3) : t_Argument
-val impl__new_display (#t:Type0) (x: t): t_Argument
-val impl__new_debug (#t:Type0) (x: t): t_Argument
+type t_Argument = | Argument : t_Argument
 
-val impl_1__none : unit -> t_Array Core_models.Fmt.Rt.t_Argument (MkInt 0)
+val impl_Argument__new_display (#v_T: Type0) (x: v_T)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__new_debug (#v_T: Type0) (x: v_T)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__new_v1_formatted (#v_T: Type0) (x: v_T)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__new_binary (#v_T: Type0) (x: v_T)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__new_lower_hex (#v_T: Type0) (x: v_T)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__new_const (#v_T #v_U: Type0) (x: v_T) (y: v_U)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__new_v1 (#v_T #v_U #v_V #v_W: Type0) (x: v_T) (y: v_U) (z: v_V) (t: v_W)
+    : Prims.Pure t_Argument Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Argument__none: Prims.unit
+  -> Prims.Pure (t_Array t_Argument (mk_usize 0)) Prims.l_True (fun _ -> Prims.l_True)
 
 type t_Count =
-  | Count_Is : int_t U16 -> t_Count
-  | Count_Param : int_t U16 -> t_Count
+  | Count_Is : u16 -> t_Count
+  | Count_Param : u16 -> t_Count
   | Count_Implied : t_Count
 
-class t_Placeholder = {
-  f_position: usize;
-  f_flags: u32;
-  f_precision: t_Count;
-  f_width: t_Count
+type t_Placeholder = {
+  f_position:usize;
+  f_flags:u32;
+  f_precision:t_Count;
+  f_width:t_Count
 }
-val impl_Placeholder__new : usize -> (int_t U32) -> t_Count -> t_Count -> t_Placeholder
 
-type t_UnsafeArg
-val impl_UnsafeArg__new : unit -> t_UnsafeArg
-
+type t_UnsafeArg = | UnsafeArg : t_UnsafeArg

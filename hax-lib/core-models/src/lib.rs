@@ -27,10 +27,28 @@
 
 #![allow(dead_code)]
 
+#[path = "core/borrow.rs"]
+pub mod borrow;
+#[path = "core/clone.rs"]
+pub mod clone;
+#[path = "core/convert.rs"]
+pub mod convert;
 #[path = "core/default.rs"]
 pub mod default;
+#[path = "core/error.rs"]
+pub mod error;
 #[path = "core/fmt.rs"]
 pub mod fmt;
+#[path = "core/hash.rs"]
+pub mod hash;
+#[path = "core/hint.rs"]
+pub mod hint;
+#[path = "core/marker.rs"]
+pub mod marker;
+#[path = "core/mem.rs"]
+pub mod mem;
+#[path = "core/num/mod.rs"]
+pub mod num;
 #[path = "core/ops.rs"]
 pub mod ops;
 #[path = "core/option.rs"]
