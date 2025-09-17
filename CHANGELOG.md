@@ -32,6 +32,7 @@ Changes to hax-lib:
 
 Miscellaneous:
  - A lean tutorial has been added to the hax website (#1626)
+ - Add end-to-end tests for the website (#1690)
 
 ## 0.3.4
 

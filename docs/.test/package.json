@@ -1,0 +1,12 @@
+{
+    "name": "docs-ci-checks",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "test": "playwright test --reporter=list"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.46.0",
+        "http-server": "^14.1.1"
+    }
+}

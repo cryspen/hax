@@ -153,7 +153,16 @@
           serve-rustc-docs = {
             type = "app";
             program = "${pkgs.writeScript "serve-rustc-docs" ''
+              #!${pkgs.bash}/bin/bash
               cd ${rustc-docs}/share/doc/rust/html/rustc
+              ${pkgs.python3}/bin/python -m http.server "$@"
+            ''}";
+          };
+          serve-docs = {
+            type = "app";
+            program = "${pkgs.writeScript "serve-docs" ''
+              #!${pkgs.bash}/bin/bash
+              cd ${packages.docs}
               ${pkgs.python3}/bin/python -m http.server "$@"
             ''}";
           };

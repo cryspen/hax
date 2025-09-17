@@ -36,7 +36,7 @@ Note:
       - [`jq`](https://jqlang.github.io/jq/)
 
 2. Clone this repo: `git clone git@github.com:hacspec/hax.git && cd hax`
-3. Run the [setup.sh](./setup.sh) script: `./setup.sh`.
+3. Run the `setup.sh` script: `./setup.sh`.
 4. Run `cargo-hax --help`
 
 ### Nix

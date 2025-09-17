@@ -23,7 +23,7 @@ panic-free. Indeed, our encoding of Rust code in Lean wraps everything in a resu
 functions that panic return an error in this monad. To try to prove panic-freedom, we have to 
 specify that the result of `square` is expected not to be an error in this result type. A way
 to do that is the following:
-```{.rust .playable .lean-backend}
+```{.rust .playable .lean-backend .expect-failure}
 #[hax_lib::lean::after("
 theorem square_spec (value: u8) :
   ⦃ Playground._.requires (value) = pure true ⦄
@@ -120,11 +120,5 @@ Another source of panics is indexing. Indexing in an array, a slice or
 a vector is a partial operation: the index might be out of range.
 
 In the example folder of hax, you can find the [`chacha20`
-example](https://github.com/hacspec/hax/blob/main/examples/chacha20/src/lib.rs)
+example](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
 that makes use of pre-conditions to prove panic freedom.
-
-Another solution for safe indexing is to use the [newtype index
-pattern](https://matklad.github.io/2018/06/04/newtype-index-pattern.html),
-which is [also supported by
-hax](https://github.com/hacspec/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
-
