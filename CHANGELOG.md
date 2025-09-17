@@ -15,6 +15,7 @@ Changes to the Rust Engine:
    expressions, pattern-matching) (#1623)
  - Update name rendering infrastructure in the Lean backend (#1623, #1624)
  - Global identifiers are now interned (#1689)
+ - Global identifiers are encapsulated properly, and provide easy destructuring as tuple identifiers (#1693)
 
 Changes to the frontend:
 - Add an explicit `Self: Trait` clause to trait methods and consts (#1559)
