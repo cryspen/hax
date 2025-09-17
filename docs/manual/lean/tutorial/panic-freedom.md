@@ -120,5 +120,5 @@ Another source of panics is indexing. Indexing in an array, a slice or
 a vector is a partial operation: the index might be out of range.
 
 In the example folder of hax, you can find the [`chacha20`
-example](https://github.com/hacspec/hax/blob/main/examples/chacha20/src/lib.rs)
+example](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
 that makes use of pre-conditions to prove panic freedom.
