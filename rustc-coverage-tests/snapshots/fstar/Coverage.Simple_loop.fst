@@ -26,7 +26,7 @@ let main (_: Prims.unit) : (i32 & Prims.unit) =
       countdown
     else countdown
   in
-  Rust_primitives.Hax.failure "(FunctionalizeLoops) something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/933.\nPlease upvote or comment this issue if you see this error message.\nUnhandled loop kind"
+  Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/933.\nPlease upvote or comment this issue if you see this error message.\nUnhandled loop kind\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/933.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
     "{\n (loop {\n |countdown| {\n (if rust_primitives::hax::machine_int::eq(countdown, 0) {\n core::ops::control_flow::ControlFlow_Break(Tuple2(Tuple0, countdown))\n } else {\n core::ops::control_flow::ControlF..."
   ,
   ()
