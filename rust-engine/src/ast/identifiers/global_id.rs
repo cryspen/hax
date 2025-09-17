@@ -1,5 +1,5 @@
 //! The global identifiers of hax.
-use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
+use hax_frontend_exporter::{DefKind, DefPathItem, DisambiguatedDefPathItem};
 use hax_rust_engine_macros::*;
 
 use crate::interning::{HasGlobal, InternExtTrait, Interned, InterningTable};
@@ -22,7 +22,11 @@ struct DefIdInner {
     kind: DefKind,
 }
 
-use std::sync::{LazyLock, Mutex};
+use std::{
+    cell::{LazyCell, RefCell},
+    collections::HashMap,
+    sync::{LazyLock, Mutex},
+};
 impl HasGlobal for DefIdInner {
     fn interning_table() -> &'static Mutex<InterningTable<Self>> {
         static TABLE: LazyLock<Mutex<InterningTable<DefIdInner>>> =
@@ -122,7 +126,98 @@ enum GlobalIdInner {
     /// A concrete identifier that exists in Rust.
     Concrete(ConcreteId),
     /// A projector.
-    Projector(ConcreteId),
+    Tuple(TupleId),
+}
+
+#[derive_group_for_ast]
+#[derive(Copy)]
+/// Represents tuple-related identifier in Rust.
+///
+/// Since Rust tuples do not have user-defined names, this type is used to
+/// represent synthesized identifiers for tuple types, their constructors, and
+/// fields. This is necessary in cases where we need to refer to these
+/// components in a structured and identifiable way.
+///
+/// For ergnomic purposes, `TupleId` can be transformed into `ConcreteId`s.
+/// After such a conversion, we loose structure, but we end up with a standard
+/// concrete identifier, which can be printed in a generic way.
+/// See [`ConcreteId::from_global_id`].
+pub enum TupleId {
+    /// Represents a tuple type with the given number of elements.
+    ///
+    /// For example, a tuple like `(i32, bool, String)` would have `length = 3`.
+    Type {
+        /// Number of elements in the tuple.
+        length: usize,
+    },
+
+    /// Represents the constructor function for a tuple with the given arity.
+    ///
+    /// This refers to the tuple expression itself (e.g., `(x, y, z)`), which constructs
+    /// a value of the tuple type.
+    Constructor {
+        /// Number of elements in the tuple.
+        length: usize,
+    },
+
+    /// Represents a field within a tuple, addressed by position.
+    ///
+    /// For instance, accessing `.0` or `.1` on a tuple corresponds to a specific field.
+    Field {
+        /// Number of elements in the tuple.
+        length: usize,
+        /// Index of the field (zero-based).
+        field: usize,
+    },
+}
+
+impl From<TupleId> for GlobalId {
+    fn from(tuple_id: TupleId) -> Self {
+        Self(GlobalIdInner::Tuple(tuple_id).intern())
+    }
+}
+
+impl From<TupleId> for ConcreteId {
+    fn from(value: TupleId) -> Self {
+        fn patch_def_id(template: GlobalId, length: usize, field: usize) -> ConcreteId {
+            let GlobalIdInner::Concrete(mut concrete_id) = template.0.get().clone() else {
+                panic!()
+            };
+            fn inner(did: &mut DefIdInner, length: usize, field: usize) {
+                for DisambiguatedDefPathItem { data, .. } in &mut did.path {
+                    // Patch field
+                    if let DefPathItem::ValueNs(s) = data
+                        && s == "1"
+                    {
+                        *s = field.to_string()
+                    }
+                    // Patch constructor / type name
+                    if let DefPathItem::TypeNs(s) = data
+                        && s.starts_with("Tuple")
+                    {
+                        *s = format!("Tuple{length}")
+                    }
+                }
+                if let Some(parent) = did.parent {
+                    let mut parent = parent.get().clone();
+                    inner(&mut parent, length, field);
+                    did.parent = Some(parent.intern());
+                }
+            }
+            let mut did = concrete_id.def_id.def_id.get().clone();
+            inner(&mut did, length, field);
+            concrete_id.def_id.def_id = did.intern();
+            concrete_id
+        }
+
+        use crate::names::rust_primitives::hax;
+
+        match value {
+            TupleId::Type { length } => patch_def_id(hax::Tuple2, length, 0),
+            TupleId::Constructor { length } => patch_def_id(hax::Tuple2::Constructor, length, 0),
+            TupleId::Field { length, field } => patch_def_id(hax::Tuple2::_1, length, field),
+        }
+    }
 }
 
 /// A interned global identifier in hax.
@@ -132,20 +227,28 @@ pub struct GlobalId(Interned<GlobalIdInner>);
 
 impl GlobalId {
     /// Extracts the Crate info
-    pub fn krate(self) -> String {
-        self.0.get().krate()
+    pub fn krate(self) -> &'static str {
+        &ConcreteId::from_global_id(self).def_id.def_id.krate
     }
 
-    /// Tests if the raw output is reduced to "_". Should be used only for
-    /// testing. See https://github.com/cryspen/hax/issues/1599
-    pub fn is_empty(self) -> bool {
-        self.0.get().is_empty()
+    /// Returns true if this global identifier refers to a anonymous constant item.
+    /// TODO: drop this function. No logic should be derived from this.
+    pub fn is_anonymous_const(self) -> bool {
+        let def_id = self.0.get().def_id();
+        let Some(DisambiguatedDefPathItem {
+            data: DefPathItem::ValueNs(s),
+            ..
+        }) = def_id.path.last()
+        else {
+            return false;
+        };
+        matches!(self.0.get().def_id().kind, DefKind::Const) && s == "_"
     }
 
     /// Raw printing of identifier separated by underscore. Should be used
     /// only for testing. See https://github.com/cryspen/hax/issues/1599
     pub fn to_debug_string(self) -> String {
-        self.0.get().to_debug_string()
+        ConcreteId::from_global_id(self).to_debug_string()
     }
 
     /// Returns true if the underlying identifier is a constructor
@@ -160,123 +263,70 @@ impl GlobalId {
 
     /// Renders a view of the concrete identifier.
     pub fn view(self) -> view::View {
-        self.0.get().view()
+        ConcreteId::from_global_id(self).view()
     }
 
-    /// Returns `true` if self is a tuple constructor or a tuple type.
-    // TODO: this is a hack, see issue https://github.com/cryspen/hax/issues/1671.
-    pub fn is_tuple(self) -> bool {
-        self.0.get().is_tuple()
+    /// Returns a tuple identifier if `self` is indeed a tuple.
+    pub fn expect_tuple(self) -> Option<TupleId> {
+        match self.0.get() {
+            GlobalIdInner::Concrete(..) => None,
+            GlobalIdInner::Tuple(tuple_id) => Some(*tuple_id),
+        }
     }
 
     /// Gets the closest mod-only parent.
-    pub fn mod_only_closest_parent(self) -> GlobalId {
-        self.0.get().mod_only_closest_parent()
+    pub fn mod_only_closest_parent(self) -> Self {
+        let concrete_id = ConcreteId::from_global_id(self).mod_only_closest_parent();
+        Self(GlobalIdInner::Concrete(concrete_id).intern())
     }
 }
 
 impl GlobalIdInner {
-    /// Extracts the Crate info
-    pub fn krate(&self) -> String {
-        match self {
-            GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id) => {
-                concrete_id.def_id.def_id.krate.clone()
-            }
-        }
-    }
-
-    /// Tests if the raw output is reduced to "_". Should be used only for
-    /// testing. See https://github.com/cryspen/hax/issues/1599
-    pub fn is_empty(&self) -> bool {
-        self.to_debug_string() == "_"
-    }
-
     /// Extract the raw `DefId` from a `GlobalId`.
     /// This should never be used for name printing.
     fn def_id(&self) -> DefId {
-        self.explicit_def_id().def_id
+        ConcreteId::from_global_id(GlobalId(self.intern()))
+            .def_id
+            .def_id
     }
 
     /// Extract the `ExplicitDefId` from a `GlobalId`.
-    /// This should never be used for name printing.
-    fn explicit_def_id(&self) -> ExplicitDefId {
-        let (GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id)) = self;
-        concrete_id.def_id.clone()
-    }
-
-    /// Raw printing of identifier separated by underscore. Should be used
-    /// only for testing. See https://github.com/cryspen/hax/issues/1599
-    pub fn to_debug_string(&self) -> String {
+    fn explicit_def_id(&self) -> Option<ExplicitDefId> {
         match self {
-            GlobalIdInner::Concrete(concrete_id) => concrete_id
-                .def_id
-                .def_id
-                .path
-                .iter()
-                .map(|def| {
-                    let data = match def.clone().data {
-                        hax_frontend_exporter::DefPathItem::ValueNs(s)
-                        | hax_frontend_exporter::DefPathItem::MacroNs(s)
-                        | hax_frontend_exporter::DefPathItem::TypeNs(s) => s.clone(),
-                        hax_frontend_exporter::DefPathItem::Impl => "impl".to_string(),
-                        other => unimplemented!("{other:?}"),
-                    };
-                    if def.disambiguator != 0 && !data.is_empty() && data != "_" {
-                        // Don't print disambiguator of empty data
-                        format!("_{}_{}", def.disambiguator, data)
-                    } else {
-                        data
-                    }
-                })
-                .collect::<Vec<String>>()
-                .join("_"),
-            GlobalIdInner::Projector(_concrete_id) => todo!(),
+            GlobalIdInner::Concrete(concrete_id) => Some(concrete_id.def_id.clone()),
+            GlobalIdInner::Tuple(_) => None,
         }
     }
 
     /// Returns true if the underlying identifier is a constructor
     pub fn is_constructor(&self) -> bool {
         match self {
-            GlobalIdInner::Concrete(concrete_id) | GlobalIdInner::Projector(concrete_id) => {
-                concrete_id.def_id.is_constructor
-            }
+            GlobalIdInner::Concrete(concrete_id) => concrete_id.def_id.is_constructor,
+            GlobalIdInner::Tuple(TupleId::Constructor { .. }) => true,
+            _ => false,
         }
     }
 
     /// Returns true if the underlying identifier is a projector
     pub fn is_projector(&self) -> bool {
-        matches!(self, GlobalIdInner::Projector(_))
-    }
-
-    /// Renders a view of the concrete identifier.
-    pub fn view(&self) -> view::View {
-        let (GlobalIdInner::Concrete(id) | GlobalIdInner::Projector(id)) = self;
-        id.def_id.clone().into()
-    }
-
-    /// Returns `true` if self is a tuple constructor or a tuple type.
-    // TODO: this is a hack, see issue https://github.com/cryspen/hax/issues/1671.
-    pub fn is_tuple(&self) -> bool {
-        self.to_debug_string()
-            .strip_prefix("hax_Tuple")
-            .is_some_and(|value| value.parse::<usize>().is_ok())
-    }
-
-    /// Gets the closest mod-only parent.
-    pub fn mod_only_closest_parent(&self) -> GlobalId {
-        let (GlobalIdInner::Concrete(id) | GlobalIdInner::Projector(id)) = self;
-        id.mod_only_closest_parent().into_concrete()
+        match self {
+            GlobalIdInner::Concrete(concrete_id) => {
+                matches!(concrete_id.def_id.def_id.get().kind, DefKind::Field)
+            }
+            GlobalIdInner::Tuple(TupleId::Field { .. }) => true,
+            _ => false,
+        }
     }
 }
 
 impl ConcreteId {
     /// Renders a view of the concrete identifier.
-    pub fn view(&self) -> view::View {
+    fn view(&self) -> view::View {
         self.def_id.clone().into()
     }
 
     /// Gets the closest mod-only parent.
-    pub fn mod_only_closest_parent(&self) -> Self {
+    fn mod_only_closest_parent(&self) -> Self {
         let mut parents = self.def_id.parents().collect::<Vec<_>>();
         parents.reverse();
         let def_id = parents
@@ -291,9 +341,54 @@ impl ConcreteId {
         }
     }
 
-    /// Turns a ConcreteId into a GlobalId
-    pub fn into_concrete(self) -> GlobalId {
-        GlobalId(GlobalIdInner::Concrete(self).intern())
+    /// Get a static reference to a `ConcreteId` out of a `GlobalId`.
+    /// When a tuple is encountered, the tuple is rendered into a proper Rust name.
+    /// This function is memoized, so that we don't recompute Rust names for tuples all the time.
+    fn from_global_id(value: GlobalId) -> &'static ConcreteId {
+        thread_local! {
+            static MEMO: LazyCell<RefCell<HashMap<GlobalId, &'static ConcreteId>>> =
+                LazyCell::new(|| RefCell::new(HashMap::new()));
+        }
+
+        MEMO.with(|memo| {
+            let mut memo = memo.borrow_mut();
+            let reference: &'static ConcreteId =
+                memo.entry(value).or_insert_with(|| match value.0.get() {
+                    GlobalIdInner::Concrete(concrete_id) => concrete_id,
+                    GlobalIdInner::Tuple(tuple_id) => {
+                        match GlobalIdInner::Concrete((*tuple_id).into()).intern().get() {
+                            GlobalIdInner::Concrete(concrete_id) => concrete_id,
+                            GlobalIdInner::Tuple(_) => unreachable!(),
+                        }
+                    }
+                });
+            reference
+        })
+    }
+
+    fn to_debug_string(&self) -> String {
+        self.def_id
+            .def_id
+            .path
+            .iter()
+            .map(|def| {
+                let data = match def.clone().data {
+                    DefPathItem::ValueNs(s) | DefPathItem::MacroNs(s) | DefPathItem::TypeNs(s) => {
+                        s.clone()
+                    }
+                    DefPathItem::Impl => "impl".to_string(),
+                    other => unimplemented!("{other:?}"),
+                };
+                // TODO: `data.is_empty()` should always be false
+                if def.disambiguator != 0 && !data.is_empty() && data != "_" {
+                    // Don't print disambiguator of empty data
+                    format!("_{}_{}", def.disambiguator, data)
+                } else {
+                    data
+                }
+            })
+            .collect::<Vec<String>>()
+            .join("_")
     }
 }
 

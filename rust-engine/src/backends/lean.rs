@@ -140,7 +140,7 @@ impl LeanPrinter {
                 body: _,
                 params: _,
                 safety: _,
-            } if name.is_empty() => false,
+            } if name.is_anonymous_const() => false,
             // Other unprintable items
             ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
             // Printable items

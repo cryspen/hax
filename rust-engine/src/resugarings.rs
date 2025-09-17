@@ -118,7 +118,7 @@ impl AstVisitorMut for Tuples {
             ExprKind::GlobalId(constructor) => (constructor, &[][..]),
             _ => return,
         };
-        if constructor.is_tuple() {
+        if constructor.expect_tuple().is_some() {
             let args = fields.iter().map(|(_, e)| e).cloned().collect();
             *x = ExprKind::Resugared(ResugaredExprKind::Tuple(args))
         }
@@ -127,7 +127,7 @@ impl AstVisitorMut for Tuples {
         let TyKind::App { head, args } = x else {
             return;
         };
-        if head.is_tuple() {
+        if head.expect_tuple().is_some() {
             let Some(args) = args
                 .iter()
                 .map(GenericValue::expect_ty)
