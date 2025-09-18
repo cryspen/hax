@@ -66,7 +66,7 @@ pub mod codegen {
         use crate::ast::visitors::*;
         impl AstVisitor for DefIdCollector {
             fn visit_global_id(&mut self, x: &GlobalId) {
-                let mut current = Some(x.explicit_def_id());
+                let mut current = x.0.explicit_def_id();
                 while let Some(def_id) = current {
                     self.0.insert(def_id.clone());
                     current = def_id.parent();
@@ -248,7 +248,19 @@ pub mod codegen {
                 Some(node)
             }
             /// Render the module tree as a string
-            fn render(self, indexes: &HashMap<ExplicitDefId, usize>) -> String {
+            fn render(self, path: String, indexes: &HashMap<ExplicitDefId, usize>) -> String {
+                /// Computes the visibility restriction for a given path.
+                fn restriction(path: &str) -> &'static str {
+                    // Tuples are encoded directly in `GlobalIdInner::Tuple`.
+                    // The names here exist so that tuple identifiers can be handled in the exact same way as other identifiers.
+                    // But the canonical representation of tuples is not `names::rust_primitives::hax::Tuple*`.
+                    // Whence this visibility restriction.
+                    if path.starts_with("::rust_primitives::hax::Tuple") {
+                        "(in crate::ast::identifiers::global_id)"
+                    } else {
+                        ""
+                    }
+                }
                 let Self {
                     submodules,
                     definitions,
@@ -258,7 +270,12 @@ pub mod codegen {
                     .into_iter()
                     .sorted_by(|(a, _), (b, _)| a.cmp(b))
                     .map(|(name, contents)| {
-                        format!(r###"pub mod {name} {{ {} }}"###, contents.render(indexes))
+                        let path = format!("{path}::{name}");
+                        let restriction = restriction(&path);
+                        format!(
+                            r###"pub{restriction} mod {name} {{ {} }}"###,
+                            contents.render(path, indexes)
+                        )
                     });
                 let definitions = definitions
                     .into_iter()
@@ -266,9 +283,10 @@ pub mod codegen {
                     .map(|(name, def_id)| {
                         let docstring = docstring(&def_id);
                         let index = indexes.get(&def_id).unwrap();
+                        let restriction = restriction(&format!("{path}::{name}"));
                         format!(r###"
                             #[doc = r##"{docstring}"##]
-                            pub const {name}: crate::ast::identifiers::global_id::GlobalId = root::INTERNED_GLOBAL_IDS[{index}];
+                            pub{restriction} const {name}: crate::ast::identifiers::global_id::GlobalId = crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[{index}]);
                         "###)
                     });
                 let docstring = attached_def_id
@@ -290,7 +308,7 @@ pub mod codegen {
             .map(|(n, def_id)| (def_id, n))
             .collect::<Vec<_>>();
         let indexes = HashMap::from_iter(enumerated_def_ids.iter().cloned());
-        let tree = Module::new(def_ids).render(&indexes);
+        let tree = Module::new(def_ids).render(String::new(), &indexes);
         let functions = {
             enumerated_def_ids.iter().map(|(did, i)| {
                 let serialized = compact_serialization::serialize(did);

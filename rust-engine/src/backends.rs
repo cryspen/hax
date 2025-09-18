@@ -63,15 +63,13 @@ pub trait Backend {
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
         let mut modules: HashMap<_, Vec<_>> = HashMap::new();
         for item in items {
-            let concrete_ident = item.ident.as_concrete().unwrap();
-            let module_ident = concrete_ident.mod_only_closest_parent();
-
+            let module_ident = item.ident.mod_only_closest_parent();
             modules.entry(module_ident).or_default().push(item);
         }
         modules
             .into_iter()
             .map(|(ident, items)| Module {
-                ident: ident.into_concrete(),
+                ident,
                 items,
                 meta: Metadata {
                     span: Span::dummy(),
