@@ -204,6 +204,10 @@ instance : Coe usize Nat where
   coe x := x.toNat
 
 @[simp]
+instance : Coe Nat u32 where
+  coe n := UInt32.ofNat n
+
+@[simp]
 instance : Coe i32 Nat where
   coe x := x.toNatClampNeg
 
@@ -274,7 +278,7 @@ def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
 
 end Rust_primitives.Hax.Machine_int
 
-@[simp]
+@[simp, spec]
 def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 
@@ -482,12 +486,12 @@ def Impl.unwrap (α: Type) (β:Type) (x: Result α β) :=
 @[spec]
 theorem Impl.unwrap.spec {α β} (x: Result α β) v :
   x = Result.Ok v →
-  ⦃ True ⦄
+  ⦃ ⌜ True ⌝ ⦄
   (Impl.unwrap α β x)
-  ⦃ ⇓ r => r = v ⦄ := by
+  ⦃ ⇓ r => ⌜ r = v ⌝ ⦄
+  := by
   intros
-  mvcgen [Impl.unwrap]
-  simp ; injections
+  mvcgen [Impl.unwrap] <;> try grind
 
 end Core.Result
 end RustResult
@@ -568,34 +572,30 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
     s ≤ i →
     i < e →
     inv acc i = pure true →
-    ⦃ True ⦄
+    ⦃ ⌜ True ⌝ ⦄
     (body acc i)
-    ⦃ ⇓ res => inv res (i+1) = pure true ⦄) →
-  ⦃ True ⦄
+    ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
+  ⦃ ⌜ True ⌝ ⦄
   (Rust_primitives.Hax.Folds.fold_range s e inv init body)
-  ⦃ ⇓ r => inv r e = pure true ⦄
+  ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
   intro h_inv_s h_le h_body
   mvcgen [Spec.forIn_list]
-  case inv =>
+  case inv1 =>
     simp [Coe.coe]
-    exact PostCond.total
-      (fun (acc , ⟨suff, _, _ ⟩) => inv acc (s + suff.length) = pure true )
-  case step =>
-    simp at h
-    expose_names
-    rw [Std.Range.toList_range'] at *
-    case h => simp
-    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_1
+    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + suff.length) = pure true ⌝ )
+  case vc1.step _ x _ h_list _ h =>
+    intros
+    simp [Coe.coe] at h_list h
+    simp [Std.Range.toList] at h_list
+    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
     let h_suff := Eq.symm h_suff
     let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
-    mspec h_body <;> simp [Coe.coe] at * <;> try omega
-    . rw [← List.length_reverse, h_pre, List.length_range', h_x] at h; assumption
-    . rw [← List.length_reverse, h_pre, List.length_range', ← Nat.add_assoc, h_x]
-      intro; assumption
-  all_goals simp at *
-  case pre1 =>  assumption
-  case post.success =>
+    mstart ; mspec h_body <;> simp [Coe.coe] at * <;> try grind
+  case vc2.pre | vc4.post.except =>
+    simp [Coe.coe] at * <;> try assumption
+  case vc3.post.success =>
+    simp at *
     suffices (s + (e - s)) = e by (rw [← this]; assumption)
     omega
 
@@ -627,9 +627,9 @@ def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
 @[spec]
 theorem Rust_primitives.Hax.Monomorphized_update_at.update_at_usize.spec
   {α n} (a: Vector α n) (i:Nat) (v:α) (h: i < a.size) :
-  ⦃ True ⦄
+  ⦃ ⌜ True ⌝ ⦄
   (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize a i v)
-  ⦃ ⇓ r => r = Vector.set a i v ⦄ := by
+  ⦃ ⇓ r => ⌜ r = Vector.set a i v ⌝ ⦄ := by
   mvcgen [Rust_primitives.Hax.Monomorphized_update_at.update_at_usize]
 
 
@@ -652,20 +652,18 @@ def Core.Convert.TryInto.try_into {α n} (a: Array α) :
      if h: a.size = n then
        Core.Result.Result.Ok (Eq.mp (congrArg _ h) a.toVector)
      else
-       .Err .array.TryFromSliceError
+       .Err Core.Array.TryFromSliceError.array.TryFromSliceError
      )
 
 @[spec]
 theorem Core.Convert.TryInto.try_into.spec {α n} (a: Array α) :
   (h: a.size = n) →
-  ⦃ True ⦄
+  ⦃ ⌜ True ⌝ ⦄
   ( Core.Convert.TryInto.try_into a)
-  ⦃ ⇓ r => r = .Ok (Eq.mp (congrArg _ h) a.toVector) ⦄ := by
+  ⦃ ⇓ r => ⌜ r = .Ok (Eq.mp (congrArg _ h) a.toVector) ⌝ ⦄ := by
   intro h
   mvcgen [Core.Result.Impl.unwrap.spec, Core.Convert.TryInto.try_into]
-  apply SPred.pure_intro
-  split <;> grind
-
+  grind
 
 end RustArray
 
@@ -709,6 +707,7 @@ export GetElemResult (getElemResult)
 syntax:max term noWs "[" withoutPosition(term) "]" noWs "_?": term
 macro_rules | `($x[$i]_?) => `(getElemResult $x $i)
 
+-- Have lean use the notation when printing
 @[app_unexpander getElemResult] meta def unexpandGetElemResult : Lean.PrettyPrinter.Unexpander
   | `($_ $array $index) => `($array[$index]_?)
   | _ => throw ()
@@ -774,7 +773,7 @@ theorem Nat.getElemArrayResult_spec
   (α : Type) (a: Array α) (i: Nat) (h: i < a.size) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => r = a[i] ⦄ :=
+  ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
   by mvcgen [Result.ofOption, Nat.instGetElemResultArray]
 
 @[spec]
@@ -782,7 +781,7 @@ theorem Nat.getElemVectorResult_spec
   (α : Type) (n:Nat) (a: Vector α n) (i: Nat) (h : i < n) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => r = a[i] ⦄ :=
+  ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
   by mvcgen [Nat.instGetElemResultVector]
 
 @[spec]
@@ -790,7 +789,7 @@ theorem usize.getElemArrayResult_spec
   (α : Type) (a: Array α) (i: usize) (h: i.toNat < a.size) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => r = a[i.toNat]⦄ :=
+  ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
   by mvcgen [usize.instGetElemResultArray]
 
 @[spec]
@@ -798,7 +797,7 @@ theorem usize.getElemVectorResult_spec
   (α : Type) (n:Nat) (a: Vector α n) (i: usize) (h: i.toNat < n) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => r = a[i.toNat]⦄ :=
+  ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
   by mvcgen [usize.instGetElemResultVector]
 
 @[spec]
@@ -808,7 +807,7 @@ theorem Range.getElemArrayUSize_spec
   e ≤ a.size →
   ⦃ ⌜ True ⌝ ⦄
   ( a[(Range.mk s e)]_? )
-  ⦃ ⇓ r => r = Array.extract a s e ⦄
+  ⦃ ⇓ r => ⌜ r = Array.extract a s e ⌝ ⦄
 := by
   intros
   mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize] <;> grind
@@ -820,7 +819,7 @@ theorem Range.getElemVectorUSize_spec
   e ≤ a.size →
   ⦃ ⌜ True ⌝ ⦄
   ( a[(Range.mk s e)]_? )
-  ⦃ ⇓ r => r = (Vector.extract a s e).toArray ⦄
+  ⦃ ⇓ r => ⌜ r = (Vector.extract a s e).toArray ⌝ ⦄
 := by
   intros
   mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize] <;> grind
@@ -939,7 +938,7 @@ macro "hax_bv_decide" : tactic => `(tactic| (
           Int64.eq_iff_toBitVec_eq,
           Int64.lt_iff_toBitVec_slt,
           Int64.le_iff_toBitVec_sle] at * <;>
-    bv_decide;
+    bv_decide (config := {timeout := 1});
     done
  )))
 
