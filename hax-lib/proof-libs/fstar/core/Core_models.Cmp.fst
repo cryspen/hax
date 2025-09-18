@@ -5,7 +5,7 @@ open FStar.Mul
 open Rust_primitives.Integers
 
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
-  f_eq_pre:v_Self -> v_Rhs -> Type0;
+  f_eq_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
   f_eq_post:v_Self -> v_Rhs -> bool -> Type0;
   f_eq:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_eq_pre x0 x1) (fun result -> f_eq_post x0 x1 result)
@@ -37,7 +37,7 @@ let t_Ordering_cast_to_repr (x: t_Ordering) : isize =
 
 class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_4666540144042099734:t_PartialEq v_Self v_Rhs;
-  f_partial_cmp_pre:v_Self -> v_Rhs -> Type0;
+  f_partial_cmp_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
   f_partial_cmp_post:v_Self -> v_Rhs -> Core_models.Option.t_Option t_Ordering -> Type0;
   f_partial_cmp:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure (Core_models.Option.t_Option t_Ordering)
@@ -49,49 +49,42 @@ class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
 let _ = fun (v_Self:Type0) (v_Rhs:Type0) {|i: t_PartialOrd v_Self v_Rhs|} -> i._super_4666540144042099734
 
 class t_Neq (v_Self: Type0) (v_Rhs: Type0) = {
-  f_neq_pre:{| i0: t_PartialEq v_Self v_Rhs |} -> v_Self -> v_Rhs -> Type0;
-  f_neq_post:{| i0: t_PartialEq v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_neq:{| i0: t_PartialEq v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_neq_pre #i0 x0 x1) (fun result -> f_neq_post #i0 x0 x1 result)
+  f_neq_pre:self_: v_Self -> y: v_Rhs -> pred: Type0{true ==> pred};
+  f_neq_post:v_Self -> v_Rhs -> bool -> Type0;
+  f_neq:x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_neq_pre x0 x1) (fun result -> f_neq_post x0 x1 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialEq v_T v_T)
     : t_Neq v_T v_T =
   {
-    f_neq_pre
-    =
-    (fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialEq v_T v_T) (self: v_T) (y: v_T) ->
-        true);
-    f_neq_post
-    =
-    (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialEq v_T v_T)
-        (self: v_T)
-        (y: v_T)
-        (out: bool)
-        ->
-        true);
+    f_neq_pre = (fun (self: v_T) (y: v_T) -> true);
+    f_neq_post = (fun (self: v_T) (y: v_T) (out: bool) -> true);
     f_neq
     =
-    fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialEq v_T v_T) (self: v_T) (y: v_T) ->
+    fun (self: v_T) (y: v_T) ->
       (f_eq #v_T #v_T #FStar.Tactics.Typeclasses.solve self y <: bool) =. false
   }
 
 class t_PartialOrdDefaults (v_Self: Type0) (v_Rhs: Type0) = {
-  f_lt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> Type0;
+  f_lt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+    -> pred: Type0{true ==> pred};
   f_lt_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
   f_lt:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_lt_pre #i0 x0 x1) (fun result -> f_lt_post #i0 x0 x1 result);
-  f_le_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> Type0;
+  f_le_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+    -> pred: Type0{true ==> pred};
   f_le_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
   f_le:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_le_pre #i0 x0 x1) (fun result -> f_le_post #i0 x0 x1 result);
-  f_gt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> Type0;
+  f_gt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+    -> pred: Type0{true ==> pred};
   f_gt_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
   f_gt:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_gt_pre #i0 x0 x1) (fun result -> f_gt_post #i0 x0 x1 result);
-  f_ge_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> Type0;
+  f_ge_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+    -> pred: Type0{true ==> pred};
   f_ge_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
   f_ge:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
     -> Prims.Pure bool (f_ge_pre #i0 x0 x1) (fun result -> f_ge_post #i0 x0 x1 result)
@@ -228,7 +221,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
 class t_Ord (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_4518226736117889738:t_Eq v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_13434448650954310000:t_PartialOrd v_Self v_Self;
-  f_cmp_pre:v_Self -> v_Self -> Type0;
+  f_cmp_pre:self_: v_Self -> other: v_Self -> pred: Type0{true ==> pred};
   f_cmp_post:v_Self -> v_Self -> t_Ordering -> Type0;
   f_cmp:x0: v_Self -> x1: v_Self
     -> Prims.Pure t_Ordering (f_cmp_pre x0 x1) (fun result -> f_cmp_post x0 x1 result)
@@ -303,7 +296,7 @@ let impl_5 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_8: t_PartialEq u8 u8 =
+let impl_6: t_PartialEq u8 u8 =
   {
     f_eq_pre = (fun (self: u8) (other: u8) -> true);
     f_eq_post = (fun (self: u8) (other: u8) (out: bool) -> true);
@@ -311,13 +304,18 @@ let impl_8: t_PartialEq u8 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_6: t_PartialOrd u8 u8 =
+let impl_30: t_PartialOrd u8 u8 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u8) (other: u8) -> true);
     f_partial_cmp_post
     =
-    (fun (self: u8) (other: u8) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: u8) (other: u8) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: u8) (other: u8) ->
@@ -338,7 +336,13 @@ let impl_Ord_for_u8: t_Ord u8 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u8) (other: u8) -> true);
-    f_cmp_post = (fun (self: u8) (other: u8) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: u8) (other: u8) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: u8) (other: u8) ->
@@ -348,7 +352,7 @@ let impl_Ord_for_u8: t_Ord u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_12: t_PartialEq i8 i8 =
+let impl_8: t_PartialEq i8 i8 =
   {
     f_eq_pre = (fun (self: i8) (other: i8) -> true);
     f_eq_post = (fun (self: i8) (other: i8) (out: bool) -> true);
@@ -356,13 +360,18 @@ let impl_12: t_PartialEq i8 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_10: t_PartialOrd i8 i8 =
+let impl_32: t_PartialOrd i8 i8 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i8) (other: i8) -> true);
     f_partial_cmp_post
     =
-    (fun (self: i8) (other: i8) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: i8) (other: i8) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: i8) (other: i8) ->
@@ -383,7 +392,13 @@ let impl_Ord_for_i8: t_Ord i8 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i8) (other: i8) -> true);
-    f_cmp_post = (fun (self: i8) (other: i8) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: i8) (other: i8) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: i8) (other: i8) ->
@@ -393,7 +408,7 @@ let impl_Ord_for_i8: t_Ord i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_16: t_PartialEq u16 u16 =
+let impl_10: t_PartialEq u16 u16 =
   {
     f_eq_pre = (fun (self: u16) (other: u16) -> true);
     f_eq_post = (fun (self: u16) (other: u16) (out: bool) -> true);
@@ -401,13 +416,18 @@ let impl_16: t_PartialEq u16 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_14: t_PartialOrd u16 u16 =
+let impl_34: t_PartialOrd u16 u16 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u16) (other: u16) -> true);
     f_partial_cmp_post
     =
-    (fun (self: u16) (other: u16) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: u16) (other: u16) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: u16) (other: u16) ->
@@ -428,7 +448,13 @@ let impl_Ord_for_u16: t_Ord u16 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u16) (other: u16) -> true);
-    f_cmp_post = (fun (self: u16) (other: u16) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: u16) (other: u16) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: u16) (other: u16) ->
@@ -438,7 +464,7 @@ let impl_Ord_for_u16: t_Ord u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_20: t_PartialEq i16 i16 =
+let impl_12: t_PartialEq i16 i16 =
   {
     f_eq_pre = (fun (self: i16) (other: i16) -> true);
     f_eq_post = (fun (self: i16) (other: i16) (out: bool) -> true);
@@ -446,13 +472,18 @@ let impl_20: t_PartialEq i16 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_18: t_PartialOrd i16 i16 =
+let impl_36: t_PartialOrd i16 i16 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i16) (other: i16) -> true);
     f_partial_cmp_post
     =
-    (fun (self: i16) (other: i16) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: i16) (other: i16) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: i16) (other: i16) ->
@@ -473,7 +504,13 @@ let impl_Ord_for_i16: t_Ord i16 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i16) (other: i16) -> true);
-    f_cmp_post = (fun (self: i16) (other: i16) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: i16) (other: i16) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: i16) (other: i16) ->
@@ -483,7 +520,7 @@ let impl_Ord_for_i16: t_Ord i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_24: t_PartialEq u32 u32 =
+let impl_14: t_PartialEq u32 u32 =
   {
     f_eq_pre = (fun (self: u32) (other: u32) -> true);
     f_eq_post = (fun (self: u32) (other: u32) (out: bool) -> true);
@@ -491,13 +528,18 @@ let impl_24: t_PartialEq u32 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_22: t_PartialOrd u32 u32 =
+let impl_38: t_PartialOrd u32 u32 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u32) (other: u32) -> true);
     f_partial_cmp_post
     =
-    (fun (self: u32) (other: u32) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: u32) (other: u32) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: u32) (other: u32) ->
@@ -518,7 +560,13 @@ let impl_Ord_for_u32: t_Ord u32 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u32) (other: u32) -> true);
-    f_cmp_post = (fun (self: u32) (other: u32) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: u32) (other: u32) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: u32) (other: u32) ->
@@ -528,7 +576,7 @@ let impl_Ord_for_u32: t_Ord u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_28: t_PartialEq i32 i32 =
+let impl_16: t_PartialEq i32 i32 =
   {
     f_eq_pre = (fun (self: i32) (other: i32) -> true);
     f_eq_post = (fun (self: i32) (other: i32) (out: bool) -> true);
@@ -536,13 +584,18 @@ let impl_28: t_PartialEq i32 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_26: t_PartialOrd i32 i32 =
+let impl_40: t_PartialOrd i32 i32 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i32) (other: i32) -> true);
     f_partial_cmp_post
     =
-    (fun (self: i32) (other: i32) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: i32) (other: i32) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: i32) (other: i32) ->
@@ -563,7 +616,13 @@ let impl_Ord_for_i32: t_Ord i32 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i32) (other: i32) -> true);
-    f_cmp_post = (fun (self: i32) (other: i32) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: i32) (other: i32) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: i32) (other: i32) ->
@@ -573,7 +632,7 @@ let impl_Ord_for_i32: t_Ord i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_32: t_PartialEq u64 u64 =
+let impl_18: t_PartialEq u64 u64 =
   {
     f_eq_pre = (fun (self: u64) (other: u64) -> true);
     f_eq_post = (fun (self: u64) (other: u64) (out: bool) -> true);
@@ -581,13 +640,18 @@ let impl_32: t_PartialEq u64 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_30: t_PartialOrd u64 u64 =
+let impl_42: t_PartialOrd u64 u64 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u64) (other: u64) -> true);
     f_partial_cmp_post
     =
-    (fun (self: u64) (other: u64) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: u64) (other: u64) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: u64) (other: u64) ->
@@ -608,7 +672,13 @@ let impl_Ord_for_u64: t_Ord u64 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u64) (other: u64) -> true);
-    f_cmp_post = (fun (self: u64) (other: u64) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: u64) (other: u64) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: u64) (other: u64) ->
@@ -618,7 +688,7 @@ let impl_Ord_for_u64: t_Ord u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_36: t_PartialEq i64 i64 =
+let impl_20: t_PartialEq i64 i64 =
   {
     f_eq_pre = (fun (self: i64) (other: i64) -> true);
     f_eq_post = (fun (self: i64) (other: i64) (out: bool) -> true);
@@ -626,13 +696,18 @@ let impl_36: t_PartialEq i64 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_34: t_PartialOrd i64 i64 =
+let impl_44: t_PartialOrd i64 i64 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i64) (other: i64) -> true);
     f_partial_cmp_post
     =
-    (fun (self: i64) (other: i64) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: i64) (other: i64) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: i64) (other: i64) ->
@@ -653,7 +728,13 @@ let impl_Ord_for_i64: t_Ord i64 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i64) (other: i64) -> true);
-    f_cmp_post = (fun (self: i64) (other: i64) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: i64) (other: i64) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: i64) (other: i64) ->
@@ -663,7 +744,7 @@ let impl_Ord_for_i64: t_Ord i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_40: t_PartialEq u128 u128 =
+let impl_22: t_PartialEq u128 u128 =
   {
     f_eq_pre = (fun (self: u128) (other: u128) -> true);
     f_eq_post = (fun (self: u128) (other: u128) (out: bool) -> true);
@@ -671,13 +752,18 @@ let impl_40: t_PartialEq u128 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_38: t_PartialOrd u128 u128 =
+let impl_46: t_PartialOrd u128 u128 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u128) (other: u128) -> true);
     f_partial_cmp_post
     =
-    (fun (self: u128) (other: u128) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: u128) (other: u128) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: u128) (other: u128) ->
@@ -698,7 +784,13 @@ let impl_Ord_for_u128: t_Ord u128 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u128) (other: u128) -> true);
-    f_cmp_post = (fun (self: u128) (other: u128) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: u128) (other: u128) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: u128) (other: u128) ->
@@ -708,7 +800,7 @@ let impl_Ord_for_u128: t_Ord u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_44: t_PartialEq i128 i128 =
+let impl_24: t_PartialEq i128 i128 =
   {
     f_eq_pre = (fun (self: i128) (other: i128) -> true);
     f_eq_post = (fun (self: i128) (other: i128) (out: bool) -> true);
@@ -716,13 +808,18 @@ let impl_44: t_PartialEq i128 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_42: t_PartialOrd i128 i128 =
+let impl_48: t_PartialOrd i128 i128 =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i128) (other: i128) -> true);
     f_partial_cmp_post
     =
-    (fun (self: i128) (other: i128) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: i128) (other: i128) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: i128) (other: i128) ->
@@ -743,7 +840,13 @@ let impl_Ord_for_i128: t_Ord i128 =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i128) (other: i128) -> true);
-    f_cmp_post = (fun (self: i128) (other: i128) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: i128) (other: i128) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: i128) (other: i128) ->
@@ -753,7 +856,7 @@ let impl_Ord_for_i128: t_Ord i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_48: t_PartialEq usize usize =
+let impl_26: t_PartialEq usize usize =
   {
     f_eq_pre = (fun (self: usize) (other: usize) -> true);
     f_eq_post = (fun (self: usize) (other: usize) (out: bool) -> true);
@@ -761,13 +864,18 @@ let impl_48: t_PartialEq usize usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_46: t_PartialOrd usize usize =
+let impl_50: t_PartialOrd usize usize =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: usize) (other: usize) -> true);
     f_partial_cmp_post
     =
-    (fun (self: usize) (other: usize) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: usize) (other: usize) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: usize) (other: usize) ->
@@ -788,7 +896,13 @@ let impl_Ord_for_usize: t_Ord usize =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: usize) (other: usize) -> true);
-    f_cmp_post = (fun (self: usize) (other: usize) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: usize) (other: usize) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: usize) (other: usize) ->
@@ -798,7 +912,7 @@ let impl_Ord_for_usize: t_Ord usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_52: t_PartialEq isize isize =
+let impl_28: t_PartialEq isize isize =
   {
     f_eq_pre = (fun (self: isize) (other: isize) -> true);
     f_eq_post = (fun (self: isize) (other: isize) (out: bool) -> true);
@@ -806,13 +920,18 @@ let impl_52: t_PartialEq isize isize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_50: t_PartialOrd isize isize =
+let impl_52: t_PartialOrd isize isize =
   {
     _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: isize) (other: isize) -> true);
     f_partial_cmp_post
     =
-    (fun (self: isize) (other: isize) (out: Core_models.Option.t_Option t_Ordering) -> true);
+    (fun (self_: isize) (other: isize) (res: Core_models.Option.t_Option t_Ordering) ->
+        match res <: Core_models.Option.t_Option t_Ordering with
+        | Core_models.Option.Option_Some (Ordering_Less ) -> self_ <. other
+        | Core_models.Option.Option_Some (Ordering_Equal ) -> self_ =. other
+        | Core_models.Option.Option_Some (Ordering_Greater ) -> self_ >. other
+        | Core_models.Option.Option_None  -> false);
     f_partial_cmp
     =
     fun (self: isize) (other: isize) ->
@@ -833,7 +952,13 @@ let impl_Ord_for_isize: t_Ord isize =
     _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
     _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: isize) (other: isize) -> true);
-    f_cmp_post = (fun (self: isize) (other: isize) (out: t_Ordering) -> true);
+    f_cmp_post
+    =
+    (fun (self_: isize) (other: isize) (res: t_Ordering) ->
+        match res <: t_Ordering with
+        | Ordering_Less  -> self_ <. other
+        | Ordering_Equal  -> self_ =. other
+        | Ordering_Greater  -> self_ >. other);
     f_cmp
     =
     fun (self: isize) (other: isize) ->

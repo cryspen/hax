@@ -1,3 +1,12 @@
+// In F* we replace the definition to have the equality a value
+// and its clone.
+#[hax_lib::fstar::replace(
+    "class t_Clone self = {
+  f_clone_pre: self -> Type0;
+  f_clone_post: self -> self -> Type0;
+  f_clone: x:self -> r:self {x == r}
+}"
+)]
 trait Clone {
     fn clone(self) -> Self;
 }
