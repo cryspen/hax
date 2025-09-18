@@ -281,7 +281,8 @@ impl GlobalId {
         }
     }
 
-    /// Gets the closest mod-only parent.
+    /// Gets the closest module only parent identifier, that is, the closest
+    /// parent whose path contains only path chunks of kind `DefKind::Mod`.
     pub fn mod_only_closest_parent(self) -> Self {
         let concrete_id = ConcreteId::from_global_id(self).mod_only_closest_parent();
         Self(GlobalIdInner::Concrete(concrete_id).intern())
@@ -332,7 +333,8 @@ impl ConcreteId {
         self.def_id.clone().into()
     }
 
-    /// Gets the closest mod-only parent.
+    /// Gets the closest module only parent identifier, that is, the closest
+    /// parent whose path contains only path chunks of kind `DefKind::Mod`.
     fn mod_only_closest_parent(&self) -> Self {
         let mut parents = self.def_id.parents().collect::<Vec<_>>();
         parents.reverse();
