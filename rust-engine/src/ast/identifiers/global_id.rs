@@ -2,7 +2,7 @@
 use hax_frontend_exporter::{DefKind, DisambiguatedDefPathItem};
 use hax_rust_engine_macros::*;
 
-use crate::interning::{HasGlobal, InternExtTrait, Interned, InterningTable};
+use crate::interning::{Internable, Interned, InterningTable};
 
 mod compact_serialization;
 pub(crate) mod generated_names;
@@ -23,7 +23,7 @@ struct DefIdInner {
 }
 
 use std::sync::{LazyLock, Mutex};
-impl HasGlobal for DefIdInner {
+impl Internable for DefIdInner {
     fn interning_table() -> &'static Mutex<InterningTable<Self>> {
         static TABLE: LazyLock<Mutex<InterningTable<DefIdInner>>> =
             LazyLock::new(|| Mutex::new(InterningTable::default()));

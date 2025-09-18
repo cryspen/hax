@@ -9,8 +9,7 @@
 //!
 //! - [`Interned<T>`]: A compact, copyable handle to a deduplicated value.
 //! - [`InterningTable<T>`]: Stores interned values and manages uniqueness.
-//! - [`HasGlobal`]: A trait to register global interning tables for types.
-//! - [`InternExtTrait`]: A convenience trait to call `.intern()` on any value.
+//! - [`Internable`]: A trait for types that can be interned.
 //!
 //! ## Safety Note
 //!
@@ -34,7 +33,7 @@ use serde::{Deserialize, Serialize};
 /// An interning table storing unique values of `T` and assigning them stable indices.
 ///
 /// This type is primarily an implementation detail behind [`Interned<T>`] and
-/// the [`HasGlobal`] trait. You typically won't use it directly unless you're
+/// the [`Internable`] trait. You typically won't use it directly unless you're
 /// wiring up a new globally‑interned type.
 pub struct InterningTable<T> {
     /// The raw items: item at index `n` will be an `Interned { index: n }`.
@@ -80,7 +79,7 @@ impl<T: Eq> Ord for Interned<T> {
     }
 }
 
-impl<T: Serialize + HasGlobal> Serialize for Interned<T> {
+impl<T: Serialize + Internable> Serialize for Interned<T> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -89,13 +88,13 @@ impl<T: Serialize + HasGlobal> Serialize for Interned<T> {
     }
 }
 
-impl<T: HasGlobal> AsRef<T> for Interned<T> {
+impl<T: Internable> AsRef<T> for Interned<T> {
     fn as_ref(&self) -> &T {
         (*self).get()
     }
 }
 
-impl<'a, T: Deserialize<'a> + HasGlobal> Deserialize<'a> for Interned<T> {
+impl<'a, T: Deserialize<'a> + Internable> Deserialize<'a> for Interned<T> {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'a>,
@@ -114,7 +113,7 @@ impl<T: JsonSchema> JsonSchema for Interned<T> {
     }
 }
 
-impl<T: HasGlobal + Debug> Debug for Interned<T> {
+impl<T: Internable + Debug> Debug for Interned<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Interned")
             .field("index", &self.index)
@@ -216,12 +215,20 @@ pub type LazyLockNewWithValue<T, const N: usize> =
 /// Implement this for your type to opt in to interning:
 /// provide a `static` (usually a `LazyLock<Mutex<InterningTable<Self>>>`)
 /// and return a reference to it.
-pub trait HasGlobal: Sized + Hash + Eq + Clone + Send + 'static {
+pub trait Internable: Sized + Hash + Eq + Clone + Send + 'static {
     /// Returns the global interning table for `Self`.
     fn interning_table() -> &'static Mutex<InterningTable<Self>>;
+
+    /// Interns a `value` and returns its compact handle.
+    ///
+    /// If an equal value has been interned before, this returns the existing
+    /// handle; otherwise it inserts the value into the global table.
+    fn intern(&self) -> Interned<Self> {
+        Interned::intern(self)
+    }
 }
 
-impl<T: HasGlobal> Interned<T> {
+impl<T: Internable> Interned<T> {
     /// Interns a `value` and returns its compact handle.
     ///
     /// If an equal value has been interned before, this returns the existing
@@ -253,21 +260,7 @@ impl<T: HasGlobal> Interned<T> {
     }
 }
 
-/// Extension trait to intern values ergonomically via a method call.
-///
-/// This is blanket‑implemented for any `T` that can be globally interned.
-pub trait InternExtTrait: Sized {
-    /// Interns `self` and returns an [`Interned<Self>`].
-    fn intern(&self) -> Interned<Self>;
-}
-
-impl<T: HasGlobal> InternExtTrait for T {
-    fn intern(&self) -> Interned<Self> {
-        Interned::intern(self)
-    }
-}
-
-impl<T: HasGlobal> Deref for Interned<T> {
+impl<T: Internable> Deref for Interned<T> {
     type Target = T;
 
     /// Dereferences to the underlying value (`&'static T`).

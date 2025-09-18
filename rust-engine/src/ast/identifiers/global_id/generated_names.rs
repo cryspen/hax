@@ -40,7 +40,7 @@ pub mod codegen {
         GlobalId,
         global_id::{DefIdInner, ExplicitDefId, compact_serialization},
     };
-    use crate::interning::InternExtTrait;
+    use crate::interning::Internable;
     use hax_frontend_exporter::DefKind;
 
     use std::collections::{HashMap, HashSet};
@@ -321,7 +321,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (crate::interning::LazyLockNewWithValue<cr
 
 static INTERNED_GLOBAL_IDS: [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; {n}] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
 
-impl crate::interning::HasGlobal for crate::ast::identifiers::global_id::GlobalIdInner {{
+impl crate::interning::Internable for crate::ast::identifiers::global_id::GlobalIdInner {{
     fn interning_table() -> &'static std::sync::Mutex<crate::interning::InterningTable<Self>> {{
         &TABLE_AND_INTERNED_GLOBAL_IDS.0
     }}

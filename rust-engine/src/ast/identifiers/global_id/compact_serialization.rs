@@ -6,7 +6,7 @@
 //! It provides a bijection from the fields `krate`, `path`, and `kind` of `DefId` and `Repr`.
 //! The choice of `Repr` itself is irrelevant. Anything that produces compact JSON is good.
 
-use crate::interning::InternExtTrait;
+use crate::interning::Internable;
 use hax_frontend_exporter::{DefKind, DefPathItem, DisambiguatedDefPathItem};
 
 use super::{DefIdInner, ExplicitDefId};
