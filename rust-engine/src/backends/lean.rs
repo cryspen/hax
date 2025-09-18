@@ -111,8 +111,6 @@ impl Printer for LeanPrinter {
             binops::logical_op_or(),
         ]))]
     }
-
-    const NAME: &str = "Lean";
 }
 
 /// The Lean backend
@@ -289,6 +287,8 @@ const _: () = {
     }
 
     impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for LeanPrinter {
+        const NAME: &'static str = "Lean";
+
         fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
             let items = &module.items;
             docs![
