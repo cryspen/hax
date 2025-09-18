@@ -714,9 +714,15 @@ set_option linter.unusedVariables false
                 .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
-                TyKind::Array { ty, length } => docs!["RustArray", line!(), ty, line!(), &**length]
-                    .parens()
-                    .group(),
+                TyKind::Array { ty, length } => {
+                    let v = length.kind().clone();
+                    let ExprKind::Literal(int_lit @ Literal::Int { .. }) = v else {
+                        todo!()
+                    };
+                    docs!["RustArray", line!(), ty, line!(), &int_lit]
+                        .parens()
+                        .group()
+                }
                 TyKind::AssociatedType { impl_, item } => {
                     let kind = impl_.kind();
                     match &kind {
