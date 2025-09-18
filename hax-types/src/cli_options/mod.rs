@@ -174,6 +174,8 @@ pub struct FStarOptions<E: Extension> {
 pub enum Backend<E: Extension> {
     /// Use the F* backend
     Fstar(FStarOptions<E>),
+    /// Use the Lean backend (warning: experimental)
+    Lean,
     /// Use the Coq backend
     Coq,
     /// Use the SSProve backend
@@ -182,9 +184,6 @@ pub enum Backend<E: Extension> {
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
     ProVerif(ProVerifOptions),
-    /// Use the Lean backend (warning: work in progress!)
-    #[clap(hide = true)]
-    Lean,
     /// Use the Rust backend (warning: work in progress!)
     #[clap(hide = true)]
     Rust,
