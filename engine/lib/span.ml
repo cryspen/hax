@@ -150,7 +150,8 @@ let default = { id = 0; data = []; owner_hint = None }
 
 let owner_hint span =
   span.owner_hint
-  |> Option.bind ~f:(fun (OwnerId id) -> List.nth !owner_id_list id)
+  |> Option.map ~f:(fun (OwnerId id) ->
+         Option.value_exn (List.nth !owner_id_list id))
 
 let to_span2 span : Types.span2 =
   {

@@ -33,6 +33,7 @@ Changes to hax-lib:
 
 Miscellaneous:
  - A lean tutorial has been added to the hax website (#1626)
+ - Diagnostics reporting were improved (#1692)
 
 ## 0.3.4
 
