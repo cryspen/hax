@@ -37,6 +37,9 @@ Changes to hax-lib:
 Changes to the Lean backend:
 - Improve support for functionalized loops (#1695)
 
+Changes to the Lean backend:
+- Improve support for functionalized loops (#1695)
+
 Miscellaneous:
  - A lean tutorial has been added to the hax website (#1626)
  - Diagnostics reporting were improved (#1692)
