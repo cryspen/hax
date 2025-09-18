@@ -30,7 +30,7 @@ impl std::fmt::Display for Diagnostics {
             ),
             Kind::UnsupportedMacro { id } => write!(
                 f,
-                "The unexpanded macro {} it is not supported by this backend.\nPlease verify the option you passed the {} (or {}) option.",
+                "The unexpanded macro {} is not supported by this backend.\nPlease verify the argument you passed to the {} (or {}) option.",
                 id.bold(),
                 "--inline-macro-call".bold(), "-i".bold()
             ),
