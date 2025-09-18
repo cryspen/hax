@@ -181,7 +181,14 @@ impl From<TupleId> for ConcreteId {
     fn from(value: TupleId) -> Self {
         fn patch_def_id(template: GlobalId, length: usize, field: usize) -> ConcreteId {
             let GlobalIdInner::Concrete(mut concrete_id) = template.0.get().clone() else {
-                panic!()
+                // `patch_def_id` is called with constant values (`hax::Tuple2`
+                // and friends are constants) Those are of the shape
+                // `GlobalIdInner::Concrete(_)`, *not*
+                // `GlobalIdInner::Tuple(_)`. The tuple identifiers we deal with
+                // in this functions are private identifiers used only in this
+                // module, to provide normal concrete identifiers even for
+                // tuples.
+                unreachable!()
             };
             fn inner(did: &mut DefIdInner, length: usize, field: usize) {
                 for DisambiguatedDefPathItem { data, .. } in &mut did.path {
