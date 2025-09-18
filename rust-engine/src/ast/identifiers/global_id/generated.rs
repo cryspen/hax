@@ -8,8 +8,8 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
     [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 642],
 ) = {
     crate::interning::InterningTable::new_with_values(|| {
-        use crate::ast::identifiers::global_id::compact_serialization::deserialize;
         use crate::ast::identifiers::global_id::ExplicitDefId;
+        use crate::ast::identifiers::global_id::compact_serialization::deserialize;
         fn did_0() -> ExplicitDefId {
             deserialize(r##"["rust_primitives",[],"Mod",false]"##, None)
         }
@@ -4498,7 +4498,7 @@ static INTERNED_GLOBAL_IDS: [crate::interning::Interned<
     crate::ast::identifiers::global_id::GlobalIdInner,
 >; 642] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
 
-impl crate::interning::HasGlobal for crate::ast::identifiers::global_id::GlobalIdInner {
+impl crate::interning::Internable for crate::ast::identifiers::global_id::GlobalIdInner {
     fn interning_table() -> &'static std::sync::Mutex<crate::interning::InterningTable<Self>> {
         &TABLE_AND_INTERNED_GLOBAL_IDS.0
     }
