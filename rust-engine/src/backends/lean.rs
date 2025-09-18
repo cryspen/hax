@@ -14,7 +14,8 @@ use crate::{
 };
 
 mod binops {
-    pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
+    pub use crate::names::core::ops::index::*;
+    pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
 
@@ -100,14 +101,17 @@ impl RenderView for LeanPrinter {
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![Box::new(BinOp::new(&[
-            binops::add,
-            binops::sub,
-            binops::mul,
-            binops::rem,
-            binops::div,
-            binops::shr,
-            binops::logical_op_and,
-            binops::logical_op_or,
+            binops::add(),
+            binops::sub(),
+            binops::mul(),
+            binops::rem(),
+            binops::div(),
+            binops::shr(),
+            binops::bitand(),
+            binops::bitxor(),
+            binops::logical_op_and(),
+            binops::logical_op_or(),
+            binops::Index::index(),
         ]))]
     }
 }
@@ -543,16 +547,35 @@ set_option linter.unusedVariables false
                         bounds_impls: _,
                         trait_: _,
                     } => {
-                        let symbol = match *op {
-                            binops::add => "+?",
-                            binops::sub => "-?",
-                            binops::mul => "*?",
-                            binops::div => "/?",
-                            binops::rem => "%?",
-                            binops::shr => ">>>?",
-                            binops::logical_op_and => "&&?",
-                            binops::logical_op_or => "||?",
-                            _ => unreachable!(),
+                        if op == &binops::Index::index() {
+                            return docs!["← ", lhs, "[", line_!(), rhs, line_!(), "]_?"]
+                                .parens()
+                                .nest(INDENT)
+                                .group();
+                        }
+
+                        let symbol = if op == &binops::add() {
+                            "+?"
+                        } else if op == &binops::sub() {
+                            "-?"
+                        } else if op == &binops::mul() {
+                            "*?"
+                        } else if op == &binops::div() {
+                            "/?"
+                        } else if op == &binops::rem() {
+                            "%?"
+                        } else if op == &binops::shr() {
+                            ">>>?"
+                        } else if op == &binops::bitand() {
+                            "&&&?"
+                        } else if op == &binops::bitxor() {
+                            "^^^?"
+                        } else if op == &binops::logical_op_and() {
+                            "&&?"
+                        } else if op == &binops::logical_op_or() {
+                            "||?"
+                        } else {
+                            unreachable!()
                         };
 
                         // TODO: This monad lifting should be handled by a phase/resugaring, see

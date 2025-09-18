@@ -17,3 +17,6 @@ limitations under the License. -/
 
 /- Main Prelude library -/
 import Hax.Lib
+
+/- Rust primitives (integers, string, slices, etc.) -/
+import Hax.Rust_primitives
