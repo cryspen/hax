@@ -54,7 +54,34 @@ struct DefIdInner {
     kind: DefKind,
 }
 
-use std::sync::{LazyLock, Mutex};
+impl DefIdInner {
+    fn to_debug_string(&self) -> String {
+        fn disambiguator_suffix(disambiguator: u32) -> String {
+            if disambiguator == 0 {
+                "".into()
+            } else {
+                format!("__{disambiguator}")
+            }
+        }
+        use itertools::Itertools;
+        std::iter::once(self.krate.clone())
+            .chain(self.path.iter().map(|item| match &item.data {
+                DefPathItem::TypeNs(s)
+                | DefPathItem::ValueNs(s)
+                | DefPathItem::MacroNs(s)
+                | DefPathItem::LifetimeNs(s) => s.clone(),
+                DefPathItem::Impl => "impl".into(),
+                other => format!("{other:?}"),
+            } + &disambiguator_suffix(item.disambiguator)))
+            .join("::")
+    }
+}
+
+use std::{
+    cell::{LazyCell, RefCell},
+    collections::HashMap,
+    sync::{LazyLock, Mutex},
+};
 impl Internable for DefIdInner {
     fn interning_table() -> &'static Mutex<InterningTable<Self>> {
         static TABLE: LazyLock<Mutex<InterningTable<DefIdInner>>> =
@@ -280,8 +307,8 @@ impl GlobalId {
         matches!(self.0.get().def_id().kind, DefKind::Const) && s == "_"
     }
 
-    /// Raw printing of identifier separated by underscore. Should be used
-    /// only for testing. See https://github.com/cryspen/hax/issues/1599
+    /// Debug printing of identifiers, for testing purposes only.
+    /// Prints path in a Rust-like way, as a `::` separated dismabiguated path.
     pub fn to_debug_string(self) -> String {
         ConcreteId::from_global_id(self).to_debug_string()
     }
@@ -404,28 +431,7 @@ impl ConcreteId {
     }
 
     fn to_debug_string(&self) -> String {
-        self.def_id
-            .def_id
-            .path
-            .iter()
-            .map(|def| {
-                let data = match def.clone().data {
-                    DefPathItem::ValueNs(s) | DefPathItem::MacroNs(s) | DefPathItem::TypeNs(s) => {
-                        s.clone()
-                    }
-                    DefPathItem::Impl => "impl".to_string(),
-                    other => unimplemented!("{other:?}"),
-                };
-                // TODO: `data.is_empty()` should always be false
-                if def.disambiguator != 0 && !data.is_empty() && data != "_" {
-                    // Don't print disambiguator of empty data
-                    format!("_{}_{}", def.disambiguator, data)
-                } else {
-                    data
-                }
-            })
-            .collect::<Vec<String>>()
-            .join("_")
+        self.def_id.def_id.get().to_debug_string()
     }
 }
 
