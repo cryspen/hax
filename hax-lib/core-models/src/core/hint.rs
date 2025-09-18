@@ -1,7 +1,9 @@
-pub const fn black_box<T>(dummy: T) -> T {
+#[hax_lib::ensures(|res| fstar!("$res == $dummy"))]
+pub fn black_box<T>(dummy: T) -> T {
     dummy
 }
 
-pub const fn must_use<T>(value: T) -> T {
+#[hax_lib::ensures(|res| fstar!("$res == $value"))]
+pub fn must_use<T>(value: T) -> T {
     value
 }

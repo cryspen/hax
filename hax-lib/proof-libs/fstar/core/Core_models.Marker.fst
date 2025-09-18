@@ -26,3 +26,9 @@ let impl_1 (#v_T: Type0) : t_Sync v_T = { __marker_trait_t_Sync = () }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_2 (#v_T: Type0) : t_Sized v_T = { __marker_trait_t_Sized = () }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+    : t_Copy v_T = { _super_15837849249852401974 = FStar.Tactics.Typeclasses.solve }
