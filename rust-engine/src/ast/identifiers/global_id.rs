@@ -1,4 +1,36 @@
 //! The global identifiers of hax.
+//!
+//! ## Public API
+//! The main type provided by this module is `GlobalId`.
+//!
+//! A global identifier is either:
+//!  - a concrete identifier, something that could be represented as a Rust path
+//!  - a tuple identifier
+//!
+//! To print a global identifier, you have to use the method [`GlobalId::view`],
+//! which will output a [`view::View`].
+//!
+//! You can also try to interpret a global identifier as a tuple identifier
+//! ([`TupleId`]) via the method [`GlobalId::expect_tuple`].
+//!
+//! ## Internal representations
+//! [`GlobalId`] is a wrapper for an interned [`GlobalIdInner`].
+//!
+//! A [`GlobalIdInner`] is either a [`ConcreteId`] or a [`TupleId`]. A
+//! [`GlobalId`] can always be turned into a [`ConcreteId`].
+//!
+//! A [`ConcreteId`] is an [`ExplicitDefId`] that can be moved to fresh
+//! namespaces or suffixed with reserved suffixes.
+//!
+//! An [`ExplicitDefId`] is a [`DefId`] that adds one piece of information: is
+//! the identifier refering to a constructor or not. This information is
+//! ambiguous in Rust's `DefId`s.
+//!
+//! A [`DefId`] is an interned [`DefIdInner`], which in turn is a datatype
+//! isomorphic to the raw representation of `DefId`s in the frontend.
+//!
+//! A [`DefIdInner`] is basically a definition kind, a krate name and a path.
+
 use hax_frontend_exporter::{DefKind, DefPathItem, DisambiguatedDefPathItem};
 use hax_rust_engine_macros::*;
 
