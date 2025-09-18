@@ -109,7 +109,13 @@ impl<'a, 'b, A: 'a + Clone, P: PrettyAst<'a, 'b, A>, T: 'b + serde::Serialize> P
 
 #[macro_export]
 /// Similar to [`std::todo`], but returns a document instead of panicking with a message.
-/// Also, `todo_document!` accepts a `issue #123` prefix to point to a specific issue number.
+/// In addition, `todo_document!` accepts a prefix to point to a specific issue number.
+///
+/// ## Examples:
+/// - `todo_document!(allocator)`
+/// - `todo_document!(allocator, "This is a todo")`
+/// - `todo_document!(allocator, issue #42)`
+/// - `todo_document!(allocator, issue #42, "This is a todo")`
 macro_rules! todo_document {
     ($allocator:ident, issue $issue:literal) => {
         {return $allocator.todo_document(&format!("TODO_LINE_{}", std::line!()), Some($issue));}
