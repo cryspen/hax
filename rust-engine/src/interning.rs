@@ -59,24 +59,24 @@ impl<T> Default for InterningTable<T> {
 /// and compares in **O(1)** using its index. It behaves like `&'static T` via
 /// [`Deref`], and can be obtained with [`InternExtTrait::intern`] or
 /// [`Interned::intern`].
-#[derive(Hash, PartialEq, Eq)]
+#[derive(Hash, Eq, PartialEq)]
 pub struct Interned<T> {
     phantom: PhantomData<T>,
     index: u32,
 }
 
-impl<T: Serialize + Hash + Eq + PartialEq + Send + HasGlobal + Clone> PartialOrd for Interned<T> {
+impl<T: Eq> PartialOrd for Interned<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
-impl<T: Serialize + Hash + Eq + PartialEq + Send + HasGlobal + Clone> Ord for Interned<T> {
+impl<T: Eq> Ord for Interned<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.index.cmp(&other.index)
     }
 }
 
-impl<T: Serialize + Hash + Eq + PartialEq + Send + HasGlobal + Clone> Serialize for Interned<T> {
+impl<T: Serialize + Hash + Eq + Send + HasGlobal + Clone> Serialize for Interned<T> {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -85,13 +85,13 @@ impl<T: Serialize + Hash + Eq + PartialEq + Send + HasGlobal + Clone> Serialize 
     }
 }
 
-impl<T: Hash + Eq + PartialEq + Send + HasGlobal + Clone> AsRef<T> for Interned<T> {
+impl<T: Hash + Eq + Send + HasGlobal + Clone> AsRef<T> for Interned<T> {
     fn as_ref(&self) -> &T {
         (*self).get()
     }
 }
 
-impl<'a, T: Deserialize<'a> + Hash + Eq + PartialEq + Send + HasGlobal + Clone> Deserialize<'a>
+impl<'a, T: Deserialize<'a> + Hash + Eq + Send + HasGlobal + Clone> Deserialize<'a>
     for Interned<T>
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -112,7 +112,7 @@ impl<T: JsonSchema> JsonSchema for Interned<T> {
     }
 }
 
-impl<T: Eq + PartialEq + Send + HasGlobal + Clone + Debug + Hash> Debug for Interned<T> {
+impl<T: Eq + Send + HasGlobal + Clone + Debug + Hash> Debug for Interned<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("Interned")
             .field("index", &self.index)
@@ -145,7 +145,7 @@ impl<T, R> FnOnce<()> for ExplicitClosure<T, R> {
     }
 }
 
-impl<T: Hash + Eq + PartialEq + Clone + Send> InterningTable<T> {
+impl<T: Hash + Eq + Clone + Send> InterningTable<T> {
     fn intern(&mut self, value: &T) -> Interned<T> {
         if let Some(interned) = self.ids.get(value) {
             *interned
@@ -219,7 +219,7 @@ pub trait HasGlobal: Sized + 'static {
     fn interning_table() -> &'static Mutex<InterningTable<Self>>;
 }
 
-impl<T: Hash + Eq + PartialEq + Clone + HasGlobal + Send> Interned<T> {
+impl<T: Hash + Eq + Clone + HasGlobal + Send> Interned<T> {
     /// Interns a `value` and returns its compact handle.
     ///
     /// If an equal value has been interned before, this returns the existing
@@ -259,13 +259,13 @@ pub trait InternExtTrait: Sized {
     fn intern(&self) -> Interned<Self>;
 }
 
-impl<T: Hash + Eq + PartialEq + Clone + HasGlobal + Send> InternExtTrait for T {
+impl<T: Hash + Eq + Clone + HasGlobal + Send> InternExtTrait for T {
     fn intern(&self) -> Interned<Self> {
         Interned::intern(self)
     }
 }
 
-impl<T: Hash + Eq + PartialEq + Clone + HasGlobal + Send> Deref for Interned<T> {
+impl<T: Hash + Eq + Clone + HasGlobal + Send> Deref for Interned<T> {
     type Target = T;
 
     /// Dereferences to the underlying value (`&'static T`).
