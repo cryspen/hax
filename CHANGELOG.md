@@ -32,6 +32,9 @@ Changes to the frontend:
 Changes to hax-lib:
 - New behavior for`hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag (#1685)
 
+Changes to the Lean backend:
+- Improve support for functionalized loops (#1695)
+
 Miscellaneous:
  - A lean tutorial has been added to the hax website (#1626)
  - Diagnostics reporting were improved (#1692)
