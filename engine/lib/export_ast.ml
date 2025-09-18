@@ -76,7 +76,7 @@ module Make (FA : Features.T) = struct
     in
     let of_name n = concrete (Concrete_ident.of_name ~value:true n) in
     match gi with
-    | `Concrete c -> concrete c
+    | `Concrete c | `Projector (`Concrete c) -> concrete c
     | `TupleType length ->
         Types.Newtypeglobal_id (Tuple (Type { length = Int.to_string length }))
     | `TupleCons length ->
@@ -89,8 +89,6 @@ module Make (FA : Features.T) = struct
     | `Primitive Cast -> of_name Rust_primitives__hax__cast_op
     | `Primitive (LogicalOp And) -> of_name Rust_primitives__hax__logical_op_and
     | `Primitive (LogicalOp Or) -> of_name Rust_primitives__hax__logical_op_or
-    | `Projector (`Concrete c) ->
-        Types.Newtypeglobal_id (Concrete (Concrete_ident.to_rust_ast c))
 
   and dlocal_ident (li : local_ident) : B.local_id =
     Newtypelocal_id (Newtypesymbol li.name)
