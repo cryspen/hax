@@ -19,6 +19,7 @@
 //! `InterningTable`.
 
 use std::{
+    any::Any,
     collections::{HashMap, HashSet},
     fmt::Debug,
     hash::Hash,
@@ -147,19 +148,19 @@ impl<T, R> FnOnce<()> for ExplicitClosure<T, R> {
 }
 
 impl<T: Hash + Eq + Clone + Send> InterningTable<T> {
-    fn intern(&mut self, value: &T) -> Interned<T> {
-        if let Some(interned) = self.ids.get(value) {
+    fn try_intern(&mut self, value: &T) -> Option<Interned<T>> {
+        Some(if let Some(interned) = self.ids.get(value) {
             *interned
         } else {
             let index = self.items.len();
             self.items.push(value.clone());
             let handle = Interned {
                 phantom: PhantomData,
-                index: index as u32,
+                index: index.try_into().ok()?,
             };
             self.ids.insert(value.clone(), handle);
             handle
-        }
+        })
     }
     fn get(&self, interned: Interned<T>) -> &T {
         &self.items[interned.index as usize]
@@ -170,10 +171,12 @@ impl<T: Hash + Eq + Clone + Send> InterningTable<T> {
     ///
     /// # Panics
     ///
-    /// Panics if `values` contains duplicates (by `Eq`).
+    /// Panics if `values` contains duplicates (by `Eq`) or if `N` is greater
+    /// than `u32::MAX`.
     pub const fn new_with_values<const N: usize>(
         values: fn() -> [T; N],
     ) -> (LazyLockNewWithValue<T, N>, [Interned<T>; N]) {
+        assert!(N < u32::MAX as usize);
         let mut i = 0;
         let mut interned_values: [Interned<T>; N] = [Interned {
             phantom: PhantomData,
@@ -195,7 +198,11 @@ impl<T: Hash + Eq + Clone + Send> InterningTable<T> {
 
             let mut table = InterningTable::default();
             for value in values {
-                table.intern(&value);
+                if table.try_intern(&value).is_none() {
+                    unreachable!(
+                        "we asserted `N < u32::MAX`, the length of the internal vector `table` should be less than `u32::MAX`"
+                    )
+                }
             }
             Mutex::new(table)
         }));
@@ -215,7 +222,7 @@ pub type LazyLockNewWithValue<T, const N: usize> =
 /// Implement this for your type to opt in to interning:
 /// provide a `static` (usually a `LazyLock<Mutex<InterningTable<Self>>>`)
 /// and return a reference to it.
-pub trait Internable: Sized + Hash + Eq + Clone + Send + 'static {
+pub trait Internable: Sized + Hash + Eq + Clone + Send + Any + 'static {
     /// Returns the global interning table for `Self`.
     fn interning_table() -> &'static Mutex<InterningTable<Self>>;
 
@@ -234,14 +241,22 @@ impl<T: Internable> Interned<T> {
     /// If an equal value has been interned before, this returns the existing
     /// handle; otherwise it inserts the value into the global table.
     pub fn intern(value: &T) -> Self {
-        // Invariant: the interning mutex is only locked here, and InterningTable::intern
-        // is panic-free (and does not invoke user code that may panic). Therefore, no
-        // panic can occur while the mutex is held, so the mutex cannot be poisoned.
-        // If this ever panics, our invariant was broken elsewhere.
-        let mut table = T::interning_table()
-            .lock()
-            .expect("interning table mutex poisoned");
-        table.intern(value)
+        {
+            // Invariant: the interning mutex is only locked here, and InterningTable::intern
+            // is panic-free (and does not invoke user code that may panic). Therefore, no
+            // panic can occur while the mutex is held, so the mutex cannot be poisoned.
+            // If this ever panics, our invariant was broken elsewhere.
+            let mut table = T::interning_table()
+                .lock()
+                .expect("interning table mutex poisoned");
+            table.try_intern(value)
+        }
+        .unwrap_or_else(|| {
+            panic!(
+                "more than `u32::MAX` values have been interned for type `{}`",
+                std::any::type_name::<T>()
+            )
+        })
     }
 
     /// Returns a `&'static T` for this handle.
