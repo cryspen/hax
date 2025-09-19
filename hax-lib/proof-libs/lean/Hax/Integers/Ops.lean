@@ -301,12 +301,12 @@ instance : Operations isize where
 @[simp, spec]
 instance : HaxShiftRight u64 i32 where
   shiftRight x y :=
-    if 0 ≤ y && y ≤ 31 then pure (x >>> y.toNatClampNeg.toUInt64)
+    if 0 ≤ y && y < 64 then pure (x >>> y.toNatClampNeg.toUInt64)
     else .fail .integerOverflow
 
 -- Custom instances
 @[simp, spec]
 instance : HaxShiftRight i64 i32 where
   shiftRight x y :=
-    if 0 ≤ y && y ≤ 31 then pure (x >>> y.toInt64)
+    if 0 ≤ y && y < 64 then pure (x >>> y.toInt64)
     else .fail .integerOverflow
