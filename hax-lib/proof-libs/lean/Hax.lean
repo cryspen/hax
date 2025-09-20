@@ -20,3 +20,6 @@ import Hax.Lib
 
 /- Rust primitives (integers, string, slices, etc.) -/
 import Hax.Rust_primitives
+
+/- Tactics -/
+import Hax.Tactics
