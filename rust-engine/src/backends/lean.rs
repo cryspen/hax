@@ -15,7 +15,8 @@ use crate::{
 };
 
 mod binops {
-    pub use crate::names::rust_primitives::hax::machine_int::{add, div, mul, rem, shr, sub};
+    pub use crate::names::core::ops::index::*;
+    pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
 
@@ -107,8 +108,11 @@ impl Printer for LeanPrinter {
             binops::rem(),
             binops::div(),
             binops::shr(),
+            binops::bitand(),
+            binops::bitxor(),
             binops::logical_op_and(),
             binops::logical_op_or(),
+            binops::Index::index(),
         ]))]
     }
 }
@@ -553,6 +557,13 @@ set_option linter.unusedVariables false
                         bounds_impls: _,
                         trait_: _,
                     } => {
+                        if op == &binops::Index::index() {
+                            return docs!["← ", lhs, "[", line_!(), rhs, line_!(), "]_?"]
+                                .parens()
+                                .nest(INDENT)
+                                .group();
+                        }
+
                         let symbol = if op == &binops::add() {
                             "+?"
                         } else if op == &binops::sub() {
@@ -565,6 +576,10 @@ set_option linter.unusedVariables false
                             "%?"
                         } else if op == &binops::shr() {
                             ">>>?"
+                        } else if op == &binops::bitand() {
+                            "&&&?"
+                        } else if op == &binops::bitxor() {
+                            "^^^?"
                         } else if op == &binops::logical_op_and() {
                             "&&?"
                         } else if op == &binops::logical_op_or() {
@@ -708,9 +723,15 @@ set_option linter.unusedVariables false
                 .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
-                TyKind::Array { ty, length } => docs!["RustArray", line!(), ty, line!(), &**length]
-                    .parens()
-                    .group(),
+                TyKind::Array { ty, length } => {
+                    let v = length.kind().clone();
+                    let ExprKind::Literal(int_lit @ Literal::Int { .. }) = v else {
+                        todo!()
+                    };
+                    docs!["RustArray", line!(), ty, line!(), &int_lit]
+                        .parens()
+                        .group()
+                }
                 TyKind::AssociatedType { impl_, item } => {
                     let kind = impl_.kind();
                     match &kind {
