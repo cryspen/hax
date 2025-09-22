@@ -221,16 +221,20 @@ const _: () = {
     #[allow(unused)]
     macro_rules! todo {($($tt:tt)*) => {disambiguated_todo!($($tt)*)};}
 
+    // Insert a new line in a doc (pretty)
     macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
 
+    // Concatenate docs (pretty )
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
 
+    // Given an iterable `[A,B, ... , C]` and a separator `S`, create the doc `ASBS...CS`
     macro_rules! zip_right {
         ($a:expr, $sep:expr) => {
             docs![concat!($a.into_iter().map(|a| docs![a, $sep]))]
         };
     }
 
+    // Given an iterable `[A,B, ... , C]` and a separator `S`, create the doc `SASB...SC`
     macro_rules! zip_left {
         ($sep:expr, $a:expr) => {
             docs![concat!($a.into_iter().map(|a| docs![$sep, a]))]
