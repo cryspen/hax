@@ -19,7 +19,6 @@
 //! `InterningTable`.
 
 use std::{
-    any::Any,
     collections::{HashMap, HashSet},
     fmt::Debug,
     hash::Hash,
@@ -226,7 +225,7 @@ pub type LazyLockNewWithValue<T, const N: usize> =
 /// Implement this for your type to opt in to interning:
 /// provide a `static` (usually a `LazyLock<Mutex<InterningTable<Self>>>`)
 /// and return a reference to it.
-pub trait Internable: Sized + Hash + Eq + Clone + Send + Any + 'static {
+pub trait Internable: Sized + Hash + Eq + Clone + Send + 'static {
     /// Returns the global interning table for `Self`.
     fn interning_table() -> &'static Mutex<InterningTable<Self>>;
 
