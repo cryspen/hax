@@ -10,7 +10,6 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    printer::pretty_ast::DebugJSON,
     resugarings::BinOp,
 };
 
@@ -358,7 +357,7 @@ set_option linter.unusedVariables false
                             .group()
                             .append(line!()),
                         GenericParamKind::Const { .. } => {
-                            todo!("-- to debug const param run: {}", DebugJSON(param))
+                            todo!("-- Unsupported const param")
                         }
                     }
                 })),
@@ -373,10 +372,7 @@ set_option linter.unusedVariables false
         ) -> DocBuilder<'a, Self, A> {
             match generic_constraint {
                 GenericConstraint::Type(impl_ident) => docs![impl_ident].brackets(),
-                _ => todo!(
-                    "-- to debug generic constraint run: {}",
-                    DebugJSON(generic_constraint)
-                ),
+                _ => todo!("-- unsupported constraint"),
             }
         }
 
@@ -462,10 +458,7 @@ set_option linter.unusedVariables false
                         docs![constructor]
                     } else if base.is_some() {
                         // TODO : support base expressions. see https://github.com/cryspen/hax/issues/1637
-                        todo!(
-                            "-- Unsupported base expressions for structs. To see the ast of the item run : {}",
-                            DebugJSON(&**kind)
-                        )
+                        todo!("-- Unsupported base expressions for structs.")
                     } else {
                         docs![constructor, line!(), self.arguments(fields, is_record)]
                             .nest(INDENT)
@@ -689,16 +682,10 @@ set_option linter.unusedVariables false
                     let kind = impl_.kind();
                     match &kind {
                         ImplExprKind::Self_ => docs![self.render_last(item)],
-                        _ => todo!(
-                            "sorry \n-- support only local associated types: {}\n",
-                            DebugJSON(ty)
-                        ), // Support only local associated types
+                        _ => todo!("sorry \n-- support only local associated types\n"), // Support only local associated types
                     }
                 }
-                _ => todo!(
-                    "sorry \n-- unsupported type, to debug run: {}\n",
-                    DebugJSON(ty)
-                ),
+                _ => todo!("sorry \n-- unsupported type\n"),
             }
         }
 
@@ -976,7 +963,7 @@ set_option linter.unusedVariables false
                     ]
                     .nest(INDENT),
                 ],
-                _ => todo!("-- to debug missing item run: {}", DebugJSON(kind)),
+                _ => todo!("-- unsupported item"),
             }
         }
 
@@ -1012,7 +999,7 @@ set_option linter.unusedVariables false
                             .brackets()]))
                     ]
                 }
-                _ => todo!("-- to debug missing trait item run: {}", DebugJSON(kind)),
+                _ => todo!("-- unsupported trait item"),
             }]
         }
 
