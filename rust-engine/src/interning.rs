@@ -130,10 +130,14 @@ impl<T> Clone for Interned<T> {
 }
 impl<T> Copy for Interned<T> {}
 
-/// A tiny, `FnOnce`-compatible wrapper used to initialize a `LazyLock` with a captured value.
+/// A tiny, `FnOnce`-compatible wrapper used to initialize a `LazyLock` with a
+/// captured value.
 ///
-/// This is a utility to build `LazyLock<T>` where the initializer needs to
-/// own some value prepared in a `const` context.
+/// This is a utility to build `LazyLock<T>` where the initializer needs to own
+/// some value prepared in a `const` context.
+///
+/// This is required since we need an explicit concrete type for the
+/// initializataion function given to `LazyLock::new`.
 ///
 /// You usually don't need this directly unless you're calling
 /// [`InterningTable::new_with_values`].
