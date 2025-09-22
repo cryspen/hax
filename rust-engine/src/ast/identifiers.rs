@@ -1,8 +1,8 @@
 //! Identifier types used throughout the AST.
 //!
-//! This module defines:
+//! This module provides two kinds of identifiers:
 //! - `GlobalId`: fully-qualified paths like `std::mem::drop`
-//! - `LocalId`: local variable identifiers
+//! - `LocalId`: local identifiers
 
 use crate::symbol::Symbol;
 use hax_rust_engine_macros::*;
