@@ -1,54 +1,34 @@
-
 module Core_models.Marker
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
 
-type t_PhantomData (t:Type0) = 
-     | PhantomData: t_PhantomData t
-
-class t_Send (h: Type) = {
-  dummy_send_field: unit
+class t_Copy (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_15837849249852401974:Core_models.Clone.t_Clone
+  v_Self
 }
 
-(** we consider everything to be send *)
-instance t_Send_all t: t_Send t = {
-  dummy_send_field = ()
-}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let _ = fun (v_Self:Type0) {|i: t_Copy v_Self|} -> i._super_15837849249852401974
 
-class t_Sync (h: Type) = {
-  dummy_sync_field: unit
-}
+class t_Send (v_Self: Type0) = { __marker_trait_t_Send:Prims.unit }
 
-(** we consider everything to be sync *)
-instance t_Sync_all t: t_Sync t = {
-  dummy_sync_field = ()
-}
+class t_Sync (v_Self: Type0) = { __marker_trait_t_Sync:Prims.unit }
 
-class t_Sized (h: Type) = {
-  dummy_field: unit
-}
+class t_Sized (v_Self: Type0) = { __marker_trait_t_Sized:Prims.unit }
 
-(** we consider everything to be sized *)
-instance t_Sized_all t: t_Sized t = {
-  dummy_field = ()
-}
+class t_StructuralPartialEq (v_Self: Type0) = { __marker_trait_t_StructuralPartialEq:Prims.unit }
 
-class t_Copy (h: Type) = {
-  dummy_copy_field: unit
-}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl (#v_T: Type0) : t_Send v_T = { __marker_trait_t_Send = () }
 
-(** we consider everything to be copyable *)
-instance t_Copy_all t: t_Copy t = {
-  dummy_copy_field = ()
-}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1 (#v_T: Type0) : t_Sync v_T = { __marker_trait_t_Sync = () }
 
-class t_Clone (h: Type) = {
-  dummy_clone_field: unit
-}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_2 (#v_T: Type0) : t_Sized v_T = { __marker_trait_t_Sized = () }
 
-(** we consider everything to be clonable *)
-instance t_Clone_all t: t_Clone t = {
-  dummy_clone_field = ()
-}
-
-class t_StructuralPartialEq (h: Type) = {
-  dummy_eq_field: unit
-}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+    : t_Copy v_T = { _super_15837849249852401974 = FStar.Tactics.Typeclasses.solve }

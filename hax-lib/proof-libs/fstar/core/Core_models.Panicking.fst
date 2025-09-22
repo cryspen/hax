@@ -1,7 +1,6 @@
 module Core_models.Panicking
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives.Integers
 
 assume
 val panic_explicit': Prims.unit
@@ -30,7 +29,7 @@ unfold
 let panic__panic_cold_explicit = panic__panic_cold_explicit'
 
 assume
-val panic_fmt': e_fmt: Core_models.Fmt.Rt.t_Argument
+val panic_fmt': e_fmt: Core_models.Fmt.t_Arguments
   -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
 
 unfold
@@ -41,16 +40,3 @@ val panic_fmt__panic_cold_explicit': Prims.unit -> Rust_primitives.Hax.t_Never
 
 unfold
 let panic_fmt__panic_cold_explicit = panic_fmt__panic_cold_explicit'
-
-assume
-val panic_internal': Prims.unit
-  -> Prims.Pure Rust_primitives.Hax.t_Never (requires false) (fun _ -> Prims.l_True)
-
-unfold
-let panic_internal = panic_internal'
-
-assume
-val panic_internal__panic_cold_explicit': Prims.unit -> Rust_primitives.Hax.t_Never
-
-unfold
-let panic_internal__panic_cold_explicit = panic_internal__panic_cold_explicit'

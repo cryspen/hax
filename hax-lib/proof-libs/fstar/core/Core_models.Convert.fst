@@ -51,7 +51,7 @@ instance integer_try_from (t:inttype) (t':inttype) : t_TryFrom (int_t t) (int_t 
   f_try_from = (fun (x: int_t t') ->
     if range (v #t' x) t
     then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #t' #t x)
-    else Core_models.Result.Result_Err ()
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
   )
 }
 
@@ -90,7 +90,7 @@ instance integer_try_into (t:inttype) (t':inttype) : t_TryInto (int_t t) (int_t 
   f_try_into = (fun (x: int_t t) ->
     if range (v #t x) t'
     then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #t #t' x)
-    else Core_models.Result.Result_Err ()
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
   )
 }
 
