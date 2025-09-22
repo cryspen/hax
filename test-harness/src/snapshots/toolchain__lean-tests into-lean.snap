@@ -74,6 +74,65 @@ def Lean_tests.Traits.Overlapping_methods.test
       +? (← Lean_tests.Traits.Overlapping_methods.T2.f x))
     +? (← Lean_tests.Traits.Overlapping_methods.T3.f x))
 
+class Lean_tests.Traits.Inheritance.T1 (Self : Type) where
+  f1 : Self -> Result usize
+
+class Lean_tests.Traits.Inheritance.T2 (Self : Type) where
+  f2 : Self -> Result usize
+
+class Lean_tests.Traits.Inheritance.T3 (Self : Type) where
+  [_constr_5860918688139008796 : (Lean_tests.Traits.Inheritance.T2 Self)]
+  [_constr_2614080591691505761 : (Lean_tests.Traits.Inheritance.T1 Self)]
+  f3 : Self -> Result usize
+
+class Lean_tests.Traits.Inheritance.Tp1 (Self : Type) where
+  f1 : Self -> Result usize
+
+class Lean_tests.Traits.Inheritance.Tp2 (Self : Type) where
+  [_constr_9900012313089209274 : (Lean_tests.Traits.Inheritance.Tp1 Self)]
+  [_constr_3518312647081482353 : (Lean_tests.Traits.Inheritance.T3 Self)]
+  fp2 : Self -> Result usize
+
+structure Lean_tests.Traits.Inheritance.S where
+
+
+instance Lean_tests.Traits.Inheritance.Impl :
+  Lean_tests.Traits.Inheritance.T1 Lean_tests.Traits.Inheritance.S
+  where
+  f1 (self : Lean_tests.Traits.Inheritance.S) := do (1 : usize)
+
+instance Lean_tests.Traits.Inheritance.Impl_1 :
+  Lean_tests.Traits.Inheritance.T2 Lean_tests.Traits.Inheritance.S
+  where
+  f2 (self : Lean_tests.Traits.Inheritance.S) := do (2 : usize)
+
+instance Lean_tests.Traits.Inheritance.Impl_2 :
+  Lean_tests.Traits.Inheritance.T3 Lean_tests.Traits.Inheritance.S
+  where
+  f3 (self : Lean_tests.Traits.Inheritance.S) := do (3 : usize)
+
+instance Lean_tests.Traits.Inheritance.Impl_3 :
+  Lean_tests.Traits.Inheritance.Tp1 Lean_tests.Traits.Inheritance.S
+  where
+  f1 (self : Lean_tests.Traits.Inheritance.S) := do (10 : usize)
+
+instance Lean_tests.Traits.Inheritance.Impl_4 :
+  Lean_tests.Traits.Inheritance.Tp2 Lean_tests.Traits.Inheritance.S
+  where
+  fp2 (self : Lean_tests.Traits.Inheritance.S) := do
+    (← (← (← (← Lean_tests.Traits.Inheritance.Tp1.f1 self)
+          +? (← Lean_tests.Traits.Inheritance.T1.f1 self))
+        +? (← Lean_tests.Traits.Inheritance.T2.f2 self))
+      +? (← Lean_tests.Traits.Inheritance.T3.f3 self))
+
+def Lean_tests.Traits.Inheritance.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result usize
+  := do
+  let s : Lean_tests.Traits.Inheritance.S ← (pure
+    Lean_tests.Traits.Inheritance.S.mk);
+  (← (← Lean_tests.Traits.Inheritance.T3.f3 s) +? (1 : usize))
+
 class Lean_tests.Traits.Bounds.T1 (Self : Type) where
   f1 : Self -> Result usize
 

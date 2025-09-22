@@ -118,3 +118,54 @@ mod overlapping_methods {
         T1::f(&x) + T2::f(&x) + T3::f(&x)
     }
 }
+
+mod inheritance {
+    trait T1 {
+        fn f1(&self) -> usize;
+    }
+    trait T2 {
+        fn f2(&self) -> usize;
+    }
+    trait T3: T2 + T1 {
+        fn f3(&self) -> usize;
+    }
+    trait Tp1 {
+        fn f1(&self) -> usize;
+    }
+    trait Tp2: Tp1 + T3 {
+        fn fp2(&self) -> usize;
+    }
+
+    struct S {}
+    impl T1 for S {
+        fn f1(&self) -> usize {
+            1
+        }
+    }
+    impl T2 for S {
+        fn f2(&self) -> usize {
+            2
+        }
+    }
+    impl T3 for S {
+        fn f3(&self) -> usize {
+            3
+        }
+    }
+
+    impl Tp1 for S {
+        fn f1(&self) -> usize {
+            10
+        }
+    }
+
+    impl Tp2 for S {
+        fn fp2(&self) -> usize {
+            Tp1::f1(self) + T1::f1(self) + T2::f2(self) + T3::f3(self)
+        }
+    }
+    fn test() -> usize {
+        let s = S {};
+        s.f3() + 1
+    }
+}

@@ -349,19 +349,13 @@ set_option linter.unusedVariables false
             // TODO : The lean backend should not ignore constraints on generic params, see
             // https://github.com/cryspen/hax/issues/1636
             docs![
-                concat!(params.iter().map(|param| {
-                    match param.kind {
-                        GenericParamKind::Lifetime => unreachable!(),
-                        GenericParamKind::Type => docs![param, reflow!(" : Type")]
-                            .parens()
-                            .group()
-                            .append(line!()),
-                        GenericParamKind::Const { .. } => {
-                            todo!("-- Unsupported const param")
-                        }
-                    }
-                })),
-                zip_right!(constraints, line!()),
+                zip_right!(params, line!()),
+                zip_right!(
+                    constraints
+                        .iter()
+                        .map(|constraint| docs![constraint].brackets()),
+                    line!()
+                ),
             ]
             .group()
         }
@@ -371,8 +365,20 @@ set_option linter.unusedVariables false
             generic_constraint: &'b GenericConstraint,
         ) -> DocBuilder<'a, Self, A> {
             match generic_constraint {
-                GenericConstraint::Type(impl_ident) => docs![impl_ident].brackets(),
+                GenericConstraint::Type(impl_ident) => docs![impl_ident],
                 _ => todo!("-- unsupported constraint"),
+            }
+        }
+
+        fn generic_param(&'a self, generic_param: &'b GenericParam) -> DocBuilder<'a, Self, A> {
+            match generic_param.kind() {
+                GenericParamKind::Type => docs![&generic_param.ident, reflow!(" : Type")]
+                    .parens()
+                    .group(),
+                GenericParamKind::Lifetime => unreachable!(),
+                GenericParamKind::Const { .. } => {
+                    todo!("-- Unsupported const param")
+                }
             }
         }
 
@@ -770,10 +776,6 @@ set_option linter.unusedVariables false
             docs![&param.pat]
         }
 
-        fn generic_param(&'a self, generic_param: &'b GenericParam) -> DocBuilder<'a, Self, A> {
-            docs![&generic_param.ident]
-        }
-
         fn item(
             &'a self,
             item @ Item {
@@ -891,37 +893,36 @@ set_option linter.unusedVariables false
                     docs![
                         docs![
                             docs![reflow!("class "), name],
+                            (!generics.params.is_empty()).then_some(docs![
+                                line!(),
+                                intersperse!(&generics.params, line!()).group()
+                            ]),
                             line!(),
-                            zip_right!(
-                                generics
-                                    .params
-                                    .iter()
-                                    .map(|p| docs![p, reflow!(" : Type")].parens().group()),
-                                line!()
-                            )
-                            .group(),
                             "where"
                         ]
                         .group(),
                         hardline!(),
-                        zip_right!(
-                            generics.constraints.iter().map(|c| {
-                                match c {
-                                    GenericConstraint::Type(tc_constraint) => docs![
-                                        format!("_constr_{}", tc_constraint.name),
-                                        reflow!(" :"),
-                                        line!(),
-                                        &tc_constraint.goal
-                                    ]
-                                    .nest(INDENT)
-                                    .group()
-                                    .brackets(),
-                                    GenericConstraint::Lifetime(_) => unreachable!(),
-                                    GenericConstraint::Projection(_projection_predicate) => todo!(),
-                                }
-                            }),
+                        (!generics.constraints.is_empty()).then_some(docs![zip_right!(
+                            generics
+                                .constraints
+                                .iter()
+                                .map(|constraint: &GenericConstraint| {
+                                    match constraint {
+                                        GenericConstraint::Type(tc_constraint) => docs![
+                                            format!("_constr_{}", tc_constraint.name),
+                                            " :",
+                                            line!(),
+                                            constraint
+                                        ]
+                                        .group()
+                                        .brackets(),
+                                        _ => {
+                                            todo!("unsupported type constraint in trait definition")
+                                        }
+                                    }
+                                }),
                             hardline!()
-                        ),
+                        )]),
                         intersperse!(
                             items.iter().filter(|item| {
                                 // TODO: should be treated directly by name rendering, see :
