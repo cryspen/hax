@@ -242,7 +242,7 @@ impl<T: Internable> Interned<T> {
     /// handle; otherwise it inserts the value into the global table.
     pub fn intern(value: &T) -> Self {
         {
-            // Invariant: the interning mutex is only locked here, and InterningTable::intern
+            // Invariant: the interning mutex is only locked here, and InterningTable::try_intern
             // is panic-free (and does not invoke user code that may panic). Therefore, no
             // panic can occur while the mutex is held, so the mutex cannot be poisoned.
             // If this ever panics, our invariant was broken elsewhere.
