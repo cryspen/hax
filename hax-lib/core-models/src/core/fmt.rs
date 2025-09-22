@@ -28,6 +28,7 @@ mod rt {
 open Rust_primitives.Integers"
     )]
     #[hax_lib::opaque]
+    // The internals of this are not important in this model
     enum ArgumentType<'a> {
         Placeholder {
             /* value: NonNull<()>,

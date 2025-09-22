@@ -1,5 +1,6 @@
 use crate::option::Option;
 
+// TODO try to remove this
 #[hax_lib::fstar::before("open Rust_primitives.Integers")]
 #[hax_lib::attributes]
 pub trait PartialEq<Rhs>

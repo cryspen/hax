@@ -18,7 +18,7 @@ trait TryFrom<T>: Sized {
     fn try_from(x: T) -> Result<Self, Self::Error>;
 }
 
-// Need manual definitions for integer types. Need definition of Infallible
+// TODO add impls for integer types and for Infallible
 
 impl<T, U: From<T>> Into<U> for T {
     fn into(self) -> U {

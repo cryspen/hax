@@ -56,6 +56,7 @@ pub mod control_flow {
 }
 
 pub mod index {
+    // TODO remove
     #[hax_lib::fstar::before("open Rust_primitives.Integers")]
     trait Index<Idx> {
         type Output;

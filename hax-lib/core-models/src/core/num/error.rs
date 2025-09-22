@@ -7,7 +7,8 @@ pub struct ParseIntError {
     pub(super) kind: IntErrorKind,
 }
 
-// enums bring a dependency to isize, leaving this away for now.
+// Because of representations, enums bring a dependency to isize.
+// TODO Fix the dependency issue and add `IntErrorKind`
 /* pub enum IntErrorKind {
     Empty,
     InvalidDigit,

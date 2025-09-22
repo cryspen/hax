@@ -166,12 +166,11 @@ val drop': #v_T: Type0 -> e_x: v_T -> Prims.unit
 unfold
 let drop (#v_T: Type0) = drop' #v_T
 
-assume
-val copy': #v_T: Type0 -> {| i0: Core_models.Marker.t_Copy v_T |} -> x: v_T -> v_T
-
-unfold
-let copy (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T) =
-  copy' #v_T #i0
+let copy
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (x: v_T)
+    : v_T = x
 
 assume
 val transmute_copy': #v_Src: Type0 -> #v_Dst: Type0 -> src: v_Src -> v_Dst

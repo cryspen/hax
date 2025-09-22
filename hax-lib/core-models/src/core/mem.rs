@@ -69,7 +69,6 @@ pub fn replace<T>(dest: &mut T, src: T) -> T {
 #[hax_lib::opaque]
 pub fn drop<T>(_x: T) {}
 
-#[hax_lib::opaque]
 pub fn copy<T: Copy>(x: &T) -> T {
     *x
 }
