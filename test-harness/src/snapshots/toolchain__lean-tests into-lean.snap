@@ -209,23 +209,50 @@ class Lean_tests.Traits.Associated_types.Foo (Self : Type) (T : Type) where
 class Lean_tests.Traits.Associated_types.Bar (Self : Type) where
 
 
+structure Lean_tests.Traits.Associated_types.S where
+
+
+instance Lean_tests.Traits.Associated_types.Impl_2 :
+  Lean_tests.Traits.Associated_types.Bar i16
+  where
+
+
+instance Lean_tests.Traits.Associated_types.Impl_3 (A : Type) :
+  Lean_tests.Traits.Associated_types.Foo (Rust_primitives.Hax.Tuple2 u32 A) i16
+  where
+
+
 class Lean_tests.Traits.Associated_types.T1 (Self : Type) where
   T : Type
   f : Self -> T -> Result T
 
 class Lean_tests.Traits.Associated_types.T3 (Self : Type) where
   T : Type
-  [_constr_14712917225944295424 :
-    (Lean_tests.Traits.Associated_types.Foo T Rust_primitives.Hax.Tuple0)]
+  [_constr_9884638762124940061 : (Lean_tests.Traits.Associated_types.Bar T)]
   Tp : Type
-  [_constr_17020143134338090706 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
+  [_constr_16271648697586611929 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
   f (A : Type) [(Lean_tests.Traits.Associated_types.Bar A)] :
     Self -> T -> Tp -> Result usize
+
+instance Lean_tests.Traits.Associated_types.Impl :
+  Lean_tests.Traits.Associated_types.T1 Lean_tests.Traits.Associated_types.S
+  where
+  T := i32
+  f (self : Lean_tests.Traits.Associated_types.S) (x : i32) := do (2121 : i32)
 
 class Lean_tests.Traits.Associated_types.T2 (Self : Type) where
   T : Type
   [_constr_11855681382024687155 : (Lean_tests.Traits.Associated_types.T1 T)]
   f : Self -> T -> Result usize
+
+instance Lean_tests.Traits.Associated_types.Impl_1 :
+  Lean_tests.Traits.Associated_types.T2 Lean_tests.Traits.Associated_types.S
+  where
+  T := Lean_tests.Traits.Associated_types.S
+  f (self : Lean_tests.Traits.Associated_types.S)
+    (x : Lean_tests.Traits.Associated_types.S)
+    := do
+    (21 : usize)
 
 structure Lean_tests.Structs.Miscellaneous.S where
   f : i32

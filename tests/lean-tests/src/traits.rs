@@ -81,10 +81,39 @@ mod associated_types {
     trait Bar {}
 
     trait T3 {
-        type T: Foo<()>;
-        type Tp<T: Bar>: Foo<T>;
+        type T: Bar;
+        type Tp<A: Bar>: Foo<Self::T>;
         fn f<A: Bar>(&self, x: Self::T, y: Self::Tp<A>) -> usize;
     }
+
+    struct S {}
+    impl T1 for S {
+        type T = i32;
+
+        fn f(&self, x: Self::T) -> Self::T {
+            2121
+        }
+    }
+    impl T2 for S {
+        type T = S;
+
+        fn f(&self, x: Self::T) -> usize {
+            21
+        }
+    }
+
+    impl Bar for i16 {}
+    impl<A> Foo<i16> for (u32, A) {}
+
+    // impl T3 for S {
+    //     type T = i16;
+
+    //     type Tp<A: Bar> = (u32, A);
+
+    //     fn f<A: Bar>(&self, x: Self::T, y: Self::Tp<A>) -> usize {
+    //         12
+    //     }
+    // }
 }
 
 mod overlapping_methods {

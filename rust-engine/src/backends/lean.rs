@@ -1015,7 +1015,10 @@ set_option linter.unusedVariables false
         ) -> DocBuilder<'a, Self, A> {
             let name = self.render_last(ident);
             match kind {
-                ImplItemKind::Type { .. } => todo!(),
+                ImplItemKind::Type {
+                    ty,
+                    parent_bounds: _,
+                } => docs![name, reflow!(" := "), ty],
                 ImplItemKind::Fn { body, params } => docs![
                     docs![
                         name,
