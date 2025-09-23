@@ -208,20 +208,12 @@ instance : Coe Nat u32 where
   coe n := UInt32.ofNat n
 
 @[simp]
-instance : Coe i32 Nat where
-  coe x := x.toNatClampNeg
-
-@[simp]
 instance : Coe u32 Nat where
   coe x := x.toNat
 
 @[simp]
 instance : Coe Nat usize where
   coe x := USize.ofNat x
-
-@[simp]
-instance : Coe Nat i32 where
-  coe x := Int32.ofNat x
 
 @[simp]
 instance : Coe usize u32 where
@@ -231,14 +223,6 @@ instance : Coe usize u32 where
 instance : Coe usize (Result u32) where
   coe x := if x.toNat < UInt32.size then pure (x.toUInt32)
            else Result.fail .integerOverflow
-
-@[simp]
-instance {β} : Coe (α -> usize -> β) (α -> Nat -> β) where
-  coe f a x := f a (USize.ofNat x)
-
-@[simp]
-instance {β} : Coe (α -> i32 -> β) (α -> Nat -> β) where
-  coe f a x := f a (Int32.ofNat x)
 
 @[simp]
 instance : OfNat (Result Nat) n where
@@ -537,7 +521,7 @@ class Rust_primitives.Hax.Folds {int_type: Type} where
 instance : Coe Nat Nat where
   coe x := x
 
-@[simp, spec]
+@[simp]
 instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
   fold_range s e inv init body := do
     let mut acc := init
@@ -561,6 +545,7 @@ values, executing body of the loop on a value that satisfies the invariant
 produces a result that also satisfies the invariant.
 
 -/
+@[spec]
 theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   (s e : Nat)
   (inv : α -> Nat -> Result Bool)
@@ -580,7 +565,7 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
   intro h_inv_s h_le h_body
-  mvcgen [Spec.forIn_list]
+  mvcgen [Spec.forIn_list, fold_range]
   case inv1 =>
     simp [Coe.coe]
     exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + suff.length) = pure true ⌝ )
@@ -598,6 +583,60 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
     simp at *
     suffices (s + (e - s)) = e by (rw [← this]; assumption)
     omega
+
+
+@[spec]
+theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
+  (s e : usize)
+  (inv : α -> usize -> Result Bool)
+  (init: α)
+  (body : α -> usize -> Result α) :
+  s ≤ e →
+  inv init s = pure true →
+  (∀ (acc:α) (i:usize),
+    s ≤ i →
+    i < e →
+    inv acc i = pure true →
+    ⦃ ⌜ True ⌝ ⦄
+    (body acc i)
+    ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
+  ⦃ ⌜ True ⌝ ⦄
+  (Rust_primitives.Hax.Folds.fold_range s e inv init body)
+  ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
+:= by
+  intro h_inv_s h_le h_body
+  have : s.toNat < USize.size := by apply USize.toNat_lt_size
+  have : e.toNat < USize.size := by apply USize.toNat_lt_size
+  mvcgen [Spec.forIn_list, fold_range]
+  case inv1 =>
+    simp [Coe.coe]
+    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + (USize.ofNat suff.length)) = pure true ⌝ )
+  case vc2.pre | vc4.post.except =>
+    simp [Coe.coe, USize.ofNat] at * <;> try assumption
+  case vc3.post.success =>
+    simp at *
+    suffices (s + USize.ofNat (USize.toNat e - USize.toNat s)) = e by rwa [← this]
+    rw [USize.ofNat_sub, USize.ofNat_toNat, USize.ofNat_toNat] <;> try assumption
+    rw (occs := [2])[← USize.sub_add_cancel (b := s) (a := e)]
+    rw [USize.add_comm]
+  case vc1.step _ x _ h_list _ h =>
+    intros
+    simp [Coe.coe] at h_list h
+    simp [Std.Range.toList] at h_list
+    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
+    let h_suff := Eq.symm h_suff
+    let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
+    unfold USize.size at *
+    mstart ; mspec h_body <;> simp [Coe.coe] at * <;> (try grind) <;> (try omega)
+    . apply USize.le_iff_toNat_le.mpr
+      rw [← h_x, USize.toNat_ofNat', Nat.mod_eq_of_lt] <;> try omega
+    . apply USize.lt_iff_toNat_lt.mpr
+      rw [← h_x, USize.toNat_ofNat', Nat.mod_eq_of_lt] <;> try omega
+    . rw [← h_x, USize.ofNat_add, USize.ofNat_toNat]
+      rwa [h_pre, List.length_range'] at h
+    . rw [h_pre, List.length_range', ← h_x, USize.ofNat_add, USize.ofNat_toNat, USize.add_assoc]
+      intro; assumption
+
 
 end Fold
 

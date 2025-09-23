@@ -6,7 +6,7 @@ use hax_lib::lean;
 pub(crate) type FieldElement = i32;
 
 #[hax_lib::lean::before("@[simp, spec]")]
-const BARRETT_R: i64 = 0x40000; // is 0x4000000 in the normal barrett example
+const BARRETT_R: i64 = 0x400000; // is 0x4000000 in the normal barrett example
 
 #[hax_lib::lean::before("@[simp, spec]")]
 const BARRETT_SHIFT: i64 = 26;
@@ -40,6 +40,8 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
 #[hax_lib::lean::before("@[simp, spec]")]
 #[hax_lib::lean::after(
     "
+set_option maxHeartbeats 1000000 in
+-- quite computation intensive
 theorem barrett_spec (value: i32) :
   ⦃ ⌜ Lean_barrett.__4.requires (value) = pure true ⌝ ⦄
   (do
