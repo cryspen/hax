@@ -33,19 +33,19 @@ namespace BV
 
 /-- Bitvec-based specification for rust addition on unsigned integers -/
 theorem HaxAdd {α : Type} [i: UnSigned α] (x y : α):
-  ¬ (BitVec.uaddOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) →
+  ¬ (BitVec.uaddOverflow (toBitVec x) (toBitVec y)) →
   ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r = x + y ⌝ ⦄
   := by intros; mvcgen
 
 /-- Bitvec-based specification for rust subtraction on unsigned integers -/
 theorem HaxSub {α : Type} [UnSigned α] (x y : α):
-  ¬ (BitVec.usubOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) →
+  ¬ (BitVec.usubOverflow (toBitVec x) (toBitVec y)) →
   ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r = x - y ⌝ ⦄
   := by intros; mvcgen
 
 /-- Bitvec-based specification for rust multiplication on unsigned integers -/
 theorem HaxMul {α : Type} [i: UnSigned α] (x y : α):
-  ¬ (BitVec.umulOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) →
+  ¬ (BitVec.umulOverflow (toBitVec x) (toBitVec y)) →
   ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r = x * y ⌝ ⦄
   := by intros; mvcgen
 
@@ -63,7 +63,7 @@ theorem HaxRem {α : Type} [UnSigned α] (x y : α):
 
 /-- Bitvec-based specification for rust remainder on unsigned integers -/
 theorem HaxShiftRight {α : Type} [UnSigned α] (x y : α):
-  (UnSigned.toNat y) < (UnSigned.width α) →
+  (UnSigned.toNat y) < (width α) →
   ⦃ ⌜ True ⌝ ⦄ (x >>>? y) ⦃ ⇓ r => ⌜ r = x >>> y ⌝ ⦄
   := by intros; mvcgen ; omega
 
@@ -75,7 +75,7 @@ namespace BV_post
 /-- Bitvec-based specification for rust addition on unsigned integers,
     with no overflow in post-condition -/
 theorem HaxAdd {α : Type} [i: UnSigned α] (x y : α):
-  ¬ (BitVec.uaddOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) →
+  ¬ (BitVec.uaddOverflow (toBitVec x) (toBitVec y)) →
   ⦃ ⌜ True ⌝ ⦄
   (x +? y)
   ⦃ ⇓ r => ⌜
@@ -86,7 +86,7 @@ theorem HaxAdd {α : Type} [i: UnSigned α] (x y : α):
 /-- Bitvec-based specification for rust subtraction on unsigned integers
     with no overflow in post-condition -/
 theorem HaxSub {α : Type} [i: UnSigned α] (x y : α):
-  ¬ (BitVec.usubOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) →
+  ¬ (BitVec.usubOverflow (toBitVec x) (toBitVec y)) →
   ⦃ ⌜ True ⌝ ⦄
   (x -? y)
   ⦃ ⇓ r =>
@@ -97,7 +97,7 @@ theorem HaxSub {α : Type} [i: UnSigned α] (x y : α):
 /-- Bitvec-based specification for rust multiplication on unsigned integers
     with no overflow in post-condition -/
 theorem HaxMul {α : Type} [i: UnSigned α] (x y : α):
-  ¬ (BitVec.umulOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) →
+  ¬ (BitVec.umulOverflow (toBitVec x) (toBitVec y)) →
   ⦃ ⌜ True ⌝ ⦄
   (x *? y)
   ⦃ ⇓ r => ⌜
@@ -105,7 +105,49 @@ theorem HaxMul {α : Type} [i: UnSigned α] (x y : α):
     (i.toNat x) * (i.toNat y) < 2 ^ i.width ⌝ ⦄
   := by intros; mvcgen ; simp at * ; assumption
 
+
+
 end BV_post
+
+
+namespace Nat
+
+/-- Nat-based specification for rust addition on signed integers -/
+theorem HaxAdd {α : Type} [UnSigned α] (x y : α):
+  (toNat x) + (toNat y) < 2^(width α) →
+  ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r = x + y ⌝ ⦄
+  := by
+  intros; mvcgen ; simp at *; omega
+
+
+/-- Nat-based specification for rust subtraction on signed integers -/
+theorem HaxSub {α : Type} [UnSigned α] (x y : α):
+  (toNat y) ≤ (toNat x) →
+  ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r = x - y ⌝ ⦄
+  := by
+  intros; mvcgen ; simp at *; omega
+
+/-- Nat-based specification for rust multiplication on signed integers -/
+theorem HaxMul {α : Type} [UnSigned α] (x y : α):
+  (toNat x) * (toNat y) < 2^(width α)→
+  ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r = x * y ⌝ ⦄
+  := by
+  intros; mvcgen ; simp at *; omega
+
+/-- Nat-based specification for rust division on signed integers -/
+theorem HaxDiv {α : Type} [UnSigned α] (x y : α):
+  y ≠ 0 →
+  ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r = x / y ⌝ ⦄
+  := by intros; mvcgen
+
+/-- Nat-based specification for rust remainder on signed integers -/
+theorem HaxRem {α : Type} [UnSigned α] (x y : α):
+  y ≠ 0 →
+  ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r = x % y ⌝ ⦄
+  := by intros; mvcgen
+
+end Nat
+
 
 end UnSigned.Spec
 
@@ -283,6 +325,12 @@ end Spec.BV_post
 -- Registering instances for mvcgen
 namespace Spec.Nat
 attribute [scoped spec]
+  UnSigned.Spec.Nat.HaxAdd
+  UnSigned.Spec.Nat.HaxSub
+  UnSigned.Spec.Nat.HaxMul
+  UnSigned.Spec.Nat.HaxRem
+  UnSigned.Spec.Nat.HaxDiv
+
   Signed.Spec.Nat.HaxAdd
   Signed.Spec.Nat.HaxSub
   Signed.Spec.Nat.HaxMul
