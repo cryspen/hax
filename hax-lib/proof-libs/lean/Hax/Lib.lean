@@ -911,24 +911,24 @@ section RustResult
 namespace Core.Result
 
 inductive Result α β
-| ok : α -> Result α β
-| err : β -> Result α β
+| Ok : α -> Result α β
+| Err : β -> Result α β
 
 instance {β : Type} : Monad (fun α => Result α β) where
-  pure x := .ok x
+  pure x := .Ok x
   bind {α α'} x (f: α -> Result α' β) := match x with
-  | .ok v => f v
-  | .err e => .err e
+  | .Ok v => f v
+  | .Err e => .Err e
 
 /-- Rust unwrapping, panics if `x` is not `result.Result.ok _` -/
 def Impl.unwrap (α: Type) (β:Type) (x: Result α β) :=
   match x with
-  | .err _ => Result.fail .panic
-  | .ok v => pure v
+  | .Err _ => Result.fail .panic
+  | .Ok v => pure v
 
 @[spec]
 theorem Impl.unwrap.spec {α β} (x: Result α β) v :
-  x = Result.ok v →
+  x = Result.Ok v →
   ⦃ True ⦄
   (Impl.unwrap α β x)
   ⦃ ⇓ r => r = v ⦄ := by
@@ -956,61 +956,61 @@ loop `body` from index `e` to `s`. If the invariant is not checked at runtime,
 only passed around
 
 -/
-def Rust_primitives.Hax.Folds.fold_range {α}
-  (s e : Nat)
-  (inv : α -> Nat -> Result Bool)
-  (init: α)
-  (body : α -> Nat -> Result α) : Result α := do
-  if e ≤ s then pure init
-  else Rust_primitives.Hax.Folds.fold_range (s+1) e inv (← body init s) body
 
--- Lemma for proof of hax_folds_fold_range property
-private
-theorem induction_decreasing {e} {P: Nat  → Prop}
-  (init: P e)
-  (rec: ∀ n, n < e → P (n+1) → P n) :
-  ∀ n, n ≤ e → P n
-:= by
-  intros n h
-  by_cases (n = 0)
-  . subst_vars
-    induction e <;> try grind
-  generalize h: (e - n) = d
-  have : n = e - d := by omega
-  have hlt : d < e := by omega
-  rw [this] ; clear h this
-  induction d with
-  | zero => simp ; grind
-  | succ d ih =>
-    apply rec <;> try omega
-    suffices e - (d + 1) + 1 = e - d by grind
-    omega
+inductive Core.Ops.Control_flow.ControlFlow (α β: Type 0) where
+| Break (x: α)
+| Continue (y : β)
+open Core.Ops.Control_flow
 
--- Lemma for proof of hax_folds_fold_range property
-private
-def induction_decreasing_range {s e} {P: Nat → Nat → Prop} :
-  s ≤ e →
-  (init: P e e) →
-  (rec: ∀ (n : Nat), n < e → s ≤ n → P (n + 1) e → P n e) →
-  P s e
-:= by intros; apply induction_decreasing (P := fun n => (s ≤ n → P n e)) (e := e) <;> try grind
+class Rust_primitives.Hax.Folds {int_type: Type} where
+  fold_range {α : Type}
+    (s e : int_type)
+    (inv : α -> int_type -> Result Bool)
+    (init: α)
+    (body : α -> int_type -> Result α)
+    : Result α
+  fold_range_return  {α_acc α_ret : Type}
+    (s e: int_type)
+    (inv : α_acc -> int_type -> Result Bool)
+    (init: α_acc)
+    (body : α_acc -> int_type ->
+      Result (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc ))
+    : Result (ControlFlow α_ret α_acc)
 
-/--
+instance : Coe Nat Nat where
+  coe x := x
 
+@[simp, spec]
+instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
+  fold_range s e inv init body := do
+    let mut acc := init
+    for i in [s:e] do
+      acc := (← body acc i)
+    return acc
+
+  fold_range_return {α_acc α_ret} s e inv init body := do
+    let mut acc := init
+    for i in [s:e] do
+      match (← body acc i) with
+      | .Break (.Break res ) => return (.Break res)
+      | .Break (.Continue ⟨ ⟨ ⟩, res⟩) => return (.Continue res)
+      | .Continue acc' => acc := acc'
+    pure (ControlFlow.Continue acc)
+
+/-
 Nat-based specification for hax_folds_fold_range. It requires that the invariant
 holds on the initial value, and that for any index `i` between the start and end
 values, executing body of the loop on a value that satisfies the invariant
 produces a result that also satisfies the invariant.
 
 -/
-@[spec]
 theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   (s e : Nat)
   (inv : α -> Nat -> Result Bool)
   (init: α)
   (body : α -> Nat -> Result α) :
-  inv init s = pure true →
   s ≤ e →
+  inv init s = pure true →
   (∀ (acc:α) (i:Nat),
     s ≤ i →
     i < e →
@@ -1022,22 +1022,29 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   (Rust_primitives.Hax.Folds.fold_range s e inv init body)
   ⦃ ⇓ r => inv r e = pure true ⦄
 := by
-  intro h_inv_s h_s_le_e h_body
-  revert h_inv_s init
-  apply induction_decreasing_range (s := s) (e := e) <;> try grind
-  . intros
-    unfold Rust_primitives.Hax.Folds.fold_range
-    mvcgen
+  intro h_inv_s h_le h_body
+  mvcgen [Spec.forIn_list]
+  case inv =>
+    simp [Coe.coe]
+    exact PostCond.total
+      (fun (acc , ⟨suff, _, _ ⟩) => inv acc (s + suff.length) = pure true )
+  case step =>
+    simp at h
+    expose_names
+    rw [Std.Range.toList_range'] at *
+    case h => simp
+    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_1
+    let h_suff := Eq.symm h_suff
+    let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
+    mspec h_body <;> simp [Coe.coe] at * <;> try omega
+    . rw [← List.length_reverse, h_pre, List.length_range', h_x] at h; assumption
+    . rw [← List.length_reverse, h_pre, List.length_range', ← Nat.add_assoc, h_x]
+      intro; assumption
+  all_goals simp at *
+  case pre1 =>  assumption
+  case post.success =>
+    suffices (s + (e - s)) = e by (rw [← this]; assumption)
     omega
-  . intros n _ _ ih acc h_acc
-    unfold Rust_primitives.Hax.Folds.fold_range
-    mvcgen <;> (try grind) <;> try omega
-    specialize h_body acc n (by omega) (by omega)
-    mspec h_body
-    . assumption
-    . intro h_r
-      apply (ih _ h_r)
-      grind
 
 end Fold
 
@@ -1090,9 +1097,9 @@ def Core.Convert.TryInto.try_into {α n} (a: Array α) :
    Result (Core.Result.Result (Vector α n) Core.Array.TryFromSliceError) :=
    pure (
      if h: a.size = n then
-       Core.Result.Result.ok (Eq.mp (congrArg _ h) a.toVector)
+       Core.Result.Result.Ok (Eq.mp (congrArg _ h) a.toVector)
      else
-       .err .array.TryFromSliceError
+       .Err .array.TryFromSliceError
      )
 
 @[spec]
@@ -1100,7 +1107,7 @@ theorem Core.Convert.TryInto.try_into.spec {α n} (a: Array α) :
   (h: a.size = n) →
   ⦃ True ⦄
   ( Core.Convert.TryInto.try_into a)
-  ⦃ ⇓ r => r = .ok (Eq.mp (congrArg _ h) a.toVector) ⦄ := by
+  ⦃ ⇓ r => r = .Ok (Eq.mp (congrArg _ h) a.toVector) ⦄ := by
   intro h
   mvcgen [Core.Result.Impl.unwrap.spec, Core.Convert.TryInto.try_into]
   apply SPred.pure_intro
@@ -1300,12 +1307,12 @@ abbrev RustVector := Array
 
 def Alloc.Alloc.Global : Type := Unit
 
-def Alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
+abbrev Alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
 
 def Alloc.Vec.Impl.new (α: Type) (_:Tuple0) : Result (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
   pure ((List.nil).toArray)
 
-def Alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) : Result Nat :=
+def Alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) : Result usize :=
   pure x.size
 
 def Alloc.Vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) (y: Array α)
