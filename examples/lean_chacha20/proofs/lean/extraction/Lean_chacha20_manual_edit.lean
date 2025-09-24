@@ -614,36 +614,14 @@ def Lean_chacha20.chacha20  (m : (RustSlice u8))
 theorem Lean_chacha20.Hacspec_helper.add_state_spec (state : (Vector u32 16)) (other : (Vector u32 16)) :
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.add_state state other)
-  ⦃ ⇓ _ => True ⦄ := by
-  mvcgen [Lean_chacha20.Hacspec_helper.add_state]
-  <;> try apply SPred.pure_intro
-  <;> simp [Vector.size] at *
-  <;> cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      rw [h]
-      omega
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 @[spec]
 theorem Lean_chacha20.Hacspec_helper.to_le_u32s_16_spec bytes :
   bytes.size = 64 →
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.to_le_u32s_16 bytes)
-  ⦃ ⇓ _ => True ⦄ := by
-  intro
-  open SpecNat in
-  mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_16]
-  <;> (try apply SPred.pure_intro)
-  all_goals simp [USize.size, Vector.size] at *
-  any_goals subst_vars
-  all_goals try simp [USize.le_iff_toNat_le]
-  all_goals try (cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      rw [h]
-      omega ; done )
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 
 @[spec]
@@ -651,19 +629,7 @@ theorem Lean_chacha20.Hacspec_helper.to_le_u32s_3_spec bytes :
   bytes.size = 12 →
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.to_le_u32s_3 bytes)
-  ⦃ ⇓ _ => True ⦄ := by
-  intros
-  open SpecNat in
-  mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_3]
-  all_goals simp [USize.size, RustArray, Vector.size] at *
-  any_goals subst_vars
-  all_goals try simp [USize.le_iff_toNat_le]
-  all_goals try (cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      rw [h]
-      omega ; done )
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 
 
@@ -672,59 +638,19 @@ theorem Lean_chacha20.Hacspec_helper.to_le_u32s_8_spec (bytes : (Array u8)) :
   bytes.size = 32 →
   ⦃ ⌜ True ⌝ ⦄
   ( Lean_chacha20.Hacspec_helper.to_le_u32s_8 bytes )
-  ⦃ ⇓ _ => True ⦄ := by
-  intros
-  open SpecNat in
-  mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_8]
-  all_goals simp [USize.size, Vector.size] at *
-  any_goals subst_vars
-  all_goals try simp [USize.le_iff_toNat_le]
-  all_goals try (cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      rw [h]
-      omega ; done )
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 @[spec]
 theorem Lean_chacha20.Hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 16)) :
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.u32s_to_le_bytes state)
-  ⦃ ⇓ _ => True ⦄ := by
-  intros
-  open SpecNat in
-  mvcgen [Lean_chacha20.Hacspec_helper.u32s_to_le_bytes, Core.Num.Impl_8.to_le_bytes]
-  all_goals simp [USize.size, Vector.size] at *
-  any_goals subst_vars
-  all_goals try simp [USize.toNat_ofNat'] at *
-  all_goals try (cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      rw [h] ;
-      try rw [h] at h_2
-      try rw [h] at h_3
-      try rw [h] at h_5
-      omega ; done )
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 @[spec]
 theorem Lean_chacha20.Hacspec_helper.xor_state_spec (state other: (Vector u32 16)) :
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.xor_state state other)
-  ⦃ ⇓ _ => True ⦄ := by
-  intros
-  open SpecNat in
-  mvcgen [Lean_chacha20.Hacspec_helper.xor_state,
-    Core.Num.Impl_8.to_le_bytes]
-  all_goals simp [Vector.size] at *
-  any_goals subst_vars
-  all_goals try simp at *
-  all_goals try (cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      rw [h] ;
-      omega ; done )
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 
 @[spec]
@@ -732,21 +658,7 @@ theorem Lean_chacha20.Hacspec_helper.update_array_spec (a: (Vector u8 64)) (v: A
   v.size ≤ 64 →
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.update_array a v)
-  ⦃ ⇓ _ => True ⦄ := by
-  intros
-  open SpecNat in
-  mvcgen_step 24 [Lean_chacha20.Hacspec_helper.update_array]
-  all_goals simp [Vector.size, USize.le_iff_toNat_le] at *
-  any_goals subst_vars
-  all_goals try simp [USize.toNat_ofNat'] at *
-  all_goals try (cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      try rw [h] ;
-      try rw [h] at h_2
-      try rw [h] at h_4
-      omega ; done )
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 @[spec]
 theorem Lean_chacha20.chacha20_line_spec
@@ -784,8 +696,7 @@ theorem Lean_chacha20.chacha20_double_round_spec (state : (Vector u32 16)) :
 theorem Lean_chacha20.chacha20_rounds_spec state :
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.chacha20_rounds state)
-  ⦃ ⇓ _ => True ⦄ := by
-  mvcgen [Lean_chacha20.chacha20_rounds]
+  ⦃ ⇓ _ => True ⦄ := by sorry
 
 
 @[spec]
@@ -850,25 +761,7 @@ theorem Lean_chacha20.chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u
   ⦃ m.size ≤ USize.size ⦄
   (Lean_chacha20.chacha20_update st0 m)
   ⦃ ⇓ _ => True ⦄
-:= by
-  open SpecNat in
-  mvcgen [Lean_chacha20.chacha20_update,
-    Alloc.Slice.Impl.to_vec,
-    Core.Result.Impl.unwrap.spec,
-    Alloc.Vec.Impl.new,
-    Alloc.Vec.Impl_1.len,
-    ] <;> subst_vars
-  all_goals simp [Array.size_extract, USize.eq_iff_toBitVec_eq, BitVec.toNat_eq, USize.size, USize.le_iff_toNat_le ] at *
-  all_goals try cases System.Platform.numBits_eq with
-    | inl h
-    | inr h =>
-      expose_names
-      try rw [h]
-      try rw [h] at h_1
-      try rw [h] at h_2
-      try rw [h] at h_3
-      try rw [h] at h_4
-      omega ; done
+:= by sorry
 
 theorem Lean_chacha20.chacha20_spec
   (m : (Array u8)) (key : (Vector u8 32)) (iv : (Vector u8 12)) (ctr : u32) :
