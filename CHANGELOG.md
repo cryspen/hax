@@ -55,9 +55,7 @@ Changes to hax-lib:
 - New behavior for `hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
 - hax-lib requires edition 2021 instead of 2024 (#1726)
 - Improved `VecDeque` model in F* proof lib (#1728)
-
-Changes to the Lean backend:
-- Improve support for functionalized loops (#1695)
+- Split the Lean library into several files, update to lean 4.23.0 (#1696)
 
 Changes to the Lean backend:
 - Improve support for functionalized loops (#1695)
