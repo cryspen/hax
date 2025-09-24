@@ -343,7 +343,7 @@ struct
           in
           let variant = UB.make_closure [ bpat ] variant variant.span in
           UB.call fold_operator
-            [ condition; invariant; variant; init; body ]
+            [ invariant; condition; variant; init; body ]
             span (dty span expr.typ)
       | Loop { state = None; _ } ->
           Error.unimplemented ~issue_id:405 ~details:"Loop without mutation"
