@@ -26,14 +26,12 @@ unfold instance fnonce_arrow_binder t u
   }
 
 class t_Fn (v_Self: Type0) (v_Args: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_17771448556265749037:t_FnOnce v_Self v_Args;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_FnOnce v_Self v_Args;
   f_call_pre:self_: v_Self -> args: v_Args -> pred: Type0{true ==> pred};
-  f_call_post:v_Self -> v_Args -> (_super_17771448556265749037).f_Output -> Type0;
+  f_call_post:v_Self -> v_Args -> (_super_i0).f_Output -> Type0;
   f_call:x0: v_Self -> x1: v_Args
-    -> Prims.Pure (_super_17771448556265749037).f_Output
-        (f_call_pre x0 x1)
-        (fun result -> f_call_post x0 x1 result)
+    -> Prims.Pure (_super_i0).f_Output (f_call_pre x0 x1) (fun result -> f_call_post x0 x1 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_Args:Type0) {|i: t_Fn v_Self v_Args|} -> i._super_17771448556265749037
+let _ = fun (v_Self:Type0) (v_Args:Type0) {|i: t_Fn v_Self v_Args|} -> i._super_i0

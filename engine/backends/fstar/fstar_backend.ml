@@ -695,11 +695,34 @@ struct
         F.term @@ F.AST.LetOperator ([ (F.id op, p, pexpr rhs) ], pexpr body)
     | Let { lhs; rhs; body; monadic = None } ->
         let p =
-          (* TODO: temp patch that remove annotation when we see an associated type *)
-          if [%matches? TAssociatedType _] @@ U.remove_tuple1 lhs.typ then
-            ppat lhs
-          else
-            F.pat @@ F.AST.PatAscribed (ppat lhs, (pty lhs.span lhs.typ, None))
+          match lhs with
+          | {
+           p = PConstruct { constructor = `TupleCons n1; fields; _ };
+           typ = TApp { ident = `TupleType n2; args };
+           _;
+          }
+            when n1 = n2 && n1 > 1 ->
+              (* F* type inference works better if the ascription is on each component intead of the whole tuple. *)
+              F.pat
+              @@ F.AST.PatTuple
+                   ( List.map2_exn
+                       ~f:(fun { pat } (GType t) ->
+                         F.pat
+                         @@ F.AST.PatAscribed (ppat pat, (pty pat.span t, None)))
+                       fields args,
+                     false )
+          | _ ->
+              (* TODO: temp patch that remove annotation when we see an associated type *)
+              if [%matches? TAssociatedType _] @@ U.remove_tuple1 lhs.typ then
+                ppat lhs
+              else
+                (* let res : FStar_Parser_AST.pattern option =
+              let* x: Destruct.pat_PConstruct = Destruct.pat_PConstruct lhs in
+              if [%matches `TupleCons _] x.constructor
+              x.fields
+            in  *)
+                F.pat
+                @@ F.AST.PatAscribed (ppat lhs, (pty lhs.span lhs.typ, None))
         in
         F.term
         @@ F.AST.Let (NoLetQualifier, [ (None, (p, pexpr rhs)) ], pexpr body)

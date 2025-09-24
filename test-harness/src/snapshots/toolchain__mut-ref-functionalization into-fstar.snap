@@ -145,8 +145,8 @@ let test_append (_: Prims.unit) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
         <:
         Alloc.Boxed.t_Box (t_Slice u8) Alloc.Alloc.t_Global)
   in
-  let tmp0, tmp1:(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global & Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
-  =
+  let
+  (tmp0: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global), (tmp1: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) =
     Alloc.Vec.impl_1__append #u8 #Alloc.Alloc.t_Global vec1 vec2
   in
   let vec1:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global = tmp0 in
@@ -247,7 +247,7 @@ let i (bar: t_Bar) : (t_Bar & u8) =
 
 let j (x: t_Bar) : (t_Bar & u8) =
   let out:u8 = mk_u8 123 in
-  let tmp0, out1:(t_Bar & u8) = i x in
+  let (tmp0: t_Bar), (out1: u8) = i x in
   let x:t_Bar = tmp0 in
   let hax_temp_output:u8 = out1 +! out in
   x, hax_temp_output <: (t_Bar & u8)

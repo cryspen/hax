@@ -55,3 +55,5 @@ val impl__binary_search #t (s: t_Slice t) (v: t): Core_models.Result.t_Result us
 
 val impl__get #t #index {|i1: t_Index (t_Slice t) index|} 
   (s: t_Slice t) (i: index): Core_models.Option.t_Option i1.f_Output
+
+val impl__split_at_checked #t (s: t_Slice t) (mid: usize): Core_models.Option.t_Option (t_Slice t & t_Slice t)
