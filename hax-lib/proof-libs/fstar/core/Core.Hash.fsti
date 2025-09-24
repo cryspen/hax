@@ -14,7 +14,7 @@ class t_Hash (v_Self: Type0) = {
       {| i1: t_Hasher v_H |} ->
       v_Self ->
       v_H
-    -> Type0;
+    -> res:Type0 {true ==> res};
   f_hash_post:
       #v_H: Type0 ->
       {| i1: t_Hasher v_H |} ->

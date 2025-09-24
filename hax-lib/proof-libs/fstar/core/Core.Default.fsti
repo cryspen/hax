@@ -5,3 +5,5 @@ class t_Default (t: Type0) = {
   f_default_post: unit -> out:t -> Type0;
   f_default: unit -> t;
 }
+
+
