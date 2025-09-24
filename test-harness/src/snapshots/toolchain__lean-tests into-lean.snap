@@ -418,8 +418,8 @@ def Lean_tests.Structs.normal_structs
       => do Rust_primitives.Hax.Tuple0.mk)
 
 inductive Lean_tests.Loops.Errors.Error : Type
-| Foo : Lean_tests.Loops.Errors.Error
-| Bar : u32 -> Lean_tests.Loops.Errors.Error
+| Foo : Lean_tests.Loops.Errors.Error 
+| Bar : u32 -> Lean_tests.Loops.Errors.Error 
 
 
 def Lean_tests.Loops.Errors.loop3
@@ -490,19 +490,19 @@ def Lean_tests.Loops.Errors.loop4
       => do (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk e e)))
 
 inductive Lean_tests.Enums.E : Type
-| V1 : Lean_tests.Enums.E
-| V2 : Lean_tests.Enums.E
-| V3 : usize -> Lean_tests.Enums.E
-| V4 : usize -> usize -> usize -> Lean_tests.Enums.E
-| V5 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
-| V6 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
+| V1 : Lean_tests.Enums.E 
+| V2 : Lean_tests.Enums.E 
+| V3 : usize -> Lean_tests.Enums.E 
+| V4 : usize -> usize -> usize -> Lean_tests.Enums.E 
+| V5 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E 
+| V6 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E 
 
 
 inductive Lean_tests.Enums.MyList (T : Type) : Type
-| Nil : Lean_tests.Enums.MyList (T : Type)
+| Nil : Lean_tests.Enums.MyList (T : Type) 
 | Cons (hd : T)
        (tl : (Alloc.Boxed.Box (Lean_tests.Enums.MyList T) Alloc.Alloc.Global))
-    : Lean_tests.Enums.MyList (T : Type)
+    : Lean_tests.Enums.MyList (T : Type) 
 
 
 def Lean_tests.Enums.enums
