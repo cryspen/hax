@@ -12,11 +12,11 @@ class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
 }
 
 class t_Eq (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_7793694353819391875:t_PartialEq v_Self v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_PartialEq v_Self v_Self
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Eq v_Self|} -> i._super_7793694353819391875
+let _ = fun (v_Self:Type0) {|i: t_Eq v_Self|} -> i._super_i0
 
 type t_Ordering =
   | Ordering_Less : t_Ordering
@@ -36,7 +36,7 @@ let t_Ordering_cast_to_repr (x: t_Ordering) : isize =
   | Ordering_Greater  -> anon_const_Ordering_Greater__anon_const_0
 
 class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4666540144042099734:t_PartialEq v_Self v_Rhs;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_PartialEq v_Self v_Rhs;
   f_partial_cmp_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
   f_partial_cmp_post:v_Self -> v_Rhs -> Core_models.Option.t_Option t_Ordering -> Type0;
   f_partial_cmp:x0: v_Self -> x1: v_Rhs
@@ -46,7 +46,7 @@ class t_PartialOrd (v_Self: Type0) (v_Rhs: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_Rhs:Type0) {|i: t_PartialOrd v_Self v_Rhs|} -> i._super_4666540144042099734
+let _ = fun (v_Self:Type0) (v_Rhs:Type0) {|i: t_PartialOrd v_Self v_Rhs|} -> i._super_i0
 
 class t_Neq (v_Self: Type0) (v_Rhs: Type0) = {
   f_neq_pre:self_: v_Self -> y: v_Rhs -> pred: Type0{true ==> pred};
@@ -219,8 +219,8 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
   }
 
 class t_Ord (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_4518226736117889738:t_Eq v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_13434448650954310000:t_PartialOrd v_Self v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Eq v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_PartialOrd v_Self v_Self;
   f_cmp_pre:self_: v_Self -> other: v_Self -> pred: Type0{true ==> pred};
   f_cmp_post:v_Self -> v_Self -> t_Ordering -> Type0;
   f_cmp:x0: v_Self -> x1: v_Self
@@ -228,10 +228,10 @@ class t_Ord (v_Self: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_4518226736117889738
+let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_13434448650954310000
+let _ = fun (v_Self:Type0) {|i: t_Ord v_Self|} -> i._super_i1
 
 let max (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T) (v1 v2: v_T) : v_T =
   match f_cmp #v_T #FStar.Tactics.Typeclasses.solve v1 v2 <: t_Ordering with
@@ -261,7 +261,7 @@ let impl_3 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
 let impl_2 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
     : t_PartialOrd (t_Reverse v_T) (t_Reverse v_T) =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: t_Reverse v_T) (other: t_Reverse v_T) -> true);
     f_partial_cmp_post
     =
@@ -279,14 +279,14 @@ let impl_2 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_4 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Eq v_T)
-    : t_Eq (t_Reverse v_T) = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+    : t_Eq (t_Reverse v_T) = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_5 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Ord v_T)
     : t_Ord (t_Reverse v_T) =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: t_Reverse v_T) (other: t_Reverse v_T) -> true);
     f_cmp_post = (fun (self: t_Reverse v_T) (other: t_Reverse v_T) (out: t_Ordering) -> true);
     f_cmp
@@ -306,7 +306,7 @@ let impl_6: t_PartialEq u8 u8 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_30: t_PartialOrd u8 u8 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u8) (other: u8) -> true);
     f_partial_cmp_post
     =
@@ -328,13 +328,13 @@ let impl_30: t_PartialOrd u8 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_u8: t_Eq u8 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_u8: t_Eq u8 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_u8: t_Ord u8 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u8) (other: u8) -> true);
     f_cmp_post
     =
@@ -362,7 +362,7 @@ let impl_8: t_PartialEq i8 i8 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_32: t_PartialOrd i8 i8 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i8) (other: i8) -> true);
     f_partial_cmp_post
     =
@@ -384,13 +384,13 @@ let impl_32: t_PartialOrd i8 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_i8: t_Eq i8 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_i8: t_Eq i8 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_i8: t_Ord i8 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i8) (other: i8) -> true);
     f_cmp_post
     =
@@ -418,7 +418,7 @@ let impl_10: t_PartialEq u16 u16 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_34: t_PartialOrd u16 u16 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u16) (other: u16) -> true);
     f_partial_cmp_post
     =
@@ -440,13 +440,13 @@ let impl_34: t_PartialOrd u16 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_u16: t_Eq u16 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_u16: t_Eq u16 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_u16: t_Ord u16 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u16) (other: u16) -> true);
     f_cmp_post
     =
@@ -474,7 +474,7 @@ let impl_12: t_PartialEq i16 i16 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_36: t_PartialOrd i16 i16 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i16) (other: i16) -> true);
     f_partial_cmp_post
     =
@@ -496,13 +496,13 @@ let impl_36: t_PartialOrd i16 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_i16: t_Eq i16 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_i16: t_Eq i16 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_i16: t_Ord i16 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i16) (other: i16) -> true);
     f_cmp_post
     =
@@ -530,7 +530,7 @@ let impl_14: t_PartialEq u32 u32 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_38: t_PartialOrd u32 u32 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u32) (other: u32) -> true);
     f_partial_cmp_post
     =
@@ -552,13 +552,13 @@ let impl_38: t_PartialOrd u32 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_u32: t_Eq u32 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_u32: t_Eq u32 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_u32: t_Ord u32 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u32) (other: u32) -> true);
     f_cmp_post
     =
@@ -586,7 +586,7 @@ let impl_16: t_PartialEq i32 i32 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_40: t_PartialOrd i32 i32 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i32) (other: i32) -> true);
     f_partial_cmp_post
     =
@@ -608,13 +608,13 @@ let impl_40: t_PartialOrd i32 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_i32: t_Eq i32 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_i32: t_Eq i32 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_i32: t_Ord i32 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i32) (other: i32) -> true);
     f_cmp_post
     =
@@ -642,7 +642,7 @@ let impl_18: t_PartialEq u64 u64 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_42: t_PartialOrd u64 u64 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u64) (other: u64) -> true);
     f_partial_cmp_post
     =
@@ -664,13 +664,13 @@ let impl_42: t_PartialOrd u64 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_u64: t_Eq u64 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_u64: t_Eq u64 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_u64: t_Ord u64 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u64) (other: u64) -> true);
     f_cmp_post
     =
@@ -698,7 +698,7 @@ let impl_20: t_PartialEq i64 i64 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_44: t_PartialOrd i64 i64 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i64) (other: i64) -> true);
     f_partial_cmp_post
     =
@@ -720,13 +720,13 @@ let impl_44: t_PartialOrd i64 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_i64: t_Eq i64 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_i64: t_Eq i64 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_i64: t_Ord i64 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i64) (other: i64) -> true);
     f_cmp_post
     =
@@ -754,7 +754,7 @@ let impl_22: t_PartialEq u128 u128 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_46: t_PartialOrd u128 u128 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: u128) (other: u128) -> true);
     f_partial_cmp_post
     =
@@ -776,13 +776,13 @@ let impl_46: t_PartialOrd u128 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_u128: t_Eq u128 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_u128: t_Eq u128 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_u128: t_Ord u128 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: u128) (other: u128) -> true);
     f_cmp_post
     =
@@ -810,7 +810,7 @@ let impl_24: t_PartialEq i128 i128 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_48: t_PartialOrd i128 i128 =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: i128) (other: i128) -> true);
     f_partial_cmp_post
     =
@@ -832,13 +832,13 @@ let impl_48: t_PartialOrd i128 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_i128: t_Eq i128 = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_i128: t_Eq i128 = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_i128: t_Ord i128 =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: i128) (other: i128) -> true);
     f_cmp_post
     =
@@ -866,7 +866,7 @@ let impl_26: t_PartialEq usize usize =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_50: t_PartialOrd usize usize =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: usize) (other: usize) -> true);
     f_partial_cmp_post
     =
@@ -888,13 +888,13 @@ let impl_50: t_PartialOrd usize usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_usize: t_Eq usize = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_usize: t_Eq usize = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_usize: t_Ord usize =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: usize) (other: usize) -> true);
     f_cmp_post
     =
@@ -922,7 +922,7 @@ let impl_28: t_PartialEq isize isize =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_52: t_PartialOrd isize isize =
   {
-    _super_4666540144042099734 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_partial_cmp_pre = (fun (self: isize) (other: isize) -> true);
     f_partial_cmp_post
     =
@@ -944,13 +944,13 @@ let impl_52: t_PartialOrd isize isize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_Eq_for_isize: t_Eq isize = { _super_7793694353819391875 = FStar.Tactics.Typeclasses.solve }
+let impl_Eq_for_isize: t_Eq isize = { _super_i0 = FStar.Tactics.Typeclasses.solve }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_Ord_for_isize: t_Ord isize =
   {
-    _super_4518226736117889738 = FStar.Tactics.Typeclasses.solve;
-    _super_13434448650954310000 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
+    _super_i1 = FStar.Tactics.Typeclasses.solve;
     f_cmp_pre = (fun (self: isize) (other: isize) -> true);
     f_cmp_post
     =

@@ -20,7 +20,7 @@ let main (_: Prims.unit) : Prims.unit =
   in
   let (a: u8):u8 = mk_u8 0 in
   let (b: u8):u8 = mk_u8 0 in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 2 in
@@ -36,7 +36,7 @@ let main (_: Prims.unit) : Prims.unit =
     | Rust_primitives.Integers.MkInt 1, Rust_primitives.Integers.MkInt 3 -> ()
     | _ -> ()
   in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 0 in
@@ -52,7 +52,7 @@ let main (_: Prims.unit) : Prims.unit =
     | Rust_primitives.Integers.MkInt 1, Rust_primitives.Integers.MkInt 3 -> ()
     | _ -> ()
   in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 2 in
@@ -68,7 +68,7 @@ let main (_: Prims.unit) : Prims.unit =
     | Rust_primitives.Integers.MkInt 1, Rust_primitives.Integers.MkInt 3 -> ()
     | _ -> ()
   in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 0 in
