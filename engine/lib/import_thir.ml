@@ -20,7 +20,9 @@ open Diagnostics
 
 let assertion_failure (span : Thir.span list) (details : string) =
   let kind = T.AssertionFailure { details } in
-  Diagnostics.SpanFreeError.raise ~span ThirImport kind
+  Diagnostics.SpanFreeError.raise ~span
+    (Span.dummy () |> Span.owner_hint)
+    ThirImport kind
 
 let unimplemented ~issue_id (span : Thir.span list) (details : string) =
   let kind =
@@ -30,7 +32,9 @@ let unimplemented ~issue_id (span : Thir.span list) (details : string) =
         details = String.(if details = "" then None else Some details);
       }
   in
-  Diagnostics.SpanFreeError.raise ~span ThirImport kind
+  Diagnostics.SpanFreeError.raise ~span
+    (Span.dummy () |> Span.owner_hint)
+    ThirImport kind
 
 module Ast = struct
   include Ast

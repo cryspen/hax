@@ -1,7 +1,7 @@
 use super::Diagnostics;
 use annotate_snippets::*;
 use miette::SourceOffset;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
@@ -9,6 +9,7 @@ use std::rc::Rc;
 #[derive(Clone, Debug, Default)]
 pub struct ReportCtx {
     files: HashMap<PathBuf, Rc<String>>,
+    seen: HashSet<Diagnostics>,
 }
 
 /// Translates a line and column position into an absolute offset
@@ -27,6 +28,11 @@ impl ReportCtx {
                 Rc::new(s)
             })
             .clone()
+    }
+
+    /// Check if `diagnostic` have been seen already, and mark `diagnostic` as seen.
+    pub fn seen_already(&mut self, diagnostic: Diagnostics) -> bool {
+        !self.seen.insert(diagnostic)
     }
 }
 

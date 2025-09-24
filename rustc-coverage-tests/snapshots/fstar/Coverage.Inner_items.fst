@@ -35,7 +35,11 @@ type main__t_InStruct = { main__f_in_struct_field:u32 }
 
 let main__v_IN_CONST: u32 = mk_u32 1234
 
-(* item error backend: (reject_TraitItemDefault) ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
+(* item error backend: ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
+
+
+Note: the error was labeled with context `reject_TraitItemDefault`.
+
 Last available AST for this item:
 
 #[<cfg>(any(feature = "json", feature = "lean"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;

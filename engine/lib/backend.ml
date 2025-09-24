@@ -55,7 +55,8 @@ module Make (InputLanguage : Features.T) (M : BackendMetadata) = struct
       let context = Diagnostics.Context.Backend M.backend in
       let kind = err.kind in
       let span = Span.to_thir err.span in
-      Diagnostics.SpanFreeError.raise ~span context kind
+      Diagnostics.SpanFreeError.raise ~span (Span.owner_hint err.span) context
+        kind
 
     let unimplemented ?issue_id ?details span =
       raise

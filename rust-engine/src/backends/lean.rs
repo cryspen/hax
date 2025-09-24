@@ -101,18 +101,16 @@ impl RenderView for LeanPrinter {
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![Box::new(BinOp::new(&[
-            binops::add(),
-            binops::sub(),
-            binops::mul(),
-            binops::rem(),
-            binops::div(),
-            binops::shr(),
-            binops::logical_op_and(),
-            binops::logical_op_or(),
+            binops::add,
+            binops::sub,
+            binops::mul,
+            binops::rem,
+            binops::div,
+            binops::shr,
+            binops::logical_op_and,
+            binops::logical_op_or,
         ]))]
     }
-
-    const NAME: &str = "Lean";
 }
 
 /// The Lean backend
@@ -122,11 +120,8 @@ impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from_iter(
-            self.printer()
-                .render_strings(&module.ident.as_concrete().unwrap().view()),
-        )
-        .with_extension("lean")
+        camino::Utf8PathBuf::from_iter(self.printer().render_strings(&module.ident.view()))
+            .with_extension("lean")
     }
 }
 
@@ -143,7 +138,7 @@ impl LeanPrinter {
                 body: _,
                 params: _,
                 safety: _,
-            } if name.is_empty() => false,
+            } if name.is_anonymous_const() => false,
             // Other unprintable items
             ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
             // Printable items
@@ -161,11 +156,7 @@ impl LeanPrinter {
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
     /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
-        match id {
-            GlobalId::Concrete(concrete_id) | GlobalId::Projector(concrete_id) => {
-                self.render_string(&concrete_id.view())
-            }
-        }
+        self.render_string(&id.view())
     }
 
     /// Escapes local identifiers (prefixing reserved keywords with an underscore).
@@ -184,13 +175,7 @@ impl LeanPrinter {
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
         let id = self
-            .render(
-                &id.as_concrete()
-                    // TODO: Should be ensured by the rendering engine; see
-                    // https://github.com/cryspen/hax/issues/1660
-                    .expect("Rendering a projector as a constructor")
-                    .view(),
-            )
+            .render(&id.view())
             .path
             .last()
             // TODO: Should be ensured by the rendering engine; see
@@ -289,6 +274,8 @@ const _: () = {
     }
 
     impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for LeanPrinter {
+        const NAME: &'static str = "Lean";
+
         fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
             let items = &module.items;
             docs![
@@ -507,25 +494,18 @@ set_option linter.unusedVariables false
                         bounds_impls: _,
                         trait_: _,
                     } => {
-                        let symbol = if op == &binops::add() {
-                            "+?"
-                        } else if op == &binops::sub() {
-                            "-?"
-                        } else if op == &binops::mul() {
-                            "*?"
-                        } else if op == &binops::div() {
-                            "/?"
-                        } else if op == &binops::rem() {
-                            "%?"
-                        } else if op == &binops::shr() {
-                            ">>>?"
-                        } else if op == &binops::logical_op_and() {
-                            "&&?"
-                        } else if op == &binops::logical_op_or() {
-                            "||?"
-                        } else {
-                            unreachable!()
+                        let symbol = match *op {
+                            binops::add => "+?",
+                            binops::sub => "-?",
+                            binops::mul => "*?",
+                            binops::div => "/?",
+                            binops::rem => "%?",
+                            binops::shr => ">>>?",
+                            binops::logical_op_and => "&&?",
+                            binops::logical_op_or => "||?",
+                            _ => unreachable!(),
                         };
+
                         // TODO: This monad lifting should be handled by a phase/resugaring, see
                         // https://github.com/cryspen/hax/issues/1620
                         docs!["← ", lhs, softline!(), symbol, softline!(), rhs]

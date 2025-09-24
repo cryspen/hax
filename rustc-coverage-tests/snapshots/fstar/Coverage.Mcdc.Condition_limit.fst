@@ -4,7 +4,7 @@ open Core
 open FStar.Mul
 
 let accept_7_conditions (bool_arr: t_Array bool (mk_usize 7)) : Prims.unit =
-  Rust_primitives.Hax.failure "(AST import) something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/804.\nPlease upvote or comment this issue if you see this error message.\nPat:Array"
+  Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/804.\nPlease upvote or comment this issue if you see this error message.\nPat:Array\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/804.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
     ""
 
 let main (_: Prims.unit) : Prims.unit =
