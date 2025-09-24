@@ -181,7 +181,7 @@ let other_fun (rng: i8) : (i8 & Core_models.Result.t_Result Prims.unit Prims.uni
   rng, hax_temp_output <: (i8 & Core_models.Result.t_Result Prims.unit Prims.unit)
 
 let v_fun (rng: i8) : (i8 & Core_models.Result.t_Result Prims.unit Prims.unit) =
-  let tmp0, out:(i8 & Core_models.Result.t_Result Prims.unit Prims.unit) = other_fun rng in
+  let (tmp0: i8), (out: Core_models.Result.t_Result Prims.unit Prims.unit) = other_fun rng in
   let rng:i8 = tmp0 in
   match out <: Core_models.Result.t_Result Prims.unit Prims.unit with
   | Core_models.Result.Result_Ok hoist41 ->
@@ -229,7 +229,7 @@ let local_mutation (x: u32) : u32 =
     in
     Core_models.Num.impl_u32__wrapping_add x y
   else
-    let (x, y), hoist7:((u32 & u32) & u32) =
+    let (x, y: (u32 & u32)), (hoist7: u32) =
       match x <: u32 with
       | Rust_primitives.Integers.MkInt 12 ->
         let y:u32 = Core_models.Num.impl_u32__wrapping_add x y in
@@ -255,7 +255,7 @@ let early_returns (x: u32) : u32 =
       match true <: bool with
       | true -> mk_u32 34
       | _ ->
-        let x, hoist11:(u32 & u32) = x, mk_u32 3 <: (u32 & u32) in
+        let (x: u32), (hoist11: u32) = x, mk_u32 3 <: (u32 & u32) in
         Core_models.Num.impl_u32__wrapping_add (Core_models.Num.impl_u32__wrapping_add (mk_u32 123)
               hoist11
             <:
@@ -263,7 +263,7 @@ let early_returns (x: u32) : u32 =
           x
     else
       let x:u32 = x +! mk_u32 9 in
-      let x, hoist11:(u32 & u32) = x, x +! mk_u32 1 <: (u32 & u32) in
+      let (x: u32), (hoist11: u32) = x, x +! mk_u32 1 <: (u32 & u32) in
       Core_models.Num.impl_u32__wrapping_add (Core_models.Num.impl_u32__wrapping_add (mk_u32 123)
             hoist11
           <:

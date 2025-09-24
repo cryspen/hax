@@ -64,11 +64,11 @@ class iterator_return (self: Type u#0): Type u#1 = {
   f_fold_return: #b:Type0 -> s:self -> b -> (b -> i:parent_iterator.f_Item{parent_iterator.f_contains s i} -> Core_models.Ops.Control_flow.t_ControlFlow b b) -> Core_models.Ops.Control_flow.t_ControlFlow b b;
 }
 let while_loop #acc_t 
-  (condition: acc_t -> bool) 
   (inv: acc_t -> Type0)
+  (condition: (c:acc_t {inv c}) -> bool) 
   (fuel: (a:acc_t{inv a} -> nat))
   (init: acc_t {inv init}) 
-  (f: (i:acc_t{condition i /\ inv i} -> o:acc_t{inv o /\ fuel o < fuel i})): 
+  (f: (i:acc_t{inv i /\ condition i} -> o:acc_t{inv o /\ fuel o < fuel i})): 
   (res: acc_t {inv res /\ not (condition res)})
   = 
   let rec while_loop_internal
@@ -82,8 +82,9 @@ let while_loop #acc_t
     else current in 
   while_loop_internal init
 
-assume val while_loop_return #acc_t #ret_t (condition: acc_t -> bool) 
+assume val while_loop_return #acc_t #ret_t 
   (inv: acc_t -> Type0)
+  (condition: (c:acc_t {inv c}) -> bool) 
   (fuel: (a:acc_t -> nat))
   (init: acc_t ) 
   (f: (acc_t -> Core_models.Ops.Control_flow.t_ControlFlow 

@@ -18,8 +18,8 @@ let main (_: Prims.unit) : Prims.unit =
       usize) =.
     mk_usize 1
   in
-  let a, b, c:(i32 & i32 & i32) = mk_i32 0, mk_i32 0, mk_i32 0 <: (i32 & i32 & i32) in
-  let a, b, c:(i32 & i32 & i32) =
+  let (a: i32), (b: i32), (c: i32) = mk_i32 0, mk_i32 0, mk_i32 0 <: (i32 & i32 & i32) in
+  let (a: i32), (b: i32), (c: i32) =
     if is_true
     then
       let a:i32 = mk_i32 1 in
@@ -39,7 +39,7 @@ let main (_: Prims.unit) : Prims.unit =
       a
     else a
   in
-  let b, c:(i32 & i32) =
+  let (b: i32), (c: i32) =
     if is_true
     then
       let b:i32 = mk_i32 30 in
