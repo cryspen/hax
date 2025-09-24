@@ -7,3 +7,4 @@ default:
 
 clean:
 	-rm -f proofs/lean/extraction/lean_chacha20.lean
+	-cd proofs/lean/extraction && lake clean
