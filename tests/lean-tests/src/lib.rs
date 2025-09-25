@@ -3,6 +3,7 @@
 
 pub mod enums;
 pub mod structs;
+pub mod traits;
 
 const FORTYTWO: usize = 42;
 const MINUS_FORTYTWO: isize = -42;
