@@ -511,7 +511,7 @@ val get_bit_cast_extend #t #u
           [SMTPat (get_bit (cast_mod #t #u x) nth)]
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-instance default_int #t: Core.Default.t_Default (int_t t) = {
+instance default_int #t: Core_models.Default.t_Default (int_t t) = {
   f_default_pre = (fun () -> true);
   f_default_post = (fun () (res: int_t t) -> res =. mk_int #t 0);
   f_default = (fun () -> mk_int #t 0);

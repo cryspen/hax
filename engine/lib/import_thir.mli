@@ -4,7 +4,7 @@ val import_trait_ref :
   Types.span -> Types.node_for__item_ref_contents -> Ast.Rust.trait_goal
 
 val import_clause :
-  Types.span -> Types.clause -> Ast.Rust.generic_constraint option
+  Types.span -> int -> Types.clause -> Ast.Rust.generic_constraint option
 
 val import_item :
   type_only:bool ->

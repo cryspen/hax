@@ -1,7 +1,7 @@
 module Chacha20
-#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 40"
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -18,7 +18,7 @@ let chacha20_line
   let state:t_Array u32 (mk_usize 16) =
     Rust_primitives.Hax.update_at state
       a
-      (Core.Num.impl_u32__wrapping_add (state.[ a ] <: u32) (state.[ b ] <: u32) <: u32)
+      (Core_models.Num.impl_u32__wrapping_add (state.[ a ] <: u32) (state.[ b ] <: u32) <: u32)
   in
   let state:t_Array u32 (mk_usize 16) =
     Rust_primitives.Hax.update_at state d ((state.[ d ] <: u32) ^. (state.[ a ] <: u32) <: u32)
@@ -26,7 +26,7 @@ let chacha20_line
   let state:t_Array u32 (mk_usize 16) =
     Rust_primitives.Hax.update_at state
       d
-      (Core.Num.impl_u32__rotate_left (state.[ d ] <: u32) s <: u32)
+      (Core_models.Num.impl_u32__rotate_left (state.[ d ] <: u32) s <: u32)
   in
   state
 
@@ -133,7 +133,7 @@ let chacha20_core (ctr: u32) (st0: t_Array u32 (mk_usize 16)) : t_Array u32 (mk_
   let state:t_Array u32 (mk_usize 16) =
     Rust_primitives.Hax.Monomorphized_update_at.update_at_usize state
       (mk_usize 12)
-      (Core.Num.impl_u32__wrapping_add (state.[ mk_usize 12 ] <: u32) ctr <: u32)
+      (Core_models.Num.impl_u32__wrapping_add (state.[ mk_usize 12 ] <: u32) ctr <: u32)
   in
   let k:t_Array u32 (mk_usize 16) = chacha20_rounds state in
   Chacha20.Hacspec_helper.add_state state k
@@ -180,7 +180,7 @@ let chacha20_encrypt_block
 
 let chacha20_encrypt_last (st0: t_Array u32 (mk_usize 16)) (ctr: u32) (plain: t_Slice u8)
     : Prims.Pure (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
-      (requires (Core.Slice.impl__len #u8 plain <: usize) <=. mk_usize 64)
+      (requires (Core_models.Slice.impl__len #u8 plain <: usize) <=. mk_usize 64)
       (fun _ -> Prims.l_True) =
   let (b: t_Array u8 (mk_usize 64)):t_Array u8 (mk_usize 64) =
     Rust_primitives.Hax.repeat (mk_u8 0) (mk_usize 64)
@@ -189,19 +189,19 @@ let chacha20_encrypt_last (st0: t_Array u32 (mk_usize 16)) (ctr: u32) (plain: t_
   let b:t_Array u8 (mk_usize 64) = chacha20_encrypt_block st0 ctr b in
   Alloc.Slice.impl__to_vec #u8
     (b.[ {
-          Core.Ops.Range.f_start = mk_usize 0;
-          Core.Ops.Range.f_end = Core.Slice.impl__len #u8 plain <: usize
+          Core_models.Ops.Range.f_start = mk_usize 0;
+          Core_models.Ops.Range.f_end = Core_models.Slice.impl__len #u8 plain <: usize
         }
         <:
-        Core.Ops.Range.t_Range usize ]
+        Core_models.Ops.Range.t_Range usize ]
       <:
       t_Slice u8)
 
 let chacha20_update (st0: t_Array u32 (mk_usize 16)) (m: t_Slice u8)
     : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
   let blocks_out:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global = Alloc.Vec.impl__new #u8 () in
-  let num_blocks:usize = (Core.Slice.impl__len #u8 m <: usize) /! mk_usize 64 in
-  let remainder_len:usize = (Core.Slice.impl__len #u8 m <: usize) %! mk_usize 64 in
+  let num_blocks:usize = (Core_models.Slice.impl__len #u8 m <: usize) /! mk_usize 64 in
+  let remainder_len:usize = (Core_models.Slice.impl__len #u8 m <: usize) %! mk_usize 64 in
   let blocks_out:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
       num_blocks
@@ -216,23 +216,24 @@ let chacha20_update (st0: t_Array u32 (mk_usize 16)) (m: t_Slice u8)
           let b:t_Array u8 (mk_usize 64) =
             chacha20_encrypt_block st0
               (cast (i <: usize) <: u32)
-              (Core.Result.impl__unwrap #(t_Array u8 (mk_usize 64))
-                  #Core.Array.t_TryFromSliceError
-                  (Core.Convert.f_try_into #(t_Slice u8)
+              (Core_models.Result.impl__unwrap #(t_Array u8 (mk_usize 64))
+                  #Core_models.Array.t_TryFromSliceError
+                  (Core_models.Convert.f_try_into #(t_Slice u8)
                       #(t_Array u8 (mk_usize 64))
                       #FStar.Tactics.Typeclasses.solve
                       (m.[ {
-                            Core.Ops.Range.f_start = mk_usize 64 *! i <: usize;
-                            Core.Ops.Range.f_end
+                            Core_models.Ops.Range.f_start = mk_usize 64 *! i <: usize;
+                            Core_models.Ops.Range.f_end
                             =
                             (mk_usize 64 *! i <: usize) +! mk_usize 64 <: usize
                           }
                           <:
-                          Core.Ops.Range.t_Range usize ]
+                          Core_models.Ops.Range.t_Range usize ]
                         <:
                         t_Slice u8)
                     <:
-                    Core.Result.t_Result (t_Array u8 (mk_usize 64)) Core.Array.t_TryFromSliceError)
+                    Core_models.Result.t_Result (t_Array u8 (mk_usize 64))
+                      Core_models.Array.t_TryFromSliceError)
                 <:
                 t_Array u8 (mk_usize 64))
           in
@@ -265,11 +266,11 @@ let chacha20_update (st0: t_Array u32 (mk_usize 16)) (m: t_Slice u8)
         chacha20_encrypt_last st0
           (cast (num_blocks <: usize) <: u32)
           (m.[ {
-                Core.Ops.Range.f_start = mk_usize 64 *! num_blocks <: usize;
-                Core.Ops.Range.f_end = Core.Slice.impl__len #u8 m <: usize
+                Core_models.Ops.Range.f_start = mk_usize 64 *! num_blocks <: usize;
+                Core_models.Ops.Range.f_end = Core_models.Slice.impl__len #u8 m <: usize
               }
               <:
-              Core.Ops.Range.t_Range usize ]
+              Core_models.Ops.Range.t_Range usize ]
             <:
             t_Slice u8)
       in
@@ -277,7 +278,7 @@ let chacha20_update (st0: t_Array u32 (mk_usize 16)) (m: t_Slice u8)
         Alloc.Vec.impl_2__extend_from_slice #u8
           #Alloc.Alloc.t_Global
           blocks_out
-          (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+          (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
               #FStar.Tactics.Typeclasses.solve
               b
             <:

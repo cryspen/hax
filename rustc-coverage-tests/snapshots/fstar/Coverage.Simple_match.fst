@@ -1,7 +1,7 @@
 module Coverage.Simple_match
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -11,7 +11,7 @@ let _ =
 
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:
@@ -27,7 +27,7 @@ let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
     else countdown
   in
   Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-    "{\n for _ in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {\n f_start: 0,\n f_end: 2,\n })) {\n rust_primitives::hax::failure(\n \"something is not implemented yet.This is discussed in i..."
+    "{\n for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {\n f_start: 0,\n f_end: 2,\n })) {\n rust_primitives::hax::failure(\n \"something is not implemented yet.This is ..."
   ,
   ()
   <:
