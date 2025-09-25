@@ -207,6 +207,8 @@ const _: () = {
     // Boilerplate: define local macros to disambiguate otherwise `std` macros.
     #[allow(unused)]
     macro_rules! todo {($($tt:tt)*) => {disambiguated_todo!($($tt)*)};}
+    // Emits a CLI error with a github issue number, and prints "sorry" in the lean output
+    macro_rules! emit_error {($($tt:tt)*) => {disambiguated_todo!($($tt)*)};}
 
     // Insert a new line in a doc (pretty)
     macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
@@ -225,6 +227,23 @@ const _: () = {
     macro_rules! zip_left {
         ($sep:expr, $a:expr) => {
             docs![concat!($a.into_iter().map(|a| docs![$sep, a]))]
+        };
+    }
+
+    // Prints a one-line comment
+    macro_rules! comment {
+        ($e:expr) => {
+            docs!["-- ", $e]
+        };
+    }
+
+    // Special kind of unreachability that should be prevented by a phase
+    macro_rules! unreachable_by_invariant {
+        ($phase:ident) => {
+            unreachable!(
+                "The phase {} should make this unreachable",
+                stringify!($ident)
+            )
         };
     }
 
@@ -310,6 +329,22 @@ const _: () = {
 
     impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for LeanPrinter {
         const NAME: &'static str = "Lean";
+
+        /// Produce a non-panicking placeholder document. In general, prefer the use of the helper macro [`todo_document!`].
+        fn todo_document(
+            &'a self,
+            message: &str,
+            issue_id: Option<u32>,
+        ) -> DocBuilder<'a, Self, A> {
+            <Self as PrettyAst<'a, 'b, A>>::emit_diagnostic(
+                self,
+                hax_types::diagnostics::Kind::Unimplemented {
+                    issue_id,
+                    details: Some(message.into()),
+                },
+            );
+            text!("sorry")
+        }
 
         fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
             let items = &module.items;
