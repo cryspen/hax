@@ -418,7 +418,7 @@ set_option linter.unusedVariables false
                 GenericParamKind::Type => docs![&generic_param.ident, reflow!(" : Type")]
                     .parens()
                     .group(),
-                GenericParamKind::Lifetime => unreachable!(),
+                GenericParamKind::Lifetime => unreachable_by_invariant!(Drop_references),
                 GenericParamKind::Const { .. } => {
                     todo!("-- Unsupported const param")
                 }
@@ -448,8 +448,7 @@ set_option linter.unusedVariables false
                         .parens()
                         .group()
                     } else {
-                        // The Hax engine should ensure that there is always an else branch
-                        unreachable!()
+                        unreachable_by_invariant!(Local_mutation)
                     }
                 }
                 ExprKind::App {
@@ -633,7 +632,7 @@ set_option linter.unusedVariables false
 
         fn arm(&'a self, arm: &'b Arm) -> DocBuilder<'a, Self, A> {
             if let Some(_guard) = &arm.guard {
-                todo!()
+                unreachable_by_invariant!(Drop_match_guards)
             } else {
                 docs![
                     reflow!("| "),
@@ -904,8 +903,9 @@ set_option linter.unusedVariables false
                     if *is_struct {
                         // Structures
                         let Some(variant) = variants.first() else {
-                            // Structures always have a constructor (even empty ones)
-                            unreachable!()
+                            unreachable!(
+                                "Structures should always have a constructor (even empty ones)"
+                            )
                         };
                         let args = if !variant.is_record {
                             // Tuple-like structure, using positional arguments
@@ -1162,5 +1162,27 @@ set_option linter.unusedVariables false
             .group()
             .nest(INDENT)
         }
+
+        fn lhs(&'a self, _lhs: &'b Lhs) -> DocBuilder<'a, Self, A> {
+            unreachable_by_invariant!(Local_mutation)
+        }
+
+
+        fn binding_mode(&'a self, _binding_mode: &'b BindingMode) -> DocBuilder<'a, Self, A> {
+            unreachable!("This backend handle binding modes directly inside patterns")
+        }
+
+        fn region(&'a self, _region: &'b Region) -> DocBuilder<'a, Self, A> {
+            unreachable_by_invariant!(Drop_references)
+        }
+
+        fn borrow_kind(&'a self, _borrow_kind: &'b BorrowKind) -> DocBuilder<'a, Self, A> {
+            unreachable_by_invariant!(Drop_references)
+        }
+
+        fn guard(&'a self, _guard: &'b Guard) -> DocBuilder<'a, Self, A> {
+            unreachable_by_invariant!(Drop_match_guards)
+        }
+
     }
 };
