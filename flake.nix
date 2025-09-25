@@ -64,7 +64,6 @@
           inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs proverif;
           docs = pkgs.python312Packages.callPackage ./docs {
             hax-frontend-docs = packages.hax-rust-frontend.docs;
-            hax-engine-docs = packages.hax-engine.docs;
           };
           hax-engine = pkgs.callPackage ./engine {
             hax-rust-frontend = packages.hax-rust-frontend.unwrapped;
@@ -154,7 +153,16 @@
           serve-rustc-docs = {
             type = "app";
             program = "${pkgs.writeScript "serve-rustc-docs" ''
+              #!${pkgs.bash}/bin/bash
               cd ${rustc-docs}/share/doc/rust/html/rustc
+              ${pkgs.python3}/bin/python -m http.server "$@"
+            ''}";
+          };
+          serve-docs = {
+            type = "app";
+            program = "${pkgs.writeScript "serve-docs" ''
+              #!${pkgs.bash}/bin/bash
+              cd ${packages.docs}
               ${pkgs.python3}/bin/python -m http.server "$@"
             ''}";
           };
@@ -199,6 +207,8 @@
             pkgs.toml2json
             rustfmt
             utils
+
+            pkgs.go-grip
           ];
           LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
           DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.libz rustc ];

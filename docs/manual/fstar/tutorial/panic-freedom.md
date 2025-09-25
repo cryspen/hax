@@ -12,7 +12,7 @@ in which the function `square` is defined.
 *Note: throughout this tutorial, you can edit the snippets of code and
 extract to F\* by clicking the play button (:material-play:), or even typecheck it with the button (:material-check:).*
 
-```{.rust .playable }
+```{.rust .playable .expect-failure }
 fn square(x: u8) -> u8 {
     x * x
 }
@@ -27,6 +27,7 @@ For instance, running `square(16)` panics: `16 * 16` is `256`, which
 is just over `255`, the largest integer that fits `u8`. Rust does not
 ensure that functions are *total*: a function might panic at any
 point, or might never terminate.
+
 
 ## Rust and panicking code
 Quoting the chapter [To `panic!` or Not to
@@ -90,10 +91,10 @@ anything might happen: the function might panic, might run forever,
 erase your disk, or anything.
 
 The helper crate
-[hax-lib](https://github.com/hacspec/hax/tree/main/hax-lib)
-provdes the `requires`
+[hax-lib](https://github.com/cryspen/hax/tree/main/hax-lib)
+provides the `requires`
 [proc-macro](https://doc.rust-lang.org/reference/procedural-macros.html)
-which lets user writting pre-conditions directly in Rust.
+which lets user writing pre-conditions directly in Rust.
 
 ```{.rust .playable}
 #[hax_lib::requires(x < 16)]
@@ -116,11 +117,11 @@ Another source of panics is indexing. Indexing in an array, a slice or
 a vector is a partial operation: the index might be out of range.
 
 In the example folder of hax, you can find the [`chacha20`
-example](https://github.com/hacspec/hax/blob/main/examples/chacha20/src/lib.rs)
+example](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
 that makes use of pre-conditions to prove panic freedom.
 
 Another solution for safe indexing is to use the [newtype index
 pattern](https://matklad.github.io/2018/06/04/newtype-index-pattern.html),
 which is [also supported by
-hax](https://github.com/hacspec/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
+hax](https://github.com/cryspen/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
 

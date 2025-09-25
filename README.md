@@ -3,10 +3,11 @@
 </p>
 
 <p align="center">
-  <a href="https://hax.cryspen.com/">🌐 Website</a> |
-  <a href="https://hax.cryspen.com/blog">📝 Blog</a> |
-  <a href="https://hacspec.zulipchat.com/">💬 Zulip</a> |
-  <a href="https://hax-playground.cryspen.com/">🛝 Playground</a>
+  <a href="https://hacspec.zulipchat.com/"><img src="https://img.shields.io/badge/Zulip-50ADFF?logo=Zulip&logoColor=white" alt="Zulip"></a>
+  <a href="https://hax-playground.cryspen.com"><img src="https://img.shields.io/badge/try-Playground-1f6feb" alt="Playground"></a>
+  <a href="https://hax.cryspen.com"><img src="https://img.shields.io/badge/docs-Website-brightgreen" alt="Website"></a>
+  <a href="https://hax.cryspen.com/blog"><img src="https://img.shields.io/badge/Blog-9b59b6" alt="Blog"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License: Apache-2.0"></a>
 </p>
 
 # Hax
@@ -14,24 +15,81 @@
 hax is a tool for high assurance translations of a large subset of
 Rust into formal languages such as [F\*](https://www.fstar-lang.org/) or [Rocq](https://rocq-prover.org/).
 
-<details>
-<summary> So what is hacspec now?</summary>
-
-hacspec is the functional subset of Rust that can be used, together with a hacspec
-standard library, to write succinct, executable, and verifiable specifications in
-Rust.
-These specifications can be translated into formal languages with hax.
-</details>
-
 <p align="center">
     <a href="https://hax-playground.cryspen.com/#fstar+tc/latest-main/gist=5252f86237adbca7fdeb7a8fea0b1648">
     Try out hax online now!
     </a>
 </p>
 
+### Supported Backends
+
+<table align="center">
+  <tr>
+    <td align="center" colspan="3">
+      General purpose proof assistants
+    </td>
+    <td align="center" colspan="2">
+      Cryptography & protocols
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="https://www.fstar-lang.org/">
+        F*
+        <!-- <picture>
+          <source srcset=".github/assets/fstar-dark.png" media="(prefers-color-scheme: dark)">
+          <source srcset=".github/assets/fstar-light.png" media="(prefers-color-scheme: light)">
+          <img src=".github/assets/fstar-light.png" height="40" alt="F*">
+        </picture> -->
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://rocq-prover.org/">
+        <picture>
+          <source srcset=".github/assets/rocq-dark.svg" media="(prefers-color-scheme: dark)">
+          <source srcset=".github/assets/rocq-light.svg" media="(prefers-color-scheme: light)">
+          <img src=".github/assets/rocq-light.svg" height="18" alt="Rocq">
+        </picture>
+      </a>
+    </td>
+    <td align="center" style="vertical-align: center; ">
+      <a href="https://lean-lang.org/">
+        <picture>
+          <source srcset=".github/assets/lean-dark.svg" media="(prefers-color-scheme: dark)">
+          <source srcset=".github/assets/lean-light.svg" media="(prefers-color-scheme: light)">
+          <img src=".github/assets/lean-light.svg" height="18" alt="Lean">
+        </picture>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/SSProve/ssprove">
+        <picture>
+          <source srcset=".github/assets/ssprove-dark.svg" media="(prefers-color-scheme: dark)">
+          <source srcset=".github/assets/ssprove-light.svg" media="(prefers-color-scheme: light)">
+          <img src=".github/assets/ssprove-light.svg" height="18" alt="SSProve">
+        </picture>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://proverif.inria.fr/">
+        <b>ProVerif</b>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <!-- 🟢🟡🟠🔴 -->
+    <td align="center"><sub>🟢 stable</sub></td>
+    <td align="center"><sub>🟡 partial</sub></td>
+    <td align="center"><sub>🚀 active dev.</sub></td>
+    <td align="center"><sub>🟡 partial</sub></td>
+    <td align="center"><sub>🟠 PoC</sub></td>
+  </tr>
+</table>
+
 ## Learn more
 
 Here are some resources for learning more about hax:
+
  - [Manual](https://hax.cryspen.com/manual/index.html) (work in progress)
     + [Quick start](https://hax.cryspen.com/manual/quick_start/index.html)
     + [Tutorial](https://hax.cryspen.com/manual/tutorial/index.html)
@@ -39,14 +97,16 @@ Here are some resources for learning more about hax:
    a set of examples that show what hax can do for you.
  - Other [specifications](https://github.com/hacspec/specs) of cryptographic protocols.
 
+Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/cryspen/hax/discussions). For bugs, file an [Issue](https://github.com/cryspen/hax/issues).
+
 ## Usage
 Hax is a cargo subcommand. 
 The command `cargo hax` accepts the following subcommands:
- * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`).
+ * **`into`** (`cargo hax into BACKEND`): translate a Rust crate to the backend `BACKEND` (e.g. `fstar`, `coq`, `lean`).
  * **`json`** (`cargo hax json`): extract the typed AST of your crate as a JSON file.
  
 Note:
- * `BACKEND` can be `fstar`, `coq`, `easycrypt` or `pro-verif`. `cargo hax into --help`
+ * `BACKEND` can be `fstar`, `lean`, `coq`, `easycrypt` or `pro-verif`. `cargo hax into --help`
    gives the full list of supported backends.
  * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
    <BACKEND>` takes options. For instance, you can `cargo hax into
@@ -64,7 +124,7 @@ Note:
 - [`nodejs`](https://nodejs.org/)
 - [`jq`](https://jqlang.github.io/jq/)
 
-2. Clone this repo: `git clone git@github.com:hacspec/hax.git && cd hax`
+2. Clone this repo: `git clone git@github.com:cryspen/hax.git && cd hax`
 3. Run the [setup.sh](./setup.sh) script: `./setup.sh`.
 4. Run `cargo-hax --help`
 
@@ -87,7 +147,7 @@ manager</a> <i>(with <a href="https://nixos.wiki/wiki/Flakes">flakes</a> enabled
 
 </details>
 
-+ **Run hax on a crate directly** to get F\*/Coq/... (assuming you are in the crate's folder):
++ **Run hax on a crate directly** to get F\*/Coq/Lean/... (assuming you are in the crate's folder):
    - `nix run github:hacspec/hax -- into fstar` extracts F*.
 
 + **Install hax**:  `nix profile install github:hacspec/hax`, then run `cargo hax --help` anywhere
@@ -134,8 +194,10 @@ You can also just use [direnv](https://github.com/nix-community/nix-direnv), wit
 - `rust-frontend/`: Rust library that hooks in the rust compiler and
   extract its internal typed abstract syntax tree
   [**THIR**](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
-- `engine/`: the simplification and elaboration engine that translates
-  programs from the Rust language to various backends (see `engine/backends/`).
+- `engine/`: the simplification and elaboration engine that translates programs
+  from the Rust language to various backends (see `engine/backends/`). Written
+  in OCaml.
+- `rust-engine/`: an on-going rewrite of our engine from OCaml to Rust.
 - `cli/`: the `hax` subcommand for Cargo.
 
 ### Compiling, formatting, and more

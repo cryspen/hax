@@ -12,7 +12,6 @@ import Std
 import Std.Do.Triple
 import Std.Tactic.Do
 import Std.Tactic.Do.Syntax
-import Hax.BitVec
 
 open Std.Do
 open Std.Tactic
@@ -119,6 +118,15 @@ instance instWPMonad : WPMonad Result (.except Error .pure) where
 instance instCoe {α} : Coe α (Result α) where
   coe x := pure x
 
+
+@[simp, spec, default_instance]
+instance {α} : Coe (Result (Result α)) (Result α) where
+  coe x := match x with
+  | .ok y => y
+  | .fail e => .fail e
+  | .div => .div
+
+
 end Result
 
 
@@ -127,18 +135,25 @@ end Result
 -/
 section Logic
 
+namespace Rust_primitives.Hax.Logical_op
+
+/-- Boolean conjunction. Cannot panic (always returns .ok ) -/
 @[simp, spec]
-abbrev hax_logical_op_and := (fun a b => a && b)
+def and (a b: Bool) : Result Bool := pure (a && b)
+
+/-- Boolean disjunction. Cannot panic (always returns .ok )-/
 @[simp, spec]
-abbrev hax_logical_op_or := (fun a b => a || b)
+def or (a b: Bool) : Result Bool := pure (a || b)
 
-abbrev assert (b:Bool) : Result Unit :=
-  if b then pure ()
-  else .fail (Error.assertionFailure)
+/-- Boolean negation. Cannot panic (always returns .ok )-/
+@[simp, spec]
+def not (a :Bool) : Result Bool := pure (!a)
 
-abbrev assume : Prop -> Result Unit := fun _ => pure ()
+@[inherit_doc] infixl:35 " &&? " => and
+@[inherit_doc] infixl:30 " ||? " => or
+@[inherit_doc] notation:max "!?" b:40 => not b
 
-abbrev prop_constructors_from_bool (b :Bool) : Prop := (b = true)
+end Rust_primitives.Hax.Logical_op
 
 end Logic
 
@@ -161,7 +176,7 @@ class ToNat (α: Type) where
   toNat : α -> Nat
 
 @[simp]
-instance : ToNat USize where
+instance : ToNat usize where
   toNat x := x.toNat
 @[simp]
 instance : ToNat u64 where
@@ -185,8 +200,12 @@ instance : Coe i32 (Result i64) where
   coe x := pure (x.toInt64)
 
 @[simp]
-instance : Coe USize Nat where
+instance : Coe usize Nat where
   coe x := x.toNat
+
+@[simp]
+instance : Coe i32 Nat where
+  coe x := x.toNatClampNeg
 
 @[simp]
 instance : Coe u32 Nat where
@@ -201,11 +220,11 @@ instance : Coe Nat i32 where
   coe x := Int32.ofNat x
 
 @[simp]
-instance : Coe USize UInt32 where
+instance : Coe usize u32 where
   coe x := x.toUInt32
 
 @[simp]
-instance : Coe USize (Result u32) where
+instance : Coe usize (Result u32) where
   coe x := if x.toNat < UInt32.size then pure (x.toUInt32)
            else Result.fail .integerOverflow
 
@@ -266,12 +285,13 @@ class HaxDiv α where
   meaning of this notation is type-dependent. -/
   div : α → α → Result α
 
-/-- The typeclass behind the notation `a >>>? b : Result α` where `a b : α`. -/
-class HaxShiftRight α where
+/--The notation typeclass for right shift that returns a Result. It enables the
+ notation `a >>>? b : Result α` where `a : α` and `b : β`. -/
+class HaxShiftRight α β where
   /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
   of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
   -/
-  shiftRight : α → α → Result α
+  shiftRight : α → β → Result α
 
 /-- The notation typeclass for remainder.  This enables the notation `a %? b :
 Result α` where `a b : α`.  -/
@@ -290,39 +310,32 @@ infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 
 /- Until notations are not introduced by the Lean backend, explicit hax-names
   are also provided -/
-@[simp, spec]
-def hax_machine_int_add {α} [HaxAdd α] (x y: α) : Result α := x +? y
-@[simp, spec]
-def hax_machine_int_sub {α} [HaxSub α] (x y: α) : Result α := x -? y
-@[simp, spec]
-def hax_machine_int_mul {α} [HaxMul α] (x y: α) : Result α := x *? y
-@[simp, spec]
-def hax_machine_int_div {α} [HaxDiv α] (x y: α) : Result α := x /? y
-@[simp, spec]
-def hax_machine_int_rem {α} [HaxRem α] (x y: α) : Result α := x %? y
-@[simp, spec]
-def hax_machine_int_shr {α} [HaxShiftRight α] (a b: α) : Result α := a >>>? b
-@[simp, spec]
-def hax_machine_int_bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
-@[simp]
-def ops_arith_Neg_neg {α} [Neg α] (x:α) : Result α := pure (-x)
+namespace Rust_primitives.Hax.Machine_int
 
 @[simp, spec]
-def hax_machine_int_eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
+def bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
+
 @[simp, spec]
-def hax_machine_int_ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
+def eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
 @[simp, spec]
-def hax_machine_int_lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool :=
+def ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
+@[simp, spec]
+def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool :=
   pure (x < y)
 @[simp, spec]
-def hax_machine_int_le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool :=
+def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool :=
   pure (x ≤ y)
 @[simp, spec]
-def hax_machine_int_gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
+def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
   pure (x > y)
 @[simp, spec]
-def hax_machine_int_ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
+def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
   pure (x ≥ y)
+
+end Rust_primitives.Hax.Machine_int
+
+@[simp]
+def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 
 /-
@@ -334,28 +347,29 @@ given, along with hoare-triple specifications (to be used by mvcgen)
 
 -/
 
-namespace USize
+namespace usize
+open USize
 
 /-- Partial addition on usize -/
-instance instHaxAdd : HaxAdd USize where
+instance instHaxAdd : HaxAdd usize where
   add x y :=
     if (BitVec.uaddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x + y)
 
 /-- Partial substraction on usize -/
-instance instHaxSub : HaxSub USize where
+instance instHaxSub : HaxSub usize where
   sub x y :=
     if (BitVec.usubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x - y)
 
 /-- Partial multiplication on usize -/
-instance instHaxMul : HaxMul USize where
+instance instHaxMul : HaxMul usize where
   mul x y :=
     if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x * y)
 
 /-- Partial right shift on usize -/
-instance instHaxShiftRight : HaxShiftRight USize where
+instance instHaxShiftRight : HaxShiftRight usize usize where
   shiftRight x y :=
     if (y ≤ USize.size) then pure (x >>> y)
     else .fail .integerOverflow
@@ -435,10 +449,7 @@ theorem HaxAdd_spec_nat (x y: usize) :
   ⦃ ⇓ r => r = x + y ⦄ := by
   intros
   mvcgen [HaxAdd_spec_bv] ; simp
-  apply eq_false_of_ne_true
-  apply (BitVec.toNat_add_iff_not_uaddOverflow _).mp
-  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
-  . apply System.Platform.numBits_pos
+  simp [BitVec.uaddOverflow, size] at * ; assumption
 
 
 /-- Nat-based specification for rust multiplication on usize -/
@@ -449,27 +460,26 @@ theorem HaxMul_spec_nat (x y: usize) :
   ⦃ ⇓ r => r = x * y ⦄ := by
   intros
   mvcgen [HaxMul_spec_bv] ; simp
-  apply eq_false_of_ne_true
-  apply (BitVec.toNat_mul_iff_not_umulOverflow _).mp
-  . simp [USize.toNat_toBitVec, size, Nat.mod_eq_iff_lt] at *; assumption
-  . apply System.Platform.numBits_pos
+  intros
+  mvcgen [HaxAdd_spec_bv] ; simp
+  simp [BitVec.umulOverflow, size] at * ; assumption
 
-end USize
+end usize
 
 namespace SpecNat
 attribute [scoped spec]
-  USize.HaxAdd_spec_nat
-  USize.HaxMul_spec_nat
+  usize.HaxAdd_spec_nat
+  usize.HaxMul_spec_nat
 end SpecNat
 
 namespace SpecBV
 attribute [scoped spec]
-  USize.HaxAdd_spec_bv
-  USize.HaxSub_spec_bv
-  USize.HaxMul_spec_bv
-  USize.HaxDiv_spec_bv
-  USize.HaxRem_spec_bv
-  USize.HaxShiftRight_spec_bv
+  usize.HaxAdd_spec_bv
+  usize.HaxSub_spec_bv
+  usize.HaxMul_spec_bv
+  usize.HaxDiv_spec_bv
+  usize.HaxRem_spec_bv
+  usize.HaxShiftRight_spec_bv
 end SpecBV
 
 
@@ -514,7 +524,7 @@ theorem HaxMul_spec_bv (x y: isize) :
   (x *? y)
   ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
 
-instance instHaxShiftRight : HaxShiftRight ISize where
+instance instHaxShiftRight : HaxShiftRight ISize ISize where
   shiftRight x y :=
     if (y ≤ ISize.size.toISize) then pure (x >>> y)
     else .fail .integerOverflow
@@ -528,9 +538,9 @@ theorem HaxShiftRight_spec_bv (x y: isize) :
 end ISize
 
 
-namespace Int64
+namespace i64
 
-instance instHaxAdd : HaxAdd Int64 where
+instance instHaxAdd : HaxAdd i64 where
   add x y :=
     if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x + y)
@@ -541,7 +551,7 @@ theorem HaxAdd_spec_bv (x y: i64) :
   (x +? y)
   ⦃ ⇓ r => r = x + y ⦄ := by mvcgen [instHaxAdd ]
 
-instance instHaxSub : HaxSub Int64 where
+instance instHaxSub : HaxSub i64 where
   sub x y :=
     if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x - y)
@@ -552,7 +562,7 @@ theorem HaxSub_spec_bv (x y: i64) :
   (x -? y)
   ⦃ ⇓ r => r = x - y ⦄ := by mvcgen [instHaxSub]
 
-instance instHaxMul : HaxMul Int64 where
+instance instHaxMul : HaxMul i64 where
   mul x y :=
     if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x * y)
@@ -563,7 +573,14 @@ theorem HaxMul_spec_bv (x y: i64) :
   (x *? y)
   ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
 
-instance instHaxShiftRight : HaxShiftRight Int64 where
+instance instHaxHShiftRight : HaxShiftRight i64 i32 where
+  shiftRight x y :=
+    if (y ≤ 64) then
+      pure (x >>> (Int32.toInt64 y))
+    else
+      .fail .integerOverflow
+
+instance instHaxShiftRight : HaxShiftRight i64 i64 where
   shiftRight x y :=
     if (y ≤ 64) then pure (x >>> y)
     else .fail .integerOverflow
@@ -574,12 +591,18 @@ theorem HaxShiftRight_spec_bv (x y: i64) :
   ( x >>>? y)
   ⦃ ⇓ r => r = x >>> y ⦄ := by mvcgen [instHaxShiftRight]
 
-end Int64
+@[spec]
+theorem HaxHShiftRight_spec_bv (x : i64) (y: i32) :
+  ⦃ y ≤ 64 ⦄
+  ( x >>>? y)
+  ⦃ ⇓ r => r = x >>> y.toInt64 ⦄ := by mvcgen [instHaxHShiftRight]
+
+end i64
 
 
-namespace Int32
+namespace i32
 
-instance instHaxAdd : HaxAdd Int32 where
+instance instHaxAdd : HaxAdd i32 where
   add x y :=
     if (BitVec.saddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x + y)
@@ -594,7 +617,7 @@ theorem HaxAdd_spec_bv_rw (x y: i32) :
   ¬ (BitVec.saddOverflow x.toBitVec y.toBitVec) →
   x +? y = Result.ok (x + y) := by simp [instHaxAdd ] <;> grind
 
-instance instHaxSub : HaxSub Int32 where
+instance instHaxSub : HaxSub i32 where
   sub x y :=
     if (BitVec.ssubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x - y)
@@ -609,7 +632,7 @@ theorem HaxSub_spec_bv_rw (x y: i32) :
   ¬ (BitVec.ssubOverflow x.toBitVec y.toBitVec) →
   x -? y = Result.ok (x - y) := by simp [instHaxSub ] <;> grind
 
-instance instHaxMul : HaxMul Int32 where
+instance instHaxMul : HaxMul i32 where
   mul x y :=
     if (BitVec.smulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
     else pure (x * y)
@@ -642,7 +665,64 @@ theorem HaxRem_spec_bv_rw (x y : i32) :
   x %? y = Result.ok (x % y)
 := by simp [instHaxRem] <;> try grind
 
-end Int32
+end i32
+
+
+namespace u32
+
+instance instHaxAdd : HaxAdd u32 where
+  add x y :=
+    if (BitVec.uaddOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x + y)
+
+instance instHaxSub : HaxSub u32 where
+  sub x y :=
+    if (BitVec.usubOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x - y)
+
+instance instHaxMul : HaxMul u32 where
+  mul x y :=
+    if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+instance instHaxDiv : HaxDiv u32 where
+  div x y :=
+    if y = 0 then .fail .divisionByZero
+    else pure (x / y)
+
+instance instHaxRem : HaxRem u32 where
+  rem x y :=
+    if y = 0 then .fail .divisionByZero
+    else pure (x % y)
+
+instance instHaxShiftRight : HaxShiftRight u32 u32 where
+  shiftRight x y :=
+    if (y > 32) then .fail .integerOverflow
+    else pure (x >>> y)
+
+end u32
+
+
+
+namespace UInt8
+
+instance instHaxMul : HaxMul UInt8 where
+  mul x y :=
+    if (BitVec.umulOverflow x.toBitVec y.toBitVec) then .fail .integerOverflow
+    else pure (x * y)
+
+@[spec]
+theorem HaxMul_spec_bv (x y: u8) :
+  ⦃ ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) ⦄
+  (x *? y)
+  ⦃ ⇓ r => r = x * y ⦄ := by mvcgen [instHaxMul]
+
+theorem HaxMul_spec_bv_rw (x y: u8) :
+   ¬ (BitVec.umulOverflow x.toBitVec y.toBitVec) →
+   x *? y = Result.ok (x * y)
+:= by simp [instHaxMul]
+
+end UInt8
 
 /-
 
@@ -653,28 +733,23 @@ for each implementation of typeclasses
 
 -/
 
+namespace Core.Num.Impl_8
 @[simp, spec]
-def num__8_impl_wrapping_add (x y: u32) : Result u32 := pure (x + y)
+def wrapping_add (x y: u32) : Result u32 := pure (x + y)
 
 @[simp, spec]
-def num__8_impl_rotate_left (x: u32) (n: Nat) : Result u32 :=
+def rotate_left (x: u32) (n: Nat) : Result u32 :=
   pure (UInt32.ofBitVec (BitVec.rotateLeft x.toBitVec n))
 
-
-/-- Hax-generated bounded integers -/
-abbrev hax__autogenerated_refinement__BoundedUsize_BoundedUsize
-  (lo: USize) (hi: USize) := USize
---  {u : usize // lo ≤ u ∧ u ≤ hi}
--- Todo : make it into a proper subtype
-
-
-def num__8_impl_from_le_bytes (x: Vector u8 4) : u32 :=
+@[simp, spec]
+def from_le_bytes (x: Vector u8 4) : u32 :=
   x[0].toUInt32
   + (x[1].toUInt32 <<< 8)
   + (x[2].toUInt32 <<< 16)
   + (x[3].toUInt32 <<< 24)
 
-def num__8_impl_to_le_bytes (x:u32) : Result (Vector u8 4) :=
+@[simp, spec]
+def to_le_bytes (x:u32) : Result (Vector u8 4) :=
   #v[
     (x % 256).toUInt8,
     (x >>> 8 % 256).toUInt8,
@@ -682,8 +757,16 @@ def num__8_impl_to_le_bytes (x:u32) : Result (Vector u8 4) :=
     (x >>> 24 % 256).toUInt8,
   ]
 
+end Core.Num.Impl_8
 
 end Arithmetic
+
+
+/-- Hax-generated bounded integers -/
+abbrev Hax_bounded_integers.Hax__autogenerated_refinement__BoundedUsize.BoundedUsize
+  (lo: usize) (hi: usize) := usize
+--  {u : usize // lo ≤ u ∧ u ≤ hi}
+-- Todo : make it into a proper subtype
 
 
 
@@ -693,21 +776,89 @@ end Arithmetic
 
 -/
 section Tuples
+namespace Rust_primitives.Hax
 
-abbrev hax_Tuple0 : Type := Unit
-def constr_hax_Tuple0 : hax_Tuple0 := ()
-instance : CoeDep Type hax_Tuple0 (hax_Tuple0) where
-  coe := ()
+structure Tuple0 where
 
+structure Tuple1 (α0: Type) where
+  _0 : α0
 
-abbrev hax_Tuple1 (α: Type) : Type := α × Unit
-def constr_hax_Tuple1 {hax_Tuple1_Tuple0: α} : hax_Tuple1 α := (hax_Tuple1_Tuple0, ())
+structure Tuple2 (α0 α1: Type) where
+  _0 : α0
+  _1 : α1
 
-abbrev hax_Tuple2 (α β: Type) : Type := α × β
-def constr_hax_Tuple2 {α β} {hax_Tuple2_Tuple0: α} {hax_Tuple2_Tuple1 : β} : hax_Tuple2 α β
-  := (hax_Tuple2_Tuple0, hax_Tuple2_Tuple1)
+structure Tuple3 (α0 α1 α2: Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
 
+structure Tuple4 (α0 α1 α2 α3 : Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+
+structure Tuple5 (α0 α1 α2 α3 α4 : Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+  _4 : α4
+
+structure Tuple6 (α0 α1 α2 α3 α4 α5 : Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+  _4 : α4
+  _5 : α5
+
+structure Tuple7 (α0 α1 α2 α3 α4 α5 α6 : Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+  _4 : α4
+  _5 : α5
+  _6 : α6
+
+structure Tuple8 (α0 α1 α2 α3 α4 α5 α6 α7 : Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+  _4 : α4
+  _5 : α5
+  _6 : α6
+  _7 : α7
+
+structure Tuple9 (α0 α1 α2 α3 α4 α5 α6 α7 α8 α9 : Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+  _4 : α4
+  _5 : α5
+  _6 : α6
+  _7 : α7
+  _8 : α8
+
+structure Tuple10 (α0 α1 α2 α3 α4 α5 α6 α7 α8 α9: Type) where
+  _0 : α0
+  _1 : α1
+  _2 : α2
+  _3 : α3
+  _4 : α4
+  _5 : α5
+  _6 : α6
+  _7 : α7
+  _8 : α8
+  _9 : α9
+
+end Rust_primitives.Hax
 end Tuples
+
+open Rust_primitives.Hax
 
 
 /-
@@ -719,7 +870,7 @@ section Cast
 
 /-- Hax-introduced explicit cast. It is partial (returns a `Result`) -/
 @[simp, spec]
-def convert_From_from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
+def Core.Convert.From.from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
 
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
@@ -738,8 +889,12 @@ instance : Cast i64 (Result i32) where
 instance : Cast usize u32 where
   cast x := pure (USize.toUInt32 x)
 
+@[spec]
+instance : Cast String String where
+  cast x := pure x
+
 @[simp, spec]
-def hax_cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
+def Rust_primitives.Hax.cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
 
 end Cast
 
@@ -749,37 +904,39 @@ end Cast
 # Results
 
 Not to be confused with the underlying `Result` monad of the Lean encoding, the
-`result_Result` type models the rust `Result`.
+`result.Result` type models the rust `Result`.
 
 -/
 section RustResult
+namespace Core.Result
 
-inductive result_Result α β
-| ok : α -> result_Result α β
-| err : β -> result_Result α β
+inductive Result α β
+| ok : α -> Result α β
+| err : β -> Result α β
 
-instance {β : Type} : Monad (fun α => result_Result α β) where
+instance {β : Type} : Monad (fun α => Result α β) where
   pure x := .ok x
-  bind {α α'} x (f: α -> result_Result α' β) := match x with
+  bind {α α'} x (f: α -> Result α' β) := match x with
   | .ok v => f v
   | .err e => .err e
 
-/-- Rust unwrapping, panics if `x` is not `result_Result.ok _` -/
-def result_impl_unwrap (α: Type) (β:Type) (x: result_Result α β) : (Result α) :=
+/-- Rust unwrapping, panics if `x` is not `result.Result.ok _` -/
+def Impl.unwrap (α: Type) (β:Type) (x: Result α β) :=
   match x with
+  | .err _ => Result.fail .panic
   | .ok v => pure v
-  | .err _ => .fail .panic
 
-theorem result_impl_unwrap_spec {α β} (x: result_Result α β) v :
-  x = result_Result.ok v →
+@[spec]
+theorem Impl.unwrap.spec {α β} (x: Result α β) v :
+  x = Result.ok v →
   ⦃ True ⦄
-  (result_impl_unwrap α β x)
+  (Impl.unwrap α β x)
   ⦃ ⇓ r => r = v ⦄ := by
   intros
-  mvcgen [result_impl_unwrap]
+  mvcgen [Impl.unwrap]
   simp ; injections
 
-
+end Core.Result
 end RustResult
 
 
@@ -799,13 +956,13 @@ loop `body` from index `e` to `s`. If the invariant is not checked at runtime,
 only passed around
 
 -/
-def hax_folds_fold_range {α}
+def Rust_primitives.Hax.Folds.fold_range {α}
   (s e : Nat)
   (inv : α -> Nat -> Result Bool)
   (init: α)
   (body : α -> Nat -> Result α) : Result α := do
   if e ≤ s then pure init
-  else hax_folds_fold_range (s+1) e inv (← body init s) body
+  else Rust_primitives.Hax.Folds.fold_range (s+1) e inv (← body init s) body
 
 -- Lemma for proof of hax_folds_fold_range property
 private
@@ -847,7 +1004,7 @@ produces a result that also satisfies the invariant.
 
 -/
 @[spec]
-theorem hax_folds_fold_range_spec {α}
+theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   (s e : Nat)
   (inv : α -> Nat -> Result Bool)
   (init: α)
@@ -862,18 +1019,18 @@ theorem hax_folds_fold_range_spec {α}
     (body acc i)
     ⦃ ⇓ res => inv res (i+1) = pure true ⦄) →
   ⦃ True ⦄
-  (hax_folds_fold_range s e inv init body)
+  (Rust_primitives.Hax.Folds.fold_range s e inv init body)
   ⦃ ⇓ r => inv r e = pure true ⦄
 := by
   intro h_inv_s h_s_le_e h_body
   revert h_inv_s init
   apply induction_decreasing_range (s := s) (e := e) <;> try grind
   . intros
-    unfold hax_folds_fold_range
+    unfold Rust_primitives.Hax.Folds.fold_range
     mvcgen
     omega
   . intros n _ _ ih acc h_acc
-    unfold hax_folds_fold_range
+    unfold Rust_primitives.Hax.Folds.fold_range
     mvcgen <;> (try grind) <;> try omega
     specialize h_body acc n (by omega) (by omega)
     mspec h_body
@@ -893,12 +1050,14 @@ Rust arrays, are represented as Lean `Vector` (Lean Arrays of known size)
 -/
 section RustArray
 
+
 abbrev RustArray := Vector
 
-inductive array_TryFromSliceError where
-  | array_TryFromSliceError
 
-def hax_monomorphized_update_at_update_at_usize {α n}
+inductive Core.Array.TryFromSliceError where
+  | array.TryFromSliceError
+
+def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
   (a: Vector α n) (i:Nat) (v:α) : Result (Vector α n) :=
   if h: i < a.size then
     pure ( Vector.set a i v )
@@ -906,43 +1065,44 @@ def hax_monomorphized_update_at_update_at_usize {α n}
     .fail (.arrayOutOfBounds)
 
 @[spec]
-theorem hax_monomorphized_update_at_update_at_usize_spec
+theorem Rust_primitives.Hax.Monomorphized_update_at.update_at_usize.spec
   {α n} (a: Vector α n) (i:Nat) (v:α) (h: i < a.size) :
   ⦃ True ⦄
-  (hax_monomorphized_update_at_update_at_usize a i v)
+  (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize a i v)
   ⦃ ⇓ r => r = Vector.set a i v ⦄ := by
-  mvcgen [hax_monomorphized_update_at_update_at_usize]
+  mvcgen [Rust_primitives.Hax.Monomorphized_update_at.update_at_usize]
 
 
 @[spec]
-def hax_update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector α n) :=
+def Rust_primitives.Hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector α n) :=
   if i < n then
     pure ( Vector.setIfInBounds m i v)
   else
     .fail (.arrayOutOfBounds)
 
 @[spec]
-def hax_repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
+def Rust_primitives.Hax.repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
   pure (Vector.replicate n v)
 
 
 /- Warning : this function has been specialized, it should be turned into a typeclass -/
-def convert_TryInto_try_into {α n} (a: Array α) :
-   Result (result_Result (Vector α n) array_TryFromSliceError) :=
+def Core.Convert.TryInto.try_into {α n} (a: Array α) :
+   Result (Core.Result.Result (Vector α n) Core.Array.TryFromSliceError) :=
    pure (
      if h: a.size = n then
-       result_Result.ok (Eq.mp (congrArg _ h) a.toVector)
+       Core.Result.Result.ok (Eq.mp (congrArg _ h) a.toVector)
      else
-       .err .array_TryFromSliceError
+       .err .array.TryFromSliceError
      )
 
-theorem convert_TryInto_try_success_spec {α n} (a: Array α) :
+@[spec]
+theorem Core.Convert.TryInto.try_into.spec {α n} (a: Array α) :
   (h: a.size = n) →
   ⦃ True ⦄
-  ( convert_TryInto_try_into a)
+  ( Core.Convert.TryInto.try_into a)
   ⦃ ⇓ r => r = .ok (Eq.mp (congrArg _ h) a.toVector) ⦄ := by
   intro h
-  mvcgen [result_impl_unwrap_spec, convert_TryInto_try_into]
+  mvcgen [Core.Result.Impl.unwrap.spec, Core.Convert.TryInto.try_into]
   apply SPred.pure_intro
   split <;> grind
 
@@ -956,13 +1116,11 @@ end RustArray
 -/
 
 /-- Type of ranges -/
-inductive ops_range_Range (α: Type)  where
-| range (r_start r_end : α) : ops_range_Range α
+structure Core.Ops.Range.Range (α: Type) where
+  start : α
+  _end : α
 
-@[simp, spec]
-def constr_ops_range_Range {α} (ops_range_Range_start : α) (ops_range_Range_end : α) :=
-  ops_range_Range.range ops_range_Range_start ops_range_Range_end
-
+open Core.Ops.Range
 
 /-
 
@@ -998,20 +1156,20 @@ macro_rules | `($x[$i]_?) => `(getElemResult $x $i)
 /--
 
 Until the backend introduces notations, a definition for the explicit name
-`ops_index_index_index` is provided as a proxy
+`ops.index_index_index` is provided as a proxy
 
 -/
 @[simp, spec]
-def ops_index_Index_index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (Result γ) := a[i]_?
+def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (Result γ) := a[i]_?
 
 
 instance Range.instGetElemResultArrayUSize :
   GetElemResult
     (Array α)
-    (ops_range_Range usize)
+    (Range usize)
     (Array α) where
   getElemResult xs i := match i with
-  | ops_range_Range.range s e =>
+  | ⟨s, e⟩ =>
     let size := xs.size;
     if s ≤ e && e ≤ size then
       pure ( xs.extract s e )
@@ -1021,22 +1179,22 @@ instance Range.instGetElemResultArrayUSize :
 instance Range.instGetElemResultVectorUSize :
   GetElemResult
     (Vector α n)
-    (ops_range_Range usize)
+    (Range usize)
     (Array α) where
   getElemResult xs i := match i with
-  | ops_range_Range.range s e =>
+  | ⟨s, e⟩ =>
     if s ≤ e && e ≤ n then
       pure (xs.extract s e).toArray
     else
       Result.fail Error.arrayOutOfBounds
 
 
-instance USize.instGetElemResultArray {α} : GetElemResult (Array α) usize α where
+instance usize.instGetElemResultArray {α} : GetElemResult (Array α) usize α where
   getElemResult xs i :=
     if h: i.toNat < xs.size then pure (xs[i])
     else .fail arrayOutOfBounds
 
-instance USize.instGetElemResultVector {α n} : GetElemResult (Vector α n) usize α where
+instance usize.instGetElemResultVector {α n} : GetElemResult (Vector α n) usize α where
   getElemResult xs i :=
     if h: i.toNat < n then pure (xs[i.toNat])
     else .fail arrayOutOfBounds
@@ -1068,20 +1226,20 @@ theorem Nat.getElemVectorResult_spec
   by mvcgen [Nat.instGetElemResultVector]
 
 @[spec]
-theorem USize.getElemArrayResult_spec
+theorem usize.getElemArrayResult_spec
   (α : Type) (a: Array α) (i: usize) (h: i.toNat < a.size) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
   ⦃ ⇓ r => r = a[i.toNat]⦄ :=
-  by mvcgen [USize.instGetElemResultArray]
+  by mvcgen [usize.instGetElemResultArray]
 
 @[spec]
-theorem USize.getElemVectorResult_spec
+theorem usize.getElemVectorResult_spec
   (α : Type) (n:Nat) (a: Vector α n) (i: usize) (h: i.toNat < n) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
   ⦃ ⇓ r => r = a[i.toNat]⦄ :=
-  by mvcgen [USize.instGetElemResultVector]
+  by mvcgen [usize.instGetElemResultVector]
 
 @[spec]
 theorem Range.getElemArrayUSize_spec
@@ -1089,11 +1247,11 @@ theorem Range.getElemArrayUSize_spec
   s ≤ e →
   e ≤ a.size →
   ⦃ ⌜ True ⌝ ⦄
-  ( a[(ops_range_Range.range s e)]_? )
+  ( a[(Range.mk s e)]_? )
   ⦃ ⇓ r => r = Array.extract a s e ⦄
 := by
   intros
-  mvcgen [ops_index_Index_index, Range.instGetElemResultArrayUSize] <;> grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize] <;> grind
 
 @[spec]
 theorem Range.getElemVectorUSize_spec
@@ -1101,11 +1259,11 @@ theorem Range.getElemVectorUSize_spec
   s ≤ e →
   e ≤ a.size →
   ⦃ ⌜ True ⌝ ⦄
-  ( a[(ops_range_Range.range s e)]_? )
+  ( a[(Range.mk s e)]_? )
   ⦃ ⇓ r => r = (Vector.extract a s e).toArray ⦄
 := by
   intros
-  mvcgen [ops_index_Index_index, Range.instGetElemResultVectorUSize] <;> grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize] <;> grind
 
 
 end Lookup
@@ -1122,11 +1280,11 @@ Rust slices are represented as Lean Arrays (variable size)
 
 
 @[spec]
-def unsize {α n} (a: Vector α n) : Result (Array α) :=
+def Rust_primitives.unsize {α n} (a: Vector α n) : Result (Array α) :=
   pure (a.toArray)
 
 @[simp, spec]
-def slice_impl_len α (a: Array α) : Result usize := pure a.size
+def Core.Slice.Impl.len α (a: Array α) : Result usize := pure a.size
 
 /-
 
@@ -1137,22 +1295,24 @@ Rust vectors are represented as Lean Arrays (variable size)
 -/
 section RustVectors
 
+abbrev RustSlice := Array
 abbrev RustVector := Array
 
-def alloc_Global : Type := Unit
-def vec_Vec (α: Type) (_Allocator:Type) : Type := Array α
+def Alloc.Alloc.Global : Type := Unit
 
-def vec_impl_new (α: Type) (Allocator:Type) : Result (vec_Vec α Allocator) :=
+def Alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
+
+def Alloc.Vec.Impl.new (α: Type) (_:Tuple0) : Result (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
   pure ((List.nil).toArray)
 
-def vec__1_impl_len (α: Type) (Allocator:Type) (x: vec_Vec α Allocator) : Result Nat :=
+def Alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) : Result Nat :=
   pure x.size
 
-def vec__2_impl_extend_from_slice (α Allocator) (x: vec_Vec α Allocator) (y: Array α)
-  : Result (vec_Vec α Allocator):=
+def Alloc.Vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) (y: Array α)
+  : Result (Alloc.Vec.Vec α Alloc.Alloc.Global):=
   pure (x.append y)
 
-def slice_impl_to_vec α (a:  Array α) : Result (vec_Vec α alloc_Global) :=
+def Alloc.Slice.Impl.to_vec α (a:  Array α) : Result (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
   pure a
 
 -- For
@@ -1178,23 +1338,36 @@ taken care of by the `Fn` class
 
 -/
 
+namespace Core.Ops.Function
+
 class Fn α (β : outParam Type) γ where
   call : α → β → γ
 
-instance {α β} : Fn (α → β) (hax_Tuple1 α) β where
-  call f x := f x.fst
+instance {α β} : Fn (α → β) (Tuple1 α) β where
+  call f x := f x._0
 
-instance {α β γ} : Fn (α → β → γ) (hax_Tuple2 α β) γ where
-  call f x := f x.fst x.snd
+instance {α β γ} : Fn (α → β → γ) (Tuple2 α β) γ where
+  call f x := f x._0 x._1
 
-def ops_function_Fn_call {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.call f x
+instance {α β} : Fn (α → β) (Tuple1 α) (Result β) where
+  call f x := pure (f x._0)
+
+instance {α β γ} : Fn (α → β → γ) (Tuple2 α β) (Result γ) where
+  call f x := pure (f x._0 x._1)
+
+end Core.Ops.Function
+-- def Core.Ops.Function. {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.call f x --
 
 
 -- Miscellaneous
-def ops_deref_Deref_deref {α Allocator} (v: vec_Vec α Allocator)
+def Core.Ops.Deref.Deref.deref {α Allocator} (v: Alloc.Vec.Vec α Allocator)
   : Result (Array α)
   := pure v
 
+abbrev string_indirection : Type := String
+abbrev Alloc.String.String : Type := string_indirection
+
+abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
 
 -- Tactics
 macro "hax_bv_decide" : tactic => `(tactic| (
@@ -1209,3 +1382,18 @@ macro "hax_bv_decide" : tactic => `(tactic| (
     bv_decide;
     done
  )))
+
+
+-- Assume, Assert
+
+namespace Hax_lib
+
+abbrev assert (b:Bool) : Result Tuple0 :=
+  if b then pure ⟨ ⟩
+  else .fail (Error.assertionFailure)
+
+abbrev assume : Prop -> Result Tuple0 := fun _ => pure ⟨ ⟩
+
+abbrev Prop.Constructors.from_bool (b :Bool) : Prop := (b = true)
+
+end Hax_lib

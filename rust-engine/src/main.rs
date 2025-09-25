@@ -8,7 +8,7 @@ fn main() {
     let ExtendedToEngine::Query(input) = hax_rust_engine::hax_io::read() else {
         panic!()
     };
-    let (value, _map) = input.destruct();
+    let (value, table) = input.destruct();
 
     let query = hax_rust_engine::ocaml_engine::Query {
         hax_version: value.hax_version,
@@ -16,10 +16,11 @@ fn main() {
         kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
             input: value.input,
             apply_phases: !matches!(&value.backend.backend, Backend::GenerateRustEngineNames),
+            translation_options: value.backend.translation_options,
         },
     };
 
-    let Some(Response::ImportThir { output: items }) = query.execute() else {
+    let Some(Response::ImportThir { output: items }) = query.execute(table) else {
         panic!()
     };
 

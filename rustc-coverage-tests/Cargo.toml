@@ -11,4 +11,5 @@ fstar = []
 fstar-lax = []
 coq = []
 json = []
+lean = []
 

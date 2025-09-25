@@ -4,7 +4,10 @@
 
 use std::io::BufRead;
 
-use hax_frontend_exporter::ThirBody;
+use hax_frontend_exporter::{
+    ThirBody,
+    id_table::{Table, WithTable},
+};
 use hax_types::engine_api::{
     EngineOptions,
     protocol::{FromEngine, ToEngine},
@@ -35,6 +38,8 @@ pub enum QueryKind {
         input: Vec<hax_frontend_exporter::Item<ThirBody>>,
         /// Temporary option to enable a set of default phases
         apply_phases: bool,
+        /// Translation options which contains include clauses (items filtering)
+        translation_options: hax_types::cli_options::TranslationOptions,
     },
 }
 
@@ -55,7 +60,7 @@ pub enum ExtendedToEngine {
     /// A standard `ToEngine` message
     ToEngine(ToEngine),
     /// A `Query`
-    Query(Box<hax_frontend_exporter::id_table::WithTable<EngineOptions>>),
+    Query(Box<WithTable<EngineOptions>>),
 }
 
 /// Extends the common `FromEngine` messages with one extra case: `Response`.
@@ -70,7 +75,7 @@ pub enum ExtendedFromEngine {
 
 impl Query {
     /// Execute the query synchronously.
-    pub fn execute(&self) -> Option<Response> {
+    pub fn execute(&self, table: Table) -> Option<Response> {
         use std::io::Write;
         use std::process::Command;
 
@@ -82,12 +87,13 @@ impl Query {
             };
         }
 
-        let mut engine_subprocess = Command::new("hax-engine")
-            .arg("driver_rust_engine")
-            .stdin(std::process::Stdio::piped())
-            .stdout(std::process::Stdio::piped())
-            .spawn()
-            .unwrap();
+        let mut engine_subprocess =
+            Command::new(std::env::var("HAX_ENGINE_BINARY").unwrap_or("hax-engine".into()))
+                .arg("driver_rust_engine")
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::piped())
+                .spawn()
+                .unwrap();
 
         let mut stdin = std::io::BufWriter::new(
             engine_subprocess
@@ -96,8 +102,9 @@ impl Query {
                 .expect("Could not write on stdin"),
         );
 
-        // TODO: send a table here (see https://github.com/cryspen/hax/issues/1536)
-        send!(stdin, self);
+        WithTable::run(table, self, |with_table| {
+            send!(stdin, with_table);
+        });
 
         let mut response = None;
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());

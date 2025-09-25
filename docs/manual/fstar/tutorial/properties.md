@@ -48,7 +48,7 @@ const BARRETT_SHIFT: i64 = 26;
 const BARRETT_R: i64 = 0x4000000; // 2^26
 const BARRETT_MULTIPLIER: i64 = 20159; // ⌊(BARRETT_R / FIELD_MODULUS) + 1/2⌋
 
-#[hax_lib::fstar::options("--z3rlimit 100")]
+#[hax_lib::fstar::options("--z3rlimit 500")]
 #[hax_lib::requires((i64::from(value) >= -BARRETT_R && i64::from(value) <= BARRETT_R))]
 #[hax_lib::ensures(|result| result > -FIELD_MODULUS && result < FIELD_MODULUS
                      && result %  FIELD_MODULUS ==  value % FIELD_MODULUS)]
@@ -123,7 +123,7 @@ In this situation, adding a pre- or a post-condition to either
 `encrypt` or `decrypt` is not useful: we want to state our inverse
 property about both of them. Better, we want this property to be
 stated directly in Rust: just as with pre and post-conditions, the
-Rust souces should clearly state what is to be proven.
+Rust sources should clearly state what is to be proven.
 
 To this end, Hax provides a macro `lemma`. Below, the Rust function
 `encrypt_decrypt_identity` takes a key and a plaintext, and then
@@ -132,7 +132,7 @@ proof itself are not relevant, at this stage, we only care about the
 statement. The proof will be completed manually in the proof
 assistant.
 
-```{.rust .playable}
+```{.rust .playable .expect-failure}
 # fn encrypt(plaintext: u32, key: u32) -> u32 {
 #     plaintext ^ key
 # }

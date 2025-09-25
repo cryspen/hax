@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:ns2="http://creativecommons.org/ns#" xmlns:ns4="http://www.w3.org/1999/xlink" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" width="539.18" height="236.48000000000002" version="1.1" viewBox="0.0 0.0 431.34 201.18">
+<metadata>
+<rdf:RDF>
+<ns2:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+</ns2:Work>
+</rdf:RDF>
+</metadata>
+<defs>
+<symbol id="a" overflow="visible" />
+</defs>
+<g id="__topPaddingWrapper" transform="translate(0, 60)" data-top-padding="60.0"><g transform="matrix(.59987 0 0 .59987 -14.832 -26.479)">
+<path fill="#FFF" d="m323.27 164.46h-143.3v-5.3773h143.3v-109.66h-146.45v-5.0454h152.78v235.12h-304.88v-235.11h6.3393v230.1h292.21z" />
+<path fill="#FFF" d="m554.58 279.5v-224.68l182.87 224.68h6.3281v-235.03h-5.9374v225.62l-184.06-225.62h-5.5312v235.03z" />
+<path d="m326.65 45.441 112.01 227.27 112.53-227.18" fill="none" stroke="#FFF" stroke-width="5.8852" />
+<path d="m383.18 161.62h111.5" fill="none" stroke="#FFF" stroke-width="5.8852" />
+<use x="399.97409" y="388.08368" width="770" height="415" fill="#FFF" ns4:href="#a" />
+</g>
+</g></svg>

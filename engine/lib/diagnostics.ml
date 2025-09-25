@@ -147,7 +147,9 @@ module SpanFreeError : sig
   exception Exn of t
 
   val payload : t -> Context.t * kind
-  val raise : ?span:T.span list -> Context.t -> kind -> 'a
+
+  val raise :
+    ?span:T.span list -> Types.def_id option -> Context.t -> kind -> 'a
 end = struct
   type t = Data of Context.t * kind [@@deriving show]
 
@@ -158,7 +160,8 @@ end = struct
   let raise_without_reporting (ctx : Context.t) (kind : kind) =
     raise (Exn (Data (ctx, kind)))
 
-  let raise ?(span = []) (ctx : Context.t) (kind : kind) =
-    report { span; kind; context = ctx; owner_id = None };
+  let raise ?(span = []) (owner_id : Types.def_id option) (ctx : Context.t)
+      (kind : kind) =
+    report { span; kind; context = ctx; owner_id };
     raise_without_reporting ctx kind
 end

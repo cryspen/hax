@@ -78,7 +78,7 @@ pub trait Printer: Sized + for<'a, 'b> PrettyAst<'a, 'b, Span> + Default {
     /// A list of resugaring phases.
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>>;
     /// The name of the printer
-    const NAME: &'static str;
+    const NAME: &'static str = <Self as PrettyAst<'static, 'static, Span>>::NAME;
 }
 
 /// Placeholder type for sourcemaps.

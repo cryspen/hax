@@ -20,7 +20,9 @@ open Diagnostics
 
 let assertion_failure (span : Thir.span list) (details : string) =
   let kind = T.AssertionFailure { details } in
-  Diagnostics.SpanFreeError.raise ~span ThirImport kind
+  Diagnostics.SpanFreeError.raise ~span
+    (Span.dummy () |> Span.owner_hint)
+    ThirImport kind
 
 let unimplemented ~issue_id (span : Thir.span list) (details : string) =
   let kind =
@@ -30,7 +32,9 @@ let unimplemented ~issue_id (span : Thir.span list) (details : string) =
         details = String.(if details = "" then None else Some details);
       }
   in
-  Diagnostics.SpanFreeError.raise ~span ThirImport kind
+  Diagnostics.SpanFreeError.raise ~span
+    (Span.dummy () |> Span.owner_hint)
+    ThirImport kind
 
 module Ast = struct
   include Ast
@@ -359,6 +363,30 @@ end) : EXPR = struct
               ^ [%show: ty] lhs.typ)
       else Concrete_ident.of_name ~value:true @@ overloaded_names_of_binop op
     in
+    let needs_borrow =
+      match op with Lt | Le | Ne | Ge | Gt | Eq -> true | _ -> false
+    in
+    let borrow_if_needed (e : expr) =
+      if needs_borrow then
+        match e.typ with
+        | TRef _ -> e
+        | _ ->
+            {
+              span = e.span;
+              e = Borrow { e; kind = Shared; witness = W.reference };
+              typ =
+                TRef
+                  {
+                    witness = W.reference;
+                    region = "unknown";
+                    typ = e.typ;
+                    mut = Immutable;
+                  };
+            }
+      else e
+    in
+    let lhs = borrow_if_needed lhs in
+    let rhs = borrow_if_needed rhs in
     U.call' (`Concrete name) [ lhs; rhs ] span typ
 
   let binop_of_assignop : Thir.assign_op -> Thir.bin_op = function
@@ -523,7 +551,8 @@ end) : EXPR = struct
               {
                 item =
                   {
-                    value = { def_id = id; generic_args; impl_exprs; in_trait };
+                    value =
+                      { def_id = id; generic_args; impl_exprs; in_trait; _ };
                     _;
                   };
                 _;
@@ -1001,7 +1030,7 @@ end) : EXPR = struct
     | ClosureFnPointer Safe | ReifyFnPointer ->
         (* we have arrow types, we do not distinguish between top-level functions and closures *)
         (c_expr source).e
-    | Unsize ->
+    | Unsize _ ->
         (* https://doc.rust-lang.org/std/marker/trait.Unsize.html *)
         (U.call Rust_primitives__unsize [ c_expr source ] span typ).e
         (* let source = c_expr source in *)
@@ -1090,21 +1119,25 @@ end) : EXPR = struct
     | Error ->
         assertion_failure [ span ]
           "got type `Error`: Rust compilation probably failed."
-    | Dynamic (predicates, _region, Dyn) -> (
+    | Dynamic (_, predicates, _region) -> (
         let goals, non_traits =
           List.partition_map
-            ~f:(fun pred ->
-              match pred.value with
-              | Trait { args; def_id } ->
+            ~f:(fun ((clause, _span) : Types.clause * _) ->
+              match clause.kind.value with
+              | Trait { trait_ref; _ } ->
                   let goal : dyn_trait_goal =
                     {
-                      trait = Concrete_ident.of_def_id ~value:false def_id;
-                      non_self_args = List.map ~f:(c_generic_value span) args;
+                      trait =
+                        Concrete_ident.of_def_id ~value:false
+                          trait_ref.value.def_id;
+                      non_self_args =
+                        List.map ~f:(c_generic_value span)
+                          (List.tl_exn trait_ref.value.generic_args);
                     }
                   in
                   First goal
               | _ -> Second ())
-            predicates
+            predicates.predicates
         in
         match non_traits with
         | [] -> TDyn { witness = W.dyn; goals }
@@ -1126,7 +1159,7 @@ end) : EXPR = struct
 
   and c_impl_expr (span : Thir.span) (ie : Thir.impl_expr) : impl_expr =
     let goal = c_trait_ref span ie.trait.value in
-    let impl = { kind = c_impl_expr_atom span ie.impl; goal } in
+    let impl = { kind = c_impl_expr_atom span ie.impl goal; goal } in
     match ie.impl with
     | Concrete { value = { impl_exprs = []; _ }; _ } -> impl
     | Concrete { value = { impl_exprs; _ }; _ } ->
@@ -1139,7 +1172,7 @@ end) : EXPR = struct
     let args = List.map ~f:(c_generic_value span) tr.value.generic_args in
     { trait; args }
 
-  and c_impl_expr_atom (span : Thir.span) (ie : Thir.impl_expr_atom) :
+  and c_impl_expr_atom (span : Thir.span) (ie : Thir.impl_expr_atom) goal :
       impl_expr_kind =
     let browse_path (item_kind : impl_expr_kind)
         (chunk : Thir.impl_expr_path_chunk) =
@@ -1166,8 +1199,7 @@ end) : EXPR = struct
         List.fold ~init ~f:browse_path path
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
-    | Builtin { trait; _ } -> Builtin (c_trait_ref span trait.value)
-    | Drop _ -> failwith @@ "impl_expr_atom: Drop"
+    | Builtin _ -> Builtin goal
     | Error str -> failwith @@ "impl_expr_atom: Error " ^ str
 
   and c_generic_value (span : Thir.span) (ty : Thir.generic_arg) : generic_value

@@ -130,7 +130,9 @@ module Make (F : Features.T) = struct
           let span = Span.to_thir current_span in
           let kind = Types.AssertionFailure { details } in
           let ctx = Diagnostics.Context.GenericPrinter print#printer_name in
-          Diagnostics.SpanFreeError.raise ~span ctx kind
+          Diagnostics.SpanFreeError.raise ~span
+            (Span.owner_hint current_span)
+            ctx kind
 
       method set_current_namespace ns = current_namespace <- ns
       method get_current_namespace () = current_namespace

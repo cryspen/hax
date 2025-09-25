@@ -8,8 +8,8 @@ The processes described here is not to pester you but to increase and maintain c
 ## Working with this repository
 
 We use issues to organise and prioritise work items.
-If you start working on an issue, assign it to yourself so everyone knows it's being worked on.
-Unassign yourself if you stop working on it and leave a comment why you stopped.
+
+**Assignee meaning in issues:** The assignee is the person responsible for addressing the issue and is typically the one actively working on it.
 
 After picking up an issue create a branch.
 There can be any number of branches and pull request for one issue.
@@ -55,6 +55,27 @@ Our changelog format is based on https://keepachangelog.com/.
 Please add an entry in a subsection (`Added`, `Changed`, `Deprecated`, `Removed`, `Fixed` -- see https://keepachangelog.com/en/1.0.0/#how) for each notable change.
 
 Please prefix with `engine:`, `frontend:` or similar.
+
+#### Should I add an entry to `CHANGELOG.md`?
+
+**Include in CHANGELOG.md:**
+ - New features and enhancements
+ - Bug fixes
+ - Breaking changes
+ - Security patches
+ - Major documentation updates
+ - Dependency updates that affect users
+
+**Do not include:**
+ - Code refactoring with no user impact
+ - Minor doc fixes (typos, grammar)
+ - CI/CD or tooling changes with no external effect
+ - Linting, formatting, or style-only commits
+ - Reverts or fixup commits
+ - Dependency bumps with no behavioral impact
+
+**Rule of thumb:**
+If a user (developer or customer) wouldn’t notice or need to know, leave it out.
 
 ## Styleguides
 

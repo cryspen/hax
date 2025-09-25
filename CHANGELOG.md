@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Changes to the Rust Engine:
+ - The module `names` now produces `ExplicitDefId`s instead of `DefId`s (#1648)
+ - Add a resugaring `FunctionsToConstants` (#1559)
+ - Drop the tuple nodes of the AST, add resugaring node for tuples (#1662)
+ - Add support for enums and structs to the Lean backend (type definitions,
+   expressions, pattern-matching) (#1623)
+ - Update name rendering infrastructure in the Lean backend (#1623, #1624)
+ - Printers now emit proper diagnostics (PR #1669)
+ - Global identifiers are now interned (#1689)
+ - Global identifiers are encapsulated properly, and provide easy destructuring as tuple identifiers (#1693)
+
+Changes to the frontend:
+- Add an explicit `Self: Trait` clause to trait methods and consts (#1559)
+- Fix `ImplExpr::Builtin` that had some type errors (#1559)
+- Improve the translation of `Drop` information (#1559)
+- Add variance information to type parameters (#1559)
+- Cleanup the `State` infrastructure a little bit (#1559)
+- Add information about the metadata to use in unsize coercions (#1559)
+- Resolve `dyn Trait` predicates (#1559)
+- Many improvements to `FullDef` (#1559)
+- Add infrastructure to get a monomorphized `FullDef`; this is used in charon to monomorphize a crate graph (#1559)
+- Fix a regression affecting projection predicates (#1678)
+
+Changes to hax-lib:
+- New behavior for `hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
+
+Miscellaneous:
+ - A lean tutorial has been added to the hax website (#1626)
+ - Add end-to-end tests for the website (#1690)
+ - Diagnostics reporting were improved (#1692)
+
+## 0.3.4
+
+The release of `0.3.3` got troubles because of the new Rust Engine crates.
+This release is mostly empty.
+
+## 0.3.3
+
+Changes to the frontend:
+ - A field `visibility` was added to HIR items (#1643)
+
+Rust Engine:
+ - A Lean backend was introduced (#1593, #1591, #1590, #1607)
+ - The Rust engine was improved (#1624, #1603, #1600, #1585)
+ - The F* backend has been improved (#1587, #1585)
+
 ## 0.3.2
 
 Changes to the frontend:

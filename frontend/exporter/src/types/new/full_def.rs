@@ -1,12 +1,13 @@
 use crate::prelude::*;
-use std::sync::Arc;
 
 #[cfg(feature = "rustc")]
 use rustc_hir::def::DefKind as RDefKind;
 #[cfg(feature = "rustc")]
-use rustc_middle::{mir, ty};
+use rustc_middle::ty;
 #[cfg(feature = "rustc")]
 use rustc_span::def_id::DefId as RDefId;
+#[cfg(feature = "rustc")]
+use std::sync::Arc;
 
 /// Hack: charon used to rely on the old `()` default everywhere. To avoid big merge conflicts with
 /// in-flight PRs we're changing the default here. Eventually this should be removed.
@@ -16,9 +17,9 @@ type DefaultFullDefBody = MirBody<mir_kinds::Unknown>;
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct FullDef<Body = DefaultFullDefBody> {
-    pub def_id: DefId,
-    /// The enclosing item.
-    pub parent: Option<DefId>,
+    /// A reference to the current item. If the item was provided with generic args, they are
+    /// stored here; otherwise the args are the identity_args for this item.
+    pub this: ItemRef,
     /// The span of the definition of this item (e.g. for a function this is is signature).
     pub span: Span,
     /// The span of the whole definition (including e.g. the function body).
@@ -37,14 +38,19 @@ pub struct FullDef<Body = DefaultFullDefBody> {
 }
 
 #[cfg(feature = "rustc")]
-fn translate_full_def<'tcx, S, Body>(s: &S, def_id: &DefId) -> FullDef<Body>
+/// Construct the `FullDefKind` for this item. If `args` is `Some`, the returned `FullDef` will be
+/// instantiated with the provided generics.
+fn translate_full_def<'tcx, S, Body>(
+    s: &S,
+    def_id: &DefId,
+    args: Option<ty::GenericArgsRef<'tcx>>,
+) -> FullDef<Body>
 where
-    S: BaseState<'tcx>,
+    S: UnderOwnerState<'tcx>,
     Body: IsBody + TypeMappable,
 {
     let tcx = s.base().tcx;
     let rust_def_id = def_id.underlying_rust_def_id();
-    let state_with_id = with_owner_id(s.base(), (), (), rust_def_id);
     let source_span;
     let attributes;
     let visibility;
@@ -53,9 +59,9 @@ where
     let kind;
     match def_id.promoted_id() {
         None => {
-            let def_kind = get_def_kind(tcx, rust_def_id);
-            kind = def_kind.sinto(&state_with_id);
+            kind = translate_full_def_kind(s, rust_def_id, args);
 
+            let def_kind = get_def_kind(tcx, rust_def_id);
             source_span = rust_def_id.as_local().map(|ldid| tcx.source_span(ldid));
             attributes = get_def_attrs(tcx, rust_def_id, def_kind).sinto(s);
             visibility = get_def_visibility(tcx, rust_def_id, def_kind);
@@ -69,7 +75,11 @@ where
         }
 
         Some(promoted_id) => {
-            let parent_def = def_id.parent.as_ref().unwrap().full_def::<_, Body>(s);
+            let parent_def = def_id
+                .parent
+                .as_ref()
+                .unwrap()
+                .full_def_maybe_instantiated::<_, Body>(s, args);
             let parent_param_env = parent_def.param_env().unwrap();
             let param_env = ParamEnv {
                 generics: TyGenerics {
@@ -80,20 +90,18 @@ where
                     has_late_bound_regions: None,
                 },
                 predicates: GenericPredicates { predicates: vec![] },
+                parent: Some(parent_def.this().clone()),
             };
             let body = get_promoted_mir(tcx, rust_def_id, promoted_id.as_rust_promoted_id());
+            let body = substitute(tcx, s.typing_env(), args, body);
             source_span = Some(body.span);
 
-            let ty: Ty = body.local_decls[rustc_middle::mir::Local::ZERO]
-                .ty
-                .sinto(&state_with_id);
-            // Promoted constants only happen within MIR bodies; we can therefore assume that
-            // `Body` is a MIR body and unwrap.
-            let body = Body::from_mir(&state_with_id, body).s_unwrap(s);
-            kind = FullDefKind::PromotedConst {
+            let ty: Ty = body.local_decls[rustc_middle::mir::Local::ZERO].ty.sinto(s);
+            kind = FullDefKind::Const {
                 param_env,
                 ty,
-                body,
+                kind: ConstKind::PromotedConst,
+                body: Body::from_mir(s, body),
             };
 
             // None of these make sense for a promoted constant.
@@ -107,9 +115,18 @@ where
     let source_text = source_span
         .filter(|source_span| source_span.ctxt().is_root())
         .and_then(|source_span| tcx.sess.source_map().span_to_snippet(source_span).ok());
+    let this = if can_have_generics(tcx, rust_def_id) {
+        let args_or_default =
+            args.unwrap_or_else(|| ty::GenericArgs::identity_for_item(tcx, rust_def_id));
+        let item = translate_item_ref(s, rust_def_id, args_or_default);
+        // Tricky: hax's DefId has more info (could be a promoted const), we must be careful to use
+        // the input DefId instead of the one derived from `rust_def_id`.
+        item.with_def_id(s, def_id)
+    } else {
+        ItemRef::dummy_without_generics(s, def_id.clone())
+    };
     FullDef {
-        def_id: def_id.clone(),
-        parent: def_id.parent.clone(),
+        this,
         span: def_id.def_span(s),
         source_span: source_span.sinto(s),
         source_text,
@@ -141,26 +158,49 @@ impl DefId {
         Body: IsBody + TypeMappable,
         S: BaseState<'tcx>,
     {
+        self.full_def_maybe_instantiated(s, None)
+    }
+
+    /// Get the full definition of this item, instantiated if `args` is `Some`.
+    pub fn full_def_maybe_instantiated<'tcx, S, Body>(
+        &self,
+        s: &S,
+        args: Option<ty::GenericArgsRef<'tcx>>,
+    ) -> Arc<FullDef<Body>>
+    where
+        Body: IsBody + TypeMappable,
+        S: BaseState<'tcx>,
+    {
         let rust_def_id = self.underlying_rust_def_id();
-        if let Some(def) = s.with_item_cache(rust_def_id, |cache| match self.promoted_id() {
-            None => cache.full_def.get().cloned(),
-            Some(promoted_id) => cache.promoteds.or_default().get(&promoted_id).cloned(),
-        }) {
+        let s = &s.with_owner_id(rust_def_id);
+        let cache_key = (self.promoted_id(), args);
+        if let Some(def) =
+            s.with_cache(|cache| cache.full_defs.entry(cache_key).or_default().get().cloned())
+        {
             return def;
         }
-        let def = Arc::new(translate_full_def(s, self));
-        s.with_item_cache(rust_def_id, |cache| match self.promoted_id() {
-            None => {
-                cache.full_def.insert(def.clone());
-            }
-            Some(promoted_id) => {
-                cache
-                    .promoteds
-                    .or_default()
-                    .insert(promoted_id, def.clone());
-            }
+        let def = Arc::new(translate_full_def(s, self, args));
+        s.with_cache(|cache| {
+            cache
+                .full_defs
+                .entry(cache_key)
+                .or_default()
+                .insert(def.clone());
         });
         def
+    }
+}
+
+#[cfg(feature = "rustc")]
+impl ItemRef {
+    /// Get the full definition of the item, instantiated with the provided generics.
+    pub fn instantiated_full_def<'tcx, S, Body>(&self, s: &S) -> Arc<FullDef<Body>>
+    where
+        Body: IsBody + TypeMappable,
+        S: BaseState<'tcx>,
+    {
+        let args = self.rustc_args(s);
+        self.def_id.full_def_maybe_instantiated(s, Some(args))
     }
 }
 
@@ -172,78 +212,53 @@ pub struct ParamEnv {
     pub generics: TyGenerics,
     /// Required predicates for the item (see `traits::utils::required_predicates`).
     pub predicates: GenericPredicates,
+    /// A reference to the parent of this item, with appropriate args.
+    pub parent: Option<ItemRef>,
+}
+
+/// The kind of a constant item.
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema)]
+pub enum ConstKind {
+    /// Top-level constant: `const CONST: usize = 42;`
+    TopLevel,
+    /// Anonymous constant, e.g. the `1 + 2` in `[u8; 1 + 2]`
+    AnonConst,
+    /// An inline constant, e.g. `const { 1 + 2 }`
+    InlineConst,
+    /// A promoted constant, e.g. the `1 + 2` in `&(1 + 2)`
+    PromotedConst,
 }
 
 /// Imbues [`rustc_hir::def::DefKind`] with a lot of extra information.
-/// Important: the `owner_id()` must be the id of this definition.
-#[derive(AdtInto)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_hir::def::DefKind, state: S as s, where Body: IsBody + TypeMappable)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub enum FullDefKind<Body> {
     // Types
-    /// Refers to the struct definition, [`DefKind::Ctor`] refers to its constructor if it exists.
-    Struct {
-        #[value(get_param_env(s, s.owner_id()))]
+    /// ADts (`Struct`, `Enum` and `Union` map to this variant).
+    Adt {
         param_env: ParamEnv,
-        #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
-        def: AdtDef,
+        adt_kind: AdtKind,
+        variants: IndexVec<VariantIdx, VariantDef>,
+        flags: AdtFlags,
+        repr: ReprOptions,
         /// MIR body of the builtin `drop` impl.
-        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
         drop_glue: Option<Body>,
-    },
-    Union {
-        #[value(get_param_env(s, s.owner_id()))]
-        param_env: ParamEnv,
-        #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
-        def: AdtDef,
-        /// MIR body of the builtin `drop` impl.
-        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
-        drop_glue: Option<Body>,
-    },
-    Enum {
-        #[value(get_param_env(s, s.owner_id()))]
-        param_env: ParamEnv,
-        #[value(s.base().tcx.adt_def(s.owner_id()).sinto(s))]
-        def: AdtDef,
-        /// MIR body of the builtin `drop` impl.
-        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
-        drop_glue: Option<Body>,
+        /// Info required to construct a virtual `Drop` impl for this adt.
+        drop_impl: Box<VirtualTraitImpl>,
     },
     /// Type alias: `type Foo = Bar;`
     TyAlias {
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        /// `Some` if the item is in the local crate.
-        #[value(s.base().tcx.hir_get_if_local(s.owner_id()).map(|node| {
-            let rustc_hir::Node::Item(item) = node else { unreachable!() };
-            let rustc_hir::ItemKind::TyAlias(_, _generics, ty) = &item.kind else { unreachable!() };
-            let mut s = State::from_under_owner(s);
-            s.base.ty_alias_mode = true;
-            ty.sinto(&s)
-        }))]
-        ty: Option<Ty>,
+        ty: Ty,
     },
     /// Type from an `extern` block.
     ForeignTy,
     /// Associated type: `trait MyTrait { type Assoc; }`
     AssocTy {
-        #[value(s.base().tcx.parent(s.owner_id()).sinto(s))]
-        parent: DefId,
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.bounds_options).sinto(s))]
         implied_predicates: GenericPredicates,
-        #[value(s.base().tcx.associated_item(s.owner_id()).sinto(s))]
         associated_item: AssocItem,
-        #[value({
-            let tcx = s.base().tcx;
-            if tcx.defaultness(s.owner_id()).has_value() {
-                Some(tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))
-            } else {
-                None
-            }
-        })]
         value: Option<Ty>,
     },
     /// Opaque type, aka `impl Trait`.
@@ -251,42 +266,20 @@ pub enum FullDefKind<Body> {
 
     // Traits
     Trait {
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.bounds_options).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
-        #[value(get_self_predicate(s))]
         self_predicate: TraitPredicate,
         /// Associated items, in definition order.
-        #[value(
-            s
-                .base()
-                .tcx
-                .associated_items(s.owner_id())
-                .in_definition_order()
-                .map(|assoc| {
-                    let def_id = assoc.def_id.sinto(s);
-                    (assoc.sinto(s), def_id.full_def(s))
-                })
-                .collect::<Vec<_>>()
-        )]
-        items: Vec<(AssocItem, Arc<FullDef<Body>>)>,
+        items: Vec<AssocItem>,
     },
     /// Trait alias: `trait IntIterator = Iterator<Item = i32>;`
     TraitAlias {
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(implied_predicates(s.base().tcx, s.owner_id(), s.base().options.bounds_options).sinto(s))]
         implied_predicates: GenericPredicates,
         /// The special `Self: Trait` clause.
-        #[value(get_self_predicate(s))]
         self_predicate: TraitPredicate,
     },
-    #[custom_arm(
-        // Returns `TraitImpl` or `InherentImpl`.
-        RDefKind::Impl { .. } => get_impl_contents(s),
-    )]
     TraitImpl {
         param_env: ParamEnv,
         /// The trait that is implemented by this impl block.
@@ -298,46 +291,32 @@ pub enum FullDefKind<Body> {
         /// ```
         implied_impl_exprs: Vec<ImplExpr>,
         /// Associated items, in the order of the trait declaration. Includes defaulted items.
-        items: Vec<ImplAssocItem<Body>>,
+        items: Vec<ImplAssocItem>,
     },
-    #[disable_mapping]
     InherentImpl {
         param_env: ParamEnv,
         /// The type to which this block applies.
         ty: Ty,
         /// Associated items, in definition order.
-        items: Vec<(AssocItem, Arc<FullDef<Body>>)>,
+        items: Vec<AssocItem>,
     },
 
     // Functions
     Fn {
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(s.base().tcx.codegen_fn_attrs(s.owner_id()).inline.sinto(s))]
         inline: InlineAttr,
-        #[value(s.base().tcx.constness(s.owner_id()) == rustc_hir::Constness::Const)]
         is_const: bool,
-        #[value(s.base().tcx.fn_sig(s.owner_id()).instantiate_identity().sinto(s))]
         sig: PolyFnSig,
-        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// Associated function: `impl MyStruct { fn associated() {} }` or `trait Foo { fn associated()
     /// {} }`
     AssocFn {
-        #[value(s.base().tcx.parent(s.owner_id()).sinto(s))]
-        parent: DefId,
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(s.base().tcx.associated_item(s.owner_id()).sinto(s))]
         associated_item: AssocItem,
-        #[value(s.base().tcx.codegen_fn_attrs(s.owner_id()).inline.sinto(s))]
         inline: InlineAttr,
-        #[value(s.base().tcx.constness(s.owner_id()) == rustc_hir::Constness::Const)]
         is_const: bool,
-        #[value(get_method_sig(s).sinto(s))]
         sig: PolyFnSig,
-        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
     /// A closure, coroutine, or coroutine-closure.
@@ -345,82 +324,38 @@ pub enum FullDefKind<Body> {
     /// Note: the (early-bound) generics of a closure are the same as those of the item in which it
     /// is defined.
     Closure {
-        /// The enclosing item. Note: this item could itself be a closure; to get the generics, you
-        /// might have to recurse through several layers of parents until you find a function or
-        /// constant.
-        #[value(s.base().tcx.parent(s.owner_id()).sinto(s))]
-        parent: DefId,
-        #[value(s.base().tcx.constness(s.owner_id()) == rustc_hir::Constness::Const)]
-        is_const: bool,
-        #[value({
-            let closure_ty = s.base().tcx.type_of(s.owner_id()).instantiate_identity();
-            let ty::TyKind::Closure(_, args) = closure_ty.kind() else { unreachable!() };
-            ClosureArgs::sfrom(s, s.owner_id(), args.as_closure())
-        })]
         args: ClosureArgs,
+        is_const: bool,
+        /// Info required to construct a virtual `FnOnce` impl for this closure.
+        fn_once_impl: Box<VirtualTraitImpl>,
+        /// Info required to construct a virtual `FnMut` impl for this closure.
+        fn_mut_impl: Option<Box<VirtualTraitImpl>>,
+        /// Info required to construct a virtual `Fn` impl for this closure.
+        fn_impl: Option<Box<VirtualTraitImpl>>,
         /// For `FnMut`&`Fn` closures: the MIR for the `call_once` method; it simply calls
         /// `call_mut`.
-        #[value({
-            let tcx = s.base().tcx;
-            let closure_ty = tcx.type_of(s.owner_id()).instantiate_identity();
-            let opt_body = closure_once_shim(tcx, closure_ty);
-            opt_body.and_then(|body| Body::from_mir(s, body))
-        })]
         once_shim: Option<Body>,
         /// MIR body of the builtin `drop` impl.
-        #[value(drop_glue_shim(s.base().tcx, s.owner_id()).and_then(|body| Body::from_mir(s, body)))]
         drop_glue: Option<Body>,
+        /// Info required to construct a virtual `Drop` impl for this closure.
+        drop_impl: Box<VirtualTraitImpl>,
     },
 
     // Constants
     Const {
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(Body::body(s.owner_id(), s))]
+        kind: ConstKind,
         body: Option<Body>,
     },
     /// Associated constant: `trait MyTrait { const ASSOC: usize; }`
     AssocConst {
-        #[value(s.base().tcx.parent(s.owner_id()).sinto(s))]
-        parent: DefId,
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
-        #[value(s.base().tcx.associated_item(s.owner_id()).sinto(s))]
         associated_item: AssocItem,
-        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
-    },
-    /// Anonymous constant, e.g. the `1 + 2` in `[u8; 1 + 2]`
-    AnonConst {
-        #[value(get_param_env(s, s.owner_id()))]
-        param_env: ParamEnv,
-        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
-        ty: Ty,
-        #[value(Body::body(s.owner_id(), s))]
-        body: Option<Body>,
-    },
-    /// An inline constant, e.g. `const { 1 + 2 }`
-    InlineConst {
-        #[value(get_param_env(s, s.owner_id()))]
-        param_env: ParamEnv,
-        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
-        ty: Ty,
-        #[value(Body::body(s.owner_id(), s))]
-        body: Option<Body>,
-    },
-    /// A promoted constant, e.g. `&(1 + 2)`
-    #[disable_mapping]
-    PromotedConst {
-        param_env: ParamEnv,
-        ty: Ty,
-        body: Body,
     },
     Static {
-        #[value(get_param_env(s, s.owner_id()))]
         param_env: ParamEnv,
         /// Whether it's a `unsafe static`, `safe static` (inside extern only) or just a `static`.
         safety: Safety,
@@ -428,9 +363,7 @@ pub enum FullDefKind<Body> {
         mutability: Mutability,
         /// Whether it's an anonymous static generated for nested allocations.
         nested: bool,
-        #[value(s.base().tcx.type_of(s.owner_id()).instantiate_identity().sinto(s))]
         ty: Ty,
-        #[value(Body::body(s.owner_id(), s))]
         body: Option<Body>,
     },
 
@@ -438,12 +371,10 @@ pub enum FullDefKind<Body> {
     ExternCrate,
     Use,
     Mod {
-        #[value(get_mod_children(s.base().tcx, s.owner_id()).sinto(s))]
         items: Vec<(Option<Ident>, DefId)>,
     },
     /// An `extern` block.
     ForeignMod {
-        #[value(get_foreign_mod_children(s.base().tcx, s.owner_id()).sinto(s))]
         items: Vec<DefId>,
     },
 
@@ -459,7 +390,6 @@ pub enum FullDefKind<Body> {
     /// Refers to the variant definition, [`DefKind::Ctor`] refers to its constructor if it exists.
     Variant,
     /// The constructor function of a tuple/unit struct or tuple/unit enum variant.
-    #[custom_arm(RDefKind::Ctor(ctor_of, _) => get_ctor_contents(s, ctor_of.sinto(s)),)]
     Ctor {
         adt_def_id: DefId,
         ctor_of: CtorOf,
@@ -482,16 +412,366 @@ pub enum FullDefKind<Body> {
     SyntheticCoroutineBody,
 }
 
+#[cfg(feature = "rustc")]
+/// Construct the `FullDefKind` for this item.
+///
+/// If `args` is `Some`, instantiate the whole definition with these generics; otherwise keep the
+/// polymorphic definition.
+// Note: this is tricky to get right, we have to make sure to isntantiate every single field that
+// may contain a type/const/trait reference.
+fn translate_full_def_kind<'tcx, S, Body>(
+    s: &S,
+    def_id: RDefId,
+    args: Option<ty::GenericArgsRef<'tcx>>,
+) -> FullDefKind<Body>
+where
+    S: BaseState<'tcx>,
+    Body: IsBody + TypeMappable,
+{
+    let s = &s.with_owner_id(def_id);
+    let tcx = s.base().tcx;
+    let type_of_self = || inst_binder(tcx, s.typing_env(), args, tcx.type_of(def_id));
+    let args_or_default =
+        || args.unwrap_or_else(|| ty::GenericArgs::identity_for_item(tcx, def_id));
+    match get_def_kind(tcx, def_id) {
+        RDefKind::Struct { .. } | RDefKind::Union { .. } | RDefKind::Enum { .. } => {
+            let def = tcx.adt_def(def_id);
+            let variants = def
+                .variants()
+                .iter_enumerated()
+                .map(|(variant_idx, variant)| {
+                    let discr = if def.is_enum() {
+                        def.discriminant_for_variant(tcx, variant_idx)
+                    } else {
+                        // Structs and unions have a single variant.
+                        assert_eq!(variant_idx.index(), 0);
+                        ty::util::Discr {
+                            val: 0,
+                            ty: tcx.types.isize,
+                        }
+                    };
+                    VariantDef::sfrom(s, variant, discr, args)
+                })
+                .collect();
+
+            let drop_trait = tcx.lang_items().drop_trait().unwrap();
+            FullDefKind::Adt {
+                param_env: get_param_env(s, args),
+                adt_kind: def.adt_kind().sinto(s),
+                variants,
+                flags: def.flags().sinto(s),
+                repr: def.repr().sinto(s),
+                drop_glue: get_drop_glue_shim(s, args),
+                drop_impl: virtual_impl_for(
+                    s,
+                    ty::TraitRef::new(tcx, drop_trait, [type_of_self()]),
+                ),
+            }
+        }
+        RDefKind::TyAlias { .. } => {
+            let s = &s.with_base(Base {
+                ty_alias_mode: true,
+                ..s.base()
+            });
+            FullDefKind::TyAlias {
+                param_env: get_param_env(s, args),
+                ty: type_of_self().sinto(s),
+            }
+        }
+        RDefKind::ForeignTy => FullDefKind::ForeignTy,
+        RDefKind::AssocTy { .. } => FullDefKind::AssocTy {
+            param_env: get_param_env(s, args),
+            implied_predicates: get_implied_predicates(s, args),
+            associated_item: AssocItem::sfrom_instantiated(s, &tcx.associated_item(def_id), args),
+            value: if tcx.defaultness(def_id).has_value() {
+                Some(type_of_self().sinto(s))
+            } else {
+                None
+            },
+        },
+        RDefKind::OpaqueTy => FullDefKind::OpaqueTy,
+        RDefKind::Trait { .. } => FullDefKind::Trait {
+            param_env: get_param_env(s, args),
+            implied_predicates: get_implied_predicates(s, args),
+            self_predicate: get_self_predicate(s, args),
+            items: tcx
+                .associated_items(def_id)
+                .in_definition_order()
+                .map(|assoc| {
+                    let item_args = args.map(|args| {
+                        let item_identity_args =
+                            ty::GenericArgs::identity_for_item(tcx, assoc.def_id);
+                        let item_args = item_identity_args.rebase_onto(tcx, def_id, args);
+                        tcx.mk_args(item_args)
+                    });
+                    AssocItem::sfrom_instantiated(s, assoc, item_args)
+                })
+                .collect::<Vec<_>>(),
+        },
+        RDefKind::TraitAlias { .. } => FullDefKind::TraitAlias {
+            param_env: get_param_env(s, args),
+            implied_predicates: get_implied_predicates(s, args),
+            self_predicate: get_self_predicate(s, args),
+        },
+        RDefKind::Impl { .. } => {
+            use std::collections::HashMap;
+            let param_env = get_param_env(s, args);
+            match inst_binder(tcx, s.typing_env(), args, tcx.impl_subject(def_id)) {
+                ty::ImplSubject::Inherent(ty) => {
+                    let items = tcx
+                        .associated_items(def_id)
+                        .in_definition_order()
+                        .map(|assoc| {
+                            let item_args = args.map(|args| {
+                                let item_identity_args =
+                                    ty::GenericArgs::identity_for_item(tcx, assoc.def_id);
+                                let item_args = item_identity_args.rebase_onto(tcx, def_id, args);
+                                tcx.mk_args(item_args)
+                            });
+                            AssocItem::sfrom_instantiated(s, assoc, item_args)
+                        })
+                        .collect::<Vec<_>>();
+                    FullDefKind::InherentImpl {
+                        param_env,
+                        ty: ty.sinto(s),
+                        items,
+                    }
+                }
+                ty::ImplSubject::Trait(trait_ref) => {
+                    // Also record the polarity.
+                    let polarity = tcx.impl_polarity(def_id);
+                    let trait_pred = TraitPredicate {
+                        trait_ref: trait_ref.sinto(s),
+                        is_positive: matches!(polarity, ty::ImplPolarity::Positive),
+                    };
+                    // Impl exprs required by the trait.
+                    let required_impl_exprs =
+                        solve_item_implied_traits(s, trait_ref.def_id, trait_ref.args);
+
+                    let mut item_map: HashMap<RDefId, _> = tcx
+                        .associated_items(def_id)
+                        .in_definition_order()
+                        .map(|assoc| (assoc.trait_item_def_id.unwrap(), assoc))
+                        .collect();
+                    let items = tcx
+                        .associated_items(trait_ref.def_id)
+                        .in_definition_order()
+                        .map(|decl_assoc| {
+                            let decl_def_id = decl_assoc.def_id;
+                            // Impl exprs required by the item.
+                            let required_impl_exprs;
+                            let value = match item_map.remove(&decl_def_id) {
+                                Some(impl_assoc) => {
+                                    required_impl_exprs = {
+                                        let item_args = ty::GenericArgs::identity_for_item(
+                                            tcx,
+                                            impl_assoc.def_id,
+                                        );
+                                        // Subtlety: we have to add the GAT arguments (if any) to the trait ref arguments.
+                                        let args =
+                                            item_args.rebase_onto(tcx, def_id, trait_ref.args);
+                                        let state_with_id = s.with_owner_id(impl_assoc.def_id);
+                                        solve_item_implied_traits(&state_with_id, decl_def_id, args)
+                                    };
+
+                                    ImplAssocItemValue::Provided {
+                                        def_id: impl_assoc.def_id.sinto(s),
+                                        is_override: decl_assoc.defaultness(tcx).has_value(),
+                                    }
+                                }
+                                None => {
+                                    required_impl_exprs = if tcx
+                                        .generics_of(decl_def_id)
+                                        .is_own_empty()
+                                    {
+                                        // Non-GAT case.
+                                        let item_args =
+                                            ty::GenericArgs::identity_for_item(tcx, decl_def_id);
+                                        let args =
+                                            item_args.rebase_onto(tcx, def_id, trait_ref.args);
+                                        // TODO: is it the right `def_id`?
+                                        let state_with_id = s.with_owner_id(def_id);
+                                        solve_item_implied_traits(&state_with_id, decl_def_id, args)
+                                    } else {
+                                        // FIXME: For GATs, we need a param_env that has the arguments of
+                                        // the impl plus those of the associated type, but there's no
+                                        // def_id with that param_env.
+                                        vec![]
+                                    };
+                                    match decl_assoc.kind {
+                                        ty::AssocKind::Type { .. } => {
+                                            let ty = tcx
+                                                .type_of(decl_def_id)
+                                                .instantiate(tcx, trait_ref.args)
+                                                .sinto(s);
+                                            ImplAssocItemValue::DefaultedTy { ty }
+                                        }
+                                        ty::AssocKind::Fn { .. } => {
+                                            ImplAssocItemValue::DefaultedFn {}
+                                        }
+                                        ty::AssocKind::Const { .. } => {
+                                            ImplAssocItemValue::DefaultedConst {}
+                                        }
+                                    }
+                                }
+                            };
+
+                            ImplAssocItem {
+                                name: decl_assoc.opt_name().sinto(s),
+                                value,
+                                required_impl_exprs,
+                                decl_def_id: decl_def_id.sinto(s),
+                            }
+                        })
+                        .collect();
+                    assert!(item_map.is_empty());
+                    FullDefKind::TraitImpl {
+                        param_env,
+                        trait_pred,
+                        implied_impl_exprs: required_impl_exprs,
+                        items,
+                    }
+                }
+            }
+        }
+        RDefKind::Fn { .. } => FullDefKind::Fn {
+            param_env: get_param_env(s, args),
+            inline: tcx.codegen_fn_attrs(def_id).inline.sinto(s),
+            is_const: tcx.constness(def_id) == rustc_hir::Constness::Const,
+            sig: inst_binder(tcx, s.typing_env(), args, tcx.fn_sig(def_id)).sinto(s),
+            body: get_body(s, args),
+        },
+        RDefKind::AssocFn { .. } => FullDefKind::AssocFn {
+            param_env: get_param_env(s, args),
+            associated_item: AssocItem::sfrom_instantiated(s, &tcx.associated_item(def_id), args),
+            inline: tcx.codegen_fn_attrs(def_id).inline.sinto(s),
+            is_const: tcx.constness(def_id) == rustc_hir::Constness::Const,
+            sig: get_method_sig(tcx, s.typing_env(), def_id, args).sinto(s),
+            body: get_body(s, args),
+        },
+        RDefKind::Closure { .. } => {
+            use ty::ClosureKind::{Fn, FnMut};
+            let closure_ty = type_of_self();
+            let ty::TyKind::Closure(_, closure_args) = closure_ty.kind() else {
+                unreachable!()
+            };
+            let closure = closure_args.as_closure();
+            // We lose lifetime information here. Eventually would be nice not to.
+            let input_ty = erase_free_regions(tcx, closure.sig().input(0).skip_binder());
+            let trait_args = [closure_ty, input_ty];
+            let fn_once_trait = tcx.lang_items().fn_once_trait().unwrap();
+            let fn_mut_trait = tcx.lang_items().fn_mut_trait().unwrap();
+            let fn_trait = tcx.lang_items().fn_trait().unwrap();
+            let drop_trait = tcx.lang_items().drop_trait().unwrap();
+            FullDefKind::Closure {
+                is_const: tcx.constness(def_id) == rustc_hir::Constness::Const,
+                args: ClosureArgs::sfrom(s, def_id, closure),
+                once_shim: get_closure_once_shim(s, closure_ty),
+                drop_glue: get_drop_glue_shim(s, args),
+                drop_impl: virtual_impl_for(
+                    s,
+                    ty::TraitRef::new(tcx, drop_trait, [type_of_self()]),
+                ),
+                fn_once_impl: virtual_impl_for(
+                    s,
+                    ty::TraitRef::new(tcx, fn_once_trait, trait_args),
+                ),
+                fn_mut_impl: matches!(closure.kind(), FnMut | Fn)
+                    .then(|| virtual_impl_for(s, ty::TraitRef::new(tcx, fn_mut_trait, trait_args))),
+                fn_impl: matches!(closure.kind(), Fn)
+                    .then(|| virtual_impl_for(s, ty::TraitRef::new(tcx, fn_trait, trait_args))),
+            }
+        }
+        kind @ (RDefKind::Const { .. }
+        | RDefKind::AnonConst { .. }
+        | RDefKind::InlineConst { .. }) => {
+            let kind = match kind {
+                RDefKind::Const { .. } => ConstKind::TopLevel,
+                RDefKind::AnonConst { .. } => ConstKind::AnonConst,
+                RDefKind::InlineConst { .. } => ConstKind::InlineConst,
+                _ => unreachable!(),
+            };
+            FullDefKind::Const {
+                param_env: get_param_env(s, args),
+                ty: type_of_self().sinto(s),
+                kind,
+                body: get_body(s, args),
+            }
+        }
+        RDefKind::AssocConst { .. } => FullDefKind::AssocConst {
+            param_env: get_param_env(s, args),
+            associated_item: AssocItem::sfrom_instantiated(s, &tcx.associated_item(def_id), args),
+            ty: type_of_self().sinto(s),
+            body: get_body(s, args),
+        },
+        RDefKind::Static {
+            safety,
+            mutability,
+            nested,
+            ..
+        } => FullDefKind::Static {
+            param_env: get_param_env(s, args),
+            safety: safety.sinto(s),
+            mutability: mutability.sinto(s),
+            nested: nested.sinto(s),
+            ty: type_of_self().sinto(s),
+            body: get_body(s, args),
+        },
+        RDefKind::ExternCrate => FullDefKind::ExternCrate,
+        RDefKind::Use => FullDefKind::Use,
+        RDefKind::Mod { .. } => FullDefKind::Mod {
+            items: get_mod_children(tcx, def_id).sinto(s),
+        },
+        RDefKind::ForeignMod { .. } => FullDefKind::ForeignMod {
+            items: get_foreign_mod_children(tcx, def_id).sinto(s),
+        },
+        RDefKind::TyParam => FullDefKind::TyParam,
+        RDefKind::ConstParam => FullDefKind::ConstParam,
+        RDefKind::LifetimeParam => FullDefKind::LifetimeParam,
+        RDefKind::Variant => FullDefKind::Variant,
+        RDefKind::Ctor(ctor_of, _) => {
+            let args = args_or_default();
+            let ctor_of = ctor_of.sinto(s);
+
+            // The def_id of the adt this ctor belongs to.
+            let adt_def_id = match ctor_of {
+                CtorOf::Struct => tcx.parent(def_id),
+                CtorOf::Variant => tcx.parent(tcx.parent(def_id)),
+            };
+            let adt_def = tcx.adt_def(adt_def_id);
+            let variant_id = adt_def.variant_index_with_ctor_id(def_id);
+            let fields = adt_def
+                .variant(variant_id)
+                .fields
+                .iter()
+                .map(|f| FieldDef::sfrom(s, f, args))
+                .collect();
+            let output_ty = ty::Ty::new_adt(tcx, adt_def, args).sinto(s);
+            FullDefKind::Ctor {
+                adt_def_id: adt_def_id.sinto(s),
+                ctor_of,
+                variant_id: variant_id.sinto(s),
+                fields,
+                output_ty,
+            }
+        }
+        RDefKind::Field => FullDefKind::Field,
+        RDefKind::Macro(kind) => FullDefKind::Macro(kind.sinto(s)),
+        RDefKind::GlobalAsm => FullDefKind::GlobalAsm,
+        RDefKind::SyntheticCoroutineBody => FullDefKind::SyntheticCoroutineBody,
+    }
+}
+
 /// An associated item in a trait impl. This can be an item provided by the trait impl, or an item
 /// that reuses the trait decl default value.
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
-pub struct ImplAssocItem<Body> {
+pub struct ImplAssocItem {
     /// This is `None` for RPTITs.
     pub name: Option<Symbol>,
-    /// The definition of the item from the trait declaration. This is `AssocTy`, `AssocFn` or
+    /// The definition of the item from the trait declaration. This is an `AssocTy`, `AssocFn` or
     /// `AssocConst`.
-    pub decl_def: Arc<FullDef<Body>>,
+    pub decl_def_id: DefId,
     /// The `ImplExpr`s required to satisfy the predicates on the associated type. E.g.:
     /// ```ignore
     /// trait Foo {
@@ -504,17 +784,17 @@ pub struct ImplAssocItem<Body> {
     /// Empty if this item is an associated const or fn.
     pub required_impl_exprs: Vec<ImplExpr>,
     /// The value of the implemented item.
-    pub value: ImplAssocItemValue<Body>,
+    pub value: ImplAssocItemValue,
 }
 
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
-pub enum ImplAssocItemValue<Body> {
+pub enum ImplAssocItemValue {
     /// The item is provided by the trait impl.
     Provided {
-        /// The definition of the item in the trait impl. This is `AssocTy`, `AssocFn` or
+        /// The definition of the item in the trait impl. This is an `AssocTy`, `AssocFn` or
         /// `AssocConst`.
-        def: Arc<FullDef<Body>>,
+        def_id: DefId,
         /// Whether the trait had a default value for this item (which is therefore overriden).
         is_override: bool,
     },
@@ -532,9 +812,27 @@ pub enum ImplAssocItemValue<Body> {
     DefaultedConst,
 }
 
+/// Partial data for a trait impl, used for fake trait impls that we generate ourselves such as
+/// `FnOnce` and `Drop` impls.
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema)]
+pub struct VirtualTraitImpl {
+    /// The trait that is implemented by this impl block.
+    pub trait_pred: TraitPredicate,
+    /// The `ImplExpr`s required to satisfy the predicates on the trait declaration.
+    pub implied_impl_exprs: Vec<ImplExpr>,
+    /// The associated types and their predicates, in definition order.
+    pub types: Vec<(Ty, Vec<ImplExpr>)>,
+}
+
 impl<Body> FullDef<Body> {
     pub fn def_id(&self) -> &DefId {
-        &self.def_id
+        &self.this.def_id
+    }
+
+    /// Reference to the item itself.
+    pub fn this(&self) -> &ItemRef {
+        &self.this
     }
 
     pub fn kind(&self) -> &FullDefKind<Body> {
@@ -544,10 +842,8 @@ impl<Body> FullDef<Body> {
     /// Returns the generics and predicates for definitions that have those.
     pub fn param_env(&self) -> Option<&ParamEnv> {
         use FullDefKind::*;
-        match &self.kind {
-            Struct { param_env, .. }
-            | Union { param_env, .. }
-            | Enum { param_env, .. }
+        match self.kind() {
+            Adt { param_env, .. }
             | Trait { param_env, .. }
             | TraitAlias { param_env, .. }
             | TyAlias { param_env, .. }
@@ -556,12 +852,47 @@ impl<Body> FullDef<Body> {
             | AssocFn { param_env, .. }
             | Const { param_env, .. }
             | AssocConst { param_env, .. }
-            | AnonConst { param_env, .. }
-            | InlineConst { param_env, .. }
             | Static { param_env, .. }
             | TraitImpl { param_env, .. }
             | InherentImpl { param_env, .. } => Some(param_env),
             _ => None,
+        }
+    }
+
+    /// Return the parent of this item if the item inherits the typing context from its parent.
+    #[cfg(feature = "rustc")]
+    pub fn typing_parent<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<ItemRef> {
+        use FullDefKind::*;
+        match self.kind() {
+            AssocTy { .. }
+            | AssocFn { .. }
+            | AssocConst { .. }
+            | Const {
+                kind: ConstKind::AnonConst | ConstKind::InlineConst | ConstKind::PromotedConst,
+                ..
+            } => self.param_env().unwrap().parent.clone(),
+            Closure { .. } | Ctor { .. } | Variant { .. } => {
+                let parent = self.def_id().parent.as_ref().unwrap();
+                // The parent has the same generics as this item.
+                Some(self.this().with_def_id(s, parent))
+            }
+            _ => None,
+        }
+    }
+
+    /// Whether the item has any generics at all (including parent generics).
+    pub fn has_any_generics(&self) -> bool {
+        match self.param_env() {
+            Some(p) => p.generics.parent_count != 0 || !p.generics.params.is_empty(),
+            None => false,
+        }
+    }
+
+    /// Whether the item has any generics of its own (ignoring parent generics).
+    pub fn has_own_generics(&self) -> bool {
+        match self.param_env() {
+            Some(p) => !p.generics.params.is_empty(),
+            None => false,
         }
     }
 
@@ -576,24 +907,26 @@ impl<Body> FullDef<Body> {
                     Some((opt_ident.as_ref()?.0.clone(), def_id.clone()))
                 })
                 .collect(),
-            FullDefKind::Enum { def, .. } => def
-                .variants
-                .raw
+            FullDefKind::Adt {
+                adt_kind: AdtKind::Enum,
+                variants,
+                ..
+            } => variants
                 .iter()
                 .map(|variant| (variant.name.clone(), variant.def_id.clone()))
                 .collect(),
             FullDefKind::InherentImpl { items, .. } | FullDefKind::Trait { items, .. } => items
                 .iter()
-                .filter_map(|(item, _)| Some((item.name.clone()?, item.def_id.clone())))
+                .filter_map(|item| Some((item.name.clone()?, item.def_id.clone())))
                 .collect(),
             FullDefKind::TraitImpl { items, .. } => items
                 .iter()
-                .filter_map(|item| Some((item.name.clone()?, item.def().def_id.clone())))
+                .filter_map(|item| Some((item.name.clone()?, item.def_id().clone())))
                 .collect(),
             _ => vec![],
         };
         // Add inherent impl items if any.
-        if let Some(rust_def_id) = self.def_id.as_rust_def_id() {
+        if let Some(rust_def_id) = self.def_id().as_rust_def_id() {
             let tcx = s.base().tcx;
             for impl_def_id in tcx.inherent_impls(rust_def_id) {
                 children.extend(
@@ -607,399 +940,156 @@ impl<Body> FullDef<Body> {
     }
 }
 
-impl<Body> ImplAssocItem<Body> {
+impl ImplAssocItem {
     /// The relevant definition: the provided implementation if any, otherwise the default
     /// declaration from the trait declaration.
-    pub fn def(&self) -> &FullDef<Body> {
+    pub fn def_id(&self) -> &DefId {
         match &self.value {
-            ImplAssocItemValue::Provided { def, .. } => def.as_ref(),
-            _ => self.decl_def.as_ref(),
-        }
-    }
-
-    /// The kind of item this is.
-    pub fn assoc_kind(&self) -> &AssocKind {
-        match self.def().kind() {
-            FullDefKind::AssocTy {
-                associated_item, ..
-            }
-            | FullDefKind::AssocFn {
-                associated_item, ..
-            }
-            | FullDefKind::AssocConst {
-                associated_item, ..
-            } => &associated_item.kind,
-            _ => unreachable!(),
+            ImplAssocItemValue::Provided { def_id, .. } => def_id,
+            _ => &self.decl_def_id,
         }
     }
 }
 
-/// Gets the visibility (`pub` or not) of the definition. Returns `None` for defs that don't have a
-/// meaningful visibility.
 #[cfg(feature = "rustc")]
-fn get_def_visibility<'tcx>(
-    tcx: ty::TyCtxt<'tcx>,
-    def_id: RDefId,
-    def_kind: RDefKind,
-) -> Option<bool> {
-    use RDefKind::*;
-    match def_kind {
-        AssocConst
-        | AssocFn
-        | Const
-        | Enum
-        | Field
-        | Fn
-        | ForeignTy
-        | Macro { .. }
-        | Mod
-        | Static { .. }
-        | Struct
-        | Trait
-        | TraitAlias
-        | TyAlias { .. }
-        | Union
-        | Use
-        | Variant => Some(tcx.visibility(def_id).is_public()),
-        // These kinds don't have visibility modifiers (which would cause `visibility` to panic).
-        AnonConst
-        | AssocTy
-        | Closure
-        | ConstParam
-        | Ctor { .. }
-        | ExternCrate
-        | ForeignMod
-        | GlobalAsm
-        | Impl { .. }
-        | InlineConst
-        | LifetimeParam
-        | OpaqueTy
-        | SyntheticCoroutineBody
-        | TyParam => None,
-    }
-}
-
-/// Gets the attributes of the definition.
-#[cfg(feature = "rustc")]
-fn get_def_attrs<'tcx>(
-    tcx: ty::TyCtxt<'tcx>,
-    def_id: RDefId,
-    def_kind: RDefKind,
-) -> &'tcx [rustc_hir::Attribute] {
-    use RDefKind::*;
-    match def_kind {
-        // These kinds cause `get_attrs_unchecked` to panic.
-        ConstParam | LifetimeParam | TyParam | ForeignMod => &[],
-        _ => tcx.get_attrs_unchecked(def_id),
-    }
-}
-
-/// Gets the children of a module.
-#[cfg(feature = "rustc")]
-fn get_mod_children<'tcx>(
-    tcx: ty::TyCtxt<'tcx>,
-    def_id: RDefId,
-) -> Vec<(Option<rustc_span::Ident>, RDefId)> {
-    match def_id.as_local() {
-        Some(ldid) => match tcx.hir_node_by_def_id(ldid) {
-            rustc_hir::Node::Crate(m)
-            | rustc_hir::Node::Item(&rustc_hir::Item {
-                kind: rustc_hir::ItemKind::Mod(_, m),
-                ..
-            }) => m
-                .item_ids
-                .iter()
-                .map(|&item_id| {
-                    let opt_ident = tcx.hir_item(item_id).kind.ident();
-                    let def_id = item_id.owner_id.to_def_id();
-                    (opt_ident, def_id)
-                })
-                .collect(),
-            node => panic!("DefKind::Module is an unexpected node: {node:?}"),
-        },
-        None => tcx
-            .module_children(def_id)
-            .iter()
-            .map(|child| (Some(child.ident), child.res.def_id()))
-            .collect(),
-    }
-}
-
-/// Gets the children of an `extern` block. Empty if the block is not defined in the current crate.
-#[cfg(feature = "rustc")]
-fn get_foreign_mod_children<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Vec<RDefId> {
-    match def_id.as_local() {
-        Some(ldid) => tcx
-            .hir_node_by_def_id(ldid)
-            .expect_item()
-            .expect_foreign_mod()
-            .1
-            .iter()
-            .map(|foreign_item_ref| foreign_item_ref.owner_id.to_def_id())
-            .collect(),
-        None => vec![],
-    }
-}
-
-#[cfg(feature = "rustc")]
-fn get_self_predicate<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> TraitPredicate {
+fn get_self_predicate<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+    args: Option<ty::GenericArgsRef<'tcx>>,
+) -> TraitPredicate {
     use ty::Upcast;
     let tcx = s.base().tcx;
+    let typing_env = s.typing_env();
     let pred: ty::TraitPredicate = crate::traits::self_predicate(tcx, s.owner_id())
         .no_bound_vars()
         .unwrap()
         .upcast(tcx);
+    let pred = substitute(tcx, typing_env, args, pred);
     pred.sinto(s)
 }
 
+/// Do the trait resolution necessary to create a new impl for the given trait_ref. Used when we
+/// generate fake trait impls e.g. for `FnOnce` and `Drop`.
 #[cfg(feature = "rustc")]
-fn get_impl_contents<'tcx, S, Body>(s: &S) -> FullDefKind<Body>
+fn virtual_impl_for<'tcx, S>(s: &S, trait_ref: ty::TraitRef<'tcx>) -> Box<VirtualTraitImpl>
+where
+    S: UnderOwnerState<'tcx>,
+{
+    let tcx = s.base().tcx;
+    let trait_pred = TraitPredicate {
+        trait_ref: trait_ref.sinto(s),
+        is_positive: true,
+    };
+    // Impl exprs required by the trait.
+    let required_impl_exprs = solve_item_implied_traits(s, trait_ref.def_id, trait_ref.args);
+    let types = tcx
+        .associated_items(trait_ref.def_id)
+        .in_definition_order()
+        .filter(|assoc| matches!(assoc.kind, ty::AssocKind::Type { .. }))
+        .map(|assoc| {
+            // This assumes non-GAT because this is for builtin-trait (that don't
+            // have GATs).
+            let ty = ty::Ty::new_projection(tcx, assoc.def_id, trait_ref.args).sinto(s);
+            // Impl exprs required by the type.
+            let required_impl_exprs = solve_item_implied_traits(s, assoc.def_id, trait_ref.args);
+            (ty, required_impl_exprs)
+        })
+        .collect();
+    Box::new(VirtualTraitImpl {
+        trait_pred,
+        implied_impl_exprs: required_impl_exprs,
+        types,
+    })
+}
+
+#[cfg(feature = "rustc")]
+fn get_body<'tcx, S, Body>(s: &S, args: Option<ty::GenericArgsRef<'tcx>>) -> Option<Body>
 where
     S: UnderOwnerState<'tcx>,
     Body: IsBody + TypeMappable,
 {
-    use std::collections::HashMap;
-    let tcx = s.base().tcx;
-    let impl_def_id = s.owner_id();
-    let param_env = get_param_env(s, impl_def_id);
-    match tcx.impl_subject(impl_def_id).instantiate_identity() {
-        ty::ImplSubject::Inherent(ty) => {
-            let items = tcx
-                .associated_items(impl_def_id)
-                .in_definition_order()
-                .map(|assoc| {
-                    let def_id = assoc.def_id.sinto(s);
-                    (assoc.sinto(s), def_id.full_def(s))
-                })
-                .collect::<Vec<_>>();
-            FullDefKind::InherentImpl {
-                param_env,
-                ty: ty.sinto(s),
-                items,
-            }
-        }
-        ty::ImplSubject::Trait(trait_ref) => {
-            // Also record the polarity.
-            let polarity = tcx.impl_polarity(impl_def_id);
-            let trait_pred = TraitPredicate {
-                trait_ref: trait_ref.sinto(s),
-                is_positive: matches!(polarity, ty::ImplPolarity::Positive),
-            };
-            // Impl exprs required by the trait.
-            let required_impl_exprs =
-                solve_item_implied_traits(s, trait_ref.def_id, trait_ref.args);
-
-            let mut item_map: HashMap<RDefId, _> = tcx
-                .associated_items(impl_def_id)
-                .in_definition_order()
-                .map(|assoc| (assoc.trait_item_def_id.unwrap(), assoc))
-                .collect();
-            let items = tcx
-                .associated_items(trait_ref.def_id)
-                .in_definition_order()
-                .map(|decl_assoc| {
-                    let decl_def_id = decl_assoc.def_id;
-                    let decl_def = decl_def_id.sinto(s).full_def(s);
-                    // Impl exprs required by the item.
-                    let required_impl_exprs;
-                    let value = match item_map.remove(&decl_def_id) {
-                        Some(impl_assoc) => {
-                            required_impl_exprs = {
-                                let item_args =
-                                    ty::GenericArgs::identity_for_item(tcx, impl_assoc.def_id);
-                                // Subtlety: we have to add the GAT arguments (if any) to the trait ref arguments.
-                                let args = item_args.rebase_onto(tcx, impl_def_id, trait_ref.args);
-                                let state_with_id =
-                                    with_owner_id(s.base(), (), (), impl_assoc.def_id);
-                                solve_item_implied_traits(&state_with_id, decl_def_id, args)
-                            };
-
-                            ImplAssocItemValue::Provided {
-                                def: impl_assoc.def_id.sinto(s).full_def(s),
-                                is_override: decl_assoc.defaultness(tcx).has_value(),
-                            }
-                        }
-                        None => {
-                            required_impl_exprs = if tcx.generics_of(decl_def_id).is_own_empty() {
-                                // Non-GAT case.
-                                let item_args =
-                                    ty::GenericArgs::identity_for_item(tcx, decl_def_id);
-                                let args = item_args.rebase_onto(tcx, impl_def_id, trait_ref.args);
-                                let state_with_id = with_owner_id(s.base(), (), (), impl_def_id);
-                                solve_item_implied_traits(&state_with_id, decl_def_id, args)
-                            } else {
-                                // FIXME: For GATs, we need a param_env that has the arguments of
-                                // the impl plus those of the associated type, but there's no
-                                // def_id with that param_env.
-                                vec![]
-                            };
-                            match decl_assoc.kind {
-                                ty::AssocKind::Type { .. } => {
-                                    let ty = tcx
-                                        .type_of(decl_def_id)
-                                        .instantiate(tcx, trait_ref.args)
-                                        .sinto(s);
-                                    ImplAssocItemValue::DefaultedTy { ty }
-                                }
-                                ty::AssocKind::Fn { .. } => ImplAssocItemValue::DefaultedFn {},
-                                ty::AssocKind::Const { .. } => {
-                                    ImplAssocItemValue::DefaultedConst {}
-                                }
-                            }
-                        }
-                    };
-
-                    ImplAssocItem {
-                        name: decl_assoc.opt_name().sinto(s),
-                        value,
-                        required_impl_exprs,
-                        decl_def,
-                    }
-                })
-                .collect();
-            assert!(item_map.is_empty());
-            FullDefKind::TraitImpl {
-                param_env,
-                trait_pred,
-                implied_impl_exprs: required_impl_exprs,
-                items,
-            }
-        }
-    }
-}
-
-/// The signature of a method impl may be a subtype of the one expected from the trait decl, as in
-/// the example below. For correctness, we must be able to map from the method generics declared in
-/// the trait to the actual method generics. Because this would require type inference, we instead
-/// simply return the declared signature. This will cause issues if it is possible to use such a
-/// more-specific implementation with its more-specific type, but we have a few other issues with
-/// lifetime-generic function pointers anyway so this is unlikely to cause problems.
-///
-/// ```ignore
-/// trait MyCompare<Other>: Sized {
-///     fn compare(self, other: Other) -> bool;
-/// }
-/// impl<'a> MyCompare<&'a ()> for &'a () {
-///     // This implementation is more general because it works for non-`'a` refs. Note that only
-///     // late-bound vars may differ in this way.
-///     // `<&'a () as MyCompare<&'a ()>>::compare` has type `fn<'b>(&'a (), &'b ()) -> bool`,
-///     // but type `fn(&'a (), &'a ()) -> bool` was expected from the trait declaration.
-///     fn compare<'b>(self, _other: &'b ()) -> bool {
-///         true
-///     }
-/// }
-/// ```
-#[cfg(feature = "rustc")]
-fn get_method_sig<'tcx, S>(s: &S) -> ty::PolyFnSig<'tcx>
-where
-    S: UnderOwnerState<'tcx>,
-{
-    let tcx = s.base().tcx;
     let def_id = s.owner_id();
-    let real_sig = tcx.fn_sig(def_id).instantiate_identity();
-    let item = tcx.associated_item(def_id);
-    if !matches!(item.container, ty::AssocItemContainer::Impl) {
-        return real_sig;
-    }
-    let Some(decl_method_id) = item.trait_item_def_id else {
-        return real_sig;
-    };
-    let declared_sig = tcx.fn_sig(decl_method_id);
-
-    // TODO(Nadrieril): Temporary hack: if the signatures have the same number of bound vars, we
-    // keep the real signature. While the declared signature is more correct, it is also less
-    // normalized and we can't normalize without erasing regions but regions are crucial in
-    // function signatures. Hence we cheat here, until charon gains proper normalization
-    // capabilities.
-    if declared_sig.skip_binder().bound_vars().len() == real_sig.bound_vars().len() {
-        return real_sig;
-    }
-
-    let impl_def_id = item.container_id(tcx);
-    // The trait predicate that is implemented by the surrounding impl block.
-    let implemented_trait_ref = tcx
-        .impl_trait_ref(impl_def_id)
-        .unwrap()
-        .instantiate_identity();
-    // Construct arguments for the declared method generics in the context of the implemented
-    // method generics.
-    let impl_args = ty::GenericArgs::identity_for_item(tcx, def_id);
-    let decl_args = impl_args.rebase_onto(tcx, impl_def_id, implemented_trait_ref.args);
-    let sig = declared_sig.instantiate(tcx, decl_args);
-    // Avoids accidentally using the same lifetime name twice in the same scope
-    // (once in impl parameters, second in the method declaration late-bound vars).
-    let sig = tcx.anonymize_bound_vars(sig);
-    sig
+    Body::body(s, def_id, args)
 }
 
 #[cfg(feature = "rustc")]
-fn get_ctor_contents<'tcx, S, Body>(s: &S, ctor_of: CtorOf) -> FullDefKind<Body>
+fn get_closure_once_shim<'tcx, S, Body>(s: &S, closure_ty: ty::Ty<'tcx>) -> Option<Body>
 where
     S: UnderOwnerState<'tcx>,
     Body: IsBody + TypeMappable,
 {
     let tcx = s.base().tcx;
-    let def_id = s.owner_id();
-
-    // The def_id of the adt this ctor belongs to.
-    let adt_def_id = match ctor_of {
-        CtorOf::Struct => tcx.parent(def_id),
-        CtorOf::Variant => tcx.parent(tcx.parent(def_id)),
-    };
-    let adt_def = tcx.adt_def(adt_def_id);
-    let variant_id = adt_def.variant_index_with_ctor_id(def_id);
-    let fields = adt_def.variant(variant_id).fields.sinto(s);
-    let generic_args = ty::GenericArgs::identity_for_item(tcx, adt_def_id);
-    let output_ty = ty::Ty::new_adt(tcx, adt_def, generic_args).sinto(s);
-    FullDefKind::Ctor {
-        adt_def_id: adt_def_id.sinto(s),
-        ctor_of,
-        variant_id: variant_id.sinto(s),
-        fields,
-        output_ty,
-    }
+    let mir = crate::closure_once_shim(tcx, closure_ty)?;
+    let body = Body::from_mir(s, mir)?;
+    Some(body)
 }
 
 #[cfg(feature = "rustc")]
-fn closure_once_shim<'tcx>(
-    tcx: ty::TyCtxt<'tcx>,
-    closure_ty: ty::Ty<'tcx>,
-) -> Option<mir::Body<'tcx>> {
-    let ty::Closure(def_id, args) = closure_ty.kind() else {
-        unreachable!()
-    };
-    let instance = match args.as_closure().kind() {
-        ty::ClosureKind::Fn | ty::ClosureKind::FnMut => {
-            ty::Instance::fn_once_adapter_instance(tcx, *def_id, args)
-        }
-        ty::ClosureKind::FnOnce => return None,
-    };
-    let mir = tcx.instance_mir(instance.def).clone();
-    let mir = ty::EarlyBinder::bind(mir).instantiate(tcx, instance.args);
-    Some(mir)
-}
-
-#[cfg(feature = "rustc")]
-fn drop_glue_shim<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> Option<mir::Body<'tcx>> {
-    let drop_in_place =
-        tcx.require_lang_item(rustc_hir::LangItem::DropInPlace, rustc_span::DUMMY_SP);
-    if !tcx.generics_of(def_id).is_empty() {
-        // Hack: layout code panics if it can't fully normalize types, which can happen e.g. with a
-        // trait associated type. For now we only translate the glue for monomorphic types.
-        return None;
-    }
-    let ty = tcx.type_of(def_id).instantiate_identity();
-    let instance_kind = ty::InstanceKind::DropGlue(drop_in_place, Some(ty));
-    let mir = tcx.instance_mir(instance_kind).clone();
-    Some(mir)
-}
-
-#[cfg(feature = "rustc")]
-fn get_param_env<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> ParamEnv {
+fn get_drop_glue_shim<'tcx, S, Body>(s: &S, args: Option<ty::GenericArgsRef<'tcx>>) -> Option<Body>
+where
+    S: UnderOwnerState<'tcx>,
+    Body: IsBody + TypeMappable,
+{
     let tcx = s.base().tcx;
-    let s = &with_owner_id(s.base(), (), (), def_id);
-    ParamEnv {
-        generics: tcx.generics_of(def_id).sinto(s),
-        predicates: required_predicates(tcx, def_id, s.base().options.bounds_options).sinto(s),
+    let mir = crate::drop_glue_shim(tcx, s.owner_id(), args)?;
+    let body = Body::from_mir(s, mir)?;
+    Some(body)
+}
+
+#[cfg(feature = "rustc")]
+fn get_param_env<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+    args: Option<ty::GenericArgsRef<'tcx>>,
+) -> ParamEnv {
+    let tcx = s.base().tcx;
+    let def_id = s.owner_id();
+    let generics = tcx.generics_of(def_id).sinto(s);
+
+    let parent = generics.parent.as_ref().map(|parent| {
+        let parent = parent.underlying_rust_def_id();
+        let args = args.unwrap_or_else(|| ty::GenericArgs::identity_for_item(tcx, def_id));
+        let parent_args = args.truncate_to(tcx, tcx.generics_of(parent));
+        translate_item_ref(s, parent, parent_args)
+    });
+    match args {
+        None => ParamEnv {
+            generics,
+            predicates: required_predicates(tcx, def_id, s.base().options.bounds_options).sinto(s),
+            parent,
+        },
+        // An instantiated item is monomorphic.
+        Some(_) => ParamEnv {
+            generics: TyGenerics {
+                parent_count: 0,
+                params: Default::default(),
+                ..generics
+            },
+            predicates: GenericPredicates::default(),
+            parent,
+        },
     }
+}
+
+#[cfg(feature = "rustc")]
+fn get_implied_predicates<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+    args: Option<ty::GenericArgsRef<'tcx>>,
+) -> GenericPredicates {
+    use std::borrow::Cow;
+    let tcx = s.base().tcx;
+    let def_id = s.owner_id();
+    let typing_env = s.typing_env();
+    let mut implied_predicates = implied_predicates(tcx, def_id, s.base().options.bounds_options);
+    if args.is_some() {
+        implied_predicates = Cow::Owned(
+            implied_predicates
+                .iter()
+                .copied()
+                .map(|(clause, span)| {
+                    let clause = substitute(tcx, typing_env, args, clause);
+                    (clause, span)
+                })
+                .collect(),
+        );
+    }
+    implied_predicates.sinto(s)
 }

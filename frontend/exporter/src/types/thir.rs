@@ -190,6 +190,7 @@ impl<'tcx, S: ExprState<'tcx>> SInto<S, Stmt> for thir::StmtId {
 #[cfg(feature = "rustc")]
 impl<'tcx, S: ExprState<'tcx>> SInto<S, Expr> for thir::Expr<'tcx> {
     fn sinto(&self, s: &S) -> Expr {
+        let s = &s.with_ty(self.ty);
         let (hir_id, attributes) = self.hir_id_and_attributes(s);
         let hir_id = hir_id.map(|hir_id| hir_id.index());
         let unrolled = self.unroll_scope(s);
@@ -589,7 +590,7 @@ pub type Expr = Decorated<ExprKind>;
 
 /// Reflects [`thir::ExprKind`]
 #[derive(AdtInto)]
-#[args(<'tcx, S: ExprState<'tcx>>, from: thir::ExprKind<'tcx>, state: S as gstate)]
+#[args(<'tcx, S: ExprState<'tcx> + HasTy<'tcx>>, from: thir::ExprKind<'tcx>, state: S as gstate)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 #[append(
@@ -704,6 +705,17 @@ pub enum ExprKind {
     NeverToAny {
         source: Expr,
     },
+    #[custom_arm(
+        &FROM_TYPE::PointerCoercion { cast, source, .. } => {
+            let source = &gstate.thir().exprs[source];
+            let src_ty = source.ty;
+            let tgt_ty = gstate.ty();
+            TO_TYPE::PointerCoercion {
+                cast: PointerCoercion::sfrom(gstate, cast, src_ty, tgt_ty),
+                source: source.sinto(gstate),
+            }
+        },
+    )]
     PointerCoercion {
         cast: PointerCoercion,
         source: Expr,
@@ -804,7 +816,7 @@ pub enum ExprKind {
     },
     #[custom_arm(FROM_TYPE::Closure(e) => {
         let (thir, expr_entrypoint) = get_thir(e.closure_id, gstate);
-        let s = &State::from_thir(gstate.base(), gstate.owner_id(), thir.clone());
+        let s = &gstate.with_thir(thir.clone());
         TO_TYPE::Closure {
             params: thir.params.raw.sinto(s),
             body: expr_entrypoint.sinto(s),
@@ -858,7 +870,7 @@ pub trait ExprKindExt<'tcx> {
         &self,
         s: &S,
     ) -> (Option<rustc_hir::HirId>, Vec<Attribute>);
-    fn unroll_scope<S: IsState<'tcx> + HasThir<'tcx>>(&self, s: &S) -> thir::Expr<'tcx>;
+    fn unroll_scope<S: BaseState<'tcx> + HasThir<'tcx>>(&self, s: &S) -> thir::Expr<'tcx>;
 }
 
 #[cfg(feature = "rustc")]
@@ -875,7 +887,7 @@ impl<'tcx> ExprKindExt<'tcx> for thir::Expr<'tcx> {
             _ => (None, vec![]),
         }
     }
-    fn unroll_scope<S: IsState<'tcx> + HasThir<'tcx>>(&self, s: &S) -> thir::Expr<'tcx> {
+    fn unroll_scope<S: BaseState<'tcx> + HasThir<'tcx>>(&self, s: &S) -> thir::Expr<'tcx> {
         // TODO: when we see a loop, we should lookup its label! label is actually a scope id
         // we remove scopes here, whence the TODO
         match self.kind {

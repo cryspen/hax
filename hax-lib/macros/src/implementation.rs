@@ -174,7 +174,7 @@ pub fn fstar_postprocess_with(attr: pm::TokenStream, item: pm::TokenStream) -> p
     quote! {#[::hax_lib::fstar::before(#payload)] #item}.into()
 }
 
-/// Include this item in the Hax translation.
+/// Include this item in the Hax translation. This overrides any exclusion resulting of `-i` flag.
 #[proc_macro_error]
 #[proc_macro_attribute]
 pub fn include(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {

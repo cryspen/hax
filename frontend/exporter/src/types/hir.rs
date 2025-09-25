@@ -225,11 +225,11 @@ pub struct Generics<Body: IsBody> {
 }
 
 #[cfg(feature = "rustc")]
-impl<'tcx, S: UnderOwnerState<'tcx>, Body: IsBody> SInto<S, ImplItem<Body>> for hir::ImplItemId {
+impl<'tcx, S: BaseState<'tcx>, Body: IsBody> SInto<S, ImplItem<Body>> for hir::ImplItemId {
     fn sinto(&self, s: &S) -> ImplItem<Body> {
         let tcx: rustc_middle::ty::TyCtxt = s.base().tcx;
         let impl_item = tcx.hir_impl_item(*self);
-        let s = with_owner_id(s.base(), (), (), impl_item.owner_id.to_def_id());
+        let s = s.with_owner_id(impl_item.owner_id.to_def_id());
         impl_item.sinto(&s)
     }
 }
@@ -257,12 +257,12 @@ pub enum LifetimeParamKind {
 /// Reflects [`hir::AnonConst`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: hir::AnonConst, state: S as s)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: hir::AnonConst, state: S as s)]
 pub struct AnonConst<Body: IsBody> {
     pub hir_id: HirId,
     pub def_id: GlobalIdent,
     #[map({
-        body_from_id::<Body, _>(*x, &with_owner_id(s.base(), (), (), hir_id.owner.to_def_id()))
+        body_from_id::<Body, _>(*x, &s.with_owner_id(hir_id.owner.to_def_id()))
     })]
     pub body: Body,
 }
@@ -504,7 +504,7 @@ pub struct Variant<Body: IsBody> {
     pub ident: Ident,
     pub hir_id: HirId,
     pub def_id: GlobalIdent,
-    #[map(x.sinto(&with_owner_id(s.base(), (), (), self.def_id.to_def_id())))]
+    #[map(x.sinto(&s.with_owner_id(self.def_id.to_def_id())))]
     pub data: VariantData,
     pub disr_expr: Option<AnonConst<Body>>,
     #[value({
@@ -645,13 +645,7 @@ pub enum ItemKind<Body: IsBody> {
         Ident,
         Generics<Body>,
         #[map({
-            let s = &State {
-                base: Base {ty_alias_mode: true, ..s.base()},
-                owner_id: s.owner_id(),
-                thir: (),
-                mir: (),
-                binder: (),
-            };
+            let s = &s.with_base(Base { ty_alias_mode: true, ..s.base() });
             x.sinto(s)
         })]
         Ty,
@@ -737,9 +731,9 @@ impl<'tcx, S: UnderOwnerState<'tcx>, Body: IsBody> SInto<S, EnumDef<Body>> for h
 }
 
 #[cfg(feature = "rustc")]
-impl<'a, S: UnderOwnerState<'a>, Body: IsBody> SInto<S, TraitItem<Body>> for hir::TraitItemId {
+impl<'a, S: BaseState<'a>, Body: IsBody> SInto<S, TraitItem<Body>> for hir::TraitItemId {
     fn sinto(&self, s: &S) -> TraitItem<Body> {
-        let s = with_owner_id(s.base(), (), (), self.owner_id.to_def_id());
+        let s = s.with_owner_id(self.owner_id.to_def_id());
         let tcx: rustc_middle::ty::TyCtxt = s.base().tcx;
         tcx.hir_trait_item(*self).sinto(&s)
     }
@@ -826,7 +820,6 @@ fn region_bounds_at_current_owner<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> Gene
             .instantiate_identity()
     } else {
         predicates_defined_on(tcx, s.owner_id())
-            .predicates
             .iter()
             .map(|(x, _span)| x)
             .copied()
@@ -909,6 +902,7 @@ pub struct Item<Body: IsBody> {
     pub vis_span: Span,
     pub kind: ItemKind<Body>,
     pub attributes: ItemAttributes,
+    pub visibility: Visibility<DefId>,
 }
 
 #[cfg(feature = "rustc")]
@@ -933,7 +927,8 @@ impl<'tcx, S: BaseState<'tcx>, Body: IsBody> SInto<S, Item<Body>> for hir::Item<
             | TraitAlias(i, ..) => i.name.to_ident_string(),
             Use(..) | ForeignMod { .. } | GlobalAsm { .. } | Impl { .. } => String::new(),
         };
-        let s = &with_owner_id(s.base(), (), (), self.owner_id.to_def_id());
+        let s = &s.with_owner_id(self.owner_id.to_def_id());
+        let tcx = s.base().tcx;
         let owner_id: DefId = self.owner_id.sinto(s);
         let def_id = Path::from(owner_id.clone())
             .ends_with(&[name])
@@ -945,6 +940,7 @@ impl<'tcx, S: BaseState<'tcx>, Body: IsBody> SInto<S, Item<Body>> for hir::Item<
             vis_span: self.span.sinto(s),
             kind: self.kind.sinto(s),
             attributes: ItemAttributes::from_owner_id(s, self.owner_id),
+            visibility: tcx.visibility(self.owner_id).sinto(s),
         }
     }
 }

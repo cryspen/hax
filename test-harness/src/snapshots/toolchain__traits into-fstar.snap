@@ -731,13 +731,15 @@ let iter_option (#v_T: Type0) (x: Core_models.Option.t_Option v_T)
     (Core_models.Option.impl__as_ref #v_T x <: Core_models.Option.t_Option v_T)
 
 let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
-  let iter:_ =
+  let iter:Core_models.Option.t_IntoIter bool =
     iter_option #bool (Core_models.Option.Option_Some false <: Core_models.Option.t_Option bool)
   in
-  let tmp0, out:(_ & Core_models.Option.t_Option bool) =
-    Core_models.Iter.Traits.Iterator.f_next #_ #FStar.Tactics.Typeclasses.solve iter
+  let tmp0, out:(Core_models.Option.t_IntoIter bool & Core_models.Option.t_Option bool) =
+    Core_models.Iter.Traits.Iterator.f_next #(Core_models.Option.t_IntoIter bool)
+      #FStar.Tactics.Typeclasses.solve
+      iter
   in
-  let iter:_ = tmp0 in
+  let iter:Core_models.Option.t_IntoIter bool = tmp0 in
   let _:Core_models.Option.t_Option bool = out in
   ()
 

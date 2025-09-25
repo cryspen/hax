@@ -13,13 +13,51 @@
 
 use hax_rust_engine_macros::*;
 
+use super::*;
+
 /// Resugared variants for items. This represent extra printing-only items, see [`super::ItemKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredItemKind {}
+pub enum ResugaredItemKind {
+    /// A `const` item, for example `const NAME: T = body;`.
+    /// The type of the constant is `body.ty`.
+    Constant {
+        /// The identifier of the constant, for example `krate::module::NAME`.
+        name: GlobalId,
+        /// The body of the constant, for example `body`.
+        body: Expr,
+        /// The generic arguments and constraints of the constant.
+        /// Note: constant supporting generics is a nightly feature (generic_const_items).
+        generics: Generics,
+    },
+}
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredExprKind {}
+// TODO: drop `clippy::large_enum_variant` when https://github.com/cryspen/hax/issues/1666 is addressed.
+#[allow(clippy::large_enum_variant)]
+pub enum ResugaredExprKind {
+    /// Binary operations (identified by resugaring) of the form `f(e1, e2)`
+    BinOp {
+        /// The identifier of the operation (`f`)
+        op: GlobalId,
+        /// The left-hand side of the operation (`e1`)
+        lhs: Expr,
+        /// The right-hand side of the operation (`e2`)
+        rhs: Expr,
+        /// The generic arguments applied to the function.
+        generic_args: Vec<GenericValue>,
+        /// If the function requires generic bounds to be called, `bounds_impls`
+        /// is a vector of impl. expressions for those bounds.
+        bounds_impls: Vec<ImplExpr>,
+        /// If we apply an associated function, contains the impl. expr used.
+        trait_: Option<(ImplExpr, Vec<GenericValue>)>,
+    },
+    /// A tuple constructor.
+    ///
+    /// # Example:
+    /// `(a, b)`
+    Tuple(Vec<Expr>),
+}
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].
 #[derive_group_for_ast]
@@ -27,7 +65,13 @@ pub enum ResugaredPatKind {}
 
 /// Resugared variants for types. This represent extra printing-only types, see [`super::TyKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredTyKind {}
+pub enum ResugaredTyKind {
+    /// A tuple tupe.
+    ///
+    /// # Example:
+    /// `(i32, bool)`
+    Tuple(Vec<Ty>),
+}
 
 /// Resugared variants for impl. items. This represent extra printing-only impl. items, see [`super::ImplItemKind::Resugared`].
 #[derive_group_for_ast]
@@ -60,10 +104,10 @@ macro_rules! derive_from {
 }
 
 derive_from!(
-    ResugaredItemKind => super::ItemKind,
-    ResugaredExprKind => super::ExprKind,
-    ResugaredPatKind => super::PatKind,
-    ResugaredTyKind => super::TyKind,
-    ResugaredImplItemKind => super::ImplItemKind,
-    ResugaredTraitItemKind => super::TraitItemKind
+    ResugaredItemKind => ItemKind,
+    ResugaredExprKind => ExprKind,
+    ResugaredPatKind => PatKind,
+    ResugaredTyKind => TyKind,
+    ResugaredImplItemKind => ImplItemKind,
+    ResugaredTraitItemKind => TraitItemKind
 );

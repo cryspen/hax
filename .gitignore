@@ -1,6 +1,7 @@
 debug/
 target/
 **/*.rs.bk
+**/*.profraw
 node_modules
 TODO.org
 .direnv
@@ -15,3 +16,4 @@ proof-libs/fstar/rust_primitives/#*#
 !**/proofs/*/extraction/*.diff
 !**/proofs/fstar/extraction/*.fst
 !**/proofs/coq/extraction/*.v
+!**/proofs/lean/extraction/lakefile.toml

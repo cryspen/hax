@@ -113,7 +113,8 @@ end) : ERROR = struct
 
   let raise err =
     let span = Span.to_thir err.span in
-    Diagnostics.SpanFreeError.raise ~span Ctx.ctx err.kind
+    Diagnostics.SpanFreeError.raise ~span (Span.owner_hint err.span) Ctx.ctx
+      err.kind
 
   let unimplemented ?issue_id ?details span =
     raise

@@ -15,8 +15,5 @@ limitations under the License. -/
 -- This module serves as the root of the `Hax` library.
 -- Import modules here that should be built as part of the library.
 
-/- Additional results and tactics about BitVectors -/
-import Hax.BitVec
-
 /- Main Prelude library -/
 import Hax.Lib

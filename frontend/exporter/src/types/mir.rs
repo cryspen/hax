@@ -258,10 +258,10 @@ fn translate_mir_const<'tcx, S: UnderOwnerState<'tcx>>(
             );
             match ucv.promoted {
                 Some(promoted) => {
-                    let mut item = translate_item_ref(s, ucv.def, ucv.args);
-                    item.mutate(s, |item| {
+                    let item = translate_item_ref(s, ucv.def, ucv.args);
+                    let item = item.mutate_def_id(s, |def_id| {
                         // Construct a def_id for the promoted constant.
-                        item.def_id = item.def_id.make_promoted_child(s, promoted.sinto(s));
+                        *def_id = def_id.make_promoted_child(s, promoted.sinto(s));
                     });
                     Promoted(item)
                 }
@@ -352,7 +352,7 @@ pub struct Terminator {
 }
 
 #[cfg(feature = "rustc")]
-fn translate_terminator_kind_call<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasOwnerId>(
+fn translate_terminator_kind_call<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>(
     s: &S,
     terminator: &rustc_middle::mir::TerminatorKind<'tcx>,
 ) -> TerminatorKind {
@@ -435,7 +435,7 @@ fn translate_terminator_kind_call<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasO
 }
 
 #[cfg(feature = "rustc")]
-fn translate_terminator_kind_drop<'tcx, S: BaseState<'tcx> + HasMir<'tcx> + HasOwnerId>(
+fn translate_terminator_kind_drop<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>(
     s: &S,
     terminator: &rustc_middle::mir::TerminatorKind<'tcx>,
 ) -> TerminatorKind {
@@ -863,8 +863,7 @@ pub enum AggregateKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S>, from: rustc_middle::mir::CastKind, state: S as _s)]
+#[derive(Clone, Debug, JsonSchema)]
 pub enum CastKind {
     PointerExposeProvenance,
     PointerWithExposedProvenance,
@@ -876,6 +875,32 @@ pub enum CastKind {
     PtrToPtr,
     FnPtrToPtr,
     Transmute,
+}
+
+#[cfg(feature = "rustc")]
+impl CastKind {
+    fn sfrom<'tcx, S: UnderOwnerState<'tcx>>(
+        s: &S,
+        kind: mir::CastKind,
+        src_ty: ty::Ty<'tcx>,
+        tgt_ty: ty::Ty<'tcx>,
+    ) -> CastKind {
+        match kind {
+            mir::CastKind::PointerExposeProvenance => CastKind::PointerExposeProvenance,
+            mir::CastKind::PointerWithExposedProvenance => CastKind::PointerWithExposedProvenance,
+            mir::CastKind::PointerCoercion(coercion, y) => {
+                let coercion = PointerCoercion::sfrom(s, coercion, src_ty, tgt_ty);
+                CastKind::PointerCoercion(coercion, y.sinto(s))
+            }
+            mir::CastKind::IntToInt => CastKind::IntToInt,
+            mir::CastKind::FloatToInt => CastKind::FloatToInt,
+            mir::CastKind::FloatToFloat => CastKind::FloatToFloat,
+            mir::CastKind::IntToFloat => CastKind::IntToFloat,
+            mir::CastKind::PtrToPtr => CastKind::PtrToPtr,
+            mir::CastKind::FnPtrToPtr => CastKind::FnPtrToPtr,
+            mir::CastKind::Transmute => CastKind::Transmute,
+        }
+    }
 }
 
 #[derive_group(Serializers)]
@@ -902,17 +927,18 @@ pub enum NullOp {
 #[args(<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>, from: rustc_middle::mir::Rvalue<'tcx>, state: S as s)]
 pub enum Rvalue {
     Use(Operand),
-    #[custom_arm(
-        rustc_middle::mir::Rvalue::Repeat(op, ce) => {
-            let op = op.sinto(s);
-            Rvalue::Repeat(op, ce.sinto(s))
-        },
-    )]
     Repeat(Operand, ConstantExpr),
     Ref(Region, BorrowKind, Place),
     ThreadLocalRef(DefId),
     RawPtr(RawPtrKind, Place),
     Len(Place),
+    #[custom_arm(
+        FROM_TYPE::Cast(kind, op, tgt_ty) => {
+            let src_ty = op.ty(&*s.mir(), s.base().tcx);
+            let kind = CastKind::sfrom(s, *kind, src_ty, *tgt_ty);
+            TO_TYPE::Cast(kind, op.sinto(s), tgt_ty.sinto(s))
+        },
+    )]
     Cast(CastKind, Operand, Ty),
     BinaryOp(BinOp, (Operand, Operand)),
     NullaryOp(NullOp, Ty),
