@@ -298,4 +298,9 @@ mod hax {
         }
     }
     fn box_new() {}
+
+    mod explicit_monadic {
+        fn lift() {}
+        fn pure() {}
+    }
 }
