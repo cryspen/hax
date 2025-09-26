@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+pub mod comments;
 pub mod enums;
 pub mod ite;
 pub mod loops;

@@ -864,15 +864,8 @@ set_option linter.unusedVariables false
             self.pat_typed(&param.pat)
         }
 
-        fn item(
-            &'a self,
-            Item {
-                ident,
-                kind,
-                meta: _,
-            }: &'b Item,
-        ) -> DocBuilder<'a, Self, A> {
-            match kind {
+        fn item(&'a self, Item { ident, kind, meta }: &'b Item) -> DocBuilder<'a, Self, A> {
+            let body = match kind {
                 ItemKind::Fn {
                     name,
                     generics,
@@ -1060,7 +1053,8 @@ set_option linter.unusedVariables false
                     emit_error!(issue 1658, "Unsupported alias item")
                 }
                 ItemKind::Error(e) => docs![e],
-            }
+            };
+            docs![meta, body]
         }
 
         fn trait_item(
@@ -1161,10 +1155,11 @@ set_option linter.unusedVariables false
                 name,
                 arguments,
                 is_record,
-                attributes: _,
+                attributes,
             }: &'b Variant,
         ) -> DocBuilder<'a, Self, A> {
             docs![
+                concat!(attributes),
                 self.render_last(name),
                 softline!(),
                 // args
@@ -1212,7 +1207,7 @@ set_option linter.unusedVariables false
                 attributes,
             }: &'b Metadata,
         ) -> DocBuilder<'a, Self, A> {
-            zip_right!(attributes, hardline!())
+            concat!(attributes)
         }
 
         fn lhs(&'a self, _lhs: &'b Lhs) -> DocBuilder<'a, Self, A> {
@@ -1244,13 +1239,13 @@ set_option linter.unusedVariables false
             Attribute { kind, span: _ }: &'b Attribute,
         ) -> DocBuilder<'a, Self, A> {
             match kind {
-                AttributeKind::Tool { path, tokens: _ } => {
-                    comment!(format!("Rust attribute {}", path))
+                AttributeKind::Tool { .. } => {
+                    nil!()
                 }
                 AttributeKind::DocComment {
                     kind: DocCommentKind::Line,
                     body,
-                } => comment!(body.clone()),
+                } => comment!(body.clone()).append(hardline!()),
                 AttributeKind::DocComment {
                     kind: DocCommentKind::Block,
                     body,
@@ -1262,7 +1257,8 @@ set_option linter.unusedVariables false
                     "-/"
                 ]
                 .nest(INDENT)
-                .group(),
+                .group()
+                .append(hardline!()),
             }
         }
 
