@@ -176,11 +176,6 @@ impl LeanPrinter {
         }
     }
 
-    /// Renders a single symbol, used for anonymous implementations of typeclasses
-    pub fn render_symbol(&self, symbol: Symbol) -> String {
-        self.escape(symbol.to_string())
-    }
-
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
         let id = self
@@ -204,9 +199,6 @@ impl<'a, A: 'a + Clone> Pretty<'a, LeanPrinter, A> for &Vec<Param> {
 
 #[prepend_associated_functions_with(install_pretty_helpers!(self: Self))]
 const _: () = {
-    // Boilerplate: define local macros to disambiguate otherwise `std` macros.
-    #[allow(unused)]
-    macro_rules! todo {($($tt:tt)*) => {disambiguated_todo!($($tt)*)};}
     // Emits a CLI error with a github issue number, and prints "sorry" in the lean output
     macro_rules! emit_error {($($tt:tt)*) => {disambiguated_todo!($($tt)*)};}
 
@@ -389,8 +381,6 @@ set_option linter.unusedVariables false
                 constraints,
             }: &'b Generics,
         ) -> DocBuilder<'a, Self, A> {
-            // TODO : The lean backend should not ignore constraints on generic params, see
-            // https://github.com/cryspen/hax/issues/1636
             docs![
                 zip_right!(params, line!()),
                 zip_right!(
@@ -409,7 +399,10 @@ set_option linter.unusedVariables false
         ) -> DocBuilder<'a, Self, A> {
             match generic_constraint {
                 GenericConstraint::Type(impl_ident) => docs![impl_ident],
-                _ => todo!("-- unsupported constraint"),
+                GenericConstraint::Projection(_) => {
+                    emit_error!(issue 1710, "Unsupported equality constraints on associated types")
+                }
+                GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
             }
         }
 
@@ -420,7 +413,7 @@ set_option linter.unusedVariables false
                     .group(),
                 GenericParamKind::Lifetime => unreachable_by_invariant!(Drop_references),
                 GenericParamKind::Const { .. } => {
-                    todo!("-- Unsupported const param")
+                    emit_error!(issue 1711, "Const parameters are not yet supported")
                 }
             }
         }
@@ -501,8 +494,7 @@ set_option linter.unusedVariables false
                     if fields.is_empty() && base.is_none() {
                         docs![constructor]
                     } else if base.is_some() {
-                        // TODO : support base expressions. see https://github.com/cryspen/hax/issues/1637
-                        todo!("-- Unsupported base expressions for structs.")
+                        emit_error!(issue 1637, "Unsupported base expressions for structs.")
                     } else {
                         docs![constructor, line!(), self.arguments(fields, is_record)]
                             .nest(INDENT)
@@ -581,6 +573,8 @@ set_option linter.unusedVariables false
                         bounds_impls: _,
                         trait_: _,
                     } => {
+                        // TODO : refactor this, moving this code directly in the `App` node (see
+                        // https://github.com/cryspen/hax/issues/1705)
                         if *op == binops::Index::index {
                             return docs!["← ", lhs, "[", line_!(), rhs, line_!(), "]_?"]
                                 .parens()
@@ -626,7 +620,19 @@ set_option linter.unusedVariables false
                 ]
                 .parens()
                 .group(),
-                _ => todo!(),
+
+                ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
+                    unreachable_by_invariant!(Drop_references)
+                }
+                ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
+                ExprKind::Assign { .. } => unreachable_by_invariant!(Local_mutation),
+                ExprKind::Loop { .. } => unreachable_by_invariant!(Functionalize_loops),
+                ExprKind::Break { .. } | ExprKind::Return { .. } | ExprKind::Continue { .. } => {
+                    unreachable_by_invariant!(Drop_break_continue_return)
+                }
+                ExprKind::Block { .. } => unreachable_by_invariant!(Drop_blocks),
+                ExprKind::Quote { contents } => docs![contents],
+                ExprKind::Error(error_node) => docs![error_node],
             }
         }
 
@@ -659,13 +665,21 @@ set_option linter.unusedVariables false
                     mode,
                     sub_pat,
                 } => match (mutable, mode, sub_pat) {
+                    (true, _, _) => unreachable_by_invariant!(Local_mutation),
+                    (false, BindingMode::ByRef(_), _) => unreachable_by_invariant!(Drop_references),
                     (false, BindingMode::ByValue, None) => docs![var],
-                    _ => panic!(),
+                    (false, BindingMode::ByValue, Some(_)) => {
+                        emit_error!(issue 1712, "Unsupported as-pattern")
+                    }
                 },
                 PatKind::Or { sub_pats } => docs![intersperse!(sub_pats, reflow!(" | "))].group(),
-                PatKind::Array { args: _ } => todo!(),
-                PatKind::Deref { sub_pat: _ } => todo!(),
-                PatKind::Constant { lit: _ } => todo!(),
+                PatKind::Array { .. } => {
+                    emit_error!(issue 1712, "Unsupported pattern-matching on arrays")
+                }
+                PatKind::Deref { .. } => unreachable_by_invariant!(Drop_references),
+                PatKind::Constant { .. } => {
+                    emit_error!(issue 1712, "Unsupported pattern-matching on constants")
+                }
                 PatKind::Construct {
                     constructor,
                     is_record,
@@ -711,8 +725,13 @@ set_option linter.unusedVariables false
                         .nest(INDENT)
                     }
                 }
-                PatKind::Resugared(_resugared_pat_kind) => todo!(),
-                PatKind::Error(_error_node) => todo!(),
+                PatKind::Resugared(_) => {
+                    unreachable!("This backend does not use resugarings on patterns")
+                }
+                PatKind::Error(_) => {
+                    // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672
+                    text!("sorry")
+                }
             }
         }
 
@@ -740,7 +759,7 @@ set_option linter.unusedVariables false
                 TyKind::Array { ty, length } => {
                     let v = length.kind().clone();
                     let ExprKind::Literal(int_lit @ Literal::Int { .. }) = v else {
-                        todo!()
+                        emit_error!(issue 1713, "Unsupported arrays where the size is not an integer literal")
                     };
                     docs!["RustArray", line!(), ty, line!(), &int_lit]
                         .parens()
@@ -750,10 +769,21 @@ set_option linter.unusedVariables false
                     let kind = impl_.kind();
                     match &kind {
                         ImplExprKind::Self_ => docs![self.render_last(item)],
-                        _ => todo!(), // Support only local associated types
+                        _ => {
+                            emit_error!(issue 1710, "Unsupported non trait-local associated types")
+                        }
                     }
                 }
-                _ => todo!("sorry \n-- unsupported type\n"),
+                TyKind::Ref { .. } => unreachable_by_invariant!(Drop_references),
+                TyKind::RawPointer => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
+                TyKind::Opaque(_) => emit_error!(issue 1714, "Unsupported opaque type definitions"),
+                TyKind::Dyn(_) => emit_error!(issue 1708, "Unsupported `dyn` traits"),
+                TyKind::Resugared(resugared_ty_kind) => match resugared_ty_kind {
+                    ResugaredTyKind::Tuple(_) => {
+                        unreachable!("This backend does not use tuple resugaring (yet)")
+                    }
+                },
+                TyKind::Error(e) => docs![e],
             }
         }
 
@@ -767,11 +797,7 @@ set_option linter.unusedVariables false
                     negative,
                     kind: _,
                 } => format!("{}{value}", if *negative { "-" } else { "" }),
-                Literal::Float {
-                    value: _,
-                    negative: _,
-                    kind: _,
-                } => todo!(),
+                Literal::Float { .. } => emit_error!(issue 1715, "Unsupported Float literal"),
             }]
         }
 
@@ -788,7 +814,7 @@ set_option linter.unusedVariables false
             match primitive_ty {
                 PrimitiveTy::Bool => docs!["Bool"],
                 PrimitiveTy::Int(int_kind) => docs![int_kind],
-                PrimitiveTy::Float(_float_kind) => todo!(),
+                PrimitiveTy::Float(_) => emit_error!(issue 1715, "Unsupported Float type"),
                 PrimitiveTy::Char => docs!["Char"],
                 PrimitiveTy::Str => docs!["String"],
             }
@@ -815,7 +841,7 @@ set_option linter.unusedVariables false
             match generic_value {
                 GenericValue::Ty(ty) => docs![ty],
                 GenericValue::Expr(expr) => docs![expr],
-                GenericValue::Lifetime => todo!(),
+                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
             }
         }
 
@@ -840,15 +866,12 @@ set_option linter.unusedVariables false
 
         fn item(
             &'a self,
-            item @ Item {
+            Item {
                 ident,
                 kind,
                 meta: _,
             }: &'b Item,
         ) -> DocBuilder<'a, Self, A> {
-            if !LeanPrinter::printable_item(item) {
-                return nil!();
-            };
             match kind {
                 ItemKind::Fn {
                     name,
@@ -891,7 +914,7 @@ set_option linter.unusedVariables false
                 } => nil!(),
                 ItemKind::Quote { quote, origin: _ } => docs![quote],
                 ItemKind::NotImplementedYet => {
-                    docs!["example : Unit := sorry /- unsupported by the Hax engine -/"]
+                    emit_error!(issue 1706, "Item unsupported by the Hax engine (unimplemented yet)")
                 }
                 ItemKind::Type {
                     name,
@@ -978,10 +1001,9 @@ set_option linter.unusedVariables false
                                             constraint
                                         ]
                                         .group()
-                                        .brackets(),
-                                        _ => {
-                                            todo!("unsupported type constraint in trait definition")
-                                        }
+                                            .brackets(),
+                                        GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
+                                        GenericConstraint::Projection(_) => emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
                                     }
                                 }),
                             hardline!()
@@ -1027,7 +1049,17 @@ set_option linter.unusedVariables false
                     ]
                     .nest(INDENT),
                 ],
-                _ => todo!("-- unsupported item"),
+                ItemKind::Resugared(resugared_item_kind) => match resugared_item_kind {
+                    ResugaredItemKind::Constant { .. } => {
+                        unreachable!("This backend does not use constant resugaring")
+                    }
+                },
+                ItemKind::Alias { .. } => {
+                    // aliases are introduced when creating bundles. Those should not appear in
+                    // Lean, as items can be named correctly in any file.
+                    emit_error!(issue 1658, "Unsupported alias item")
+                }
+                ItemKind::Error(e) => docs![e],
             }
         }
 
@@ -1063,7 +1095,11 @@ set_option linter.unusedVariables false
                             .brackets()]))
                     ]
                 }
-                _ => todo!("-- unsupported trait item"),
+                TraitItemKind::Default { .. } =>
+                    emit_error!(issue 1707, "Unsupported default implementation for trait items"),
+                TraitItemKind::Resugared(_) => {
+                    unreachable!("This backend has no resugaring for trait items")
+                }
             }]
         }
 
@@ -1096,7 +1132,9 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(_) => todo!(),
+                ImplItemKind::Resugared(_) => {
+                    unreachable!("This backend has no resugaring for impl items")
+                }
             }
         }
 
@@ -1163,10 +1201,27 @@ set_option linter.unusedVariables false
             .nest(INDENT)
         }
 
+        fn symbol(&'a self, symbol: &'b Symbol) -> DocBuilder<'a, Self, A> {
+            docs![self.escape(symbol.to_string())]
+        }
+
+        fn metadata(
+            &'a self,
+            Metadata {
+                span: _,
+                attributes,
+            }: &'b Metadata,
+        ) -> DocBuilder<'a, Self, A> {
+            zip_right!(attributes, hardline!())
+        }
+
         fn lhs(&'a self, _lhs: &'b Lhs) -> DocBuilder<'a, Self, A> {
             unreachable_by_invariant!(Local_mutation)
         }
 
+        fn safety_kind(&'a self, _safety_kind: &'b SafetyKind) -> DocBuilder<'a, Self, A> {
+            nil!()
+        }
 
         fn binding_mode(&'a self, _binding_mode: &'b BindingMode) -> DocBuilder<'a, Self, A> {
             unreachable!("This backend handle binding modes directly inside patterns")
@@ -1174,6 +1229,41 @@ set_option linter.unusedVariables false
 
         fn region(&'a self, _region: &'b Region) -> DocBuilder<'a, Self, A> {
             unreachable_by_invariant!(Drop_references)
+        }
+
+        fn float_kind(&'a self, _float_kind: &'b FloatKind) -> DocBuilder<'a, Self, A> {
+            emit_error!(issue 1715, "floats are unsupported")
+        }
+
+        fn dyn_trait_goal(&'a self, _dyn_trait_goal: &'b DynTraitGoal) -> DocBuilder<'a, Self, A> {
+            emit_error!(issue 1708, "`dyn` traits are unsupported")
+        }
+
+        fn attribute(
+            &'a self,
+            Attribute { kind, span: _ }: &'b Attribute,
+        ) -> DocBuilder<'a, Self, A> {
+            match kind {
+                AttributeKind::Tool { path, tokens: _ } => {
+                    comment!(format!("Rust attribute {}", path))
+                }
+                AttributeKind::DocComment {
+                    kind: DocCommentKind::Line,
+                    body,
+                } => comment!(body.clone()),
+                AttributeKind::DocComment {
+                    kind: DocCommentKind::Block,
+                    body,
+                } => docs![
+                    "/--",
+                    line!(),
+                    intersperse!(body.lines().map(|line| line.to_string()), line!()),
+                    line!(),
+                    "-/"
+                ]
+                .nest(INDENT)
+                .group(),
+            }
         }
 
         fn borrow_kind(&'a self, _borrow_kind: &'b BorrowKind) -> DocBuilder<'a, Self, A> {
@@ -1184,5 +1274,22 @@ set_option linter.unusedVariables false
             unreachable_by_invariant!(Drop_match_guards)
         }
 
+        fn projection_predicate(
+            &'a self,
+            _projection_predicate: &'b ProjectionPredicate,
+        ) -> DocBuilder<'a, Self, A> {
+            emit_error!(issue 1710, "Projection predicate (type equalities on associated types) are unsupported")
+        }
+
+        fn error_node(&'a self, _error_node: &'b ErrorNode) -> DocBuilder<'a, Self, A> {
+            // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672
+            text!("sorry")
+        }
+
+        // Impl expressions
+
+        fn impl_expr(&'a self, _impl_expr: &'b ImplExpr) -> DocBuilder<'a, Self, A> {
+            emit_error!(issue 1716, "Explicit impl expressions are unsupported")
+        }
     }
 };
