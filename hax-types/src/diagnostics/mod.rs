@@ -16,17 +16,13 @@ pub struct Diagnostics {
 impl std::fmt::Display for Diagnostics {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match &self.kind {
-            Kind::Unimplemented { issue_id, details } => write!(
+            Kind::Unimplemented { issue_id:_, details } => write!(
                 f,
-                "something is not implemented yet.{}{}",
-                match issue_id {
-                    Some(id) => format!("This is discussed in issue https://github.com/hacspec/hax/issues/{id}.\nPlease upvote or comment this issue if you see this error message."),
-                    _ => "".to_string(),
-                },
+                "something is not implemented yet.{}",
                 match details {
                     Some(details) => format!("\n{}", details),
                     _ => "".to_string(),
-                }
+                },
             ),
             Kind::UnsupportedMacro { id } => write!(
                 f,
