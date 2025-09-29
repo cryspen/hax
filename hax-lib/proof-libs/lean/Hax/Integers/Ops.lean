@@ -33,7 +33,7 @@ class HaxAdd α where
 This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
 no heterogeneous version -/
 class HaxSub α where
-  /-- `a -? b` computes the panicking substraction of `a` and `b`.
+  /-- `a -? b` computes the panicking subtraction of `a` and `b`.
   The meaning of this notation is type-dependent. -/
   sub : α → α → Result α
 
