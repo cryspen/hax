@@ -41,7 +41,7 @@ class HaxSub α where
 This enables the notation `a *? b : Result α` where `a b : α`. For now, there is
 no heterogeneous version -/
 class HaxMul α where
-  /-- `a -? b` computes the panicking multiplication of `a` and `b`.  The
+  /-- `a *? b` computes the panicking multiplication of `a` and `b`.  The
   meaning of this notation is type-dependent. -/
   mul : α → α → Result α
 
