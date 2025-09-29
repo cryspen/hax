@@ -195,16 +195,7 @@ pub enum Backend<E: Extension> {
 
 impl fmt::Display for Backend<()> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Backend::Fstar { .. } => write!(f, "fstar"),
-            Backend::Coq { .. } => write!(f, "coq"),
-            Backend::Ssprove { .. } => write!(f, "ssprove"),
-            Backend::Easycrypt { .. } => write!(f, "easycrypt"),
-            Backend::ProVerif { .. } => write!(f, "proverif"),
-            Backend::Lean { .. } => write!(f, "lean"),
-            Backend::Rust { .. } => write!(f, "rust"),
-            Backend::GenerateRustEngineNames { .. } => write!(f, "generate_rust_engine_names"),
-        }
+        BackendName::from(self).fmt(f)
     }
 }
 
@@ -537,4 +528,75 @@ impl From<Options> for hax_frontend_exporter_options::Options {
     }
 }
 
+/// The subset of `Options` the frontend is sensible to.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Debug, Clone)]
+pub struct ExporterOptions {
+    pub deps: bool,
+    pub force_cargo_build: ForceCargoBuild,
+    pub backend: Option<BackendName>,
+    pub body_kinds: Vec<ExportBodyKind>,
+}
+
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Debug, Clone, Copy)]
+pub enum BackendName {
+    Fstar,
+    Coq,
+    Ssprove,
+    Easycrypt,
+    ProVerif,
+    Lean,
+    Rust,
+    GenerateRustEngineNames,
+}
+
+impl fmt::Display for BackendName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match self {
+            BackendName::Fstar => "fstar",
+            BackendName::Coq => "coq",
+            BackendName::Ssprove => "ssprove",
+            BackendName::Easycrypt => "easycrypt",
+            BackendName::ProVerif => "proverif",
+            BackendName::Lean => "lean",
+            BackendName::Rust => "rust",
+            BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
+        };
+        write!(f, "{name}")
+    }
+}
+
+impl From<&Options> for ExporterOptions {
+    fn from(options: &Options) -> Self {
+        let backend = match &options.command {
+            Command::Backend(backend_options) => Some((&backend_options.backend).into()),
+            _ => None,
+        };
+        let body_kinds = options.command.body_kinds();
+        ExporterOptions {
+            deps: options.deps,
+            force_cargo_build: options.force_cargo_build.clone(),
+            backend,
+            body_kinds,
+        }
+    }
+}
+
+impl From<&Backend<()>> for BackendName {
+    fn from(backend: &Backend<()>) -> Self {
+        match backend {
+            Backend::Fstar { .. } => BackendName::Fstar,
+            Backend::Coq { .. } => BackendName::Coq,
+            Backend::Ssprove { .. } => BackendName::Ssprove,
+            Backend::Easycrypt { .. } => BackendName::Easycrypt,
+            Backend::ProVerif { .. } => BackendName::ProVerif,
+            Backend::Lean { .. } => BackendName::Lean,
+            Backend::Rust { .. } => BackendName::Rust,
+            Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
+        }
+    }
+}
+
 pub const ENV_VAR_OPTIONS_FRONTEND: &str = "DRIVER_HAX_FRONTEND_OPTS";
+pub const ENV_VAR_OPTIONS_FULL: &str = "DRIVER_HAX_FRONTEND_FULL_OPTS";
