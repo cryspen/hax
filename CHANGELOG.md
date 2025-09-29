@@ -30,6 +30,9 @@ Changes to the frontend:
 - Add infrastructure to get a monomorphized `FullDef`; this is used in charon to monomorphize a crate graph (#1559)
 - Fix a regression affecting projection predicates (#1678)
 
+Change to cargo-hax:
+- Improve the caching of rustc when using `cargo hax` commands (#1719)
+
 Changes to hax-lib:
 - New behavior for `hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
 
