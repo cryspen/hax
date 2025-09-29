@@ -510,6 +510,7 @@ fn get_hax_rustc_driver_path() -> PathBuf {
 /// in `TARGET`. One `haxmeta` file is produced by crate. Each
 /// `haxmeta` file contains the full AST of one crate.
 fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
+    let frontend_options = ExporterOptions::from(options);
     let mut cmd = {
         let mut cmd = process::Command::new("cargo");
         if let Some(toolchain) = toolchain() {
@@ -536,7 +537,7 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
             .env("HAX_CARGO_CACHE_KEY", get_hax_version())
             .env(
                 ENV_VAR_OPTIONS_FRONTEND,
-                serde_json::to_string(&options)
+                serde_json::to_string(&frontend_options)
                     .expect("Options could not be converted to a JSON string"),
             );
         cmd
@@ -660,20 +661,20 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
 fn main() {
     let args: Vec<String> = get_args("hax");
     let mut options = match &args[..] {
-        [_, kw] if kw == "__json" => serde_json::from_str(
-            &std::env::var(ENV_VAR_OPTIONS_FRONTEND).unwrap_or_else(|_| {
+        [_, kw] if kw == "__json" => {
+            serde_json::from_str(&std::env::var(ENV_VAR_OPTIONS_FULL).unwrap_or_else(|_| {
                 panic!(
                     "Cannot find environnement variable {}",
-                    ENV_VAR_OPTIONS_FRONTEND
+                    ENV_VAR_OPTIONS_FULL
                 )
-            }),
-        )
-        .unwrap_or_else(|_| {
-            panic!(
-                "Invalid value for the environnement variable {}",
-                ENV_VAR_OPTIONS_FRONTEND
-            )
-        }),
+            }))
+            .unwrap_or_else(|_| {
+                panic!(
+                    "Invalid value for the environnement variable {}",
+                    ENV_VAR_OPTIONS_FULL
+                )
+            })
+        }
         _ => Options::parse_from(args.iter()),
     };
     options.normalize_paths();
