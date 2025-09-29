@@ -463,25 +463,6 @@ pub enum ExportBodyKind {
     long_about = None
 )]
 pub struct ExtensibleOptions<E: Extension> {
-    /// Replace the expansion of each macro matching PATTERN by their
-    /// invocation. PATTERN denotes a rust path (i.e. `A::B::c`) in
-    /// which glob patterns are allowed. The glob pattern * matches
-    /// any name, the glob pattern ** matches zero, one or more
-    /// names. For instance, `A::B::C::D::X` and `A::E::F::D::Y`
-    /// matches `A::**::D::*`.
-    #[arg(
-        short = 'i',
-        long = "inline-macro-call",
-        value_name = "PATTERN",
-        value_parser,
-        value_delimiter = ',',
-        default_values = [
-            "hacspec_lib::array::array", "hacspec_lib::array::public_bytes", "hacspec_lib::array::bytes",
-            "hacspec_lib::math_integers::public_nat_mod", "hacspec_lib::math_integers::unsigned_public_integer",
-        ],
-    )]
-    pub inline_macro_calls: Vec<Namespace>,
-
     /// Semi-colon terminated list of arguments to pass to the
     /// `cargo build` invocation. For example, to apply this
     /// program on a package `foo`, use `-C -p foo ;`. (make sure
