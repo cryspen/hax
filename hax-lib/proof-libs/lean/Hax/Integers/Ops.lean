@@ -49,7 +49,7 @@ class HaxMul α where
 enables the notation `a /? b : Result α` where `a b : α`. For now, there is no
 heterogeneous version -/
 class HaxDiv α where
-  /-- `a -? b` computes the panicking multiplication of `a` and `b`.  The
+  /-- `a /? b` computes the panicking division of `a` and `b`.  The
   meaning of this notation is type-dependent. -/
   div : α → α → Result α
 
