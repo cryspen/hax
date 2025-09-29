@@ -534,6 +534,7 @@ impl From<Options> for hax_frontend_exporter_options::Options {
 pub struct ExporterOptions {
     pub deps: bool,
     pub force_cargo_build: ForceCargoBuild,
+    /// When exporting, the driver sets `--cfg hax_backend_{backkend}`, thus we need this information.
     pub backend: Option<BackendName>,
     pub body_kinds: Vec<ExportBodyKind>,
 }
