@@ -29,7 +29,7 @@ class HaxAdd α where
   notation is type-dependent. -/
   add : α → α → Result α
 
-/-- The notation typeclass for homogeneous substraction that returns a Result.
+/-- The notation typeclass for homogeneous subtraction that returns a Result.
 This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
 no heterogeneous version -/
 class HaxSub α where
