@@ -9,7 +9,7 @@ The processes described here is not to pester you but to increase and maintain c
 
 We use issues to organise and prioritise work items.
 
-**Assignee meaning in issues:** The assignee is the person responsible for addressing the issue and is typically the one actively working on it.
+**Assignee meaning in issues:** The assignee is the person responsible for following up on the issue (making sure it eventually gets addressed). It is usually (but not necessarily) the one working on it.
 
 After picking up an issue, create a branch.
 There can be any number of branches and pull requests for one issue.
