@@ -600,7 +600,7 @@ set_option linter.unusedVariables false
         }
 
         fn pat(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
-            docs![pat.kind()] //, reflow!(" : "), &pat.ty].parens().group()
+            docs![pat.kind()]
         }
 
         fn pat_kind(&'a self, pat_kind: &'b PatKind) -> DocBuilder<'a, Self, A> {
