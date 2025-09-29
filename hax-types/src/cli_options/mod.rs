@@ -341,6 +341,12 @@ pub struct BackendOptions<E: Extension> {
     #[arg(long)]
     pub profile: bool,
 
+    /// Prune everything which is not under the top-level module name provided just before calling the engine.
+    /// This will effectively remove all items that don't match `*::<prune_haxmetadata>::**`.
+    #[arg(long)]
+    #[clap(hide = true)]
+    pub prune_haxmeta: Option<String>,
+
     /// Enable engine debugging: dumps the AST at each phase.
     ///
     /// The value of `<DEBUG_ENGINE>` can be either:

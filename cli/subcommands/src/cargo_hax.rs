@@ -647,8 +647,28 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
                 path,
             } in haxmeta_files
             {
-                let (haxmeta, id_table): (HaxMeta<Body>, _) =
+                let (mut haxmeta, id_table): (HaxMeta<Body>, _) =
                     HaxMeta::read(fs::File::open(&path).unwrap());
+
+                if let Some(root_module) = &backend.prune_haxmeta {
+                    use hax_frontend_exporter::{DefPathItem, DisambiguatedDefPathItem, IsBody};
+
+                    /// Remove every item from an `HaxMeta` whose path is not `*::<root_module>::**`, where `root_module` is a string.
+                    fn prune_haxmeta<B: IsBody>(haxmeta: &mut HaxMeta<B>, root_module: &str) {
+                        haxmeta.items.retain(|item| match &item.owner_id.path[..] {
+                            [] => true,
+                            [
+                                DisambiguatedDefPathItem {
+                                    data: DefPathItem::TypeNs(s),
+                                    disambiguator: 0,
+                                },
+                                ..,
+                            ] => s == root_module,
+                            _ => false,
+                        })
+                    }
+                    prune_haxmeta(&mut haxmeta, root_module.as_str())
+                }
 
                 error = error
                     || run_engine(
