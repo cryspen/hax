@@ -21,7 +21,7 @@ If there are multiple PRs for an issue, make sure this is clear in the pull requ
 
 We use the GitHub-based PR workflow.
 When starting to work on an issue, create a branch and an according pull request that fixes the issue.
-The changeset in a pull request must not be larger than 1000 lines.
+The changeset in a pull request must not be larger than 1000 lines (with some exceptions for test snapshots or generated code).
 If an issue needs more work than that, split it into multiple pull requests.
 
 After submitting the pull request, verify that all [status checks](https://help.github.com/articles/about-status-checks/) are passing before asking for review.
