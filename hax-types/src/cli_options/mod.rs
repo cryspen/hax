@@ -423,6 +423,29 @@ pub enum Command<E: Extension> {
         include_extra: bool,
     },
 
+    /// Export to a `haxmeta` file, the internal binary format used by hax to
+    /// store the ASTs produced by the hax exporter.
+    #[clap(name = "haxmeta", hide = true)]
+    HaxMeta {
+        /// Whether the bodies are exported as THIR, built MIR, const
+        /// MIR, or a combination. Repeat this option to extract a
+        /// combination (e.g. `-k thir -k mir-built`). Pass `--kind`
+        /// alone with no value to disable body extraction.
+        #[arg(
+            value_enum,
+            short,
+            long = "kind",
+            num_args = 0..=3,
+            default_values_t = [ExportBodyKind::Thir]
+        )]
+        kind: Vec<ExportBodyKind>,
+
+        /// When extracting to a given backend, the exporter is called with different `cfg` options.
+        /// This option allows to set the same flags as `cargo hax into` would pick.
+        #[arg(short)]
+        backend: Option<BackendName>,
+    },
+
     #[command(flatten)]
     CliExtension(E::Command),
 }
@@ -431,7 +454,16 @@ impl<E: Extension> Command<E> {
     pub fn body_kinds(&self) -> Vec<ExportBodyKind> {
         match self {
             Command::JSON { kind, .. } => kind.clone(),
-            _ => vec![ExportBodyKind::Thir],
+            Command::HaxMeta { kind, .. } => kind.clone(),
+            Command::Backend { .. } | Command::CliExtension { .. } => vec![ExportBodyKind::Thir],
+        }
+    }
+    pub fn backend_name(&self) -> Option<BackendName> {
+        match self {
+            Command::Backend(backend_options) => Some((&backend_options.backend).into()),
+            Command::JSON { .. } => None,
+            Command::HaxMeta { backend, .. } => backend.clone(),
+            Command::CliExtension(_) => None,
         }
     }
 }
@@ -540,7 +572,7 @@ pub struct ExporterOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone, Copy)]
+#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy)]
 pub enum BackendName {
     Fstar,
     Coq,
@@ -570,22 +602,17 @@ impl fmt::Display for BackendName {
 
 impl From<&Options> for ExporterOptions {
     fn from(options: &Options) -> Self {
-        let backend = match &options.command {
-            Command::Backend(backend_options) => Some((&backend_options.backend).into()),
-            _ => None,
-        };
-        let body_kinds = options.command.body_kinds();
         ExporterOptions {
             deps: options.deps,
             force_cargo_build: options.force_cargo_build.clone(),
-            backend,
-            body_kinds,
+            backend: options.command.backend_name(),
+            body_kinds: options.command.body_kinds(),
         }
     }
 }
 
-impl From<&Backend<()>> for BackendName {
-    fn from(backend: &Backend<()>) -> Self {
+impl<E: Extension> From<&Backend<E>> for BackendName {
+    fn from(backend: &Backend<E>) -> Self {
         match backend {
             Backend::Fstar { .. } => BackendName::Fstar,
             Backend::Coq { .. } => BackendName::Coq,
