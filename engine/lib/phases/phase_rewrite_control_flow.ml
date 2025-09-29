@@ -72,7 +72,7 @@ module Make (F : Features.T) =
               let arms =
                 [
                   MS.arm
-                    (mk_cf_pat `Break (U.make_var_pat id typ span))
+                    (mk_cf_pat `Break (U.make_var_pat id return_type span))
                     return_expr;
                   MS.arm (mk_cf_pat `Continue pat)
                     (U.make_lets stmts_after final |> self#visit_expr in_loop);

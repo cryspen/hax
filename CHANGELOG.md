@@ -39,6 +39,9 @@ Change to cargo-hax:
 Changes to hax-lib:
 - New behavior for `hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
 
+Changes to the Lean backend:
+- Improve support for functionalized loops (#1695)
+
 Miscellaneous:
  - A lean tutorial has been added to the hax website (#1626)
  - Add end-to-end tests for the website (#1690)
