@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub enum HaxMessage {
     Diagnostic {
         diagnostic: super::Diagnostics,
-        working_dir: PathBuf,
+        working_dir: Option<PathBuf>,
     } = 254,
     EngineNotFound {
         is_opam_setup_correctly: bool,

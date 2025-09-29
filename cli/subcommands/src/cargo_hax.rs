@@ -169,9 +169,12 @@ impl HaxMessage {
             } => {
                 let mut _rctx = None;
                 let rctx = rctx.unwrap_or_else(|| _rctx.get_or_insert(ReportCtx::default()));
-                diagnostic.with_message(rctx, &working_dir, Level::Error, |msg| {
-                    eprintln!("{}", renderer.render(msg))
-                });
+                diagnostic.with_message(
+                    rctx,
+                    working_dir.as_ref().map(PathBuf::as_path),
+                    Level::Error,
+                    |msg| eprintln!("{}", renderer.render(msg)),
+                );
             }
             Self::EngineNotFound {
                 is_opam_setup_correctly,
@@ -258,8 +261,8 @@ impl HaxMessage {
 fn run_engine(
     haxmeta: HaxMeta<hax_frontend_exporter::ThirBody>,
     id_table: id_table::Table,
-    working_dir: PathBuf,
-    manifest_dir: PathBuf,
+    working_dir: Option<PathBuf>,
+    manifest_dir: Option<PathBuf>,
     backend: &BackendOptions<()>,
     message_format: MessageFormat,
 ) -> bool {
@@ -326,7 +329,9 @@ fn run_engine(
             ]
             .iter()
             .collect();
-            manifest_dir.join(&relative_path)
+            manifest_dir
+                .map(|manifest_dir| manifest_dir.join(&relative_path))
+                .unwrap_or(relative_path)
         });
 
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());
@@ -371,10 +376,12 @@ fn run_engine(
                                 .iter()
                                 .map(PathBuf::from)
                                 .map(|path| {
-                                    if path.is_absolute() {
-                                        path
-                                    } else {
+                                    if let Some(working_dir) = working_dir.as_ref()
+                                        && path.is_relative()
+                                    {
                                         working_dir.join(path).to_path_buf()
+                                    } else {
+                                        path
                                     }
                                 })
                                 .map(|path| fs::read_to_string(path).ok())
