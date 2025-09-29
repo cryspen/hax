@@ -507,6 +507,12 @@ pub struct ExtensibleOptions<E: Extension> {
     #[arg(long = "deps")]
     pub deps: bool,
 
+    /// Give explicitely a precomputed haxmeta file.
+    /// Setting this option bypass rustc and the exporter altogether.
+    #[arg(long)]
+    #[clap(hide = true)]
+    pub haxmeta: Option<PathBuf>,
+
     /// By default, hax uses `$CARGO_TARGET_DIR/hax` as target folder,
     /// to avoid recompilation when working both with `cargo hax` and
     /// `cargo build` (or, e.g. `rust-analyzer`). This option disables

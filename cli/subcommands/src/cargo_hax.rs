@@ -692,7 +692,20 @@ fn main() {
     };
     options.normalize_paths();
 
-    let (haxmeta_files, exit_code) = compute_haxmeta_files(&options);
+    let (haxmeta_files, exit_code) = options
+        .haxmeta
+        .clone()
+        .map(|path| {
+            (
+                vec![EmitHaxMetaMessage {
+                    working_dir: None,
+                    manifest_dir: None,
+                    path,
+                }],
+                0,
+            )
+        })
+        .unwrap_or_else(|| compute_haxmeta_files(&options));
     let error = run_command(&options, haxmeta_files);
 
     std::process::exit(if exit_code == 0 && error {
