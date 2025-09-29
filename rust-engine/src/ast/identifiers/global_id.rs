@@ -323,6 +323,18 @@ impl GlobalId {
         self.0.get().is_projector()
     }
 
+    /// Returns true if the underlying identifier is a precondition (trait/impl item)
+    /// Should be removed once https://github.com/cryspen/hax/issues/1646 has been fixed
+    pub fn is_precondition(self) -> bool {
+        self.0.get().is_precondition()
+    }
+
+    /// Returns true if the underlying identifier is a postcondition (trait/impl item)
+    /// Should be removed once https://github.com/cryspen/hax/issues/1646 has been fixed
+    pub fn is_postcondition(self) -> bool {
+        self.0.get().is_postcondition()
+    }
+
     /// Renders a view of the concrete identifier.
     pub fn view(self) -> view::View {
         ConcreteId::from_global_id(self).view()
@@ -379,6 +391,18 @@ impl GlobalIdInner {
             GlobalIdInner::Tuple(TupleId::Field { .. }) => true,
             _ => false,
         }
+    }
+
+    /// Returns true if the underlying identifier has the precondition suffix
+    /// Should be removed once https://github.com/cryspen/hax/issues/1646 has been fixed
+    pub fn is_precondition(&self) -> bool {
+        matches!(self, GlobalIdInner::Concrete(concrete_id) if matches!(concrete_id.suffix, Some(ReservedSuffix::Pre)))
+    }
+
+    /// Returns true if the underlying identifier has the postcondition suffix
+    /// Should be removed once https://github.com/cryspen/hax/issues/1646 has been fixed
+    pub fn is_postcondition(&self) -> bool {
+        matches!(self, GlobalIdInner::Concrete(concrete_id) if matches!(concrete_id.suffix, Some(ReservedSuffix::Post)))
     }
 }
 

@@ -143,3 +143,22 @@ fn normal_structs() -> () {
         } => {}
     }
 }
+
+mod miscellaneous {
+    struct S {
+        f: i32,
+    }
+
+    fn test_tuples() -> (i32, i32) {
+        let lit = 1;
+        let constr = S { f: 42 };
+        let proj = constr.f;
+        let ite = if true {
+            (1, 2)
+        } else {
+            let z = 1 + 2;
+            (z, z)
+        };
+        (1, 2)
+    }
+}
