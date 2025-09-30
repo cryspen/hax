@@ -341,8 +341,10 @@ pub struct BackendOptions<E: Extension> {
     #[arg(long)]
     pub profile: bool,
 
-    /// Prune everything which is not under the top-level module name provided just before calling the engine.
+    /// Prune Rust items that are not under the provided top-level module name.
     /// This will effectively remove all items that don't match `*::<prune_haxmetadata>::**`.
+    /// This prunning occurs directly on the `haxmeta` file, in the frontend.
+    /// This is independent from any engine options.
     #[arg(long)]
     #[clap(hide = true)]
     pub prune_haxmeta: Option<String>,
