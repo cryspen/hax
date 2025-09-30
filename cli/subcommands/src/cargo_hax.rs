@@ -682,7 +682,7 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
             }
             error
         }
-        Command::HaxMeta { .. } => {
+        Command::Serialize { .. } => {
             for EmitHaxMetaMessage { path, .. } in haxmeta_files {
                 HaxMessage::ProducedFile { path, wrote: true }.report(options.message_format, None);
             }

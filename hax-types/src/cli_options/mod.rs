@@ -431,10 +431,10 @@ pub enum Command<E: Extension> {
         include_extra: bool,
     },
 
-    /// Export to a `haxmeta` file, the internal binary format used by hax to
+    /// Serialize to a `haxmeta` file, the internal binary format used by hax to
     /// store the ASTs produced by the hax exporter.
-    #[clap(name = "haxmeta", hide = true)]
-    HaxMeta {
+    #[clap(hide = true)]
+    Serialize {
         /// Whether the bodies are exported as THIR, built MIR, const
         /// MIR, or a combination. Repeat this option to extract a
         /// combination (e.g. `-k thir -k mir-built`). Pass `--kind`
@@ -462,7 +462,7 @@ impl<E: Extension> Command<E> {
     pub fn body_kinds(&self) -> Vec<ExportBodyKind> {
         match self {
             Command::JSON { kind, .. } => kind.clone(),
-            Command::HaxMeta { kind, .. } => kind.clone(),
+            Command::Serialize { kind, .. } => kind.clone(),
             Command::Backend { .. } | Command::CliExtension { .. } => vec![ExportBodyKind::Thir],
         }
     }
@@ -470,7 +470,7 @@ impl<E: Extension> Command<E> {
         match self {
             Command::Backend(backend_options) => Some((&backend_options.backend).into()),
             Command::JSON { .. } => None,
-            Command::HaxMeta { backend, .. } => backend.clone(),
+            Command::Serialize { backend, .. } => backend.clone(),
             Command::CliExtension(_) => None,
         }
     }
