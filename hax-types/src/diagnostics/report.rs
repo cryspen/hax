@@ -42,7 +42,7 @@ impl Diagnostics {
     pub fn with_message<R, F: for<'a> FnMut(Message<'a>) -> R>(
         &self,
         report_ctx: &mut ReportCtx,
-        working_dir: &Path,
+        working_dir: Option<&Path>,
         level: Level,
         mut then: F,
     ) -> R {
@@ -52,7 +52,9 @@ impl Diagnostics {
             if let Some(path) = span.filename.to_path() {
                 let source = {
                     let mut path = path.to_path_buf();
-                    if path.is_relative() {
+                    if let Some(working_dir) = working_dir
+                        && path.is_relative()
+                    {
                         path = working_dir.join(&path);
                     };
                     report_ctx.file_contents(path)

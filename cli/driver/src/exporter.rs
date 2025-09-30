@@ -152,11 +152,12 @@ impl Callbacks for ExtractionCallbacks {
         let manifest_dir = std::path::Path::new(&manifest_dir);
 
         let data = hax_types::driver_api::EmitHaxMetaMessage {
-            manifest_dir: manifest_dir.to_path_buf(),
-            working_dir: opts
-                .working_dir
-                .to_path(rustc_span::FileNameDisplayPreference::Local)
-                .to_path_buf(),
+            manifest_dir: Some(manifest_dir.to_path_buf()),
+            working_dir: Some(
+                opts.working_dir
+                    .to_path(rustc_span::FileNameDisplayPreference::Local)
+                    .to_path_buf(),
+            ),
             path: haxmeta_path,
         };
         eprintln!(

@@ -35,6 +35,7 @@ Changes to the frontend:
 
 Change to cargo-hax:
 - Improve the caching of rustc when using `cargo hax` commands (#1719)
+- Add hidden commands and flags to explicitly manipulate `haxmeta` files (#1722)
 
 Changes to hax-lib:
 - New behavior for `hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
