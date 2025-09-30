@@ -1,0 +1,43 @@
+
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
+
+structure Tests.Rustc_tests__generic_unused_impl.W (T : Type) where
+  _0 : T
+
+def Tests.Rustc_tests__generic_unused_impl.main
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  Rust_primitives.Hax.Tuple0.mk
+
+class Tests.Rustc_tests__generic_unused_impl.Foo (Self : Type) where
+  Assoc : Type
+  _from : Assoc -> Result Self
+
+instance Tests.Rustc_tests__generic_unused_impl.Impl
+  (T : Type) [(Tests.Rustc_tests__generic_unused_impl.Foo T)] :
+  Core.Convert.From
+  (Tests.Rustc_tests__generic_unused_impl.W T)
+  (RustArray TODO_LINE_701 (1 : usize))
+  where
+  _from (_from : (RustArray TODO_LINE_701 (1 : usize))) := do
+    (← Rust_primitives.Hax.failure
+        "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/804.
+Please upvote or comment this issue if you see this error message.
+Pat:Array
+
+This is discussed in issue https://github.com/hacspec/hax/issues/804.
+Please upvote or comment this issue if you see this error message.
+Note: the error was labeled with context `AST import`.
+"
+        "")

@@ -1,3 +1,9 @@
+use std::{
+    fs::OpenOptions,
+    io::{BufWriter, Write},
+    time::Instant,
+};
+
 use crate::prelude::*;
 
 pub const HAX_DRIVER_STDERR_PREFIX: &str = "::hax-driver::";

@@ -8,7 +8,7 @@ pub mod extension;
 use extension::Extension;
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Eq, PartialEq)]
 pub enum DebugEngineMode {
     File(PathOrDash),
     Interactive,
@@ -45,7 +45,7 @@ impl std::convert::From<&str> for ForceCargoBuild {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Eq, PartialEq)]
 pub enum PathOrDash {
     Dash,
     Path(PathBuf),
@@ -111,7 +111,7 @@ impl NormalizePaths for PathOrDash {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct ProVerifOptions {
     /// Items for which hax should extract a default-valued process
     /// macro with a corresponding type signature. This flag expects a
@@ -131,7 +131,7 @@ pub struct ProVerifOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct FStarOptions<E: Extension> {
     /// Set the Z3 per-query resource limit
     #[arg(long, default_value = "15")]
@@ -170,7 +170,7 @@ pub struct FStarOptions<E: Extension> {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
 pub enum Backend<E: Extension> {
     /// Use the F* backend
     Fstar(FStarOptions<E>),
@@ -200,7 +200,7 @@ impl fmt::Display for Backend<()> {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Eq, PartialEq)]
 pub enum DepsKind {
     Transitive,
     Shallow,
@@ -208,7 +208,7 @@ pub enum DepsKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Eq, PartialEq)]
 pub enum InclusionKind {
     /// `+query` include the items selected by `query`
     Included(DepsKind),
@@ -217,7 +217,7 @@ pub enum InclusionKind {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Debug, Clone)]
+#[derive(JsonSchema, Debug, Clone, Eq, PartialEq)]
 pub struct InclusionClause {
     pub kind: InclusionKind,
     pub namespace: Namespace,
@@ -273,7 +273,7 @@ pub fn parse_inclusion_clause(
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct TranslationOptions {
     /// Controls which Rust item should be extracted or not.
     ///
@@ -317,7 +317,7 @@ pub struct TranslationOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Parser, Debug, Clone)]
+#[derive(JsonSchema, Parser, Debug, Clone, Eq, PartialEq)]
 pub struct BackendOptions<E: Extension> {
     #[command(subcommand)]
     pub backend: Backend<E>,
@@ -388,7 +388,7 @@ pub struct BackendOptions<E: Extension> {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, Subcommand, Debug, Clone)]
+#[derive(JsonSchema, Subcommand, Debug, Clone, Eq, PartialEq)]
 pub enum Command<E: Extension> {
     /// Translate to a backend. The translated modules will be written
     /// under the directory `<PKG>/proofs/<BACKEND>/extraction`, where
@@ -586,7 +586,7 @@ pub struct ExporterOptions {
 }
 
 #[derive_group(Serializers)]
-#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy)]
+#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BackendName {
     Fstar,
     Coq,
@@ -596,6 +596,22 @@ pub enum BackendName {
     Lean,
     Rust,
     GenerateRustEngineNames,
+}
+
+impl BackendName {
+    pub fn iter() -> impl Iterator<Item = Self> {
+        [
+            Self::Fstar,
+            Self::Coq,
+            Self::Ssprove,
+            Self::Easycrypt,
+            Self::ProVerif,
+            Self::Lean,
+            Self::Rust,
+            Self::GenerateRustEngineNames,
+        ]
+        .into_iter()
+    }
 }
 
 impl fmt::Display for BackendName {

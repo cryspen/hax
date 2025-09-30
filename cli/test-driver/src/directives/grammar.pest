@@ -1,0 +1,21 @@
+WHITESPACE = _{ " " | "\t" }
+NEWLINE = _{ "\n" | "\r\n" }
+
+directive = { SOI ~ (NEWLINE)* ~ (cli | backend_directive | off | fail) ~ (NEWLINE)* ~ EOI }
+
+cli = { "@" ~ "cli" ~ ":" ~ line_text? }
+
+backend_directive = { "@" ~ "backend" ~ "(" ~ backend ~ ")" ~ ":" ~ line_text? }
+
+off = { "@" ~ "off" ~ ":" ~ backend ~ ("," ~ backend)* }
+
+fail = { "@" ~ "fail" ~ "(" ~ fail_kind ~ ")" ~ ":" ~ backend_fail ~ ("," ~ backend_fail)* }
+
+backend_fail = { backend ~ "(" ~ errcode ~ ("," ~ errcode)* ~ ")" }
+
+backend = @{ ASCII_ALPHANUMERIC+ ~ ("-" ~ ASCII_ALPHANUMERIC+)* }
+errcode = @{ ASCII_ALPHANUMERIC+ }
+
+fail_kind = @{ "tc" | "extraction" }
+
+line_text = { (!NEWLINE ~ ANY)* }
