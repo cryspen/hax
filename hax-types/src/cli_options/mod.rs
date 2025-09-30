@@ -513,8 +513,8 @@ pub struct ExtensibleOptions<E: Extension> {
     #[arg(long = "deps")]
     pub deps: bool,
 
-    /// Give explicitely a precomputed haxmeta file.
-    /// Setting this option bypass rustc and the exporter altogether.
+    /// Provide a precomputed haxmeta file explicitly.
+    /// Setting this option bypasses rustc and the exporter altogether.
     #[arg(long)]
     #[clap(hide = true)]
     pub haxmeta: Option<PathBuf>,
