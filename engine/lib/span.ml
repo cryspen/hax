@@ -100,7 +100,7 @@ let owner_id_list = ref []
 let owner_id_list_len = ref 0
 
 let fresh_owner_id (owner : Types.def_id) : owner_id =
-  let next_id = OwnerId (List.length !owner_id_list) in
+  let next_id = OwnerId !owner_id_list_len in
   owner_id_list := owner :: !owner_id_list;
   owner_id_list_len := !owner_id_list_len + 1;
   next_id
