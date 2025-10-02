@@ -328,7 +328,7 @@ pub enum FullDefKind<Body> {
         /// The function signature when this method is used in a vtable. `None` if this method is not
         /// vtable safe. `Some(sig)` if it is vtable safe, where `sig` is the trait method declaration's
         /// signature with `Self` replaced by `dyn Trait` and associated types normalized.
-        dyn_sig: Option<PolyFnSig>,
+        vtable_sig: Option<PolyFnSig>,
         sig: PolyFnSig,
         body: Option<Body>,
     },
@@ -426,7 +426,7 @@ pub enum FullDefKind<Body> {
 }
 
 #[cfg(feature = "rustc")]
-fn gen_dyn_sig<'tcx>(
+fn gen_vtable_sig<'tcx>(
     // The state that owns the method DefId
     assoc_method_s: &StateWithOwner<'tcx>,
     args: Option<ty::GenericArgsRef<'tcx>>,
@@ -760,7 +760,7 @@ where
                 associated_item: AssocItem::sfrom_instantiated(s, &item, args),
                 inline: tcx.codegen_fn_attrs(def_id).inline.sinto(s),
                 is_const: tcx.constness(def_id) == rustc_hir::Constness::Const,
-                dyn_sig: gen_dyn_sig(s, args),
+                vtable_sig: gen_vtable_sig(s, args),
                 sig: get_method_sig(tcx, s.typing_env(), def_id, args).sinto(s),
                 body: get_body(s, args),
             }
