@@ -9,19 +9,24 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
-From Core Require Import Core_Marker.
-Export Core_Marker.
-
-Record t_Range (v_Idx : Type) `{t_Sized (v_Idx)} : Type :=
+Record RangeFull_RangeFull_record : Type :=
   {
-    Range_f_start : v_Idx;
-    Range_f_end : v_Idx;
   }.
-Arguments Build_t_Range (_) {_}.
-Arguments Range_f_start {_} {_}.
-Arguments Range_f_end {_} {_}.
-#[export] Instance settable_t_Range `{v_Idx : Type} `{t_Sized (v_Idx)} : Settable _ :=
-  settable! (Build_t_Range v_Idx) <Range_f_start; Range_f_end>.
+
+#[export]
+Notation "'RangeFull_RangeFull_record'" := Build_RangeFull_RangeFull_record.
+
+Record Range_Range_record (v_Idx : Type) `{Core_Marker.t_Sized (v_Idx)} : Type :=
+  {
+    Range_Range_f_Range_start : v_Idx;
+    Range_Range_f_Range_end : v_Idx;
+  }.
+Arguments Build_Range_Range_record {_} {_}.
+Arguments Range_Range_f_Range_start {_} {_}.
+Arguments Range_Range_f_Range_end {_} {_}.
+#[export] Instance settable_Range_Range_record `{v_Idx : Type} `{Core_Marker.t_Sized (v_Idx)} : Settable _ :=
+  settable! (Build_Range_Range_record (v_Idx := v_Idx)) <Range_Range_f_Range_start; Range_Range_f_Range_end>.

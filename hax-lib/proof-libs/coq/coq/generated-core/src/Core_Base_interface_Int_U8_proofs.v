@@ -9,77 +9,128 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
+(* NotImplementedYet *)
 
-(* TODO: Replace this dummy lib with core lib *)
-Class t_Sized (T : Type) := { }.
-Definition t_u8 := Z.
-Definition t_u16 := Z.
-Definition t_u32 := Z.
-Definition t_u64 := Z.
-Definition t_u128 := Z.
-Definition t_usize := Z.
-Definition t_i8 := Z.
-Definition t_i16 := Z.
-Definition t_i32 := Z.
-Definition t_i64 := Z.
-Definition t_i128 := Z.
-Definition t_isize := Z.
-Definition t_Array T (x : t_usize) := list T.
-Definition t_String := string.
-Definition ToString_f_to_string (x : string) := x.
-Instance Sized_any : forall {t_A}, t_Sized t_A := {}.
-Class t_Clone (T : Type) := { Clone_f_clone : T -> T }.
-Instance Clone_any : forall {t_A}, t_Clone t_A := {Clone_f_clone := fun x => x}.
-Definition t_Slice (T : Type) := list T.
-Definition unsize {T : Type} : list T -> t_Slice T := id.
-Definition t_PartialEq_f_eq x y := x =? y.
-Definition t_Rem_f_rem (x y : Z) := x mod y.
-Definition assert (b : bool) (* `{H_assert : b = true} *) : unit := tt.
-Inductive globality := | t_Global.
-Definition t_Vec T (_ : globality) : Type := list T.
-Definition impl_1__append {T} l1 l2 : list T * list T := (app l1 l2, l2).
-Definition impl_1__len {A} (l : list A) := Z.of_nat (List.length l).
-Definition impl__new {A} (_ : Datatypes.unit) : list A := nil.
-Definition impl__with_capacity {A} (_ : Z)  : list A := nil.
-Definition impl_1__push {A} l (x : A) := cons x l.
-Class t_From (A B : Type) := { From_f_from : B -> A }.
-Definition impl__to_vec {T} (x : t_Slice T) : t_Vec T t_Global := x.
-Class t_Into (A B : Type) := { Into_f_into : A -> B }.
-Instance t_Into_from_t_From {A B : Type} `{H : t_From B A} : t_Into A B := { Into_f_into x := @From_f_from B A H x }.
-Definition from_elem {A} (x : A) (l : Z) := repeat x (Z.to_nat l).
-Definition t_Option := option.
-Definition impl__map {A B} (x : t_Option A) (f : A -> B) : t_Option B := match x with | Some x => Some (f x) | None => None end.
-Definition t_Add_f_add x y := x + y.
-Class Cast A B := { cast : A -> B }.
-Instance cast_t_u8_t_u32 : Cast t_u8 t_u32 := {| cast x := x |}.
-(* / dummy lib *)
 
-From Core Require Import Core_Base_interface_Int.
-Export Core_Base_interface_Int.
 
-Lemma abstract_concretize_cancel (x : t_U8) :
+Lemma abstract_concretize_cancel (x : Core_Base_interface_Int.t_U8) :
    ->
-  PartialEq_f_eq (Concretization_f_concretize (Abstraction_f_lift (Clone_f_clone (x)))) (x) = true.
+  Core_Cmp.PartialEq__f_eq (Core_Base_interface_Coerce.Concretization__f_concretize (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (x)))) (x) = true.
 Proof. Admitted.
 
-Lemma mod_add (x : t_U8) (y : t_U8) (z : t_U8) :
+Lemma addC (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) :
    ->
-  orb (haxint_le (v_WORDSIZE_8_) (haxint_add (Abstraction_f_lift (Clone_f_clone (x))) (Abstraction_f_lift (Clone_f_clone (y))))) (PartialEq_f_eq (Rem_f_rem (Add_f_add (Clone_f_clone (x)) (Clone_f_clone (y))) (Clone_f_clone (z))) (Rem_f_rem (Add_f_add (Rem_f_rem (x) (Clone_f_clone (z))) (Rem_f_rem (y) (Clone_f_clone (z)))) (z))) = true.
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Ops_Arith.Add__f_add (y) (x)) = true.
 Proof. Admitted.
 
-Lemma mod_mul (x : t_U8) (y : t_U8) (z : t_U8) :
+Lemma addA (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
    ->
-  orb (haxint_lt (v_WORDSIZE_8_) (haxint_mul (Abstraction_f_lift (Clone_f_clone (x))) (Abstraction_f_lift (Clone_f_clone (y))))) (PartialEq_f_eq (Rem_f_rem (Mul_f_mul (Clone_f_clone (x)) (Clone_f_clone (y))) (Clone_f_clone (z))) (Rem_f_rem (Rem_f_rem (Mul_f_mul (Rem_f_rem (x) (Clone_f_clone (z))) (y)) (Clone_f_clone (z))) (z))) = true.
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (y)) (Core_Clone.Clone__f_clone (z)))) (Core_Ops_Arith.Add__f_add (Core_Ops_Arith.Add__f_add (x) (y)) (z)) = true.
 Proof. Admitted.
 
-Lemma mod_one (x : t_U8) :
+Lemma add_0_r (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
    ->
-  PartialEq_f_eq (Rem_f_rem (x) (Constants_f_ONE)) (Constants_f_ZERO) = true.
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (x)) (Core_Base_interface_Int.Constants__f_ZERO)) (x) = true.
 Proof. Admitted.
 
-Lemma mod_sub (x : t_U8) (y : t_U8) (z : t_U8) :
+Lemma add_0_l (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
    ->
-  orb (orb (PartialOrd_f_lt (Clone_f_clone (x)) (Clone_f_clone (y))) (PartialOrd_f_le (Clone_f_clone (z)) (Clone_f_clone (x)))) (PartialEq_f_eq (Rem_f_rem (Sub_f_sub (Clone_f_clone (x)) (Clone_f_clone (y))) (Clone_f_clone (z))) (Rem_f_rem (Sub_f_sub (Rem_f_rem (x) (Clone_f_clone (z))) (Rem_f_rem (y) (Clone_f_clone (z)))) (z))) = true.
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Add__f_add (Core_Base_interface_Int.Constants__f_ZERO) (Core_Clone.Clone__f_clone (x))) (x) = true.
+Proof. Admitted.
+
+Lemma neg_idemp (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Neg__f_neg (Core_Ops_Arith.Neg__f_neg (Core_Clone.Clone__f_clone (x)))) (x) = true.
+Proof. Admitted.
+
+Lemma sub_is (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Ops_Arith.Add__f_add (x) (Core_Ops_Arith.Neg__f_neg (y))) = true.
+Proof. Admitted.
+
+Lemma sub_distr (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (y)) (Core_Clone.Clone__f_clone (z)))) (Core_Ops_Arith.Add__f_add (x) (Core_Ops_Arith.Add__f_add (Core_Ops_Arith.Neg__f_neg (y)) (Core_Ops_Arith.Neg__f_neg (z)))) = true.
+Proof. Admitted.
+
+Lemma addN (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (x)) (x)) (Core_Base_interface_Int.Constants__f_ZERO) = true.
+Proof. Admitted.
+
+Lemma mul_1_r (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (x)) (Core_Base_interface_Int.Constants__f_ONE)) (x) = true.
+Proof. Admitted.
+
+Lemma mul_1_l (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Mul__f_mul (Core_Base_interface_Int.Constants__f_ONE) (Core_Clone.Clone__f_clone (x))) (x) = true.
+Proof. Admitted.
+
+Lemma mulC (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Ops_Arith.Mul__f_mul (y) (x)) = true.
+Proof. Admitted.
+
+Lemma mulA (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (y)) (Core_Clone.Clone__f_clone (z)))) (Core_Ops_Arith.Mul__f_mul (Core_Ops_Arith.Mul__f_mul (x) (y)) (z)) = true.
+Proof. Admitted.
+
+Lemma mul_distr (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (y)) (Core_Clone.Clone__f_clone (z)))) (Core_Ops_Arith.Add__f_add (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (x)) (y)) (Core_Ops_Arith.Mul__f_mul (x) (z))) = true.
+Proof. Admitted.
+
+Lemma mul_opp (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Neg__f_neg (Core_Clone.Clone__f_clone (x))) (Core_Ops_Arith.Mul__f_mul (Core_Ops_Arith.Neg__f_neg (Core_Base_interface_Int.Constants__f_ONE)) (x)) = true.
+Proof. Admitted.
+
+Lemma div_1_r (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Div__f_div (Core_Clone.Clone__f_clone (x)) (Core_Base_interface_Int.Constants__f_ONE)) (x) = true.
+Proof. Admitted.
+
+Lemma shl_1_ (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Bit.Shl__f_shl (Core_Clone.Clone__f_clone (x)) (Core_Base_interface_Int.Constants__f_ONE)) (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (x)) (x)) = true.
+Proof. Admitted.
+
+Lemma shr_1_ (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Bit.Shr__f_shr (Core_Clone.Clone__f_clone (x)) (Core_Base_interface_Int.Constants__f_ONE)) (Core_Ops_Arith.Div__f_div (Core_Clone.Clone__f_clone (x)) (Core_Ops_Arith.Add__f_add (Core_Base_interface_Int.Constants__f_ONE) (Core_Base_interface_Int.Constants__f_ONE))) = true.
+Proof. Admitted.
+
+Lemma mod_small (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) :
+   ->
+  orb (Core_Cmp.PartialOrd__f_ge (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Rem__f_rem (Core_Clone.Clone__f_clone (x)) (y)) (x)) = true.
+Proof. Admitted.
+
+Lemma int_range (x : Core_Base_interface_Int.t_U8) :
+   ->
+  andb (Core_Cmp.PartialOrd__f_le (Core_Base_interface_Int.Constants__f_MIN) (Core_Clone.Clone__f_clone (x))) (Core_Cmp.PartialOrd__f_le (x) (Core_Base_interface_Int.Constants__f_MAX)) = true.
+Proof. Admitted.
+
+Lemma mod_one (x : Core_Base_interface_Int.t_U8) :
+   ->
+  Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Rem__f_rem (x) (Core_Base_interface_Int.Constants__f_ONE)) (Core_Base_interface_Int.Constants__f_ZERO) = true.
+Proof. Admitted.
+
+Lemma mod_add (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
+   ->
+  orb (Core_Base_Pos.haxint_le (Core_Base_Spec_Constants.v_WORDSIZE_8_) (Core_Base_Pos.haxint_add (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (x))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (y))))) (Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Add__f_add (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Clone.Clone__f_clone (z))) (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Add__f_add (Core_Ops_Arith.Rem__f_rem (x) (Core_Clone.Clone__f_clone (z))) (Core_Ops_Arith.Rem__f_rem (y) (Core_Clone.Clone__f_clone (z)))) (z))) = true.
+Proof. Admitted.
+
+Lemma mod_sub (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
+   ->
+  orb (orb (Core_Cmp.PartialOrd__f_lt (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Cmp.PartialOrd__f_le (Core_Clone.Clone__f_clone (z)) (Core_Clone.Clone__f_clone (x)))) (Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Sub__f_sub (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Clone.Clone__f_clone (z))) (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Sub__f_sub (Core_Ops_Arith.Rem__f_rem (x) (Core_Clone.Clone__f_clone (z))) (Core_Ops_Arith.Rem__f_rem (y) (Core_Clone.Clone__f_clone (z)))) (z))) = true.
+Proof. Admitted.
+
+Lemma mod_mul (x : Core_Base_interface_Int.t_U8) (y : Core_Base_interface_Int.t_U8) (z : Core_Base_interface_Int.t_U8) :
+   ->
+  orb (Core_Base_Pos.haxint_lt (Core_Base_Spec_Constants.v_WORDSIZE_8_) (Core_Base_Pos.haxint_mul (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (x))) (Core_Base_interface_Coerce.Abstraction__f_lift (Core_Clone.Clone__f_clone (y))))) (Core_Cmp.PartialEq__f_eq (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Mul__f_mul (Core_Clone.Clone__f_clone (x)) (Core_Clone.Clone__f_clone (y))) (Core_Clone.Clone__f_clone (z))) (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Rem__f_rem (Core_Ops_Arith.Mul__f_mul (Core_Ops_Arith.Rem__f_rem (x) (Core_Clone.Clone__f_clone (z))) (y)) (Core_Clone.Clone__f_clone (z))) (z))) = true.
 Proof. Admitted.
