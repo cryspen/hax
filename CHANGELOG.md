@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+Changes to the Rust Engine:
+
+Changes to the frontend:
+
+Change to cargo-hax:
+
+Changes to hax-lib:
+
+Changes to the Lean backend:
+
+Miscellaneous:
+
 ## 0.3.5
 
 Changes to the Rust Engine:
