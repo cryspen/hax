@@ -325,9 +325,10 @@ pub enum FullDefKind<Body> {
         associated_item: AssocItem,
         inline: InlineAttr,
         is_const: bool,
-        /// Whether this method will be included in the trait vtable. `false` if this is not a
-        /// trait method.
-        vtable_safe: bool,
+        /// The function signature when this method is used in a vtable. `None` if this method is not
+        /// vtable safe. `Some(sig)` if it is vtable safe, where `sig` is the trait method declaration's
+        /// signature with `Self` replaced by `dyn Trait` and associated types normalized.
+        dyn_sig: Option<PolyFnSig>,
         sig: PolyFnSig,
         body: Option<Body>,
     },
@@ -425,6 +426,90 @@ pub enum FullDefKind<Body> {
 }
 
 #[cfg(feature = "rustc")]
+fn gen_dyn_sig<'tcx>(
+    // The state that owns the method DefId
+    assoc_method_s: &StateWithOwner<'tcx>,
+    args: Option<ty::GenericArgsRef<'tcx>>,
+) -> Option<PolyFnSig>
+{
+    let def_id = assoc_method_s.owner_id();
+    let tcx = assoc_method_s.base().tcx;
+    let assoc_item = tcx.associated_item(def_id);
+    let s = &assoc_method_s.with_owner_id(assoc_item.container_id(tcx));
+    
+    // The args for the container
+    let container_args = {
+        let container_def_id = assoc_item.container_id(tcx);
+        let container_generics = tcx.generics_of(container_def_id);
+        args.map(|args| args.truncate_to(tcx, container_generics))
+    };
+
+    let dyn_self: ty::Ty = match assoc_item.container {
+        ty::AssocItemContainer::Trait => {
+            get_trait_decl_dyn_self_ty(s, container_args)
+        },
+        ty::AssocItemContainer::Impl => {
+            // For impl methods, compute concrete dyn_self from the impl's trait reference
+            let impl_def_id = assoc_item.container_id(tcx);
+            let Some(impl_trait_ref) = tcx.impl_trait_ref(impl_def_id) else {
+                // There might be inherent impl methods, which is surely not vtable safe.
+                return None;
+            };
+            // Get the concrete trait reference by rebasing the impl's trait ref args onto `container_args`
+            let concrete_trait_ref = inst_binder(tcx, s.typing_env(), container_args, impl_trait_ref);
+            dyn_self_ty(tcx, s.typing_env(), concrete_trait_ref)
+        },
+    }?;
+
+    // Get the original trait method declaration's signature
+    let origin_trait_method_id = match assoc_item.trait_item_def_id {
+        Some(id) => id,
+        // It is itself a trait method declaration
+        None => def_id,
+    };
+    
+    let trait_id = tcx.trait_of_item(origin_trait_method_id).unwrap();
+    if !rustc_trait_selection::traits::is_vtable_safe_method(tcx, trait_id, assoc_item) {
+        return None;
+    }
+    
+    let origin_trait_method_sig_binder = tcx.fn_sig(origin_trait_method_id);
+    
+    // Extract the trait reference from dyn_self
+    // dyn_self is of form `dyn Trait<Args...>`, we need to extract the trait args
+    match dyn_self.kind() {
+        ty::Dynamic(preds, _, _) => {
+            // Find the principal trait predicate
+            for pred in preds.iter() {
+                // Safe to use `skip_binder` because we know the predicate we built in dyn_self_ty
+                // has no bound vars
+                if let ty::ExistentialPredicate::Trait(trait_ref) = pred.skip_binder() {
+                    // Build full args: dyn_self + trait args
+                    // Note: trait_ref.args doesn't include Self (it's existential), so we prepend dyn_self
+                    let mut full_args = vec![ty::GenericArg::from(dyn_self)];
+                    full_args.extend(trait_ref.args.iter());
+                    
+                    let subst_args = tcx.mk_args(&full_args);
+                    
+                    // Instantiate the signature with the substitution args
+                    let origin_trait_method_sig = origin_trait_method_sig_binder.instantiate(tcx, subst_args);
+                    
+                    // Normalize the signature to resolve associated types
+                    let normalized_sig = normalize(tcx, s.typing_env(), origin_trait_method_sig);
+
+                    return Some(normalized_sig.sinto(s));
+                }
+            }
+            panic!("No principal trait found in dyn_self: {:?}", dyn_self);
+        }
+        _ => {
+            // If it's not a dyn trait, something went wrong
+            panic!("Unexpected dyn_self: {:?}", dyn_self);
+        }
+    }
+}
+
+#[cfg(feature = "rustc")]
 /// Construct the `FullDefKind` for this item.
 ///
 /// If `args` is `Some`, instantiate the whole definition with these generics; otherwise keep the
@@ -506,7 +591,7 @@ where
             param_env: get_param_env(s, args),
             implied_predicates: get_implied_predicates(s, args),
             self_predicate: get_self_predicate(s, args),
-            dyn_self: get_dyn_self_ty(s, args),
+            dyn_self: get_trait_decl_dyn_self_ty(s, args).sinto(s),
             items: tcx
                 .associated_items(def_id)
                 .in_definition_order()
@@ -525,7 +610,7 @@ where
             param_env: get_param_env(s, args),
             implied_predicates: get_implied_predicates(s, args),
             self_predicate: get_self_predicate(s, args),
-            dyn_self: get_dyn_self_ty(s, args),
+            dyn_self: get_trait_decl_dyn_self_ty(s, args).sinto(s),
         },
         RDefKind::Impl { .. } => {
             use std::collections::HashMap;
@@ -671,22 +756,12 @@ where
         },
         RDefKind::AssocFn { .. } => {
             let item = tcx.associated_item(def_id);
-            let vtable_safe = match item.container {
-                ty::AssocItemContainer::Trait => {
-                    rustc_trait_selection::traits::is_vtable_safe_method(
-                        tcx,
-                        item.container_id(tcx),
-                        item,
-                    )
-                }
-                _ => false,
-            };
             FullDefKind::AssocFn {
                 param_env: get_param_env(s, args),
                 associated_item: AssocItem::sfrom_instantiated(s, &item, args),
                 inline: tcx.codegen_fn_attrs(def_id).inline.sinto(s),
                 is_const: tcx.constness(def_id) == rustc_hir::Constness::Const,
-                vtable_safe,
+                dyn_sig: gen_dyn_sig(s, args),
                 sig: get_method_sig(tcx, s.typing_env(), def_id, args).sinto(s),
                 body: get_body(s, args),
             }
@@ -1016,10 +1091,10 @@ fn get_self_predicate<'tcx, S: UnderOwnerState<'tcx>>(
 
 /// Generates a `dyn Trait<Args.., Ty = <Self as Trait>::Ty..>` type for this trait.
 #[cfg(feature = "rustc")]
-fn get_dyn_self_ty<'tcx, S: UnderOwnerState<'tcx>>(
+fn get_trait_decl_dyn_self_ty<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     args: Option<ty::GenericArgsRef<'tcx>>,
-) -> Option<Ty> {
+) -> Option<ty::Ty<'tcx>> {
     let tcx = s.base().tcx;
     let typing_env = s.typing_env();
     let def_id = s.owner_id();
@@ -1035,7 +1110,7 @@ fn get_dyn_self_ty<'tcx, S: UnderOwnerState<'tcx>>(
         } else {
             ty
         };
-        ty.sinto(s)
+        ty
     })
 }
 
