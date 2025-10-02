@@ -22,6 +22,8 @@ use std::{
     sync::{Arc, LazyLock, Mutex, MutexGuard, atomic::Ordering},
 };
 
+use std::cell::RefCell;
+
 /// Unique IDs in a ID table.
 #[derive_group(Serializers)]
 #[derive(Default, Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -227,9 +229,14 @@ pub struct WithTable<T> {
 }
 
 /// The state used for deserialization: a table.
-static DESERIALIZATION_STATE: LazyLock<Mutex<Table>> =
-    LazyLock::new(|| Mutex::new(Table::default()));
+// static DESERIALIZATION_STATE: LazyLock<Mutex<Table>> =
+//     LazyLock::new(|| Mutex::new(Table::default()));
 static DESERIALIZATION_STATE_LOCK: LazyLock<Mutex<()>> = LazyLock::new(|| Mutex::new(()));
+
+thread_local! {
+    static DESERIALIZATION_STATE: LazyLock<RefCell<Table>> =
+        LazyLock::new(|| RefCell::new(Table::default()));
+}
 
 /// The mode of serialization: should `Node<T>` ship values of type `T` or not?
 static SERIALIZATION_MODE_USE_IDS: std::sync::atomic::AtomicBool =
@@ -282,9 +289,11 @@ impl<'de, T: Deserialize<'de>> serde::Deserialize<'de> for WithTable<T> {
     {
         let _lock: MutexGuard<_> = DESERIALIZATION_STATE_LOCK.try_lock().expect("CACHE_MAP_LOCK: only one WithTable deserialization can occur at a time (nesting is forbidden)");
         use serde_repr::WithTableRepr;
-        let previous = std::mem::take(&mut *DESERIALIZATION_STATE.lock().unwrap());
+        let previous = DESERIALIZATION_STATE.with(|state| std::mem::take(&mut *state.borrow_mut()));
+        // let previous = std::mem::take(&mut *DESERIALIZATION_STATE.lock().unwrap());
         let with_table_repr = WithTableRepr::deserialize(deserializer);
-        *DESERIALIZATION_STATE.lock().unwrap() = previous;
+        // *DESERIALIZATION_STATE.lock().unwrap() = previous;
+        DESERIALIZATION_STATE.with(|state| *state.borrow_mut() = previous);
         let WithTableRepr(table, value) = with_table_repr?;
         Ok(Self { table, value })
     }
@@ -325,28 +334,31 @@ mod serde_repr {
 
         fn try_from(cached: NodeRepr<T>) -> Result<Self, Self::Error> {
             use serde::de::Error;
-            let table = DESERIALIZATION_STATE.lock().unwrap();
-            let id = cached.id;
-            let kind = if let Some(kind) = cached.value {
-                kind
-            } else {
-                table
-                    .0
-                    .get(&id)
-                    .ok_or_else(|| {
-                        Self::Error::custom(&format!(
-                            "Stateful deserialization failed for id {:?}: not found in cache",
-                            id
-                        ))
-                    })?
-                    .ok_or_else(|| {
-                        Self::Error::custom(&format!(
-                            "Stateful deserialization failed for id {:?}: wrong type",
-                            id
-                        ))
-                    })?
-            };
-            Ok(Self { value: kind, id })
+            DESERIALIZATION_STATE.with(|state| {
+                let table = state.borrow();
+                // let table = DESERIALIZATION_STATE.lock().unwrap();
+                let id = cached.id;
+                let kind = if let Some(kind) = cached.value {
+                    kind
+                } else {
+                    table
+                        .0
+                        .get(&id)
+                        .ok_or_else(|| {
+                            Self::Error::custom(&format!(
+                                "Stateful deserialization failed for id {:?}: not found in cache",
+                                id
+                            ))
+                        })?
+                        .ok_or_else(|| {
+                            Self::Error::custom(&format!(
+                                "Stateful deserialization failed for id {:?}: wrong type",
+                                id
+                            ))
+                        })?
+                };
+                Ok(Self { value: kind, id })
+            })
         }
     }
 
@@ -357,10 +369,12 @@ mod serde_repr {
         {
             let (id, v) = <(Id, Value)>::deserialize(deserializer)?;
             DESERIALIZATION_STATE
-                .lock()
-                .unwrap()
-                .0
-                .insert_raw_value(id.clone(), v.clone());
+                .with(|state| state.borrow_mut().0.insert_raw_value(id.clone(), v.clone()));
+            // DESERIALIZATION_STATE
+            //     .lock()
+            //     .unwrap()
+            //     .0
+            //     .insert_raw_value(id.clone(), v.clone());
             Ok(Pair(id, v))
         }
     }

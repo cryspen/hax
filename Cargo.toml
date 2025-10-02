@@ -4,6 +4,7 @@ members = [
      "frontend/exporter/options",
      "cli/subcommands",
      "cli/driver",
+     "cli/test-driver",
      "test-harness",
      "hax-lib",
      "hax-lib/macros",
