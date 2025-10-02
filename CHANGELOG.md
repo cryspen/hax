@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 0.3.5
+
 Changes to the Rust Engine:
  - The module `names` now produces `ExplicitDefId`s instead of `DefId`s (#1648)
  - Add a resugaring `FunctionsToConstants` (#1559)
