@@ -1000,6 +1000,15 @@ impl<Body> FullDef<Body> {
         }
     }
 
+    /// Whether the item has any generics or predicates of its own (ignoring parent
+    /// generics/predicates).
+    pub fn has_own_generics_or_predicates(&self) -> bool {
+        match self.param_env() {
+            Some(p) => !p.generics.params.is_empty() || !p.predicates.predicates.is_empty(),
+            None => false,
+        }
+    }
+
     /// Lists the children of this item that can be named, in the way of normal rust paths. For
     /// types, this includes inherent items.
     #[cfg(feature = "rustc")]
