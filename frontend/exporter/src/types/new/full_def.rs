@@ -467,7 +467,8 @@ fn gen_vtable_sig<'tcx>(
     };
 
     let trait_id = tcx.trait_of_item(origin_trait_method_id).unwrap();
-    if !rustc_trait_selection::traits::is_vtable_safe_method(tcx, trait_id, assoc_item) {
+    let decl_assoc_item = tcx.associated_item(origin_trait_method_id);
+    if !rustc_trait_selection::traits::is_vtable_safe_method(tcx, trait_id, decl_assoc_item) {
         return None;
     }
 
