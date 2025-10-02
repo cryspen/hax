@@ -110,7 +110,6 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
         .collect()
 }
 
-#[allow(unused)]
 mod prelude {
     //! Small "bring-into-scope" set used by backend modules.
     //!
@@ -124,7 +123,6 @@ mod prelude {
     pub use crate::ast::*;
     pub use crate::printer::render_view::*;
     pub use crate::printer::*;
-    pub use crate::symbol::Symbol;
     pub use hax_rust_engine_macros::prepend_associated_functions_with;
     pub use pretty::DocAllocator;
     pub use pretty::DocBuilder;
