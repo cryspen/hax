@@ -430,13 +430,12 @@ fn gen_dyn_sig<'tcx>(
     // The state that owns the method DefId
     assoc_method_s: &StateWithOwner<'tcx>,
     args: Option<ty::GenericArgsRef<'tcx>>,
-) -> Option<PolyFnSig>
-{
+) -> Option<PolyFnSig> {
     let def_id = assoc_method_s.owner_id();
     let tcx = assoc_method_s.base().tcx;
     let assoc_item = tcx.associated_item(def_id);
     let s = &assoc_method_s.with_owner_id(assoc_item.container_id(tcx));
-    
+
     // The args for the container
     let container_args = {
         let container_def_id = assoc_item.container_id(tcx);
@@ -445,9 +444,7 @@ fn gen_dyn_sig<'tcx>(
     };
 
     let dyn_self: ty::Ty = match assoc_item.container {
-        ty::AssocItemContainer::Trait => {
-            get_trait_decl_dyn_self_ty(s, container_args)
-        },
+        ty::AssocItemContainer::Trait => get_trait_decl_dyn_self_ty(s, container_args),
         ty::AssocItemContainer::Impl => {
             // For impl methods, compute concrete dyn_self from the impl's trait reference
             let impl_def_id = assoc_item.container_id(tcx);
@@ -456,9 +453,10 @@ fn gen_dyn_sig<'tcx>(
                 return None;
             };
             // Get the concrete trait reference by rebasing the impl's trait ref args onto `container_args`
-            let concrete_trait_ref = inst_binder(tcx, s.typing_env(), container_args, impl_trait_ref);
+            let concrete_trait_ref =
+                inst_binder(tcx, s.typing_env(), container_args, impl_trait_ref);
             dyn_self_ty(tcx, s.typing_env(), concrete_trait_ref)
-        },
+        }
     }?;
 
     // Get the original trait method declaration's signature
@@ -467,14 +465,14 @@ fn gen_dyn_sig<'tcx>(
         // It is itself a trait method declaration
         None => def_id,
     };
-    
+
     let trait_id = tcx.trait_of_item(origin_trait_method_id).unwrap();
     if !rustc_trait_selection::traits::is_vtable_safe_method(tcx, trait_id, assoc_item) {
         return None;
     }
-    
+
     let origin_trait_method_sig_binder = tcx.fn_sig(origin_trait_method_id);
-    
+
     // Extract the trait reference from dyn_self
     // dyn_self is of form `dyn Trait<Args...>`, we need to extract the trait args
     match dyn_self.kind() {
@@ -488,12 +486,13 @@ fn gen_dyn_sig<'tcx>(
                     // Note: trait_ref.args doesn't include Self (it's existential), so we prepend dyn_self
                     let mut full_args = vec![ty::GenericArg::from(dyn_self)];
                     full_args.extend(trait_ref.args.iter());
-                    
+
                     let subst_args = tcx.mk_args(&full_args);
-                    
+
                     // Instantiate the signature with the substitution args
-                    let origin_trait_method_sig = origin_trait_method_sig_binder.instantiate(tcx, subst_args);
-                    
+                    let origin_trait_method_sig =
+                        origin_trait_method_sig_binder.instantiate(tcx, subst_args);
+
                     // Normalize the signature to resolve associated types
                     let normalized_sig = normalize(tcx, s.typing_env(), origin_trait_method_sig);
 
