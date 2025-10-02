@@ -345,9 +345,7 @@ struct
           UB.call fold_operator
             [ condition; invariant; variant; init; body ]
             span (dty span expr.typ)
-      | Loop { state = None; _ } ->
-          Error.unimplemented ~issue_id:405 ~details:"Loop without mutation"
-            span
+      | Loop { state = None; _ } -> UB.unit_expr span
       | Loop _ ->
           Error.unimplemented ~issue_id:933 ~details:"Unhandled loop kind" span
       | [%inline_arms "dexpr'.*" - Loop - Break - Continue - Return] ->
