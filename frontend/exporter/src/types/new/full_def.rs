@@ -1004,7 +1004,18 @@ impl<Body> FullDef<Body> {
     /// generics/predicates).
     pub fn has_own_generics_or_predicates(&self) -> bool {
         match self.param_env() {
-            Some(p) => !p.generics.params.is_empty() || !p.predicates.predicates.is_empty(),
+            Some(p) => {
+                let has_predicates = if let FullDefKind::AssocFn { .. }
+                | FullDefKind::AssocConst { .. } = self.kind()
+                {
+                    // Assoc fns and consts have a special `Self: Trait` predicate inserted, which
+                    // we don't want to consider as an "own predicate".
+                    p.predicates.predicates.len() > 1
+                } else {
+                    !p.predicates.predicates.is_empty()
+                };
+                !p.generics.params.is_empty() || has_predicates
+            }
             None => false,
         }
     }
