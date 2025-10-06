@@ -14,6 +14,7 @@
 use std::{
     collections::{HashMap, HashSet},
     env::set_current_dir,
+    ffi::OsStr,
     fs::{self},
     path::{Path, PathBuf},
     sync::{LazyLock, Mutex},
@@ -336,7 +337,20 @@ impl BackendTestContext {
         }
         fs::create_dir_all(path_to_snapshots.parent().unwrap())?;
 
-        fs::rename(out_dir, path_to_snapshots)?;
+        fs::rename(out_dir, &path_to_snapshots)?;
+
+        // drop `*.map` files
+        for entry in walkdir::WalkDir::new(path_to_snapshots)
+            .into_iter()
+            .filter_map(Result::ok)
+        {
+            let path = entry.path();
+            if path.is_file() {
+                if let Some("map") = path.extension().map(OsStr::to_str).flatten() {
+                    fs::remove_file(path)?;
+                }
+            }
+        }
 
         Ok(())
     }
@@ -440,10 +454,7 @@ async fn main() -> Result<()> {
     })?;
 
     let disabled_backends = [
-        BackendName::Ssprove,
-        BackendName::Coq,
         BackendName::Easycrypt,
-        BackendName::ProVerif,
         BackendName::Rust,
         BackendName::GenerateRustEngineNames,
     ];
@@ -451,7 +462,7 @@ async fn main() -> Result<()> {
         .filter(|backend| !disabled_backends.contains(backend))
         .collect();
 
-    let cache_dir = PathBuf::from(".hax-tests");
+    let cache_dir = options.cache_dir();
     let _ = tokio::fs::create_dir_all(&cache_dir)
         .await
         .with_context(|| {

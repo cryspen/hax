@@ -1,8 +1,8 @@
 #![feature(rustc_private)]
-use annotate_snippets::{Level, Renderer};
 use clap::Parser;
 use colored::Colorize;
 use hax_types::cli_options::*;
+use hax_types::diagnostics::message::HaxMessage;
 use hax_types::driver_api::*;
 use hax_types::engine_api::*;
 use is_terminal::IsTerminal;
@@ -143,9 +143,6 @@ fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
         })
         .expect(RUST_ENGINE_BINARY_NOT_FOUND)
 }
-
-use hax_types::diagnostics::message::HaxMessage;
-use hax_types::diagnostics::report::ReportCtx;
 
 /// Runs `hax-engine`
 fn run_engine(

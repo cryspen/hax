@@ -21,7 +21,7 @@ pub struct Cli {
     #[clap(long, short, default_value = current_dir().unwrap().join(".hax-tests-cache").into_os_string())]
     cache_dir: PathBuf,
     /// Maximum number of jobs that are allowed to execute concurrently.
-    #[clap(long, short, default_value_t = num_cpus::get())]
+    #[clap(long, short, default_value_t = num_cpus::get() * 2)]
     jobs: usize,
     /// Enabling this flag will add directives to the Rust source files so that
     /// the errors collected are marked as expected.

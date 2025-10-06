@@ -35,11 +35,14 @@ pub fn save() -> Result<()> {
 
         lines.sort();
 
-        let contents = lines
+        let mut contents = lines
             .into_iter()
             .map(|line| line.to_string())
             .collect::<Vec<_>>()
             .join("\n");
+        if !contents.ends_with("\n") {
+            contents += "\n";
+        }
         write(path, contents)?;
     }
 
