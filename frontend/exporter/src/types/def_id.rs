@@ -158,7 +158,7 @@ pub struct DefId {
 }
 
 #[derive_group(Serializers)]
-#[derive(Debug, Hash, Clone, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Hash, Clone, Eq, Ord)]
 #[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema))]
 pub struct DefIdContents {
     pub krate: String,
@@ -176,6 +176,26 @@ pub struct DefIdContents {
 
     /// The kind of definition this `DefId` points to.
     pub kind: crate::DefKind,
+}
+
+impl PartialEq for DefIdContents {
+    fn eq(&self, other: &Self) -> bool {
+        self.krate == other.krate && self.path == other.path && self.kind == other.kind
+    }
+}
+
+impl PartialOrd for DefIdContents {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.krate.partial_cmp(&other.krate) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        match self.path.partial_cmp(&other.path) {
+            Some(core::cmp::Ordering::Equal) => {}
+            ord => return ord,
+        }
+        self.kind.partial_cmp(&other.kind)
+    }
 }
 
 #[cfg(feature = "rustc")]
