@@ -65,10 +65,6 @@ fmt:
 test *FLAGS:
   cargo run --release --bin test-driver -- ./tests {{FLAGS}}
 
-# Review snapshots
-test-review: (_ensure_command_in_path "cargo-insta" "Insta (https://insta.rs)")
-  cargo insta review
-
 # Serve documentation
 docs: (_ensure_command_in_path "mkdocs" "mkdocs (https://www.mkdocs.org/)")
   mkdocs serve
