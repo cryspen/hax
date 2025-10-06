@@ -149,7 +149,7 @@ let run (options : Types.engine_options) : Types.output =
         | backend ->
             failwith
               ("The OCaml hax engine should never be called with backend `"
-              ^ [%show: Types.backend_for__null] backend
+              ^ [%show: Types.backend] backend
               ^ "`. This backend uses the newer rust engine. Please report \
                  this issue on our GitHub repository: \
                  https://github.com/cryspen/hax."))
