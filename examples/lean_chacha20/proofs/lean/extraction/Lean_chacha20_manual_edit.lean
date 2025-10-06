@@ -749,7 +749,6 @@ theorem Lean_chacha20.chacha20_quarter_round_spec a b c d state:
   intros
   mvcgen [Lean_chacha20.chacha20_quarter_round,
           Lean_chacha20.chacha20_line,
-          Rust_primitives.Hax.Machine_int.bitxor,
           Result.ofOption, ]
   <;> try omega
 
