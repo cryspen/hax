@@ -1,43 +1,19 @@
+[package]
+name = "tests"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hax-lib = { path = "../hax-lib" }
+hax-bounded-integers = { path = "../hax-bounded-integers" }
+serde = { version = "1.0", features = ["derive"] }
+hax-lib-protocol = { path = "../hax-lib-protocol" }
+hax-lib-protocol-macros = { path = "../hax-lib-protocol-macros" }
+typenum = "1.18.0"
+
 [workspace]
-members = [
-        "assert",
-        "enum-struct-variant",
-        "literals",
-        "slices",
-        "naming",
-        "if-let",
-        "let-else",
-        "enum-repr",
-        "pattern-or",
-        "side-effects",
-        "mut-ref-functionalization",
-        "generics",
-        "lean-tests",
-        "loops",
-        "even",
-        "odd",
-        "never-type",
-        "attributes",
-        "attribute-opaque",
-        "raw-attributes",
-        "traits",
-        "dyn",
-        "reordering",
-        "nested-derefs",
-        "patterns",
-        "proverif-minimal",
-        "proverif-basic-structs",
-        "proverif-ping-pong",
-        "proverif-noise",
-        "proverif-fn-to-letfun",
-        "cli/include-flag",
-        "cli/interface-only",
-        "recursion",
-        "functions",
-        "guards",
-        "cyclic-modules",
-        "unsafe",
-        "constructor-as-closure",
-        "statics",
-]
-resolver = "2"
+
+[build-dependencies]
+anyhow = "1.0.100"
+syn = { version = "2.0.106", features = ["full"] }
+walkdir = "2.5.0"
