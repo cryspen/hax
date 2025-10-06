@@ -36,8 +36,7 @@ Equations double_sum (_ : both 'unit) : both int32 :=
     letb sum := foldi_both_list (f_into_iter (Build_t_Range (f_start := ret_both (1 : int32)) (f_end := ret_both (10 : int32)))) (fun i =>
       ssp (fun sum =>
         letb _ := ifb i <.? (ret_both (0 : int32))
-        then letb hoist7 := failure (ret_both (something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+        then letb hoist7 := failure (ret_both (something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.
@@ -59,8 +58,7 @@ Equations double_sum2 (_ : both 'unit) : both int32 :=
     letb '(sum,sum2) := foldi_both_list (f_into_iter (Build_t_Range (f_start := ret_both (1 : int32)) (f_end := ret_both (10 : int32)))) (fun i =>
       ssp (fun '(sum,sum2) =>
         letb _ := ifb i <.? (ret_both (0 : int32))
-        then letb hoist8 := failure (ret_both (something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+        then letb hoist8 := failure (ret_both (something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.
@@ -145,8 +143,7 @@ Equations nested (_ : both 'unit) : both int32 :=
         letb sum := foldi_both_list (f_into_iter (Build_t_Range (f_start := ret_both (1 : int32)) (f_end := ret_both (10 : int32)))) (fun j =>
           ssp (fun sum =>
             letb _ := ifb j <.? (ret_both (0 : int32))
-            then letb hoist16 := failure (ret_both (something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+            then letb hoist16 := failure (ret_both (something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.
@@ -210,8 +207,7 @@ Note: the error was labeled with context `reject_Continue`.
  : chString)) (ret_both (continue; : chString)))
           else ret_both (tt : 'unit) in
           letb _ := ifb i <.? (ret_both (0 : int32))
-          then letb hoist18 := failure (ret_both (something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+          then letb hoist18 := failure (ret_both (something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.

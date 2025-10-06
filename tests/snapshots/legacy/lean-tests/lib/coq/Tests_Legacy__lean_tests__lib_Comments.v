@@ -13,11 +13,8 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
+Definition f '(_ : unit) : unit :=
+  tt.
 
-
-Definition f (x : t_Prop) (y : bool) : t_Prop :=
-  let xprop : t_Prop := f_into (y) in
-  let p := f_bitand (f_bitand (f_bitand (f_lift (y)) (xprop)) (y)) (f_to_prop (y)) in
-  f_not (impl_Prop__implies (f_bitor (p) (y)) (f_bitand (forall (fun x =>
-    f_le (x) (impl_u8__MAX))) (exists (fun x =>
-    f_gt (x) ((300 : t_u16)))))).
+Definition heavily_documented '(_ : unit) : t_u32 :=
+  (4 : t_u32).

@@ -23,6 +23,7 @@ instance Tests.Legacy__cli__include_flag__src__lib.Impl :
   where
 
 
+--  Indirect dependencies
 def Tests.Legacy__cli__include_flag__src__lib.main_a_a
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
@@ -65,6 +66,7 @@ def Tests.Legacy__cli__include_flag__src__lib.main_a_c
   := do
   Rust_primitives.Hax.Tuple0.mk
 
+--  Direct dependencies
 def Tests.Legacy__cli__include_flag__src__lib.main_a
   (T : Type) [(Tests.Legacy__cli__include_flag__src__lib.Trait T)] (x : T)
   : Result Rust_primitives.Hax.Tuple0
@@ -122,6 +124,7 @@ def Tests.Legacy__cli__include_flag__src__lib.main_c
         Rust_primitives.Hax.Tuple0.mk));
   Rust_primitives.Hax.Tuple0.mk
 
+--  Entrypoint
 def Tests.Legacy__cli__include_flag__src__lib.main
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0

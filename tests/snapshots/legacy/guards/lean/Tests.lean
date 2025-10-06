@@ -11,6 +11,7 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__guards.if_let_guard
   (x : (Core.Option.Option (Core.Result.Result i32 i32)))
   : Result i32
@@ -59,6 +60,7 @@ def Tests.Legacy__guards.equivalent
                 | (Core.Option.Option.Some (Core.Result.Result.Err y)) => do y
                 | _ => do (1 : i32))))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__guards.multiple_guards
   (x : (Core.Option.Option (Core.Result.Result i32 i32)))
   : Result i32
@@ -72,7 +74,7 @@ def Tests.Legacy__guards.multiple_guards
             | (Core.Option.Option.Some (Core.Result.Result.Ok v))
               => do
                 (match (Core.Option.Option.Some (← v +? (1 : i32))) with
-                  | (Core.Option.Option.Some TODO_LINE_622)
+                  | (Core.Option.Option.Some sorry)
                     => do (Core.Option.Option.Some (0 : i32))
                   | _ => do Core.Option.Option.None)
             | _ => do Core.Option.Option.None)
@@ -98,6 +100,7 @@ def Tests.Legacy__guards.multiple_guards
                         => do y
                       | _ => do (1 : i32)))))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__guards.if_guard
   (x : (Core.Option.Option i32))
   : Result i32
@@ -107,7 +110,7 @@ def Tests.Legacy__guards.if_guard
       | (Core.Option.Option.Some v)
         => do
           (match (← Rust_primitives.Hax.Machine_int.gt v (0 : i32)) with
-            | TODO_LINE_622 => do (Core.Option.Option.Some v)
+            | sorry => do (Core.Option.Option.Some v)
             | _ => do Core.Option.Option.None)
       | _ => do Core.Option.Option.None)
   with

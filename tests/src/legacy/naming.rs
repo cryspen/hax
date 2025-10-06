@@ -112,7 +112,7 @@ fn constants<T: FooTrait>() -> usize {
 /// Such situation can occur playing with *hygenic* macros.
 /// Also, this happens with some internal Rustc rewrite. (e.g. assignment of tuples)
 mod ambiguous_names {
-/// @fail(extraction): ssprove(HAX0001)
+    /// @fail(extraction): ssprove(HAX0001)
     fn debug(label: u32, value: u32) {
         println!("[{}] a={}", label, value)
     }

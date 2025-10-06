@@ -108,6 +108,7 @@ def Tests.Legacy__side_effects.Issue_1083.f
         (Core.Result.Result.Ok
           (← Tests.Legacy__side_effects.Issue_1083.MyFrom.my_from x)))
 
+--  Helper function
 def Tests.Legacy__side_effects.add3
   (x : u32)
   (y : u32)
@@ -116,6 +117,8 @@ def Tests.Legacy__side_effects.add3
   := do
   (← Core.Num.Impl_8.wrapping_add (← Core.Num.Impl_8.wrapping_add x y) z)
 
+--  Exercise local mutation with control flow and loops
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__side_effects.local_mutation (x : u32) : Result u32 := do
   let y : u32 ← (pure (0 : u32));
   let x : u32 ← (pure (← Core.Num.Impl_8.wrapping_add x (1 : u32)));
@@ -134,12 +137,12 @@ def Tests.Legacy__side_effects.local_mutation (x : u32) : Result u32 := do
   else do
     let ⟨⟨x, y⟩, hoist7⟩ ← (pure
       (match x with
-        | TODO_LINE_622
+        | sorry
           => do
             let y : u32 ← (pure (← Core.Num.Impl_8.wrapping_add x y));
             (Rust_primitives.Hax.Tuple2.mk
               (Rust_primitives.Hax.Tuple2.mk x y) (3 : u32))
-        | TODO_LINE_622
+        | sorry
           => do
             let x : u32 ← (pure (← Core.Num.Impl_8.wrapping_add x (1 : u32)));
             (Rust_primitives.Hax.Tuple2.mk
@@ -155,13 +158,14 @@ def Tests.Legacy__side_effects.local_mutation (x : u32) : Result u32 := do
     let x : u32 ← (pure hoist7);
     (← Core.Num.Impl_8.wrapping_add x y))
 
+--  Exercise early returns with control flow and loops
 def Tests.Legacy__side_effects.early_returns (x : u32) : Result u32 := do
   (← if (← Rust_primitives.Hax.Machine_int.gt x (3 : u32)) then do
     (0 : u32)
   else do
     (← if (← Rust_primitives.Hax.Machine_int.gt x (30 : u32)) then do
       (match true with
-        | TODO_LINE_622 => do (34 : u32)
+        | sorry => do (34 : u32)
         | _
           => do
             let ⟨x, hoist11⟩ ← (pure
@@ -211,6 +215,7 @@ def Tests.Legacy__side_effects.simplifiable_question_mark
     let b : i32 ← (pure (20 : i32));
     (Core.Option.Option.Some (← a +? b)))
 
+--  Question mark without error coercion
 def Tests.Legacy__side_effects.direct_result_question_mark
   (y : (Core.Result.Result Rust_primitives.Hax.Tuple0 u32))
   : Result (Core.Result.Result i8 u32)
@@ -219,6 +224,7 @@ def Tests.Legacy__side_effects.direct_result_question_mark
     | (Core.Result.Result.Ok _) => do (Core.Result.Result.Ok (0 : i8))
     | (Core.Result.Result.Err err) => do (Core.Result.Result.Err err))
 
+--  Question mark with an error coercion
 def Tests.Legacy__side_effects.direct_result_question_mark_coercion
   (y : (Core.Result.Result i8 u16))
   : Result (Core.Result.Result i8 u32)
@@ -228,6 +234,7 @@ def Tests.Legacy__side_effects.direct_result_question_mark_coercion
     | (Core.Result.Result.Err err)
       => do (Core.Result.Result.Err (← Core.Convert.From.from err)))
 
+--  Test question mark on `Option`s with some control flow
 def Tests.Legacy__side_effects.options
   (x : (Core.Option.Option u8))
   (y : (Core.Option.Option u8))
@@ -248,7 +255,7 @@ def Tests.Legacy__side_effects.options
                   | (Core.Option.Option.Some hoist29)
                     => do
                       (match hoist29 with
-                        | TODO_LINE_622
+                        | sorry
                           => do
                             (match Core.Option.Option.None with
                               | (Core.Option.Option.Some some)
@@ -272,7 +279,7 @@ def Tests.Legacy__side_effects.options
                                       => do Core.Option.Option.None)
                               | (Core.Option.Option.None )
                                 => do Core.Option.Option.None)
-                        | TODO_LINE_622
+                        | sorry
                           => do
                             (match z with
                               | (Core.Option.Option.Some hoist18)
@@ -339,7 +346,7 @@ def Tests.Legacy__side_effects.options
                         | (Core.Option.Option.Some hoist29)
                           => do
                             (match hoist29 with
-                              | TODO_LINE_622
+                              | sorry
                                 => do
                                   (match Core.Option.Option.None with
                                     | (Core.Option.Option.Some some)
@@ -364,7 +371,7 @@ def Tests.Legacy__side_effects.options
                                             => do Core.Option.Option.None)
                                     | (Core.Option.Option.None )
                                       => do Core.Option.Option.None)
-                              | TODO_LINE_622
+                              | sorry
                                 => do
                                   (match z with
                                     | (Core.Option.Option.Some hoist18)
@@ -422,6 +429,7 @@ def Tests.Legacy__side_effects.options
             | (Core.Option.Option.None ) => do Core.Option.Option.None))
     | (Core.Option.Option.None ) => do Core.Option.Option.None)
 
+--  Test question mark on `Result`s with local mutation
 def Tests.Legacy__side_effects.question_mark
   (x : u32)
   : Result (Core.Result.Result u32 u32)
@@ -449,6 +457,7 @@ structure Tests.Legacy__side_effects.A where
 structure Tests.Legacy__side_effects.B where
 
 
+--  Combine `?` and early return
 def Tests.Legacy__side_effects.monad_lifting
   (x : u8)
   : Result
@@ -464,7 +473,7 @@ def Tests.Legacy__side_effects.monad_lifting
 structure Tests.Legacy__side_effects.Bar where
   a : Bool
   b : (Rust_primitives.Hax.Tuple2
-      (RustArray (Rust_primitives.Hax.Tuple2 Bool Bool) (6 : usize))
+      (RustArray (Rust_primitives.Hax.Tuple2 Bool Bool) 6)
       Bool)
 
 structure Tests.Legacy__side_effects.Foo where
@@ -472,23 +481,21 @@ structure Tests.Legacy__side_effects.Foo where
   y : (Rust_primitives.Hax.Tuple2
       Bool
       (Alloc.Vec.Vec Tests.Legacy__side_effects.Bar Alloc.Alloc.Global))
-  z : (RustArray Tests.Legacy__side_effects.Bar (6 : usize))
+  z : (RustArray Tests.Legacy__side_effects.Bar 6)
   bar : Tests.Legacy__side_effects.Bar
 
+--  Test assignation on non-trivial places
+--  @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0001)
+--  @fail(extraction): proverif(HAX0002, HAX0002, HAX0002, HAX0002)
 def Tests.Legacy__side_effects.assign_non_trivial_lhs
   (foo : Tests.Legacy__side_effects.Foo)
   : Result Tests.Legacy__side_effects.Foo
   := do
-  let foo : Tests.Legacy__side_effects.Foo ← (pure
-    -- Unsupported base expressions for structs.);
-  let foo : Tests.Legacy__side_effects.Foo ← (pure
-    -- Unsupported base expressions for structs.);
-  let foo : Tests.Legacy__side_effects.Foo ← (pure
-    -- Unsupported base expressions for structs.);
-  let foo : Tests.Legacy__side_effects.Foo ← (pure
-    -- Unsupported base expressions for structs.);
-  let foo : Tests.Legacy__side_effects.Foo ← (pure
-    -- Unsupported base expressions for structs.);
+  let foo : Tests.Legacy__side_effects.Foo ← (pure sorry);
+  let foo : Tests.Legacy__side_effects.Foo ← (pure sorry);
+  let foo : Tests.Legacy__side_effects.Foo ← (pure sorry);
+  let foo : Tests.Legacy__side_effects.Foo ← (pure sorry);
+  let foo : Tests.Legacy__side_effects.Foo ← (pure sorry);
   foo
 
 def Tests.Legacy__side_effects.Issue_1300.fun
@@ -499,16 +506,16 @@ def Tests.Legacy__side_effects.Issue_1300.fun
     (← Core.Iter.Traits.Iterator.Iterator.collect
         (Core.Result.Result
           (Alloc.Vec.Vec
-            (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 (32 : usize)))
+            (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 32))
             Alloc.Alloc.Global)
           u8)
         (← Core.Iter.Traits.Iterator.Iterator.map
             (Core.Result.Result
-              (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 (32 : usize)))
+              (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 32))
               u8)
             u8
             -> Result (Core.Result.Result
-              (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 (32 : usize)))
+              (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 32))
               u8)
             (← Core.Slice.Impl.iter u8
                 (← Rust_primitives.unsize
@@ -525,7 +532,7 @@ def Tests.Legacy__side_effects.Issue_1300.fun
                   | (Core.Result.Result.Err err)
                     => do (Core.Result.Result.Err err)) : Result
                 (Core.Result.Result
-                  (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 (32 : usize)))
+                  (Rust_primitives.Hax.Tuple2 u8 (RustArray u8 32))
                   u8)))))
   with
     | (Core.Result.Result.Ok val)

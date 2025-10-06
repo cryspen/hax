@@ -20,8 +20,7 @@ Definition double_sum '(_ : unit) : t_i32 :=
     let _ := if
       f_lt (i) ((0 : t_i32))
     then
-      let hoist7 := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+      let hoist7 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.
@@ -44,8 +43,7 @@ Definition double_sum2 '(_ : unit) : t_i32 :=
     let _ := if
       f_lt (i) ((0 : t_i32))
     then
-      let hoist8 := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+      let hoist8 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.
@@ -91,8 +89,7 @@ Definition double_sum2_return (v : t_Slice t_i32) : t_i32 :=
 
 Definition bigger_power_2_ (x : t_i32) : t_i32 :=
   let pow := (1 : t_i32) in
-  let pow := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/933.
-Please upvote or comment this issue if you see this error message.
+  let pow := failure (("something is not implemented yet.
 Unhandled loop kind
 
 This is discussed in issue https://github.com/hacspec/hax/issues/933.
@@ -121,20 +118,15 @@ Record M_record : Type :=
   settable! (Build_M_record) <M_f_m>.
 
 Definition impl_M__decoded_message (self : t_M) : t_Option ((t_Vec ((t_u8)) ((t_Global)))) :=
-  run (let _ := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.
-Please upvote or comment this issue if you see this error message.
-Loop without mutation
-
-This is discussed in issue https://github.com/hacspec/hax/issues/405.
-Please upvote or comment this issue if you see this error message.
-Note: the error was labeled with context `FunctionalizeLoops`.
-"%string : string)) (("{
- for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
- f_start: 0,
- f_end: alloc::vec::impl_1__len::<
- int,
- alloc::alloc::t_Global,
- >(proj_tests::legacy__loops::control_flo..."%string : string)) in
+  run (let _ := fold_range ((0 : t_usize)) (impl_1__len (f_m self)) (fun _ _ =>
+    (true : bool)) (tt) (fun _ i =>
+    if
+      f_gt (i) ((5 : t_usize))
+    then
+      let hoist14 := ControlFlow_Break (Option_None) in
+      ControlFlow_Continue (never_to_any (hoist14))
+    else
+      ControlFlow_Continue (tt)) in
   let hoist15 := ControlFlow_Break (Option_Some (f_clone (f_m self))) in
   ControlFlow_Continue (never_to_any (hoist15))).
 
@@ -147,8 +139,7 @@ Definition nested '(_ : unit) : t_i32 :=
       let _ := if
         f_lt (j) ((0 : t_i32))
       then
-        let hoist16 := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+        let hoist16 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.
@@ -216,8 +207,7 @@ Note: the error was labeled with context `reject_Continue`.
     let _ := if
       f_lt (i) ((0 : t_i32))
     then
-      let hoist18 := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/15.
-Please upvote or comment this issue if you see this error message.
+      let hoist18 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
 This is discussed in issue https://github.com/hacspec/hax/issues/15.

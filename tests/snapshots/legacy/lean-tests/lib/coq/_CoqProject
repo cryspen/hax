@@ -14,4 +14,5 @@ Tests_Legacy__lean_tests__lib_Loops_Errors.v
 Tests_Legacy__lean_tests__lib_Loops.v
 Tests_Legacy__lean_tests__lib_Ite.v
 Tests_Legacy__lean_tests__lib_Enums.v
+Tests_Legacy__lean_tests__lib_Comments.v
 Tests_Legacy__lean_tests__lib.v

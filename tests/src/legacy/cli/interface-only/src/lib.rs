@@ -1,4 +1,5 @@
 //! @fail(extraction): lean(HAX0001)
+//! @fail(extraction): lean(HAX0001)
 #![allow(dead_code)]
 
 /// This item contains unsafe blocks and raw references, two features

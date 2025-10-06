@@ -19,13 +19,13 @@ instance Tests.Legacy__dyn.Impl :
   where
   stringify (self : i32) := do (← Alloc.String.ToString.to_string self)
 
+--  @fail(extraction): coq(HAX0008), ssprove(HAX0008)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__dyn.print
-  (a : (Alloc.Boxed.Box sorry 
--- unsupported type
- Alloc.Alloc.Global))
+  (a : (Alloc.Boxed.Box sorry Alloc.Alloc.Global))
   : Result Rust_primitives.Hax.Tuple0
   := do
-  let args : (RustArray Core.Fmt.Rt.Argument (1 : usize)) ← (pure
+  let args : (RustArray Core.Fmt.Rt.Argument 1) ← (pure
     #v[(← Core.Fmt.Rt.Impl.new_display Alloc.String.String
              (← Tests.Legacy__dyn.Printable.stringify a))]);
   let _ ← (pure

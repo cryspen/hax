@@ -27,7 +27,7 @@ Record S_record : Type :=
 #[export]
 Notation "'S_S_record'" := Build_S_record.
 
-Instance t_T1_119949170 : t_T1 ((t_S)) :=
+Instance t_T1_294394600 : t_T1 ((t_S)) :=
   {
     implaabbcc_t_T1_f_f1 := fun  (self : t_S)=>
       (42 : t_usize);

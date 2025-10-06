@@ -30,11 +30,11 @@ Record S_record : Type :=
 #[export]
 Notation "'S_S_record'" := Build_S_record.
 
-Instance t_Bar_1041747046 : t_Bar ((t_i16)) :=
+Instance t_Bar_349357745 : t_Bar ((t_i16)) :=
   {
   }.
 
-Instance t_Foo_734938404 `{v_A : Type} : t_Foo (((t_u32*v_A))) ((t_i16)) :=
+Instance t_Foo_694045734 `{v_A : Type} : t_Foo (((t_u32*v_A))) ((t_i16)) :=
   {
   }.
 
@@ -54,7 +54,7 @@ Class t_T3 (v_Self : Type) : Type :=
   }.
 Arguments t_T3 (_).
 
-Instance t_T1_208181362 : t_T1 ((t_S)) :=
+Instance t_T1_546165175 : t_T1 ((t_S)) :=
   {
     implaabbcc_t_T1_f_T := t_i32;
     implaabbcc_t_T1_f_f := fun  (self : t_S) (x : t_i32)=>
@@ -69,7 +69,7 @@ Class t_T2 (v_Self : Type) : Type :=
   }.
 Arguments t_T2 (_).
 
-Instance t_T2_416948713 : t_T2 ((t_S)) :=
+Instance t_T2_646910062 : t_T2 ((t_S)) :=
   {
     implaabbcc_t_T2_f_T := t_S;
     implaabbcc_t_T2_f_f := fun  (self : t_S) (x : t_S)=>

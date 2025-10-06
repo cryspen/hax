@@ -23,7 +23,7 @@ Record Wrapped_record : Type :=
   settable! (Build_Wrapped_record) <Wrapped_0>.
 Notation "'Wrapped_Wrapped_record'" := Build_Wrapped_record.
 
-Instance t_Add_514317068 : t_Add ((t_Wrapped)) ((t_Wrapped)) :=
+Instance t_Add_936171117 : t_Add ((t_Wrapped)) ((t_Wrapped)) :=
   {
     implaabbcc_t_Add_f_Output := t_Wrapped;
     implaabbcc_t_Add_f_add := fun  (self : t_Wrapped) (rhs : t_Wrapped)=>

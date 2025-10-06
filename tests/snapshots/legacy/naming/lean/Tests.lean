@@ -55,6 +55,7 @@ instance Tests.Legacy__naming.Functions_defined_in_trait_impls.Impl_1 :
         (← Tests.Legacy__naming.Functions_defined_in_trait_impls.Impl_1.eq.panic_cold_explicit
             Rust_primitives.Hax.Tuple0.mk))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__naming.Ambiguous_names.debug
   (label : u32)
   (value : u32)
@@ -62,7 +63,7 @@ def Tests.Legacy__naming.Ambiguous_names.debug
   := do
   let args : (Rust_primitives.Hax.Tuple2 u32 u32) ← (pure
     (Rust_primitives.Hax.Tuple2.mk label value));
-  let args : (RustArray Core.Fmt.Rt.Argument (2 : usize)) ← (pure
+  let args : (RustArray Core.Fmt.Rt.Argument 2) ← (pure
     #v[(← Core.Fmt.Rt.Impl.new_display u32
              (Rust_primitives.Hax.Tuple0._0 args)),
          (← Core.Fmt.Rt.Impl.new_display u32
@@ -75,6 +76,7 @@ def Tests.Legacy__naming.Ambiguous_names.debug
             args)));
   Rust_primitives.Hax.Tuple0.mk
 
+--  `f` stacks mutliple let bindings declaring different `a`s.
 def Tests.Legacy__naming.Ambiguous_names.f
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
@@ -88,6 +90,14 @@ def Tests.Legacy__naming.Ambiguous_names.f
   let _ ← (pure (← Tests.Legacy__naming.Ambiguous_names.debug (1 : u32) a_1));
   (← Tests.Legacy__naming.Ambiguous_names.debug (4 : u32) a)
 
+--  `f` is expanded into `f_expand` below, while the execution of `f` gives:
+-- 
+--  ```plaintext
+--   [3] a=306
+--   [2] a=205
+--   [1] a=104
+--   [last] a=123
+--  ```
 def Tests.Legacy__naming.Ambiguous_names.f_expand
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
@@ -259,6 +269,7 @@ def Tests.Legacy__naming.constants
   (← (← Tests.Legacy__naming.FooTrait.ASSOCIATED_CONSTANT)
     +? Tests.Legacy__naming.INHERENT_CONSTANT)
 
+--  From issue https://github.com/hacspec/hax/issues/839
 def Tests.Legacy__naming.string_shadows
   (string : String)
   (n : String)
@@ -266,6 +277,7 @@ def Tests.Legacy__naming.string_shadows
   := do
   Rust_primitives.Hax.Tuple0.mk
 
+--  From issue https://github.com/cryspen/hax/issues/1450
 def Tests.Legacy__naming.items_under_closures
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0

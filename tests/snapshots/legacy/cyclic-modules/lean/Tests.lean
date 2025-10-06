@@ -11,28 +11,28 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-def Tests.Legacy__cyclic_modules.Disjoint_cycle_a.g
+def Tests.Legacy__cyclic_modules.M2.d
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
   Rust_primitives.Hax.Tuple0.mk
 
-def Tests.Legacy__cyclic_modules.Disjoint_cycle_b.h
+def Tests.Legacy__cyclic_modules.M2.c
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
   Rust_primitives.Hax.Tuple0.mk
 
-def Tests.Legacy__cyclic_modules.Disjoint_cycle_a.f
+def Tests.Legacy__cyclic_modules.M1.a
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
-  (← Tests.Legacy__cyclic_modules.Disjoint_cycle_b.h
-      Rust_primitives.Hax.Tuple0.mk)
+  (← Tests.Legacy__cyclic_modules.M2.c Rust_primitives.Hax.Tuple0.mk)
 
-def Tests.Legacy__cyclic_modules.Disjoint_cycle_b.i
+def Tests.Legacy__cyclic_modules.M2.b
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
-  (← Tests.Legacy__cyclic_modules.Disjoint_cycle_a.g
-      Rust_primitives.Hax.Tuple0.mk)
+  let _ ← (pure
+    (← Tests.Legacy__cyclic_modules.M1.a Rust_primitives.Hax.Tuple0.mk));
+  (← Tests.Legacy__cyclic_modules.M2.d Rust_primitives.Hax.Tuple0.mk)

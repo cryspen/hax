@@ -30,29 +30,12 @@ Obligation Tactic := (* try timeout 8 *) solve_ssprove_obligations.
 
 (*Not implemented yet? todo(item)*)
 
-Definition t_Dummy : choice_type :=
-  'unit.
-Equations Build_t_Dummy : both (t_Dummy) :=
-  Build_t_Dummy  :=
-    ret_both (tt (* Empty tuple *) : (t_Dummy)) : both (t_Dummy).
+Equations f (_ : both 'unit) : both 'unit :=
+  f _  :=
+    ret_both (tt : 'unit) : both 'unit.
 Fail Next Obligation.
 
-#[global] Program Instance t_Dummy_t_StructuralPartialEq : t_StructuralPartialEq t_Dummy :=
-  _.
-Fail Next Obligation.
-Hint Unfold t_Dummy_t_StructuralPartialEq.
-
-#[global] Program Instance t_Dummy_t_PartialEq : t_PartialEq t_Dummy t_Dummy :=
-  _.
-Fail Next Obligation.
-Hint Unfold t_Dummy_t_PartialEq.
-
-#[global] Program Instance t_Dummy_t_Eq : t_Eq t_Dummy :=
-  _.
-Fail Next Obligation.
-Hint Unfold t_Dummy_t_Eq.
-
-Equations impl_Dummy__f (self : both t_Dummy) : both t_Dummy :=
-  impl_Dummy__f self  :=
-    self : both t_Dummy.
+Equations heavily_documented (_ : both 'unit) : both int32 :=
+  heavily_documented _  :=
+    ret_both (4 : int32) : both int32.
 Fail Next Obligation.

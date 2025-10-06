@@ -38,7 +38,7 @@ Record S1_record : Type :=
 #[export]
 Notation "'S1_S1_record'" := Build_S1_record.
 
-Instance t_T1_430553508 : t_T1 ((t_S1)) :=
+Instance t_T1_603572875 : t_T1 ((t_S1)) :=
   {
     implaabbcc_t_T1_f_f1 := fun  (self : t_S1)=>
       (0 : t_usize);
@@ -51,13 +51,13 @@ Record S2_record : Type :=
 #[export]
 Notation "'S2_S2_record'" := Build_S2_record.
 
-Instance t_T2_1059470561 : t_T2 ((t_S2)) :=
+Instance t_T2_377660757 : t_T2 ((t_S2)) :=
   {
     implaabbcc_t_T2_f_f2 := fun  (self : t_S2)=>
       (1 : t_usize);
   }.
 
-Instance t_Test_68453437 : t_Test ((t_S2)) ((t_S1)) :=
+Instance t_Test_762805500 : t_Test ((t_S2)) ((t_S1)) :=
   {
     implaabbcc_t_Test_f_ff_test := fun  (self : t_S2) (x : t_S1)=>
       f_add (f_add (f_f1 (x)) (f_f2 (self))) ((1 : t_usize));

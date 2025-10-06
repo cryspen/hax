@@ -31,7 +31,7 @@ mod errors {
         Bar(u32),
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn loop3() -> Result<u32, Error> {
         let mut x = 0;
         for i in 1..10 {
@@ -43,7 +43,7 @@ mod errors {
         Ok(x)
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn loop4() -> Result<(u32, u32), Error> {
         let mut e = 0;
         let f = |()| 42;

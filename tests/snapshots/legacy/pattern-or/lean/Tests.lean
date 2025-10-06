@@ -37,8 +37,7 @@ def Tests.Legacy__pattern_or.nested
   : Result i32
   := do
   (match x with
-    | (Core.Option.Option.Some TODO_LINE_622) | (Core.Option.Option.Some
-        TODO_LINE_622)
+    | (Core.Option.Option.Some sorry) | (Core.Option.Option.Some sorry)
       => do (1 : i32)
     | (Core.Option.Option.Some x) => do x
     | (Core.Option.Option.None ) => do (0 : i32))
@@ -48,11 +47,12 @@ def Tests.Legacy__pattern_or.deep
   : Result i32
   := do
   (match x with
-    | ⟨TODO_LINE_622, (Core.Option.Option.Some TODO_LINE_622)⟩ | ⟨TODO_LINE_622,
-                                                                  (Core.Option.Option.Some
-                                                                    TODO_LINE_622)⟩
-      | ⟨TODO_LINE_622, (Core.Option.Option.Some TODO_LINE_622)⟩ |
-      ⟨TODO_LINE_622, (Core.Option.Option.Some TODO_LINE_622)⟩
+    | ⟨sorry, (Core.Option.Option.Some sorry)⟩ | ⟨sorry,
+                                                  (Core.Option.Option.Some
+                                                    sorry)⟩ | ⟨sorry,
+                                                               (Core.Option.Option.Some
+                                                                 sorry)⟩ |
+      ⟨sorry, (Core.Option.Option.Some sorry)⟩
       => do (0 : i32)
     | ⟨x, _⟩ => do x)
 
@@ -61,11 +61,12 @@ def Tests.Legacy__pattern_or.equivalent
   : Result i32
   := do
   (match x with
-    | ⟨TODO_LINE_622, (Core.Option.Option.Some TODO_LINE_622)⟩ | ⟨TODO_LINE_622,
-                                                                  (Core.Option.Option.Some
-                                                                    TODO_LINE_622)⟩
-      | ⟨TODO_LINE_622, (Core.Option.Option.Some TODO_LINE_622)⟩ |
-      ⟨TODO_LINE_622, (Core.Option.Option.Some TODO_LINE_622)⟩
+    | ⟨sorry, (Core.Option.Option.Some sorry)⟩ | ⟨sorry,
+                                                  (Core.Option.Option.Some
+                                                    sorry)⟩ | ⟨sorry,
+                                                               (Core.Option.Option.Some
+                                                                 sorry)⟩ |
+      ⟨sorry, (Core.Option.Option.Some sorry)⟩
       => do (0 : i32)
     | ⟨x, _⟩ => do x)
 
@@ -77,8 +78,7 @@ def Tests.Legacy__pattern_or.deep_capture
   : Result i32
   := do
   (match x with
-    | (Core.Result.Result.Ok ⟨TODO_LINE_622, x⟩) | (Core.Result.Result.Ok
-        ⟨TODO_LINE_622, x⟩) | (Core.Result.Result.Err ⟨TODO_LINE_622, x⟩) |
-      (Core.Result.Result.Err ⟨TODO_LINE_622, x⟩)
+    | (Core.Result.Result.Ok ⟨sorry, x⟩) | (Core.Result.Result.Ok ⟨sorry, x⟩) |
+      (Core.Result.Result.Err ⟨sorry, x⟩) | (Core.Result.Result.Err ⟨sorry, x⟩)
       => do x
     | (Core.Result.Result.Ok ⟨x, _⟩) | (Core.Result.Result.Err ⟨x, _⟩) => do x)

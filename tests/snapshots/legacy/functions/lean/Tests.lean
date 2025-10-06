@@ -21,6 +21,7 @@ instance Tests.Legacy__functions.Issue_1048.Impl :
   deref (self : Tests.Legacy__functions.Issue_1048.CallableViaDeref) := do
     (fun _ => (do true : Result Bool))
 
+--  @fail(extraction): coq(HAX0002)
 def Tests.Legacy__functions.Issue_1048.call_via_deref
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Bool
@@ -35,6 +36,7 @@ def Tests.Legacy__functions.calling_function_pointer.f
   := do
   Rust_primitives.Hax.Tuple0.mk
 
+--  Issue #757
 def Tests.Legacy__functions.calling_function_pointer
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0

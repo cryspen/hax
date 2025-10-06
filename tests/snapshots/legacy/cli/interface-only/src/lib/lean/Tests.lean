@@ -26,16 +26,22 @@ def Tests.Legacy__cli__interface_only__src__lib.__1.future
 
 def Tests.Legacy__cli__interface_only__src__lib.__1.ensures
   (x : u8)
-  (r : (RustArray u8 (4 : usize)))
+  (r : (RustArray u8 4))
   : Result Bool
   := do
-  (← Rust_primitives.Hax.Machine_int.gt
-      (← Core.Ops.Index.Index.index r (0 : usize))
-      x)
+  (← Rust_primitives.Hax.Machine_int.gt (← r[(0 : usize)]_?) x)
 
+--  This item contains unsafe blocks and raw references, two features
+--  not supported by hax. Thanks to the `-i` flag and the `+:`
+--  modifier, `f` is still extractable as an interface.
+-- 
+--  Expressions within type are still extracted, as well as pre- and
+--  post-conditions.
+--  @fail(extraction): ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008)
 def Tests.Legacy__cli__interface_only__src__lib.f
   (x : u8)
-  : Result (RustArray u8 (4 : usize))
+  : Result (RustArray u8 4)
   := do
   (← Rust_primitives.Hax.failure
       "ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
@@ -59,6 +65,9 @@ Note: the error was labeled with context `reject_RawOrMutPointer`.
 structure Tests.Legacy__cli__interface_only__src__lib.Bar where
 
 
+--  Non-inherent implementations are extracted, their bodies are not
+--  dropped. This might be a bit surprising: see
+--  https://github.com/hacspec/hax/issues/616.
 instance Tests.Legacy__cli__interface_only__src__lib.Impl :
   Core.Convert.From
   Tests.Legacy__cli__interface_only__src__lib.Bar
@@ -73,6 +82,7 @@ def Tests.Legacy__cli__interface_only__src__lib.Impl_1.from.from
   := do
   Tests.Legacy__cli__interface_only__src__lib.Bar.mk
 
+--  If you need to drop the body of a method, please hoist it:
 instance Tests.Legacy__cli__interface_only__src__lib.Impl_1 :
   Core.Convert.From Tests.Legacy__cli__interface_only__src__lib.Bar u8
   where
@@ -91,12 +101,10 @@ instance Tests.Legacy__cli__interface_only__src__lib.Impl_2 (T : Type) :
     (Tests.Legacy__cli__interface_only__src__lib.Holder.mk
       (value := (← Alloc.Vec.Impl.new T Rust_primitives.Hax.Tuple0.mk)))
 
-structure Tests.Legacy__cli__interface_only__src__lib.Param
-  -- Unsupported const param where
-  value : (RustArray u8 SIZE)
+structure Tests.Legacy__cli__interface_only__src__lib.Param sorry where
+  value : sorry
 
-instance Tests.Legacy__cli__interface_only__src__lib.Impl_3
-  -- Unsupported const param :
+instance Tests.Legacy__cli__interface_only__src__lib.Impl_3 sorry :
   Core.Convert.From
   (Tests.Legacy__cli__interface_only__src__lib.Param SIZE)
   Rust_primitives.Hax.Tuple0
@@ -106,7 +114,7 @@ instance Tests.Legacy__cli__interface_only__src__lib.Impl_3
       (value := (← Rust_primitives.Hax.repeat (0 : u8) SIZE)))
 
 def Tests.Legacy__cli__interface_only__src__lib.f_generic
-  -- Unsupported const param (U : Type) (_x : U)
+  sorry (U : Type) (_x : U)
   : Result (Tests.Legacy__cli__interface_only__src__lib.Param X)
   := do
   (Tests.Legacy__cli__interface_only__src__lib.Param.mk
@@ -116,6 +124,7 @@ class Tests.Legacy__cli__interface_only__src__lib.T (Self : Type) where
   Assoc : Type
   d : Rust_primitives.Hax.Tuple0 -> Result Rust_primitives.Hax.Tuple0
 
+--  Impls with associated types are not erased
 instance Tests.Legacy__cli__interface_only__src__lib.Impl_4 :
   Tests.Legacy__cli__interface_only__src__lib.T u8
   where
@@ -131,6 +140,7 @@ def Tests.Legacy__cli__interface_only__src__lib.Impl_5.d._.requires
   := do
   false
 
+--  Items can be forced to be transparent
 instance Tests.Legacy__cli__interface_only__src__lib.Impl_5 :
   Tests.Legacy__cli__interface_only__src__lib.T2 u8
   where
@@ -166,7 +176,7 @@ def Tests.Legacy__cli__interface_only__src__lib.padlen
   (← if
   (← (← Rust_primitives.Hax.Machine_int.gt n (0 : usize))
     &&? (← Rust_primitives.Hax.Machine_int.eq
-        (← Core.Ops.Index.Index.index b (← n -? (1 : usize)))
+        (← b[(← n -? (1 : usize))]_?)
         (0 : u8))) then do
     (← (1 : usize)
       +? (← Tests.Legacy__cli__interface_only__src__lib.padlen

@@ -12,8 +12,9 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 structure Tests.Legacy__mut_ref_functionalization.S where
-  b : (RustArray u8 (5 : usize))
+  b : (RustArray u8 5)
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__mut_ref_functionalization.foo
   (lhs : Tests.Legacy__mut_ref_functionalization.S)
   (rhs : Tests.Legacy__mut_ref_functionalization.S)
@@ -26,8 +27,7 @@ def Tests.Legacy__mut_ref_functionalization.foo
         (fun lhs _ => (do true : Result Bool))
         lhs
         (fun lhs i => (do
-            -- Unsupported base expressions for structs. : Result
-            Tests.Legacy__mut_ref_functionalization.S))));
+            sorry : Result Tests.Legacy__mut_ref_functionalization.S))));
   lhs
 
 def Tests.Legacy__mut_ref_functionalization.Impl.update
@@ -35,8 +35,7 @@ def Tests.Legacy__mut_ref_functionalization.Impl.update
   (x : u8)
   : Result Tests.Legacy__mut_ref_functionalization.S
   := do
-  let self : Tests.Legacy__mut_ref_functionalization.S ← (pure
-    -- Unsupported base expressions for structs.);
+  let self : Tests.Legacy__mut_ref_functionalization.S ← (pure sorry);
   self
 
 def Tests.Legacy__mut_ref_functionalization.index_mutation
@@ -52,9 +51,7 @@ def Tests.Legacy__mut_ref_functionalization.index_mutation
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_range
         v
         x
-        (← Core.Slice.Impl.copy_from_slice u8
-            (← Core.Ops.Index.Index.index v x)
-            a)));
+        (← Core.Slice.Impl.copy_from_slice u8 (← v[x]_?) a)));
   let v : (Alloc.Vec.Vec u8 Alloc.Alloc.Global) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         v
@@ -63,18 +60,18 @@ def Tests.Legacy__mut_ref_functionalization.index_mutation
   Rust_primitives.Hax.Tuple0.mk
 
 def Tests.Legacy__mut_ref_functionalization.index_mutation_unsize
-  (x : (RustArray u8 (12 : usize)))
+  (x : (RustArray u8 12))
   : Result u8
   := do
-  let x : (RustArray u8 (12 : usize)) ← (pure
+  let x : (RustArray u8 12) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_range
         x
         (Core.Ops.Range.Range.mk (start := (4 : usize)) (_end := (5 : usize)))
         (← Core.Slice.Impl.copy_from_slice u8
-            (← Core.Ops.Index.Index.index
-                x
-                (Core.Ops.Range.Range.mk
-                  (start := (4 : usize)) (_end := (5 : usize))))
+            (← x[
+              (Core.Ops.Range.Range.mk
+                (start := (4 : usize)) (_end := (5 : usize)))
+              ]_?)
             (← Rust_primitives.unsize #v[(1 : u8), (2 : u8)]))));
   (42 : u8)
 
@@ -131,6 +128,7 @@ structure Tests.Legacy__mut_ref_functionalization.Pair (T : Type) where
   a : T
   b : Tests.Legacy__mut_ref_functionalization.Foo
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__mut_ref_functionalization.g
   (x :
   (Tests.Legacy__mut_ref_functionalization.Pair
@@ -149,17 +147,15 @@ def Tests.Legacy__mut_ref_functionalization.g
         (fun x _ => (do true : Result Bool))
         x
         (fun x i => (do
-            -- Unsupported base expressions for structs. : Result
+            sorry : Result
             (Tests.Legacy__mut_ref_functionalization.Pair
               (Alloc.Vec.Vec u8 Alloc.Alloc.Global))))));
   let
     x : (Tests.Legacy__mut_ref_functionalization.Pair
-      (Alloc.Vec.Vec u8 Alloc.Alloc.Global)) ← (pure
-    -- Unsupported base expressions for structs.);
+      (Alloc.Vec.Vec u8 Alloc.Alloc.Global)) ← (pure sorry);
   let
     x : (Tests.Legacy__mut_ref_functionalization.Pair
-      (Alloc.Vec.Vec u8 Alloc.Alloc.Global)) ← (pure
-    -- Unsupported base expressions for structs.);
+      (Alloc.Vec.Vec u8 Alloc.Alloc.Global)) ← (pure sorry);
   (Tests.Legacy__mut_ref_functionalization.Pair.a x)
 
 def Tests.Legacy__mut_ref_functionalization.h (x : u8) : Result u8 := do
@@ -175,10 +171,8 @@ def Tests.Legacy__mut_ref_functionalization.i
   : Result
   (Rust_primitives.Hax.Tuple2 Tests.Legacy__mut_ref_functionalization.Bar u8)
   := do
-  let bar : Tests.Legacy__mut_ref_functionalization.Bar ← (pure
-    -- Unsupported base expressions for structs.);
-  let bar : Tests.Legacy__mut_ref_functionalization.Bar ← (pure
-    -- Unsupported base expressions for structs.);
+  let bar : Tests.Legacy__mut_ref_functionalization.Bar ← (pure sorry);
+  let bar : Tests.Legacy__mut_ref_functionalization.Bar ← (pure sorry);
   let hax_temp_output : u8 ← (pure
     (← (Tests.Legacy__mut_ref_functionalization.Bar.a bar)
       +? (Tests.Legacy__mut_ref_functionalization.Bar.b bar)));
@@ -207,10 +201,10 @@ def Tests.Legacy__mut_ref_functionalization.k
     Rust_primitives.Hax.Tuple0
     u64)
   := do
-  let arg_1_wild2 : u8 ← (pure (← Core.Ops.Index.Index.index vec (1 : usize)));
-  let arg_3_wild : u8 ← (pure (← Core.Ops.Index.Index.index vec (2 : usize)));
-  let arg_1_wild1 : u8 ← (pure (← Core.Ops.Index.Index.index vec (3 : usize)));
-  let arg_3_wild1 : u8 ← (pure (← Core.Ops.Index.Index.index vec (4 : usize)));
+  let arg_1_wild2 : u8 ← (pure (← vec[(1 : usize)]_?));
+  let arg_3_wild : u8 ← (pure (← vec[(2 : usize)]_?));
+  let arg_1_wild1 : u8 ← (pure (← vec[(3 : usize)]_?));
+  let arg_3_wild1 : u8 ← (pure (← vec[(4 : usize)]_?));
   let vec : (Alloc.Vec.Vec u8 Alloc.Alloc.Global) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         vec
@@ -230,12 +224,12 @@ instance Tests.Legacy__mut_ref_functionalization.Impl_1 :
   z (self : Tests.Legacy__mut_ref_functionalization.Foo) := do self
 
 def Tests.Legacy__mut_ref_functionalization.array
-  (x : (RustArray u8 (10 : usize)))
-  : Result (RustArray u8 (10 : usize))
+  (x : (RustArray u8 10))
+  : Result (RustArray u8 10)
   := do
-  let x : (RustArray u8 (10 : usize)) ← (pure
+  let x : (RustArray u8 10) ← (pure
     (← Rust_primitives.Hax.Monomorphized_update_at.update_at_usize
         x
         (1 : usize)
-        (← Core.Ops.Index.Index.index x (2 : usize))));
+        (← x[(2 : usize)]_?)));
   x

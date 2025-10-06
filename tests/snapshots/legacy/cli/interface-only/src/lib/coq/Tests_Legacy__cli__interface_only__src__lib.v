@@ -45,7 +45,7 @@ Record Bar_record : Type :=
 #[export]
 Notation "'Bar_Bar_record'" := Build_Bar_record.
 
-Instance t_From_509179257 : t_From ((t_Bar)) ((unit)) :=
+Instance t_From_825578261 : t_From ((t_Bar)) ((unit)) :=
   {
     implaabbcc_t_From_f_from := fun  (() : unit)=>
       Bar;
@@ -54,7 +54,7 @@ Instance t_From_509179257 : t_From ((t_Bar)) ((unit)) :=
 Definition f_from__impl_1__from '(_ : t_u8) : t_Bar :=
   Bar.
 
-Instance t_From_184197699 : t_From ((t_Bar)) ((t_u8)) :=
+Instance t_From_981564546 : t_From ((t_Bar)) ((t_u8)) :=
   {
     implaabbcc_t_From_f_from := fun  (x : t_u8)=>
       f_from__impl_1__from (x);
@@ -69,7 +69,7 @@ Arguments Holder_f_value {_}.
 #[export] Instance settable_Holder_record `{v_T : Type} : Settable _ :=
   settable! (Build_Holder_record (v_T := v_T)) <Holder_f_value>.
 
-Instance t_From_442094552 `{v_T : Type} : t_From ((t_Holder ((v_T)))) ((unit)) :=
+Instance t_From_633561504 `{v_T : Type} : t_From ((t_Holder ((v_T)))) ((unit)) :=
   {
     implaabbcc_t_From_f_from := fun  (() : unit)=>
       Holder (impl__new (tt));
@@ -84,7 +84,7 @@ Arguments Param_f_value {_}.
 #[export] Instance settable_Param_record `{v_SIZE : t_usize} : Settable _ :=
   settable! (Build_Param_record (v_SIZE := v_SIZE)) <Param_f_value>.
 
-Instance t_From_866459549 `{v_SIZE : t_usize} : t_From ((t_Param (v_SIZE))) ((unit)) :=
+Instance t_From_765923989 `{v_SIZE : t_usize} : t_From ((t_Param (v_SIZE))) ((unit)) :=
   {
     implaabbcc_t_From_f_from := fun  (() : unit)=>
       Param (repeat ((0 : t_u8)) (v_SIZE));
@@ -100,7 +100,7 @@ Class t_T (v_Self : Type) : Type :=
   }.
 Arguments t_T (_).
 
-Instance t_T_465317481 : t_T ((t_u8)) :=
+Instance t_T_629389323 : t_T ((t_u8)) :=
   {
     implaabbcc_t_T_f_Assoc := t_u8;
     implaabbcc_t_T_f_d := fun  (_ : unit)=>
@@ -113,7 +113,7 @@ Class t_T2 (v_Self : Type) : Type :=
   }.
 Arguments t_T2 (_).
 
-Instance t_T2_37008592 : t_T2 ((t_u8)) :=
+Instance t_T2_632221587 : t_T2 ((t_u8)) :=
   {
     implaabbcc_t_T2_f_d := fun  (_ : unit)=>
       tt;

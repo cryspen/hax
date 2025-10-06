@@ -11,6 +11,7 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.range1
   (_ : Rust_primitives.Hax.Tuple0)
   : Result usize
@@ -25,6 +26,7 @@ def Tests.Legacy__loops.For_loops.range1
         (fun acc i => (do (← acc +? i) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.range2 (n : usize) : Result usize := do
   let acc : usize ← (pure (0 : usize));
   let acc : usize ← (pure
@@ -36,6 +38,7 @@ def Tests.Legacy__loops.For_loops.range2 (n : usize) : Result usize := do
         (fun acc i => (do (← (← acc +? i) +? (1 : usize)) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.composed_range
   (n : usize)
   : Result usize
@@ -54,6 +57,7 @@ def Tests.Legacy__loops.For_loops.composed_range
         (fun acc i => (do (← (← acc +? i) +? (1 : usize)) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.rev_range (n : usize) : Result usize := do
   let acc : usize ← (pure (0 : usize));
   let acc : usize ← (pure
@@ -65,8 +69,9 @@ def Tests.Legacy__loops.For_loops.rev_range (n : usize) : Result usize := do
         (fun acc i => (do (← (← acc +? i) +? (1 : usize)) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008, HAX0008)
 def Tests.Legacy__loops.For_loops.chunks
-  -- Unsupported const param (arr : (Alloc.Vec.Vec usize Alloc.Alloc.Global))
+  sorry (arr : (Alloc.Vec.Vec usize Alloc.Alloc.Global))
   : Result usize
   := do
   let acc : usize ← (pure (0 : usize));
@@ -96,6 +101,7 @@ def Tests.Legacy__loops.For_loops.chunks
         (fun acc item => (do (← acc -? item) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.iterator
   (arr : (Alloc.Vec.Vec usize Alloc.Alloc.Global))
   : Result usize
@@ -109,6 +115,8 @@ def Tests.Legacy__loops.For_loops.iterator
         (fun acc item => (do (← acc +? item) : Result usize))));
   acc
 
+--  @fail(extraction): ssprove(HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.nested
   (arr : (Alloc.Vec.Vec usize Alloc.Alloc.Global))
   : Result usize
@@ -144,6 +152,7 @@ def Tests.Legacy__loops.For_loops.nested
                             usize))) : Result usize))) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.pattern
   (arr :
   (Alloc.Vec.Vec (Rust_primitives.Hax.Tuple2 usize usize) Alloc.Alloc.Global))
@@ -157,6 +166,7 @@ def Tests.Legacy__loops.For_loops.pattern
         (fun acc ⟨x, y⟩ => (do (← acc +? (← x *? y)) : Result usize))));
   acc
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.enumerate_chunks
   (arr : (Alloc.Vec.Vec usize Alloc.Alloc.Global))
   : Result usize
@@ -182,6 +192,7 @@ def Tests.Legacy__loops.For_loops.enumerate_chunks
 def Tests.Legacy__loops.For_loops.bool_returning (x : u8) : Result Bool := do
   (← Rust_primitives.Hax.Machine_int.lt x (10 : u8))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.For_loops.f
   (_ : Rust_primitives.Hax.Tuple0)
   : Result (Rust_primitives.Hax.Tuple2 u8 Rust_primitives.Hax.Tuple0)
@@ -199,6 +210,8 @@ def Tests.Legacy__loops.For_loops.f
             acc : Result u8)))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.double_sum
   (_ : Rust_primitives.Hax.Tuple0)
   : Result i32
@@ -223,6 +236,8 @@ def Tests.Legacy__loops.Control_flow.double_sum
               i32)))));
   (← sum *? (2 : i32))
 
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.double_sum2
   (_ : Rust_primitives.Hax.Tuple0)
   : Result i32
@@ -252,6 +267,7 @@ def Tests.Legacy__loops.Control_flow.double_sum2
               (Rust_primitives.Hax.Tuple2 i32 i32))))));
   (← sum +? sum2)
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.double_sum_return
   (v : (RustSlice i32))
   : Result i32
@@ -278,6 +294,7 @@ def Tests.Legacy__loops.Control_flow.double_sum_return
     | (Core.Ops.Control_flow.ControlFlow.Continue sum)
       => do (← sum *? (2 : i32)))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.double_sum2_return
   (v : (RustSlice i32))
   : Result i32
@@ -308,6 +325,8 @@ def Tests.Legacy__loops.Control_flow.double_sum2_return
     | (Core.Ops.Control_flow.ControlFlow.Continue ⟨sum, sum2⟩)
       => do (← sum +? sum2))
 
+--  @fail(extraction): ssprove(HAX0001, HAX0001), coq(HAX0001, HAX0001, HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.bigger_power_2 (x : i32) : Result i32 := do
   let pow : i32 ← (pure (1 : i32));
   (← Rust_primitives.Hax.while_loop_cf
@@ -373,6 +392,8 @@ def Tests.Legacy__loops.Control_flow.Impl.decoded_message
           (← Core.Clone.Clone.clone
               (Tests.Legacy__loops.Control_flow.M.m self))))
 
+--  @fail(extraction): coq(HAX0001), ssprove(HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.nested
   (_ : Rust_primitives.Hax.Tuple0)
   : Result i32
@@ -408,6 +429,7 @@ def Tests.Legacy__loops.Control_flow.nested
             (← sum +? i) : Result i32))));
   (← sum *? (2 : i32))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Control_flow.nested_return
   (_ : Rust_primitives.Hax.Tuple0)
   : Result i32
@@ -459,6 +481,8 @@ def Tests.Legacy__loops.Control_flow.nested_return
     | (Core.Ops.Control_flow.ControlFlow.Continue sum)
       => do (← sum *? (2 : i32)))
 
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): proverif(HAX0008, HAX0008)
 def Tests.Legacy__loops.Control_flow.continue_only
   (x : (RustSlice i32))
   : Result (Rust_primitives.Hax.Tuple2 i32 Rust_primitives.Hax.Tuple0)
@@ -475,6 +499,8 @@ def Tests.Legacy__loops.Control_flow.continue_only
               (← Core.Ops.Arith.MulAssign.mul_assign product i)) : Result i32)))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): coq(HAX0001, HAX0008), ssprove(HAX0008, HAX0001)
+--  @fail(extraction): proverif(HAX0008, HAX0008)
 def Tests.Legacy__loops.Control_flow.continue_and_break
   (x : (RustSlice i32))
   : Result (Rust_primitives.Hax.Tuple2 i32 Rust_primitives.Hax.Tuple0)
@@ -500,6 +526,8 @@ def Tests.Legacy__loops.Control_flow.continue_and_break
               i32))))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.While_loops.f
   (_ : Rust_primitives.Hax.Tuple0)
   : Result u8
@@ -517,6 +545,8 @@ def Tests.Legacy__loops.While_loops.f
         (fun x => (do let x : u8 ← (pure (← x +? (3 : u8))); x : Result u8))));
   (← x +? (12 : u8))
 
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.While_loops.while_invariant_decr
   (_ : Rust_primitives.Hax.Tuple0)
   : Result u8
@@ -537,6 +567,8 @@ def Tests.Legacy__loops.While_loops.while_invariant_decr
         (fun x => (do let x : u8 ← (pure (← x +? (3 : u8))); x : Result u8))));
   (← x +? (12 : u8))
 
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.While_loops.while_invariant_decr_rev
   (_ : Rust_primitives.Hax.Tuple0)
   : Result u8
@@ -557,6 +589,7 @@ def Tests.Legacy__loops.While_loops.while_invariant_decr_rev
         (fun x => (do let x : u8 ← (pure (← x +? (3 : u8))); x : Result u8))));
   (← x +? (12 : u8))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Recognized_loops.range
   (_ : Rust_primitives.Hax.Tuple0)
   : Result (Rust_primitives.Hax.Tuple2 u64 Rust_primitives.Hax.Tuple0)
@@ -574,6 +607,7 @@ def Tests.Legacy__loops.Recognized_loops.range
             count : Result u64)))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Recognized_loops.range_step_by
   (_ : Rust_primitives.Hax.Tuple0)
   : Result (Rust_primitives.Hax.Tuple2 u64 Rust_primitives.Hax.Tuple0)
@@ -592,6 +626,7 @@ def Tests.Legacy__loops.Recognized_loops.range_step_by
             count : Result u64)))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Recognized_loops.enumerated_slice
   (T : Type) (slice : (RustSlice T))
   : Result (Rust_primitives.Hax.Tuple2 u64 Rust_primitives.Hax.Tuple0)
@@ -609,6 +644,7 @@ def Tests.Legacy__loops.Recognized_loops.enumerated_slice
             count : Result u64)))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.Recognized_loops.enumerated_chunked_slice
   (T : Type) (slice : (RustSlice T))
   : Result (Rust_primitives.Hax.Tuple2 u64 Rust_primitives.Hax.Tuple0)
@@ -626,11 +662,12 @@ def Tests.Legacy__loops.Recognized_loops.enumerated_chunked_slice
             count : Result u64)))
     Rust_primitives.Hax.Tuple0.mk)
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.And_mut_side_effect_loop.looping
-  (array : (RustArray u8 (5 : usize)))
-  : Result (RustArray u8 (5 : usize))
+  (array : (RustArray u8 5))
+  : Result (RustArray u8 5)
   := do
-  let array : (RustArray u8 (5 : usize)) ← (pure
+  let array : (RustArray u8 5) ← (pure
     (← Rust_primitives.Hax.Folds.fold_range
         (0 : usize)
         (← Core.Slice.Impl.len u8 (← Rust_primitives.unsize array))
@@ -641,12 +678,13 @@ def Tests.Legacy__loops.And_mut_side_effect_loop.looping
                 array
                 i
                 (← Rust_primitives.Hax.cast_op i)) : Result
-            (RustArray u8 (5 : usize))))));
+            (RustArray u8 5)))));
   array
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__loops.And_mut_side_effect_loop.looping_2
-  (array : (RustArray u8 (5 : usize)))
-  : Result (RustArray u8 (5 : usize))
+  (array : (RustArray u8 5))
+  : Result (RustArray u8 5)
   := do
   let ⟨array, result⟩ ← (pure
     (Rust_primitives.Hax.Tuple2.mk
@@ -660,7 +698,7 @@ def Tests.Legacy__loops.And_mut_side_effect_loop.looping_2
                   array
                   i
                   (← Rust_primitives.Hax.cast_op i)) : Result
-              (RustArray u8 (5 : usize)))))
+              (RustArray u8 5))))
       Rust_primitives.Hax.Tuple0.mk));
   let _ ← (pure Rust_primitives.Hax.Tuple0.mk);
   let _ ← (pure result);

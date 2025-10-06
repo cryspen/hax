@@ -90,42 +90,37 @@ class Tests.Legacy__traits.Recursive_trait_with_assoc_type.Trait2
   U : Type
 
 structure Tests.Legacy__traits.Interlaced_consts_types.Bar
-  -- Unsupported const param (FooType : Type) where
-  _0 : (RustArray FooType FooConst)
+  sorry (FooType : Type) where
+  _0 : sorry
 
 class Tests.Legacy__traits.Interlaced_consts_types.Foo
-  (Self : Type) -- Unsupported const param (FooType : Type)
+  (Self : Type) sorry (FooType : Type)
   where
-  fun -- Unsupported const param (FunType : Type) :
-    (RustArray FooType FooConst)
-    -> (RustArray FunType FunConst)
-    -> Result Rust_primitives.Hax.Tuple0
+  fun sorry (FunType : Type) :
+    sorry -> sorry -> Result Rust_primitives.Hax.Tuple0
 
 instance Tests.Legacy__traits.Interlaced_consts_types.Impl
-  -- Unsupported const param (FooType : Type) (SelfType : Type) :
+  sorry (FooType : Type) (SelfType : Type) :
   Tests.Legacy__traits.Interlaced_consts_types.Foo SelfType FooConst FooType
   where
-  fun -- Unsupported const param (FunType : Type) (x :
-    (RustArray FooType FooConst))
-    (y : (RustArray FunType FunConst))
-    := do
+  fun sorry (FunType : Type) (x : sorry) (y : sorry) := do
     Rust_primitives.Hax.Tuple0.mk
 
 structure Tests.Legacy__traits.Implicit_explicit_calling_conventions.Type
-  (TypeArg : Type) -- Unsupported const param where
-  field : (RustArray TypeArg ConstArg)
+  (TypeArg : Type) sorry where
+  field : sorry
 
 class Tests.Legacy__traits.Implicit_explicit_calling_conventions.Trait
-  (Self : Type) (TypeArg : Type) -- Unsupported const param
+  (Self : Type) (TypeArg : Type) sorry
   where
-  method (MethodTypeArg : Type) -- Unsupported const param :
+  method (MethodTypeArg : Type) sorry :
     Self
     -> TypeArg
     -> (Tests.Legacy__traits.Implicit_explicit_calling_conventions.Type
       TypeArg
       ConstArg)
     -> Result Rust_primitives.Hax.Tuple0
-  associated_function (MethodTypeArg : Type) -- Unsupported const param :
+  associated_function (MethodTypeArg : Type) sorry :
     Self
     -> TypeArg
     -> (Tests.Legacy__traits.Implicit_explicit_calling_conventions.Type
@@ -134,14 +129,13 @@ class Tests.Legacy__traits.Implicit_explicit_calling_conventions.Trait
     -> Result Rust_primitives.Hax.Tuple0
 
 instance Tests.Legacy__traits.Implicit_explicit_calling_conventions.Impl
-  (TypeArg : Type) -- Unsupported const param :
+  (TypeArg : Type) sorry :
   Tests.Legacy__traits.Implicit_explicit_calling_conventions.Trait
   Rust_primitives.Hax.Tuple0
   TypeArg
   ConstArg
   where
-  method (MethodTypeArg : Type) -- Unsupported const param (self :
-    Rust_primitives.Hax.Tuple0)
+  method (MethodTypeArg : Type) sorry (self : Rust_primitives.Hax.Tuple0)
     (value_TypeArg : TypeArg)
     (value_Type :
     (Tests.Legacy__traits.Implicit_explicit_calling_conventions.Type
@@ -149,7 +143,7 @@ instance Tests.Legacy__traits.Implicit_explicit_calling_conventions.Impl
       ConstArg))
     := do
     Rust_primitives.Hax.Tuple0.mk
-  associated_function (MethodTypeArg : Type) -- Unsupported const param (_self :
+  associated_function (MethodTypeArg : Type) sorry (_self :
     Rust_primitives.Hax.Tuple0)
     (value_TypeArg : TypeArg)
     (value_Type :
@@ -162,8 +156,8 @@ instance Tests.Legacy__traits.Implicit_explicit_calling_conventions.Impl
 def Tests.Legacy__traits.Implicit_explicit_calling_conventions.method_caller
   (MethodTypeArg : Type)
   (TypeArg : Type)
-  -- Unsupported const param
-  -- Unsupported const param
+  sorry
+  sorry
   (ImplTrait : Type)
   [(Tests.Legacy__traits.Implicit_explicit_calling_conventions.Trait
     ImplTrait
@@ -187,8 +181,8 @@ def
   Tests.Legacy__traits.Implicit_explicit_calling_conventions.associated_function_caller
   (MethodTypeArg : Type)
   (TypeArg : Type)
-  -- Unsupported const param
-  -- Unsupported const param
+  sorry
+  sorry
   (ImplTrait : Type)
   [(Tests.Legacy__traits.Implicit_explicit_calling_conventions.Trait
     ImplTrait
@@ -209,7 +203,7 @@ def
   Rust_primitives.Hax.Tuple0.mk
 
 class Tests.Legacy__traits.Implicit_explicit_calling_conventions.SubTrait
-  (Self : Type) (TypeArg : Type) -- Unsupported const param
+  (Self : Type) (TypeArg : Type) sorry
   where
   [_constr_13222719583123837337 :
   (Tests.Legacy__traits.Implicit_explicit_calling_conventions.Trait
@@ -264,7 +258,7 @@ class Tests.Legacy__traits.Impl_expr_in_goal.T2 (Self : Type) where
 instance Tests.Legacy__traits.Impl_expr_in_goal.Impl
   (U : Type)
   [(Tests.Legacy__traits.Impl_expr_in_goal.T1 U)]
-  [(Tests.Legacy__traits.Impl_expr_in_goal.T2 TODO_LINE_701)]
+  [(Tests.Legacy__traits.Impl_expr_in_goal.T2 sorry)]
   :
   Tests.Legacy__traits.Impl_expr_in_goal.T2 U
   where
@@ -277,7 +271,7 @@ class Tests.Legacy__traits.For_clauses.Issue_495.Minimized_3.Trait
 
 instance Tests.Legacy__traits.For_clauses.Issue_495.Minimized_3.Impl
   (P : Type)
-  [-- unsupported constraint]
+  [sorry]
   [(Core.Ops.Function.FnMut P (Rust_primitives.Hax.Tuple1 u8))]
   :
   Tests.Legacy__traits.For_clauses.Issue_495.Minimized_3.Trait P
@@ -316,7 +310,7 @@ class Tests.Legacy__traits.Block_size.BlockBackend (Self : Type) where
   [_constr_12752098123861594988 :
   (Tests.Legacy__traits.Block_size.ParBlocksSizeUser Self)]
   proc_block :
-    (Alloc.Vec.Vec TODO_LINE_701 Alloc.Alloc.Global)
+    (Alloc.Vec.Vec sorry Alloc.Alloc.Global)
     -> Result Rust_primitives.Hax.Tuple0
 
 class Tests.Legacy__traits.SuperTrait (Self : Type) where
@@ -340,10 +334,7 @@ def Tests.Legacy__traits.Impl_2.method
   (← Tests.Legacy__traits.Bar.bar x)
 
 def Tests.Legacy__traits.closure_impl_expr
-  (I : Type)
-  [(Core.Iter.Traits.Iterator.Iterator I)]
-  [-- unsupported constraint]
-  (it : I)
+  (I : Type) [(Core.Iter.Traits.Iterator.Iterator I)] [sorry] (it : I)
   : Result (Alloc.Vec.Vec Rust_primitives.Hax.Tuple0 Alloc.Alloc.Global)
   := do
   (← Core.Iter.Traits.Iterator.Iterator.collect
@@ -358,11 +349,11 @@ def Tests.Legacy__traits.closure_impl_expr_fngen
   (I : Type)
   (F : Type)
   [(Core.Iter.Traits.Iterator.Iterator I)]
-  [-- unsupported constraint]
+  [sorry]
   [(Core.Ops.Function.FnMut
     F
     (Rust_primitives.Hax.Tuple1 Rust_primitives.Hax.Tuple0))]
-  [-- unsupported constraint]
+  [sorry]
   (it : I)
   (f : F)
   : Result (Alloc.Vec.Vec Rust_primitives.Hax.Tuple0 Alloc.Alloc.Global)
@@ -430,7 +421,7 @@ def Tests.Legacy__traits.f
   (← Tests.Legacy__traits.Foo.method_f x)
 
 def Tests.Legacy__traits.g
-  (T : Type) [(Tests.Legacy__traits.Foo T)] (x : TODO_LINE_701)
+  (T : Type) [(Tests.Legacy__traits.Foo T)] (x : sorry)
   : Result u32
   := do
   (← Tests.Legacy__traits.SuperTrait.function_of_super_trait x)

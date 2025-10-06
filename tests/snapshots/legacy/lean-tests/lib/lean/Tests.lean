@@ -394,6 +394,7 @@ structure Tests.Legacy__lean_tests__lib.Structs.S3 where
   _structure : usize
   _inductive : usize
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__lean_tests__lib.Structs.normal_structs
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
@@ -457,6 +458,7 @@ inductive Tests.Legacy__lean_tests__lib.Loops.Errors.Error : Type
 | Bar : u32 -> Tests.Legacy__lean_tests__lib.Loops.Errors.Error 
 
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__lean_tests__lib.Loops.Errors.loop3
   (_ : Rust_primitives.Hax.Tuple0)
   : Result
@@ -490,6 +492,7 @@ def Tests.Legacy__lean_tests__lib.Loops.Errors.loop3
     | (Core.Ops.Control_flow.ControlFlow.Continue x)
       => do (Core.Result.Result.Ok x))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__lean_tests__lib.Loops.Errors.loop4
   (_ : Rust_primitives.Hax.Tuple0)
   : Result
@@ -546,6 +549,7 @@ inductive Tests.Legacy__lean_tests__lib.Enums.MyList (T : Type) : Type
     : Tests.Legacy__lean_tests__lib.Enums.MyList (T : Type) 
 
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__lean_tests__lib.Enums.enums
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
@@ -662,6 +666,7 @@ def Tests.Legacy__lean_tests__lib.binop_resugarings (x : u32) : Result u32 := do
   let rshift : u32 ← (pure (← div >>>? x));
   x
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__lean_tests__lib.Loops.loop1
   (_ : Rust_primitives.Hax.Tuple0)
   : Result u32
@@ -676,6 +681,7 @@ def Tests.Legacy__lean_tests__lib.Loops.loop1
         (fun x i => (do (← x +? i) : Result u32))));
   x
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__lean_tests__lib.Loops.loop2
   (_ : Rust_primitives.Hax.Tuple0)
   : Result u32
@@ -724,3 +730,26 @@ def Tests.Legacy__lean_tests__lib.Ite.test2 (b : Bool) : Result i32 := do
   else do
     let z : i32 ← (pure (← y -? x));
     (← (← z +? y) +? x))
+
+--  Single line doc comment
+def Tests.Legacy__lean_tests__lib.Comments.f
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  Rust_primitives.Hax.Tuple0.mk
+
+/--
+   Block doc-comment : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum rutrum
+  orci ac tellus ullamcorper sollicitudin. Sed fringilla mi id arcu suscipit rhoncus. Pellentesque et
+  metus a ante feugiat lobortis. Nam a mauris eget nisl congue egestas. Duis et gravida
+  nulla. Curabitur mattis leo vel molestie posuere. Etiam malesuada et augue eget
+  varius. Pellentesque quis tincidunt erat. Vestibulum id consectetur turpis. Cras elementum magna id
+  urna volutpat fermentum. In vel erat quis nunc rhoncus porta. Aliquam sed pellentesque
+  tellus. Quisque odio diam, mollis ut venenatis non, scelerisque at nulla. Nunc urna ante, tristique
+  quis nisi quis, congue maximus nisl. Curabitur non efficitur odio. 
+  -/
+def Tests.Legacy__lean_tests__lib.Comments.heavily_documented
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result u32
+  := do
+  (4 : u32)

@@ -26,6 +26,7 @@ def Tests.Legacy__unsafe._.requires
   := do
   false
 
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008)
 def Tests.Legacy__unsafe.impossible
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Tests.Legacy__unsafe.Impossible
@@ -41,6 +42,7 @@ def Tests.Legacy__unsafe.__1.requires
       (← Core.Slice.Impl.len u8 slice)
       (10 : usize))
 
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008)
 def Tests.Legacy__unsafe.get_unchecked_example
   (slice : (RustSlice u8))
   : Result u8

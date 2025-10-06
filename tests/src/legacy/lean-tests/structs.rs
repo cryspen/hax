@@ -33,12 +33,12 @@ fn tuple_structs() -> () {
     let _ = t3.0;
     let _ = t3.1;
     let _ = t3.2;
-    let _ = t3.2.1;
+    let _ = t3.2 .1;
     let _ = t3p.0;
     let _ = t3p.1;
-    let _ = t3p.1.1.0;
-    let _ = t3p.1.0;
-    let _ = t3p.1.1;
+    let _ = t3p.1 .1 .0;
+    let _ = t3p.1 .0;
+    let _ = t3p.1 .1;
 
     // 5. Pattern matching
     let _ = match t0 {

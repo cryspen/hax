@@ -21,15 +21,14 @@ def Tests.Legacy__slices.do_something
   Rust_primitives.Hax.Tuple0.mk
 
 def Tests.Legacy__slices.r#unsized
-  (_ : (RustArray (RustSlice u8) (1 : usize)))
+  (_ : (RustArray (RustSlice u8) 1))
   : Result Rust_primitives.Hax.Tuple0
   := do
   Rust_primitives.Hax.Tuple0.mk
 
 def Tests.Legacy__slices.sized
-  (x : (RustArray (RustArray u8 (4 : usize)) (1 : usize)))
+  (x : (RustArray (RustArray u8 4) 1))
   : Result Rust_primitives.Hax.Tuple0
   := do
   (← Tests.Legacy__slices.r#unsized
-      #v[(← Rust_primitives.unsize
-               (← Core.Ops.Index.Index.index x (0 : usize)))])
+      #v[(← Rust_primitives.unsize (← x[(0 : usize)]_?))])

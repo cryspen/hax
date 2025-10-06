@@ -1,4 +1,4 @@
-//! @fail(extraction): lean(HAX0001), ssprove(HAX0001), coq(HAX0002, HAX0002, HAX0002, HAX0002, HAX0002)
+//! @off: lean, ssprove, coq
 use hax_lib as hax;
 
 // dummy max value

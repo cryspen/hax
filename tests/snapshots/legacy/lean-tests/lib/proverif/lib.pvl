@@ -1125,3 +1125,11 @@ letfun tests__legacy__lean_tests__lib__ite__test2(b : bool) =
          core__ops__arith__f_add(core__ops__arith__f_add(z, y), x)
        ).
 
+letfun tests__legacy__lean_tests__lib__comments__f(wildcard42 : bitstring) =
+       ().
+
+letfun tests__legacy__lean_tests__lib__comments__heavily_documented(
+         wildcard43 : bitstring
+       ) =
+       4.
+

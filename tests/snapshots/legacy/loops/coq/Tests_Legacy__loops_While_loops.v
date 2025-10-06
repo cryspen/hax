@@ -15,8 +15,7 @@ From Core Require Import Core.
 
 Definition f '(_ : unit) : t_u8 :=
   let x := (0 : t_u8) in
-  let x := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/933.
-Please upvote or comment this issue if you see this error message.
+  let x := failure (("something is not implemented yet.
 Unhandled loop kind
 
 This is discussed in issue https://github.com/hacspec/hax/issues/933.
@@ -39,8 +38,7 @@ Note: the error was labeled with context `FunctionalizeLoops`.
 
 Definition while_invariant_decr '(_ : unit) : t_u8 :=
   let x := (0 : t_u8) in
-  let x := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/933.
-Please upvote or comment this issue if you see this error message.
+  let x := failure (("something is not implemented yet.
 Unhandled loop kind
 
 This is discussed in issue https://github.com/hacspec/hax/issues/933.
@@ -81,8 +79,7 @@ Note: the error was labeled with context `FunctionalizeLoops`.
 
 Definition while_invariant_decr_rev '(_ : unit) : t_u8 :=
   let x := (0 : t_u8) in
-  let x := failure (("something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/933.
-Please upvote or comment this issue if you see this error message.
+  let x := failure (("something is not implemented yet.
 Unhandled loop kind
 
 This is discussed in issue https://github.com/hacspec/hax/issues/933.

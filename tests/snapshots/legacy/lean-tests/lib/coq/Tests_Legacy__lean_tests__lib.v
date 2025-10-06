@@ -42,13 +42,13 @@ Definition closure '(_ : unit) : t_i32 :=
   f_add (res1) (res2).
 
 (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "e89f3131055d4a0ead923431f4ffaeeb")
+Details: Could not find item with UID (Attr_payloads.UId.T.UId "6bb470a53f4a4e17badf402f7fffa8f4")
 
 
 Note: the error was labeled with context `Coq backend`.
 (* ERROR_ITEM *))
 (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
-Details: Could not find item with UID (Attr_payloads.UId.T.UId "61499b7f7c584c0c956b466d3a2a4c3a")
+Details: Could not find item with UID (Attr_payloads.UId.T.UId "07975eaf462a4b639ab3724308a46d46")
 
 
 Note: the error was labeled with context `Coq backend`.

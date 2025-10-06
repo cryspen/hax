@@ -1,6 +1,6 @@
 //! @fail(extraction): lean(HAX0001)
 mod recognized_loops {
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn range() {
         let mut count = 0u64;
         for i in 0u8..10u8 {
@@ -8,7 +8,7 @@ mod recognized_loops {
             count += 1;
         }
     }
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn range_step_by() {
         let mut count = 0u64;
         for i in (0u8..10u8).step_by(2) {
@@ -16,7 +16,7 @@ mod recognized_loops {
             count += 1;
         }
     }
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn enumerated_slice<T>(slice: &[T]) {
         let mut count = 0u64;
         for i in slice.into_iter().enumerate() {
@@ -24,7 +24,7 @@ mod recognized_loops {
             count += 2;
         }
     }
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn enumerated_chunked_slice<T>(slice: &[T]) {
         let mut count = 0u64;
         for i in slice.chunks_exact(3).enumerate() {
@@ -35,7 +35,7 @@ mod recognized_loops {
 }
 
 mod for_loops {
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn range1() -> usize {
         let mut acc = 0;
         for i in 0..15 {
@@ -44,7 +44,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn range2(n: usize) -> usize {
         let mut acc = 0;
         for i in 0..(n + 10) {
@@ -53,7 +53,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn composed_range(n: usize) -> usize {
         let mut acc = 0;
         for i in (0..n).chain((n + 10)..(n + 50)) {
@@ -62,7 +62,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn rev_range(n: usize) -> usize {
         let mut acc = 0;
         for i in (0..n).rev() {
@@ -71,7 +71,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
+    /// @fail(extraction): proverif(HAX0008, HAX0008)
     fn chunks<const CHUNK_LEN: usize>(arr: Vec<usize>) -> usize {
         let mut acc = 0;
         let chunks = arr.chunks_exact(CHUNK_LEN);
@@ -88,7 +88,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn iterator(arr: Vec<usize>) -> usize {
         let mut acc = 0;
         for item in arr.iter() {
@@ -97,8 +97,8 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): ssprove(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn nested(arr: Vec<usize>) -> usize {
         let mut acc = 0;
         for item in arr.iter() {
@@ -112,7 +112,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn pattern(arr: Vec<(usize, usize)>) -> usize {
         let mut acc = 0;
         for (x, y) in arr {
@@ -121,7 +121,7 @@ mod for_loops {
         acc
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn enumerate_chunks(arr: Vec<usize>) -> usize {
         let mut acc = 0;
         for (i, chunk) in arr.chunks(4).enumerate() {
@@ -136,7 +136,7 @@ mod for_loops {
         x < 10
     }
 
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn f() {
         let mut acc = 0;
         for i in 1..10 {
@@ -147,8 +147,8 @@ mod for_loops {
 }
 
 mod while_loops {
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn f() -> u8 {
         let mut x = 0;
         while x < 10 {
@@ -156,8 +156,8 @@ mod while_loops {
         }
         x + 12
     }
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn while_invariant_decr() -> u8 {
         let mut x = 0;
         while x < 10 {
@@ -167,8 +167,8 @@ mod while_loops {
         }
         x + 12
     }
-/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn while_invariant_decr_rev() -> u8 {
         let mut x = 0;
         while x < 10 {
@@ -181,8 +181,8 @@ mod while_loops {
 }
 
 mod control_flow {
-/// @fail(extraction): ssprove(HAX0001), coq(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0001), coq(HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn double_sum() -> i32 {
         let mut sum = 0;
         for i in 1..10 {
@@ -194,8 +194,8 @@ mod control_flow {
         sum *= 2;
         sum
     }
-/// @fail(extraction): ssprove(HAX0001), coq(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0001), coq(HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn double_sum2() -> i32 {
         let mut sum = 0;
         let mut sum2 = 0;
@@ -208,7 +208,7 @@ mod control_flow {
         }
         sum + sum2
     }
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn double_sum_return(v: &[i32]) -> i32 {
         let mut sum = 0;
         for i in v {
@@ -220,7 +220,7 @@ mod control_flow {
         sum *= 2;
         sum
     }
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn double_sum2_return(v: &[i32]) -> i32 {
         let mut sum = 0;
         let mut sum2 = 0;
@@ -233,8 +233,8 @@ mod control_flow {
         }
         sum + sum2
     }
-/// @fail(extraction): ssprove(HAX0001, HAX0001), coq(HAX0001, HAX0001, HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0001, HAX0001), coq(HAX0001, HAX0001, HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn bigger_power_2(x: i32) -> i32 {
         let mut pow = 1;
         while pow < 1000000 {
@@ -253,8 +253,7 @@ mod control_flow {
         m: Vec<u8>,
     }
 
-/// @fail(extraction): coq(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     impl M {
         fn decoded_message(&self) -> Option<Vec<u8>> {
             for i in 0..self.m.len() {
@@ -265,8 +264,8 @@ mod control_flow {
             return Some(self.m.clone());
         }
     }
-/// @fail(extraction): coq(HAX0001), ssprove(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): coq(HAX0001), ssprove(HAX0001)
+    /// @fail(extraction): proverif(HAX0008)
     fn nested() -> i32 {
         let mut sum = 0;
         for i in 1..10 {
@@ -281,7 +280,7 @@ mod control_flow {
         sum *= 2;
         sum
     }
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn nested_return() -> i32 {
         let mut sum = 0;
         for i in 1..10 {
@@ -296,8 +295,8 @@ mod control_flow {
         sum *= 2;
         sum
     }
-/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
-/// @fail(extraction): proverif(HAX0008, HAX0008)
+    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+    /// @fail(extraction): proverif(HAX0008, HAX0008)
     fn continue_only(x: &[i32]) {
         let mut product = 1;
         for i in x {
@@ -307,8 +306,8 @@ mod control_flow {
             product *= i
         }
     }
-/// @fail(extraction): coq(HAX0001, HAX0008), ssprove(HAX0008, HAX0001)
-/// @fail(extraction): proverif(HAX0008, HAX0008)
+    /// @fail(extraction): coq(HAX0001, HAX0008), ssprove(HAX0008, HAX0001)
+    /// @fail(extraction): proverif(HAX0008, HAX0008)
     fn continue_and_break(x: &[i32]) {
         let mut product = 1;
         for i in x {
@@ -325,7 +324,7 @@ mod control_flow {
 
 mod and_mut_side_effect_loop {
     // https://github.com/hacspec/hax/issues/720
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn looping(array: &mut [u8; 5]) {
         for i in 0..array.len() {
             array[i] = i as u8;
@@ -333,7 +332,7 @@ mod and_mut_side_effect_loop {
     }
 
     #[hax_lib::fstar::verification_status(panic_free)]
-/// @fail(extraction): proverif(HAX0008)
+    /// @fail(extraction): proverif(HAX0008)
     fn looping_2(array: &mut [u8; 5]) {
         for i in 0..array.len() {
             array[i] = i as u8;

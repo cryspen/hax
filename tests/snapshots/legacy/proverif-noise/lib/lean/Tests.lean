@@ -11,6 +11,9 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+--  This file formalizes the Crypto Functions from the Noise Specification
+--  Section 4: Crypto Functions
+--  https://noiseprotocol.org/noise.html#crypto-functions
 inductive Tests.Legacy__proverif_noise__lib.Noise_crypto.Error : Type
 | CryptoError : Tests.Legacy__proverif_noise__lib.Noise_crypto.Error 
 
@@ -23,6 +26,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_crypto.Error
     | (Tests.Legacy__proverif_noise__lib.Noise_crypto.Error.CryptoError )
       => do (0 : isize))
 
+--  Section 4.1 and 12.1: Diffie-Hellman Functions for Curve25519
 structure Tests.Legacy__proverif_noise__lib.Noise_crypto.KeyPair where
   private_key : Hax_lib_protocol.Crypto.DHScalar
   public_key : (Alloc.Vec.Vec u8 Alloc.Alloc.Global)
@@ -56,6 +60,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_crypto.dh
               sk))
       pk)
 
+--  Section 4.2 and 12.3: Cipher functions for ChaCha20-Poly1305
 def Tests.Legacy__proverif_noise__lib.Noise_crypto.encrypt
   (key : (RustSlice u8))
   (counter : u64)
@@ -103,14 +108,14 @@ def Tests.Legacy__proverif_noise__lib.Noise_crypto.decrypt
   let cipher_len : usize ← (pure
     (← (← Core.Slice.Impl.len u8 cipher) -? (16 : usize)));
   let cip : (RustSlice u8) ← (pure
-    (← Core.Ops.Index.Index.index
-        cipher
-        (Core.Ops.Range.Range.mk (start := (0 : usize)) (_end := cipher_len))));
+    (← cipher[
+      (Core.Ops.Range.Range.mk (start := (0 : usize)) (_end := cipher_len))
+      ]_?));
   let tag : (RustSlice u8) ← (pure
-    (← Core.Ops.Index.Index.index
-        cipher
-        (Core.Ops.Range.Range.mk
-          (start := cipher_len) (_end := (← Core.Slice.Impl.len u8 cipher)))));
+    (← cipher[
+      (Core.Ops.Range.Range.mk
+        (start := cipher_len) (_end := (← Core.Slice.Impl.len u8 cipher)))
+      ]_?));
   (← Core.Result.Impl.map_err
       (Alloc.Vec.Vec u8 Alloc.Alloc.Global)
       Hax_lib_protocol.ProtocolError
@@ -142,6 +147,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_crypto.rekey
       (← Rust_primitives.unsize
           (← Rust_primitives.Hax.repeat (0 : u8) (32 : usize))))
 
+--  Section 4.3 and 12.5: Hash functions for SHA-256
 def Tests.Legacy__proverif_noise__lib.Noise_crypto.HASHLEN : usize := 32
 
 def Tests.Legacy__proverif_noise__lib.Noise_crypto.BLOCKLEN : usize := 64
@@ -164,6 +170,8 @@ def Tests.Legacy__proverif_noise__lib.Noise_crypto.hmac_hash
       key
       input)
 
+--  HKDF spec as per Noise
+--  Alternative would be to directly use HKDF
 def Tests.Legacy__proverif_noise__lib.Noise_crypto.kdf_next
   (secret : (RustSlice u8))
   (prev : (RustSlice u8))
@@ -242,6 +250,8 @@ def Tests.Legacy__proverif_noise__lib.Noise_crypto.hkdf3
         (3 : u8)));
   (Rust_primitives.Hax.Tuple3.mk k1 k2 k3)
 
+--  This module defines the generic Noise processing rules
+--  Section 5: https://noiseprotocol.org/noise.html#processing-rules
 structure Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState where
   k : (Core.Option.Option (Alloc.Vec.Vec u8 Alloc.Alloc.Global))
   n : u64
@@ -251,6 +261,7 @@ structure Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState where
   ck : (Alloc.Vec.Vec u8 Alloc.Alloc.Global)
   h : (Alloc.Vec.Vec u8 Alloc.Alloc.Global)
 
+--  5.1: The CipherState Object
 def Tests.Legacy__proverif_noise__lib.Noise_lib.initialize_key
   (key : (Core.Option.Option (Alloc.Vec.Vec u8 Alloc.Alloc.Global)))
   : Result Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState
@@ -265,6 +276,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.has_key
   (← Core.Option.Impl.is_some (Alloc.Vec.Vec u8 Alloc.Alloc.Global)
       (Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState.k cs))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.set_nonce
   (cs : Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState)
   (n : u64)
@@ -273,6 +285,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.set_nonce
   let {k := k, n := _} ← (pure cs);
   (Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState.mk (k := k) (n := n))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.encrypt_with_ad
   (cs : Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState)
   (ad : (RustSlice u8))
@@ -312,6 +325,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.encrypt_with_ad
                 (k := k) (n := n))
               (← Alloc.Slice.Impl.to_vec u8 plaintext)))))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.decrypt_with_ad
   (cs : Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState)
   (ad : (RustSlice u8))
@@ -356,6 +370,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.decrypt_with_ad
                 (k := k) (n := n))
               (← Alloc.Slice.Impl.to_vec u8 ciphertext)))))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.rekey
   (cs : Tests.Legacy__proverif_noise__lib.Noise_lib.CipherState)
   : Result
@@ -378,6 +393,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.rekey
         (Core.Result.Result.Err
           Tests.Legacy__proverif_noise__lib.Noise_crypto.Error.CryptoError))
 
+--  5.2: The SymmetricState Object
 def Tests.Legacy__proverif_noise__lib.Noise_lib.initialize_symmetric
   (protocol_name : (RustSlice u8))
   : Result Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState
@@ -405,6 +421,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.initialize_symmetric
     (ck := ck)
     (h := hv))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.mix_key
   (st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState)
   (input_key_material : (RustSlice u8))
@@ -433,6 +450,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.mix_key
     (ck := ck)
     (h := h))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.mix_hash
   (st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState)
   (data : (RustSlice u8))
@@ -448,6 +466,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.mix_hash
                 (← Rust_primitives.unsize
                     #v[(← Core.Ops.Deref.Deref.deref h), data]))))))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_lib.mix_key_and_hash
   (st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState)
   (input_key_material : (RustSlice u8))
@@ -484,6 +503,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_lib.mix_key_and_hash
     (ck := ck)
     (h := new_h))
 
+--  Unclear if we need a special function for psk or we can reuse mix_key_and_hash above
 def Tests.Legacy__proverif_noise__lib.Noise_lib.encrypt_and_hash
   (st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState)
   (plaintext : (RustSlice u8))
@@ -634,7 +654,7 @@ structure Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.Transport where
   handshake_hash : (Alloc.Vec.Vec u8 Alloc.Alloc.Global)
 
 structure Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.ProtocolName where
-  _0 : (RustArray u8 (36 : usize))
+  _0 : (RustArray u8 36)
 
 def
   Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.Noise_KKpsk0_25519_ChaChaPoly_SHA256
@@ -678,6 +698,10 @@ def
          (53 : u8),
          (54 : u8)])
 
+--   KKpsk0:
+--     -> s
+--     <- s
+--     ...
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.initialize_initiator
   (prologue : (RustSlice u8))
   (psk : (Alloc.Vec.Vec u8 Alloc.Alloc.Global))
@@ -738,6 +762,10 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.initialize_responder
     (e := e)
     (rs := (← Alloc.Slice.Impl.to_vec u8 rs)))
 
+--   KKpsk0:
+--     ...
+--     -> psk, e, es, ss
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.write_message1
   (hs : Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.HandshakeStateI0)
   (payload : (RustSlice u8))
@@ -794,6 +822,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.write_message1
         (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk hs ciphertext))
     | (Core.Result.Result.Err err) => do (Core.Result.Result.Err err))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_message1
   (hs : Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.HandshakeStateR0)
   (ciphertext : (RustSlice u8))
@@ -806,17 +835,17 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_message1
   := do
   let {st := st, psk := psk, s := s, e := e, rs := rs} ← (pure hs);
   let re : (RustSlice u8) ← (pure
-    (← Core.Ops.Index.Index.index
-        ciphertext
-        (Core.Ops.Range.Range.mk
-          (start := (0 : usize))
-          (_end := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN))));
+    (← ciphertext[
+      (Core.Ops.Range.Range.mk
+        (start := (0 : usize))
+        (_end := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN))
+      ]_?));
   let ciphertext : (RustSlice u8) ← (pure
-    (← Core.Ops.Index.Index.index
-        ciphertext
-        (Core.Ops.Range.Range.mk
-          (start := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN)
-          (_end := (← Core.Slice.Impl.len u8 ciphertext)))));
+    (← ciphertext[
+      (Core.Ops.Range.Range.mk
+        (start := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN)
+        (_end := (← Core.Slice.Impl.len u8 ciphertext)))
+      ]_?));
   let st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState ← (pure
     (← Tests.Legacy__proverif_noise__lib.Noise_lib.mix_key_and_hash
         st
@@ -857,6 +886,10 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_message1
         (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk hs plaintext))
     | (Core.Result.Result.Err err) => do (Core.Result.Result.Err err))
 
+--   KKpsk0:
+--     ...
+--      <- e, ee, se
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.write_message2
   (hs : Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.HandshakeStateR1)
   (payload : (RustSlice u8))
@@ -910,6 +943,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.write_message2
         (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk tx ciphertext))
     | (Core.Result.Result.Err err) => do (Core.Result.Result.Err err))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_message2
   (hs : Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.HandshakeStateI1)
   (ciphertext : (RustSlice u8))
@@ -922,17 +956,17 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_message2
   := do
   let {st := st, s := s, e := e} ← (pure hs);
   let re : (RustSlice u8) ← (pure
-    (← Core.Ops.Index.Index.index
-        ciphertext
-        (Core.Ops.Range.Range.mk
-          (start := (0 : usize))
-          (_end := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN))));
+    (← ciphertext[
+      (Core.Ops.Range.Range.mk
+        (start := (0 : usize))
+        (_end := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN))
+      ]_?));
   let ciphertext : (RustSlice u8) ← (pure
-    (← Core.Ops.Index.Index.index
-        ciphertext
-        (Core.Ops.Range.Range.mk
-          (start := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN)
-          (_end := (← Core.Slice.Impl.len u8 ciphertext)))));
+    (← ciphertext[
+      (Core.Ops.Range.Range.mk
+        (start := Tests.Legacy__proverif_noise__lib.Noise_crypto.DHLEN)
+        (_end := (← Core.Slice.Impl.len u8 ciphertext)))
+      ]_?));
   let st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState ← (pure
     (← Tests.Legacy__proverif_noise__lib.Noise_lib.mix_hash st re));
   let st : Tests.Legacy__proverif_noise__lib.Noise_lib.SymmetricState ← (pure
@@ -965,6 +999,10 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_message2
         (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk tx plaintext))
     | (Core.Result.Result.Err err) => do (Core.Result.Result.Err err))
 
+--   KKpsk0:
+--     ->
+--     <-
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.write_transport
   (tx : Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.Transport)
   (ad : (RustSlice u8))
@@ -993,6 +1031,7 @@ def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.write_transport
         (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk tx ciphertext))
     | (Core.Result.Result.Err err) => do (Core.Result.Result.Err err))
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.read_transport
   (tx : Tests.Legacy__proverif_noise__lib.Noise_kkpsk0.Transport)
   (ad : (RustSlice u8))

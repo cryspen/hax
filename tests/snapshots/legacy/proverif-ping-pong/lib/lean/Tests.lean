@@ -55,6 +55,7 @@ def Tests.Legacy__proverif_ping_pong__lib.B.read_ping
       => do
         (Core.Result.Result.Err Hax_lib_protocol.ProtocolError.InvalidMessage))
 
+--  @fail(extraction): proverif(HAX0008)
 def Tests.Legacy__proverif_ping_pong__lib.B.read_ping_alt
   (_state : Tests.Legacy__proverif_ping_pong__lib.B.B0)
   (msg : Tests.Legacy__proverif_ping_pong__lib.Message)
@@ -68,7 +69,7 @@ def Tests.Legacy__proverif_ping_pong__lib.B.read_ping_alt
       | (Tests.Legacy__proverif_ping_pong__lib.Message.Ping received)
         => do
           (match (← Rust_primitives.Hax.Machine_int.eq received (42 : u8)) with
-            | TODO_LINE_622
+            | sorry
               => do
                 (Core.Option.Option.Some
                   (Core.Result.Result.Ok
@@ -120,7 +121,7 @@ def Tests.Legacy__proverif_ping_pong__lib.A.init_a
   else do
     (Core.Result.Result.Ok
       (Tests.Legacy__proverif_ping_pong__lib.A.A0.mk
-        (data := (← Core.Ops.Index.Index.index prologue (0 : usize))))))
+        (data := (← prologue[(0 : usize)]_?)))))
 
 def Tests.Legacy__proverif_ping_pong__lib.A.write_ping
   (state : Tests.Legacy__proverif_ping_pong__lib.A.A0)

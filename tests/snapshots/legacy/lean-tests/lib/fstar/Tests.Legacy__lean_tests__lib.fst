@@ -44,21 +44,21 @@ let closure (_: Prims.unit) : i32 =
 (* item error backend: ((Diagnostics.Context.Backend FStar),
  Types.AssertionFailure {
    details =
-   "Could not find item with UID (Attr_payloads.UId.T.UId \"62aea1a237484a7cac59d5bdf22602e7\")"})
+   "Could not find item with UID (Attr_payloads.UId.T.UId \"0ad959a0909e4c9b940295bdd3fa9bc5\")"})
 
 Last AST:
 #[<cfg_attr>(hax_compilation, _hax ::
-json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"62aea1a237484a7cac59d5bdf22602e7\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"62aea1a237484a7cac59d5bdf22602e7\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
+json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"0ad959a0909e4c9b940295bdd3fa9bc5\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"0ad959a0909e4c9b940295bdd3fa9bc5\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]fn test_before_verbatime_single_line(x: int) -> int{42} *)
 
 (* item error backend: ((Diagnostics.Context.Backend FStar),
  Types.AssertionFailure {
    details =
-   "Could not find item with UID (Attr_payloads.UId.T.UId \"9af3783cd21042efb88022bde243cbdd\")"})
+   "Could not find item with UID (Attr_payloads.UId.T.UId \"a58afa25dee34db7b1a896c83e5e9887\")"})
 
 Last AST:
 #[<cfg_attr>(hax_compilation, _hax ::
-json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"9af3783cd21042efb88022bde243cbdd\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"9af3783cd21042efb88022bde243cbdd\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
+json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"a58afa25dee34db7b1a896c83e5e9887\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"a58afa25dee34db7b1a896c83e5e9887\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]fn test_before_verbatim_multi_line(x: int) -> int{32} *)
 
 let binop_resugarings (x: u32) : u32 =

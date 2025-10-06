@@ -113,25 +113,25 @@ def Tests.Legacy__literals.numeric
   let _ ← (pure (22222222222222222222 : u128));
   Rust_primitives.Hax.Tuple0.mk
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__literals.patterns
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
   let _ ← (pure
     (match (1 : u8) with
-      | TODO_LINE_622 => do Rust_primitives.Hax.Tuple0.mk
+      | sorry => do Rust_primitives.Hax.Tuple0.mk
       | _ => do Rust_primitives.Hax.Tuple0.mk));
   let _ ← (pure
     (match
       (Rust_primitives.Hax.Tuple2.mk
         "hello" (Rust_primitives.Hax.Tuple2.mk (123 : i32) #v["a", "b"]))
     with
-      | ⟨TODO_LINE_622, ⟨TODO_LINE_622, _todo⟩⟩
-        => do Rust_primitives.Hax.Tuple0.mk
+      | ⟨sorry, ⟨sorry, _todo⟩⟩ => do Rust_primitives.Hax.Tuple0.mk
       | _ => do Rust_primitives.Hax.Tuple0.mk));
   let _ ← (pure
     (match (Tests.Legacy__literals.Foo.mk (field := (4 : u8))) with
-      | {field := TODO_LINE_622} => do Rust_primitives.Hax.Tuple0.mk
+      | {field := sorry} => do Rust_primitives.Hax.Tuple0.mk
       | _ => do Rust_primitives.Hax.Tuple0.mk));
   Rust_primitives.Hax.Tuple0.mk
 
@@ -198,6 +198,7 @@ def Tests.Legacy__literals.empty_array
   let _ ← (pure (← Rust_primitives.unsize #v[]));
   Rust_primitives.Hax.Tuple0.mk
 
+--  https://github.com/hacspec/hax/issues/500
 def Tests.Legacy__literals.fn_pointer_cast
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
@@ -205,4 +206,5 @@ def Tests.Legacy__literals.fn_pointer_cast
   let f ← (pure (fun x => (do x : Result u32)));
   Rust_primitives.Hax.Tuple0.mk
 
+--  @fail(extraction): ssprove(HAX0001)
 def Tests.Legacy__literals.null : Char := ' '
