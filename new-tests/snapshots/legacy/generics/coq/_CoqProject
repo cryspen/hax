@@ -1,0 +1,8 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__generics_Impl_generics.v
+Tests_Legacy__generics_Defaults_generics.v
+Tests_Legacy__generics_Assoc_const_param.v
+Tests_Legacy__generics.v

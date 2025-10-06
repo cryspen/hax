@@ -1,0 +1,46 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__let_else__let_else(opt : Option) =
+       let Some(nat_to_bitstring(x)) = opt in true
+       else todo return;.
+
+letfun tests__legacy__let_else__let_else_different_type(opt : Option) =
+       let Some(nat_to_bitstring(x)) = opt in (
+         let hoist1 = (Some(nat_to_bitstring(core__ops__arith__f_add(x, 1)))) in
+         tests__legacy__let_else__let_else(hoist1)
+       )
+       else todo return;.
+

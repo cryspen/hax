@@ -1,0 +1,8 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__proverif_noise__lib_Noise_lib.v
+Tests_Legacy__proverif_noise__lib_Noise_kkpsk0.v
+Tests_Legacy__proverif_noise__lib_Noise_crypto.v
+Tests_Legacy__proverif_noise__lib.v

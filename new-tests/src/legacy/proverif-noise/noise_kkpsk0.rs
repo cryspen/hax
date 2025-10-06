@@ -93,6 +93,7 @@ pub fn initialize_responder(
 ///  KKpsk0:
 ///    ...
 ///    -> psk, e, es, ss
+/// @fail(extraction): ssprove(HAX0001)
 pub fn write_message1(
     hs: HandshakeStateI0,
     payload: &[u8],
@@ -110,6 +111,7 @@ pub fn write_message1(
     Ok((hs, ciphertext))
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn read_message1(
     hs: HandshakeStateR0,
     ciphertext: &[u8],
@@ -137,6 +139,7 @@ pub fn read_message1(
 ///  KKpsk0:
 ///    ...
 ///     <- e, ee, se
+/// @fail(extraction): ssprove(HAX0001)
 pub fn write_message2(hs: HandshakeStateR1, payload: &[u8]) -> Result<(Transport, Vec<u8>), Error> {
     let HandshakeStateR1 { st, e, rs, re } = hs;
     let st = mix_hash(st, &e.public_key);
@@ -155,6 +158,7 @@ pub fn write_message2(hs: HandshakeStateR1, payload: &[u8]) -> Result<(Transport
     Ok((tx, ciphertext))
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn read_message2(
     hs: HandshakeStateI1,
     ciphertext: &[u8],
@@ -181,6 +185,7 @@ pub fn read_message2(
 ///  KKpsk0:
 ///    ->
 ///    <-
+/// @fail(extraction): ssprove(HAX0001)
 pub fn write_transport(
     tx: Transport,
     ad: &[u8],
@@ -200,6 +205,7 @@ pub fn write_transport(
     Ok((tx, ciphertext))
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn read_transport(
     tx: Transport,
     ad: &[u8],

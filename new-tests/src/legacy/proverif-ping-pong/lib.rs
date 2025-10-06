@@ -1,3 +1,4 @@
+//! @fail(extraction): lean(HAX0001)
 mod a;
 mod b;
 
