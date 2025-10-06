@@ -1,7 +1,5 @@
 //! Helper functions that implement small bits of logic used across modules.
 
-use std::path::Path;
-
 use hax_frontend_exporter::{DefId, DefPathItem, DisambiguatedDefPathItem};
 use hax_types::cli_options::BackendName;
 
