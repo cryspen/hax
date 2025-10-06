@@ -27,11 +27,13 @@ pub fn has_key(cs: &CipherState) -> bool {
     cs.k.is_some()
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn set_nonce(cs: CipherState, n: u64) -> CipherState {
     let CipherState { k, n: _ } = cs;
     CipherState { k, n }
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn encrypt_with_ad(
     cs: CipherState,
     ad: &[u8],
@@ -57,6 +59,7 @@ pub fn encrypt_with_ad(
     }
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn decrypt_with_ad(
     cs: CipherState,
     ad: &[u8],
@@ -82,6 +85,7 @@ pub fn decrypt_with_ad(
     }
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn rekey(cs: CipherState) -> Result<CipherState, Error> {
     let CipherState { k, n } = cs;
     match k {
@@ -110,6 +114,7 @@ pub fn initialize_symmetric(protocol_name: &[u8]) -> SymmetricState {
     }
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn mix_key(st: SymmetricState, input_key_material: &[u8]) -> SymmetricState {
     let SymmetricState { cs: _, ck, h } = st;
     let (ck, mut temp_k) = hkdf2(&ck, input_key_material);
@@ -123,6 +128,7 @@ pub fn mix_key(st: SymmetricState, input_key_material: &[u8]) -> SymmetricState 
     }
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn mix_hash(st: SymmetricState, data: &[u8]) -> SymmetricState {
     let SymmetricState { cs, ck, h } = st;
     SymmetricState {
@@ -132,6 +138,7 @@ pub fn mix_hash(st: SymmetricState, data: &[u8]) -> SymmetricState {
     }
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn mix_key_and_hash(st: SymmetricState, input_key_material: &[u8]) -> SymmetricState {
     let SymmetricState { cs: _, ck, h } = st;
     let (ck, temp_h, mut temp_k) = hkdf3(&ck, input_key_material);

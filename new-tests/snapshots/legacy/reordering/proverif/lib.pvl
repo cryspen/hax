@@ -1,0 +1,112 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__reordering__t_Foo.
+
+fun tests__legacy__reordering__t_Foo_to_bitstring(
+      tests__legacy__reordering__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__reordering__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__reordering__t_Foo [typeConverter].
+const tests__legacy__reordering__t_Foo_default_value: tests__legacy__reordering__t_Foo.
+letfun tests__legacy__reordering__t_Foo_default() =
+       tests__legacy__reordering__t_Foo_default_value.
+letfun tests__legacy__reordering__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__reordering__t_Foo_default_value.
+fun tests__legacy__reordering__Foo_A()
+    : tests__legacy__reordering__t_Foo [data].
+
+fun tests__legacy__reordering__Foo_B()
+    : tests__legacy__reordering__t_Foo [data].
+
+
+type tests__legacy__reordering__t_Bar.
+
+fun tests__legacy__reordering__t_Bar_to_bitstring(
+      tests__legacy__reordering__t_Bar
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__reordering__t_Bar_from_bitstring(bitstring)
+    : tests__legacy__reordering__t_Bar [typeConverter].
+const tests__legacy__reordering__t_Bar_default_value: tests__legacy__reordering__t_Bar.
+letfun tests__legacy__reordering__t_Bar_default() =
+       tests__legacy__reordering__t_Bar_default_value.
+letfun tests__legacy__reordering__t_Bar_err() =
+       let x = construct_fail() in tests__legacy__reordering__t_Bar_default_value.
+fun tests__legacy__reordering__Bar(tests__legacy__reordering__t_Foo)
+    : tests__legacy__reordering__t_Bar [data].
+reduc forall tests__legacy__reordering__0: tests__legacy__reordering__t_Foo;
+    accessor_tests__legacy__reordering__t_Bar_tests__legacy__reordering__0(
+      tests__legacy__reordering__Bar(tests__legacy__reordering__0)
+    ) = tests__legacy__reordering__0.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__reordering__mut_rec__g(wildcard1 : bitstring) =
+       tests__legacy__reordering__mut_rec__f(()).
+
+letfun tests__legacy__reordering__mut_rec__f(wildcard2 : bitstring) =
+       tests__legacy__reordering__mut_rec__g(()).
+
+letfun tests__legacy__reordering__mut_rec__ff_2_(wildcard3 : bitstring) =
+       tests__legacy__reordering__mut_rec__f(()).
+
+letfun tests__legacy__reordering__independent_cycles__c(wildcard4 : bitstring) =
+       tests__legacy__reordering__independent_cycles__a(()).
+
+letfun tests__legacy__reordering__independent_cycles__a(wildcard5 : bitstring) =
+       tests__legacy__reordering__independent_cycles__c(()).
+
+letfun tests__legacy__reordering__independent_cycles__d(wildcard6 : bitstring) =
+       tests__legacy__reordering__independent_cycles__b(()).
+
+letfun tests__legacy__reordering__independent_cycles__b(wildcard7 : bitstring) =
+       tests__legacy__reordering__independent_cycles__d(()).
+
+letfun tests__legacy__reordering__no_dependency_1_(wildcard8 : bitstring) =
+       ().
+
+letfun tests__legacy__reordering__no_dependency_2_(wildcard9 : bitstring) =
+       ().
+
+letfun tests__legacy__reordering__f(wildcard10 : nat) =
+       tests__legacy__reordering__Foo_A().
+
+letfun tests__legacy__reordering__g(wildcard11 : bitstring) =
+       tests__legacy__reordering__Bar(tests__legacy__reordering__f(32)).
+
+letfun tests__legacy__reordering__t_Foo_cast_to_repr(
+         x : tests__legacy__reordering__t_Foo
+       ) =
+       let tests__legacy__reordering__Foo_A() = x in 0
+       else let tests__legacy__reordering__Foo_B() = x in 1.
+

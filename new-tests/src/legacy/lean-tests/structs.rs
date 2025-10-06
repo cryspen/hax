@@ -33,12 +33,12 @@ fn tuple_structs() -> () {
     let _ = t3.0;
     let _ = t3.1;
     let _ = t3.2;
-    let _ = t3.2.1;
+    let _ = t3.2 .1;
     let _ = t3p.0;
     let _ = t3p.1;
-    let _ = t3p.1.1.0;
-    let _ = t3p.1.0;
-    let _ = t3p.1.1;
+    let _ = t3p.1 .1 .0;
+    let _ = t3p.1 .0;
+    let _ = t3p.1 .1;
 
     // 5. Pattern matching
     let _ = match t0 {
@@ -81,6 +81,7 @@ struct S3 {
     inductive: usize,
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 fn normal_structs() -> () {
     // 2. Expressions
     let s1 = S1 { f1: 0, f2: 1 };

@@ -1,0 +1,147 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__cli__include_flag__src__lib__t_Foo.
+
+fun tests__legacy__cli__include_flag__src__lib__t_Foo_to_bitstring(
+      tests__legacy__cli__include_flag__src__lib__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__cli__include_flag__src__lib__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__cli__include_flag__src__lib__t_Foo [typeConverter].
+const tests__legacy__cli__include_flag__src__lib__t_Foo_default_value: tests__legacy__cli__include_flag__src__lib__t_Foo.
+letfun tests__legacy__cli__include_flag__src__lib__t_Foo_default() =
+       tests__legacy__cli__include_flag__src__lib__t_Foo_default_value.
+letfun tests__legacy__cli__include_flag__src__lib__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__cli__include_flag__src__lib__t_Foo_default_value.
+fun tests__legacy__cli__include_flag__src__lib__Foo()
+    : tests__legacy__cli__include_flag__src__lib__t_Foo [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__cli__include_flag__src__lib__main_a_a(
+         wildcard1 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_b_a(
+         wildcard2 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_c_a(
+         wildcard3 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_a_b(
+         wildcard4 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_b_b(
+         wildcard5 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_c_b(
+         wildcard6 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_a_c(
+         wildcard7 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_a(x : v_T) =
+       let wildcard10: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_a_a(())
+       ) in
+       let wildcard9: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_a_b(())
+       ) in
+       let wildcard8: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_a_c(())
+       ) in
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_b_c(
+         wildcard11 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_b(wildcard15 : bitstring
+       ) =
+       let wildcard14: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_b_a(())
+       ) in
+       let wildcard13: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_b_b(())
+       ) in
+       let wildcard12: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_b_c(())
+       ) in
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_c_c(
+         wildcard16 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main_c(wildcard20 : bitstring
+       ) =
+       let wildcard19: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_c_a(())
+       ) in
+       let wildcard18: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_c_b(())
+       ) in
+       let wildcard17: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_c_c(())
+       ) in
+       ().
+
+letfun tests__legacy__cli__include_flag__src__lib__main(wildcard24 : bitstring) =
+       let wildcard23: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_a(
+           tests__legacy__cli__include_flag__src__lib__Foo()
+         )
+       ) in
+       let wildcard22: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_b(())
+       ) in
+       let wildcard21: bitstring = (
+         tests__legacy__cli__include_flag__src__lib__main_c(())
+       ) in
+       ().
+

@@ -1,3 +1,5 @@
+//! @fail(extraction): lean(HAX0001)
+//! @fail(extraction): lean(HAX0001, HAX0001, HAX0001)
 #![allow(dead_code)]
 
 pub trait SuperTrait: Clone {

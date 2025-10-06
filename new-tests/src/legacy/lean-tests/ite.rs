@@ -4,7 +4,11 @@
 
 fn test1() -> i32 {
     let x = if true { 0 } else { 1 };
-    if false { 2 } else { 3 }
+    if false {
+        2
+    } else {
+        3
+    }
 }
 
 fn test2(b: bool) -> i32 {

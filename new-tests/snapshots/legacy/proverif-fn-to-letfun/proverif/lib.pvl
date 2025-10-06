@@ -1,0 +1,116 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__proverif_fn_to_letfun__t_A.
+
+fun tests__legacy__proverif_fn_to_letfun__t_A_to_bitstring(
+      tests__legacy__proverif_fn_to_letfun__t_A
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__proverif_fn_to_letfun__t_A_from_bitstring(bitstring)
+    : tests__legacy__proverif_fn_to_letfun__t_A [typeConverter].
+const tests__legacy__proverif_fn_to_letfun__t_A_default_value: tests__legacy__proverif_fn_to_letfun__t_A.
+letfun tests__legacy__proverif_fn_to_letfun__t_A_default() =
+       tests__legacy__proverif_fn_to_letfun__t_A_default_value.
+letfun tests__legacy__proverif_fn_to_letfun__t_A_err() =
+       let x = construct_fail() in tests__legacy__proverif_fn_to_letfun__t_A_default_value.
+fun tests__legacy__proverif_fn_to_letfun__A(nat, nat)
+    : tests__legacy__proverif_fn_to_letfun__t_A [data].
+reduc forall 
+  tests__legacy__proverif_fn_to_letfun__f_x: nat,
+  tests__legacy__proverif_fn_to_letfun__f_y: nat
+;
+    accessor_tests__legacy__proverif_fn_to_letfun__t_A_tests__legacy__proverif_fn_to_letfun__f_x(
+      tests__legacy__proverif_fn_to_letfun__A(
+        tests__legacy__proverif_fn_to_letfun__f_x,
+        tests__legacy__proverif_fn_to_letfun__f_y
+      )
+    ) = tests__legacy__proverif_fn_to_letfun__f_x.
+reduc forall 
+  tests__legacy__proverif_fn_to_letfun__f_x: nat,
+  tests__legacy__proverif_fn_to_letfun__f_y: nat
+;
+    accessor_tests__legacy__proverif_fn_to_letfun__t_A_tests__legacy__proverif_fn_to_letfun__f_y(
+      tests__legacy__proverif_fn_to_letfun__A(
+        tests__legacy__proverif_fn_to_letfun__f_x,
+        tests__legacy__proverif_fn_to_letfun__f_y
+      )
+    ) = tests__legacy__proverif_fn_to_letfun__f_y.
+
+type tests__legacy__proverif_fn_to_letfun__t_B.
+
+fun tests__legacy__proverif_fn_to_letfun__t_B_to_bitstring(
+      tests__legacy__proverif_fn_to_letfun__t_B
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__proverif_fn_to_letfun__t_B_from_bitstring(bitstring)
+    : tests__legacy__proverif_fn_to_letfun__t_B [typeConverter].
+const tests__legacy__proverif_fn_to_letfun__t_B_default_value: tests__legacy__proverif_fn_to_letfun__t_B.
+letfun tests__legacy__proverif_fn_to_letfun__t_B_default() =
+       tests__legacy__proverif_fn_to_letfun__t_B_default_value.
+letfun tests__legacy__proverif_fn_to_letfun__t_B_err() =
+       let x = construct_fail() in tests__legacy__proverif_fn_to_letfun__t_B_default_value.
+fun tests__legacy__proverif_fn_to_letfun__B(bool)
+    : tests__legacy__proverif_fn_to_letfun__t_B [data].
+reduc forall tests__legacy__proverif_fn_to_letfun__f_b: bool;
+    accessor_tests__legacy__proverif_fn_to_letfun__t_B_tests__legacy__proverif_fn_to_letfun__f_b(
+      tests__legacy__proverif_fn_to_letfun__B(
+        tests__legacy__proverif_fn_to_letfun__f_b
+      )
+    ) = tests__legacy__proverif_fn_to_letfun__f_b.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__proverif_fn_to_letfun__some_function(wildcard1 : bitstring
+       ) =
+       true.
+
+letfun tests__legacy__proverif_fn_to_letfun__some_other_function(b : bool) =
+       5.
+
+letfun tests__legacy__proverif_fn_to_letfun__longer_function(x : bitstring) =
+       let b = (tests__legacy__proverif_fn_to_letfun__some_function(())) in
+       let d = (tests__legacy__proverif_fn_to_letfun__some_other_function(b)) in
+       tests__legacy__proverif_fn_to_letfun__A(12,9).
+
+letfun tests__legacy__proverif_fn_to_letfun__another_longer_function(
+         wildcard2 : bitstring
+       ) =
+       let b = (tests__legacy__proverif_fn_to_letfun__some_function(())) in
+       let d = (tests__legacy__proverif_fn_to_letfun__some_other_function(b)) in
+       tests__legacy__proverif_fn_to_letfun__B(false).
+
+letfun tests__legacy__proverif_fn_to_letfun__void_function(wildcard3 : bitstring
+       ) =
+       let b = (tests__legacy__proverif_fn_to_letfun__some_function(())) in
+       let d = (tests__legacy__proverif_fn_to_letfun__some_other_function(b)) in
+       ().
+

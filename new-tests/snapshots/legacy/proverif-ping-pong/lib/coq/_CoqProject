@@ -1,0 +1,7 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__proverif_ping_pong__lib_B.v
+Tests_Legacy__proverif_ping_pong__lib_A.v
+Tests_Legacy__proverif_ping_pong__lib.v

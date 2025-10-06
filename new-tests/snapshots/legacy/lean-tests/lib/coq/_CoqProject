@@ -1,0 +1,18 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__lean_tests__lib_Traits_Overlapping_methods.v
+Tests_Legacy__lean_tests__lib_Traits_Inheritance.v
+Tests_Legacy__lean_tests__lib_Traits_Bounds.v
+Tests_Legacy__lean_tests__lib_Traits_Basic.v
+Tests_Legacy__lean_tests__lib_Traits_Associated_types.v
+Tests_Legacy__lean_tests__lib_Traits.v
+Tests_Legacy__lean_tests__lib_Structs_Miscellaneous.v
+Tests_Legacy__lean_tests__lib_Structs.v
+Tests_Legacy__lean_tests__lib_Loops_Errors.v
+Tests_Legacy__lean_tests__lib_Loops.v
+Tests_Legacy__lean_tests__lib_Ite.v
+Tests_Legacy__lean_tests__lib_Enums.v
+Tests_Legacy__lean_tests__lib_Comments.v
+Tests_Legacy__lean_tests__lib.v

@@ -1,0 +1,79 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__patterns__t_Other.
+
+fun tests__legacy__patterns__t_Other_to_bitstring(
+      tests__legacy__patterns__t_Other
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__patterns__t_Other_from_bitstring(bitstring)
+    : tests__legacy__patterns__t_Other [typeConverter].
+const tests__legacy__patterns__t_Other_default_value: tests__legacy__patterns__t_Other.
+letfun tests__legacy__patterns__t_Other_default() =
+       tests__legacy__patterns__t_Other_default_value.
+letfun tests__legacy__patterns__t_Other_err() =
+       let x = construct_fail() in tests__legacy__patterns__t_Other_default_value.
+fun tests__legacy__patterns__Other(nat)
+    : tests__legacy__patterns__t_Other [data].
+reduc forall tests__legacy__patterns__0: nat;
+    accessor_tests__legacy__patterns__t_Other_tests__legacy__patterns__0(
+      tests__legacy__patterns__Other(tests__legacy__patterns__0)
+    ) = tests__legacy__patterns__0.
+
+type tests__legacy__patterns__t_Test.
+
+fun tests__legacy__patterns__t_Test_to_bitstring(tests__legacy__patterns__t_Test
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__patterns__t_Test_from_bitstring(bitstring)
+    : tests__legacy__patterns__t_Test [typeConverter].
+const tests__legacy__patterns__t_Test_default_value: tests__legacy__patterns__t_Test.
+letfun tests__legacy__patterns__t_Test_default() =
+       tests__legacy__patterns__t_Test_default_value.
+letfun tests__legacy__patterns__t_Test_err() =
+       let x = construct_fail() in tests__legacy__patterns__t_Test_default_value.
+fun tests__legacy__patterns__Test_C1(tests__legacy__patterns__t_Other)
+    : tests__legacy__patterns__t_Test [data].
+reduc forall tests__legacy__patterns__0: tests__legacy__patterns__t_Other;
+    accessor_tests__legacy__patterns__t_Test_tests__legacy__patterns__0(
+      tests__legacy__patterns__Test_C1(tests__legacy__patterns__0)
+    ) = tests__legacy__patterns__0.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__patterns__impl__test(
+         self : tests__legacy__patterns__t_Test
+       ) =
+       let {tests__legacy__patterns__Test_C1(c):tests__legacy__patterns__t_Test} = self in accessor_tests__legacy__patterns__t_Other_tests__legacy__patterns__0(
+         c
+       ).
+

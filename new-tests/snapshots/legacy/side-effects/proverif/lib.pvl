@@ -1,0 +1,623 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__side_effects__issue_1299___t_Foo.
+
+fun tests__legacy__side_effects__issue_1299___t_Foo_to_bitstring(
+      tests__legacy__side_effects__issue_1299___t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__issue_1299___t_Foo_from_bitstring(bitstring)
+    : tests__legacy__side_effects__issue_1299___t_Foo [typeConverter].
+const tests__legacy__side_effects__issue_1299___t_Foo_default_value: tests__legacy__side_effects__issue_1299___t_Foo.
+letfun tests__legacy__side_effects__issue_1299___t_Foo_default() =
+       tests__legacy__side_effects__issue_1299___t_Foo_default_value.
+letfun tests__legacy__side_effects__issue_1299___t_Foo_err() =
+       let x = construct_fail() in tests__legacy__side_effects__issue_1299___t_Foo_default_value.
+fun tests__legacy__side_effects__issue_1299___Foo(nat)
+    : tests__legacy__side_effects__issue_1299___t_Foo [data].
+reduc forall tests__legacy__side_effects__issue_1299___f_y: nat;
+    accessor_tests__legacy__side_effects__issue_1299___t_Foo_tests__legacy__side_effects__issue_1299___f_y(
+      tests__legacy__side_effects__issue_1299___Foo(
+        tests__legacy__side_effects__issue_1299___f_y
+      )
+    ) = tests__legacy__side_effects__issue_1299___f_y.
+
+type tests__legacy__side_effects__issue_1299___t_S.
+
+fun tests__legacy__side_effects__issue_1299___t_S_to_bitstring(
+      tests__legacy__side_effects__issue_1299___t_S
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__issue_1299___t_S_from_bitstring(bitstring)
+    : tests__legacy__side_effects__issue_1299___t_S [typeConverter].
+const tests__legacy__side_effects__issue_1299___t_S_default_value: tests__legacy__side_effects__issue_1299___t_S.
+letfun tests__legacy__side_effects__issue_1299___t_S_default() =
+       tests__legacy__side_effects__issue_1299___t_S_default_value.
+letfun tests__legacy__side_effects__issue_1299___t_S_err() =
+       let x = construct_fail() in tests__legacy__side_effects__issue_1299___t_S_default_value.
+fun tests__legacy__side_effects__issue_1299___S(
+      tests__legacy__side_effects__issue_1299___t_Foo
+    )
+    : tests__legacy__side_effects__issue_1299___t_S [data].
+reduc forall 
+  tests__legacy__side_effects__issue_1299___f_g: tests__legacy__side_effects__issue_1299___t_Foo
+;
+    accessor_tests__legacy__side_effects__issue_1299___t_S_tests__legacy__side_effects__issue_1299___f_g(
+      tests__legacy__side_effects__issue_1299___S(
+        tests__legacy__side_effects__issue_1299___f_g
+      )
+    ) = tests__legacy__side_effects__issue_1299___f_g.
+
+type tests__legacy__side_effects__issue_1299___t_OtherS.
+
+fun tests__legacy__side_effects__issue_1299___t_OtherS_to_bitstring(
+      tests__legacy__side_effects__issue_1299___t_OtherS
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__issue_1299___t_OtherS_from_bitstring(bitstring)
+    : tests__legacy__side_effects__issue_1299___t_OtherS [typeConverter].
+const tests__legacy__side_effects__issue_1299___t_OtherS_default_value: tests__legacy__side_effects__issue_1299___t_OtherS.
+letfun tests__legacy__side_effects__issue_1299___t_OtherS_default() =
+       tests__legacy__side_effects__issue_1299___t_OtherS_default_value.
+letfun tests__legacy__side_effects__issue_1299___t_OtherS_err() =
+       let x = construct_fail() in tests__legacy__side_effects__issue_1299___t_OtherS_default_value.
+fun tests__legacy__side_effects__issue_1299___OtherS(Option)
+    : tests__legacy__side_effects__issue_1299___t_OtherS [data].
+reduc forall tests__legacy__side_effects__issue_1299___f_g: Option;
+    accessor_tests__legacy__side_effects__issue_1299___t_OtherS_tests__legacy__side_effects__issue_1299___f_g(
+      tests__legacy__side_effects__issue_1299___OtherS(
+        tests__legacy__side_effects__issue_1299___f_g
+      )
+    ) = tests__legacy__side_effects__issue_1299___f_g.
+
+type tests__legacy__side_effects__issue_1299___t_Error.
+
+fun tests__legacy__side_effects__issue_1299___t_Error_to_bitstring(
+      tests__legacy__side_effects__issue_1299___t_Error
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__issue_1299___t_Error_from_bitstring(bitstring)
+    : tests__legacy__side_effects__issue_1299___t_Error [typeConverter].
+const tests__legacy__side_effects__issue_1299___t_Error_default_value: tests__legacy__side_effects__issue_1299___t_Error.
+letfun tests__legacy__side_effects__issue_1299___t_Error_default() =
+       tests__legacy__side_effects__issue_1299___t_Error_default_value.
+letfun tests__legacy__side_effects__issue_1299___t_Error_err() =
+       let x = construct_fail() in tests__legacy__side_effects__issue_1299___t_Error_default_value.
+fun tests__legacy__side_effects__issue_1299___Error()
+    : tests__legacy__side_effects__issue_1299___t_Error [data].
+
+
+type tests__legacy__side_effects__t_A.
+
+fun tests__legacy__side_effects__t_A_to_bitstring(
+      tests__legacy__side_effects__t_A
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__t_A_from_bitstring(bitstring)
+    : tests__legacy__side_effects__t_A [typeConverter].
+const tests__legacy__side_effects__t_A_default_value: tests__legacy__side_effects__t_A.
+letfun tests__legacy__side_effects__t_A_default() =
+       tests__legacy__side_effects__t_A_default_value.
+letfun tests__legacy__side_effects__t_A_err() =
+       let x = construct_fail() in tests__legacy__side_effects__t_A_default_value.
+fun tests__legacy__side_effects__A()
+    : tests__legacy__side_effects__t_A [data].
+
+
+type tests__legacy__side_effects__t_B.
+
+fun tests__legacy__side_effects__t_B_to_bitstring(
+      tests__legacy__side_effects__t_B
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__t_B_from_bitstring(bitstring)
+    : tests__legacy__side_effects__t_B [typeConverter].
+const tests__legacy__side_effects__t_B_default_value: tests__legacy__side_effects__t_B.
+letfun tests__legacy__side_effects__t_B_default() =
+       tests__legacy__side_effects__t_B_default_value.
+letfun tests__legacy__side_effects__t_B_err() =
+       let x = construct_fail() in tests__legacy__side_effects__t_B_default_value.
+fun tests__legacy__side_effects__B()
+    : tests__legacy__side_effects__t_B [data].
+
+
+type tests__legacy__side_effects__t_Bar.
+
+fun tests__legacy__side_effects__t_Bar_to_bitstring(
+      tests__legacy__side_effects__t_Bar
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__t_Bar_from_bitstring(bitstring)
+    : tests__legacy__side_effects__t_Bar [typeConverter].
+const tests__legacy__side_effects__t_Bar_default_value: tests__legacy__side_effects__t_Bar.
+letfun tests__legacy__side_effects__t_Bar_default() =
+       tests__legacy__side_effects__t_Bar_default_value.
+letfun tests__legacy__side_effects__t_Bar_err() =
+       let x = construct_fail() in tests__legacy__side_effects__t_Bar_default_value.
+fun tests__legacy__side_effects__Bar(bool, bitstring)
+    : tests__legacy__side_effects__t_Bar [data].
+reduc forall 
+  tests__legacy__side_effects__f_a: bool,
+  tests__legacy__side_effects__f_b: bitstring
+;
+    accessor_tests__legacy__side_effects__t_Bar_tests__legacy__side_effects__f_a(
+      tests__legacy__side_effects__Bar(
+        tests__legacy__side_effects__f_a, tests__legacy__side_effects__f_b
+      )
+    ) = tests__legacy__side_effects__f_a.
+reduc forall 
+  tests__legacy__side_effects__f_a: bool,
+  tests__legacy__side_effects__f_b: bitstring
+;
+    accessor_tests__legacy__side_effects__t_Bar_tests__legacy__side_effects__f_b(
+      tests__legacy__side_effects__Bar(
+        tests__legacy__side_effects__f_a, tests__legacy__side_effects__f_b
+      )
+    ) = tests__legacy__side_effects__f_b.
+
+type tests__legacy__side_effects__t_Foo.
+
+fun tests__legacy__side_effects__t_Foo_to_bitstring(
+      tests__legacy__side_effects__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__side_effects__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__side_effects__t_Foo [typeConverter].
+const tests__legacy__side_effects__t_Foo_default_value: tests__legacy__side_effects__t_Foo.
+letfun tests__legacy__side_effects__t_Foo_default() =
+       tests__legacy__side_effects__t_Foo_default_value.
+letfun tests__legacy__side_effects__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__side_effects__t_Foo_default_value.
+fun tests__legacy__side_effects__Foo(
+      bool, bitstring, bitstring, tests__legacy__side_effects__t_Bar
+    )
+    : tests__legacy__side_effects__t_Foo [data].
+reduc forall 
+  tests__legacy__side_effects__f_x: bool,
+  tests__legacy__side_effects__f_y: bitstring,
+  tests__legacy__side_effects__f_z: bitstring,
+  tests__legacy__side_effects__f_bar: tests__legacy__side_effects__t_Bar
+;
+    accessor_tests__legacy__side_effects__t_Foo_tests__legacy__side_effects__f_x(
+      tests__legacy__side_effects__Foo(
+        tests__legacy__side_effects__f_x,
+        tests__legacy__side_effects__f_y,
+        tests__legacy__side_effects__f_z,
+        tests__legacy__side_effects__f_bar
+      )
+    ) = tests__legacy__side_effects__f_x.
+reduc forall 
+  tests__legacy__side_effects__f_x: bool,
+  tests__legacy__side_effects__f_y: bitstring,
+  tests__legacy__side_effects__f_z: bitstring,
+  tests__legacy__side_effects__f_bar: tests__legacy__side_effects__t_Bar
+;
+    accessor_tests__legacy__side_effects__t_Foo_tests__legacy__side_effects__f_y(
+      tests__legacy__side_effects__Foo(
+        tests__legacy__side_effects__f_x,
+        tests__legacy__side_effects__f_y,
+        tests__legacy__side_effects__f_z,
+        tests__legacy__side_effects__f_bar
+      )
+    ) = tests__legacy__side_effects__f_y.
+reduc forall 
+  tests__legacy__side_effects__f_x: bool,
+  tests__legacy__side_effects__f_y: bitstring,
+  tests__legacy__side_effects__f_z: bitstring,
+  tests__legacy__side_effects__f_bar: tests__legacy__side_effects__t_Bar
+;
+    accessor_tests__legacy__side_effects__t_Foo_tests__legacy__side_effects__f_z(
+      tests__legacy__side_effects__Foo(
+        tests__legacy__side_effects__f_x,
+        tests__legacy__side_effects__f_y,
+        tests__legacy__side_effects__f_z,
+        tests__legacy__side_effects__f_bar
+      )
+    ) = tests__legacy__side_effects__f_z.
+reduc forall 
+  tests__legacy__side_effects__f_x: bool,
+  tests__legacy__side_effects__f_y: bitstring,
+  tests__legacy__side_effects__f_z: bitstring,
+  tests__legacy__side_effects__f_bar: tests__legacy__side_effects__t_Bar
+;
+    accessor_tests__legacy__side_effects__t_Foo_tests__legacy__side_effects__f_bar(
+      tests__legacy__side_effects__Foo(
+        tests__legacy__side_effects__f_x,
+        tests__legacy__side_effects__f_y,
+        tests__legacy__side_effects__f_z,
+        tests__legacy__side_effects__f_bar
+      )
+    ) = tests__legacy__side_effects__f_bar.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__side_effects__nested_return__other_fun(rng : nat) =
+       let hax_temp_output = (()) in
+       (rng, hax_temp_output).
+
+letfun tests__legacy__side_effects__nested_return__v_fun(rng : nat) =
+       let (tmp0: nat, v_out: bitstring) = (
+         tests__legacy__side_effects__nested_return__other_fun(rng)
+       ) in
+       let rng = (tmp0) in
+       let hoist40 = (v_out) in
+       let hoist41 = hoist40 in (
+         let hoist42 = (hoist41) in
+         let hoist43 = ((rng, hoist42)) in
+         let hoist44 = (todo return;) in
+         let hax_temp_output = (bitstring_err()) in
+         (rng, hax_temp_output)
+       )
+       else bitstring_err().
+
+letfun tests__legacy__side_effects__issue_1299___impl_Foo__from(
+         i : tests__legacy__side_effects__issue_1299___t_Foo
+       ) =
+       tests__legacy__side_effects__issue_1299___Foo(
+
+           accessor_tests__legacy__side_effects__issue_1299___t_Foo_tests__legacy__side_effects__issue_1299___f_y(
+             i
+           )
+
+       ).
+
+letfun tests__legacy__side_effects__issue_1299___impl_S__from(
+         i : tests__legacy__side_effects__issue_1299___t_OtherS
+       ) =
+       let hoist47 = core__option__impl__ok_or(
+         core__option__impl__as_ref(
+           accessor_tests__legacy__side_effects__issue_1299___t_OtherS_tests__legacy__side_effects__issue_1299___f_g(
+             i
+           )
+         ),
+         tests__legacy__side_effects__issue_1299___Error()
+       ) in (
+         let hoist48 = (
+           tests__legacy__side_effects__issue_1299___impl_Foo__from(hoist47)
+         ) in
+         let hoist49 = (tests__legacy__side_effects__issue_1299___S(hoist48)) in
+         hoist49
+       )
+       else tests__legacy__side_effects__issue_1299___t_S_err().
+
+letfun tests__legacy__side_effects__issue_1083___f(x : nat) =
+       let wildcard1: bitstring = (
+         let core__ops__control_flow__ControlFlow_Break(residual) = core__ops__try_trait__f_branch(
+           rust_primitives__hax__t_Never_err()
+         ) in todo return;
+         else let core__ops__control_flow__ControlFlow_Continue(val) = core__ops__try_trait__f_branch(
+           rust_primitives__hax__t_Never_err()
+         ) in val
+       ) in
+       tests__legacy__side_effects__issue_1083___f_my_from(x).
+
+letfun tests__legacy__side_effects__add3(x : nat, y : nat, z : nat) =
+       core__num__impl_u32__wrapping_add(
+         core__num__impl_u32__wrapping_add(x, y), z
+       ).
+
+letfun tests__legacy__side_effects__local_mutation(x : nat) =
+       let y = (0) in
+       let x = (core__num__impl_u32__wrapping_add(x, 1)) in
+       let hoist1 = (core__cmp__f_gt(x, 3)) in
+       if hoist1
+       then
+         (let x = (core__num__impl_u32__wrapping_sub(x, 3)) in
+          let y = (core__ops__arith__f_div(x, 2)) in
+          let y = (core__num__impl_u32__wrapping_add(y, 2)) in
+          let hoist2 = (0) in
+          let hoist3 = (core__ops__range__Range(hoist2,10)) in
+          let hoist4 = (core__iter__traits__collect__f_into_iter(hoist3)) in
+          let y = (
+            rust_primitives__hax__failure(
+              "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
+
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+              "{
+ (for i in (hoist4) {
+ |y| { core::num::impl_u32__wrapping_add(x, i) }
+ })(y)
+ }"
+            )
+          ) in
+          core__num__impl_u32__wrapping_add(x, y))
+       else (
+         let ((x: nat, y: nat), hoist7: nat) = (
+           let (=12) = x in (
+             let y = (core__num__impl_u32__wrapping_add(x, y)) in
+             ((x, y), 3)
+           )
+           else let (=13) = x in (
+             let hoist6 = (x) in
+             let x = (core__num__impl_u32__wrapping_add(x, 1)) in
+             let hoist5 = (core__num__impl_u32__wrapping_add(123, x)) in
+             ((x, y), tests__legacy__side_effects__add3(hoist6, hoist5, x))
+           )
+           else ((x, y), 0)
+         ) in
+         let x = (hoist7) in
+         core__num__impl_u32__wrapping_add(x, y)
+       ).
+
+letfun tests__legacy__side_effects__early_returns(x : nat) =
+       let wildcard2: bitstring = (
+         if core__cmp__f_gt(x, 3)
+         then
+           (let hoist8 = (todo return;) in
+            bitstring_err())
+         else (())
+       ) in
+       let hoist9 = (core__cmp__f_gt(x, 30)) in
+       let (x: nat, hoist11: nat) = (
+         if hoist9
+         then
+           (let (=true) = true in (
+              let hoist10 = (todo return;) in
+              (x, nat_err())
+            )
+            else (x, 3))
+         else (
+           let x = (core__ops__arith__f_add(x, 9)) in
+           (x, core__ops__arith__f_add(x, 1))
+         )
+       ) in
+       let hoist12 = (core__num__impl_u32__wrapping_add(123, hoist11)) in
+       let hoist13 = (core__num__impl_u32__wrapping_add(hoist12, x)) in
+       let hoist14 = (todo return;) in
+       nat_err().
+
+letfun tests__legacy__side_effects__simplifiable_return(
+         c1 : bool, c2 : bool, c3 : bool
+       ) =
+       let x = (0) in
+       let x = (
+         if c1
+         then
+           (let x = (
+              if c2
+              then
+                (let x = (core__ops__arith__f_add(x, 10)) in
+                 if c3
+                 then
+                   (let hoist15 = (todo return;) in
+                    x)
+                 else (x))
+              else (x)
+            ) in
+            let x = (core__ops__arith__f_add(x, 1)) in
+            x)
+         else (x)
+       ) in
+       x.
+
+letfun tests__legacy__side_effects__simplifiable_question_mark(
+         c : bool, x : Option
+       ) =
+       let a = (
+         if c
+         then
+           (let Some(nat_to_bitstring(hoist16)) = x in core__ops__arith__f_add(
+              hoist16, 10
+            )
+            else let None() = x in todo return;)
+         else (0)
+       ) in
+       let b = (20) in
+       Some(nat_to_bitstring(core__ops__arith__f_add(a, b))).
+
+letfun tests__legacy__side_effects__direct_result_question_mark(y : bitstring) =
+       let wildcard3: bitstring = y in 0
+       else nat_err().
+
+letfun tests__legacy__side_effects__direct_result_question_mark_coercion(y : nat
+       ) =
+       let hoist17 = y in hoist17
+       else nat_err().
+
+letfun tests__legacy__side_effects__options(x : Option, y : Option, z : Option) =
+       let Some(nat_to_bitstring(hoist21)) = x in (
+         let hoist22 = (core__cmp__f_gt(hoist21, 10)) in
+         let hoist28 = (
+           if hoist22
+           then
+             (let Some(nat_to_bitstring(hoist23)) = x in (
+                let hoist24 = (core__num__impl_u8__wrapping_add(hoist23, 3)) in
+                Some(nat_to_bitstring(hoist24))
+              )
+              else let None() = x in todo return;)
+           else (
+             let Some(nat_to_bitstring(hoist26)) = x in let Some(
+               nat_to_bitstring(hoist25)
+             ) = y in (
+               let hoist27 = (core__num__impl_u8__wrapping_add(hoist26, hoist25)
+               ) in
+               Some(nat_to_bitstring(hoist27))
+             )
+             else let None() = y in todo return;
+             else let None() = x in todo return;
+           )
+         ) in
+         let Some(nat_to_bitstring(hoist29)) = hoist28 in (
+           let v = (
+             let (=3) = hoist29 in let Some(nat_to_bitstring(some)) = None() in some
+             else let None() = None() in todo return;
+             else let (=4) = hoist29 in let Some(nat_to_bitstring(hoist18)) = z in (
+               let hoist19 = (core__cmp__f_gt(hoist18, 4)) in
+               let hoist20 = (if hoist19 then (0) else (3)) in
+               core__ops__arith__f_add(4, hoist20)
+             )
+             else let None() = z in todo return;
+             else 12
+           ) in
+           let Some(nat_to_bitstring(hoist30)) = x in (
+             let hoist32 = (core__num__impl_u8__wrapping_add(v, hoist30)) in
+             let Some(nat_to_bitstring(hoist31)) = y in (
+               let hoist33 = (core__num__impl_u8__wrapping_add(hoist32, hoist31)
+               ) in
+               Some(nat_to_bitstring(hoist33))
+             )
+             else let None() = y in todo return;
+           )
+           else let None() = x in todo return;
+         )
+         else let None() = hoist28 in todo return;
+       )
+       else let None() = x in todo return;.
+
+letfun tests__legacy__side_effects__question_mark(x : nat) =
+       let x = (
+         if core__cmp__f_gt(x, 40)
+         then
+           (let y = (0) in
+            let x = (core__num__impl_u32__wrapping_add(x, 3)) in
+            let y = (core__num__impl_u32__wrapping_add(x, y)) in
+            let x = (core__num__impl_u32__wrapping_add(x, y)) in
+            let hoist34 = (core__cmp__f_gt(x, 90)) in
+            if hoist34
+            then
+              (let ok = bitstring_err() in x
+               else nat_err())
+            else (x))
+         else (x)
+       ) in
+       core__num__impl_u32__wrapping_add(3, x).
+
+letfun tests__legacy__side_effects__monad_lifting(x : nat) =
+       if core__cmp__f_gt(x, 123)
+       then
+         (let hoist35 = tests__legacy__side_effects__t_A_err() in (
+            let hoist36 = (hoist35) in
+            let hoist37 = (todo return;) in
+            tests__legacy__side_effects__t_A_err()
+          )
+          else tests__legacy__side_effects__t_A_err())
+       else (tests__legacy__side_effects__A()).
+
+letfun tests__legacy__side_effects__assign_non_trivial_lhs(
+         foo : tests__legacy__side_effects__t_Foo
+       ) =
+       let foo = (tests__legacy__side_effects__t_Foo(true)) in
+       let foo = (
+         tests__legacy__side_effects__t_Foo(
+           tests__legacy__side_effects__t_Bar(true)
+         )
+       ) in
+       let foo = (
+         tests__legacy__side_effects__t_Foo(
+
+             tests__legacy__side_effects__t_Bar(
+
+                 rust_primitives__hax__failure(
+                   "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
+Details: Construct unexpected constructors
+
+
+Note: the error was labeled with context `Generic generic printer`.
+",
+                   "tuple2 {
+ print_rust_last_of_global_ident_error: rust_primitives::hax::monomorphized_update_at::update_at_usize(
+ proj_proj_tuple0(
+ proj_tests::legacy__side_effects::f_b(
+ proj_tests::legacy__side_ef..."
+                 )
+
+             )
+
+         )
+       ) in
+       let foo = (
+         tests__legacy__side_effects__t_Foo(
+
+             rust_primitives__hax__monomorphized_update_at__update_at_usize(
+               accessor_tests__legacy__side_effects__t_Foo_tests__legacy__side_effects__f_z(
+                 foo
+               ),
+               3,
+               tests__legacy__side_effects__t_Bar(true)
+             )
+
+         )
+       ) in
+       let foo = (
+         tests__legacy__side_effects__t_Foo(
+
+             rust_primitives__hax__failure(
+               "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
+Details: Construct unexpected constructors
+
+
+Note: the error was labeled with context `Generic generic printer`.
+",
+               "tuple2 {
+ print_rust_last_of_global_ident_error: rust_primitives::hax::monomorphized_update_at::update_at_usize(
+ proj_proj_tuple1(proj_tests::legacy__side_effects::f_y(foo)),
+ 3,
+ tests::legacy__side..."
+             )
+
+         )
+       ) in
+       foo.
+
+letfun tests__legacy__side_effects__issue_1300___v_fun(wildcard4 : bitstring) =
+       let val = core__iter__traits__iterator__f_collect(
+         core__iter__traits__iterator__f_map(
+           core__slice__impl__iter(rust_primitives__hax__repeat(0, 5)),
+           |prev|let hoist45 = rust_primitives__hax__repeat(0, 32) in (
+             let hoist46 = ((prev, hoist45)) in
+             hoist46
+           )
+           else bitstring_err()
+         )
+       ) in ()
+       else bitstring_err().
+
+letfun tests__legacy__side_effects__issue_1089___test(x : Option, y : Option) =
+       let Some(Option_to_bitstring(some)) = core__option__impl__map(
+         x,
+         |i|let Some(nat_to_bitstring(hoist38)) = y in (
+           let hoist39 = (core__ops__arith__f_add(i, hoist38)) in
+           Some(nat_to_bitstring(hoist39))
+         )
+         else let None() = y in todo return;
+       ) in some
+       else let None() = core__option__impl__map(
+         x,
+         |i|let Some(nat_to_bitstring(hoist38)) = y in (
+           let hoist39 = (core__ops__arith__f_add(i, hoist38)) in
+           Some(nat_to_bitstring(hoist39))
+         )
+         else let None() = y in todo return;
+       ) in todo return;.
+

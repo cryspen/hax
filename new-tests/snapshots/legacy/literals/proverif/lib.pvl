@@ -1,0 +1,239 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__literals__t_Foo.
+
+fun tests__legacy__literals__t_Foo_to_bitstring(tests__legacy__literals__t_Foo)
+    : bitstring [typeConverter].
+fun tests__legacy__literals__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__literals__t_Foo [typeConverter].
+const tests__legacy__literals__t_Foo_default_value: tests__legacy__literals__t_Foo.
+letfun tests__legacy__literals__t_Foo_default() =
+       tests__legacy__literals__t_Foo_default_value.
+letfun tests__legacy__literals__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__literals__t_Foo_default_value.
+fun tests__legacy__literals__Foo(nat)
+    : tests__legacy__literals__t_Foo [data].
+reduc forall tests__legacy__literals__f_field: nat;
+    accessor_tests__legacy__literals__t_Foo_tests__legacy__literals__f_field(
+      tests__legacy__literals__Foo(tests__legacy__literals__f_field)
+    ) = tests__legacy__literals__f_field.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__literals__math_integers(x : hax_lib__int__t_Int) =
+       let wildcard21: bitstring:hax_lib__int__t_Int = (
+         hax_lib__abstraction__f_lift(3)
+       ) in
+       let e_neg_dec = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "-340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_pos_dec = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_neg_hex = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "-340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_pos_hex = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_neg_octal = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "-340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_pos_octal = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_neg_bin = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "-340282366920938463463374607431768211455000"
+         )
+       ) in
+       let e_pos_bin = (
+         hax_lib__int__impl_Int__e_unsafe_from_str(
+           "340282366920938463463374607431768211455000"
+         )
+       ) in
+       let wildcard20: bitstring = (
+         core__cmp__f_gt(
+           hax_lib__int__impl_Int__e_unsafe_from_str(
+             "-340282366920938463463374607431768211455000"
+           ),
+           hax_lib__int__impl_Int__e_unsafe_from_str(
+             "340282366920938463463374607431768211455000"
+           )
+         )
+       ) in
+       let wildcard19: bitstring = (core__cmp__f_lt(x, x)) in
+       let wildcard18: bitstring = (core__cmp__f_ge(x, x)) in
+       let wildcard17: bitstring = (core__cmp__f_le(x, x)) in
+       let wildcard16: bitstring = (core__cmp__f_ne(x, x)) in
+       let wildcard15: bitstring = (core__cmp__f_eq(x, x)) in
+       let wildcard14: bitstring = (core__ops__arith__f_add(x, x)) in
+       let wildcard13: bitstring = (core__ops__arith__f_sub(x, x)) in
+       let wildcard12: bitstring = (core__ops__arith__f_mul(x, x)) in
+       let wildcard11: bitstring = (core__ops__arith__f_div(x, x)) in
+       let wildcard10: bitstring:nat = (hax_lib__int__impl_Int__to_i16(x)) in
+       let wildcard9: bitstring:nat = (hax_lib__int__impl_Int__to_i32(x)) in
+       let wildcard8: bitstring:nat = (hax_lib__int__impl_Int__to_i64(x)) in
+       let wildcard7: bitstring:nat = (hax_lib__int__impl_Int__to_i128(x)) in
+       let wildcard6: bitstring:nat = (hax_lib__int__impl_Int__to_isize(x)) in
+       let wildcard5: bitstring:nat = (hax_lib__int__impl_Int__to_u16(x)) in
+       let wildcard4: bitstring:nat = (hax_lib__int__impl_Int__to_u32(x)) in
+       let wildcard3: bitstring:nat = (hax_lib__int__impl_Int__to_u64(x)) in
+       let wildcard2: bitstring:nat = (hax_lib__int__impl_Int__to_u128(x)) in
+       let wildcard1: bitstring:nat = (hax_lib__int__impl_Int__to_usize(x)) in
+       hax_lib__int__impl_Int__to_u8(
+         core__ops__arith__f_add(x, core__ops__arith__f_mul(x, x))
+       ).
+
+letfun tests__legacy__literals__panic_with_msg(wildcard22 : bitstring) =
+       bitstring_err().
+
+const tests__legacy__literals__v_CONSTANT: tests__legacy__literals__t_Foo.
+
+letfun tests__legacy__literals__numeric(wildcard28 : bitstring) =
+       let wildcard27: bitstring:nat = (123) in
+       let wildcard26: bitstring:nat = (-42) in
+       let wildcard25: bitstring:nat = (42) in
+       let wildcard24: bitstring:nat = (-42) in
+       let wildcard23: bitstring:nat = (22222222222222222222) in
+       ().
+
+letfun tests__legacy__literals__patterns(wildcard32 : bitstring) =
+       let wildcard31: bitstring = (
+         let (=2) = 1 in ()
+         else ()
+       ) in
+       let wildcard30: bitstring = (
+         let (="hello", (=123, e_todo: bitstring)) = ("hello", (123, ["a","b"])) in (
+
+         )
+         else ()
+       ) in
+       let wildcard29: bitstring = (
+         let tests__legacy__literals__Foo(=3) = tests__legacy__literals__Foo(4) in (
+
+         )
+         else ()
+       ) in
+       ().
+
+letfun tests__legacy__literals__casts(
+         x8 : nat, x16 : nat, x32 : nat, x64 : nat, xs : nat
+       ) =
+       let wildcard40: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard39: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard38: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard37: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard36: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard35: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard34: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       let wildcard33: bitstring:nat = (
+         core__ops__arith__f_add(
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+           ),
+           xs
+         )
+       ) in
+       ().
+
+letfun tests__legacy__literals__empty_array(wildcard42 : bitstring) =
+       let wildcard41: bitstring:bitstring = ([]) in
+       ().
+
+letfun tests__legacy__literals__fn_pointer_cast(wildcard43 : bitstring) =
+       let f:bitstring = (|x|x) in
+       ().
+
+const tests__legacy__literals__null: bitstring.
+

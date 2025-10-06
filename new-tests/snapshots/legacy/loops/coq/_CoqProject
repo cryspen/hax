@@ -1,0 +1,10 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__loops_While_loops.v
+Tests_Legacy__loops_Recognized_loops.v
+Tests_Legacy__loops_For_loops.v
+Tests_Legacy__loops_Control_flow.v
+Tests_Legacy__loops_And_mut_side_effect_loop.v
+Tests_Legacy__loops.v

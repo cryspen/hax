@@ -1,3 +1,4 @@
+//! @fail(extraction): ssprove(HAX0001)
 #![allow(dead_code)]
 
 #[derive(Debug)]

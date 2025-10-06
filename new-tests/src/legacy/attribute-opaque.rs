@@ -1,4 +1,6 @@
+//! @off: proverif, lean
 #[hax_lib::opaque]
+/// @fail(extraction): coq(HAX0002)
 struct OpaqueStruct<const X: usize, T, U> {
     field: [T; X],
     other_field: U,

@@ -1,0 +1,10 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__side_effects_Nested_return.v
+Tests_Legacy__side_effects_Issue_1300_.v
+Tests_Legacy__side_effects_Issue_1299_.v
+Tests_Legacy__side_effects_Issue_1089_.v
+Tests_Legacy__side_effects_Issue_1083_.v
+Tests_Legacy__side_effects.v

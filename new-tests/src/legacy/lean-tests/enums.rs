@@ -20,6 +20,7 @@ enum MyList<T> {
     Cons { hd: T, tl: Box<MyList<T>> },
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 fn enums() -> () {
     // 2. Expressions
     let e_v1 = E::V1;

@@ -1,3 +1,5 @@
+//! @off: proverif
+
 /// Issue #757
 fn calling_function_pointer() {
     fn f<T>() {}
@@ -16,6 +18,7 @@ mod issue_1048 {
         }
     }
 
+    /// @fail(extraction): coq(HAX0002)
     pub fn call_via_deref() -> bool {
         CallableViaDeref()
     }

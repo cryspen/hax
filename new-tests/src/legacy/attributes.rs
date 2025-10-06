@@ -1,3 +1,4 @@
+//! @off: lean, ssprove, coq
 use hax_lib as hax;
 
 // dummy max value

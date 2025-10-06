@@ -1,0 +1,85 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__enum_struct_variant__t_Money.
+
+fun tests__legacy__enum_struct_variant__t_Money_to_bitstring(
+      tests__legacy__enum_struct_variant__t_Money
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__enum_struct_variant__t_Money_from_bitstring(bitstring)
+    : tests__legacy__enum_struct_variant__t_Money [typeConverter].
+const tests__legacy__enum_struct_variant__t_Money_default_value: tests__legacy__enum_struct_variant__t_Money.
+letfun tests__legacy__enum_struct_variant__t_Money_default() =
+       tests__legacy__enum_struct_variant__t_Money_default_value.
+letfun tests__legacy__enum_struct_variant__t_Money_err() =
+       let x = construct_fail() in tests__legacy__enum_struct_variant__t_Money_default_value.
+fun tests__legacy__enum_struct_variant__Money(nat)
+    : tests__legacy__enum_struct_variant__t_Money [data].
+reduc forall tests__legacy__enum_struct_variant__f_value: nat;
+    accessor_tests__legacy__enum_struct_variant__t_Money_tests__legacy__enum_struct_variant__f_value(
+      tests__legacy__enum_struct_variant__Money(
+        tests__legacy__enum_struct_variant__f_value
+      )
+    ) = tests__legacy__enum_struct_variant__f_value.
+
+type tests__legacy__enum_struct_variant__t_EnumWithStructVariant.
+
+fun tests__legacy__enum_struct_variant__t_EnumWithStructVariant_to_bitstring(
+      tests__legacy__enum_struct_variant__t_EnumWithStructVariant
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__enum_struct_variant__t_EnumWithStructVariant_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__enum_struct_variant__t_EnumWithStructVariant [typeConverter].
+const tests__legacy__enum_struct_variant__t_EnumWithStructVariant_default_value: tests__legacy__enum_struct_variant__t_EnumWithStructVariant.
+letfun tests__legacy__enum_struct_variant__t_EnumWithStructVariant_default() =
+       tests__legacy__enum_struct_variant__t_EnumWithStructVariant_default_value.
+letfun tests__legacy__enum_struct_variant__t_EnumWithStructVariant_err() =
+       let x = construct_fail() in tests__legacy__enum_struct_variant__t_EnumWithStructVariant_default_value.
+fun tests__legacy__enum_struct_variant__EnumWithStructVariant_Funds(
+      tests__legacy__enum_struct_variant__t_Money
+    )
+    : tests__legacy__enum_struct_variant__t_EnumWithStructVariant [data].
+reduc forall 
+  tests__legacy__enum_struct_variant__f_balance: tests__legacy__enum_struct_variant__t_Money
+;
+    accessor_tests__legacy__enum_struct_variant__t_EnumWithStructVariant_tests__legacy__enum_struct_variant__f_balance(
+      tests__legacy__enum_struct_variant__EnumWithStructVariant_Funds(
+        tests__legacy__enum_struct_variant__f_balance
+      )
+    ) = tests__legacy__enum_struct_variant__f_balance.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+
+

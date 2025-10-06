@@ -1,3 +1,4 @@
+//! @fail(extraction): lean(HAX0001)
 mod typ_a {
     pub enum TRec {
         T(super::typ_b::T1Rec),
