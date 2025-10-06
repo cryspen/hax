@@ -1,3 +1,4 @@
+//! @fail(extraction): lean(HAX0001, HAX0001)
 #![allow(dead_code)]
 
 /// Helper function
@@ -6,6 +7,7 @@ fn add3(x: u32, y: u32, z: u32) -> u32 {
 }
 
 /// Exercise local mutation with control flow and loops
+/// @fail(extraction): proverif(HAX0008)
 fn local_mutation(mut x: u32) -> u32 {
     let mut y = 0;
     if {
@@ -148,6 +150,8 @@ struct Foo {
 }
 
 /// Test assignation on non-trivial places
+/// @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0001)
+/// @fail(extraction): proverif(HAX0002, HAX0002, HAX0002, HAX0002)
 fn assign_non_trivial_lhs(mut foo: Foo) -> Foo {
     foo.x = true;
     foo.bar.a = true;

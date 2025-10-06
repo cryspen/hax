@@ -1,0 +1,114 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__attribute_opaque__t_OpaqueStruct.
+
+fun tests__legacy__attribute_opaque__t_OpaqueStruct_to_bitstring(
+      tests__legacy__attribute_opaque__t_OpaqueStruct
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attribute_opaque__t_OpaqueStruct_from_bitstring(bitstring)
+    : tests__legacy__attribute_opaque__t_OpaqueStruct [typeConverter].
+const tests__legacy__attribute_opaque__t_OpaqueStruct_default_value: tests__legacy__attribute_opaque__t_OpaqueStruct.
+letfun tests__legacy__attribute_opaque__t_OpaqueStruct_default() =
+       tests__legacy__attribute_opaque__t_OpaqueStruct_default_value.
+letfun tests__legacy__attribute_opaque__t_OpaqueStruct_err() =
+       let x = construct_fail() in tests__legacy__attribute_opaque__t_OpaqueStruct_default_value.
+
+
+type tests__legacy__attribute_opaque__t_OpaqueEnum.
+
+fun tests__legacy__attribute_opaque__t_OpaqueEnum_to_bitstring(
+      tests__legacy__attribute_opaque__t_OpaqueEnum
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attribute_opaque__t_OpaqueEnum_from_bitstring(bitstring)
+    : tests__legacy__attribute_opaque__t_OpaqueEnum [typeConverter].
+const tests__legacy__attribute_opaque__t_OpaqueEnum_default_value: tests__legacy__attribute_opaque__t_OpaqueEnum.
+letfun tests__legacy__attribute_opaque__t_OpaqueEnum_default() =
+       tests__legacy__attribute_opaque__t_OpaqueEnum_default_value.
+letfun tests__legacy__attribute_opaque__t_OpaqueEnum_err() =
+       let x = construct_fail() in tests__legacy__attribute_opaque__t_OpaqueEnum_default_value.
+
+
+type tests__legacy__attribute_opaque__t_S1.
+
+fun tests__legacy__attribute_opaque__t_S1_to_bitstring(
+      tests__legacy__attribute_opaque__t_S1
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attribute_opaque__t_S1_from_bitstring(bitstring)
+    : tests__legacy__attribute_opaque__t_S1 [typeConverter].
+const tests__legacy__attribute_opaque__t_S1_default_value: tests__legacy__attribute_opaque__t_S1.
+letfun tests__legacy__attribute_opaque__t_S1_default() =
+       tests__legacy__attribute_opaque__t_S1_default_value.
+letfun tests__legacy__attribute_opaque__t_S1_err() =
+       let x = construct_fail() in tests__legacy__attribute_opaque__t_S1_default_value.
+fun tests__legacy__attribute_opaque__S1()
+    : tests__legacy__attribute_opaque__t_S1 [data].
+
+
+type tests__legacy__attribute_opaque__t_S2.
+
+fun tests__legacy__attribute_opaque__t_S2_to_bitstring(
+      tests__legacy__attribute_opaque__t_S2
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attribute_opaque__t_S2_from_bitstring(bitstring)
+    : tests__legacy__attribute_opaque__t_S2 [typeConverter].
+const tests__legacy__attribute_opaque__t_S2_default_value: tests__legacy__attribute_opaque__t_S2.
+letfun tests__legacy__attribute_opaque__t_S2_default() =
+       tests__legacy__attribute_opaque__t_S2_default_value.
+letfun tests__legacy__attribute_opaque__t_S2_err() =
+       let x = construct_fail() in tests__legacy__attribute_opaque__t_S2_default_value.
+fun tests__legacy__attribute_opaque__S2()
+    : tests__legacy__attribute_opaque__t_S2 [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__attribute_opaque__ff_generic(x : v_U) =
+       rust_primitives__hax__dropped_body.
+
+letfun tests__legacy__attribute_opaque__f(x : bool, y : bool) =
+       rust_primitives__hax__dropped_body.
+
+letfun tests__legacy__attribute_opaque__ff_pre_post(x : bool, y : bool) =
+       rust_primitives__hax__dropped_body.
+
+const tests__legacy__attribute_opaque__v_C: bitstring.
+
+letfun tests__legacy__attribute_opaque__impl_S1__ff_s1(wildcard1 : bitstring) =
+       rust_primitives__hax__dropped_body.
+
+letfun tests__legacy__attribute_opaque__impl_S2__ff_s2(wildcard2 : bitstring) =
+       rust_primitives__hax__dropped_body.
+

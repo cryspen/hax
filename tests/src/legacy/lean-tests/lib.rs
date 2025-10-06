@@ -1,3 +1,4 @@
+//! @fail(extraction): fstar(HAX0002, HAX0002), coq(HAX0002, HAX0002), ssprove(HAX0001)
 #![allow(dead_code)]
 #![allow(unused_variables)]
 

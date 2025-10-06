@@ -1,0 +1,486 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__naming__functions_defined_in_trait_impls__t_A.
+
+fun tests__legacy__naming__functions_defined_in_trait_impls__t_A_to_bitstring(
+      tests__legacy__naming__functions_defined_in_trait_impls__t_A
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__functions_defined_in_trait_impls__t_A_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__naming__functions_defined_in_trait_impls__t_A [typeConverter].
+const tests__legacy__naming__functions_defined_in_trait_impls__t_A_default_value: tests__legacy__naming__functions_defined_in_trait_impls__t_A.
+letfun tests__legacy__naming__functions_defined_in_trait_impls__t_A_default() =
+       tests__legacy__naming__functions_defined_in_trait_impls__t_A_default_value.
+letfun tests__legacy__naming__functions_defined_in_trait_impls__t_A_err() =
+       let x = construct_fail() in tests__legacy__naming__functions_defined_in_trait_impls__t_A_default_value.
+fun tests__legacy__naming__functions_defined_in_trait_impls__A()
+    : tests__legacy__naming__functions_defined_in_trait_impls__t_A [data].
+
+
+type tests__legacy__naming__functions_defined_in_trait_impls__t_B.
+
+fun tests__legacy__naming__functions_defined_in_trait_impls__t_B_to_bitstring(
+      tests__legacy__naming__functions_defined_in_trait_impls__t_B
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__functions_defined_in_trait_impls__t_B_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__naming__functions_defined_in_trait_impls__t_B [typeConverter].
+const tests__legacy__naming__functions_defined_in_trait_impls__t_B_default_value: tests__legacy__naming__functions_defined_in_trait_impls__t_B.
+letfun tests__legacy__naming__functions_defined_in_trait_impls__t_B_default() =
+       tests__legacy__naming__functions_defined_in_trait_impls__t_B_default_value.
+letfun tests__legacy__naming__functions_defined_in_trait_impls__t_B_err() =
+       let x = construct_fail() in tests__legacy__naming__functions_defined_in_trait_impls__t_B_default_value.
+fun tests__legacy__naming__functions_defined_in_trait_impls__B()
+    : tests__legacy__naming__functions_defined_in_trait_impls__t_B [data].
+
+
+type tests__legacy__naming__t_Foo.
+
+fun tests__legacy__naming__t_Foo_to_bitstring(tests__legacy__naming__t_Foo)
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__naming__t_Foo [typeConverter].
+const tests__legacy__naming__t_Foo_default_value: tests__legacy__naming__t_Foo.
+letfun tests__legacy__naming__t_Foo_default() =
+       tests__legacy__naming__t_Foo_default_value.
+letfun tests__legacy__naming__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__naming__t_Foo_default_value.
+fun tests__legacy__naming__Foo_A()
+    : tests__legacy__naming__t_Foo [data].
+
+fun tests__legacy__naming__Foo_B(nat)
+    : tests__legacy__naming__t_Foo [data].
+reduc forall tests__legacy__naming__f_x: nat;
+    accessor_tests__legacy__naming__t_Foo_tests__legacy__naming__f_x(
+      tests__legacy__naming__Foo_B(tests__legacy__naming__f_x)
+    ) = tests__legacy__naming__f_x.
+
+type tests__legacy__naming__t_Foo2.
+
+fun tests__legacy__naming__t_Foo2_to_bitstring(tests__legacy__naming__t_Foo2)
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_Foo2_from_bitstring(bitstring)
+    : tests__legacy__naming__t_Foo2 [typeConverter].
+const tests__legacy__naming__t_Foo2_default_value: tests__legacy__naming__t_Foo2.
+letfun tests__legacy__naming__t_Foo2_default() =
+       tests__legacy__naming__t_Foo2_default_value.
+letfun tests__legacy__naming__t_Foo2_err() =
+       let x = construct_fail() in tests__legacy__naming__t_Foo2_default_value.
+fun tests__legacy__naming__Foo2_A()
+    : tests__legacy__naming__t_Foo2 [data].
+
+fun tests__legacy__naming__Foo2_B(nat)
+    : tests__legacy__naming__t_Foo2 [data].
+reduc forall tests__legacy__naming__f_x: nat;
+    accessor_tests__legacy__naming__t_Foo2_tests__legacy__naming__f_x(
+      tests__legacy__naming__Foo2_B(tests__legacy__naming__f_x)
+    ) = tests__legacy__naming__f_x.
+
+type tests__legacy__naming__t_B.
+
+fun tests__legacy__naming__t_B_to_bitstring(tests__legacy__naming__t_B)
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_B_from_bitstring(bitstring)
+    : tests__legacy__naming__t_B [typeConverter].
+const tests__legacy__naming__t_B_default_value: tests__legacy__naming__t_B.
+letfun tests__legacy__naming__t_B_default() =
+       tests__legacy__naming__t_B_default_value.
+letfun tests__legacy__naming__t_B_err() =
+       let x = construct_fail() in tests__legacy__naming__t_B_default_value.
+fun tests__legacy__naming__B()
+    : tests__legacy__naming__t_B [data].
+
+
+type tests__legacy__naming__t_C.
+
+fun tests__legacy__naming__t_C_to_bitstring(tests__legacy__naming__t_C)
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_C_from_bitstring(bitstring)
+    : tests__legacy__naming__t_C [typeConverter].
+const tests__legacy__naming__t_C_default_value: tests__legacy__naming__t_C.
+letfun tests__legacy__naming__t_C_default() =
+       tests__legacy__naming__t_C_default_value.
+letfun tests__legacy__naming__t_C_err() =
+       let x = construct_fail() in tests__legacy__naming__t_C_default_value.
+fun tests__legacy__naming__C(nat)
+    : tests__legacy__naming__t_C [data].
+reduc forall tests__legacy__naming__f_x: nat;
+    accessor_tests__legacy__naming__t_C_tests__legacy__naming__f_x(
+      tests__legacy__naming__C(tests__legacy__naming__f_x)
+    ) = tests__legacy__naming__f_x.
+
+type tests__legacy__naming__t_X.
+
+fun tests__legacy__naming__t_X_to_bitstring(tests__legacy__naming__t_X)
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_X_from_bitstring(bitstring)
+    : tests__legacy__naming__t_X [typeConverter].
+const tests__legacy__naming__t_X_default_value: tests__legacy__naming__t_X.
+letfun tests__legacy__naming__t_X_default() =
+       tests__legacy__naming__t_X_default_value.
+letfun tests__legacy__naming__t_X_err() =
+       let x = construct_fail() in tests__legacy__naming__t_X_default_value.
+fun tests__legacy__naming__X()
+    : tests__legacy__naming__t_X [data].
+
+
+type tests__legacy__naming__t_Foobar.
+
+fun tests__legacy__naming__t_Foobar_to_bitstring(tests__legacy__naming__t_Foobar
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_Foobar_from_bitstring(bitstring)
+    : tests__legacy__naming__t_Foobar [typeConverter].
+const tests__legacy__naming__t_Foobar_default_value: tests__legacy__naming__t_Foobar.
+letfun tests__legacy__naming__t_Foobar_default() =
+       tests__legacy__naming__t_Foobar_default_value.
+letfun tests__legacy__naming__t_Foobar_err() =
+       let x = construct_fail() in tests__legacy__naming__t_Foobar_default_value.
+fun tests__legacy__naming__Foobar(tests__legacy__naming__t_Foo)
+    : tests__legacy__naming__t_Foobar [data].
+reduc forall tests__legacy__naming__f_a: tests__legacy__naming__t_Foo;
+    accessor_tests__legacy__naming__t_Foobar_tests__legacy__naming__f_a(
+      tests__legacy__naming__Foobar(tests__legacy__naming__f_a)
+    ) = tests__legacy__naming__f_a.
+
+type tests__legacy__naming__f__g__impl_B__g__t_Foo.
+
+fun tests__legacy__naming__f__g__impl_B__g__t_Foo_to_bitstring(
+      tests__legacy__naming__f__g__impl_B__g__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__f__g__impl_B__g__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__naming__f__g__impl_B__g__t_Foo [typeConverter].
+const tests__legacy__naming__f__g__impl_B__g__t_Foo_default_value: tests__legacy__naming__f__g__impl_B__g__t_Foo.
+letfun tests__legacy__naming__f__g__impl_B__g__t_Foo_default() =
+       tests__legacy__naming__f__g__impl_B__g__t_Foo_default_value.
+letfun tests__legacy__naming__f__g__impl_B__g__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__naming__f__g__impl_B__g__t_Foo_default_value.
+fun tests__legacy__naming__C_f__g__impl_B__g__Foo_A()
+    : tests__legacy__naming__f__g__impl_B__g__t_Foo [data].
+
+fun tests__legacy__naming__C_f__g__impl_B__g__Foo_B(nat)
+    : tests__legacy__naming__f__g__impl_B__g__t_Foo [data].
+reduc forall tests__legacy__naming__f__g__impl_B__g__f_x: nat;
+    accessor_tests__legacy__naming__f__g__impl_B__g__t_Foo_tests__legacy__naming__f__g__impl_B__g__f_x(
+      tests__legacy__naming__C_f__g__impl_B__g__Foo_B(
+        tests__legacy__naming__f__g__impl_B__g__f_x
+      )
+    ) = tests__legacy__naming__f__g__impl_B__g__f_x.
+
+type tests__legacy__naming__t_Arity1.
+
+fun tests__legacy__naming__t_Arity1_to_bitstring(tests__legacy__naming__t_Arity1
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_Arity1_from_bitstring(bitstring)
+    : tests__legacy__naming__t_Arity1 [typeConverter].
+const tests__legacy__naming__t_Arity1_default_value: tests__legacy__naming__t_Arity1.
+letfun tests__legacy__naming__t_Arity1_default() =
+       tests__legacy__naming__t_Arity1_default_value.
+letfun tests__legacy__naming__t_Arity1_err() =
+       let x = construct_fail() in tests__legacy__naming__t_Arity1_default_value.
+fun tests__legacy__naming__Arity1(v_T)
+    : tests__legacy__naming__t_Arity1 [data].
+reduc forall tests__legacy__naming__0: v_T;
+    accessor_tests__legacy__naming__t_Arity1_tests__legacy__naming__0(
+      tests__legacy__naming__Arity1(tests__legacy__naming__0)
+    ) = tests__legacy__naming__0.
+
+type tests__legacy__naming__t_StructA.
+
+fun tests__legacy__naming__t_StructA_to_bitstring(
+      tests__legacy__naming__t_StructA
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_StructA_from_bitstring(bitstring)
+    : tests__legacy__naming__t_StructA [typeConverter].
+const tests__legacy__naming__t_StructA_default_value: tests__legacy__naming__t_StructA.
+letfun tests__legacy__naming__t_StructA_default() =
+       tests__legacy__naming__t_StructA_default_value.
+letfun tests__legacy__naming__t_StructA_err() =
+       let x = construct_fail() in tests__legacy__naming__t_StructA_default_value.
+fun tests__legacy__naming__StructA(nat)
+    : tests__legacy__naming__t_StructA [data].
+reduc forall tests__legacy__naming__f_a: nat;
+    accessor_tests__legacy__naming__t_StructA_tests__legacy__naming__f_a(
+      tests__legacy__naming__StructA(tests__legacy__naming__f_a)
+    ) = tests__legacy__naming__f_a.
+
+type tests__legacy__naming__t_StructB.
+
+fun tests__legacy__naming__t_StructB_to_bitstring(
+      tests__legacy__naming__t_StructB
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_StructB_from_bitstring(bitstring)
+    : tests__legacy__naming__t_StructB [typeConverter].
+const tests__legacy__naming__t_StructB_default_value: tests__legacy__naming__t_StructB.
+letfun tests__legacy__naming__t_StructB_default() =
+       tests__legacy__naming__t_StructB_default_value.
+letfun tests__legacy__naming__t_StructB_err() =
+       let x = construct_fail() in tests__legacy__naming__t_StructB_default_value.
+fun tests__legacy__naming__StructB(nat, nat)
+    : tests__legacy__naming__t_StructB [data].
+reduc forall tests__legacy__naming__f_a: nat, tests__legacy__naming__f_b: nat;
+    accessor_tests__legacy__naming__t_StructB_tests__legacy__naming__f_a(
+      tests__legacy__naming__StructB(
+        tests__legacy__naming__f_a, tests__legacy__naming__f_b
+      )
+    ) = tests__legacy__naming__f_a.
+reduc forall tests__legacy__naming__f_a: nat, tests__legacy__naming__f_b: nat;
+    accessor_tests__legacy__naming__t_StructB_tests__legacy__naming__f_b(
+      tests__legacy__naming__StructB(
+        tests__legacy__naming__f_a, tests__legacy__naming__f_b
+      )
+    ) = tests__legacy__naming__f_b.
+
+type tests__legacy__naming__t_StructC.
+
+fun tests__legacy__naming__t_StructC_to_bitstring(
+      tests__legacy__naming__t_StructC
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_StructC_from_bitstring(bitstring)
+    : tests__legacy__naming__t_StructC [typeConverter].
+const tests__legacy__naming__t_StructC_default_value: tests__legacy__naming__t_StructC.
+letfun tests__legacy__naming__t_StructC_default() =
+       tests__legacy__naming__t_StructC_default_value.
+letfun tests__legacy__naming__t_StructC_err() =
+       let x = construct_fail() in tests__legacy__naming__t_StructC_default_value.
+fun tests__legacy__naming__StructC(nat)
+    : tests__legacy__naming__t_StructC [data].
+reduc forall tests__legacy__naming__f_a: nat;
+    accessor_tests__legacy__naming__t_StructC_tests__legacy__naming__f_a(
+      tests__legacy__naming__StructC(tests__legacy__naming__f_a)
+    ) = tests__legacy__naming__f_a.
+
+type tests__legacy__naming__t_StructD.
+
+fun tests__legacy__naming__t_StructD_to_bitstring(
+      tests__legacy__naming__t_StructD
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__t_StructD_from_bitstring(bitstring)
+    : tests__legacy__naming__t_StructD [typeConverter].
+const tests__legacy__naming__t_StructD_default_value: tests__legacy__naming__t_StructD.
+letfun tests__legacy__naming__t_StructD_default() =
+       tests__legacy__naming__t_StructD_default_value.
+letfun tests__legacy__naming__t_StructD_err() =
+       let x = construct_fail() in tests__legacy__naming__t_StructD_default_value.
+fun tests__legacy__naming__StructD(nat, nat)
+    : tests__legacy__naming__t_StructD [data].
+reduc forall tests__legacy__naming__f_a: nat, tests__legacy__naming__f_b: nat;
+    accessor_tests__legacy__naming__t_StructD_tests__legacy__naming__f_a(
+      tests__legacy__naming__StructD(
+        tests__legacy__naming__f_a, tests__legacy__naming__f_b
+      )
+    ) = tests__legacy__naming__f_a.
+reduc forall tests__legacy__naming__f_a: nat, tests__legacy__naming__f_b: nat;
+    accessor_tests__legacy__naming__t_StructD_tests__legacy__naming__f_b(
+      tests__legacy__naming__StructD(
+        tests__legacy__naming__f_a, tests__legacy__naming__f_b
+      )
+    ) = tests__legacy__naming__f_b.
+
+type tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct.
+
+fun tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_to_bitstring(
+      tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct [typeConverter].
+const tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_default_value: tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct.
+letfun tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_default(
+
+       ) =
+       tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_default_value.
+letfun tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_err(
+
+       ) =
+       let x = construct_fail() in tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct_default_value.
+fun tests__legacy__naming__C_items_under_closures__anon_const_0__NestedStruct()
+    : tests__legacy__naming__items_under_closures__anon_const_0__t_NestedStruct [data].
+
+
+type tests__legacy__naming__items_under_closures__t_NestedStruct.
+
+fun tests__legacy__naming__items_under_closures__t_NestedStruct_to_bitstring(
+      tests__legacy__naming__items_under_closures__t_NestedStruct
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__naming__items_under_closures__t_NestedStruct_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__naming__items_under_closures__t_NestedStruct [typeConverter].
+const tests__legacy__naming__items_under_closures__t_NestedStruct_default_value: tests__legacy__naming__items_under_closures__t_NestedStruct.
+letfun tests__legacy__naming__items_under_closures__t_NestedStruct_default() =
+       tests__legacy__naming__items_under_closures__t_NestedStruct_default_value.
+letfun tests__legacy__naming__items_under_closures__t_NestedStruct_err() =
+       let x = construct_fail() in tests__legacy__naming__items_under_closures__t_NestedStruct_default_value.
+fun tests__legacy__naming__C_items_under_closures__NestedStruct()
+    : tests__legacy__naming__items_under_closures__t_NestedStruct [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__naming__functions_defined_in_trait_impls__f_eq__impl__panic_cold_explicit(
+         wildcard1 : bitstring
+       ) =
+       core__panicking__panic_explicit(()).
+
+letfun tests__legacy__naming__functions_defined_in_trait_impls__f_eq__impl_1__panic_cold_explicit(
+         wildcard2 : bitstring
+       ) =
+       core__panicking__panic_explicit(()).
+
+letfun tests__legacy__naming__ambiguous_names__debug(label : nat, value : nat) =
+       let args = ((label, value)) in
+       let args = (
+         [core__fmt__rt__impl__new_display(args.0),core__fmt__rt__impl__new_display(
+           args.1
+         )]
+       ) in
+       let wildcard3: bitstring = (
+         std__io__stdio__e_print(
+           core__fmt__rt__impl_1__new_v1(["[","] a=","
+"], args)
+         )
+       ) in
+       ().
+
+letfun tests__legacy__naming__ambiguous_names__f(wildcard7 : bitstring) =
+       let a_1_ = (104) in
+       let a_2_ = (205) in
+       let a_3_ = (306) in
+       let a = (123) in
+       let wildcard6: bitstring = (
+         tests__legacy__naming__ambiguous_names__debug(3, a_3_)
+       ) in
+       let wildcard5: bitstring = (
+         tests__legacy__naming__ambiguous_names__debug(2, a_2_)
+       ) in
+       let wildcard4: bitstring = (
+         tests__legacy__naming__ambiguous_names__debug(1, a_1_)
+       ) in
+       tests__legacy__naming__ambiguous_names__debug(4, a).
+
+letfun tests__legacy__naming__ambiguous_names__ff_expand(wildcard11 : bitstring) =
+       let a = (104) in
+       let a = (205) in
+       let a = (306) in
+       let a = (123) in
+       let wildcard10: bitstring = (
+         tests__legacy__naming__ambiguous_names__debug(3, a)
+       ) in
+       let wildcard9: bitstring = (
+         tests__legacy__naming__ambiguous_names__debug(2, a)
+       ) in
+       let wildcard8: bitstring = (
+         tests__legacy__naming__ambiguous_names__debug(1, a)
+       ) in
+       tests__legacy__naming__ambiguous_names__debug(0, a).
+
+letfun tests__legacy__naming__mk_c(wildcard14 : bitstring) =
+       let wildcard13: bitstring = (tests__legacy__naming__Foo_B(3)) in
+       let wildcard12: bitstring = (tests__legacy__naming__X()) in
+       tests__legacy__naming__C(3).
+
+letfun tests__legacy__naming__impl_Foo__f(self : tests__legacy__naming__t_Foo) =
+       tests__legacy__naming__Foo_A().
+
+letfun tests__legacy__naming__impl_B__f(self : tests__legacy__naming__t_B) =
+       tests__legacy__naming__B().
+
+letfun tests__legacy__naming__f__g(wildcard15 : bitstring) =
+       ().
+
+letfun tests__legacy__naming__f__g__impl_B__g(self : tests__legacy__naming__t_B) =
+       0.
+
+letfun tests__legacy__naming__f__g__impl_Foo__g(
+         self : tests__legacy__naming__t_Foo
+       ) =
+       1.
+
+letfun tests__legacy__naming__f(x : tests__legacy__naming__t_Foobar) =
+       tests__legacy__naming__f__g__impl_Foo__g(
+         accessor_tests__legacy__naming__t_Foobar_tests__legacy__naming__f_a(x)
+       ).
+
+letfun tests__legacy__naming__f__g__impl_Foo__g__t_hello__h(
+         wildcard16 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__naming__reserved_names(val : nat, noeq : nat, of : nat) =
+       core__ops__arith__f_add(core__ops__arith__f_add(val, noeq), of).
+
+letfun tests__legacy__naming__construct_structs(a : nat, b : nat) =
+       let wildcard20: bitstring = (tests__legacy__naming__StructA(a)) in
+       let wildcard19: bitstring = (tests__legacy__naming__StructB(a,b)) in
+       let wildcard18: bitstring = (tests__legacy__naming__StructC(a)) in
+       let wildcard17: bitstring = (tests__legacy__naming__StructD(a,b)) in
+       ().
+
+const tests__legacy__naming__v_INHERENT_CONSTANT: bitstring.
+
+letfun tests__legacy__naming__constants(wildcard21 : bitstring) =
+       core__ops__arith__f_add(
+         tests__legacy__naming__f_ASSOCIATED_CONSTANT(),
+         tests__legacy__naming__v_INHERENT_CONSTANT
+       ).
+
+letfun tests__legacy__naming__string_shadows(string : bitstring, n : bitstring) =
+       ().
+
+letfun tests__legacy__naming__items_under_closures(wildcard24 : bitstring) =
+       let wildcard23: bitstring:bitstring = (|wildcard22: bitstring|()) in
+       ().
+
+letfun tests__legacy__naming__items_under_closures__anon_const_0__nested_function(
+         wildcard25 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__naming__items_under_closures__nested_function(
+         wildcard26 : bitstring
+       ) =
+       ().
+

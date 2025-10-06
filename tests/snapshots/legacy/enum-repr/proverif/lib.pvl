@@ -1,0 +1,170 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__enum_repr__t_EnumWithRepr.
+
+fun tests__legacy__enum_repr__t_EnumWithRepr_to_bitstring(
+      tests__legacy__enum_repr__t_EnumWithRepr
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__enum_repr__t_EnumWithRepr_from_bitstring(bitstring)
+    : tests__legacy__enum_repr__t_EnumWithRepr [typeConverter].
+const tests__legacy__enum_repr__t_EnumWithRepr_default_value: tests__legacy__enum_repr__t_EnumWithRepr.
+letfun tests__legacy__enum_repr__t_EnumWithRepr_default() =
+       tests__legacy__enum_repr__t_EnumWithRepr_default_value.
+letfun tests__legacy__enum_repr__t_EnumWithRepr_err() =
+       let x = construct_fail() in tests__legacy__enum_repr__t_EnumWithRepr_default_value.
+fun tests__legacy__enum_repr__EnumWithRepr_ExplicitDiscr1()
+    : tests__legacy__enum_repr__t_EnumWithRepr [data].
+
+fun tests__legacy__enum_repr__EnumWithRepr_ExplicitDiscr2()
+    : tests__legacy__enum_repr__t_EnumWithRepr [data].
+
+fun tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyTuple()
+    : tests__legacy__enum_repr__t_EnumWithRepr [data].
+
+fun tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyStruct()
+    : tests__legacy__enum_repr__t_EnumWithRepr [data].
+
+
+type tests__legacy__enum_repr__t_ImplicitReprs.
+
+fun tests__legacy__enum_repr__t_ImplicitReprs_to_bitstring(
+      tests__legacy__enum_repr__t_ImplicitReprs
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__enum_repr__t_ImplicitReprs_from_bitstring(bitstring)
+    : tests__legacy__enum_repr__t_ImplicitReprs [typeConverter].
+const tests__legacy__enum_repr__t_ImplicitReprs_default_value: tests__legacy__enum_repr__t_ImplicitReprs.
+letfun tests__legacy__enum_repr__t_ImplicitReprs_default() =
+       tests__legacy__enum_repr__t_ImplicitReprs_default_value.
+letfun tests__legacy__enum_repr__t_ImplicitReprs_err() =
+       let x = construct_fail() in tests__legacy__enum_repr__t_ImplicitReprs_default_value.
+fun tests__legacy__enum_repr__ImplicitReprs_A()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_B()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_C()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_D()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_E()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_F()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_G()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_H()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+fun tests__legacy__enum_repr__ImplicitReprs_I()
+    : tests__legacy__enum_repr__t_ImplicitReprs [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+const tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr1__anon_const_0: bitstring.
+
+const tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0: bitstring.
+
+letfun tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(
+         x : tests__legacy__enum_repr__t_EnumWithRepr
+       ) =
+       let tests__legacy__enum_repr__EnumWithRepr_ExplicitDiscr1() = x in tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr1__anon_const_0
+       else let tests__legacy__enum_repr__EnumWithRepr_ExplicitDiscr2() = x in tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0
+       else let tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyTuple() = x in core__ops__arith__f_add(
+         tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0,
+         1
+       )
+       else let tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyStruct(
+       ) = x in core__ops__arith__f_add(
+         tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0,
+         2
+       ).
+
+const tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0: bitstring.
+
+letfun tests__legacy__enum_repr__t_ImplicitReprs_cast_to_repr(
+         x : tests__legacy__enum_repr__t_ImplicitReprs
+       ) =
+       let tests__legacy__enum_repr__ImplicitReprs_A() = x in 0
+       else let tests__legacy__enum_repr__ImplicitReprs_B() = x in 1
+       else let tests__legacy__enum_repr__ImplicitReprs_C() = x in 2
+       else let tests__legacy__enum_repr__ImplicitReprs_D() = x in 3
+       else let tests__legacy__enum_repr__ImplicitReprs_E() = x in tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0
+       else let tests__legacy__enum_repr__ImplicitReprs_F() = x in core__ops__arith__f_add(
+         tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 1
+       )
+       else let tests__legacy__enum_repr__ImplicitReprs_G() = x in core__ops__arith__f_add(
+         tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 2
+       )
+       else let tests__legacy__enum_repr__ImplicitReprs_H() = x in core__ops__arith__f_add(
+         tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 3
+       )
+       else let tests__legacy__enum_repr__ImplicitReprs_I() = x in core__ops__arith__f_add(
+         tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 4
+       ).
+
+letfun tests__legacy__enum_repr__f(wildcard1 : bitstring) =
+       let e_x = (
+         core__ops__arith__f_add(
+           tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0,
+           0
+         )
+       ) in
+       core__ops__arith__f_add(
+         tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(
+           tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyTuple()
+         ),
+         tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(
+           tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyStruct()
+         )
+       ).
+
+const tests__legacy__enum_repr__f__v_CONST: bitstring.
+
+letfun tests__legacy__enum_repr__get_repr(
+         x : tests__legacy__enum_repr__t_EnumWithRepr
+       ) =
+       tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(x).
+
+letfun tests__legacy__enum_repr__get_casted_repr(
+         x : tests__legacy__enum_repr__t_EnumWithRepr
+       ) =
+       tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(x).
+

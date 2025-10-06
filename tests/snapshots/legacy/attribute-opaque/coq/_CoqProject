@@ -1,0 +1,5 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__attribute_opaque.v

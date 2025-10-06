@@ -1,0 +1,180 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__generics__impl_generics__t_Test.
+
+fun tests__legacy__generics__impl_generics__t_Test_to_bitstring(
+      tests__legacy__generics__impl_generics__t_Test
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__generics__impl_generics__t_Test_from_bitstring(bitstring)
+    : tests__legacy__generics__impl_generics__t_Test [typeConverter].
+const tests__legacy__generics__impl_generics__t_Test_default_value: tests__legacy__generics__impl_generics__t_Test.
+letfun tests__legacy__generics__impl_generics__t_Test_default() =
+       tests__legacy__generics__impl_generics__t_Test_default_value.
+letfun tests__legacy__generics__impl_generics__t_Test_err() =
+       let x = construct_fail() in tests__legacy__generics__impl_generics__t_Test_default_value.
+fun tests__legacy__generics__impl_generics__Test()
+    : tests__legacy__generics__impl_generics__t_Test [data].
+
+
+type tests__legacy__generics__defaults_generics__t_Defaults.
+
+fun tests__legacy__generics__defaults_generics__t_Defaults_to_bitstring(
+      tests__legacy__generics__defaults_generics__t_Defaults
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__generics__defaults_generics__t_Defaults_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__generics__defaults_generics__t_Defaults [typeConverter].
+const tests__legacy__generics__defaults_generics__t_Defaults_default_value: tests__legacy__generics__defaults_generics__t_Defaults.
+letfun tests__legacy__generics__defaults_generics__t_Defaults_default() =
+       tests__legacy__generics__defaults_generics__t_Defaults_default_value.
+letfun tests__legacy__generics__defaults_generics__t_Defaults_err() =
+       let x = construct_fail() in tests__legacy__generics__defaults_generics__t_Defaults_default_value.
+fun tests__legacy__generics__defaults_generics__Defaults(bitstring)
+    : tests__legacy__generics__defaults_generics__t_Defaults [data].
+reduc forall tests__legacy__generics__defaults_generics__0: bitstring;
+    accessor_tests__legacy__generics__defaults_generics__t_Defaults_tests__legacy__generics__defaults_generics__0(
+      tests__legacy__generics__defaults_generics__Defaults(
+        tests__legacy__generics__defaults_generics__0
+      )
+    ) = tests__legacy__generics__defaults_generics__0.
+
+type tests__legacy__generics__assoc_const_param__t_Test.
+
+fun tests__legacy__generics__assoc_const_param__t_Test_to_bitstring(
+      tests__legacy__generics__assoc_const_param__t_Test
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__generics__assoc_const_param__t_Test_from_bitstring(bitstring)
+    : tests__legacy__generics__assoc_const_param__t_Test [typeConverter].
+const tests__legacy__generics__assoc_const_param__t_Test_default_value: tests__legacy__generics__assoc_const_param__t_Test.
+letfun tests__legacy__generics__assoc_const_param__t_Test_default() =
+       tests__legacy__generics__assoc_const_param__t_Test_default_value.
+letfun tests__legacy__generics__assoc_const_param__t_Test_err() =
+       let x = construct_fail() in tests__legacy__generics__assoc_const_param__t_Test_default_value.
+fun tests__legacy__generics__assoc_const_param__Test()
+    : tests__legacy__generics__assoc_const_param__t_Test [data].
+
+
+type tests__legacy__generics__t_Bar.
+
+fun tests__legacy__generics__t_Bar_to_bitstring(tests__legacy__generics__t_Bar)
+    : bitstring [typeConverter].
+fun tests__legacy__generics__t_Bar_from_bitstring(bitstring)
+    : tests__legacy__generics__t_Bar [typeConverter].
+const tests__legacy__generics__t_Bar_default_value: tests__legacy__generics__t_Bar.
+letfun tests__legacy__generics__t_Bar_default() =
+       tests__legacy__generics__t_Bar_default_value.
+letfun tests__legacy__generics__t_Bar_err() =
+       let x = construct_fail() in tests__legacy__generics__t_Bar_default_value.
+fun tests__legacy__generics__Bar()
+    : tests__legacy__generics__t_Bar [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__generics__impl_generics__impl_Test__set_ciphersuites(
+         self : tests__legacy__generics__impl_generics__t_Test,
+         ciphers : impl_IntoIterator<Item_=_S>
+       ) =
+       ().
+
+letfun tests__legacy__generics__impl_generics__impl_Test__set_alpn_protocols(
+         self : tests__legacy__generics__impl_generics__t_Test,
+         e_protocols : impl_IntoIterator<Item_=_S>
+       ) =
+       ().
+
+letfun tests__legacy__generics__defaults_generics__f(
+         wildcard1 : tests__legacy__generics__defaults_generics__t_Defaults_of_bitstring_2
+       ) =
+       ().
+
+const tests__legacy__generics__assoc_const_param__impl__A: tests__legacy__generics__assoc_const_param__t_Test_of_v_N.
+
+letfun tests__legacy__generics__assoc_const_param__test(wildcard2 : bitstring) =
+       tests__legacy__generics__assoc_const_param__impl__A(1).
+
+letfun tests__legacy__generics__dup(x : v_T) =
+       (x, x).
+
+letfun tests__legacy__generics__foo(arr : bitstring) =
+       let acc = (core__ops__arith__f_add(v_LEN, 9)) in
+       let acc = (
+         rust_primitives__hax__failure(
+           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
+
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ f_start: 0,
+ f_end: LEN,
+ })) {
+ |acc| { core::ops::arith::f_add(acc, core::ops::index::f_index(arr, i)) }
+ })(acc)
+ }"
+         )
+       ) in
+       acc.
+
+letfun tests__legacy__generics__repeat(x : v_T) =
+       rust_primitives__hax__repeat(x, v_LEN).
+
+letfun tests__legacy__generics__f(x : nat) =
+       core__ops__arith__f_add(core__ops__arith__f_add(v_N, v_N), x).
+
+letfun tests__legacy__generics__call_f(wildcard3 : bitstring) =
+       core__ops__arith__f_add(tests__legacy__generics__f(3), 3).
+
+letfun tests__legacy__generics__g(arr : v_T) =
+       core__ops__arith__f_add(
+         core__option__impl__unwrap_or(
+           core__iter__traits__iterator__f_max(
+             core__iter__traits__collect__f_into_iter(
+               bitstring_from_bitstring(arr)
+             )
+           ),
+           v_N
+         ),
+         v_N
+       ).
+
+letfun tests__legacy__generics__call_g(wildcard4 : bitstring) =
+       core__ops__arith__f_add(tests__legacy__generics__g([42,3,49]), 3).
+
+letfun tests__legacy__generics__impl_Bar__inherent_impl_generics(x : bitstring) =
+       ().
+

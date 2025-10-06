@@ -1,0 +1,83 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__pattern_or__t_E.
+
+fun tests__legacy__pattern_or__t_E_to_bitstring(tests__legacy__pattern_or__t_E)
+    : bitstring [typeConverter].
+fun tests__legacy__pattern_or__t_E_from_bitstring(bitstring)
+    : tests__legacy__pattern_or__t_E [typeConverter].
+const tests__legacy__pattern_or__t_E_default_value: tests__legacy__pattern_or__t_E.
+letfun tests__legacy__pattern_or__t_E_default() =
+       tests__legacy__pattern_or__t_E_default_value.
+letfun tests__legacy__pattern_or__t_E_err() =
+       let x = construct_fail() in tests__legacy__pattern_or__t_E_default_value.
+fun tests__legacy__pattern_or__E_A()
+    : tests__legacy__pattern_or__t_E [data].
+
+fun tests__legacy__pattern_or__E_B()
+    : tests__legacy__pattern_or__t_E [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__pattern_or__t_E_cast_to_repr(
+         x : tests__legacy__pattern_or__t_E
+       ) =
+       let tests__legacy__pattern_or__E_A() = x in 0
+       else let tests__legacy__pattern_or__E_B() = x in 1.
+
+letfun tests__legacy__pattern_or__bar(x : tests__legacy__pattern_or__t_E) =
+       let tests__legacy__pattern_or__E_A()| tests__legacy__pattern_or__E_B() = x in (
+
+       ).
+
+letfun tests__legacy__pattern_or__nested(x : Option) =
+       let Some(nat_to_bitstring(=1| =2)) = x in 1
+       else let Some(nat_to_bitstring(x)) = x in x
+       else let None() = x in 0.
+
+letfun tests__legacy__pattern_or__deep(x : bitstring) =
+       let (=1| =2, Some(nat_to_bitstring(=3| =4))) = x in 0
+       else let (x: nat, wildcard1: bitstring) = x in x.
+
+letfun tests__legacy__pattern_or__equivalent(x : bitstring) =
+       let (=1, Some(nat_to_bitstring(=3)))|
+       (=1, Some(nat_to_bitstring(=4)))|
+       (=2, Some(nat_to_bitstring(=3)))|
+       (=2, Some(nat_to_bitstring(=4))) = x in 0
+       else let (x: nat, wildcard2: bitstring) = x in x.
+
+letfun tests__legacy__pattern_or__deep_capture(x : bitstring) =
+       let (=1| =2, x: nat)| core__result__Result_Err((=3| =4, x: nat)) = x in x
+       else let (x: nat, wildcard3: bitstring)|
+       core__result__Result_Err((x: nat, wildcard4: bitstring)) = x in x.
+

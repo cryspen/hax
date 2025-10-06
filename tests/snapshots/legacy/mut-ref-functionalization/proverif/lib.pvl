@@ -1,0 +1,405 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__mut_ref_functionalization__t_S.
+
+fun tests__legacy__mut_ref_functionalization__t_S_to_bitstring(
+      tests__legacy__mut_ref_functionalization__t_S
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__mut_ref_functionalization__t_S_from_bitstring(bitstring)
+    : tests__legacy__mut_ref_functionalization__t_S [typeConverter].
+const tests__legacy__mut_ref_functionalization__t_S_default_value: tests__legacy__mut_ref_functionalization__t_S.
+letfun tests__legacy__mut_ref_functionalization__t_S_default() =
+       tests__legacy__mut_ref_functionalization__t_S_default_value.
+letfun tests__legacy__mut_ref_functionalization__t_S_err() =
+       let x = construct_fail() in tests__legacy__mut_ref_functionalization__t_S_default_value.
+fun tests__legacy__mut_ref_functionalization__S(bitstring)
+    : tests__legacy__mut_ref_functionalization__t_S [data].
+reduc forall tests__legacy__mut_ref_functionalization__f_b: bitstring;
+    accessor_tests__legacy__mut_ref_functionalization__t_S_tests__legacy__mut_ref_functionalization__f_b(
+      tests__legacy__mut_ref_functionalization__S(
+        tests__legacy__mut_ref_functionalization__f_b
+      )
+    ) = tests__legacy__mut_ref_functionalization__f_b.
+
+type tests__legacy__mut_ref_functionalization__t_Foo.
+
+fun tests__legacy__mut_ref_functionalization__t_Foo_to_bitstring(
+      tests__legacy__mut_ref_functionalization__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__mut_ref_functionalization__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__mut_ref_functionalization__t_Foo [typeConverter].
+const tests__legacy__mut_ref_functionalization__t_Foo_default_value: tests__legacy__mut_ref_functionalization__t_Foo.
+letfun tests__legacy__mut_ref_functionalization__t_Foo_default() =
+       tests__legacy__mut_ref_functionalization__t_Foo_default_value.
+letfun tests__legacy__mut_ref_functionalization__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__mut_ref_functionalization__t_Foo_default_value.
+fun tests__legacy__mut_ref_functionalization__Foo(bitstring)
+    : tests__legacy__mut_ref_functionalization__t_Foo [data].
+reduc forall tests__legacy__mut_ref_functionalization__f_field: bitstring;
+    accessor_tests__legacy__mut_ref_functionalization__t_Foo_tests__legacy__mut_ref_functionalization__f_field(
+      tests__legacy__mut_ref_functionalization__Foo(
+        tests__legacy__mut_ref_functionalization__f_field
+      )
+    ) = tests__legacy__mut_ref_functionalization__f_field.
+
+type tests__legacy__mut_ref_functionalization__t_Pair.
+
+fun tests__legacy__mut_ref_functionalization__t_Pair_to_bitstring(
+      tests__legacy__mut_ref_functionalization__t_Pair
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__mut_ref_functionalization__t_Pair_from_bitstring(bitstring)
+    : tests__legacy__mut_ref_functionalization__t_Pair [typeConverter].
+const tests__legacy__mut_ref_functionalization__t_Pair_default_value: tests__legacy__mut_ref_functionalization__t_Pair.
+letfun tests__legacy__mut_ref_functionalization__t_Pair_default() =
+       tests__legacy__mut_ref_functionalization__t_Pair_default_value.
+letfun tests__legacy__mut_ref_functionalization__t_Pair_err() =
+       let x = construct_fail() in tests__legacy__mut_ref_functionalization__t_Pair_default_value.
+fun tests__legacy__mut_ref_functionalization__Pair(
+      v_T, tests__legacy__mut_ref_functionalization__t_Foo
+    )
+    : tests__legacy__mut_ref_functionalization__t_Pair [data].
+reduc forall 
+  tests__legacy__mut_ref_functionalization__f_a: v_T,
+  tests__legacy__mut_ref_functionalization__f_b: tests__legacy__mut_ref_functionalization__t_Foo
+;
+    accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_a(
+      tests__legacy__mut_ref_functionalization__Pair(
+        tests__legacy__mut_ref_functionalization__f_a,
+        tests__legacy__mut_ref_functionalization__f_b
+      )
+    ) = tests__legacy__mut_ref_functionalization__f_a.
+reduc forall 
+  tests__legacy__mut_ref_functionalization__f_a: v_T,
+  tests__legacy__mut_ref_functionalization__f_b: tests__legacy__mut_ref_functionalization__t_Foo
+;
+    accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_b(
+      tests__legacy__mut_ref_functionalization__Pair(
+        tests__legacy__mut_ref_functionalization__f_a,
+        tests__legacy__mut_ref_functionalization__f_b
+      )
+    ) = tests__legacy__mut_ref_functionalization__f_b.
+
+type tests__legacy__mut_ref_functionalization__t_Bar.
+
+fun tests__legacy__mut_ref_functionalization__t_Bar_to_bitstring(
+      tests__legacy__mut_ref_functionalization__t_Bar
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__mut_ref_functionalization__t_Bar_from_bitstring(bitstring)
+    : tests__legacy__mut_ref_functionalization__t_Bar [typeConverter].
+const tests__legacy__mut_ref_functionalization__t_Bar_default_value: tests__legacy__mut_ref_functionalization__t_Bar.
+letfun tests__legacy__mut_ref_functionalization__t_Bar_default() =
+       tests__legacy__mut_ref_functionalization__t_Bar_default_value.
+letfun tests__legacy__mut_ref_functionalization__t_Bar_err() =
+       let x = construct_fail() in tests__legacy__mut_ref_functionalization__t_Bar_default_value.
+fun tests__legacy__mut_ref_functionalization__Bar(nat, nat)
+    : tests__legacy__mut_ref_functionalization__t_Bar [data].
+reduc forall 
+  tests__legacy__mut_ref_functionalization__f_a: nat,
+  tests__legacy__mut_ref_functionalization__f_b: nat
+;
+    accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_a(
+      tests__legacy__mut_ref_functionalization__Bar(
+        tests__legacy__mut_ref_functionalization__f_a,
+        tests__legacy__mut_ref_functionalization__f_b
+      )
+    ) = tests__legacy__mut_ref_functionalization__f_a.
+reduc forall 
+  tests__legacy__mut_ref_functionalization__f_a: nat,
+  tests__legacy__mut_ref_functionalization__f_b: nat
+;
+    accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_b(
+      tests__legacy__mut_ref_functionalization__Bar(
+        tests__legacy__mut_ref_functionalization__f_a,
+        tests__legacy__mut_ref_functionalization__f_b
+      )
+    ) = tests__legacy__mut_ref_functionalization__f_b.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__mut_ref_functionalization__foo(
+         lhs : tests__legacy__mut_ref_functionalization__t_S,
+         rhs : tests__legacy__mut_ref_functionalization__t_S
+       ) =
+       let lhs = (
+         rust_primitives__hax__failure(
+           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
+
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ f_start: 0,
+ f_end: 1,
+ })) {
+ |lhs| {
+ tests::legacy__mut_ref_functionalization::t_S {
+ f_b: rust_primitives::hax::mo..."
+         )
+       ) in
+       lhs.
+
+letfun tests__legacy__mut_ref_functionalization__impl_S__update(
+         self : tests__legacy__mut_ref_functionalization__t_S, x : nat
+       ) =
+       let self = (
+         tests__legacy__mut_ref_functionalization__t_S(
+
+             rust_primitives__hax__monomorphized_update_at__update_at_usize(
+               accessor_tests__legacy__mut_ref_functionalization__t_S_tests__legacy__mut_ref_functionalization__f_b(
+                 self
+               ),
+               0,
+               x
+             )
+
+         )
+       ) in
+       self.
+
+letfun tests__legacy__mut_ref_functionalization__index_mutation(
+         x : core__ops__range__t_Range_of_nat, a : bitstring
+       ) =
+       let v = (alloc__slice__impl__into_vec(rust_primitives__hax__box_new([1]))
+       ) in
+       let v = (
+         rust_primitives__hax__monomorphized_update_at__update_at_range(
+           v,
+           x,
+           core__slice__impl__copy_from_slice(core__ops__index__f_index(v, x), a
+           )
+         )
+       ) in
+       let v = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(v, 1, 3)
+       ) in
+       ().
+
+letfun tests__legacy__mut_ref_functionalization__index_mutation_unsize(
+         x : bitstring
+       ) =
+       let x = (
+         rust_primitives__hax__monomorphized_update_at__update_at_range(
+           x,
+           core__ops__range__Range(4,5),
+           core__slice__impl__copy_from_slice(
+             core__ops__index__f_index(x, core__ops__range__Range(4,5)), [1,2]
+           )
+         )
+       ) in
+       42.
+
+letfun tests__legacy__mut_ref_functionalization__build_vec(wildcard1 : bitstring
+       ) =
+       alloc__slice__impl__into_vec(rust_primitives__hax__box_new([1,2,3])).
+
+letfun tests__legacy__mut_ref_functionalization__test_append(
+         wildcard3 : bitstring
+       ) =
+       let vec1 = (alloc__vec__impl__new(())) in
+       let vec2 = (
+         alloc__slice__impl__into_vec(rust_primitives__hax__box_new([1,2,3]))
+       ) in
+       let (tmp0: bitstring, tmp1: bitstring) = (
+         alloc__vec__impl_1__append(vec1, vec2)
+       ) in
+       let vec1 = (tmp0) in
+       let vec2 = (tmp1) in
+       let wildcard2: bitstring = (()) in
+       let vec1 = (
+         alloc__vec__impl_1__append(
+           vec1, tests__legacy__mut_ref_functionalization__build_vec(())
+         )
+       ) in
+       vec1.
+
+letfun tests__legacy__mut_ref_functionalization__f(wildcard4 : bitstring) =
+       let vec = (alloc__vec__impl__new(())) in
+       let vec = (alloc__vec__impl_1__push(vec, 1)) in
+       let vec = (alloc__vec__impl_1__push(vec, 2)) in
+       let vec = (core__slice__impl__swap(vec, 0, 1)) in
+       let vec = (core__slice__impl__swap(vec, 0, 1)) in
+       vec.
+
+letfun tests__legacy__mut_ref_functionalization__g(
+         x : tests__legacy__mut_ref_functionalization__t_Pair_of_bitstring
+       ) =
+       let x = (x) in
+       let x = (
+         rust_primitives__hax__failure(
+           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
+
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ f_start: 1,
+ f_end: 10,
+ })) {
+ |x| {
+ tests::legacy__mut_ref_functionalization::t_Pair {
+ f_a: alloc::vec::impl_1__pu..."
+         )
+       ) in
+       let x = (
+         tests__legacy__mut_ref_functionalization__t_Pair(
+
+             core__slice__impl__swap(
+               accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_a(
+                 x
+               ),
+               0,
+               1
+             )
+
+         )
+       ) in
+       let x = (
+         tests__legacy__mut_ref_functionalization__t_Pair(
+
+             tests__legacy__mut_ref_functionalization__t_Foo(
+
+                 core__slice__impl__swap(
+                   accessor_tests__legacy__mut_ref_functionalization__t_Foo_tests__legacy__mut_ref_functionalization__f_field(
+                     accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_b(
+                       x
+                     )
+                   ),
+                   0,
+                   1
+                 )
+
+             )
+
+         )
+       ) in
+       accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_a(
+         x
+       ).
+
+letfun tests__legacy__mut_ref_functionalization__h(x : nat) =
+       let x = (core__ops__arith__f_add(x, 10)) in
+       x.
+
+letfun tests__legacy__mut_ref_functionalization__i(
+         bar : tests__legacy__mut_ref_functionalization__t_Bar
+       ) =
+       let bar = (
+         tests__legacy__mut_ref_functionalization__t_Bar(
+
+             core__ops__arith__f_add(
+               accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_b(
+                 bar
+               ),
+               accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_a(
+                 bar
+               )
+             )
+
+         )
+       ) in
+       let bar = (
+         tests__legacy__mut_ref_functionalization__t_Bar(
+
+             tests__legacy__mut_ref_functionalization__h(
+               accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_a(
+                 bar
+               )
+             )
+
+         )
+       ) in
+       let hax_temp_output = (
+         core__ops__arith__f_add(
+           accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_a(
+             bar
+           ),
+           accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_b(
+             bar
+           )
+         )
+       ) in
+       (bar, hax_temp_output).
+
+letfun tests__legacy__mut_ref_functionalization__j(
+         x : tests__legacy__mut_ref_functionalization__t_Bar
+       ) =
+       let v_out = (123) in
+       let (tmp0: tests__legacy__mut_ref_functionalization__t_Bar, out1: nat) = (
+         tests__legacy__mut_ref_functionalization__i(x)
+       ) in
+       let x = (tmp0) in
+       let hoist1 = (out1) in
+       let hax_temp_output = (core__ops__arith__f_add(hoist1, v_out)) in
+       (x, hax_temp_output).
+
+letfun tests__legacy__mut_ref_functionalization__k(
+         vec : bitstring,
+         arg_1_wild3 : nat,
+         arg_1_wild : nat,
+         arg_3_wild2 : bitstring
+       ) =
+       let arg_1_wild2 = (core__ops__index__f_index(vec, 1)) in
+       let arg_3_wild = (core__ops__index__f_index(vec, 2)) in
+       let arg_1_wild1 = (core__ops__index__f_index(vec, 3)) in
+       let arg_3_wild1 = (core__ops__index__f_index(vec, 4)) in
+       let vec = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           vec,
+           0,
+           core__ops__arith__f_add(
+             core__ops__arith__f_add(
+               core__ops__arith__f_add(
+                 core__ops__arith__f_add(arg_1_wild, arg_3_wild), arg_1_wild1
+               ),
+               arg_3_wild1
+             ),
+             arg_1_wild
+           )
+         )
+       ) in
+       let hax_temp_output = (12345) in
+       (vec, arg_1_wild3, arg_3_wild2, hax_temp_output).
+
+letfun tests__legacy__mut_ref_functionalization__array(x : bitstring) =
+       let x = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           x, 1, core__ops__index__f_index(x, 2)
+         )
+       ) in
+       x.
+
