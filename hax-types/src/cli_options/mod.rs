@@ -608,6 +608,22 @@ pub enum BackendName {
     Debugger,
 }
 
+impl BackendName {
+    pub fn iter() -> impl Iterator<Item = Self> {
+        [
+            Self::Fstar,
+            Self::Coq,
+            Self::Ssprove,
+            Self::Easycrypt,
+            Self::ProVerif,
+            Self::Lean,
+            Self::Rust,
+            Self::GenerateRustEngineNames,
+        ]
+        .into_iter()
+    }
+}
+
 impl fmt::Display for BackendName {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let name = match self {
