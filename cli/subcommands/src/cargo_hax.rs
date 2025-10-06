@@ -1,8 +1,8 @@
 #![feature(rustc_private)]
-use annotate_snippets::{Level, Renderer};
 use clap::Parser;
 use colored::Colorize;
 use hax_types::cli_options::*;
+use hax_types::diagnostics::message::HaxMessage;
 use hax_types::driver_api::*;
 use hax_types::engine_api::*;
 use is_terminal::IsTerminal;
@@ -142,119 +142,6 @@ fn find_rust_hax_engine(message_format: MessageFormat) -> process::Command {
                 .map(process::Command::new)
         })
         .expect(RUST_ENGINE_BINARY_NOT_FOUND)
-}
-
-use hax_types::diagnostics::message::HaxMessage;
-use hax_types::diagnostics::report::ReportCtx;
-
-#[extension_traits::extension(trait ExtHaxMessage)]
-impl HaxMessage {
-    fn report(self, message_format: MessageFormat, mut rctx: Option<&mut ReportCtx>) {
-        if let (Some(r), HaxMessage::Diagnostic { diagnostic, .. }) = (rctx.as_mut(), &self)
-            && r.seen_already(diagnostic.clone())
-        {
-            return;
-        }
-        match message_format {
-            MessageFormat::Json => println!("{}", serde_json::to_string(&self).unwrap()),
-            MessageFormat::Human => self.report_styled(rctx),
-        }
-    }
-    fn report_styled(self, rctx: Option<&mut ReportCtx>) {
-        let renderer = Renderer::styled();
-        match self {
-            Self::Diagnostic {
-                diagnostic,
-                working_dir,
-            } => {
-                let mut _rctx = None;
-                let rctx = rctx.unwrap_or_else(|| _rctx.get_or_insert(ReportCtx::default()));
-                diagnostic.with_message(
-                    rctx,
-                    working_dir.as_ref().map(PathBuf::as_path),
-                    Level::Error,
-                    |msg| eprintln!("{}", renderer.render(msg)),
-                );
-            }
-            Self::EngineNotFound {
-                is_opam_setup_correctly,
-            } => {
-                use colored::Colorize;
-                let message = format!("hax: {}\n{}\n\n{} {}\n",
-                      &ENGINE_BINARY_NOT_FOUND,
-                      "Please make sure the engine is installed and is in PATH!",
-                      "Hint: With OPAM, `eval $(opam env)` is necessary for OPAM binaries to be in PATH: make sure to run `eval $(opam env)` before running `cargo hax`.".bright_black(),
-                      format!("(diagnostics: {})", if is_opam_setup_correctly { "opam seems okay ✓" } else {"opam seems not okay ❌"}).bright_black()
-            );
-                let message = Level::Error.title(&message);
-                eprintln!("{}", renderer.render(message))
-            }
-            Self::ProducedFile { mut path, wrote } => {
-                // Make path relative if possible
-                if let Ok(current_dir) = std::env::current_dir() {
-                    if let Ok(relative) = path.strip_prefix(current_dir) {
-                        path = PathBuf::from(".").join(relative).to_path_buf();
-                    }
-                }
-                let title = if wrote {
-                    format!("hax: wrote file {}", path.display())
-                } else {
-                    format!("hax: unchanged file {}", path.display())
-                };
-                eprintln!("{}", renderer.render(Level::Info.title(&title)))
-            }
-            Self::HaxEngineFailure { exit_code } => {
-                let title = format!(
-                    "hax: {} exited with non-zero code {}",
-                    ENGINE_BINARY_NAME, exit_code,
-                );
-                eprintln!("{}", renderer.render(Level::Error.title(&title)));
-            }
-            Self::ProfilingData(data) => {
-                fn format_with_dot(shift: u32, n: u64) -> String {
-                    let factor = 10u64.pow(shift);
-                    format!("{}.{}", n / factor, n % factor)
-                }
-                let title = format!(
-                    "hax[profiling]: {}: {}ms, memory={}, {} item{}{}",
-                    data.context,
-                    format_with_dot(6, data.time_ns),
-                    data.memory,
-                    data.quantity,
-                    if data.quantity > 1 { "s" } else { "" },
-                    if data.errored {
-                        " (note: this failed!)"
-                    } else {
-                        ""
-                    }
-                );
-                eprintln!("{}", renderer.render(Level::Info.title(&title)));
-            }
-            Self::Stats { errors_per_item } => {
-                let success_items = errors_per_item.iter().filter(|(_, n)| *n == 0).count();
-                let total = errors_per_item.len();
-                let title = format!(
-                    "hax: {}/{} items were successfully translated ({}% success rate)",
-                    success_items,
-                    total,
-                    (success_items * 100) / total
-                );
-                eprintln!("{}", renderer.render(Level::Info.title(&title)));
-            }
-            Self::CargoBuildFailure => {
-                let title =
-                    "hax: running `cargo build` was not successful, continuing anyway.".to_string();
-                eprintln!("{}", renderer.render(Level::Warning.title(&title)));
-            }
-            Self::WarnExperimentalBackend { backend } => {
-                let title = format!(
-                    "hax: Experimental backend \"{}\" is work in progress.",
-                    backend
-                );
-                eprintln!("{}", renderer.render(Level::Warning.title(&title)));
-            }
-        }
-    }
 }
 
 /// Runs `hax-engine`
