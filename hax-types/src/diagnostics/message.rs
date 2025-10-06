@@ -2,7 +2,7 @@ use crate::cli_options::Backend;
 use crate::prelude::*;
 
 #[derive_group(Serializers)]
-#[derive(Debug, Clone, JsonSchema)]
+#[derive(Debug, Clone, JsonSchema, Hash, Eq, PartialEq)]
 #[repr(u8)]
 pub enum HaxMessage {
     Diagnostic {
@@ -21,7 +21,7 @@ pub enum HaxMessage {
     } = 2,
     CargoBuildFailure = 3,
     WarnExperimentalBackend {
-        backend: Backend<()>,
+        backend: Backend,
     } = 4,
     ProfilingData(crate::engine_api::ProfilingData) = 5,
     Stats {

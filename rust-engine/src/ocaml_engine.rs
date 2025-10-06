@@ -68,7 +68,7 @@ pub enum QueryKind {
     /// Ask the OCaml engine to call an OCaml printer
     Print {
         /// Which printer to use
-        printer: hax_types::cli_options::Backend<()>,
+        printer: hax_types::cli_options::Backend,
         /// The items after applying the phases.
         input: Vec<crate::ast::Item>,
     },
