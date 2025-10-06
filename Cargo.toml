@@ -23,6 +23,7 @@ default-members = [
      "frontend/exporter/options",
      "cli/subcommands",
      "cli/driver",
+     "cli/test-driver",
      "hax-lib",
      "hax-lib/macros",
      "hax-lib/macros/types",
