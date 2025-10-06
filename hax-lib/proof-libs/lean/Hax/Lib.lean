@@ -239,11 +239,6 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
 namespace Rust_primitives.Hax.Machine_int
 
 @[simp, spec]
-def bitxor {α} [HXor α α α] (a b: α) : Result α := a ^^^? b
-@[simp, spec]
-def hax_machine_int_bitand {α} [HAnd α α α] (a b: α) : Result α := a &&&? b
-
-@[simp, spec]
 def eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
 @[simp, spec]
 def ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
