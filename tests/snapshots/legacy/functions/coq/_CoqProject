@@ -1,0 +1,6 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__functions_Issue_1048_.v
+Tests_Legacy__functions.v

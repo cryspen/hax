@@ -1,3 +1,5 @@
+//! @off: proverif
+
 #![allow(dead_code)]
 #![feature(never_type)]
 

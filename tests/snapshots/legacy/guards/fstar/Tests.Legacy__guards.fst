@@ -1,0 +1,94 @@
+module Tests.Legacy__guards
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open Core
+open FStar.Mul
+
+/// @fail(extraction): proverif(HAX0008)
+let if_let_guard (x: Core.Option.t_Option (Core.Result.t_Result i32 i32)) : i32 =
+  match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+  | Core.Option.Option_None  -> mk_i32 0
+  | _ ->
+    match
+      (match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+        | Core.Option.Option_Some v ->
+          (match v <: Core.Result.t_Result i32 i32 with
+            | Core.Result.Result_Ok y -> Core.Option.Option_Some y <: Core.Option.t_Option i32
+            | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+        | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+      <:
+      Core.Option.t_Option i32
+    with
+    | Core.Option.Option_Some x -> x
+    | Core.Option.Option_None  ->
+      match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+      | Core.Option.Option_Some (Core.Result.Result_Err y) -> y
+      | _ -> mk_i32 1
+
+let equivalent (x: Core.Option.t_Option (Core.Result.t_Result i32 i32)) : i32 =
+  match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+  | Core.Option.Option_None  -> mk_i32 0
+  | _ ->
+    match
+      (match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+        | Core.Option.Option_Some v ->
+          (match v <: Core.Result.t_Result i32 i32 with
+            | Core.Result.Result_Ok y -> Core.Option.Option_Some y <: Core.Option.t_Option i32
+            | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+        | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+      <:
+      Core.Option.t_Option i32
+    with
+    | Core.Option.Option_Some y -> y
+    | Core.Option.Option_None  ->
+      match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+      | Core.Option.Option_Some (Core.Result.Result_Err y) -> y
+      | _ -> mk_i32 1
+
+/// @fail(extraction): proverif(HAX0008)
+let multiple_guards (x: Core.Option.t_Option (Core.Result.t_Result i32 i32)) : i32 =
+  match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+  | Core.Option.Option_None  -> mk_i32 0
+  | _ ->
+    match
+      (match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+        | Core.Option.Option_Some (Core.Result.Result_Ok v) ->
+          (match Core.Option.Option_Some (v +! mk_i32 1) <: Core.Option.t_Option i32 with
+            | Core.Option.Option_Some (Rust_primitives.Integers.MkInt 1) ->
+              Core.Option.Option_Some (mk_i32 0) <: Core.Option.t_Option i32
+            | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+        | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+      <:
+      Core.Option.t_Option i32
+    with
+    | Core.Option.Option_Some x -> x
+    | Core.Option.Option_None  ->
+      match
+        (match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+          | Core.Option.Option_Some v ->
+            (match v <: Core.Result.t_Result i32 i32 with
+              | Core.Result.Result_Ok y -> Core.Option.Option_Some y <: Core.Option.t_Option i32
+              | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+          | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+        <:
+        Core.Option.t_Option i32
+      with
+      | Core.Option.Option_Some x -> x
+      | Core.Option.Option_None  ->
+        match x <: Core.Option.t_Option (Core.Result.t_Result i32 i32) with
+        | Core.Option.Option_Some (Core.Result.Result_Err y) -> y
+        | _ -> mk_i32 1
+
+/// @fail(extraction): proverif(HAX0008)
+let if_guard (x: Core.Option.t_Option i32) : i32 =
+  match
+    (match x <: Core.Option.t_Option i32 with
+      | Core.Option.Option_Some v ->
+        (match v >. mk_i32 0 <: bool with
+          | true -> Core.Option.Option_Some v <: Core.Option.t_Option i32
+          | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+      | _ -> Core.Option.Option_None <: Core.Option.t_Option i32)
+    <:
+    Core.Option.t_Option i32
+  with
+  | Core.Option.Option_Some x -> x
+  | Core.Option.Option_None  -> mk_i32 0

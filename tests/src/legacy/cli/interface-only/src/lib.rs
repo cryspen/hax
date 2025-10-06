@@ -1,3 +1,4 @@
+//! @fail(extraction): lean(HAX0001)
 #![allow(dead_code)]
 
 /// This item contains unsafe blocks and raw references, two features
@@ -8,6 +9,8 @@
 /// post-conditions.
 #[hax_lib::requires(x < 254)]
 #[hax_lib::ensures(|r| r[0] > x)]
+/// @fail(extraction): ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008)
 fn f(x: u8) -> [u8; 4] {
     let y = x as *const i8;
 
@@ -21,6 +24,8 @@ fn f(x: u8) -> [u8; 4] {
 /// This struct contains a field which uses raw pointers, which are
 /// not supported by hax. This item cannot be extracted at all: we
 /// need to exclude it with `-i '-*::Foo'`.
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 struct Foo {
     unsupported_field: *const u8,
 }

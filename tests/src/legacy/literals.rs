@@ -1,3 +1,4 @@
+//! @fail(extraction): lean(HAX0001)
 #![allow(dead_code)]
 use hax_lib::*;
 
@@ -55,6 +56,7 @@ fn numeric() {
     let _: u128 = 22222222222222222222;
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 pub fn patterns() {
     match 1u8 {
         2 => (),
@@ -90,4 +92,5 @@ fn fn_pointer_cast() {
     let f: fn(&u32) -> &u32 = |x| x;
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 const null: char = '\0';

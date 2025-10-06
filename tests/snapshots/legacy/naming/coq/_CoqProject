@@ -1,0 +1,7 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+Tests_Legacy__naming_Functions_defined_in_trait_impls.v
+Tests_Legacy__naming_Ambiguous_names.v
+Tests_Legacy__naming.v

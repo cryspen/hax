@@ -81,6 +81,7 @@ struct S3 {
     inductive: usize,
 }
 
+/// @fail(extraction): ssprove(HAX0001)
 fn normal_structs() -> () {
     // 2. Expressions
     let s1 = S1 { f1: 0, f2: 1 };

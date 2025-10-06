@@ -1,0 +1,880 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__attributes__replace_body__t_Foo.
+
+fun tests__legacy__attributes__replace_body__t_Foo_to_bitstring(
+      tests__legacy__attributes__replace_body__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__replace_body__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__attributes__replace_body__t_Foo [typeConverter].
+const tests__legacy__attributes__replace_body__t_Foo_default_value: tests__legacy__attributes__replace_body__t_Foo.
+letfun tests__legacy__attributes__replace_body__t_Foo_default() =
+       tests__legacy__attributes__replace_body__t_Foo_default_value.
+letfun tests__legacy__attributes__replace_body__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__attributes__replace_body__t_Foo_default_value.
+fun tests__legacy__attributes__replace_body__Foo()
+    : tests__legacy__attributes__replace_body__t_Foo [data].
+
+
+type tests__legacy__attributes__reorder__t_Foo.
+
+fun tests__legacy__attributes__reorder__t_Foo_to_bitstring(
+      tests__legacy__attributes__reorder__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__reorder__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__attributes__reorder__t_Foo [typeConverter].
+const tests__legacy__attributes__reorder__t_Foo_default_value: tests__legacy__attributes__reorder__t_Foo.
+letfun tests__legacy__attributes__reorder__t_Foo_default() =
+       tests__legacy__attributes__reorder__t_Foo_default_value.
+letfun tests__legacy__attributes__reorder__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__attributes__reorder__t_Foo_default_value.
+fun tests__legacy__attributes__reorder__Foo(nat, nat, nat, nat)
+    : tests__legacy__attributes__reorder__t_Foo [data].
+reduc forall 
+  tests__legacy__attributes__reorder__f_field_3_: nat,
+  tests__legacy__attributes__reorder__f_field_4_: nat,
+  tests__legacy__attributes__reorder__f_field_2_: nat,
+  tests__legacy__attributes__reorder__f_field_1_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Foo_tests__legacy__attributes__reorder__f_field_3_(
+      tests__legacy__attributes__reorder__Foo(
+        tests__legacy__attributes__reorder__f_field_3_,
+        tests__legacy__attributes__reorder__f_field_4_,
+        tests__legacy__attributes__reorder__f_field_2_,
+        tests__legacy__attributes__reorder__f_field_1_
+      )
+    ) = tests__legacy__attributes__reorder__f_field_3_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_field_3_: nat,
+  tests__legacy__attributes__reorder__f_field_4_: nat,
+  tests__legacy__attributes__reorder__f_field_2_: nat,
+  tests__legacy__attributes__reorder__f_field_1_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Foo_tests__legacy__attributes__reorder__f_field_4_(
+      tests__legacy__attributes__reorder__Foo(
+        tests__legacy__attributes__reorder__f_field_3_,
+        tests__legacy__attributes__reorder__f_field_4_,
+        tests__legacy__attributes__reorder__f_field_2_,
+        tests__legacy__attributes__reorder__f_field_1_
+      )
+    ) = tests__legacy__attributes__reorder__f_field_4_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_field_3_: nat,
+  tests__legacy__attributes__reorder__f_field_4_: nat,
+  tests__legacy__attributes__reorder__f_field_2_: nat,
+  tests__legacy__attributes__reorder__f_field_1_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Foo_tests__legacy__attributes__reorder__f_field_2_(
+      tests__legacy__attributes__reorder__Foo(
+        tests__legacy__attributes__reorder__f_field_3_,
+        tests__legacy__attributes__reorder__f_field_4_,
+        tests__legacy__attributes__reorder__f_field_2_,
+        tests__legacy__attributes__reorder__f_field_1_
+      )
+    ) = tests__legacy__attributes__reorder__f_field_2_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_field_3_: nat,
+  tests__legacy__attributes__reorder__f_field_4_: nat,
+  tests__legacy__attributes__reorder__f_field_2_: nat,
+  tests__legacy__attributes__reorder__f_field_1_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Foo_tests__legacy__attributes__reorder__f_field_1_(
+      tests__legacy__attributes__reorder__Foo(
+        tests__legacy__attributes__reorder__f_field_3_,
+        tests__legacy__attributes__reorder__f_field_4_,
+        tests__legacy__attributes__reorder__f_field_2_,
+        tests__legacy__attributes__reorder__f_field_1_
+      )
+    ) = tests__legacy__attributes__reorder__f_field_1_.
+
+type tests__legacy__attributes__reorder__t_Bar.
+
+fun tests__legacy__attributes__reorder__t_Bar_to_bitstring(
+      tests__legacy__attributes__reorder__t_Bar
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__reorder__t_Bar_from_bitstring(bitstring)
+    : tests__legacy__attributes__reorder__t_Bar [typeConverter].
+const tests__legacy__attributes__reorder__t_Bar_default_value: tests__legacy__attributes__reorder__t_Bar.
+letfun tests__legacy__attributes__reorder__t_Bar_default() =
+       tests__legacy__attributes__reorder__t_Bar_default_value.
+letfun tests__legacy__attributes__reorder__t_Bar_err() =
+       let x = construct_fail() in tests__legacy__attributes__reorder__t_Bar_default_value.
+fun tests__legacy__attributes__reorder__Bar_A(nat, nat, nat)
+    : tests__legacy__attributes__reorder__t_Bar [data].
+reduc forall 
+  tests__legacy__attributes__reorder__f_a_field_3_: nat,
+  tests__legacy__attributes__reorder__f_a_field_1_: nat,
+  tests__legacy__attributes__reorder__f_a_field_2_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Bar_tests__legacy__attributes__reorder__f_a_field_3_(
+      tests__legacy__attributes__reorder__Bar_A(
+        tests__legacy__attributes__reorder__f_a_field_3_,
+        tests__legacy__attributes__reorder__f_a_field_1_,
+        tests__legacy__attributes__reorder__f_a_field_2_
+      )
+    ) = tests__legacy__attributes__reorder__f_a_field_3_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_a_field_3_: nat,
+  tests__legacy__attributes__reorder__f_a_field_1_: nat,
+  tests__legacy__attributes__reorder__f_a_field_2_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Bar_tests__legacy__attributes__reorder__f_a_field_1_(
+      tests__legacy__attributes__reorder__Bar_A(
+        tests__legacy__attributes__reorder__f_a_field_3_,
+        tests__legacy__attributes__reorder__f_a_field_1_,
+        tests__legacy__attributes__reorder__f_a_field_2_
+      )
+    ) = tests__legacy__attributes__reorder__f_a_field_1_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_a_field_3_: nat,
+  tests__legacy__attributes__reorder__f_a_field_1_: nat,
+  tests__legacy__attributes__reorder__f_a_field_2_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Bar_tests__legacy__attributes__reorder__f_a_field_2_(
+      tests__legacy__attributes__reorder__Bar_A(
+        tests__legacy__attributes__reorder__f_a_field_3_,
+        tests__legacy__attributes__reorder__f_a_field_1_,
+        tests__legacy__attributes__reorder__f_a_field_2_
+      )
+    ) = tests__legacy__attributes__reorder__f_a_field_2_.
+fun tests__legacy__attributes__reorder__Bar_B(nat, nat, nat)
+    : tests__legacy__attributes__reorder__t_Bar [data].
+reduc forall 
+  tests__legacy__attributes__reorder__f_b_field_1_: nat,
+  tests__legacy__attributes__reorder__f_b_field_3_: nat,
+  tests__legacy__attributes__reorder__f_b_field_2_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Bar_tests__legacy__attributes__reorder__f_b_field_1_(
+      tests__legacy__attributes__reorder__Bar_B(
+        tests__legacy__attributes__reorder__f_b_field_1_,
+        tests__legacy__attributes__reorder__f_b_field_3_,
+        tests__legacy__attributes__reorder__f_b_field_2_
+      )
+    ) = tests__legacy__attributes__reorder__f_b_field_1_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_b_field_1_: nat,
+  tests__legacy__attributes__reorder__f_b_field_3_: nat,
+  tests__legacy__attributes__reorder__f_b_field_2_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Bar_tests__legacy__attributes__reorder__f_b_field_3_(
+      tests__legacy__attributes__reorder__Bar_B(
+        tests__legacy__attributes__reorder__f_b_field_1_,
+        tests__legacy__attributes__reorder__f_b_field_3_,
+        tests__legacy__attributes__reorder__f_b_field_2_
+      )
+    ) = tests__legacy__attributes__reorder__f_b_field_3_.
+reduc forall 
+  tests__legacy__attributes__reorder__f_b_field_1_: nat,
+  tests__legacy__attributes__reorder__f_b_field_3_: nat,
+  tests__legacy__attributes__reorder__f_b_field_2_: nat
+;
+    accessor_tests__legacy__attributes__reorder__t_Bar_tests__legacy__attributes__reorder__f_b_field_2_(
+      tests__legacy__attributes__reorder__Bar_B(
+        tests__legacy__attributes__reorder__f_b_field_1_,
+        tests__legacy__attributes__reorder__f_b_field_3_,
+        tests__legacy__attributes__reorder__f_b_field_2_
+      )
+    ) = tests__legacy__attributes__reorder__f_b_field_2_.
+
+type tests__legacy__attributes__refinement_types__t_BoundedU8.
+
+fun tests__legacy__attributes__refinement_types__t_BoundedU8_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_BoundedU8
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_BoundedU8_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refinement_types__t_BoundedU8 [typeConverter].
+const tests__legacy__attributes__refinement_types__t_BoundedU8_default_value: tests__legacy__attributes__refinement_types__t_BoundedU8.
+letfun tests__legacy__attributes__refinement_types__t_BoundedU8_default() =
+       tests__legacy__attributes__refinement_types__t_BoundedU8_default_value.
+letfun tests__legacy__attributes__refinement_types__t_BoundedU8_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_BoundedU8_default_value.
+fun tests__legacy__attributes__refinement_types__BoundedU8(nat)
+    : tests__legacy__attributes__refinement_types__t_BoundedU8 [data].
+reduc forall tests__legacy__attributes__refinement_types__0: nat;
+    accessor_tests__legacy__attributes__refinement_types__t_BoundedU8_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__BoundedU8(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refinement_types__t_Even.
+
+fun tests__legacy__attributes__refinement_types__t_Even_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_Even
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_Even_from_bitstring(bitstring
+    )
+    : tests__legacy__attributes__refinement_types__t_Even [typeConverter].
+const tests__legacy__attributes__refinement_types__t_Even_default_value: tests__legacy__attributes__refinement_types__t_Even.
+letfun tests__legacy__attributes__refinement_types__t_Even_default() =
+       tests__legacy__attributes__refinement_types__t_Even_default_value.
+letfun tests__legacy__attributes__refinement_types__t_Even_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_Even_default_value.
+fun tests__legacy__attributes__refinement_types__Even(nat)
+    : tests__legacy__attributes__refinement_types__t_Even [data].
+reduc forall tests__legacy__attributes__refinement_types__0: nat;
+    accessor_tests__legacy__attributes__refinement_types__t_Even_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__Even(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refinement_types__t_NoE.
+
+fun tests__legacy__attributes__refinement_types__t_NoE_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_NoE
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_NoE_from_bitstring(bitstring)
+    : tests__legacy__attributes__refinement_types__t_NoE [typeConverter].
+const tests__legacy__attributes__refinement_types__t_NoE_default_value: tests__legacy__attributes__refinement_types__t_NoE.
+letfun tests__legacy__attributes__refinement_types__t_NoE_default() =
+       tests__legacy__attributes__refinement_types__t_NoE_default_value.
+letfun tests__legacy__attributes__refinement_types__t_NoE_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_NoE_default_value.
+fun tests__legacy__attributes__refinement_types__NoE(alloc__string__t_String)
+    : tests__legacy__attributes__refinement_types__t_NoE [data].
+reduc forall 
+  tests__legacy__attributes__refinement_types__0: alloc__string__t_String
+;
+    accessor_tests__legacy__attributes__refinement_types__t_NoE_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__NoE(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refinement_types__t_ModInverse.
+
+fun tests__legacy__attributes__refinement_types__t_ModInverse_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_ModInverse
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_ModInverse_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refinement_types__t_ModInverse [typeConverter].
+const tests__legacy__attributes__refinement_types__t_ModInverse_default_value: tests__legacy__attributes__refinement_types__t_ModInverse.
+letfun tests__legacy__attributes__refinement_types__t_ModInverse_default() =
+       tests__legacy__attributes__refinement_types__t_ModInverse_default_value.
+letfun tests__legacy__attributes__refinement_types__t_ModInverse_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_ModInverse_default_value.
+fun tests__legacy__attributes__refinement_types__ModInverse(nat)
+    : tests__legacy__attributes__refinement_types__t_ModInverse [data].
+reduc forall tests__legacy__attributes__refinement_types__0: nat;
+    accessor_tests__legacy__attributes__refinement_types__t_ModInverse_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__ModInverse(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refinement_types__t_FieldElement.
+
+fun tests__legacy__attributes__refinement_types__t_FieldElement_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_FieldElement
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_FieldElement_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refinement_types__t_FieldElement [typeConverter].
+const tests__legacy__attributes__refinement_types__t_FieldElement_default_value: tests__legacy__attributes__refinement_types__t_FieldElement.
+letfun tests__legacy__attributes__refinement_types__t_FieldElement_default() =
+       tests__legacy__attributes__refinement_types__t_FieldElement_default_value.
+letfun tests__legacy__attributes__refinement_types__t_FieldElement_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_FieldElement_default_value.
+fun tests__legacy__attributes__refinement_types__FieldElement(nat)
+    : tests__legacy__attributes__refinement_types__t_FieldElement [data].
+reduc forall tests__legacy__attributes__refinement_types__0: nat;
+    accessor_tests__legacy__attributes__refinement_types__t_FieldElement_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__FieldElement(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refinement_types__t_CompressionFactor.
+
+fun tests__legacy__attributes__refinement_types__t_CompressionFactor_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_CompressionFactor
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_CompressionFactor_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refinement_types__t_CompressionFactor [typeConverter].
+const tests__legacy__attributes__refinement_types__t_CompressionFactor_default_value: tests__legacy__attributes__refinement_types__t_CompressionFactor.
+letfun tests__legacy__attributes__refinement_types__t_CompressionFactor_default(
+       ) =
+       tests__legacy__attributes__refinement_types__t_CompressionFactor_default_value.
+letfun tests__legacy__attributes__refinement_types__t_CompressionFactor_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_CompressionFactor_default_value.
+fun tests__legacy__attributes__refinement_types__CompressionFactor(nat)
+    : tests__legacy__attributes__refinement_types__t_CompressionFactor [data].
+reduc forall tests__legacy__attributes__refinement_types__0: nat;
+    accessor_tests__legacy__attributes__refinement_types__t_CompressionFactor_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__CompressionFactor(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refinement_types__t_BoundedAbsI16.
+
+fun tests__legacy__attributes__refinement_types__t_BoundedAbsI16_to_bitstring(
+      tests__legacy__attributes__refinement_types__t_BoundedAbsI16
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refinement_types__t_BoundedAbsI16_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refinement_types__t_BoundedAbsI16 [typeConverter].
+const tests__legacy__attributes__refinement_types__t_BoundedAbsI16_default_value: tests__legacy__attributes__refinement_types__t_BoundedAbsI16.
+letfun tests__legacy__attributes__refinement_types__t_BoundedAbsI16_default() =
+       tests__legacy__attributes__refinement_types__t_BoundedAbsI16_default_value.
+letfun tests__legacy__attributes__refinement_types__t_BoundedAbsI16_err() =
+       let x = construct_fail() in tests__legacy__attributes__refinement_types__t_BoundedAbsI16_default_value.
+fun tests__legacy__attributes__refinement_types__BoundedAbsI16(nat)
+    : tests__legacy__attributes__refinement_types__t_BoundedAbsI16 [data].
+reduc forall tests__legacy__attributes__refinement_types__0: nat;
+    accessor_tests__legacy__attributes__refinement_types__t_BoundedAbsI16_tests__legacy__attributes__refinement_types__0(
+      tests__legacy__attributes__refinement_types__BoundedAbsI16(
+        tests__legacy__attributes__refinement_types__0
+      )
+    ) = tests__legacy__attributes__refinement_types__0.
+
+type tests__legacy__attributes__refined_indexes__t_MyArray.
+
+fun tests__legacy__attributes__refined_indexes__t_MyArray_to_bitstring(
+      tests__legacy__attributes__refined_indexes__t_MyArray
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refined_indexes__t_MyArray_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refined_indexes__t_MyArray [typeConverter].
+const tests__legacy__attributes__refined_indexes__t_MyArray_default_value: tests__legacy__attributes__refined_indexes__t_MyArray.
+letfun tests__legacy__attributes__refined_indexes__t_MyArray_default() =
+       tests__legacy__attributes__refined_indexes__t_MyArray_default_value.
+letfun tests__legacy__attributes__refined_indexes__t_MyArray_err() =
+       let x = construct_fail() in tests__legacy__attributes__refined_indexes__t_MyArray_default_value.
+fun tests__legacy__attributes__refined_indexes__MyArray(bitstring)
+    : tests__legacy__attributes__refined_indexes__t_MyArray [data].
+reduc forall tests__legacy__attributes__refined_indexes__0: bitstring;
+    accessor_tests__legacy__attributes__refined_indexes__t_MyArray_tests__legacy__attributes__refined_indexes__0(
+      tests__legacy__attributes__refined_indexes__MyArray(
+        tests__legacy__attributes__refined_indexes__0
+      )
+    ) = tests__legacy__attributes__refined_indexes__0.
+
+type tests__legacy__attributes__refined_arithmetic__t_Foo.
+
+fun tests__legacy__attributes__refined_arithmetic__t_Foo_to_bitstring(
+      tests__legacy__attributes__refined_arithmetic__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__refined_arithmetic__t_Foo_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__refined_arithmetic__t_Foo [typeConverter].
+const tests__legacy__attributes__refined_arithmetic__t_Foo_default_value: tests__legacy__attributes__refined_arithmetic__t_Foo.
+letfun tests__legacy__attributes__refined_arithmetic__t_Foo_default() =
+       tests__legacy__attributes__refined_arithmetic__t_Foo_default_value.
+letfun tests__legacy__attributes__refined_arithmetic__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__attributes__refined_arithmetic__t_Foo_default_value.
+fun tests__legacy__attributes__refined_arithmetic__Foo(nat)
+    : tests__legacy__attributes__refined_arithmetic__t_Foo [data].
+reduc forall tests__legacy__attributes__refined_arithmetic__0: nat;
+    accessor_tests__legacy__attributes__refined_arithmetic__t_Foo_tests__legacy__attributes__refined_arithmetic__0(
+      tests__legacy__attributes__refined_arithmetic__Foo(
+        tests__legacy__attributes__refined_arithmetic__0
+      )
+    ) = tests__legacy__attributes__refined_arithmetic__0.
+
+type tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd.
+
+fun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_to_bitstring(
+      tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd [typeConverter].
+const tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_default_value: tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd.
+letfun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_default(
+
+       ) =
+       tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_default_value.
+letfun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_err() =
+       let x = construct_fail() in tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd_default_value.
+fun tests__legacy__attributes__pre_post_on_traits_and_impls__ViaAdd()
+    : tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaAdd [data].
+
+
+type tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul.
+
+fun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_to_bitstring(
+      tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul [typeConverter].
+const tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_default_value: tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul.
+letfun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_default(
+
+       ) =
+       tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_default_value.
+letfun tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_err() =
+       let x = construct_fail() in tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul_default_value.
+fun tests__legacy__attributes__pre_post_on_traits_and_impls__ViaMul()
+    : tests__legacy__attributes__pre_post_on_traits_and_impls__t_ViaMul [data].
+
+
+type tests__legacy__attributes__newtype_pattern__t_SafeIndex.
+
+fun tests__legacy__attributes__newtype_pattern__t_SafeIndex_to_bitstring(
+      tests__legacy__attributes__newtype_pattern__t_SafeIndex
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__newtype_pattern__t_SafeIndex_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__newtype_pattern__t_SafeIndex [typeConverter].
+const tests__legacy__attributes__newtype_pattern__t_SafeIndex_default_value: tests__legacy__attributes__newtype_pattern__t_SafeIndex.
+letfun tests__legacy__attributes__newtype_pattern__t_SafeIndex_default() =
+       tests__legacy__attributes__newtype_pattern__t_SafeIndex_default_value.
+letfun tests__legacy__attributes__newtype_pattern__t_SafeIndex_err() =
+       let x = construct_fail() in tests__legacy__attributes__newtype_pattern__t_SafeIndex_default_value.
+fun tests__legacy__attributes__newtype_pattern__SafeIndex(nat)
+    : tests__legacy__attributes__newtype_pattern__t_SafeIndex [data].
+reduc forall tests__legacy__attributes__newtype_pattern__f_i: nat;
+    accessor_tests__legacy__attributes__newtype_pattern__t_SafeIndex_tests__legacy__attributes__newtype_pattern__f_i(
+      tests__legacy__attributes__newtype_pattern__SafeIndex(
+        tests__legacy__attributes__newtype_pattern__f_i
+      )
+    ) = tests__legacy__attributes__newtype_pattern__f_i.
+
+type tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement.
+
+fun tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_to_bitstring(
+      tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement [typeConverter].
+const tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_default_value: tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement.
+letfun tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_default(
+
+       ) =
+       tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_default_value.
+letfun tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_err(
+       ) =
+       let x = construct_fail() in tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_default_value.
+fun tests__legacy__attributes__nested_refinement_elim__DummyRefinement(nat)
+    : tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement [data].
+reduc forall tests__legacy__attributes__nested_refinement_elim__0: nat;
+    accessor_tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement_tests__legacy__attributes__nested_refinement_elim__0(
+      tests__legacy__attributes__nested_refinement_elim__DummyRefinement(
+        tests__legacy__attributes__nested_refinement_elim__0
+      )
+    ) = tests__legacy__attributes__nested_refinement_elim__0.
+
+type tests__legacy__attributes__issue_evit_57___t_Foo.
+
+fun tests__legacy__attributes__issue_evit_57___t_Foo_to_bitstring(
+      tests__legacy__attributes__issue_evit_57___t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__issue_evit_57___t_Foo_from_bitstring(bitstring)
+    : tests__legacy__attributes__issue_evit_57___t_Foo [typeConverter].
+const tests__legacy__attributes__issue_evit_57___t_Foo_default_value: tests__legacy__attributes__issue_evit_57___t_Foo.
+letfun tests__legacy__attributes__issue_evit_57___t_Foo_default() =
+       tests__legacy__attributes__issue_evit_57___t_Foo_default_value.
+letfun tests__legacy__attributes__issue_evit_57___t_Foo_err() =
+       let x = construct_fail() in tests__legacy__attributes__issue_evit_57___t_Foo_default_value.
+fun tests__legacy__attributes__issue_evit_57___Foo()
+    : tests__legacy__attributes__issue_evit_57___t_Foo [data].
+
+
+type tests__legacy__attributes__issue_1276___t_S.
+
+fun tests__legacy__attributes__issue_1276___t_S_to_bitstring(
+      tests__legacy__attributes__issue_1276___t_S
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__issue_1276___t_S_from_bitstring(bitstring)
+    : tests__legacy__attributes__issue_1276___t_S [typeConverter].
+const tests__legacy__attributes__issue_1276___t_S_default_value: tests__legacy__attributes__issue_1276___t_S.
+letfun tests__legacy__attributes__issue_1276___t_S_default() =
+       tests__legacy__attributes__issue_1276___t_S_default_value.
+letfun tests__legacy__attributes__issue_1276___t_S_err() =
+       let x = construct_fail() in tests__legacy__attributes__issue_1276___t_S_default_value.
+fun tests__legacy__attributes__issue_1276___S(nat)
+    : tests__legacy__attributes__issue_1276___t_S [data].
+reduc forall tests__legacy__attributes__issue_1276___0: nat;
+    accessor_tests__legacy__attributes__issue_1276___t_S_tests__legacy__attributes__issue_1276___0(
+      tests__legacy__attributes__issue_1276___S(
+        tests__legacy__attributes__issue_1276___0
+      )
+    ) = tests__legacy__attributes__issue_1276___0.
+
+type tests__legacy__attributes__future_self__t_Dummy.
+
+fun tests__legacy__attributes__future_self__t_Dummy_to_bitstring(
+      tests__legacy__attributes__future_self__t_Dummy
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__future_self__t_Dummy_from_bitstring(bitstring)
+    : tests__legacy__attributes__future_self__t_Dummy [typeConverter].
+const tests__legacy__attributes__future_self__t_Dummy_default_value: tests__legacy__attributes__future_self__t_Dummy.
+letfun tests__legacy__attributes__future_self__t_Dummy_default() =
+       tests__legacy__attributes__future_self__t_Dummy_default_value.
+letfun tests__legacy__attributes__future_self__t_Dummy_err() =
+       let x = construct_fail() in tests__legacy__attributes__future_self__t_Dummy_default_value.
+fun tests__legacy__attributes__future_self__Dummy()
+    : tests__legacy__attributes__future_self__t_Dummy [data].
+
+
+type tests__legacy__attributes__t_Foo.
+
+fun tests__legacy__attributes__t_Foo_to_bitstring(
+      tests__legacy__attributes__t_Foo
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__attributes__t_Foo_from_bitstring(bitstring)
+    : tests__legacy__attributes__t_Foo [typeConverter].
+const tests__legacy__attributes__t_Foo_default_value: tests__legacy__attributes__t_Foo.
+letfun tests__legacy__attributes__t_Foo_default() =
+       tests__legacy__attributes__t_Foo_default_value.
+letfun tests__legacy__attributes__t_Foo_err() =
+       let x = construct_fail() in tests__legacy__attributes__t_Foo_default_value.
+fun tests__legacy__attributes__Foo(nat, nat, nat)
+    : tests__legacy__attributes__t_Foo [data].
+reduc forall 
+  tests__legacy__attributes__f_x: nat,
+  tests__legacy__attributes__f_y: nat,
+  tests__legacy__attributes__f_z: nat
+;
+    accessor_tests__legacy__attributes__t_Foo_tests__legacy__attributes__f_x(
+      tests__legacy__attributes__Foo(
+        tests__legacy__attributes__f_x,
+        tests__legacy__attributes__f_y,
+        tests__legacy__attributes__f_z
+      )
+    ) = tests__legacy__attributes__f_x.
+reduc forall 
+  tests__legacy__attributes__f_x: nat,
+  tests__legacy__attributes__f_y: nat,
+  tests__legacy__attributes__f_z: nat
+;
+    accessor_tests__legacy__attributes__t_Foo_tests__legacy__attributes__f_y(
+      tests__legacy__attributes__Foo(
+        tests__legacy__attributes__f_x,
+        tests__legacy__attributes__f_y,
+        tests__legacy__attributes__f_z
+      )
+    ) = tests__legacy__attributes__f_y.
+reduc forall 
+  tests__legacy__attributes__f_x: nat,
+  tests__legacy__attributes__f_y: nat,
+  tests__legacy__attributes__f_z: nat
+;
+    accessor_tests__legacy__attributes__t_Foo_tests__legacy__attributes__f_z(
+      tests__legacy__attributes__Foo(
+        tests__legacy__attributes__f_x,
+        tests__legacy__attributes__f_y,
+        tests__legacy__attributes__f_z
+      )
+    ) = tests__legacy__attributes__f_z.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__attributes__verifcation_status__a_function_which_only_laxes(
+         wildcard1 : bitstring
+       ) =
+       if core__ops__bit__f_not(false) then (bitstring_err()) else (()).
+
+letfun tests__legacy__attributes__verifcation_status__a_panicfree_function(
+         wildcard3 : bitstring
+       ) =
+       let a = (3) in
+       let b = (6) in
+       let result = (core__ops__arith__f_add(a, b)) in
+       let wildcard2: bitstring = (()) in
+       result.
+
+letfun tests__legacy__attributes__verifcation_status__another_panicfree_function(
+         wildcard4 : bitstring
+       ) =
+       let not_much = (0) in
+       let nothing = (0) in
+       let still_not_much = (core__ops__arith__f_add(not_much, nothing)) in
+       ().
+
+letfun tests__legacy__attributes__replace_body__f(x : nat, y : nat) =
+       core__ops__arith__f_add(1, 2).
+
+letfun tests__legacy__attributes__replace_body__impl_Foo__assoc_fn(
+         self : tests__legacy__attributes__replace_body__t_Foo, x : nat
+       ) =
+       ().
+
+letfun tests__legacy__attributes__refinement_types__bounded_u8(
+         x : tests__legacy__attributes__refinement_types__t_BoundedU8_of_12_15,
+         y : tests__legacy__attributes__refinement_types__t_BoundedU8_of_10_11
+       ) =
+       hax_lib__f_new(
+         core__ops__arith__f_add(hax_lib__f_get(x), hax_lib__f_get(y))
+       ).
+
+letfun tests__legacy__attributes__refinement_types__double(x : nat) =
+       hax_lib__f_new(core__ops__arith__f_add(x, x)).
+
+letfun tests__legacy__attributes__refinement_types__double_refine(x : nat) =
+       hax_lib__f_into_checked(core__ops__arith__f_add(x, x)).
+
+letfun tests__legacy__attributes__refinement_types__double_abs_i16(
+         x : tests__legacy__attributes__refinement_types__t_BoundedAbsI16_of_v_N
+       ) =
+       hax_lib__f_into_checked(core__ops__arith__f_mul(x, 2)).
+
+const tests__legacy__attributes__refined_indexes__v_MAX: bitstring.
+
+letfun tests__legacy__attributes__refined_indexes__mutation_example(
+         uuse_generic_update_at : tests__legacy__attributes__refined_indexes__t_MyArray,
+         uuse_specialized_update_at : bitstring,
+         specialized_as_well : bitstring
+       ) =
+       let uuse_generic_update_at = (
+         rust_primitives__hax__update_at(uuse_generic_update_at, 2, 0)
+       ) in
+       let uuse_specialized_update_at = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           uuse_specialized_update_at, 2, 0
+         )
+       ) in
+       let specialized_as_well = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           specialized_as_well, 2, 0
+         )
+       ) in
+       (uuse_generic_update_at, uuse_specialized_update_at, specialized_as_well).
+
+letfun tests__legacy__attributes__pre_post_on_traits_and_impls__test(x : v_T) =
+       core__ops__arith__f_sub(
+         tests__legacy__attributes__pre_post_on_traits_and_impls__f_method(x, 99
+         ),
+         88
+       ).
+
+const tests__legacy__attributes__newtype_pattern__v_MAX: bitstring.
+
+letfun tests__legacy__attributes__newtype_pattern__impl_SafeIndex__new(i : nat) =
+       if core__cmp__f_lt(i, tests__legacy__attributes__newtype_pattern__v_MAX)
+       then
+         (Some(
+            tests__legacy__attributes__newtype_pattern__t_SafeIndex_to_bitstring(
+              tests__legacy__attributes__newtype_pattern__SafeIndex(i)
+            )
+          ))
+       else (None()).
+
+letfun tests__legacy__attributes__newtype_pattern__impl_SafeIndex__as_usize(
+         self : tests__legacy__attributes__newtype_pattern__t_SafeIndex
+       ) =
+       accessor_tests__legacy__attributes__newtype_pattern__t_SafeIndex_tests__legacy__attributes__newtype_pattern__f_i(
+         self
+       ).
+
+letfun tests__legacy__attributes__nested_refinement_elim__elim_twice(
+         x : tests__legacy__attributes__nested_refinement_elim__t_DummyRefinement
+       ) =
+       hax_lib__f_get(hax_lib__f_new(hax_lib__f_get(x))).
+
+letfun tests__legacy__attributes__issue_evit_57___impl_Foo__f(
+         self : tests__legacy__attributes__issue_evit_57___t_Foo
+       ) =
+       ().
+
+letfun tests__legacy__attributes__issue_1276___impl_S__f(
+         self : tests__legacy__attributes__issue_1276___t_S,
+         self_ : nat,
+         self_0_ : nat,
+         self_1_ : nat,
+         self_2_ : nat
+       ) =
+       ().
+
+letfun tests__legacy__attributes__inlined_code_ensures_requires__increment_array(
+         v : bitstring
+       ) =
+       let v = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           v, 0, core__ops__arith__f_add(core__ops__index__f_index(v, 0), 1)
+         )
+       ) in
+       let v = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           v, 1, core__ops__arith__f_add(core__ops__index__f_index(v, 1), 1)
+         )
+       ) in
+       let v = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           v, 2, core__ops__arith__f_add(core__ops__index__f_index(v, 2), 1)
+         )
+       ) in
+       let v = (
+         rust_primitives__hax__monomorphized_update_at__update_at_usize(
+           v, 3, core__ops__arith__f_add(core__ops__index__f_index(v, 3), 1)
+         )
+       ) in
+       v.
+
+letfun tests__legacy__attributes__future_self__impl_Dummy__f(
+         self : tests__legacy__attributes__future_self__t_Dummy
+       ) =
+       self.
+
+letfun tests__legacy__attributes__ensures_on_arity_zero_fns__doing_nothing(
+         wildcard5 : bitstring
+       ) =
+       ().
+
+letfun tests__legacy__attributes__ensures_on_arity_zero_fns__basically_a_constant(
+         wildcard6 : bitstring
+       ) =
+       127.
+
+const tests__legacy__attributes__u32_max: bitstring.
+
+letfun tests__legacy__attributes__add3(x : nat, y : nat, z : nat) =
+       core__ops__arith__f_add(core__ops__arith__f_add(x, y), z).
+
+letfun tests__legacy__attributes__swap_and_mut_req_ens(x : nat, y : nat) =
+       let x0 = (x) in
+       let x = (y) in
+       let y = (x0) in
+       let hax_temp_output = (core__ops__arith__f_add(x, y)) in
+       (x, y, hax_temp_output).
+
+letfun tests__legacy__attributes__issue_844_(e_x : nat) =
+       e_x.
+
+letfun tests__legacy__attributes__add3_lemma(x : nat) =
+       ().
+
+letfun tests__legacy__attributes__dummy_function(x : nat) =
+       x.
+
+letfun tests__legacy__attributes__apply_dummy_function_lemma(x : nat) =
+       ().
+
+letfun tests__legacy__attributes__props(wildcard10 : bitstring) =
+       let wildcard9: bitstring = (
+         hax_lib__assume(
+           core__convert__f_from(hax_lib__prop__impl_Prop__from_bool(true))
+         )
+       ) in
+       let wildcard8: bitstring = (
+         hax_lib__assert_prop(
+           core__convert__f_from(hax_lib__prop__impl_Prop__from_bool(true))
+         )
+       ) in
+       let wildcard7: bitstring = (()) in
+       ().
+
+letfun tests__legacy__attributes__inlined_code(
+         foo : tests__legacy__attributes__t_Foo
+       ) =
+       let vv_a = (13) in
+       let wildcard11: bitstring = (()) in
+       ().
+
+const tests__legacy__attributes__inlined_code__v_V: bitstring.
+
+letfun tests__legacy__attributes__mutliple_before_after(wildcard12 : bitstring) =
+       ().
+
+letfun tests__legacy__attributes__fib(x : nat) =
+       if core__cmp__f_le(x, 2)
+       then (x)
+       else (
+         core__num__impl_usize__wrapping_add(
+           tests__legacy__attributes__fib(core__ops__arith__f_sub(x, 1)),
+           tests__legacy__attributes__fib(core__ops__arith__f_sub(x, 2))
+         )
+       ).
+
+letfun tests__legacy__attributes__props__f(x : hax_lib__prop__t_Prop, y : bool) =
+       let xprop:hax_lib__prop__t_Prop = (
+         hax_lib__prop__t_Prop_from_bitstring(y)
+       ) in
+       let p = (
+         core__ops__bit__f_bitand(
+           core__ops__bit__f_bitand(
+             core__ops__bit__f_bitand(hax_lib__abstraction__f_lift(y), xprop), y
+           ),
+           hax_lib__prop__f_to_prop(y)
+         )
+       ) in
+       core__ops__bit__f_not(
+         hax_lib__prop__impl_Prop__implies(
+           core__ops__bit__f_bitor(p, y),
+           core__ops__bit__f_bitand(
+             hax_lib__prop__v_forall(
+               |x|core__cmp__f_le(x, core__num__impl_u8__MAX)
+             ),
+             hax_lib__prop__exists(|x|core__cmp__f_gt(x, 300))
+           )
+         )
+       ).
+
+letfun tests__legacy__attributes__postprocess_with__somewhere__some_hypothetical_tactic(
+         some_param : nat
+       ) =
+       ().
+
+letfun tests__legacy__attributes__postprocess_with__f(wildcard13 : bitstring) =
+       ().
+
+letfun tests__legacy__attributes__postprocess_with__g(wildcard14 : bitstring) =
+       ().
+

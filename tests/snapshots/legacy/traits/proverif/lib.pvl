@@ -1,0 +1,366 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType.
+
+fun tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_to_bitstring(
+      tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType [typeConverter].
+const tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_default_value: tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType.
+letfun tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_default(
+
+       ) =
+       tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_default_value.
+letfun tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_err(
+
+       ) =
+       let x = construct_fail() in tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType_default_value.
+fun tests__legacy__traits__implicit_dependencies_issue_667___define_type__MyType(
+
+    )
+    : tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType [data].
+
+
+type tests__legacy__traits__unconstrainted_types_issue_677___t_Plus.
+
+fun tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_to_bitstring(
+      tests__legacy__traits__unconstrainted_types_issue_677___t_Plus
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__unconstrainted_types_issue_677___t_Plus [typeConverter].
+const tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_default_value: tests__legacy__traits__unconstrainted_types_issue_677___t_Plus.
+letfun tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_default() =
+       tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_default_value.
+letfun tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_err() =
+       let x = construct_fail() in tests__legacy__traits__unconstrainted_types_issue_677___t_Plus_default_value.
+fun tests__legacy__traits__unconstrainted_types_issue_677___Plus()
+    : tests__legacy__traits__unconstrainted_types_issue_677___t_Plus [data].
+
+
+type tests__legacy__traits__unconstrainted_types_issue_677___t_Times.
+
+fun tests__legacy__traits__unconstrainted_types_issue_677___t_Times_to_bitstring(
+      tests__legacy__traits__unconstrainted_types_issue_677___t_Times
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__unconstrainted_types_issue_677___t_Times_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__unconstrainted_types_issue_677___t_Times [typeConverter].
+const tests__legacy__traits__unconstrainted_types_issue_677___t_Times_default_value: tests__legacy__traits__unconstrainted_types_issue_677___t_Times.
+letfun tests__legacy__traits__unconstrainted_types_issue_677___t_Times_default() =
+       tests__legacy__traits__unconstrainted_types_issue_677___t_Times_default_value.
+letfun tests__legacy__traits__unconstrainted_types_issue_677___t_Times_err() =
+       let x = construct_fail() in tests__legacy__traits__unconstrainted_types_issue_677___t_Times_default_value.
+fun tests__legacy__traits__unconstrainted_types_issue_677___Times()
+    : tests__legacy__traits__unconstrainted_types_issue_677___t_Times [data].
+
+
+type tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds.
+
+fun tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_to_bitstring(
+      tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds [typeConverter].
+const tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_default_value: tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds.
+letfun tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_default(
+
+       ) =
+       tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_default_value.
+letfun tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_err(
+
+       ) =
+       let x = construct_fail() in tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_default_value.
+fun tests__legacy__traits__type_alias_bounds_issue_707___StructWithGenericBounds(
+      v_T
+    )
+    : tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds [data].
+reduc forall tests__legacy__traits__type_alias_bounds_issue_707___0: v_T;
+    accessor_tests__legacy__traits__type_alias_bounds_issue_707___t_StructWithGenericBounds_tests__legacy__traits__type_alias_bounds_issue_707___0(
+      tests__legacy__traits__type_alias_bounds_issue_707___StructWithGenericBounds(
+        tests__legacy__traits__type_alias_bounds_issue_707___0
+      )
+    ) = tests__legacy__traits__type_alias_bounds_issue_707___0.
+
+type tests__legacy__traits__interlaced_consts_types__t_Bar.
+
+fun tests__legacy__traits__interlaced_consts_types__t_Bar_to_bitstring(
+      tests__legacy__traits__interlaced_consts_types__t_Bar
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__interlaced_consts_types__t_Bar_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__interlaced_consts_types__t_Bar [typeConverter].
+const tests__legacy__traits__interlaced_consts_types__t_Bar_default_value: tests__legacy__traits__interlaced_consts_types__t_Bar.
+letfun tests__legacy__traits__interlaced_consts_types__t_Bar_default() =
+       tests__legacy__traits__interlaced_consts_types__t_Bar_default_value.
+letfun tests__legacy__traits__interlaced_consts_types__t_Bar_err() =
+       let x = construct_fail() in tests__legacy__traits__interlaced_consts_types__t_Bar_default_value.
+fun tests__legacy__traits__interlaced_consts_types__Bar(bitstring)
+    : tests__legacy__traits__interlaced_consts_types__t_Bar [data].
+reduc forall tests__legacy__traits__interlaced_consts_types__0: bitstring;
+    accessor_tests__legacy__traits__interlaced_consts_types__t_Bar_tests__legacy__traits__interlaced_consts_types__0(
+      tests__legacy__traits__interlaced_consts_types__Bar(
+        tests__legacy__traits__interlaced_consts_types__0
+      )
+    ) = tests__legacy__traits__interlaced_consts_types__0.
+
+type tests__legacy__traits__implicit_explicit_calling_conventions__t_Type.
+
+fun tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_to_bitstring(
+      tests__legacy__traits__implicit_explicit_calling_conventions__t_Type
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__implicit_explicit_calling_conventions__t_Type [typeConverter].
+const tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_default_value: tests__legacy__traits__implicit_explicit_calling_conventions__t_Type.
+letfun tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_default(
+
+       ) =
+       tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_default_value.
+letfun tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_err(
+       ) =
+       let x = construct_fail() in tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_default_value.
+fun tests__legacy__traits__implicit_explicit_calling_conventions__Type(bitstring
+    )
+    : tests__legacy__traits__implicit_explicit_calling_conventions__t_Type [data].
+reduc forall 
+  tests__legacy__traits__implicit_explicit_calling_conventions__f_field: bitstring
+;
+    accessor_tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_tests__legacy__traits__implicit_explicit_calling_conventions__f_field(
+      tests__legacy__traits__implicit_explicit_calling_conventions__Type(
+        tests__legacy__traits__implicit_explicit_calling_conventions__f_field
+      )
+    ) = tests__legacy__traits__implicit_explicit_calling_conventions__f_field.
+
+type tests__legacy__traits__implement_arithmetic_trait__t_Wrapped.
+
+fun tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_to_bitstring(
+      tests__legacy__traits__implement_arithmetic_trait__t_Wrapped
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__traits__implement_arithmetic_trait__t_Wrapped [typeConverter].
+const tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_default_value: tests__legacy__traits__implement_arithmetic_trait__t_Wrapped.
+letfun tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_default() =
+       tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_default_value.
+letfun tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_err() =
+       let x = construct_fail() in tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_default_value.
+fun tests__legacy__traits__implement_arithmetic_trait__Wrapped(nat)
+    : tests__legacy__traits__implement_arithmetic_trait__t_Wrapped [data].
+reduc forall tests__legacy__traits__implement_arithmetic_trait__0: nat;
+    accessor_tests__legacy__traits__implement_arithmetic_trait__t_Wrapped_tests__legacy__traits__implement_arithmetic_trait__0(
+      tests__legacy__traits__implement_arithmetic_trait__Wrapped(
+        tests__legacy__traits__implement_arithmetic_trait__0
+      )
+    ) = tests__legacy__traits__implement_arithmetic_trait__0.
+
+type tests__legacy__traits__t_Struct.
+
+fun tests__legacy__traits__t_Struct_to_bitstring(tests__legacy__traits__t_Struct
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__traits__t_Struct_from_bitstring(bitstring)
+    : tests__legacy__traits__t_Struct [typeConverter].
+const tests__legacy__traits__t_Struct_default_value: tests__legacy__traits__t_Struct.
+letfun tests__legacy__traits__t_Struct_default() =
+       tests__legacy__traits__t_Struct_default_value.
+letfun tests__legacy__traits__t_Struct_err() =
+       let x = construct_fail() in tests__legacy__traits__t_Struct_default_value.
+fun tests__legacy__traits__Struct()
+    : tests__legacy__traits__t_Struct [data].
+
+
+type tests__legacy__traits__t_Error.
+
+fun tests__legacy__traits__t_Error_to_bitstring(tests__legacy__traits__t_Error)
+    : bitstring [typeConverter].
+fun tests__legacy__traits__t_Error_from_bitstring(bitstring)
+    : tests__legacy__traits__t_Error [typeConverter].
+const tests__legacy__traits__t_Error_default_value: tests__legacy__traits__t_Error.
+letfun tests__legacy__traits__t_Error_default() =
+       tests__legacy__traits__t_Error_default_value.
+letfun tests__legacy__traits__t_Error_err() =
+       let x = construct_fail() in tests__legacy__traits__t_Error_default_value.
+fun tests__legacy__traits__Error_Fail()
+    : tests__legacy__traits__t_Error [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun tests__legacy__traits__unconstrainted_types_issue_677___twice(x : nat) =
+       tests__legacy__traits__unconstrainted_types_issue_677___f_op(x, x).
+
+letfun tests__legacy__traits__unconstrainted_types_issue_677___both(x : nat) =
+       (
+         tests__legacy__traits__unconstrainted_types_issue_677___twice(x),
+         tests__legacy__traits__unconstrainted_types_issue_677___twice(x)
+       ).
+
+letfun tests__legacy__traits__implicit_explicit_calling_conventions__method_caller(
+         x : v_ImplTrait,
+         value_TypeArg : v_TypeArg,
+         value_Type : tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_of_v_TypeArg_v_ConstArg
+       ) =
+       let wildcard1: bitstring = (
+         tests__legacy__traits__implicit_explicit_calling_conventions__f_method(
+           x, value_TypeArg, value_Type
+         )
+       ) in
+       ().
+
+letfun tests__legacy__traits__implicit_explicit_calling_conventions__associated_function_caller(
+         x : v_ImplTrait,
+         value_TypeArg : v_TypeArg,
+         value_Type : tests__legacy__traits__implicit_explicit_calling_conventions__t_Type_of_v_TypeArg_v_ConstArg
+       ) =
+       let wildcard2: bitstring = (
+         tests__legacy__traits__implicit_explicit_calling_conventions__f_associated_function(
+           x, value_TypeArg, value_Type
+         )
+       ) in
+       ().
+
+letfun tests__legacy__traits__implement_arithmetic_trait__test(
+         x : tests__legacy__traits__implement_arithmetic_trait__t_Wrapped,
+         y : tests__legacy__traits__implement_arithmetic_trait__t_Wrapped
+       ) =
+       core__ops__arith__f_add(x, y).
+
+letfun tests__legacy__traits__for_clauses__e_f(x : v_X) =
+       let wildcard3: bitstring = (tests__legacy__traits__for_clauses__f_to_t(x)
+       ) in
+       ().
+
+letfun tests__legacy__traits__impl_2__method(x : v_T) =
+       tests__legacy__traits__f_bar(x).
+
+letfun tests__legacy__traits__cclosure_iimpl_expr(it : v_I) =
+       core__iter__traits__iterator__f_collect(
+         core__iter__traits__iterator__f_map(it, |x|x)
+       ).
+
+letfun tests__legacy__traits__cclosure_iimpl_expr_fngen(it : v_I, f : v_F) =
+       core__iter__traits__iterator__f_collect(
+         core__iter__traits__iterator__f_map(it, f)
+       ).
+
+letfun tests__legacy__traits__t_Error_cast_to_repr(
+         x : tests__legacy__traits__t_Error
+       ) =
+       let tests__legacy__traits__Error_Fail() = x in 0.
+
+letfun tests__legacy__traits__impl_Error__for_application_callback(
+         wildcard5 : bitstring
+       ) =
+       |wildcard4: bitstring|tests__legacy__traits__Error_Fail().
+
+letfun tests__legacy__traits__iter_option(x : Option) =
+       core__iter__traits__collect__f_into_iter(core__option__impl__as_ref(x)).
+
+letfun tests__legacy__traits__uuse_iimpl_trait(wildcard7 : bitstring) =
+       let iter = (
+         tests__legacy__traits__iter_option(Some(bool_to_bitstring(false)))
+       ) in
+       let (tmp0: core__option__t_IntoIter_of_bool, v_out: Option) = (
+         core__iter__traits__iterator__f_next(iter)
+       ) in
+       let iter = (tmp0) in
+       let wildcard6: bitstring = (v_out) in
+       ().
+
+letfun tests__legacy__traits__f(x : v_T) =
+       let wildcard8: bitstring = (tests__legacy__traits__f_assoc_f(())) in
+       tests__legacy__traits__f_method_f(x).
+
+letfun tests__legacy__traits__g(x : bitstring) =
+       tests__legacy__traits__f_function_of_super_trait(x).
+
+letfun tests__legacy__traits__typenum_perf__e_f(wildcard9 : bitstring) =
+       ().
+
+letfun tests__legacy__traits__implicit_dependencies_issue_667___use_type__some_function(
+         x : tests__legacy__traits__implicit_dependencies_issue_667___define_type__t_MyType
+       ) =
+       tests__legacy__traits__implicit_dependencies_issue_667___trait_definition__f_my_method(
+         x
+       ).
+
+letfun tests__legacy__traits__for_clauses__issue_495___original_function_from_495_(
+         list : bitstring
+       ) =
+       let e_indices:bitstring = (
+         core__iter__traits__iterator__f_collect(
+           core__iter__traits__iterator__f_filter(
+             core__ops__range__Range(0,5),
+             |i|let (wildcard10: bitstring, v_out: bool) = (
+               core__iter__traits__iterator__f_any(
+                 core__slice__impl__iter(list), |n|core__cmp__f_eq(n, i)
+               )
+             ) in
+             v_out
+           )
+         )
+       ) in
+       ().
+
+letfun tests__legacy__traits__for_clauses__issue_495___minimized_1_(
+         list : bitstring
+       ) =
+       core__iter__traits__iterator__f_collect(
+         core__iter__traits__iterator__f_filter(
+           core__ops__range__Range(0,5), |wildcard11: bitstring|true
+         )
+       ).
+
+letfun tests__legacy__traits__for_clauses__issue_495___minimized_2_(
+         it : core__iter__adapters__filter__t_Filter_of_core__ops__range__t_Range_of_nat_bitstring
+       ) =
+       let e_indices:bitstring = (core__iter__traits__iterator__f_collect(it)) in
+       ().
+
