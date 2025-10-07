@@ -126,6 +126,10 @@ impl Backend for LeanBackend {
         camino::Utf8PathBuf::from_iter(self.printer().render_strings(&module.ident.view()))
             .with_extension("lean")
     }
+
+    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+        vec![Box::new(crate::phase::ExplicitMonadic::default())]
+    }
 }
 
 impl LeanPrinter {
