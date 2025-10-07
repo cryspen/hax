@@ -10,6 +10,7 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+    phase::explicit_monadic::ExplicitMonadic,
     phase::reject_not_do_lean_dsl::RejectNotDoLeanDSL,
 };
 
@@ -131,7 +132,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
-        vec![Box::new(RejectNotDoLeanDSL)]
+        vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
     }
 }
 

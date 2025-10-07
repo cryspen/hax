@@ -9,4 +9,5 @@ pub trait Phase {
     fn apply(&self, items: &mut Vec<Item>);
 }
 
+pub mod explicit_monadic;
 pub mod reject_not_do_lean_dsl;
