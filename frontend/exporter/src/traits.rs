@@ -344,3 +344,13 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
     // Resolve
     Some(solve_trait(s, self_pred))
 }
+
+/// Solve the `T: Sized` predicate.
+#[cfg(feature = "rustc")]
+pub fn solve_sized<'tcx, S: UnderOwnerState<'tcx>>(s: &S, ty: ty::Ty<'tcx>) -> ImplExpr {
+    let tcx = s.base().tcx;
+    let sized_trait = tcx.lang_items().sized_trait().unwrap();
+    let ty = erase_free_regions(tcx, ty);
+    let tref = ty::Binder::dummy(ty::TraitRef::new(tcx, sized_trait, [ty]));
+    solve_trait(s, tref)
+}

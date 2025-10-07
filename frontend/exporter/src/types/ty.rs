@@ -1143,8 +1143,14 @@ pub enum TyKind {
     #[custom_arm(FROM_TYPE::Foreign(def_id) => TO_TYPE::Foreign(translate_item_ref(s, *def_id, Default::default())),)]
     Foreign(ItemRef),
     Str,
-    Array(Box<Ty>, #[map(Box::new(x.sinto(s)))] Box<ConstantExpr>),
-    Slice(Box<Ty>),
+    /// The third field is a proof that `T: Sized`, which is required for the well-formedness of
+    /// the type.
+    #[custom_arm(FROM_TYPE::Array(ty, len) => TO_TYPE::Array(ty.sinto(s), Box::new(len.sinto(s)), Box::new(solve_sized(s, *ty))),)]
+    Array(Box<Ty>, Box<ConstantExpr>, Box<ImplExpr>),
+    /// The second field is a proof that `T: Sized`, which is required for the well-formedness of
+    /// the type.
+    #[custom_arm(FROM_TYPE::Slice(ty) => TO_TYPE::Slice(ty.sinto(s), Box::new(solve_sized(s, *ty))),)]
+    Slice(Box<Ty>, Box<ImplExpr>),
     RawPtr(Box<Ty>, Mutability),
     Ref(Region, Box<Ty>, Mutability),
     #[custom_arm(FROM_TYPE::Dynamic(preds, region, _) => make_dyn(s, preds, region),)]
@@ -1159,7 +1165,10 @@ pub enum TyKind {
     #[custom_arm(FROM_TYPE::Coroutine(def_id, generics) => TO_TYPE::Coroutine(translate_item_ref(s, *def_id, generics)),)]
     Coroutine(ItemRef),
     Never,
-    Tuple(Vec<Ty>),
+    /// The second field is a proof that each `T: Sized` except the last one, which is required for
+    /// the well-formedness of the type.
+    #[custom_arm(FROM_TYPE::Tuple(tys) => TO_TYPE::Tuple(tys.sinto(s), tys.iter().enumerate().filter(|(i, _)| *i != tys.len() - 1).map(|(_, ty)| solve_sized(s, ty)).collect()),)]
+    Tuple(Vec<Ty>, Vec<ImplExpr>),
     #[custom_arm(FROM_TYPE::Alias(alias_kind, alias_ty) => Alias::from(s, alias_kind, alias_ty),)]
     Alias(Alias),
     Param(ParamTy),
