@@ -5,6 +5,7 @@
 //! directives encoded in the test sources.
 
 #![feature(rustc_private)]
+#![feature(impl_trait_in_fn_trait_return)]
 #![warn(
     rustdoc::broken_intra_doc_links,
     unused_qualifications,
@@ -26,8 +27,12 @@ use futures::future::TryJoinAll;
 use hax_frontend_exporter::{DefId, DefKind};
 use hax_types::{cli_options::BackendName, driver_api::HaxMeta};
 
-use crate::directives::{Directive, ErrorCode, FailureKind, ItemDirective, TestDirective};
+use crate::{
+    backend_runners::{Input, Runner},
+    directives::{Directive, ErrorCode, FailureKind, ItemDirective, TestDirective},
+};
 
+mod backend_runners;
 mod cli;
 mod commands;
 mod directives;
@@ -120,6 +125,19 @@ impl TestModule {
             })
             .flatten()
             .copied()
+            .collect()
+    }
+    /// Returns the set of backends disabled for this module.
+    fn backend_directives(&self, backend: BackendName) -> Vec<String> {
+        self.test_directives
+            .iter()
+            .filter_map(|directive| match directive {
+                TestDirective::BackendDirective {
+                    backend: b,
+                    directive,
+                } if backend == *b => Some(directive.clone()),
+                _ => None,
+            })
             .collect()
     }
 }
@@ -243,6 +261,44 @@ impl BackendTestContext {
             .run(async |job| self.run_inner(job).await)
             .await?;
         self.snapshots(&out_dir).await?;
+        let verification_job = self.backend.job_kind(BackendJobKind::Verification {
+            test: self.test.module_name.to_string(),
+        });
+        if let Some(runner) = backend_runners::run(self.backend) {
+            verification_job
+                .run(async |job| self.verify(job, &out_dir, runner).await)
+                .await?
+        }
+        Ok(())
+    }
+
+    async fn verify(&self, job: JobKind, out_dir: &Path, runner: Runner) -> Result<()> {
+        let mut errors = runner
+            .run(&job, &out_dir, self.test.backend_directives(self.backend))
+            .await?;
+        let expected = self
+            .test
+            .expected_diagnostics(self.backend, FailureKind::Typecheck);
+        let mut has_error = false;
+        for (_, expected) in expected {
+            if let Some((i, _)) = errors
+                .iter()
+                .enumerate()
+                .find(|(_, error)| error.error_code == expected)
+            {
+                errors.swap_remove(i);
+            } else {
+                job.report_message(format!("expected error {}", expected));
+                has_error = true;
+            }
+        }
+        for error in errors {
+            job.report_message(error.rendered.to_string());
+            has_error = true;
+        }
+        if has_error {
+            bail!("the backend failed")
+        }
         Ok(())
     }
 
@@ -336,8 +392,7 @@ impl BackendTestContext {
             fs::remove_dir_all(&path_to_snapshots)?
         }
         fs::create_dir_all(path_to_snapshots.parent().unwrap())?;
-
-        fs::rename(out_dir, &path_to_snapshots)?;
+        helpers::copy_dir_recursive(out_dir, &path_to_snapshots)?;
 
         // drop `*.map` files
         for entry in walkdir::WalkDir::new(path_to_snapshots)

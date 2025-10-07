@@ -13,6 +13,7 @@ use anyhow::{Context, Error, Result, bail};
 use clap::Parser;
 use hax_frontend_exporter::{AttrArgs, AttributeKind, MetaItemLit};
 use hax_types::cli_options::{BackendName, BackendOptions, Command, Options};
+use serde::{Deserialize, Serialize};
 
 use crate::directives::parser::FailEntry;
 
@@ -234,7 +235,8 @@ pub enum FailureKind {
     Extract,
 }
 
-#[derive(Clone, Debug, Eq)]
+#[derive(Serialize, Deserialize, Clone, Debug, Eq)]
+#[serde(from = "String", into = "String")]
 /// Wrapper that normalizes comparisons between error codes.
 pub struct ErrorCode {
     /// The raw error code we received or the user typed
@@ -247,6 +249,17 @@ impl Hash for ErrorCode {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         // `original` is ignore purposely
         self.normalized.hash(state);
+    }
+}
+
+impl From<String> for ErrorCode {
+    fn from(s: String) -> Self {
+        ErrorCode::new(s)
+    }
+}
+impl From<ErrorCode> for String {
+    fn from(ec: ErrorCode) -> Self {
+        ec.original
     }
 }
 
