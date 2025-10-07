@@ -26,9 +26,20 @@ let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
       countdown
     else countdown
   in
-  Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-    "{\n for _ in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {\n f_start: 0,\n f_end: 2,\n })) {\n rust_primitives::hax::failure(\n \"something is not implemented yet.This is discussed in i..."
-  ,
+  Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
+    (mk_i32 2)
+    (fun temp_0_ temp_1_ ->
+        let _:Prims.unit = temp_0_ in
+        let _:i32 = temp_1_ in
+        true)
+    ()
+    (fun temp_0_ temp_1_ ->
+        let _:Prims.unit = temp_0_ in
+        let _:i32 = temp_1_ in
+        Rust_primitives.Hax.failure "something is not implemented yet.\nSorry, Hax does not support declare-first let bindings (see https://doc.rust-lang.org/rust-by-example/variable_bindings/declare.html) for now.\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/156.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
+          ""
+        <:
+        Prims.unit),
   ()
   <:
   (Prims.unit & Prims.unit)

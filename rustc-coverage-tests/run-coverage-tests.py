@@ -135,7 +135,7 @@ def write_summary(results, stability):
 
 def run_tests(config, target, include_negative, check_stability, update_snapshots):
     results = []
-    all_targets = ["coq", "fstar", "fstar-lax", "lean", "lean-tc" "json"]
+    all_targets = ["coq", "fstar", "fstar-lax", "lean", "lean-tc", "json"]
 
     applicable_targets = [target] if target != "all" else all_targets
     
