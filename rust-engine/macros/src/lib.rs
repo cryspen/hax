@@ -8,16 +8,34 @@
 //!    derived without any attribute manipulation.
 
 use proc_macro::TokenStream;
-use proc_macro2::{Group, Ident, Span};
-use quote::{ToTokens, quote};
-use syn::{
-    Field, FieldsUnnamed, Token, parse_macro_input, parse_quote, punctuated::Punctuated,
-    token::Paren, visit_mut::VisitMut,
-};
+use proc_macro2::{Ident, Span};
+use quote::quote;
+use syn::{Token, parse_macro_input, visit_mut::VisitMut};
 use utils::*;
 
 mod partial_application;
 mod replace;
+mod struct_fields;
+
+/// Adds a new field with a fresh name to an existing `struct` type definition.
+/// The new field contains error handling and span information to be used with a
+/// visitor. This macro will also derive implementations of
+/// [`hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors`] and
+/// [`hax_rust_engine::ast::HasSpan`] for the struct.
+#[proc_macro_attribute]
+pub fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    struct_fields::setup_error_handling_struct(_attr, item)
+}
+
+/// Adds a new field with a fresh name to an existing `struct` type definition.
+/// The new field contains error handling and span information to be used with a
+/// visitor. This macro will also derive implementations of
+/// [`hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors`] and
+/// [`hax_rust_engine::ast::HasSpan`] for the struct.
+#[proc_macro_attribute]
+pub fn setup_span_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    struct_fields::setup_span_handling_struct(_attr, item)
+}
 
 mod utils {
     use super::*;
@@ -39,6 +57,17 @@ mod utils {
     /// Add a derive attribute to `item`
     pub(crate) fn add_derive(item: TokenStream, payload: proc_macro2::TokenStream) -> TokenStream {
         prepend(item, quote! {#[derive(#payload)]})
+    }
+
+    pub(crate) fn krate() -> proc_macro2::TokenStream {
+        use proc_macro_crate::{FoundCrate, crate_name};
+        match crate_name("hax-rust-engine").unwrap() {
+            FoundCrate::Itself => quote!(crate),
+            FoundCrate::Name(name) => {
+                let ident = Ident::new(&name, Span::call_site());
+                quote!( #ident )
+            }
+        }
     }
 }
 
@@ -72,103 +101,6 @@ pub fn derive_group_for_ast_base(_attr: TokenStream, item: TokenStream) -> Token
         item,
         quote! {Debug, Clone, Hash, Eq, PartialEq, PartialOrd, Ord, derive_generic_visitor::Drive, derive_generic_visitor::DriveMut},
     )
-}
-
-/// Adds a new field with a fresh name to an existing `struct` type definition.
-/// The new field contains error handling and span information to be used with a
-/// visitor. This macro will also derive implementations of
-/// [`hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors`] and
-/// [`hax_rust_engine::ast::HasSpan`] for the struct.
-#[proc_macro_attribute]
-pub fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    let mut item: syn::ItemStruct = parse_macro_input!(item);
-    // Deal with the case of unit structs.
-    if let fields @ syn::Fields::Unit = &mut item.fields {
-        let span = Group::new(proc_macro2::Delimiter::Brace, fields.to_token_stream()).delim_span();
-        *fields = syn::Fields::Unnamed(FieldsUnnamed {
-            paren_token: Paren { span },
-            unnamed: Punctuated::default(),
-        })
-    }
-    /// Computes a fresh identifier given a list of existing identifiers.
-    fn fresh_ident(base: &str, existing: &[Ident]) -> Ident {
-        let existing: std::collections::HashSet<_> =
-            existing.iter().map(|id| id.to_string()).collect();
-
-        (0..)
-            .map(|i| {
-                if i == 0 {
-                    base.to_string()
-                } else {
-                    format!("{}{}", base, i)
-                }
-            })
-            .find(|name| !existing.contains(name))
-            .map(|name| Ident::new(&name, Span::call_site()))
-            .expect("should always find a fresh identifier")
-    }
-    // Collect fields, disregarding their kind (are they named or not)
-    let (fields, named) = match &mut item.fields {
-        syn::Fields::Named(fields_named) => (&mut fields_named.named, true),
-        syn::Fields::Unnamed(fields_unnamed) => (&mut fields_unnamed.unnamed, false),
-        syn::Fields::Unit => unreachable!("Unit structs were dealt with."),
-    };
-
-    let existing_names = fields
-        .iter()
-        .flat_map(|f| &f.ident)
-        .cloned()
-        .collect::<Vec<_>>();
-
-    let (extra_field_ident, extra_field_ident_ts) = if named {
-        let ident = fresh_ident("error_handling_state", &existing_names);
-        (Some(ident.clone()), ident.to_token_stream())
-    } else {
-        (
-            None,
-            syn::LitInt::new(&format!("{}", fields.len()), Span::call_site()).to_token_stream(),
-        )
-    };
-
-    let krate = {
-        use proc_macro_crate::{FoundCrate, crate_name};
-        match crate_name("hax-rust-engine").unwrap() {
-            FoundCrate::Itself => quote!(crate),
-            FoundCrate::Name(name) => {
-                let ident = Ident::new(&name, Span::call_site());
-                quote!( #ident )
-            }
-        }
-    };
-
-    fields.push(Field {
-        attrs: vec![],
-        vis: syn::Visibility::Inherited,
-        mutability: syn::FieldMutability::None,
-        ident: extra_field_ident,
-        colon_token: named.then_some(Token![:](Span::call_site())),
-        ty: parse_quote! {#krate::ast::visitors::wrappers::ErrorHandlingState},
-    });
-
-    let struct_name = &item.ident;
-    let generics = &item.generics;
-    quote! {
-        #item
-        impl #generics #krate::ast::HasSpan for #struct_name #generics {
-            fn span(&self) -> #krate::ast::span::Span {
-                self.#extra_field_ident_ts.0.clone()
-            }
-            fn span_mut(&mut self) -> &mut #krate::ast::span::Span {
-                &mut self.#extra_field_ident_ts.0
-            }
-        }
-        impl #generics #krate::ast::visitors::wrappers::VisitorWithErrors for #struct_name #generics {
-            fn error_vault(&mut self) -> &mut #krate::ast::visitors::wrappers::ErrorVault {
-                &mut self.#extra_field_ident_ts.1
-            }
-        }
-    }
-    .into()
 }
 
 #[proc_macro_attribute]
