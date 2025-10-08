@@ -16,6 +16,7 @@ Change to cargo-hax:
 Changes to hax-lib:
 
 Changes to the Lean backend:
+ - Add support for base-expressions of structs (#1736)
 
 Miscellaneous:
 
