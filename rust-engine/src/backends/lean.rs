@@ -17,10 +17,9 @@ mod binops {
 }
 
 /// The Lean printer
+#[setup_span_handling_struct]
 #[derive(Default, Clone)]
-pub struct LeanPrinter {
-    span: Option<Span>,
-}
+pub struct LeanPrinter;
 
 const INDENT: isize = 2;
 
@@ -308,13 +307,6 @@ const _: () = {
 
     impl<A: 'static + Clone> PrettyAst<A> for LeanPrinter {
         const NAME: &'static str = "Lean";
-
-        fn with_span(&self, span: Span) -> Self {
-            Self { span: Some(span) }
-        }
-        fn span(&self) -> Option<Span> {
-            self.span.clone()
-        }
 
         /// Produce a non-panicking placeholder document. In general, prefer the use of the helper macro [`todo_document!`].
         fn todo_document(&self, message: &str, issue_id: Option<u32>) -> DocBuilder<A> {

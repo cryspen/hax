@@ -5,8 +5,8 @@
 //!
 //! # Quickstart
 //! In most printers you:
-//! 1. Implement [`Printer`] for your allocator/type,
-//! 2. Implement [`PrettyAst`] for that allocator,
+//! 1. Implement [`Printer`] for your printer type,
+//! 2. Implement [`PrettyAst`] for that printer type,
 //! 3. Call `ast_value.to_document(&print)` on AST values.
 //!
 //! See [`crate::backends`] for backend and printer examples.
@@ -334,6 +334,20 @@ make_cases_macro!(span_handling,
     _ => skip
 );
 
+/// A trait that provides an optional contextual span for printers: during a
+/// pretty printing job, spans will be inserted so that errors are always tagged
+/// with precise location information.
+///
+/// This should not be implemented by hand, instead, use
+/// [`hax_rust_engine_macros::setup_span_handling_struct`].
+pub trait HasContextualSpan: Clone {
+    /// Clone the printer, adding a span hint. Useful for errors.
+    fn with_span(&self, _span: Span) -> Self;
+
+    /// Returns the span currently associated with the printer, if any.
+    fn span(&self) -> Option<Span>;
+}
+
 /// Declare the `PrettyAst` trait and wiring for deriving `ToDocument` for AST
 /// nodes.
 macro_rules! mk {
@@ -352,7 +366,7 @@ macro_rules! mk {
             /// Note that using `install_pretty_helpers!` will produce macro
             /// that implicitely use `self` as allocator. Take a look at a
             /// printer in the [`backends`] module for an example.
-            pub trait PrettyAst<A: 'static + Clone>: Sized + Clone {
+            pub trait PrettyAst<A: 'static + Clone>: Sized + HasContextualSpan {
                 /// A name for this instance of `PrettyAst`.
                 /// Useful for diagnostics and debugging.
                 const NAME: &'static str;
@@ -375,24 +389,6 @@ macro_rules! mk {
                         details: Some(message.into()),
                     });
                     self.as_string(message)
-                }
-
-                /// Clone the printer, adding a span hint. Useful for errors.
-                ///
-                /// Backends that track source locations should override this so diagnostics
-                /// emitted through [`PrettyAst::emit_diagnostic`] can highlight the right span.
-                ///
-                /// The default implementation just clones, and drops the span.
-                fn with_span(&self, _span: Span) -> Self {
-                    self.clone()
-                }
-
-                /// Returns the span currently associated with the printer, if any.
-                ///
-                /// Backends that track source locations should override this so diagnostics
-                /// emitted through [`PrettyAst::emit_diagnostic`] can highlight the right span.
-                fn span(&self) -> Option<Span> {
-                    None
                 }
 
                 /// Produce a structured error document for an unimplemented

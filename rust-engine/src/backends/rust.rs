@@ -4,7 +4,8 @@
 use super::prelude::*;
 
 /// The Rust printer.
-#[derive(Default, Clone, Copy)]
+#[setup_span_handling_struct]
+#[derive(Default, Clone)]
 pub struct RustPrinter;
 
 impl Printer for RustPrinter {

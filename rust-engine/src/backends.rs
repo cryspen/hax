@@ -118,7 +118,6 @@ mod prelude {
         identifiers::{global_id::view::AnyKind, *},
         literals::*,
         resugared::*,
-        span::*,
         *,
     };
     pub use crate::printer::{
@@ -128,5 +127,7 @@ mod prelude {
     };
     pub use crate::resugarings::*;
     pub use crate::symbol::Symbol;
-    pub use hax_rust_engine_macros::prepend_associated_functions_with;
+    pub use hax_rust_engine_macros::{
+        prepend_associated_functions_with, setup_span_handling_struct,
+    };
 }
