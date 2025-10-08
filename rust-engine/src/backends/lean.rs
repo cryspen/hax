@@ -266,7 +266,6 @@ const _: () = {
         where
             &'b D: Pretty<'a, Self, A>,
         {
-            macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(
                 fields
                     .iter()
@@ -283,7 +282,6 @@ const _: () = {
         where
             &'b D: Pretty<'a, Self, A>,
         {
-            macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(
                 fields.iter().map(|(id, e)| {
                     docs![self.render_last(id), reflow!(" := "), e]
@@ -303,7 +301,6 @@ const _: () = {
         where
             &'b D: Pretty<'a, Self, A>,
         {
-            macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(fields.iter().map(|(_, e)| e), line!())].group()
         }
 
