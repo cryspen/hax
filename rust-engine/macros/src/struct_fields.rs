@@ -75,14 +75,10 @@ fn add_field_to_item_struct(
     extra_field_ident_ts
 }
 
-/// Adds a new field with a fresh name to an existing `struct` type definition.
-/// The new field contains error handling and span information to be used with a
-/// visitor. This macro will also derive implementations of
-/// [`hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors`] and
-/// [`hax_rust_engine::ast::HasSpan`] for the struct.
+/// This function is documented in [`crate::setup_error_handling_struct`].
 pub(crate) fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut item: syn::ItemStruct = parse_macro_input!(item);
-    let krate = krate();
+    let krate = rust_engine_krate_name();
     let extra_field_ident_ts = add_field_to_item_struct(
         &mut item,
         "error_handling_state",
@@ -110,13 +106,10 @@ pub(crate) fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream)
     .into()
 }
 
-/// Adds a new field with a fresh name to an existing `struct` type definition.
-/// The new field contains span information to be used with a
-/// printer. This macro will also derive implementations of
-/// [`hax_rust_engine::ast::HasSpan`] for the struct.
+/// This function is documented in [`crate::setup_span_handling_struct`].
 pub(crate) fn setup_span_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut item: syn::ItemStruct = parse_macro_input!(item);
-    let krate = krate();
+    let krate = rust_engine_krate_name();
     let extra_field_ident_ts = add_field_to_item_struct(
         &mut item,
         "contextual_span",

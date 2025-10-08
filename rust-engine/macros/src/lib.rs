@@ -20,18 +20,17 @@ mod struct_fields;
 /// Adds a new field with a fresh name to an existing `struct` type definition.
 /// The new field contains error handling and span information to be used with a
 /// visitor. This macro will also derive implementations of
-/// [`hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors`] and
-/// [`hax_rust_engine::ast::HasSpan`] for the struct.
+/// `hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors` and
+/// `hax_rust_engine::ast::HasSpan` for the struct.
 #[proc_macro_attribute]
 pub fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     struct_fields::setup_error_handling_struct(_attr, item)
 }
 
 /// Adds a new field with a fresh name to an existing `struct` type definition.
-/// The new field contains error handling and span information to be used with a
-/// visitor. This macro will also derive implementations of
-/// [`hax_rust_engine::ast::visitors::wrappers::VisitorWithErrors`] and
-/// [`hax_rust_engine::ast::HasSpan`] for the struct.
+/// The new field contains span information to be used with a
+/// printer. This macro will also derive implementations of
+/// `hax_rust_engine::printer::pretty_ast::HasContextualSpan` for the struct.
 #[proc_macro_attribute]
 pub fn setup_span_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     struct_fields::setup_span_handling_struct(_attr, item)
@@ -39,6 +38,8 @@ pub fn setup_span_handling_struct(_attr: TokenStream, item: TokenStream) -> Toke
 
 mod utils {
     use super::*;
+
+    /// Get the name of this macro crate (`hax_rust_engine_macros`)
     pub(crate) fn crate_name() -> Ident {
         let krate = module_path!().split("::").next().unwrap();
         Ident::new(krate, Span::call_site())
@@ -59,7 +60,10 @@ mod utils {
         prepend(item, quote! {#[derive(#payload)]})
     }
 
-    pub(crate) fn krate() -> proc_macro2::TokenStream {
+    /// Find the name of the crate `hax-rust-engine`. This can be either the
+    /// keyword `crate` or the ident `hax_rust_engine`, depending on the context
+    /// in which the macros using this function are called.
+    pub(crate) fn rust_engine_krate_name() -> proc_macro2::TokenStream {
         use proc_macro_crate::{FoundCrate, crate_name};
         match crate_name("hax-rust-engine").unwrap() {
             FoundCrate::Itself => quote!(crate),
@@ -85,7 +89,7 @@ pub fn derive_group_for_ast(_attr: TokenStream, item: TokenStream) -> TokenStrea
     )
 }
 
-/// Derive the necessary [de]serialization related traits for nodes in the AST.
+/// Derive the necessary (de)serialization related traits for nodes in the AST.
 #[proc_macro_attribute]
 pub fn derive_group_for_ast_serialization(_attr: TokenStream, item: TokenStream) -> TokenStream {
     add_derive(
