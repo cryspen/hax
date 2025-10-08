@@ -944,47 +944,47 @@ set_option linter.unusedVariables false
                 } => {
                     // Type parameters are also parameters of the class, but constraints are fields of the class
                     docs![
-                                docs![
-                                    docs![reflow!("class "), name],
-                                    (!generics.params.is_empty()).then_some(docs![
-                                        line!(),
-                                        intersperse!(&generics.params, line!()).group()
-                                    ]),
-                                    line!(),
-                                    "where"
-                                ]
-                                .group(),
-                                hardline!(),
-                                (!generics.constraints.is_empty()).then_some(docs![zip_right!(
-                                    generics
-                                        .constraints
-                                        .iter()
-                                        .map(|constraint: &GenericConstraint| {
-                                            match constraint {
-                                                GenericConstraint::Type(tc_constraint) => docs![
-                                                    format!("_constr_{}", tc_constraint.name),
-                                                    " :",
-                                                    line!(),
-                                                    constraint
-                                                ]
-                                                .group()
-                                                    .brackets(),
-                                                GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
-                                                GenericConstraint::Projection(_) => emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                            }
-                                        }),
-                                    hardline!()
-                                )]),
-                                intersperse!(
-                                    items.iter().filter(|item| {
-                                        // TODO: should be treated directly by name rendering, see :
-                                        // https://github.com/cryspen/hax/issues/1646
-                                        !(item.ident.is_precondition() || item.ident.is_postcondition())
-                                    }),
-                                    hardline!()
-                                )
-                            ]
-                            .nest(INDENT)
+                        docs![
+                            docs![reflow!("class "), name],
+                            (!generics.params.is_empty()).then_some(docs![
+                                line!(),
+                                intersperse!(&generics.params, line!()).group()
+                            ]),
+                            line!(),
+                            "where"
+                        ]
+                        .group(),
+                        hardline!(),
+                        (!generics.constraints.is_empty()).then_some(docs![zip_right!(
+                            generics
+                                .constraints
+                                .iter()
+                                .map(|constraint: &GenericConstraint| {
+                                    match constraint {
+                                        GenericConstraint::Type(tc_constraint) => docs![
+                                            format!("_constr_{}", tc_constraint.name),
+                                            " :",
+                                            line!(),
+                                            constraint
+                                        ]
+                                        .group()
+                                            .brackets(),
+                                        GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
+                                        GenericConstraint::Projection(_) => emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
+                                    }
+                                }),
+                            hardline!()
+                        )]),
+                        intersperse!(
+                            items.iter().filter(|item| {
+                                // TODO: should be treated directly by name rendering, see :
+                                // https://github.com/cryspen/hax/issues/1646
+                                !(item.ident.is_precondition() || item.ident.is_postcondition())
+                            }),
+                            hardline!()
+                        )
+                    ]
+                    .nest(INDENT)
                 }
                 ItemKind::Impl {
                     generics,
@@ -1052,15 +1052,17 @@ set_option linter.unusedVariables false
                         name.clone(),
                         reflow!(" : Type"),
                         concat!(constraints.iter().map(|c| docs![
-                                        hardline!(),
-                                        docs![format!("_constr_{}", c.name),
-                                        reflow!(" :"),
-                                        line!(),
-                                        &c.goal
-                                    ]
-                                        .group()
-                                        .nest(INDENT)
-                                    .brackets()]))
+                            hardline!(),
+                            docs![
+                                format!("_constr_{}", c.name),
+                                reflow!(" :"),
+                                line!(),
+                                &c.goal
+                            ]
+                            .group()
+                            .nest(INDENT)
+                            .brackets()
+                        ]))
                     ]
                 }
                 TraitItemKind::Default { .. } =>
