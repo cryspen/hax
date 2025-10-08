@@ -8,10 +8,7 @@ use std::collections::HashSet;
 use std::sync::LazyLock;
 
 use super::prelude::*;
-use crate::{
-    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    resugarings::BinOp,
-};
+use crate::ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind};
 
 mod binops {
     pub use crate::names::core::ops::index::*;
@@ -20,9 +17,10 @@ mod binops {
 }
 
 /// The Lean printer
-#[derive(Default)]
-pub struct LeanPrinter;
-impl_doc_allocator_for!(LeanPrinter);
+#[derive(Default, Clone)]
+pub struct LeanPrinter {
+    span: Option<Span>,
+}
 
 const INDENT: isize = 2;
 
@@ -191,9 +189,9 @@ impl LeanPrinter {
 }
 
 /// Render parameters, adding a line after each parameter
-impl<'a, A: 'a + Clone> Pretty<'a, LeanPrinter, A> for &Vec<Param> {
-    fn pretty(self, allocator: &'a LeanPrinter) -> DocBuilder<'a, LeanPrinter, A> {
-        allocator.params(self)
+impl<A: 'static + Clone> ToDocument<LeanPrinter, A> for Vec<Param> {
+    fn to_document(&self, printer: &LeanPrinter) -> DocBuilder<A> {
+        printer.params(self)
     }
 }
 
@@ -243,13 +241,13 @@ const _: () = {
     impl LeanPrinter {
         /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
         /// on the `is_record` flag. Used for both expressions and patterns
-        pub fn arguments<'a, 'b, A: 'a + Clone, D>(
-            &'a self,
-            fields: &'b [(GlobalId, D)],
+        pub fn arguments<A: 'static + Clone, D>(
+            &self,
+            fields: &[(GlobalId, D)],
             is_record: &bool,
-        ) -> DocBuilder<'a, Self, A>
+        ) -> DocBuilder<A>
         where
-            &'b D: Pretty<'a, Self, A>,
+            D: ToDocument<Self, A>,
         {
             if *is_record {
                 self.named_arguments(fields)
@@ -259,12 +257,9 @@ const _: () = {
         }
 
         /// Prints named arguments (record) of a variant or constructor of struct
-        fn named_arguments<'a, 'b, A: 'a + Clone, D>(
-            &'a self,
-            fields: &'b [(GlobalId, D)],
-        ) -> DocBuilder<'a, Self, A>
+        fn named_arguments<A: 'static + Clone, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
         where
-            &'b D: Pretty<'a, Self, A>,
+            D: ToDocument<Self, A>,
         {
             macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(
@@ -279,31 +274,25 @@ const _: () = {
         }
 
         /// Prints positional arguments (tuple) of a variant or constructor of struct
-        fn positional_arguments<'a, 'b, A: 'a + Clone, D>(
-            &'a self,
-            fields: &'b [(GlobalId, D)],
-        ) -> DocBuilder<'a, Self, A>
+        fn positional_arguments<A: 'static + Clone, D>(
+            &self,
+            fields: &[(GlobalId, D)],
+        ) -> DocBuilder<A>
         where
-            &'b D: Pretty<'a, Self, A>,
+            D: ToDocument<Self, A>,
         {
             macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(fields.iter().map(|(_, e)| e), line!())].group()
         }
 
         /// Prints parameters of functions (items, trait items, impl items)
-        fn params<'a, 'b, A: 'a + Clone>(
-            &'a self,
-            params: &'b Vec<Param>,
-        ) -> DocBuilder<'a, Self, A> {
+        fn params<A: 'static + Clone>(&self, params: &Vec<Param>) -> DocBuilder<A> {
             zip_right!(params, line!())
         }
 
         /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
         /// numeric literals, etc.
-        fn expr_typed_result<'a, 'b, A: 'a + Clone>(
-            &'a self,
-            expr: &'b Expr,
-        ) -> DocBuilder<'a, Self, A> {
+        fn expr_typed_result<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
             docs![
                 expr,
                 reflow!(" : "),
@@ -312,23 +301,24 @@ const _: () = {
             .group()
         }
 
-        fn pat_typed<'a, 'b, A: 'a + Clone>(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
-            docs![pat.kind(), reflow!(" :"), line!(), &pat.ty]
-                .parens()
-                .group()
+        fn pat_typed<A: 'static + Clone>(&self, pat: &Pat) -> DocBuilder<A> {
+            docs![pat, reflow!(" :"), line!(), &pat.ty].parens().group()
         }
     }
 
-    impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for LeanPrinter {
+    impl<A: 'static + Clone> PrettyAst<A> for LeanPrinter {
         const NAME: &'static str = "Lean";
 
+        fn with_span(&self, span: Span) -> Self {
+            Self { span: Some(span) }
+        }
+        fn span(&self) -> Option<Span> {
+            self.span.clone()
+        }
+
         /// Produce a non-panicking placeholder document. In general, prefer the use of the helper macro [`todo_document!`].
-        fn todo_document(
-            &'a self,
-            message: &str,
-            issue_id: Option<u32>,
-        ) -> DocBuilder<'a, Self, A> {
-            <Self as PrettyAst<'a, 'b, A>>::emit_diagnostic(
+        fn todo_document(&self, message: &str, issue_id: Option<u32>) -> DocBuilder<A> {
+            <Self as PrettyAst<A>>::emit_diagnostic(
                 self,
                 hax_types::diagnostics::Kind::Unimplemented {
                     issue_id,
@@ -338,25 +328,24 @@ const _: () = {
             text!("sorry")
         }
 
-        fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
+        fn module(&self, module: &Module) -> DocBuilder<A> {
             let items = &module.items;
             docs![
                 intersperse!(
                     "
--- Experimental lean backend for Hax
--- The Hax prelude library can be found in hax/proof-libs/lean
-import Hax
-import Std.Tactic.Do
-import Std.Do.Triple
-import Std.Tactic.Do.Syntax
-open Std.Do
-open Std.Tactic
+        -- Experimental lean backend for Hax
+        -- The Hax prelude library can be found in hax/proof-libs/lean
+        import Hax
+        import Std.Tactic.Do
+        import Std.Do.Triple
+        import Std.Tactic.Do.Syntax
+        open Std.Do
+        open Std.Tactic
 
-set_option mvcgen.warning false
-set_option linter.unusedVariables false
+        set_option mvcgen.warning false
+        set_option linter.unusedVariables false
 
-
-"
+        "
                     .lines(),
                     hardline!(),
                 ),
@@ -369,18 +358,18 @@ set_option linter.unusedVariables false
             ]
         }
 
-        fn global_id(&'a self, global_id: &'b GlobalId) -> DocBuilder<'a, Self, A> {
+        fn global_id(&self, global_id: &GlobalId) -> DocBuilder<A> {
             docs![self.render_id(global_id)]
         }
 
         /// Render generics, adding a space after each parameter
         fn generics(
-            &'a self,
+            &self,
             Generics {
                 params,
                 constraints,
-            }: &'b Generics,
-        ) -> DocBuilder<'a, Self, A> {
+            }: &Generics,
+        ) -> DocBuilder<A> {
             docs![
                 zip_right!(params, line!()),
                 zip_right!(
@@ -393,10 +382,7 @@ set_option linter.unusedVariables false
             .group()
         }
 
-        fn generic_constraint(
-            &'a self,
-            generic_constraint: &'b GenericConstraint,
-        ) -> DocBuilder<'a, Self, A> {
+        fn generic_constraint(&self, generic_constraint: &GenericConstraint) -> DocBuilder<A> {
             match generic_constraint {
                 GenericConstraint::Type(impl_ident) => docs![impl_ident],
                 GenericConstraint::Projection(_) => {
@@ -406,7 +392,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn generic_param(&'a self, generic_param: &'b GenericParam) -> DocBuilder<'a, Self, A> {
+        fn generic_param(&self, generic_param: &GenericParam) -> DocBuilder<A> {
             match generic_param.kind() {
                 GenericParamKind::Type => docs![&generic_param.ident, reflow!(" : Type")]
                     .parens()
@@ -418,7 +404,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn expr(&'a self, Expr { kind, ty, meta: _ }: &'b Expr) -> DocBuilder<'a, Self, A> {
+        fn expr(&self, Expr { kind, ty, meta: _ }: &Expr) -> DocBuilder<A> {
             match &**kind {
                 ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
                     docs![int_lit, reflow!(" : "), ty].parens().group()
@@ -460,7 +446,7 @@ set_option linter.unusedVariables false
                         Some("← ")
                     };
                     let generic_args = (!generic_args.is_empty()).then_some(
-                        docs![line!(), self.intersperse(generic_args, line!())]
+                        docs![line!(), intersperse!(generic_args, line!())]
                             .nest(INDENT)
                             .group(),
                     );
@@ -636,13 +622,13 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn arm(&'a self, arm: &'b Arm) -> DocBuilder<'a, Self, A> {
+        fn arm(&self, arm: &Arm) -> DocBuilder<A> {
             if let Some(_guard) = &arm.guard {
                 unreachable_by_invariant!(Drop_match_guards)
             } else {
                 docs![
                     reflow!("| "),
-                    &*arm.pat.kind,
+                    &arm.pat,
                     line!(),
                     docs!["=> do", line!(), &arm.body].nest(INDENT).group()
                 ]
@@ -651,14 +637,10 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn pat(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
-            docs![pat.kind()]
-        }
-
-        fn pat_kind(&'a self, pat_kind: &'b PatKind) -> DocBuilder<'a, Self, A> {
-            match pat_kind {
+        fn pat(&self, pat: &Pat) -> DocBuilder<A> {
+            match &*pat.kind {
                 PatKind::Wild => docs!["_"],
-                PatKind::Ascription { pat, ty: _ } => docs![&*pat.kind],
+                PatKind::Ascription { pat, ty: _ } => docs![pat],
                 PatKind::Binding {
                     mutable,
                     var,
@@ -735,7 +717,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn ty(&'a self, ty: &'b Ty) -> DocBuilder<'a, Self, A> {
+        fn ty(&self, ty: &Ty) -> DocBuilder<A> {
             match ty.kind() {
                 TyKind::Primitive(primitive_ty) => docs![primitive_ty],
                 TyKind::App { head, args } => {
@@ -787,7 +769,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn literal(&'a self, literal: &'b Literal) -> DocBuilder<'a, Self, A> {
+        fn literal(&self, literal: &Literal) -> DocBuilder<A> {
             docs![match literal {
                 Literal::String(symbol) => format!("\"{symbol}\""),
                 Literal::Char(c) => format!("'{c}'"),
@@ -801,16 +783,16 @@ set_option linter.unusedVariables false
             }]
         }
 
-        fn local_id(&'a self, local_id: &'b LocalId) -> DocBuilder<'a, Self, A> {
+        fn local_id(&self, local_id: &LocalId) -> DocBuilder<A> {
             // TODO: should be done by name rendering, see https://github.com/cryspen/hax/issues/1630
             docs![self.escape(local_id.0.to_string())]
         }
 
-        fn spanned_ty(&'a self, spanned_ty: &'b SpannedTy) -> DocBuilder<'a, Self, A> {
+        fn spanned_ty(&self, spanned_ty: &SpannedTy) -> DocBuilder<A> {
             docs![&spanned_ty.ty]
         }
 
-        fn primitive_ty(&'a self, primitive_ty: &'b PrimitiveTy) -> DocBuilder<'a, Self, A> {
+        fn primitive_ty(&self, primitive_ty: &PrimitiveTy) -> DocBuilder<A> {
             match primitive_ty {
                 PrimitiveTy::Bool => docs!["Bool"],
                 PrimitiveTy::Int(int_kind) => docs![int_kind],
@@ -820,7 +802,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn int_kind(&'a self, int_kind: &'b IntKind) -> DocBuilder<'a, Self, A> {
+        fn int_kind(&self, int_kind: &IntKind) -> DocBuilder<A> {
             docs![match (&int_kind.signedness, &int_kind.size) {
                 (Signedness::Signed, IntSize::S8) => "i8",
                 (Signedness::Signed, IntSize::S16) => "i16",
@@ -837,7 +819,7 @@ set_option linter.unusedVariables false
             }]
         }
 
-        fn generic_value(&'a self, generic_value: &'b GenericValue) -> DocBuilder<'a, Self, A> {
+        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
             match generic_value {
                 GenericValue::Ty(ty) => docs![ty],
                 GenericValue::Expr(expr) => docs![expr],
@@ -845,7 +827,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn quote_content(&'a self, quote_content: &'b QuoteContent) -> DocBuilder<'a, Self, A> {
+        fn quote_content(&self, quote_content: &QuoteContent) -> DocBuilder<A> {
             match quote_content {
                 QuoteContent::Verbatim(s) => {
                     intersperse!(s.lines().map(|x| x.to_string()), hardline!())
@@ -856,15 +838,15 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn quote(&'a self, quote: &'b Quote) -> DocBuilder<'a, Self, A> {
+        fn quote(&self, quote: &Quote) -> DocBuilder<A> {
             concat![&quote.0]
         }
 
-        fn param(&'a self, param: &'b Param) -> DocBuilder<'a, Self, A> {
+        fn param(&self, param: &Param) -> DocBuilder<A> {
             self.pat_typed(&param.pat)
         }
 
-        fn item(&'a self, Item { ident, kind, meta }: &'b Item) -> DocBuilder<'a, Self, A> {
+        fn item(&self, Item { ident, kind, meta }: &Item) -> DocBuilder<A> {
             let body = match kind {
                 ItemKind::Fn {
                     name,
@@ -950,8 +932,7 @@ set_option linter.unusedVariables false
                         .group()
                     } else {
                         // Enums
-                        let applied_name: DocBuilder<'a, Self, A> =
-                            docs![name, line!(), generics].group();
+                        let applied_name: DocBuilder<A> = docs![name, line!(), generics].group();
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
@@ -970,47 +951,47 @@ set_option linter.unusedVariables false
                 } => {
                     // Type parameters are also parameters of the class, but constraints are fields of the class
                     docs![
-                        docs![
-                            docs![reflow!("class "), name],
-                            (!generics.params.is_empty()).then_some(docs![
-                                line!(),
-                                intersperse!(&generics.params, line!()).group()
-                            ]),
-                            line!(),
-                            "where"
-                        ]
-                        .group(),
-                        hardline!(),
-                        (!generics.constraints.is_empty()).then_some(docs![zip_right!(
-                            generics
-                                .constraints
-                                .iter()
-                                .map(|constraint: &GenericConstraint| {
-                                    match constraint {
-                                        GenericConstraint::Type(tc_constraint) => docs![
-                                            format!("_constr_{}", tc_constraint.name),
-                                            " :",
-                                            line!(),
-                                            constraint
-                                        ]
-                                        .group()
-                                            .brackets(),
-                                        GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
-                                        GenericConstraint::Projection(_) => emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                    }
-                                }),
-                            hardline!()
-                        )]),
-                        intersperse!(
-                            items.iter().filter(|item| {
-                                // TODO: should be treated directly by name rendering, see :
-                                // https://github.com/cryspen/hax/issues/1646
-                                !(item.ident.is_precondition() || item.ident.is_postcondition())
-                            }),
-                            hardline!()
-                        )
-                    ]
-                    .nest(INDENT)
+                                docs![
+                                    docs![reflow!("class "), name],
+                                    (!generics.params.is_empty()).then_some(docs![
+                                        line!(),
+                                        intersperse!(&generics.params, line!()).group()
+                                    ]),
+                                    line!(),
+                                    "where"
+                                ]
+                                .group(),
+                                hardline!(),
+                                (!generics.constraints.is_empty()).then_some(docs![zip_right!(
+                                    generics
+                                        .constraints
+                                        .iter()
+                                        .map(|constraint: &GenericConstraint| {
+                                            match constraint {
+                                                GenericConstraint::Type(tc_constraint) => docs![
+                                                    format!("_constr_{}", tc_constraint.name),
+                                                    " :",
+                                                    line!(),
+                                                    constraint
+                                                ]
+                                                .group()
+                                                    .brackets(),
+                                                GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
+                                                GenericConstraint::Projection(_) => emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
+                                            }
+                                        }),
+                                    hardline!()
+                                )]),
+                                intersperse!(
+                                    items.iter().filter(|item| {
+                                        // TODO: should be treated directly by name rendering, see :
+                                        // https://github.com/cryspen/hax/issues/1646
+                                        !(item.ident.is_precondition() || item.ident.is_postcondition())
+                                    }),
+                                    hardline!()
+                                )
+                            ]
+                            .nest(INDENT)
                 }
                 ItemKind::Impl {
                     generics,
@@ -1058,14 +1039,14 @@ set_option linter.unusedVariables false
         }
 
         fn trait_item(
-            &'a self,
+            &self,
             TraitItem {
                 meta: _,
                 kind,
                 generics,
                 ident,
-            }: &'b TraitItem,
-        ) -> DocBuilder<'a, Self, A> {
+            }: &TraitItem,
+        ) -> DocBuilder<A> {
             let name = self.render_last(ident);
             docs![match kind {
                 TraitItemKind::Fn(ty) => {
@@ -1078,15 +1059,15 @@ set_option linter.unusedVariables false
                         name.clone(),
                         reflow!(" : Type"),
                         concat!(constraints.iter().map(|c| docs![
-                                hardline!(),
-                                docs![format!("_constr_{}", c.name),
-                                reflow!(" :"),
-                                line!(),
-                                &c.goal
-                            ]
-                                .group()
-                                .nest(INDENT)
-                            .brackets()]))
+                                        hardline!(),
+                                        docs![format!("_constr_{}", c.name),
+                                        reflow!(" :"),
+                                        line!(),
+                                        &c.goal
+                                    ]
+                                        .group()
+                                        .nest(INDENT)
+                                    .brackets()]))
                     ]
                 }
                 TraitItemKind::Default { .. } =>
@@ -1098,14 +1079,14 @@ set_option linter.unusedVariables false
         }
 
         fn impl_item(
-            &'a self,
+            &self,
             ImplItem {
                 meta: _,
                 generics,
                 kind,
                 ident,
-            }: &'b ImplItem,
-        ) -> DocBuilder<'a, Self, A> {
+            }: &ImplItem,
+        ) -> DocBuilder<A> {
             let name = self.render_last(ident);
             match kind {
                 ImplItemKind::Type {
@@ -1132,17 +1113,11 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn impl_ident(
-            &'a self,
-            ImplIdent { goal, name: _ }: &'b ImplIdent,
-        ) -> DocBuilder<'a, Self, A> {
+        fn impl_ident(&self, ImplIdent { goal, name: _ }: &ImplIdent) -> DocBuilder<A> {
             docs![goal]
         }
 
-        fn trait_goal(
-            &'a self,
-            TraitGoal { trait_, args }: &'b TraitGoal,
-        ) -> DocBuilder<'a, Self, A> {
+        fn trait_goal(&self, TraitGoal { trait_, args }: &TraitGoal) -> DocBuilder<A> {
             docs![trait_, concat!(args.iter().map(|arg| docs![line!(), arg]))]
                 .parens()
                 .nest(INDENT)
@@ -1150,14 +1125,14 @@ set_option linter.unusedVariables false
         }
 
         fn variant(
-            &'a self,
+            &self,
             Variant {
                 name,
                 arguments,
                 is_record,
                 attributes,
-            }: &'b Variant,
-        ) -> DocBuilder<'a, Self, A> {
+            }: &Variant,
+        ) -> DocBuilder<A> {
             docs![
                 concat!(attributes),
                 self.render_last(name),
@@ -1196,48 +1171,45 @@ set_option linter.unusedVariables false
             .nest(INDENT)
         }
 
-        fn symbol(&'a self, symbol: &'b Symbol) -> DocBuilder<'a, Self, A> {
+        fn symbol(&self, symbol: &Symbol) -> DocBuilder<A> {
             docs![self.escape(symbol.to_string())]
         }
 
         fn metadata(
-            &'a self,
+            &self,
             Metadata {
                 span: _,
                 attributes,
-            }: &'b Metadata,
-        ) -> DocBuilder<'a, Self, A> {
+            }: &Metadata,
+        ) -> DocBuilder<A> {
             concat!(attributes)
         }
 
-        fn lhs(&'a self, _lhs: &'b Lhs) -> DocBuilder<'a, Self, A> {
+        fn lhs(&self, _lhs: &Lhs) -> DocBuilder<A> {
             unreachable_by_invariant!(Local_mutation)
         }
 
-        fn safety_kind(&'a self, _safety_kind: &'b SafetyKind) -> DocBuilder<'a, Self, A> {
+        fn safety_kind(&self, _safety_kind: &SafetyKind) -> DocBuilder<A> {
             nil!()
         }
 
-        fn binding_mode(&'a self, _binding_mode: &'b BindingMode) -> DocBuilder<'a, Self, A> {
+        fn binding_mode(&self, _binding_mode: &BindingMode) -> DocBuilder<A> {
             unreachable!("This backend handle binding modes directly inside patterns")
         }
 
-        fn region(&'a self, _region: &'b Region) -> DocBuilder<'a, Self, A> {
+        fn region(&self, _region: &Region) -> DocBuilder<A> {
             unreachable_by_invariant!(Drop_references)
         }
 
-        fn float_kind(&'a self, _float_kind: &'b FloatKind) -> DocBuilder<'a, Self, A> {
+        fn float_kind(&self, _float_kind: &FloatKind) -> DocBuilder<A> {
             emit_error!(issue 1715, "floats are unsupported")
         }
 
-        fn dyn_trait_goal(&'a self, _dyn_trait_goal: &'b DynTraitGoal) -> DocBuilder<'a, Self, A> {
+        fn dyn_trait_goal(&self, _dyn_trait_goal: &DynTraitGoal) -> DocBuilder<A> {
             emit_error!(issue 1708, "`dyn` traits are unsupported")
         }
 
-        fn attribute(
-            &'a self,
-            Attribute { kind, span: _ }: &'b Attribute,
-        ) -> DocBuilder<'a, Self, A> {
+        fn attribute(&self, Attribute { kind, span: _ }: &Attribute) -> DocBuilder<A> {
             match kind {
                 AttributeKind::Tool { .. } => {
                     nil!()
@@ -1262,29 +1234,29 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn borrow_kind(&'a self, _borrow_kind: &'b BorrowKind) -> DocBuilder<'a, Self, A> {
+        fn borrow_kind(&self, _borrow_kind: &BorrowKind) -> DocBuilder<A> {
             unreachable_by_invariant!(Drop_references)
         }
 
-        fn guard(&'a self, _guard: &'b Guard) -> DocBuilder<'a, Self, A> {
+        fn guard(&self, _guard: &Guard) -> DocBuilder<A> {
             unreachable_by_invariant!(Drop_match_guards)
         }
 
         fn projection_predicate(
-            &'a self,
-            _projection_predicate: &'b ProjectionPredicate,
-        ) -> DocBuilder<'a, Self, A> {
+            &self,
+            _projection_predicate: &ProjectionPredicate,
+        ) -> DocBuilder<A> {
             emit_error!(issue 1710, "Projection predicate (type equalities on associated types) are unsupported")
         }
 
-        fn error_node(&'a self, _error_node: &'b ErrorNode) -> DocBuilder<'a, Self, A> {
+        fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {
             // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672
             text!("sorry")
         }
 
         // Impl expressions
 
-        fn impl_expr(&'a self, _impl_expr: &'b ImplExpr) -> DocBuilder<'a, Self, A> {
+        fn impl_expr(&self, _impl_expr: &ImplExpr) -> DocBuilder<A> {
             emit_error!(issue 1716, "Explicit impl expressions are unsupported")
         }
     }
