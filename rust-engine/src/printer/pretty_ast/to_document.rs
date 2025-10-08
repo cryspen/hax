@@ -15,7 +15,7 @@ pub trait ToDocumentOwned<P, A> {
     fn to_document_owned(self, printer: &P) -> DocBuilder<A>;
 }
 
-impl<'a, P, A, T: ToDocument<P, A>> ToDocumentOwned<P, A> for &'a T {
+impl<P, A, T: ToDocument<P, A>> ToDocumentOwned<P, A> for &T {
     fn to_document_owned(self, printer: &P) -> DocBuilder<A> {
         self.to_document(printer)
     }
@@ -76,7 +76,7 @@ impl<A: Clone, P> ToDocument<P, A> for DocBuilder<A> {
         self.clone()
     }
 }
-impl<'a, A: Clone, P, T> ToDocument<P, A> for &'a T
+impl<A: Clone, P, T> ToDocument<P, A> for &T
 where
     T: ToDocument<P, A>,
 {

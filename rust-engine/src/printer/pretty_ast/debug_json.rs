@@ -75,7 +75,7 @@ impl<A: 'static + Clone, P, T: serde::Serialize + Debug> ToDocument<P, A> for De
     fn to_document(&self, _: &P) -> super::DocBuilder<A> {
         pretty::DocAllocator::as_string(
             &pretty::BoxAllocator,
-            &serde_json::to_string_pretty(&self.0).unwrap_or_else(|_| format!("{:#?}", &self.0)),
+            serde_json::to_string_pretty(&self.0).unwrap_or_else(|_| format!("{:#?}", &self.0)),
         )
     }
 }

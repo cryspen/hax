@@ -88,7 +88,7 @@ macro_rules! pretty_ast_intersperse {
     ($printer: expr, $docs:expr, $sep: expr$(,)?) => {{
         let docs = $docs;
         let sep = $sep;
-        crate::printer::pretty_ast::PrettyAstExt::intersperse($printer, docs, sep)
+        $crate::printer::pretty_ast::PrettyAstExt::intersperse($printer, docs, sep)
     }};
 }
 pub use pretty_ast_intersperse;
@@ -133,36 +133,35 @@ macro_rules! install_pretty_helpers {
             #[doc = ::std::concat!("Proxy macro for [`pretty::docs`] that automatically uses `", stringify!($allocator),"` as allocator.")]
             docs{$crate::printer::pretty_ast::pretty_ast_docs!},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::nil`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            nil{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::nil},
+            nil{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::nil},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::fail`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            fail{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::fail},
+            fail{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::fail},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::hardline`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            hardline{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::hardline},
+            hardline{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::hardline},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::space`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            space{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::space},
+            space{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::space},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::line`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            disambiguated_line{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::line},
+            disambiguated_line{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::line},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::line_`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            line_{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::line_},
+            line_{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::line_},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::softline`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            softline{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::softline},
+            softline{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::softline},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::softline_`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            softline_{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::softline_},
+            softline_{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::softline_},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::as_string`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            as_string{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::as_string},
+            as_string{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::as_string},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::text`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            text{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::text},
+            text{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::text},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::concat`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            disambiguated_concat{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::concat},
+            disambiguated_concat{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::concat},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::intersperse`] that automatically uses `", stringify!($allocator),"` as allocator.")]
             intersperse{$crate::printer::pretty_ast::pretty_ast_intersperse!},
-            // intersperse{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::intersperse},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::column`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            column{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::column},
+            column{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::column},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::nesting`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            nesting{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::nesting},
+            nesting{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::nesting},
             #[doc = ::std::concat!("Proxy macro for [`PrettyAstExt::reflow`] that automatically uses `", stringify!($allocator),"` as allocator.")]
-            reflow{<$allocator_type as crate::printer::pretty_ast::PrettyAstExt<_>>::reflow}
+            reflow{<$allocator_type as $crate::printer::pretty_ast::PrettyAstExt<_>>::reflow}
         );
     };
     (@$allocator:ident, $($(#[$($attrs:tt)*])*$name:ident{$($callable:tt)*}),*) => {
