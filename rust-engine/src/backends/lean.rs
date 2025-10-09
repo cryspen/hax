@@ -420,13 +420,11 @@ set_option linter.unusedVariables false
                     else_,
                 } => {
                     if let Some(else_branch) = else_ {
-                        // TODO: have a proper monadic resugaring, see
-                        // https://github.com/cryspen/hax/issues/1620
                         docs![
-                            docs!["← if", line!(), condition, reflow!(" then do")].group(),
+                            docs!["if", line!(), condition, reflow!(" then")].group(),
                             docs![line!(), then].nest(INDENT),
                             line!(),
-                            reflow!("else do"),
+                            "else",
                             docs![line!(), else_branch].nest(INDENT)
                         ]
                         .parens()
@@ -442,14 +440,6 @@ set_option linter.unusedVariables false
                     bounds_impls: _,
                     trait_: _,
                 } => {
-                    // TODO: have a proper monadic resugaring, see https://github.com/cryspen/hax/issues/1620
-                    let monadic_lift = if let ExprKind::GlobalId(head_id) = head.kind()
-                        && (head_id.is_constructor() || head_id.is_projector())
-                    {
-                        None
-                    } else {
-                        Some("← ")
-                    };
                     let generic_args = (!generic_args.is_empty()).then_some(
                         docs![line!(), intersperse!(generic_args, line!())]
                             .nest(INDENT)
@@ -460,9 +450,9 @@ set_option linter.unusedVariables false
                             .nest(INDENT)
                             .group(),
                     );
-                    docs![monadic_lift, head, generic_args, args]
-                        .nest(INDENT)
+                    docs![head, generic_args, args]
                         .parens()
+                        .nest(INDENT)
                         .group()
                 }
                 ExprKind::Literal(literal) => docs![literal],
@@ -512,9 +502,10 @@ set_option linter.unusedVariables false
                                 },
                             ]
                             .group(),
+                            // Pattern match on arrow+pure
                             " ←",
                             softline!(),
-                            docs!["pure", line!(), rhs].parens().group(),
+                            rhs,
                             ";"
                         ]
                         .nest(INDENT)
@@ -523,21 +514,15 @@ set_option linter.unusedVariables false
                         body,
                     ]
                 }
+                ExprKind::GlobalId(crate::names::rust_primitives::hax::explicit_monadic::lift) => {
+                    docs!["←"]
+                }
+                ExprKind::GlobalId(crate::names::rust_primitives::hax::explicit_monadic::pure) => {
+                    docs!["pure"]
+                }
                 ExprKind::GlobalId(global_id) => docs![global_id],
                 ExprKind::LocalId(local_id) => docs![local_id],
-                ExprKind::Ascription { e, ty } => docs![
-                    // TODO: This insertion should be done by a monadic phase (or resugaring). See
-                    // https://github.com/cryspen/hax/issues/1620
-                    match *e.kind {
-                        ExprKind::Literal(_) | ExprKind::Construct { .. } => None,
-                        _ => Some("← "),
-                    },
-                    e,
-                    reflow!(" : "),
-                    ty
-                ]
-                .parens()
-                .group(),
+                ExprKind::Ascription { e, ty } => docs![e, reflow!(" : "), ty].parens().group(),
                 ExprKind::Closure {
                     params,
                     body,
@@ -609,7 +594,6 @@ set_option linter.unusedVariables false
                         .group()
                         .nest(INDENT),
                 ]
-                .parens()
                 .group(),
 
                 ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
@@ -635,7 +619,7 @@ set_option linter.unusedVariables false
                     reflow!("| "),
                     &arm.pat,
                     line!(),
-                    docs!["=> do", line!(), &arm.body].nest(INDENT).group()
+                    docs!["=>", line!(), &arm.body].nest(INDENT).group()
                 ]
                 .nest(INDENT)
                 .group()
