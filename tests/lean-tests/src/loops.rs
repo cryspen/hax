@@ -31,7 +31,8 @@ mod errors {
 
     fn loop3() -> Result<u32, Error> {
         let mut x = 0;
-        for i in 1..10 {
+        let end: u32 = 10;
+        for i in 1..end {
             if i == 5 {
                 return Err(Error::Foo);
             }
