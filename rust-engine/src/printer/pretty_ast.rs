@@ -359,7 +359,7 @@ macro_rules! mk {
             /// You then implement the actual formatting logic in the generated
             /// per-type methods. These methods are intentionally marked
             /// `#[deprecated]` to discourage calling them directly; instead,
-            /// call `node.pretty(self)` from the [`pretty::Pretty`] trait to
+            /// call `node.to_document(self)` from the [`ToDocument`] trait to
             /// ensure annotations and spans are applied correctly.
             ///
             /// Note that using `install_pretty_helpers!` will produce macro
@@ -410,8 +410,8 @@ macro_rules! mk {
                 $(
                     method_deny_list!($ty{
                         #[doc = "Define how the printer formats a value of this AST type."]
-                        #[doc = "Do not call this method directly. Use [`pretty::Pretty::pretty`] instead, so annotations/spans are preserved correctly."]
-                        #[deprecated = "Do not call this method directly. Use [`pretty::Pretty::pretty`] instead, so annotations/spans are preserved correctly."]
+                        #[doc = "Do not call this method directly. Use [`ToDocument::to_document`] instead, so annotations/spans are preserved correctly."]
+                        #[deprecated = "Do not call this method directly. Use [`ToDocument::to_document`] instead, so annotations/spans are preserved correctly."]
                         fn [<$ty:snake>](&self, [<$ty:snake>]: &$ty) -> DocBuilder<A> {
                             mk!(@method_body $ty [<$ty:snake>] self [<$ty:snake>])
                         }
