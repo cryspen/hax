@@ -65,6 +65,14 @@ def ofOption {α} (x:Option α) (e: Error) : Result α := match x with
   | .some v => pure v
   | .none => .fail e
 
+@[reducible]
+def isOk {α : Type} (x: Result α) : Bool := match x with
+| .ok _ => true
+| _ => false
+
+def of_isOk {α : Type} (x: Result α) (h: Result.isOk x): α :=
+by cases x <;> try simp_all <;> assumption
+
 @[simp]
 instance instMonad : Monad Result where
   pure := pure
@@ -117,7 +125,6 @@ instance instWPMonad : WPMonad Result (.except Error .pure) where
 @[default_instance]
 instance instCoe {α} : Coe α (Result α) where
   coe x := pure x
-
 
 @[simp, spec, default_instance]
 instance {α} : Coe (Result (Result α)) (Result α) where
