@@ -176,6 +176,7 @@ tests:
     - fstar
   inner_items:
     - json
+    - lean
   issue_83601:
     - json
     - coq
