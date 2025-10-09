@@ -1,5 +1,5 @@
-trait Hasher {}
+pub trait Hasher {}
 
-trait Hash {
+pub trait Hash {
     fn hash<H: Hasher>(&self, h: H) -> H;
 }

@@ -207,3 +207,15 @@ val zeroed__panic_cold_explicit': Prims.unit -> Rust_primitives.Hax.t_Never
 
 unfold
 let zeroed__panic_cold_explicit = zeroed__panic_cold_explicit'
+
+assume
+val transmute': #v_Src: Type0 -> #v_Dst: Type0 -> src: v_Src -> v_Dst
+
+unfold
+let transmute (#v_Src #v_Dst: Type0) = transmute' #v_Src #v_Dst
+
+assume
+val transmute__panic_cold_explicit': Prims.unit -> Rust_primitives.Hax.t_Never
+
+unfold
+let transmute__panic_cold_explicit = transmute__panic_cold_explicit'

@@ -88,6 +88,11 @@ pub unsafe fn zeroed<T>() -> T {
     panic!()
 }
 
+#[hax_lib::opaque]
+pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
+    panic!()
+}
+
 mod manually_drop {
     pub struct ManuallyDrop<T: ?Sized> {
         value: T,

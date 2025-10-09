@@ -31,6 +31,26 @@ pub mod arith {
         type Output;
         fn div_assign(self, rhs: Rhs) -> Self::Output;
     }
+
+    macro_rules! int_trait_impls {
+        ($($Self:ty)*) => {
+            $(
+            impl crate::ops::arith::AddAssign<$Self> for $Self {
+                type Output = $Self;
+                fn add_assign(self, rhs: $Self) -> $Self {
+                    self + rhs
+                }
+            }
+            impl crate::ops::arith::SubAssign<$Self> for $Self {
+                type Output = $Self;
+                fn sub_assign(self, rhs: $Self) -> $Self {
+                    self - rhs
+                }
+            })*
+        }
+    }
+
+    int_trait_impls!(u8 u16 u32 u64);
 }
 
 pub mod bit {
@@ -65,24 +85,6 @@ pub mod index {
 }
 
 pub mod function {
-    /* These instances provide implementations of the F* type classes corresponding to Fn traits for anonymous functions.
-    This ensures that passing a closure where something implementing Fn works when translated to F* */
-    #[hax_lib::fstar::after(
-        "unfold instance fnonce_arrow t u
-  : t_FnOnce (t -> u) t = {
-    f_Output = u;
-    f_call_once_pre = (fun _ _ -> true);
-    f_call_once_post = (fun (x0: t -> u) (x1: t) (res: u) -> res == x0 x1);
-    f_call_once = (fun (x0: t -> u) (x1: t) -> x0 x1);
-  } 
-unfold instance fnonce_arrow_binder t u
-  : t_FnOnce (_:t -> u) t = {
-    f_Output = u;
-    f_call_once_pre = (fun _ _ -> true);
-    f_call_once_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
-    f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
-  } "
-    )]
     #[hax_lib::attributes]
     pub trait FnOnce<Args> {
         type Output;
@@ -93,6 +95,24 @@ unfold instance fnonce_arrow_binder t u
     pub trait Fn<Args>: FnOnce<Args> {
         #[hax_lib::requires(true)]
         fn call(&self, args: Args) -> Self::Output;
+    }
+
+    /* These instances provide implementations of the F* type classes corresponding to Fn traits for anonymous functions.
+    This ensures that passing a closure where something implementing Fn works when translated to F* */
+    #[hax_lib::fstar::after(
+        "unfold instance fnonce_arrow_binder t u
+  : t_FnOnce (_:t -> u) t = {
+    f_Output = u;
+    f_call_once_pre = (fun _ _ -> true);
+    f_call_once_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
+    f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
+  }"
+    )]
+    impl<Args, Out> FnOnce<Args> for fn(Args) -> Out {
+        type Output = Out;
+        fn call_once(&self, args: Args) -> Out {
+            self(args)
+        }
     }
 }
 
