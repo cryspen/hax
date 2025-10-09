@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 
 pub mod comments;
+pub mod constants;
 pub mod enums;
 pub mod ite;
 pub mod loops;

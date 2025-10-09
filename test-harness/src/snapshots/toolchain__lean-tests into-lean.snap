@@ -538,9 +538,38 @@ def Lean_tests.Enums.enums
     | (Lean_tests.Enums.E.V6 (f1 := f1) (f2 := other_name_for_f2))
       => do Rust_primitives.Hax.Tuple0.mk)
 
-def Lean_tests.FORTYTWO : usize := 42
+def Lean_tests.Constants.C1 : u32 := Result.of_isOk (do (5678 : u32)) (by rfl)
 
-def Lean_tests.MINUS_FORTYTWO : isize := -42
+def Lean_tests.Constants.C2 : u32 :=
+  Result.of_isOk (do (← Lean_tests.Constants.C1 +? (1 : u32))) (by rfl)
+
+def Lean_tests.Constants.C3 : u32 :=
+  Result.of_isOk
+    (do (← if true then do (890 : u32) else do (← (9 : u32) /? (0 : u32))))
+    (by rfl)
+
+def Lean_tests.Constants.computation (x : u32) : Result u32 := do
+  (← (← x +? x) +? (1 : u32))
+
+def Lean_tests.Constants.C4 : u32 :=
+  Result.of_isOk
+    (do (← (← Lean_tests.Constants.computation Lean_tests.Constants.C1)
+      +? Lean_tests.Constants.C2))
+    (by rfl)
+
+def Lean_tests.Constants.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let x : u32 ← (pure (← Lean_tests.Constants.C1 +? (1 : u32)));
+  let y : u32 ← (pure (← Lean_tests.Constants.C2 +? Lean_tests.Constants.C3));
+  let z : u32 ← (pure (← Lean_tests.Constants.C4 -? Lean_tests.Constants.C3));
+  Rust_primitives.Hax.Tuple0.mk
+
+def Lean_tests.FORTYTWO : usize := Result.of_isOk (do (42 : usize)) (by rfl)
+
+def Lean_tests.MINUS_FORTYTWO : isize :=
+  Result.of_isOk (do (-42 : isize)) (by rfl)
 
 def Lean_tests.returns42 (_ : Rust_primitives.Hax.Tuple0) : Result usize := do
   Lean_tests.FORTYTWO

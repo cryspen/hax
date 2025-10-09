@@ -97,19 +97,22 @@ impl RenderView for LeanPrinter {
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(BinOp::new(&[
-            binops::add,
-            binops::sub,
-            binops::mul,
-            binops::rem,
-            binops::div,
-            binops::shr,
-            binops::bitand,
-            binops::bitxor,
-            binops::logical_op_and,
-            binops::logical_op_or,
-            binops::Index::index,
-        ]))]
+        vec![
+            Box::new(BinOp::new(&[
+                binops::add,
+                binops::sub,
+                binops::mul,
+                binops::rem,
+                binops::div,
+                binops::shr,
+                binops::bitand,
+                binops::bitxor,
+                binops::logical_op_and,
+                binops::logical_op_or,
+                binops::Index::index,
+            ])),
+            Box::new(FunctionsToConstants),
+        ]
     }
 }
 
@@ -139,6 +142,11 @@ impl LeanPrinter {
                 params: _,
                 safety: _,
             } if name.is_anonymous_const() => false,
+            ItemKind::Resugared(ResugaredItemKind::Constant {
+                name,
+                body: _,
+                generics: _,
+            }) if name.is_anonymous_const() => false,
             // Other unprintable items
             ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
             // Printable items
@@ -847,29 +855,23 @@ set_option linter.unusedVariables false
                     body,
                     params,
                     safety: _,
-                } => match &*body.kind {
-                    // TODO: Literal consts. This should be done by a resugaring, see
-                    // https://github.com/cryspen/hax/issues/1614
-                    ExprKind::Literal(l) if params.is_empty() => {
-                        docs!["def ", name, reflow!(" : "), &body.ty, reflow!(" := "), l].group()
-                    }
-                    _ => docs![
-                        docs![
-                            docs!["def", line!(), name].group(),
-                            line!(),
-                            generics,
-                            params,
-                            docs![": Result", line!(), &body.ty].group(),
-                            line!(),
-                            ":= do"
-                        ]
-                        .group(),
+                } => docs![
+                    docs![
+                        docs!["def", line!(), name].group(),
                         line!(),
-                        body
+                        generics,
+                        params,
+                        docs![": Result", line!(), &body.ty].group(),
+                        line!(),
+                        ":= do"
                     ]
-                    .group()
-                    .nest(INDENT),
-                },
+                    .group(),
+                    line!(),
+                    body
+                ]
+                .group()
+                .nest(INDENT),
+
                 ItemKind::TyAlias {
                     name,
                     generics: _,
@@ -1017,9 +1019,33 @@ set_option linter.unusedVariables false
                     .nest(INDENT),
                 ],
                 ItemKind::Resugared(resugared_item_kind) => match resugared_item_kind {
-                    ResugaredItemKind::Constant { .. } => {
-                        unreachable!("This backend does not use constant resugaring")
-                    }
+                    ResugaredItemKind::Constant {
+                        name,
+                        body,
+                        generics,
+                    } => docs![
+                        docs![
+                            docs!["def", line!(), name].group(),
+                            line!(),
+                            generics,
+                            docs![":", line!(), &body.ty].group(),
+                            line!(),
+                            ":="
+                        ]
+                        .group(),
+                        line!(),
+                        docs![
+                            "Result.of_isOk",
+                            line!(),
+                            docs!["do ", body].group().parens(),
+                            line!(),
+                            "(by rfl)"
+                        ]
+                        .group()
+                        .nest(INDENT)
+                    ]
+                    .group()
+                    .nest(INDENT),
                 },
                 ItemKind::Alias { .. } => {
                     // aliases are introduced when creating bundles. Those should not appear in
