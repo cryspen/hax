@@ -45,15 +45,15 @@ From Core Require Import Core.
 (* NotImplementedYet *)
 
 Definition asserts '(_ : unit) : unit :=
-  let _ := assert ((true : bool)) in
-  let _ := assert (f_eq ((1 : t_i32)) ((1 : t_i32))) in
+  let _ := hax_lib.assert ((true : bool)) in
+  let _ := hax_lib.assert (core.cmp.PartialEq__f_eq ((1 : t_i32)) ((1 : t_i32))) in
   let _ := match ((2 : t_i32),(2 : t_i32)) with
   | (left_val,right_val) =>
-    assert (f_eq (left_val) (right_val))
+    hax_lib.assert (core.cmp.PartialEq__f_eq (left_val) (right_val))
   end in
   let _ := match ((1 : t_i32),(2 : t_i32)) with
   | (left_val,right_val) =>
-    assert (f_not (f_eq (left_val) (right_val)))
+    hax_lib.assert (core.ops.bit.Not__f_not (core.cmp.PartialEq__f_eq (left_val) (right_val)))
   end in
   tt.
 '''

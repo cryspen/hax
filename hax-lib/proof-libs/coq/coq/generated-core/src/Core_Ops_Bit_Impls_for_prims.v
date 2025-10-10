@@ -9,92 +9,37 @@ Require Import String.
 Require Import Coq.Floats.Floats.
 From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
+From Core Require Import Core.
 
-(* From Core Require Import Core. *)
-
-(* TODO: Replace this dummy lib with core lib *)
-Class t_Sized (T : Type) := { }.
-Definition t_u8 := Z.
-Definition t_u16 := Z.
-Definition t_u32 := Z.
-Definition t_u64 := Z.
-Definition t_u128 := Z.
-Definition t_usize := Z.
-Definition t_i8 := Z.
-Definition t_i16 := Z.
-Definition t_i32 := Z.
-Definition t_i64 := Z.
-Definition t_i128 := Z.
-Definition t_isize := Z.
-Definition t_Array T (x : t_usize) := list T.
-Definition t_String := string.
-Definition ToString_f_to_string (x : string) := x.
-Instance Sized_any : forall {t_A}, t_Sized t_A := {}.
-Class t_Clone (T : Type) := { Clone_f_clone : T -> T }.
-Instance Clone_any : forall {t_A}, t_Clone t_A := {Clone_f_clone := fun x => x}.
-Definition t_Slice (T : Type) := list T.
-Definition unsize {T : Type} : list T -> t_Slice T := id.
-Definition t_PartialEq_f_eq x y := x =? y.
-Definition t_Rem_f_rem (x y : Z) := x mod y.
-Definition assert (b : bool) (* `{H_assert : b = true} *) : unit := tt.
-Inductive globality := | t_Global.
-Definition t_Vec T (_ : globality) : Type := list T.
-Definition impl_1__append {T} l1 l2 : list T * list T := (app l1 l2, l2).
-Definition impl_1__len {A} (l : list A) := Z.of_nat (List.length l).
-Definition impl__new {A} (_ : Datatypes.unit) : list A := nil.
-Definition impl__with_capacity {A} (_ : Z)  : list A := nil.
-Definition impl_1__push {A} l (x : A) := cons x l.
-Class t_From (A B : Type) := { From_f_from : B -> A }.
-Definition impl__to_vec {T} (x : t_Slice T) : t_Vec T t_Global := x.
-Class t_Into (A B : Type) := { Into_f_into : A -> B }.
-Instance t_Into_from_t_From {A B : Type} `{H : t_From B A} : t_Into A B := { Into_f_into x := @From_f_from B A H x }.
-Definition from_elem {A} (x : A) (l : Z) := repeat x (Z.to_nat l).
-Definition t_Option := option.
-Definition impl__map {A B} (x : t_Option A) (f : A -> B) : t_Option B := match x with | Some x => Some (f x) | None => None end.
-Definition t_Add_f_add x y := x + y.
-Class Cast A B := { cast : A -> B }.
-Instance cast_t_u8_t_u32 : Cast t_u8 t_u32 := {| cast x := x |}.
-(* / dummy lib *)
+(* NotImplementedYet *)
 
 
 
-From Core Require Import Core_Primitive (t_u8).
-Export Core_Primitive (t_u8).
-
-From Core Require Import Core_Primitive (t_u16).
-Export Core_Primitive (t_u16).
-
-From Core Require Import Core_Primitive (t_u32).
-Export Core_Primitive (t_u32).
-
-From Core Require Import Core_Primitive (t_u64).
-Export Core_Primitive (t_u64).
-
-From Core Require Import Core_Primitive (t_u128).
-Export Core_Primitive (t_u128).
-
-From Core Require Import Core_Primitive (t_usize).
-Export Core_Primitive (t_usize).
 
 
 
-From Core Require Import Core_Primitive (t_i8).
-Export Core_Primitive (t_i8).
 
-From Core Require Import Core_Primitive (t_i16).
-Export Core_Primitive (t_i16).
 
-From Core Require Import Core_Primitive (t_i32).
-Export Core_Primitive (t_i32).
 
-From Core Require Import Core_Primitive (t_i64).
-Export Core_Primitive (t_i64).
 
-From Core Require Import Core_Primitive (t_i128).
-Export Core_Primitive (t_i128).
 
-From Core Require Import Core_Primitive (t_isize).
-Export Core_Primitive (t_isize).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 (* NotImplementedYet *)
 
@@ -112,206 +57,390 @@ Export Core_Primitive (t_isize).
 
 (* NotImplementedYet *)
 
-Notation "'impl_84'" := (impl_84).
+(* NotImplementedYet *)
 
-Notation "'impl_85'" := (impl_85).
+(* NotImplementedYet *)
 
-Notation "'impl_86'" := (impl_86).
+Notation "'impl'" := (Core_Bundle.impl).
 
-Notation "'impl_87'" := (impl_87).
+Notation "'impl_1'" := (Core_Bundle.impl_1).
 
-Notation "'impl_88'" := (impl_88).
+Notation "'impl_2'" := (Core_Bundle.impl_2).
 
-Notation "'impl_89'" := (impl_89).
+Notation "'impl_3'" := (Core_Bundle.impl_3).
 
-Notation "'impl_6'" := (impl_6).
+Notation "'impl_4'" := (Core_Bundle.impl_4).
 
-Notation "'impl_7'" := (impl_7).
+Notation "'impl_5'" := (Core_Bundle.impl_5).
 
-Notation "'impl_8'" := (impl_8).
+Notation "'impl_6'" := (Core_Bundle.impl_6).
 
-Notation "'impl_9'" := (impl_9).
+Notation "'impl_7'" := (Core_Bundle.impl_7).
 
-Notation "'impl_10'" := (impl_10).
+Notation "'impl_8'" := (Core_Bundle.impl_8).
 
-Notation "'impl_11'" := (impl_11).
+Notation "'impl_9'" := (Core_Bundle.impl_9).
 
-Notation "'impl_12'" := (impl_12).
+Notation "'impl_10'" := (Core_Bundle.impl_10).
 
-Notation "'impl_13'" := (impl_13).
+Notation "'impl_11'" := (Core_Bundle.impl_11).
 
-Notation "'impl_14'" := (impl_14).
+Notation "'impl_12'" := (Core_Bundle.impl_12).
 
-Notation "'impl_15'" := (impl_15).
+Notation "'impl_13'" := (Core_Bundle.impl_13).
 
-Notation "'impl_16'" := (impl_16).
+Notation "'impl_14'" := (Core_Bundle.impl_14).
 
-Notation "'impl_17'" := (impl_17).
+Notation "'impl_15'" := (Core_Bundle.impl_15).
 
-Notation "'impl_18'" := (impl_18).
+Notation "'impl_16'" := (Core_Bundle.impl_16).
 
-Notation "'impl_19'" := (impl_19).
+Notation "'impl_17'" := (Core_Bundle.impl_17).
 
-Notation "'impl_20'" := (impl_20).
+Notation "'impl_18'" := (Core_Bundle.impl_18).
 
-Notation "'impl_21'" := (impl_21).
+Notation "'impl_19'" := (Core_Bundle.impl_19).
 
-Notation "'impl_22'" := (impl_22).
+Notation "'impl_20'" := (Core_Bundle.impl_20).
 
-Notation "'impl_23'" := (impl_23).
+Notation "'impl_21'" := (Core_Bundle.impl_21).
 
-Notation "'impl_24'" := (impl_24).
+Notation "'impl_22'" := (Core_Bundle.impl_22).
 
-Notation "'impl_25'" := (impl_25).
+Notation "'impl_23'" := (Core_Bundle.impl_23).
 
-Notation "'impl_26'" := (impl_26).
+Notation "'impl_24'" := (Core_Bundle.impl_24).
 
-Notation "'impl_27'" := (impl_27).
+Notation "'impl_25'" := (Core_Bundle.impl_25).
 
-Notation "'impl_28'" := (impl_28).
+Notation "'impl_26'" := (Core_Bundle.impl_26).
 
-Notation "'impl_29'" := (impl_29).
+Notation "'impl_27'" := (Core_Bundle.impl_27).
 
-Notation "'impl_30'" := (impl_30).
+Notation "'impl_28'" := (Core_Bundle.impl_28).
 
-Notation "'impl_31'" := (impl_31).
+Notation "'impl_29'" := (Core_Bundle.impl_29).
 
-Notation "'impl_32'" := (impl_32).
+Notation "'impl_30'" := (Core_Bundle.impl_30).
 
-Notation "'impl_33'" := (impl_33).
+Notation "'impl_31'" := (Core_Bundle.impl_31).
 
-Notation "'impl_34'" := (impl_34).
+Notation "'impl_32'" := (Core_Bundle.impl_32).
 
-Notation "'impl_35'" := (impl_35).
+Notation "'impl_33'" := (Core_Bundle.impl_33).
 
-Notation "'impl_36'" := (impl_36).
+Notation "'impl_34'" := (Core_Bundle.impl_34).
 
-Notation "'impl_37'" := (impl_37).
+Notation "'impl_35'" := (Core_Bundle.impl_35).
 
-Notation "'impl_38'" := (impl_38).
+Notation "'impl_36'" := (Core_Bundle.impl_36).
 
-Notation "'impl_39'" := (impl_39).
+Notation "'impl_37'" := (Core_Bundle.impl_37).
 
-Notation "'impl_40'" := (impl_40).
+Notation "'impl_38'" := (Core_Bundle.impl_38).
 
-Notation "'impl_41'" := (impl_41).
+Notation "'impl_39'" := (Core_Bundle.impl_39).
 
-Notation "'impl_42'" := (impl_42).
+Notation "'impl_40'" := (Core_Bundle.impl_40).
 
-Notation "'impl_43'" := (impl_43).
+Notation "'impl_41'" := (Core_Bundle.impl_41).
 
-Notation "'impl_44'" := (impl_44).
+Notation "'impl_42'" := (Core_Bundle.impl_42).
 
-Notation "'impl_45'" := (impl_45).
+Notation "'impl_43'" := (Core_Bundle.impl_43).
 
-Notation "'impl_46'" := (impl_46).
+Notation "'impl_44'" := (Core_Bundle.impl_44).
 
-Notation "'impl_47'" := (impl_47).
+Notation "'impl_45'" := (Core_Bundle.impl_45).
 
-Notation "'impl_48'" := (impl_48).
+Notation "'impl_46'" := (Core_Bundle.impl_46).
 
-Notation "'impl_49'" := (impl_49).
+Notation "'impl_47'" := (Core_Bundle.impl_47).
 
-Notation "'impl_50'" := (impl_50).
+Notation "'impl_48'" := (Core_Bundle.impl_48).
 
-Notation "'impl_51'" := (impl_51).
+Notation "'impl_49'" := (Core_Bundle.impl_49).
 
-Notation "'impl_52'" := (impl_52).
+Notation "'impl_50'" := (Core_Bundle.impl_50).
 
-Notation "'impl_53'" := (impl_53).
+Notation "'impl_51'" := (Core_Bundle.impl_51).
 
-Notation "'impl_54'" := (impl_54).
+Notation "'impl_52'" := (Core_Bundle.impl_52).
 
-Notation "'impl_55'" := (impl_55).
+Notation "'impl_53'" := (Core_Bundle.impl_53).
 
-Notation "'impl_56'" := (impl_56).
+Notation "'impl_54'" := (Core_Bundle.impl_54).
 
-Notation "'impl_57'" := (impl_57).
+Notation "'impl_55'" := (Core_Bundle.impl_55).
 
-Notation "'impl_58'" := (impl_58).
+Notation "'impl_56'" := (Core_Bundle.impl_56).
 
-Notation "'impl_59'" := (impl_59).
+Notation "'impl_57'" := (Core_Bundle.impl_57).
 
-Notation "'impl_60'" := (impl_60).
+Notation "'impl_58'" := (Core_Bundle.impl_58).
 
-Notation "'impl_61'" := (impl_61).
+Notation "'impl_59'" := (Core_Bundle.impl_59).
 
-Notation "'impl_62'" := (impl_62).
+Notation "'impl_60'" := (Core_Bundle.impl_60).
 
-Notation "'impl_63'" := (impl_63).
+Notation "'impl_61'" := (Core_Bundle.impl_61).
 
-Notation "'impl_64'" := (impl_64).
+Notation "'impl_62'" := (Core_Bundle.impl_62).
 
-Notation "'impl_65'" := (impl_65).
+Notation "'impl_63'" := (Core_Bundle.impl_63).
 
-Notation "'impl_66'" := (impl_66).
+Notation "'impl_64'" := (Core_Bundle.impl_64).
 
-Notation "'impl_67'" := (impl_67).
+Notation "'impl_65'" := (Core_Bundle.impl_65).
 
-Notation "'impl_68'" := (impl_68).
+Notation "'impl_66'" := (Core_Bundle.impl_66).
 
-Notation "'impl_69'" := (impl_69).
+Notation "'impl_67'" := (Core_Bundle.impl_67).
 
-Notation "'impl_70'" := (impl_70).
+Notation "'impl_68'" := (Core_Bundle.impl_68).
 
-Notation "'impl_71'" := (impl_71).
+Notation "'impl_69'" := (Core_Bundle.impl_69).
 
-Notation "'impl_72'" := (impl_72).
+Notation "'impl_70'" := (Core_Bundle.impl_70).
 
-Notation "'impl_73'" := (impl_73).
+Notation "'impl_71'" := (Core_Bundle.impl_71).
 
-Notation "'impl_74'" := (impl_74).
+Notation "'impl_72'" := (Core_Bundle.impl_72).
 
-Notation "'impl_75'" := (impl_75).
+Notation "'impl_73'" := (Core_Bundle.impl_73).
 
-Notation "'impl_76'" := (impl_76).
+Notation "'impl_74'" := (Core_Bundle.impl_74).
 
-Notation "'impl_77'" := (impl_77).
+Notation "'impl_75'" := (Core_Bundle.impl_75).
 
-Notation "'impl_78'" := (impl_78).
+Notation "'impl_76'" := (Core_Bundle.impl_76).
 
-Notation "'impl_79'" := (impl_79).
+Notation "'impl_77'" := (Core_Bundle.impl_77).
 
-Notation "'impl_80'" := (impl_80).
+Notation "'impl_78'" := (Core_Bundle.impl_78).
 
-Notation "'impl_81'" := (impl_81).
+Notation "'impl_79'" := (Core_Bundle.impl_79).
 
-Notation "'impl_82'" := (impl_82).
+Notation "'impl_80'" := (Core_Bundle.impl_80).
 
-Notation "'impl_83'" := (impl_83).
+Notation "'impl_81'" := (Core_Bundle.impl_81).
 
-Notation "'impl_90'" := (impl_90).
+Notation "'impl_82'" := (Core_Bundle.impl_82).
 
-Notation "'impl_91'" := (impl_91).
+Notation "'impl_83'" := (Core_Bundle.impl_83).
 
-Notation "'impl_92'" := (impl_92).
+Notation "'impl_84'" := (Core_Bundle.impl_84).
 
-Notation "'impl_93'" := (impl_93).
+Notation "'impl_85'" := (Core_Bundle.impl_85).
 
-Notation "'impl_94'" := (impl_94).
+Notation "'impl_86'" := (Core_Bundle.impl_86).
 
-Notation "'impl_95'" := (impl_95).
+Notation "'impl_87'" := (Core_Bundle.impl_87).
 
-Notation "'impl_96'" := (impl_96).
+Notation "'impl_88'" := (Core_Bundle.impl_88).
 
-Notation "'impl_97'" := (impl_97).
+Notation "'impl_89'" := (Core_Bundle.impl_89).
 
-Notation "'impl_98'" := (impl_98).
+Notation "'impl_90'" := (Core_Bundle.impl_90).
 
-Notation "'impl_99'" := (impl_99).
+Notation "'impl_91'" := (Core_Bundle.impl_91).
 
-Notation "'impl_100'" := (impl_100).
+Notation "'impl_92'" := (Core_Bundle.impl_92).
 
-Notation "'impl_101'" := (impl_101).
+Notation "'impl_93'" := (Core_Bundle.impl_93).
 
-Notation "'impl'" := (impl).
+Notation "'impl_94'" := (Core_Bundle.impl_94).
 
-Notation "'impl_1'" := (impl_1).
+Notation "'impl_95'" := (Core_Bundle.impl_95).
 
-Notation "'impl_2'" := (impl_2).
+Notation "'impl_96'" := (Core_Bundle.impl_96).
 
-Notation "'impl_3'" := (impl_3).
+Notation "'impl_97'" := (Core_Bundle.impl_97).
 
-Notation "'impl_4'" := (impl_4).
+Notation "'impl_98'" := (Core_Bundle.impl_98).
 
-Notation "'impl_5'" := (impl_5).
+Notation "'impl_99'" := (Core_Bundle.impl_99).
+
+Notation "'impl_100'" := (Core_Bundle.impl_100).
+
+Notation "'impl_101'" := (Core_Bundle.impl_101).
+
+Notation "'impl_102'" := (Core_Bundle.impl_102).
+
+Notation "'impl_103'" := (Core_Bundle.impl_103).
+
+Notation "'impl_104'" := (Core_Bundle.impl_104).
+
+Notation "'impl_105'" := (Core_Bundle.impl_105).
+
+Notation "'impl_106'" := (Core_Bundle.impl_106).
+
+Notation "'impl_107'" := (Core_Bundle.impl_107).
+
+Notation "'impl_108'" := (Core_Bundle.impl_108).
+
+Notation "'impl_109'" := (Core_Bundle.impl_109).
+
+Notation "'impl_110'" := (Core_Bundle.impl_110).
+
+Notation "'impl_111'" := (Core_Bundle.impl_111).
+
+Notation "'impl_112'" := (Core_Bundle.impl_112).
+
+Notation "'impl_113'" := (Core_Bundle.impl_113).
+
+Notation "'impl_114'" := (Core_Bundle.impl_114).
+
+Notation "'impl_115'" := (Core_Bundle.impl_115).
+
+Notation "'impl_116'" := (Core_Bundle.impl_116).
+
+Notation "'impl_117'" := (Core_Bundle.impl_117).
+
+Notation "'impl_118'" := (Core_Bundle.impl_118).
+
+Notation "'impl_119'" := (Core_Bundle.impl_119).
+
+Notation "'impl_120'" := (Core_Bundle.impl_120).
+
+Notation "'impl_121'" := (Core_Bundle.impl_121).
+
+Notation "'impl_122'" := (Core_Bundle.impl_122).
+
+Notation "'impl_123'" := (Core_Bundle.impl_123).
+
+Notation "'impl_124'" := (Core_Bundle.impl_124).
+
+Notation "'impl_125'" := (Core_Bundle.impl_125).
+
+Notation "'impl_126'" := (Core_Bundle.impl_126).
+
+Notation "'impl_127'" := (Core_Bundle.impl_127).
+
+Notation "'impl_128'" := (Core_Bundle.impl_128).
+
+Notation "'impl_129'" := (Core_Bundle.impl_129).
+
+Notation "'impl_130'" := (Core_Bundle.impl_130).
+
+Notation "'impl_131'" := (Core_Bundle.impl_131).
+
+Notation "'impl_132'" := (Core_Bundle.impl_132).
+
+Notation "'impl_133'" := (Core_Bundle.impl_133).
+
+Notation "'impl_134'" := (Core_Bundle.impl_134).
+
+Notation "'impl_135'" := (Core_Bundle.impl_135).
+
+Notation "'impl_136'" := (Core_Bundle.impl_136).
+
+Notation "'impl_137'" := (Core_Bundle.impl_137).
+
+Notation "'impl_138'" := (Core_Bundle.impl_138).
+
+Notation "'impl_139'" := (Core_Bundle.impl_139).
+
+Notation "'impl_140'" := (Core_Bundle.impl_140).
+
+Notation "'impl_141'" := (Core_Bundle.impl_141).
+
+Notation "'impl_142'" := (Core_Bundle.impl_142).
+
+Notation "'impl_143'" := (Core_Bundle.impl_143).
+
+Notation "'impl_144'" := (Core_Bundle.impl_144).
+
+Notation "'impl_145'" := (Core_Bundle.impl_145).
+
+Notation "'impl_146'" := (Core_Bundle.impl_146).
+
+Notation "'impl_147'" := (Core_Bundle.impl_147).
+
+Notation "'impl_148'" := (Core_Bundle.impl_148).
+
+Notation "'impl_149'" := (Core_Bundle.impl_149).
+
+Notation "'impl_150'" := (Core_Bundle.impl_150).
+
+Notation "'impl_151'" := (Core_Bundle.impl_151).
+
+Notation "'impl_152'" := (Core_Bundle.impl_152).
+
+Notation "'impl_153'" := (Core_Bundle.impl_153).
+
+Notation "'impl_154'" := (Core_Bundle.impl_154).
+
+Notation "'impl_155'" := (Core_Bundle.impl_155).
+
+Notation "'impl_156'" := (Core_Bundle.impl_156).
+
+Notation "'impl_157'" := (Core_Bundle.impl_157).
+
+Notation "'impl_158'" := (Core_Bundle.impl_158).
+
+Notation "'impl_159'" := (Core_Bundle.impl_159).
+
+Notation "'impl_160'" := (Core_Bundle.impl_160).
+
+Notation "'impl_161'" := (Core_Bundle.impl_161).
+
+Notation "'impl_162'" := (Core_Bundle.impl_162).
+
+Notation "'impl_163'" := (Core_Bundle.impl_163).
+
+Notation "'impl_164'" := (Core_Bundle.impl_164).
+
+Notation "'impl_165'" := (Core_Bundle.impl_165).
+
+Notation "'impl_166'" := (Core_Bundle.impl_166).
+
+Notation "'impl_167'" := (Core_Bundle.impl_167).
+
+Notation "'impl_168'" := (Core_Bundle.impl_168).
+
+Notation "'impl_169'" := (Core_Bundle.impl_169).
+
+Notation "'impl_170'" := (Core_Bundle.impl_170).
+
+Notation "'impl_171'" := (Core_Bundle.impl_171).
+
+Notation "'impl_172'" := (Core_Bundle.impl_172).
+
+Notation "'impl_173'" := (Core_Bundle.impl_173).
+
+Notation "'impl_174'" := (Core_Bundle.impl_174).
+
+Notation "'impl_175'" := (Core_Bundle.impl_175).
+
+Notation "'impl_176'" := (Core_Bundle.impl_176).
+
+Notation "'impl_177'" := (Core_Bundle.impl_177).
+
+Notation "'impl_178'" := (Core_Bundle.impl_178).
+
+Notation "'impl_179'" := (Core_Bundle.impl_179).
+
+Notation "'impl_180'" := (Core_Bundle.impl_180).
+
+Notation "'impl_181'" := (Core_Bundle.impl_181).
+
+Notation "'impl_182'" := (Core_Bundle.impl_182).
+
+Notation "'impl_183'" := (Core_Bundle.impl_183).
+
+Notation "'impl_184'" := (Core_Bundle.impl_184).
+
+Notation "'impl_185'" := (Core_Bundle.impl_185).
+
+Notation "'impl_186'" := (Core_Bundle.impl_186).
+
+Notation "'impl_187'" := (Core_Bundle.impl_187).
+
+Notation "'impl_188'" := (Core_Bundle.impl_188).
+
+Notation "'impl_189'" := (Core_Bundle.impl_189).
+
+Notation "'impl_190'" := (Core_Bundle.impl_190).
+
+Notation "'impl_191'" := (Core_Bundle.impl_191).
