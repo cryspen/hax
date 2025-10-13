@@ -16,7 +16,8 @@ Change to cargo-hax:
 Changes to hax-lib:
 
 Changes to the Lean backend:
-- Support for constants with arbitrary computation (#1738)
+ - Support for constants with arbitrary computation (#1738)
+ - Add support for base-expressions of structs (#1736)
 
 Miscellaneous:
 

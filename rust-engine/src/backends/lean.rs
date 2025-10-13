@@ -256,12 +256,24 @@ const _: () = {
             }
         }
 
+        /// Prints fields of structures (when in braced notation)
+        fn struct_fields<A: 'static + Clone, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
+        where
+            D: ToDocument<Self, A>,
+        {
+            docs![intersperse!(
+                fields
+                    .iter()
+                    .map(|(id, e)| { docs![self.render_last(id), reflow!(" := "), e].group() }),
+                docs![",", line!()]
+            )]
+            .group()
+        }
         /// Prints named arguments (record) of a variant or constructor of struct
         fn named_arguments<A: 'static + Clone, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
         where
             D: ToDocument<Self, A>,
         {
-            macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(
                 fields.iter().map(|(id, e)| {
                     docs![self.render_last(id), reflow!(" := "), e]
@@ -281,7 +293,6 @@ const _: () = {
         where
             D: ToDocument<Self, A>,
         {
-            macro_rules! line {($($tt:tt)*) => {disambiguated_line!($($tt)*)};}
             docs![intersperse!(fields.iter().map(|(_, e)| e), line!())].group()
         }
 
@@ -467,14 +478,21 @@ set_option linter.unusedVariables false
                 ExprKind::Construct {
                     constructor,
                     is_record,
-                    is_struct: _,
+                    is_struct,
                     fields,
                     base,
                 } => {
                     if fields.is_empty() && base.is_none() {
                         docs![constructor]
-                    } else if base.is_some() {
-                        emit_error!(issue 1637, "Unsupported base expressions for structs.")
+                    } else if let Some(base) = base {
+                        if !(*is_record && *is_struct) {
+                            unreachable!(
+                                "Constructors with base expressions are necessarily structs with record-like arguments"
+                            )
+                        }
+                        docs![base, line!(), reflow!("with "), self.struct_fields(fields)]
+                            .braces()
+                            .group()
                     } else {
                         docs![constructor, line!(), self.arguments(fields, is_record)]
                             .nest(INDENT)
