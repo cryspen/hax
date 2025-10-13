@@ -162,3 +162,32 @@ mod miscellaneous {
         (1, 2)
     }
 }
+
+mod base_expressions {
+
+    struct S {
+        f1: u32,
+        f2: u32,
+        f3: u32,
+    }
+
+    fn test() {
+        let s1 = S {
+            f1: 1,
+            f2: 2,
+            f3: 3,
+        };
+        let _ = S { f1: 0, ..s1 };
+        let _ = S { f2: 0, ..s1 };
+        let _ = S { f3: 0, ..s1 };
+        let _ = S { f1: 0, f2: 1, ..s1 };
+        let _ = S { f2: 0, f3: 1, ..s1 };
+        let _ = S { f3: 0, f1: 2, ..s1 };
+        let _ = S {
+            f1: 0,
+            f2: 1,
+            f3: 0,
+            ..s1
+        };
+    }
+}
