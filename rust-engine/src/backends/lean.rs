@@ -256,12 +256,9 @@ const _: () = {
         }
 
         /// Prints fields of structures (when in braced notation)
-        fn struct_fields<'a, 'b, A: 'a + Clone, D>(
-            &'a self,
-            fields: &'b [(GlobalId, D)],
-        ) -> DocBuilder<'a, Self, A>
+        fn struct_fields<A: 'static + Clone, D>(&self, fields: &[(GlobalId, D)]) -> DocBuilder<A>
         where
-            &'b D: Pretty<'a, Self, A>,
+            D: ToDocument<Self, A>,
         {
             docs![intersperse!(
                 fields
