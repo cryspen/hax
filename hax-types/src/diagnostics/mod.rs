@@ -18,9 +18,9 @@ impl std::fmt::Display for Diagnostics {
         match &self.kind {
             Kind::Unimplemented { issue_id:_, details } => write!(
                 f,
-                "something is not implemented yet.{}",
+                "something is not implemented yet.\n{}",
                 match details {
-                    Some(details) => format!("\n{}", details),
+                    Some(details) => format!("{}", details),
                     _ => "".to_string(),
                 },
             ),
@@ -64,20 +64,22 @@ impl std::fmt::Display for Diagnostics {
 
             Kind::FStarParseError { fstar_snippet, details: _ } => write!(f, "The following code snippet could not be parsed as valid F*:\n```\n{fstar_snippet}\n```"),
 
+            Kind::ExplicitRejection { reason } => write!(f, "Explicit rejection by a phase in the Hax engine:\n{}", reason),
+
             _ => write!(f, "{:?}", self.kind),
         }?;
         write!(f, "\n\n")?;
         if let Some(issue) = self.kind.issue_number() {
             write!(
                 f,
-                "This is discussed in issue https://github.com/hacspec/hax/issues/{issue}.\nPlease upvote or comment this issue if you see this error message."
+                "This is discussed in issue https://github.com/hacspec/hax/issues/{issue}.\nPlease upvote or comment this issue if you see this error message.\n"
             )?;
         }
         write!(
             f,
             "{}",
             format!(
-                "\nNote: the error was labeled with context `{}`.\n",
+                "Note: the error was labeled with context `{}`.\n",
                 self.context
             )
             .bright_black()
@@ -114,7 +116,7 @@ pub enum Kind {
     /// Unsafe code is not supported
     UnsafeBlock = 0,
 
-    /// A feature is not currently implemented, but
+    /// A feature is not currently implemented
     Unimplemented {
         /// Issue on the GitHub repository
         issue_id: Option<u32>,
