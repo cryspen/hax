@@ -8,7 +8,10 @@ use std::collections::HashSet;
 use std::sync::LazyLock;
 
 use super::prelude::*;
-use crate::ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind};
+use crate::{
+    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+    phase::reject_not_do_lean_dsl::RejectNotDoLeanDSL,
+};
 
 mod binops {
     pub use crate::names::core::ops::index::*;
@@ -122,6 +125,10 @@ impl Backend for LeanBackend {
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
         camino::Utf8PathBuf::from_iter(self.printer().render_strings(&module.ident.view()))
             .with_extension("lean")
+    }
+
+    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+        vec![Box::new(RejectNotDoLeanDSL::default())]
     }
 }
 
