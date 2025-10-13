@@ -49,13 +49,14 @@ theorem barrett_spec (value: i32) :
     Lean_barrett.__5.ensures value result)
   ⦃ ⇓ post => ⌜post = true⌝ ⦄
 := by
-  open Spec.BV in mvcgen [Lean_barrett.__5.ensures] <;> simp at *
+  open Spec.BV in mvcgen [Lean_barrett.__5.ensures]
+  <;> simp_all! [Lean_barrett.__4.requires]
   hax_bv_decide
   simp [Int32.eq_iff_toBitVec_eq,
         Int32.lt_iff_toBitVec_slt,
         Int64.le_iff_toBitVec_sle,
         ] at *
-  expose_names; have ⟨ _ , _ ⟩ := h_1 ; clear h_1
+  expose_names; have ⟨ _ , _ ⟩ := h ; clear h
   generalize Int32.toBitVec value = bv_value at * ; clear value
   bv_decide (config := {timeout := 120})
 "
