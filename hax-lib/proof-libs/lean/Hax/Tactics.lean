@@ -16,3 +16,17 @@ elab "split_and" : tactic => do
 
 elab "flatten" : tactic => do
   Lean.Elab.Tactic.evalTactic (← `(tactic| repeat split_and))
+
+
+macro "hax_bv_decide" : tactic => `(tactic| (
+  any_goals (subst_vars ; injections ; subst_vars)
+  all_goals try (
+    simp [Int32.eq_iff_toBitVec_eq,
+          Int32.lt_iff_toBitVec_slt,
+          Int32.le_iff_toBitVec_sle,
+          Int64.eq_iff_toBitVec_eq,
+          Int64.lt_iff_toBitVec_slt,
+          Int64.le_iff_toBitVec_sle] at * <;>
+    bv_decide (config := {timeout := 1});
+    done
+ )))

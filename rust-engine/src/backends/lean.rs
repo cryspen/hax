@@ -135,13 +135,6 @@ impl LeanPrinter {
     pub fn printable_item(item: &Item) -> bool {
         match &item.kind {
             // Anonymous consts
-            ItemKind::Fn {
-                name,
-                generics: _,
-                body: _,
-                params: _,
-                safety: _,
-            } if name.is_anonymous_const() => false,
             ItemKind::Resugared(ResugaredItemKind::Constant {
                 name,
                 body: _,
