@@ -643,7 +643,7 @@ let impl_i8__to_le_bytes = impl_i8__to_le_bytes'
 let impl_i8__rem_euclid (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_i8 x y
 
-let impl_i8__abs (x: i8) : Prims.Pure bool (requires x >. impl_i8__MIN) (fun _ -> Prims.l_True) =
+let impl_i8__abs (x: i8) : Prims.Pure i8 (requires x >. impl_i8__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i8 x
 
 let impl_i16__MIN: i16 = mk_i16 (-32768)
@@ -736,7 +736,7 @@ let impl_i16__rem_euclid (x y: i16)
     : Prims.Pure i16 (requires y <>. mk_i16 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_i16 x y
 
-let impl_i16__abs (x: i16) : Prims.Pure bool (requires x >. impl_i16__MIN) (fun _ -> Prims.l_True) =
+let impl_i16__abs (x: i16) : Prims.Pure i16 (requires x >. impl_i16__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i16 x
 
 let impl_i32__MIN: i32 = mk_i32 (-2147483648)
@@ -829,7 +829,7 @@ let impl_i32__rem_euclid (x y: i32)
     : Prims.Pure i32 (requires y <>. mk_i32 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_i32 x y
 
-let impl_i32__abs (x: i32) : Prims.Pure bool (requires x >. impl_i32__MIN) (fun _ -> Prims.l_True) =
+let impl_i32__abs (x: i32) : Prims.Pure i32 (requires x >. impl_i32__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i32 x
 
 let impl_i64__MIN: i64 = mk_i64 (-9223372036854775808)
@@ -922,7 +922,7 @@ let impl_i64__rem_euclid (x y: i64)
     : Prims.Pure i64 (requires y <>. mk_i64 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_i64 x y
 
-let impl_i64__abs (x: i64) : Prims.Pure bool (requires x >. impl_i64__MIN) (fun _ -> Prims.l_True) =
+let impl_i64__abs (x: i64) : Prims.Pure i64 (requires x >. impl_i64__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i64 x
 
 let impl_i128__MIN: i128 = mk_i128 (-170141183460469231731687303715884105728)
@@ -1019,7 +1019,7 @@ let impl_i128__rem_euclid (x y: i128)
   Rust_primitives.Arithmetic.rem_euclid_i128 x y
 
 let impl_i128__abs (x: i128)
-    : Prims.Pure bool (requires x >. impl_i128__MIN) (fun _ -> Prims.l_True) =
+    : Prims.Pure i128 (requires x >. impl_i128__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i128 x
 
 let impl_isize__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
@@ -1119,5 +1119,5 @@ let impl_isize__rem_euclid (x y: isize)
   Rust_primitives.Arithmetic.rem_euclid_isize x y
 
 let impl_isize__abs (x: isize)
-    : Prims.Pure bool (requires x >. impl_isize__MIN) (fun _ -> Prims.l_True) =
+    : Prims.Pure isize (requires x >. impl_isize__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_isize x

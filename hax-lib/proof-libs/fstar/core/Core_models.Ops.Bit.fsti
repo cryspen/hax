@@ -3,7 +3,7 @@ module Core_models.Ops.Bit
 open FStar.Mul
 
 class t_Shr (v_Self: Type0) (v_Rhs: Type0) = {
-  f_Output:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_shr_pre:v_Self -> v_Rhs -> Type0;
   f_shr_post:v_Self -> v_Rhs -> f_Output -> Type0;
   f_shr:x0: v_Self -> x1: v_Rhs
@@ -11,7 +11,7 @@ class t_Shr (v_Self: Type0) (v_Rhs: Type0) = {
 }
 
 class t_BitXor (v_Self: Type0) (v_Rhs: Type0) = {
-  f_Output:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_bitxor_pre:v_Self -> v_Rhs -> Type0;
   f_bitxor_post:v_Self -> v_Rhs -> f_Output -> Type0;
   f_bitxor:x0: v_Self -> x1: v_Rhs
@@ -19,7 +19,7 @@ class t_BitXor (v_Self: Type0) (v_Rhs: Type0) = {
 }
 
 class t_BitAnd (v_Self: Type0) (v_Rhs: Type0) = {
-  f_Output:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_bitand_pre:v_Self -> v_Rhs -> Type0;
   f_bitand_post:v_Self -> v_Rhs -> f_Output -> Type0;
   f_bitand:x0: v_Self -> x1: v_Rhs

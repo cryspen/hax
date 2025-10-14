@@ -153,7 +153,7 @@ macro_rules! iint_impl {
                 paste! { [<count_ones_ $Name>](x) }
             }
             #[hax_lib::requires(x > $Self::MIN)]
-            fn abs(x: $Self) -> bool {
+            fn abs(x: $Self) -> $Self {
                 paste! { [<abs_ $Name>](x) }
             }
             #[hax_lib::opaque]

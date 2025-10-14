@@ -5,7 +5,7 @@ open FStar.Mul
 open Rust_primitives.Integers
 
 class t_Index (v_Self: Type0) (v_Idx: Type0) = {
-  f_Output:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_index_pre:v_Self -> v_Idx -> Type0;
   f_index_post:v_Self -> v_Idx -> f_Output -> Type0;
   f_index:x0: v_Self -> x1: v_Idx

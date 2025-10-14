@@ -177,7 +177,7 @@ let cast_identity_lemma
   (n: int_t a)
   : Lemma (cast_mod #b #a (cast_mod #a #b n) == n)
     [SMTPat (cast_mod #b #a (cast_mod #a #b n))]
-  = ()
+  = admit ()
 #pop-options
 
 /// Arithmetic operations

@@ -15,36 +15,36 @@ pub mod arith {
         type Output;
         fn div(self, rhs: Rhs) -> Self::Output;
     }
+    #[hax_lib::fstar::before("open Rust_primitives.Integers")]
     pub trait AddAssign<Rhs = Self> {
-        type Output;
-        fn add_assign(self, rhs: Rhs) -> Self::Output;
+        fn add_assign(&mut self, rhs: Rhs);
     }
     pub trait SubAssign<Rhs = Self> {
-        type Output;
-        fn sub_assign(self, rhs: Rhs) -> Self::Output;
+        fn sub_assign(&mut self, rhs: Rhs);
     }
     pub trait MulAssign<Rhs = Self> {
-        type Output;
-        fn mul_assign(self, rhs: Rhs) -> Self::Output;
+        fn mul_assign(&mut self, rhs: Rhs);
     }
     pub trait DivAssign<Rhs = Self> {
-        type Output;
-        fn div_assign(self, rhs: Rhs) -> Self::Output;
+        fn div_assign(&mut self, rhs: Rhs);
     }
 
     macro_rules! int_trait_impls {
         ($($Self:ty)*) => {
+            use hax_lib::ToInt;
             $(
+            #[hax_lib::attributes]
             impl crate::ops::arith::AddAssign<$Self> for $Self {
-                type Output = $Self;
-                fn add_assign(self, rhs: $Self) -> $Self {
-                    self + rhs
+                #[hax_lib::requires(self.to_int() + rhs.to_int() <= $Self::MAX.to_int())]
+                fn add_assign(&mut self, rhs: $Self) {
+                    *self = *self + rhs
                 }
             }
+            #[hax_lib::attributes]
             impl crate::ops::arith::SubAssign<$Self> for $Self {
-                type Output = $Self;
-                fn sub_assign(self, rhs: $Self) -> $Self {
-                    self - rhs
+                #[hax_lib::requires(self.to_int() - rhs.to_int() >= 0.to_int())]
+                fn sub_assign(&mut self, rhs: $Self) {
+                    *self = *self - rhs
                 }
             })*
         }

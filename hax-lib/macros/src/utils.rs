@@ -302,7 +302,7 @@ pub fn make_fn_decoration(
                 FnDecorationKind::Decreases | FnDecorationKind::SMTPat => {
                     syn::parse_quote! { -> () }
                 }
-                _ => syn::parse_quote! { -> impl Into<::hax_lib::Prop> },
+                _ => syn::parse_quote! { -> impl std::convert::Into<::hax_lib::Prop> },
             };
             sig
         };

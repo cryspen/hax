@@ -75,7 +75,7 @@ pub mod arithmetic {
         ($($Self: ident)*) => {
             paste! {
                 $(
-                    pub fn [<abs_ $Self>](x: $Self) -> bool {
+                    pub fn [<abs_ $Self>](x: $Self) -> $Self {
                     panic!()
                 }
                 )*
