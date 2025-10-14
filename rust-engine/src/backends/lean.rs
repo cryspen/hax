@@ -128,7 +128,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
-        vec![Box::new(RejectNotDoLeanDSL::default())]
+        vec![Box::new(RejectNotDoLeanDSL)]
     }
 }
 
