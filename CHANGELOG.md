@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Add a rejection phase for interleaving of expressions and statements not
+   supported by the Lean do-notation syntax (#1739).
 
 Changes to the frontend:
 
