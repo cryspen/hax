@@ -132,4 +132,3 @@ int_try_from! {
     i16 i32 i32 i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize,
     i8  i8  i16 i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32,
 }
-

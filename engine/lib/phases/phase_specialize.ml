@@ -205,6 +205,8 @@ module Make (F : Features.T) =
               Rust_primitives__hax__machine_int__ne;
             mint_mint_any Core__cmp__PartialEq__eq
               Rust_primitives__hax__machine_int__eq;
+            mint_any Core__ops__arith__Neg__neg
+              Rust_primitives__hax__machine_int__neg;
             int_int_any Core__ops__arith__Add__add
               Rust_primitives__hax__int__add;
             int_int_any Core__ops__arith__Sub__sub

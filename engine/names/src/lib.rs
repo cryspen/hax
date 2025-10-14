@@ -272,6 +272,7 @@ mod hax {
         fn div() {}
         fn mul() {}
         fn rem() {}
+        fn neg() {}
 
         fn not() {}
         fn bitxor() {}
