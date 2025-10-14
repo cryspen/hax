@@ -20,11 +20,57 @@ info:
     include_flag: ~
     backend_options: ~
 ---
-exit = 0
-stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
+exit = 1
+stderr = """
+Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs
+\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0008] Explicit rejection by a phase in the Hax engine:
+This interleaving of expression and statements does not fit in Lean's do-notation DSL.
+You may try hoisting out let-bindings and control-flow.
+See issue https://github.com/hacspec/hax/issues/1741
 
-[stdout]
-diagnostics = []
+Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+\u001B[0m
+ \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/reject_do_dsl.rs:6:18
+  \u001B[1m\u001B[94m|\u001B[0m
+\u001B[1m\u001B[94m6 |\u001B[0m     let x1 = 1 + (if true { 0 } else { 1 });
+  \u001B[1m\u001B[94m|\u001B[0m                  \u001B[1m\u001B[91m^^^^^^^^^^^^^^^^^^^^^^^^^^\u001B[0m
+  \u001B[1m\u001B[94m|\u001B[0m
+\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0008] Explicit rejection by a phase in the Hax engine:
+This interleaving of expression and statements does not fit in Lean's do-notation DSL.
+You may try hoisting out let-bindings and control-flow.
+See issue https://github.com/hacspec/hax/issues/1741
+
+Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+\u001B[0m
+  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/reject_do_dsl.rs:8:11
+   \u001B[1m\u001B[94m|\u001B[0m
+\u001B[1m\u001B[94m 8 |\u001B[0m           + (match (1, 2) {
+   \u001B[1m\u001B[94m|\u001B[0m  \u001B[1m\u001B[91m___________^\u001B[0m
+\u001B[1m\u001B[94m 9 |\u001B[0m \u001B[1m\u001B[91m|\u001B[0m             _ => 0,
+\u001B[1m\u001B[94m10 |\u001B[0m \u001B[1m\u001B[91m|\u001B[0m         });
+   \u001B[1m\u001B[94m|\u001B[0m \u001B[1m\u001B[91m|__________^\u001B[0m
+   \u001B[1m\u001B[94m|\u001B[0m"""
+[[stdout.diagnostics]]
+message = """
+Explicit rejection by a phase in the Hax engine:
+This interleaving of expression and statements does not fit in Lean's do-notation DSL.
+You may try hoisting out let-bindings and control-flow.
+See issue https://github.com/hacspec/hax/issues/1741
+
+\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+\u001B[0m"""
+spans = ['Span { lo: Loc { line: 6, col: 17 }, hi: Loc { line: 6, col: 43 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
+
+[[stdout.diagnostics]]
+message = """
+Explicit rejection by a phase in the Hax engine:
+This interleaving of expression and statements does not fit in Lean's do-notation DSL.
+You may try hoisting out let-bindings and control-flow.
+See issue https://github.com/hacspec/hax/issues/1741
+
+\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+\u001B[0m"""
+spans = ['Span { lo: Loc { line: 8, col: 10 }, hi: Loc { line: 10, col: 10 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [stdout.files]
 "Lean_tests.lean" = '''
@@ -610,6 +656,32 @@ def Lean_tests.binop_resugarings (x : u32) : Result u32 := do
   let rshift : u32 ← (pure (← div >>>? x));
   x
 
+def Lean_tests.Reject_do_dsl.rejected
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let x1 : i32 ← (pure (← (1 : i32) +? sorry));
+  let x2 : i32 ← (pure (← (1 : i32) +? sorry));
+  let x : i32 ← (pure (9 : i32));
+  let x3 : i32 ← (pure (← (1 : i32) +? (← x +? (1 : i32))));
+  Rust_primitives.Hax.Tuple0.mk
+
+--  Code that should be produced from the rejected code
+def Lean_tests.Reject_do_dsl.accepted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let x1_tmp : i32 ← (pure (← if true then do (0 : i32) else do (1 : i32)));
+  let x1 : i32 ← (pure (← (1 : i32) +? x1_tmp));
+  let x2_tmp : i32 ← (pure
+    (match (Rust_primitives.Hax.Tuple2.mk (1 : i32) (2 : i32)) with
+      | _ => do (0 : i32)));
+  let x2 : i32 ← (pure (← (1 : i32) +? x2_tmp));
+  let x3_tmp_x : i32 ← (pure (9 : i32));
+  let x3_tmp : i32 ← (pure (← x3_tmp_x +? (1 : i32)));
+  let x3 : i32 ← (pure (← (1 : i32) +? x3_tmp));
+  Rust_primitives.Hax.Tuple0.mk
+
 def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : Result u32 := do
   let x ← (pure (0 : u32));
   let x : u32 ← (pure
@@ -649,8 +721,7 @@ def Lean_tests.Ite.test1 (_ : Rust_primitives.Hax.Tuple0) : Result i32 := do
   (← if false then do (2 : i32) else do (3 : i32))
 
 def Lean_tests.Ite.test2 (b : Bool) : Result i32 := do
-  let x : i32 ← (pure
-    (← (1 : i32) +? (← if true then do (0 : i32) else do (1 : i32))));
+  let x : i32 ← (pure (← if b then do (0 : i32) else do (9 : i32)));
   let y : i32 ← (pure (0 : i32));
   let y : i32 ← (pure
     (← if true then do

@@ -5,6 +5,7 @@ pub mod comments;
 pub mod enums;
 pub mod ite;
 pub mod loops;
+pub mod reject_do_dsl;
 pub mod structs;
 pub mod traits;
 
