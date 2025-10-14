@@ -1,32 +1,12 @@
 module Hax_lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open FStar.Mul
-open Core_models
+open FStar.Tactics
 
-include Hax_lib.Bundle {v_assert as v_assert}
+val v_assert (p: bool) : Pure unit (requires p) (ensures (fun x -> p))
+let v_assert (v__formula: bool) = ()
 
-include Hax_lib.Bundle {assert_prop as assert_prop}
+val assert_prop (p: Type0) : Pure unit (requires p) (ensures (fun x -> p))
+let assert_prop (v__formula: Type0) = ()
 
-include Hax_lib.Bundle {v_assume as v_assume}
-
-include Hax_lib.Bundle {v_inline as v_inline}
-
-include Hax_lib.Bundle {inline_unsafe as inline_unsafe}
-
-include Hax_lib.Bundle {any_to_unit as any_to_unit}
-
-include Hax_lib.Bundle {e_internal_loop_invariant as e_internal_loop_invariant}
-
-include Hax_lib.Bundle {e_internal_while_loop_invariant as e_internal_while_loop_invariant}
-
-include Hax_lib.Bundle {e_internal_loop_decreases as e_internal_loop_decreases}
-
-include Hax_lib.Bundle {t_Refinement as t_Refinement}
-
-include Hax_lib.Bundle {t_RefineAs as t_RefineAs}
-
-include Hax_lib.Bundle {f_into_checked_pre as f_into_checked_pre}
-
-include Hax_lib.Bundle {f_into_checked_post as f_into_checked_post}
-
-include Hax_lib.Bundle {f_into_checked as f_into_checked}
+val v_assume (p: Type0) : Pure unit (requires True) (ensures (fun x -> p))
+let v_assume (v__formula: Type0) = assume v__formula
