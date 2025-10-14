@@ -46,7 +46,6 @@ mod assert;
 mod assert_ne;
 #[cfg(any(
     feature = "json",
-    feature = "lean",
     feature = "fstar",
     feature = "fstar-lax",
     feature = "coq"
@@ -250,6 +249,6 @@ mod unused_mod;
 #[cfg(any(feature = "json", feature = "lean"))]
 #[path = "while.rs"]
 mod while_;
-#[cfg(any(feature = "json", feature = "lean", feature = "fstar"))]
+#[cfg(any(feature = "json", feature = "fstar"))]
 mod while_early_ret;
 // mod r#yield;
