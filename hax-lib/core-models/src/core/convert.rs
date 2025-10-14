@@ -41,6 +41,18 @@ impl<T, U: From<T>> TryFrom<T> for U {
     }
 }
 
+#[hax_lib::fstar::after("
+instance impl_slice_try_into_array_refined (t: Type0) (len: usize): t_TryInto (s: t_Slice t) (t_Array t len) = {
+  f_Error = Core_models.Array.t_TryFromSliceError;
+  f_try_into_pre = (fun (s: t_Slice t) -> true);
+  f_try_into_post = (fun (s: t_Slice t) (out: Core_models.Result.t_Result (t_Array t len) Core_models.Array.t_TryFromSliceError) -> true);
+  f_try_into = (fun (s: t_Slice t) -> 
+    if Core_models.Slice.impl__len s = len
+    then Core_models.Result.Result_Ok (s <: t_Array t len)
+    else Core_models.Result.Result_Err Core_models.Array.TryFromSliceError
+  )
+}
+")]
 impl<T, U: TryFrom<T>> TryInto<U> for T {
     type Error = U::Error;
     fn try_into(self) -> Result<U, Self::Error> {
@@ -120,4 +132,4 @@ int_try_from! {
     i16 i32 i32 i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize,
     i8  i8  i16 i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32,
 }
-// Add conversions between sized / unsized
+

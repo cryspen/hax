@@ -80,19 +80,19 @@ macro_rules! uint_impl {
                 crate::panicking::internal::panic()
             }
             #[hax_lib::opaque]
-            fn from_be_bytes(bytes: [$Self; $Bytes]) -> $Self {
+            fn from_be_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_be_bytes_ $Name>](bytes) }
             }
             #[hax_lib::opaque]
-            fn from_le_bytes(bytes: [$Self; $Bytes]) -> $Self {
+            fn from_le_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_le_bytes_ $Name>](bytes) }
             }
             #[hax_lib::opaque]
-            fn to_be_bytes(bytes: $Self) -> [$Self; $Bytes] {
+            fn to_be_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             #[hax_lib::opaque]
-            fn to_le_bytes(bytes: $Self) -> [$Self; $Bytes] {
+            fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
         }
@@ -178,19 +178,19 @@ macro_rules! iint_impl {
                 crate::panicking::internal::panic()
             }
             #[hax_lib::opaque]
-            fn from_be_bytes(bytes: [$Self; $Bytes]) -> $Self {
+            fn from_be_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_be_bytes_ $Name>](bytes) }
             }
             #[hax_lib::opaque]
-            fn from_le_bytes(bytes: [$Self; $Bytes]) -> $Self {
+            fn from_le_bytes(bytes: [core::primitive::u8; $Bytes]) -> $Self {
                 paste! { [<from_le_bytes_ $Name>](bytes) }
             }
             #[hax_lib::opaque]
-            fn to_be_bytes(bytes: $Self) -> [$Self; $Bytes] {
+            fn to_be_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_be_bytes_ $Name>](bytes) }
             }
             #[hax_lib::opaque]
-            fn to_le_bytes(bytes: $Self) -> [$Self; $Bytes] {
+            fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
         }

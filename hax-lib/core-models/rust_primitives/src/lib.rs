@@ -55,16 +55,16 @@ pub mod arithmetic {
                 pub fn [<ilog2_ $Self>](x: $Self) -> u32 {
                     panic!()
                 }
-                pub fn [<from_be_bytes_ $Self>](bytes: [$Self; $Bytes]) -> $Self {
+                pub fn [<from_be_bytes_ $Self>](bytes: [u8; $Bytes]) -> $Self {
                     panic!()
                 }
-                pub fn [<from_le_bytes_ $Self>](bytes: [$Self; $Bytes]) -> $Self {
+                pub fn [<from_le_bytes_ $Self>](bytes: [u8; $Bytes]) -> $Self {
                     panic!()
                 }
-                pub fn [<to_be_bytes_ $Self>](bytes: $Self) -> [$Self; $Bytes] {
+                pub fn [<to_be_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
                     panic!()
                 }
-                pub fn [<to_le_bytes_ $Self>](bytes: $Self) -> [$Self; $Bytes] {
+                pub fn [<to_le_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
                     panic!()
                 })*
             }

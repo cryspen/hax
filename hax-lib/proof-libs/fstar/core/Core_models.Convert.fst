@@ -27,7 +27,7 @@ let impl (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Fro
 type t_Infallible = | Infallible : t_Infallible
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3 (#v_T: Type0) : t_From v_T v_T =
+let impl_2 (#v_T: Type0) : t_From v_T v_T =
   {
     f_from_pre = (fun (x: v_T) -> true);
     f_from_post = (fun (x: v_T) (out: v_T) -> true);
@@ -41,7 +41,7 @@ class t_AsRef (v_Self: Type0) (v_T: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4 (#v_T: Type0) : t_AsRef v_T v_T =
+let impl_3 (#v_T: Type0) : t_AsRef v_T v_T =
   {
     f_as_ref_pre = (fun (self: v_T) -> true);
     f_as_ref_post = (fun (self: v_T) (out: v_T) -> true);
@@ -324,7 +324,7 @@ let impl_1 (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_F
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2 (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_TryFrom v_U v_T)
+let impl_4 (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_TryFrom v_U v_T)
     : t_TryInto v_T v_U =
   {
     f_Error = i0.f_Error;
@@ -332,6 +332,17 @@ let impl_2 (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_T
     f_try_into_post = (fun (self: v_T) (out: Core_models.Result.t_Result v_U i0.f_Error) -> true);
     f_try_into = fun (self: v_T) -> f_try_from #v_U #v_T #FStar.Tactics.Typeclasses.solve self
   }
+
+instance impl_slice_try_into_array_refined (t: Type0) (len: usize): t_TryInto (s: t_Slice t) (t_Array t len) = {
+  f_Error = Core_models.Array.t_TryFromSliceError;
+  f_try_into_pre = (fun (s: t_Slice t) -> true);
+  f_try_into_post = (fun (s: t_Slice t) (out: Core_models.Result.t_Result (t_Array t len) Core_models.Array.t_TryFromSliceError) -> true);
+  f_try_into = (fun (s: t_Slice t) -> 
+    if Core_models.Slice.impl__len s = len
+    then Core_models.Result.Result_Ok (s <: t_Array t len)
+    else Core_models.Result.Result_Err Core_models.Array.TryFromSliceError
+  )
+}
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_35: t_TryFrom u8 u16 =
