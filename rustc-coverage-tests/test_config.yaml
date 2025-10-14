@@ -84,7 +84,6 @@ tests:
     - coq
     - fstar
     - fstar-lax
-    - lean
   assert_not:
     - json
     - coq
@@ -329,4 +328,3 @@ tests:
     - json
     - fstar
     - fstar-lax
-    - lean
