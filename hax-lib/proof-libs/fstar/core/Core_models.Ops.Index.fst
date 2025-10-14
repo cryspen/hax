@@ -1,8 +1,7 @@
 module Core_models.Ops.Index
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-
-open Rust_primitives.Integers
+open Rust_primitives
 
 class t_Index (v_Self: Type0) (v_Idx: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;

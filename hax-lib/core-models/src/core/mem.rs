@@ -1,6 +1,5 @@
 #![allow(unused_variables)]
 
-#[hax_lib::fstar::before("open Rust_primitives.Integers")]
 #[hax_lib::opaque]
 pub fn forget<T>(t: T) {
     panic!()

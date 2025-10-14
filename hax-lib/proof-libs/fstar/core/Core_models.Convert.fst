@@ -1,8 +1,7 @@
 module Core_models.Convert
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-
-open Rust_primitives.Integers
+open Rust_primitives
 
 class t_Into (v_Self: Type0) (v_T: Type0) = {
   f_into_pre:self_: v_Self -> pred: Type0{true ==> pred};

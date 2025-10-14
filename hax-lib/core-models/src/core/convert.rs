@@ -1,4 +1,3 @@
-#[hax_lib::fstar::before("open Rust_primitives.Integers")]
 use super::result::Result;
 
 #[hax_lib::attributes]

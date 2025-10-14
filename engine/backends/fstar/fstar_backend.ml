@@ -1930,7 +1930,7 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
     (if
        hax_core_models_extraction
        && String.is_prefix ~prefix:"Core_models" mod_name
-     then []
+     then [ "open Rust_primitives" ]
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"
 

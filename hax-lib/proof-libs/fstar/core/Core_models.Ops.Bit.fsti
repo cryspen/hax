@@ -1,6 +1,7 @@
 module Core_models.Ops.Bit
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_Shr (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;

@@ -4,8 +4,6 @@ use pastey::paste;
 
 pub mod error;
 
-#[hax_lib::fstar::before("open Rust_primitives.Integers")]
-#[hax_lib::fstar::before("open Rust_primitives.Arrays")]
 use rust_primitives::arithmetic::*;
 
 macro_rules! uint_impl {

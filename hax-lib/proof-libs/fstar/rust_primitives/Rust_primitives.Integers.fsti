@@ -177,7 +177,7 @@ let cast_identity_lemma
   (n: int_t a)
   : Lemma (cast_mod #b #a (cast_mod #a #b n) == n)
     [SMTPat (cast_mod #b #a (cast_mod #a #b n))]
-  = admit ()
+  = ()
 #pop-options
 
 /// Arithmetic operations
@@ -509,10 +509,3 @@ val get_bit_cast_extend #t #u
   : Lemma (requires bits t < bits u /\ v nth >= bits t /\ v nth < bits u)
           (ensures get_bit (cast_mod #t #u x) nth == 0)
           [SMTPat (get_bit (cast_mod #t #u x) nth)]
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-instance default_int #t: Core_models.Default.t_Default (int_t t) = {
-  f_default_pre = (fun () -> true);
-  f_default_post = (fun () (res: int_t t) -> res =. mk_int #t 0);
-  f_default = (fun () -> mk_int #t 0);
-}

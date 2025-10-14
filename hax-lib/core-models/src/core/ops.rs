@@ -15,7 +15,6 @@ pub mod arith {
         type Output;
         fn div(self, rhs: Rhs) -> Self::Output;
     }
-    #[hax_lib::fstar::before("open Rust_primitives.Integers")]
     pub trait AddAssign<Rhs = Self> {
         fn add_assign(&mut self, rhs: Rhs);
     }
@@ -76,8 +75,6 @@ pub mod control_flow {
 }
 
 pub mod index {
-    // TODO remove
-    #[hax_lib::fstar::before("open Rust_primitives.Integers")]
     trait Index<Idx> {
         type Output;
         fn index(&self, i: Idx) -> &Self::Output;

@@ -3,7 +3,7 @@ set -e
 
 function extract_and_copy() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into fstar --interfaces '+!**::num::error +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::ops::bit'
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into fstar --interfaces '+!**::num::error +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::ops::bit +!core_models::ops::arith +!core_models::ops::function +!core_models::fmt +!core_models::fmt::rt +!core_models::mem +!core_models::mem::* +!core_models::num'
     cp proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
 }
 

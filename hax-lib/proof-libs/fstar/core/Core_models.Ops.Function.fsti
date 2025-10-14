@@ -1,6 +1,7 @@
 module Core_models.Ops.Function
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_FnOnce (v_Self: Type0) (v_Args: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
@@ -28,12 +29,4 @@ let impl (#v_Args #v_Out: Type0) : t_FnOnce (v_Args -> v_Out) v_Args =
     f_call_once_pre = (fun (self: (v_Args -> v_Out)) (args: v_Args) -> true);
     f_call_once_post = (fun (self: (v_Args -> v_Out)) (args: v_Args) (out: v_Out) -> true);
     f_call_once = fun (self: (v_Args -> v_Out)) (args: v_Args) -> self args
-  }
-
-unfold instance fnonce_arrow_binder t u
-  : t_FnOnce (_:t -> u) t = {
-    f_Output = u;
-    f_call_once_pre = (fun _ _ -> true);
-    f_call_once_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
-    f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
   }
