@@ -26,3 +26,50 @@ fn accepted() {
     let x3_tmp = x3_tmp_x + 1;
     let x3 = 1 + x3_tmp;
 }
+
+// Other cases that should be accepted
+fn test() {
+    let mut x1 = if true {
+        let mut y = if false {
+            let mut z = match () {
+                _ => 9,
+            };
+            z = 1 + z;
+            z + 1
+        } else {
+            let mut z = 9;
+            z = z + 1;
+            z
+        };
+        y = y + 1;
+        y + 1
+    } else {
+        0
+    };
+    x1 = x1 + 1;
+    let mut x2 = match Some(89) {
+        Some(a) => {
+            let mut y = 1 + a;
+            y = y + 1;
+            if y == 0 {
+                let mut z = 9;
+                z = z + y + 1;
+                z
+            } else {
+                10
+            }
+        }
+        None => {
+            let mut y = if false {
+                9
+            } else {
+                let mut z = 9;
+                z = z + 1;
+                z + 9
+            };
+            y = y + 1;
+            y
+        }
+    };
+    x2 = x1 + 1 + x2
+}

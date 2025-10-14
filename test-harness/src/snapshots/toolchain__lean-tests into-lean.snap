@@ -682,6 +682,56 @@ def Lean_tests.Reject_do_dsl.accepted
   let x3 : i32 ← (pure (← (1 : i32) +? x3_tmp));
   Rust_primitives.Hax.Tuple0.mk
 
+def Lean_tests.Reject_do_dsl.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result
+  (Rust_primitives.Hax.Tuple2
+    Rust_primitives.Hax.Tuple0
+    Rust_primitives.Hax.Tuple0)
+  := do
+  let x1 : i32 ← (pure
+    (← if true then do
+      let y : i32 ← (pure
+        (← if false then do
+          let z : i32 ← (pure
+            (match Rust_primitives.Hax.Tuple0.mk with | _ => do (9 : i32)));
+          let z : i32 ← (pure (← (1 : i32) +? z));
+          (← z +? (1 : i32))
+        else do
+          let z : i32 ← (pure (9 : i32));
+          let z : i32 ← (pure (← z +? (1 : i32)));
+          z));
+      let y : i32 ← (pure (← y +? (1 : i32)));
+      (← y +? (1 : i32))
+    else do
+      (0 : i32)));
+  let x1 : i32 ← (pure (← x1 +? (1 : i32)));
+  let x2 : i32 ← (pure
+    (match (Core.Option.Option.Some (89 : i32)) with
+      | (Core.Option.Option.Some a)
+        => do
+          let y : i32 ← (pure (← (1 : i32) +? a));
+          let y : i32 ← (pure (← y +? (1 : i32)));
+          (← if (← Rust_primitives.Hax.Machine_int.eq y (0 : i32)) then do
+            let z : i32 ← (pure (9 : i32));
+            let z : i32 ← (pure (← (← z +? y) +? (1 : i32)));
+            z
+          else do
+            (10 : i32))
+      | (Core.Option.Option.None )
+        => do
+          let y : i32 ← (pure
+            (← if false then do
+              (9 : i32)
+            else do
+              let z : i32 ← (pure (9 : i32));
+              let z : i32 ← (pure (← z +? (1 : i32)));
+              (← z +? (9 : i32))));
+          let y : i32 ← (pure (← y +? (1 : i32)));
+          y));
+  (Rust_primitives.Hax.Tuple2.mk
+    Rust_primitives.Hax.Tuple0.mk Rust_primitives.Hax.Tuple0.mk)
+
 def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : Result u32 := do
   let x ← (pure (0 : u32));
   let x : u32 ← (pure
