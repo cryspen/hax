@@ -272,7 +272,6 @@ mod hax {
         fn div() {}
         fn mul() {}
         fn rem() {}
-        fn neg() {}
 
         fn not() {}
         fn bitxor() {}
@@ -304,4 +303,8 @@ mod hax {
         }
     }
     fn box_new() {}
+}
+
+mod arithmetic {
+    fn neg() {}
 }

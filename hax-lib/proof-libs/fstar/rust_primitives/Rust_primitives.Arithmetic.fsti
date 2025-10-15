@@ -34,7 +34,7 @@ let wrapping_mul_u16 : u16 -> u16 -> u16 = mul_mod
 val saturating_mul_u16 : u16 -> u16 -> u16
 let overflowing_mul_u16 : u16 -> u16 -> u16 & bool = mul_overflow
 let rem_euclid_u16 (x: u16) (y: u16 {v y <> 0}): u16 = x %! y
-val pow_u16 : u16 -> u32 -> u16
+val pow_u16 : x:u16 -> y:u32 -> result : u16 {v x == 2 /\ v y < 16 ==> result == mk_u16 (pow2 (v y))}
 val count_ones_u16 : u16 -> r:u32{v r <= 16}
 
 let wrapping_add_u32 : u32 -> u32 -> u32 = add_mod
@@ -51,7 +51,7 @@ let wrapping_mul_u32 : u32 -> u32 -> u32 = mul_mod
 val saturating_mul_u32 : u32 -> u32 -> u32
 let overflowing_mul_u32 : u32 -> u32 -> u32 & bool = mul_overflow
 let rem_euclid_u32 (x: u32) (y: u32 {v y <> 0}): u32 = x %! y
-val pow_u32 : u32 -> u32 -> u32
+val pow_u32 : x:u32 -> y:u32 -> result : u32 {v x == 2 /\ v y <= 16 ==> result == mk_u32 (pow2 (v y))}
 val count_ones_u32 : u32 -> r:u32{v r <= 32}
 
 let wrapping_add_u64 : u64 -> u64 -> u64 = add_mod
@@ -129,7 +129,7 @@ let wrapping_mul_i16 : i16 -> i16 -> i16 = mul_mod
 val saturating_mul_i16 : i16 -> i16 -> i16
 let overflowing_mul_i16 : i16 -> i16 -> i16 & bool = mul_overflow
 let rem_euclid_i16 (x: i16) (y: i16 {v y <> 0}): i16 = x %! y
-val pow_i16 : i16 -> u32 -> i16
+val pow_i16 : x: i16 -> y:u32 -> result: i16 {v x == 2 /\ v y < 15 ==> (Math.Lemmas.pow2_lt_compat 15 (v y); result == mk_i16 (pow2 (v y)))}
 val count_ones_i16 : i16 -> r:u32{v r <= 16}
 val abs_i16 : i16 -> i16
 
@@ -143,7 +143,7 @@ let wrapping_mul_i32 : i32 -> i32 -> i32 = mul_mod
 val saturating_mul_i32 : i32 -> i32 -> i32
 let overflowing_mul_i32 : i32 -> i32 -> i32 & bool = mul_overflow
 let rem_euclid_i32 (x: i32) (y: i32 {v y <> 0}): i32 = x %! y
-val pow_i32 : i32 -> u32 -> i32
+val pow_i32 : x : i32 -> y:u32 -> result: i32 {v x == 2 /\ v y <= 16 ==> result == mk_i32 (pow2 (v y))}
 val count_ones_i32 : i32 -> r:u32{v r <= 32}
 val abs_i32 : i32 -> i32
 
@@ -193,3 +193,5 @@ let v_USIZE_MAX = mk_usize max_usize
 let v_ISIZE_MAX = mk_isize max_isize
 let v_ISIZE_MIN = mk_isize (minint ISIZE)
 let v_SIZE_BITS = mk_u32 size_bits
+
+let neg #t x = zero #t -! x
