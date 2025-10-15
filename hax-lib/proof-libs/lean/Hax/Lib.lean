@@ -335,7 +335,7 @@ def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
 end Rust_primitives.Hax.Machine_int
 
 @[simp]
-def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
+def Rust_primitives.Arithmetic.neg {α} [Neg α] (x:α) : Result α := pure (-x)
 
 
 /-
