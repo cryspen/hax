@@ -224,7 +224,7 @@ pub fn solve_trait<'tcx, S: UnderOwnerState<'tcx>>(
     trait_ref: rustc_middle::ty::PolyTraitRef<'tcx>,
 ) -> ImplExpr {
     let warn = |msg: &str| {
-        if !s.base().ty_alias_mode {
+        if !s.base().silence_resolution_errors {
             crate::warning!(s, "{}", msg)
         }
     };

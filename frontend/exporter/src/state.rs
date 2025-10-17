@@ -126,12 +126,8 @@ mod types {
         pub opt_def_id: Option<rustc_hir::def_id::DefId>,
         pub cache: Rc<RefCell<GlobalCache<'tcx>>>,
         pub tcx: ty::TyCtxt<'tcx>,
-        /// Rust doesn't enforce bounds on generic parameters in type
-        /// aliases. Thus, when translating type aliases, we need to
-        /// disable the resolution of implementation expressions. For
-        /// more details, please see
-        /// https://github.com/hacspec/hax/issues/707.
-        pub ty_alias_mode: bool,
+        /// Silence the warnings in case of trait resolution failure.
+        pub silence_resolution_errors: bool,
     }
 
     impl<'tcx> Base<'tcx> {
@@ -147,7 +143,7 @@ mod types {
                 // `opt_def_id` is used in `utils` for error reporting
                 opt_def_id: None,
                 local_ctx: Rc::new(RefCell::new(LocalContextS::new())),
-                ty_alias_mode: false,
+                silence_resolution_errors: false,
             }
         }
     }

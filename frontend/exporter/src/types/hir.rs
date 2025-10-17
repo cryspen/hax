@@ -645,7 +645,10 @@ pub enum ItemKind<Body: IsBody> {
         Ident,
         Generics<Body>,
         #[map({
-            let s = &s.with_base(Base { ty_alias_mode: true, ..s.base() });
+            // Rust doesn't enforce bounds on generic parameters in type aliases. Thus, when
+            // translating type aliases, we need to disable trait resolution errors. For more
+            // details, please see https://github.com/hacspec/hax/issues/707.
+            let s = &s.with_base(Base { silence_resolution_errors: true, ..s.base() });
             x.sinto(s)
         })]
         Ty,
