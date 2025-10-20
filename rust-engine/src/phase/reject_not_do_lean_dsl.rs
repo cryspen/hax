@@ -55,7 +55,7 @@ impl AstVisitorMut for RejectNotDoLeanDSLVisitor {
 
     fn visit_expr(&mut self, expr: &mut Expr) {
         use DoDSLExprKind::*;
-        let previous_dsl_expr_kind = self.dsl_expr_kind;
+        let parent_dsl_expr_kind = self.dsl_expr_kind;
         self.dsl_expr_kind = match (self.dsl_expr_kind, dsl_expr_kind(&expr.kind)) {
             // A do-expression cannot be upgraded to a do-statement, we throw an error
             (Expression, Statement) => {
@@ -76,11 +76,17 @@ impl AstVisitorMut for RejectNotDoLeanDSLVisitor {
             (_, kind) => kind,
         };
         self.visit_inner(expr);
-        self.dsl_expr_kind = previous_dsl_expr_kind;
+        self.dsl_expr_kind = parent_dsl_expr_kind;
     }
 
+    /// Visitor for types. Array lengths can be any (const) expression, so they are checked for dsl
+    /// patterns (as DoDSL-expressions)
     fn visit_ty(&mut self, ty: &mut Ty) {
         if let TyKind::Array { length, .. } = ty.kind_mut() {
+            // The Lean Backend does not support computation in array lengths yet.  It should be
+            // possible to have do-blocks, and treat them like constants. See
+            // https://github.com/cryspen/hax/issues/1713
+            self.dsl_expr_kind = DoDSLExprKind::Expression;
             self.visit_inner(&mut *length);
         }
     }
