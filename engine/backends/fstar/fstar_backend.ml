@@ -694,38 +694,36 @@ struct
         in
         F.term @@ F.AST.LetOperator ([ (F.id op, p, pexpr rhs) ], pexpr body)
     | Let { lhs; rhs; body; monadic = None } ->
-        let p =
-          match lhs with
-          | {
-           p = PConstruct { constructor = `TupleCons n1; fields; _ };
-           typ = TApp { ident = `TupleType n2; args };
-           _;
-          }
-            when n1 = n2 && n1 > 1 ->
+        let rec ascribe_tuple_components pattern =
+          match pattern with
+          | { p = PConstruct { constructor = `TupleCons n1; fields; _ }; _ }
+            when n1 > 1 ->
               (* F* type inference works better if the ascription is on each component intead of the whole tuple. *)
               F.pat
               @@ F.AST.PatTuple
-                   ( List.map2_exn
-                       ~f:(fun { pat } (GType t) ->
-                         F.pat
-                         @@ F.AST.PatAscribed (ppat pat, (pty pat.span t, None)))
-                       fields args,
+                   ( List.map
+                       ~f:(fun { pat } -> ascribe_tuple_components pat)
+                       fields,
                      false )
           | _ ->
               (* TODO: temp patch that remove annotation when we see an associated type *)
-              if [%matches? TAssociatedType _] @@ U.remove_tuple1 lhs.typ then
-                ppat lhs
+              if [%matches? TAssociatedType _] @@ U.remove_tuple1 pattern.typ
+              then ppat pattern
               else
                 (* let res : FStar_Parser_AST.pattern option =
-              let* x: Destruct.pat_PConstruct = Destruct.pat_PConstruct lhs in
+              let* x: Destruct.pat_PConstruct = Destruct.pat_PConstruct pattern in
               if [%matches `TupleCons _] x.constructor
               x.fields
             in  *)
                 F.pat
-                @@ F.AST.PatAscribed (ppat lhs, (pty lhs.span lhs.typ, None))
+                @@ F.AST.PatAscribed
+                     (ppat pattern, (pty pattern.span pattern.typ, None))
         in
         F.term
-        @@ F.AST.Let (NoLetQualifier, [ (None, (p, pexpr rhs)) ], pexpr body)
+        @@ F.AST.Let
+             ( NoLetQualifier,
+               [ (None, (ascribe_tuple_components lhs, pexpr rhs)) ],
+               pexpr body )
     | EffectAction _ -> .
     | Match { scrutinee; arms } ->
         F.term
