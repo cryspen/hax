@@ -19,6 +19,7 @@ Changes to the frontend:
 Change to cargo-hax:
 
 Changes to hax-lib:
+ - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
