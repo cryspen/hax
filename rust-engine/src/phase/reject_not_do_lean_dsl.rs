@@ -63,9 +63,8 @@ impl AstVisitorMut for RejectNotDoLeanDSLVisitor {
                     expr.clone(),
                     DiagnosticInfoKind::ExplicitRejection {
                         reason: "This interleaving of expression and statements does not fit in Lean's do-notation DSL.\
-                                 \nYou may try hoisting out let-bindings and control-flow.\
-                                 \nSee issue https://github.com/hacspec/hax/issues/1741"
-                            .to_string(),
+                                 \nYou may try hoisting out let-bindings and control-flow.".to_string(),
+                        issue_id: Some(1741),
                     },
                 );
                 Statement

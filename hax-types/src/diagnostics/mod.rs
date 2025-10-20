@@ -64,7 +64,7 @@ impl std::fmt::Display for Diagnostics {
 
             Kind::FStarParseError { fstar_snippet, details: _ } => write!(f, "The following code snippet could not be parsed as valid F*:\n```\n{fstar_snippet}\n```"),
 
-            Kind::ExplicitRejection { reason } => write!(f, "Explicit rejection by a phase in the Hax engine:\n{}", reason),
+            Kind::ExplicitRejection { reason , .. } => write!(f, "Explicit rejection by a phase in the Hax engine:\n{}", reason),
 
             _ => write!(f, "{:?}", self.kind),
         }?;
@@ -92,14 +92,15 @@ impl Kind {
     fn issue_number(&self) -> Option<u32> {
         match self {
             Kind::UnsafeBlock => None,
-            Kind::Unimplemented { issue_id, .. } => issue_id.clone(),
+            Kind::ExplicitRejection { issue_id, .. } | Kind::Unimplemented { issue_id, .. } => {
+                issue_id.clone()
+            }
             Kind::AssertionFailure { .. } => None,
             Kind::UnallowedMutRef => Some(420),
             Kind::UnsupportedMacro { .. } => None,
             Kind::ErrorParsingMacroInvocation { .. } => None,
             Kind::ClosureMutatesParentBindings { .. } => Some(1060),
             Kind::ArbitraryLHS => None,
-            Kind::ExplicitRejection { .. } => None,
             Kind::UnsupportedTupleSize { .. } => None,
             Kind::ExpectedMutRef => Some(420),
             Kind::NonTrivialAndMutFnInput => Some(1405),
@@ -155,6 +156,7 @@ pub enum Kind {
     /// A phase explicitely rejected this chunk of code
     ExplicitRejection {
         reason: String,
+        issue_id: Option<u32>,
     } = 8,
 
     /// A backend doesn't support a tuple size
