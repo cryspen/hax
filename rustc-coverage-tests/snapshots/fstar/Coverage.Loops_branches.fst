@@ -197,10 +197,17 @@ let impl: Core_models.Fmt.t_Debug t_DebugTest =
                             ())
                   in
                   let
+<<<<<<< HEAD
                   (tmp0: Core_models.Fmt.t_Formatter),
                   (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                     Core_models.Fmt.impl_11__write_fmt f
                       (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
+=======
+                  (tmp0: Core.Fmt.t_Formatter),
+                  (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                    Core.Fmt.impl_11__write_fmt f
+                      (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+>>>>>>> 6243d787 (Update snapshots.)
                           (let list = ["cool"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
@@ -325,10 +332,17 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
                             ())
                   in
                   let
+<<<<<<< HEAD
                   (tmp0: Core_models.Fmt.t_Formatter),
                   (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                     Core_models.Fmt.impl_11__write_fmt f
                       (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
+=======
+                  (tmp0: Core.Fmt.t_Formatter),
+                  (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                    Core.Fmt.impl_11__write_fmt f
+                      (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+>>>>>>> 6243d787 (Update snapshots.)
                           (let list = ["cool"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
@@ -401,11 +415,17 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
                   let _:Prims.unit = temp_0_ in
                   ())
         in
+<<<<<<< HEAD
         let
         (tmp0: Core_models.Fmt.t_Formatter),
         (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
           Core_models.Fmt.impl_11__write_fmt f
             (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
+=======
+        let (tmp0: Core.Fmt.t_Formatter), (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+          Core.Fmt.impl_11__write_fmt f
+            (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+>>>>>>> 6243d787 (Update snapshots.)
                 (let list = ["cool"] in
                   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                   Rust_primitives.Hax.array_of_list 1 list)
@@ -455,10 +475,17 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
                                 ())
                       in
                       let
+<<<<<<< HEAD
                       (tmp0: Core_models.Fmt.t_Formatter),
                       (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                         Core_models.Fmt.impl_11__write_fmt f
                           (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
+=======
+                      (tmp0: Core.Fmt.t_Formatter),
+                      (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                        Core.Fmt.impl_11__write_fmt f
+                          (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+>>>>>>> 6243d787 (Update snapshots.)
                               (let list = ["cool"] in
                                 FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                                 Rust_primitives.Hax.array_of_list 1 list)
