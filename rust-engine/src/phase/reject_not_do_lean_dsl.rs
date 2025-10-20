@@ -85,8 +85,10 @@ impl AstVisitorMut for RejectNotDoLeanDSLVisitor {
             // The Lean Backend does not support computation in array lengths yet.  It should be
             // possible to have do-blocks, and treat them like constants. See
             // https://github.com/cryspen/hax/issues/1713
+            let parent_dsl_expr_kind = self.dsl_expr_kind;
             self.dsl_expr_kind = DoDSLExprKind::Expression;
             self.visit_inner(&mut *length);
+            self.dsl_expr_kind = parent_dsl_expr_kind;
         }
     }
 }
