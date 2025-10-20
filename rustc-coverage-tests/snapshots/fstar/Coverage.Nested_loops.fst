@@ -21,10 +21,10 @@ let main (_: Prims.unit) : (i32 & Prims.unit) =
   let countdown:i32 = mk_i32 10 in
   Rust_primitives.Hax.while_loop (fun countdown ->
         let countdown:i32 = countdown in
-        countdown >. mk_i32 0 <: bool)
+        true)
     (fun countdown ->
         let countdown:i32 = countdown in
-        true)
+        countdown >. mk_i32 0 <: bool)
     (fun countdown ->
         let countdown:i32 = countdown in
         Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
@@ -33,16 +33,16 @@ let main (_: Prims.unit) : (i32 & Prims.unit) =
         let countdown:i32 = countdown in
         let a:i32 = mk_i32 100 in
         let b:i32 = mk_i32 100 in
-        let a, b:(i32 & i32) =
+        let (a: i32), (b: i32) =
           Rust_primitives.Hax.Folds.fold_range_cf (mk_i32 0)
             (mk_i32 50)
             (fun temp_0_ temp_1_ ->
-                let a, b:(i32 & i32) = temp_0_ in
+                let (a: i32), (b: i32) = temp_0_ in
                 let _:i32 = temp_1_ in
                 true)
             (a, b <: (i32 & i32))
             (fun temp_0_ temp_1_ ->
-                let a, b:(i32 & i32) = temp_0_ in
+                let (a: i32), (b: i32) = temp_0_ in
                 let _:i32 = temp_1_ in
                 if a <. mk_i32 30 <: bool
                 then

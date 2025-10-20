@@ -39,7 +39,7 @@ let impl: Core.Fmt.t_Debug t_DebugTest =
                   let _:Prims.unit = temp_0_ in
                   ())
         in
-        let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+        let (tmp0: Core.Fmt.t_Formatter), (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
           Core.Fmt.impl_11__write_fmt f
             (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
                 (let list = ["cool"] in
@@ -82,8 +82,9 @@ let impl: Core.Fmt.t_Debug t_DebugTest =
                                 let _:Prims.unit = temp_0_ in
                                 ())
                       in
-                      let tmp0, out:(Core.Fmt.t_Formatter &
-                        Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                      let
+                      (tmp0: Core.Fmt.t_Formatter),
+                      (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                         Core.Fmt.impl_11__write_fmt f
                           (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
                               (let list = ["cool"] in
@@ -179,8 +180,9 @@ let impl: Core.Fmt.t_Debug t_DebugTest =
                             let _:Prims.unit = temp_0_ in
                             ())
                   in
-                  let tmp0, out:(Core.Fmt.t_Formatter &
-                    Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                  let
+                  (tmp0: Core.Fmt.t_Formatter),
+                  (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                     Core.Fmt.impl_11__write_fmt f
                       (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["cool"] in
@@ -296,8 +298,9 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
                             let _:Prims.unit = temp_0_ in
                             ())
                   in
-                  let tmp0, out:(Core.Fmt.t_Formatter &
-                    Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                  let
+                  (tmp0: Core.Fmt.t_Formatter),
+                  (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                     Core.Fmt.impl_11__write_fmt f
                       (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["cool"] in
@@ -366,7 +369,7 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
                   let _:Prims.unit = temp_0_ in
                   ())
         in
-        let tmp0, out:(Core.Fmt.t_Formatter & Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+        let (tmp0: Core.Fmt.t_Formatter), (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
           Core.Fmt.impl_11__write_fmt f
             (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
                 (let list = ["cool"] in
@@ -416,8 +419,9 @@ let impl_1: Core.Fmt.t_Display t_DisplayTest =
                                 let _:Prims.unit = temp_0_ in
                                 ())
                       in
-                      let tmp0, out:(Core.Fmt.t_Formatter &
-                        Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
+                      let
+                      (tmp0: Core.Fmt.t_Formatter),
+                      (out: Core.Result.t_Result Prims.unit Core.Fmt.t_Error) =
                         Core.Fmt.impl_11__write_fmt f
                           (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
                               (let list = ["cool"] in
