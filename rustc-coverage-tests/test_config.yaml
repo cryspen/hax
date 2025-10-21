@@ -39,7 +39,7 @@ tests:
   condition::conditions:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   mcdc::condition_limit:
@@ -48,25 +48,24 @@ tests:
   mcdc::if_:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   mcdc::inlined_expressions:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   mcdc::nested_if:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
-    - lean
   mcdc::non_control_flow:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   abort:
@@ -323,7 +322,7 @@ tests:
     - lean
     - fstar
     - fstar-lax
-  
+
   while_early_ret:
     - json
     - fstar
