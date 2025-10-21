@@ -117,6 +117,7 @@ impl Printer for LeanPrinter {
                 binops::Index::index,
             ])),
             Box::new(FunctionsToConstants),
+            Box::new(LetPure),
         ]
     }
 }
@@ -492,7 +493,13 @@ set_option linter.unusedVariables false
                             .group()
                     }
                 }
-                ExprKind::Let { lhs, rhs, body } => {
+                ExprKind::Let { lhs, rhs, body }
+                | ExprKind::Resugared(ResugaredExprKind::LetPure { lhs, rhs, body }) => {
+                    let binder = if matches!(&**kind, ExprKind::Let { .. }) {
+                        " ←"
+                    } else {
+                        " :="
+                    };
                     docs![
                         docs![
                             docs![
@@ -511,9 +518,8 @@ set_option linter.unusedVariables false
                                 },
                             ]
                             .group(),
-                            // Pattern match on arrow+pure
-                            " ←",
-                            softline!(),
+                            binder,
+                            line!(),
                             rhs,
                             ";"
                         ]
@@ -545,44 +551,43 @@ set_option linter.unusedVariables false
                 .parens()
                 .group()
                 .nest(INDENT),
-                ExprKind::Resugared(resugared_expr_kind) => match resugared_expr_kind {
-                    ResugaredExprKind::BinOp {
-                        op,
-                        lhs,
-                        rhs,
-                        generic_args: _,
-                        bounds_impls: _,
-                        trait_: _,
-                    } => {
-                        // TODO : refactor this, moving this code directly in the `App` node (see
-                        // https://github.com/cryspen/hax/issues/1705)
-                        if *op == binops::Index::index {
-                            return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
-                                .nest(INDENT)
-                                .group();
-                        }
-                        let symbol = match *op {
-                            binops::add => "+?",
-                            binops::sub => "-?",
-                            binops::mul => "*?",
-                            binops::div => "/?",
-                            binops::rem => "%?",
-                            binops::shr => ">>>?",
-                            binops::bitand => "&&&?",
-                            binops::bitxor => "^^^?",
-                            binops::logical_op_and => "&&?",
-                            binops::logical_op_or => "||?",
-                            _ => unreachable!(),
-                        };
-                        docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
-                            .group()
+
+                ExprKind::Resugared(ResugaredExprKind::BinOp {
+                    op,
+                    lhs,
+                    rhs,
+                    generic_args: _,
+                    bounds_impls: _,
+                    trait_: _,
+                }) => {
+                    // TODO : refactor this, moving this code directly in the `App` node (see
+                    // https://github.com/cryspen/hax/issues/1705)
+                    if *op == binops::Index::index {
+                        return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
                             .nest(INDENT)
-                            .parens()
+                            .group();
                     }
-                    ResugaredExprKind::Tuple { .. } => {
-                        unreachable!("This printer doesn't use the tuple resugaring")
-                    }
-                },
+                    let symbol = match *op {
+                        binops::add => "+?",
+                        binops::sub => "-?",
+                        binops::mul => "*?",
+                        binops::div => "/?",
+                        binops::rem => "%?",
+                        binops::shr => ">>>?",
+                        binops::bitand => "&&&?",
+                        binops::bitxor => "^^^?",
+                        binops::logical_op_and => "&&?",
+                        binops::logical_op_or => "||?",
+                        _ => unreachable!(),
+                    };
+                    docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
+                        .group()
+                        .nest(INDENT)
+                        .parens()
+                }
+                ExprKind::Resugared(ResugaredExprKind::Tuple { .. }) => {
+                    unreachable!("This printer doesn't use the tuple resugaring")
+                }
                 ExprKind::Match { scrutinee, arms } => docs![
                     docs![
                         "match",
@@ -851,15 +856,15 @@ set_option linter.unusedVariables false
                         generics,
                         params,
                         docs![": Result", line!(), &body.ty].group(),
-                        reflow!(" := "),
+                        line!(),
+                        ":= do"
                     ]
                     .group(),
                     line!(),
-                    self.do_block(body)
+                    body
                 ]
                 .group()
                 .nest(INDENT),
-
                 ItemKind::TyAlias {
                     name,
                     generics: _,

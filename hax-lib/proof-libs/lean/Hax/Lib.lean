@@ -974,6 +974,10 @@ abbrev Alloc.String.String : Type := string_indirection
 
 abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
 
+inductive Core.Option.Option (α : Type) where
+| Some (x: α)
+| None
+
 -- Assume, Assert
 
 namespace Hax_lib
