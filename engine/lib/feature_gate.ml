@@ -45,7 +45,8 @@ struct
           with S0.E err ->
             let thir_span = Span.to_thir span in
             let kind : Diagnostics.kind =
-              ExplicitRejection { reason = S0.explain err feature_kind }
+              ExplicitRejection
+                { reason = S0.explain err feature_kind; issue_id = None }
             in
             let context : Diagnostics.Context.t =
               Phase S0.metadata.current_phase

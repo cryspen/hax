@@ -125,10 +125,7 @@ pub mod wrappers {
     /// Use this macro in an implementation of `AstVisitorMut` to get automatic spans and error handling.
     macro_rules! setup_error_handling_impl {
         () => {
-            fn visit<'a, T: $crate::ast::visitors::AstVisitableInfallible>(
-                &'a mut self,
-                x: &mut T,
-            ) {
+            fn visit<T: $crate::ast::visitors::AstVisitableInfallible>(&mut self, x: &mut T) {
                 $crate::ast::visitors::wrappers::SpanWrapper(
                     &mut $crate::ast::visitors::wrappers::ErrorWrapper(self),
                 )
@@ -233,7 +230,7 @@ mod replaced {
         #[visitable_group(
             visitor(drive_map(
                 /// An mutable visitor that visits the AST for hax.
-                /// 
+                ///
                 /// ```rust,ignore
                 /// use crate::ast::{diagnostics::*, visitors::*};
                 /// #[setup_error_handling_struct]
@@ -249,7 +246,7 @@ mod replaced {
                 /// impl AstVisitorMut for MyVisitor {
                 ///     setup_error_handling_impl!();
                 /// }
-                /// 
+                ///
                 /// // MyVisitor::visit(my_ast_node)
                 /// ```
                 &mut AstVisitorMut

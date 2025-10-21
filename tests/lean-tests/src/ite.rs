@@ -8,7 +8,7 @@ fn test1() -> i32 {
 }
 
 fn test2(b: bool) -> i32 {
-    let x = 1 + (if true { 0 } else { 1 });
+    let x = if b { 0 } else { 9 };
     let mut y = 0;
     if true {
         y = y + x + 1
