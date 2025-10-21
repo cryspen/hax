@@ -65,6 +65,19 @@ def ofOption {α} (x:Option α) (e: Error) : Result α := match x with
   | .some v => pure v
   | .none => .fail e
 
+@[reducible]
+def isOk {α : Type} (x: Result α) : Bool := match x with
+| .ok _ => true
+| _ => false
+
+@[reducible]
+def of_isOk {α : Type} (x: Result α) (h: Result.isOk x): α :=
+  match x with
+  | .ok v => v
+
+@[simp, spec]
+def ok_of_isOk {α : Type} (v : α) (h: isOk (ok v)): (ok v).of_isOk h = v := by rfl
+
 @[simp]
 instance instMonad : Monad Result where
   pure := pure
@@ -117,7 +130,6 @@ instance instWPMonad : WPMonad Result (.except Error .pure) where
 @[default_instance]
 instance instCoe {α} : Coe α (Result α) where
   coe x := pure x
-
 
 @[simp, spec, default_instance]
 instance {α} : Coe (Result (Result α)) (Result α) where
@@ -961,21 +973,6 @@ abbrev string_indirection : Type := String
 abbrev Alloc.String.String : Type := string_indirection
 
 abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
-
--- Tactics
-macro "hax_bv_decide" : tactic => `(tactic| (
-  any_goals (injections <;> subst_vars)
-  all_goals try (
-    simp [Int32.eq_iff_toBitVec_eq,
-          Int32.lt_iff_toBitVec_slt,
-          Int32.le_iff_toBitVec_sle,
-          Int64.eq_iff_toBitVec_eq,
-          Int64.lt_iff_toBitVec_slt,
-          Int64.le_iff_toBitVec_sle] at * <;>
-    bv_decide (config := {timeout := 1});
-    done
- )))
-
 
 -- Assume, Assert
 
