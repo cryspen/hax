@@ -10,9 +10,11 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    phase::explicit_monadic::ExplicitMonadic,
-    phase::reject_not_do_lean_dsl::RejectNotDoLeanDSL,
-    phase::unreachable_by_invariant,
+    phase::{
+        explicit_monadic::ExplicitMonadic, reject_not_do_lean_dsl::RejectNotDoLeanDSL,
+        unreachable_by_invariant,
+    },
+    printer::pretty_ast::DebugJSON,
 };
 
 mod binops {
@@ -317,7 +319,7 @@ const _: () = {
         }
 
         fn do_block<A: 'static + Clone, D: ToDocument<Self, A>>(&self, body: D) -> DocBuilder<A> {
-            docs!["do", line!(), body].nest(INDENT).group()
+            docs!["do", line!(), body].group()
         }
     }
 
@@ -443,16 +445,10 @@ set_option linter.unusedVariables false
                     bounds_impls: _,
                     trait_: _,
                 } => {
-                    let generic_args = (!generic_args.is_empty()).then_some(
-                        docs![line!(), intersperse!(generic_args, line!())]
-                            .nest(INDENT)
-                            .group(),
-                    );
-                    let args = (!args.is_empty()).then_some(
-                        docs![line!(), intersperse!(args, line!())]
-                            .nest(INDENT)
-                            .group(),
-                    );
+                    let generic_args = (!generic_args.is_empty())
+                        .then_some(docs![line!(), intersperse!(generic_args, line!())].group());
+                    let args = (!args.is_empty())
+                        .then_some(docs![line!(), intersperse!(args, line!())].group());
                     docs![head, generic_args, args]
                         .parens()
                         .nest(INDENT)
@@ -736,7 +732,7 @@ set_option linter.unusedVariables false
                 TyKind::Array { ty, length } => {
                     let v = length.kind().clone();
                     let ExprKind::Literal(int_lit @ Literal::Int { .. }) = v else {
-                        emit_error!(issue 1713, "Unsupported arrays where the size is not an integer literal")
+                        todo!("{}", DebugJSON(length))
                     };
                     docs!["RustArray", line!(), ty, line!(), &int_lit]
                         .parens()

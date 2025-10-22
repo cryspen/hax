@@ -44,13 +44,6 @@ enum MonadicStatus {
     Value,
 }
 
-/// The entry point for this phase are function bodies, where a monadic computation is expected
-impl Default for MonadicStatus {
-    fn default() -> Self {
-        Self::Computation
-    }
-}
-
 impl Phase for ExplicitMonadic {
     fn apply(&self, items: &mut Vec<Item>) {
         ExplicitMonadicVisitor::default().visit(items)
@@ -247,5 +240,11 @@ impl AstVisitorMut for ExplicitMonadicVisitor {
         // Entry points are functions (items and impl items), which start with a `do` block,
         // therefore a monadic computation
         self.visit_expr_coerce(MonadicStatus::Computation, x)
+    }
+
+    fn visit_ty(&mut self, x: &mut Ty) {
+        if let TyKind::Array { length, .. } = x.kind_mut() {
+            self.visit_expr_coerce(MonadicStatus::Value, length);
+        };
     }
 }
