@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Changes to the Rust Engine:
  - Add a rejection phase for interleaving of expressions and statements not
    supported by the Lean do-notation syntax (#1739).
+ - Add a phase to handle the monadic encoding: it explicitly introduces two new
+   Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
+   lift monadic computations into values) (#1746)
 
 Changes to the frontend:
 
@@ -20,6 +23,8 @@ Changes to hax-lib:
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
  - Add support for base-expressions of structs (#1736)
+ - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
+   not introduce extra `do` block (#1746)
 
 Miscellaneous:
 
