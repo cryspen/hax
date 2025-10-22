@@ -10,12 +10,12 @@
 //! something like `def f (x:u32) : Result u32`. There are two challenges in this encoding :
 //!
 //! 1. Some expressions cannot panic (literals, consts, constructors for enums, etc) and should be
-//! wrapped in the monad[^coe]. This phase inserts explicit calls to `pure` to that aim.
+//!    wrapped in the monad[^coe]. This phase inserts explicit calls to `pure` to that aim.
 //!
 //! 2. Language constructs (if-then-else, `match`, etc.) and rust functions still expect rust values
-//! as input, not monadic ones. This phase inserts explicit calls to `lift` to materialize the
-//! sub-expressions that return a monadic result where a value is expected. The Lean backend turns
-//! them into explicit lifts `(← ..)`, which implicitly introduces a monadic bind
+//!    as input, not monadic ones. This phase inserts explicit calls to `lift` to materialize the
+//!    sub-expressions that return a monadic result where a value is expected. The Lean backend turns
+//!    them into explicit lifts `(← ..)`, which implicitly introduces a monadic bind
 //!
 //! This phase expects all function and closure bodies to be monadic computations by default.
 //!
@@ -137,7 +137,7 @@ impl ExplicitMonadicVisitor {
             }
             ExprKind::Match { scrutinee, arms } => {
                 self.visit_expr_coerce(MonadicStatus::Value, scrutinee);
-                arms.into_iter()
+                arms.iter_mut()
                     // The constraint is propagated on each arm
                     .for_each(|arm| {
                         if let Some(Guard {
@@ -189,7 +189,7 @@ impl ExplicitMonadicVisitor {
             }
             ExprKind::Construct { fields, base, .. } => {
                 fields
-                    .into_iter()
+                    .iter_mut()
                     .map(|(_, e)| e)
                     .chain(base.iter_mut())
                     .for_each(|expr| self.visit_expr_coerce(MonadicStatus::Value, expr));
