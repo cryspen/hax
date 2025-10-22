@@ -445,14 +445,37 @@ set_option linter.unusedVariables false
                     bounds_impls: _,
                     trait_: _,
                 } => {
-                    let generic_args = (!generic_args.is_empty())
-                        .then_some(docs![line!(), intersperse!(generic_args, line!())].group());
-                    let args = (!args.is_empty())
-                        .then_some(docs![line!(), intersperse!(args, line!())].group());
-                    docs![head, generic_args, args]
-                        .parens()
-                        .nest(INDENT)
-                        .group()
+                    if let Some((arg, [])) = args.split_first()
+                        && matches!(
+                            head.kind(),
+                            ExprKind::GlobalId(
+                                crate::names::rust_primitives::hax::explicit_monadic::lift
+                            )
+                        )
+                        && generic_args.is_empty()
+                    {
+                        docs![reflow!("← "), arg].parens()
+                    } else if let Some((arg, [])) = args.split_first()
+                        && matches!(
+                            head.kind(),
+                            ExprKind::GlobalId(
+                                crate::names::rust_primitives::hax::explicit_monadic::pure
+                            )
+                        )
+                        && generic_args.is_empty()
+                    {
+                        docs![reflow!("pure "), arg].parens()
+                    } else {
+                        // Fallback for any application
+                        let generic_args = (!generic_args.is_empty())
+                            .then_some(docs![line!(), intersperse!(generic_args, line!())].group());
+                        let args = (!args.is_empty())
+                            .then_some(docs![line!(), intersperse!(args, line!())].group());
+                        docs![head, generic_args, args]
+                            .parens()
+                            .nest(INDENT)
+                            .group()
+                    }
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
@@ -524,12 +547,6 @@ set_option linter.unusedVariables false
                         line!(),
                         body,
                     ]
-                }
-                ExprKind::GlobalId(crate::names::rust_primitives::hax::explicit_monadic::lift) => {
-                    docs!["←"]
-                }
-                ExprKind::GlobalId(crate::names::rust_primitives::hax::explicit_monadic::pure) => {
-                    docs!["pure"]
                 }
                 ExprKind::GlobalId(global_id) => docs![global_id],
                 ExprKind::LocalId(local_id) => docs![local_id],
