@@ -47,49 +47,49 @@ From Core Require Import Core.
 
 
 
-Definition math_integers (x : t_Int) `{andb (f_gt (x) (impl_Int__e_unsafe_from_str (("0"%string : string)))) (f_lt (x) (impl_Int__e_unsafe_from_str (("16"%string : string)))) = true} : t_u8 :=
-  let _ : t_Int := f_lift ((3 : t_usize)) in
-  let e_neg_dec := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
-  let e_pos_dec := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
-  let e_neg_hex := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
-  let e_pos_hex := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
-  let e_neg_octal := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
-  let e_pos_octal := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
-  let e_neg_bin := impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
-  let e_pos_bin := impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
-  let _ := f_gt (impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string))) (impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string))) in
-  let _ := f_lt (x) (x) in
-  let _ := f_ge (x) (x) in
-  let _ := f_le (x) (x) in
-  let _ := f_ne (x) (x) in
-  let _ := f_eq (x) (x) in
-  let _ := f_add (x) (x) in
-  let _ := f_sub (x) (x) in
-  let _ := f_mul (x) (x) in
-  let _ := f_div (x) (x) in
-  let _ : t_i16 := impl_Int__to_i16 (x) in
-  let _ : t_i32 := impl_Int__to_i32 (x) in
-  let _ : t_i64 := impl_Int__to_i64 (x) in
-  let _ : t_i128 := impl_Int__to_i128 (x) in
-  let _ : t_isize := impl_Int__to_isize (x) in
-  let _ : t_u16 := impl_Int__to_u16 (x) in
-  let _ : t_u32 := impl_Int__to_u32 (x) in
-  let _ : t_u64 := impl_Int__to_u64 (x) in
-  let _ : t_u128 := impl_Int__to_u128 (x) in
-  let _ : t_usize := impl_Int__to_usize (x) in
-  impl_Int__to_u8 (f_add (x) (f_mul (x) (x))).
+Definition math_integers (x : hax_lib.int.t_Int) `{andb (core.cmp.PartialOrd__f_gt (x) (hax_lib.int.impl_Int__e_unsafe_from_str (("0"%string : string)))) (core.cmp.PartialOrd__f_lt (x) (hax_lib.int.impl_Int__e_unsafe_from_str (("16"%string : string)))) = true} : t_u8 :=
+  let _ : hax_lib.int.t_Int := hax_lib.abstraction.Abstraction__f_lift ((3 : t_usize)) in
+  let e_neg_dec := hax_lib.int.impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_dec := hax_lib.int.impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let e_neg_hex := hax_lib.int.impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_hex := hax_lib.int.impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let e_neg_octal := hax_lib.int.impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_octal := hax_lib.int.impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let e_neg_bin := hax_lib.int.impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string)) in
+  let e_pos_bin := hax_lib.int.impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string)) in
+  let _ := core.cmp.PartialOrd__f_gt (hax_lib.int.impl_Int__e_unsafe_from_str (("-340282366920938463463374607431768211455000"%string : string))) (hax_lib.int.impl_Int__e_unsafe_from_str (("340282366920938463463374607431768211455000"%string : string))) in
+  let _ := core.cmp.PartialOrd__f_lt (x) (x) in
+  let _ := core.cmp.PartialOrd__f_ge (x) (x) in
+  let _ := core.cmp.PartialOrd__f_le (x) (x) in
+  let _ := core.cmp.PartialEq__f_ne (x) (x) in
+  let _ := core.cmp.PartialEq__f_eq (x) (x) in
+  let _ := core.ops.arith.Add__f_add (x) (x) in
+  let _ := core.ops.arith.Sub__f_sub (x) (x) in
+  let _ := core.ops.arith.Mul__f_mul (x) (x) in
+  let _ := core.ops.arith.Div__f_div (x) (x) in
+  let _ : t_i16 := hax_lib.int.impl_Int__to_i16 (x) in
+  let _ : t_i32 := hax_lib.int.impl_Int__to_i32 (x) in
+  let _ : t_i64 := hax_lib.int.impl_Int__to_i64 (x) in
+  let _ : t_i128 := hax_lib.int.impl_Int__to_i128 (x) in
+  let _ : t_isize := hax_lib.int.impl_Int__to_isize (x) in
+  let _ : t_u16 := hax_lib.int.impl_Int__to_u16 (x) in
+  let _ : t_u32 := hax_lib.int.impl_Int__to_u32 (x) in
+  let _ : t_u64 := hax_lib.int.impl_Int__to_u64 (x) in
+  let _ : t_u128 := hax_lib.int.impl_Int__to_u128 (x) in
+  let _ : t_usize := hax_lib.int.impl_Int__to_usize (x) in
+  hax_lib.int.impl_Int__to_u8 (core.ops.arith.Add__f_add (x) (core.ops.arith.Mul__f_mul (x) (x))).
 
 Definition panic_with_msg '(_ : unit) : unit :=
-  never_to_any (panic_fmt (impl_1__new_const ([("with msg"%string : string)]))).
+  rust_primitives.hax.never_to_any (core.panicking.panic_fmt (core.fmt.rt.impl_1__new_const ([("with msg"%string : string)]))).
 
-Record Foo_record : Type :=
+Record Foo_Foo_record : Type :=
   {
-    Foo_f_field : t_u8;
+    Foo_Foo_f_Foo_field : t_u8;
   }.
 
 
-#[export] Instance settable_Foo_record : Settable _ :=
-  settable! (Build_Foo_record) <Foo_f_field>.
+#[export] Instance settable_Foo_Foo_record : Settable _ :=
+  settable! (Build_Foo_Foo_record) <Foo_Foo_f_Foo_field>.
 
 
 
@@ -98,7 +98,7 @@ Record Foo_record : Type :=
 
 
 Definition v_CONSTANT : t_Foo :=
-  Foo ((3 : t_u8)).
+  Foo_Foo ((3 : t_u8)).
 
 Definition numeric '(_ : unit) : unit :=
   let _ : t_usize := (123 : t_usize) in
@@ -121,8 +121,8 @@ Definition patterns '(_ : unit) : unit :=
   | _ =>
     tt
   end in
-  let _ := match Foo ((4 : t_u8)) with
-  | Foo (3) =>
+  let _ := match Foo_Foo ((4 : t_u8)) with
+  | Foo_Foo (3) =>
     tt
   | _ =>
     tt
@@ -130,18 +130,18 @@ Definition patterns '(_ : unit) : unit :=
   tt.
 
 Definition casts (x8 : t_u8) (x16 : t_u16) (x32 : t_u32) (x64 : t_u64) (xs : t_usize) : unit :=
-  let _ : t_u64 := f_add (f_add (f_add (f_add (cast (x8)) (cast (x16))) (cast (x32))) (x64)) (cast (xs)) in
-  let _ : t_u32 := f_add (f_add (f_add (f_add (cast (x8)) (cast (x16))) (x32)) (cast (x64))) (cast (xs)) in
-  let _ : t_u16 := f_add (f_add (f_add (f_add (cast (x8)) (x16)) (cast (x32))) (cast (x64))) (cast (xs)) in
-  let _ : t_u8 := f_add (f_add (f_add (f_add (x8) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
-  let _ : t_i64 := f_add (f_add (f_add (f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
-  let _ : t_i32 := f_add (f_add (f_add (f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
-  let _ : t_i16 := f_add (f_add (f_add (f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
-  let _ : t_i8 := f_add (f_add (f_add (f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
+  let _ : t_u64 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (cast (x16))) (cast (x32))) (x64)) (cast (xs)) in
+  let _ : t_u32 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (cast (x16))) (x32)) (cast (x64))) (cast (xs)) in
+  let _ : t_u16 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (x16)) (cast (x32))) (cast (x64))) (cast (xs)) in
+  let _ : t_u8 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (x8) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
+  let _ : t_i64 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
+  let _ : t_i32 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
+  let _ : t_i16 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
+  let _ : t_i8 := core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (core.ops.arith.Add__f_add (cast (x8)) (cast (x16))) (cast (x32))) (cast (x64))) (cast (xs)) in
   tt.
 
 Definition empty_array '(_ : unit) : unit :=
-  let _ : t_Slice t_u8 := unsize ([]) in
+  let _ : t_Slice t_u8 := rust_primitives.unsize ([]) in
   tt.
 
 Definition fn_pointer_cast '(_ : unit) : unit :=
