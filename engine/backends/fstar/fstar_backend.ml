@@ -710,11 +710,6 @@ struct
               if [%matches? TAssociatedType _] @@ U.remove_tuple1 pattern.typ
               then ppat pattern
               else
-                (* let res : FStar_Parser_AST.pattern option =
-              let* x: Destruct.pat_PConstruct = Destruct.pat_PConstruct pattern in
-              if [%matches `TupleCons _] x.constructor
-              x.fields
-            in  *)
                 F.pat
                 @@ F.AST.PatAscribed
                      (ppat pattern, (pty pattern.span pattern.typ, None))
