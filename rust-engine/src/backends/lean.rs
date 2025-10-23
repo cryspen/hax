@@ -505,7 +505,7 @@ set_option linter.unusedVariables false
                 }
                 ExprKind::Let { lhs, rhs, body }
                 | ExprKind::Resugared(ResugaredExprKind::LetPure { lhs, rhs, body }) => {
-                    let binder = if matches!(&**kind, ExprKind::Let { .. }) {
+                    let binder = if matches!(**kind, ExprKind::Let { .. }) {
                         " ←"
                     } else {
                         " :="
