@@ -169,8 +169,6 @@ impl AstVisitorMut for LetPure {
                 rhs: pure_rhs.clone(),
                 body: body.clone(),
             })
-        } else {
-            return;
         }
     }
 }

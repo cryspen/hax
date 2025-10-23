@@ -14,7 +14,6 @@ use crate::{
         explicit_monadic::ExplicitMonadic, reject_not_do_lean_dsl::RejectNotDoLeanDSL,
         unreachable_by_invariant,
     },
-    printer::pretty_ast::DebugJSON,
 };
 
 mod binops {
