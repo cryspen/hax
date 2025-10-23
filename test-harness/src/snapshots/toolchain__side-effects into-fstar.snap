@@ -229,7 +229,7 @@ let local_mutation (x: u32) : u32 =
     in
     Core_models.Num.impl_u32__wrapping_add x y
   else
-    let (x, y: (u32 & u32)), (hoist7: u32) =
+    let ((x: u32), (y: u32)), (hoist7: u32) =
       match x <: u32 with
       | Rust_primitives.Integers.MkInt 12 ->
         let y:u32 = Core_models.Num.impl_u32__wrapping_add x y in
