@@ -556,14 +556,7 @@ set_option linter.unusedVariables false
                 .group()
                 .nest(INDENT),
 
-                ExprKind::Resugared(ResugaredExprKind::BinOp {
-                    op,
-                    lhs,
-                    rhs,
-                    generic_args: _,
-                    bounds_impls: _,
-                    trait_: _,
-                }) => {
+                ExprKind::Resugared(ResugaredExprKind::BinOp { op, lhs, rhs, .. }) => {
                     // TODO : refactor this, moving this code directly in the `App` node (see
                     // https://github.com/cryspen/hax/issues/1705)
                     if *op == binops::Index::index {
