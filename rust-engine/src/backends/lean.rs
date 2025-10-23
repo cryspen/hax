@@ -514,8 +514,8 @@ set_option linter.unusedVariables false
                             docs![
                                 "let",
                                 line!(),
-                                // TODO: Remove this pattern-matching. See
-                                // https://github.com/cryspen/hax/issues/1620
+                                // TODO: Improve treatment of patterns in general. see
+                                // https://github.com/cryspen/hax/issues/1712
                                 match *lhs.kind.clone() {
                                     PatKind::Binding {
                                         mutable: false,
