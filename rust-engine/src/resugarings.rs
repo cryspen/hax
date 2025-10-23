@@ -151,8 +151,9 @@ impl Resugaring for Tuples {
 pub struct LetPure;
 
 impl AstVisitorMut for LetPure {
-    fn enter_expr_kind(&mut self, x: &mut ExprKind) {
-        let ExprKind::Let { lhs, rhs, body }: &mut ExprKind = x else {
+    fn enter_expr_kind(&mut self, expr: &mut ExprKind) {
+        const PURE: GlobalId = crate::names::rust_primitives::hax::explicit_monadic::pure;
+        let ExprKind::Let { lhs, rhs, body }: &mut ExprKind = expr else {
             return;
         };
         let ExprKind::App {
@@ -165,20 +166,16 @@ impl AstVisitorMut for LetPure {
         else {
             return;
         };
-        if !generic_args.is_empty() || !bounds_impls.is_empty() {
-            return;
-        };
-        let ExprKind::GlobalId(crate::names::rust_primitives::hax::explicit_monadic::pure) =
-            &*head.kind
-        else {
-            return;
-        };
-        let [pure_rhs] = &args[..] else { return };
-        *x = ExprKind::Resugared(ResugaredExprKind::LetPure {
-            lhs: lhs.clone(),
-            rhs: pure_rhs.clone(),
-            body: body.clone(),
-        })
+        match (&args[..], &generic_args[..], &bounds_impls[..], head.kind()) {
+            ([pure_rhs], [], [], ExprKind::GlobalId(PURE)) => {
+                *expr = ExprKind::Resugared(ResugaredExprKind::LetPure {
+                    lhs: lhs.clone(),
+                    rhs: pure_rhs.clone(),
+                    body: body.clone(),
+                })
+            }
+            _ => return,
+        }
     }
 }
 
