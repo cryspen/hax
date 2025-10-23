@@ -23,6 +23,10 @@ mod binops {
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
 
+use crate::names::rust_primitives::hax::explicit_monadic::{lift, pure};
+const LIFT: GlobalId = lift;
+const PURE: GlobalId = pure;
+
 /// The Lean printer
 #[setup_span_handling_struct]
 #[derive(Default, Clone)]
@@ -445,36 +449,23 @@ set_option linter.unusedVariables false
                     bounds_impls: _,
                     trait_: _,
                 } => {
-                    if let Some((arg, [])) = args.split_first()
-                        && matches!(
-                            head.kind(),
-                            ExprKind::GlobalId(
-                                crate::names::rust_primitives::hax::explicit_monadic::lift
-                            )
-                        )
-                        && generic_args.is_empty()
-                    {
-                        docs![reflow!("← "), arg].parens()
-                    } else if let Some((arg, [])) = args.split_first()
-                        && matches!(
-                            head.kind(),
-                            ExprKind::GlobalId(
-                                crate::names::rust_primitives::hax::explicit_monadic::pure
-                            )
-                        )
-                        && generic_args.is_empty()
-                    {
-                        docs![reflow!("pure "), arg].parens()
-                    } else {
-                        // Fallback for any application
-                        let generic_args = (!generic_args.is_empty())
-                            .then_some(docs![line!(), intersperse!(generic_args, line!())].group());
-                        let args = (!args.is_empty())
-                            .then_some(docs![line!(), intersperse!(args, line!())].group());
-                        docs![head, generic_args, args]
-                            .parens()
-                            .nest(INDENT)
-                            .group()
+                    match (&args[..], &generic_args[..], head.kind()) {
+                        ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
+                        ([arg], [], ExprKind::GlobalId(PURE)) => {
+                            docs![reflow!("pure "), arg].parens()
+                        }
+                        _ => {
+                            // Fallback for any application
+                            let generic_args = (!generic_args.is_empty()).then_some(
+                                docs![line!(), intersperse!(generic_args, line!())].group(),
+                            );
+                            let args = (!args.is_empty())
+                                .then_some(docs![line!(), intersperse!(args, line!())].group());
+                            docs![head, generic_args, args]
+                                .parens()
+                                .nest(INDENT)
+                                .group()
+                        }
                     }
                 }
                 ExprKind::Literal(literal) => docs![literal],
