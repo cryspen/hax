@@ -3,8 +3,8 @@ module Coverage.Attr.Trait_impl_inherit
 open Core
 open FStar.Mul
 
-(* item error backend: ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
-
+(* item error backend: Explicit rejection by a phase in the Hax engine:
+a node of kind [Trait_item_default] have been found in the AST
 
 Note: the error was labeled with context `reject_TraitItemDefault`.
 

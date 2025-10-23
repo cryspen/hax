@@ -35,8 +35,8 @@ type main__t_InStruct = { main__f_in_struct_field:u32 }
 
 let main__v_IN_CONST: u32 = mk_u32 1234
 
-(* item error backend: ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
-
+(* item error backend: Explicit rejection by a phase in the Hax engine:
+a node of kind [Trait_item_default] have been found in the AST
 
 Note: the error was labeled with context `reject_TraitItemDefault`.
 
