@@ -153,28 +153,24 @@ pub struct LetPure;
 impl AstVisitorMut for LetPure {
     fn enter_expr_kind(&mut self, expr: &mut ExprKind) {
         const PURE: GlobalId = crate::names::rust_primitives::hax::explicit_monadic::pure;
-        let ExprKind::Let { lhs, rhs, body }: &mut ExprKind = expr else {
+        if let ExprKind::Let { lhs, rhs, body } = expr
+            && let ExprKind::App {
+                head,
+                args,
+                generic_args,
+                bounds_impls,
+                trait_: None,
+            } = rhs.kind()
+            && *head.kind() == ExprKind::GlobalId(PURE)
+            && let ([pure_rhs], [], []) = (&args[..], &generic_args[..], &bounds_impls[..])
+        {
+            *expr = ExprKind::Resugared(ResugaredExprKind::LetPure {
+                lhs: lhs.clone(),
+                rhs: pure_rhs.clone(),
+                body: body.clone(),
+            })
+        } else {
             return;
-        };
-        let ExprKind::App {
-            head,
-            args,
-            generic_args,
-            bounds_impls,
-            trait_: None,
-        } = rhs.kind()
-        else {
-            return;
-        };
-        match (&args[..], &generic_args[..], &bounds_impls[..], head.kind()) {
-            ([pure_rhs], [], [], ExprKind::GlobalId(PURE)) => {
-                *expr = ExprKind::Resugared(ResugaredExprKind::LetPure {
-                    lhs: lhs.clone(),
-                    rhs: pure_rhs.clone(),
-                    body: body.clone(),
-                })
-            }
-            _ => return,
         }
     }
 }
