@@ -57,6 +57,18 @@ pub enum ResugaredExprKind {
     /// # Example:
     /// `(a, b)`
     Tuple(Vec<Expr>),
+    /// A let-binding of a "pure" (non-panicking) expression
+    ///
+    /// # Example:
+    /// `let x = 9; x + 0`
+    LetPure {
+        /// The left-hand side of the `let` expression. (`x` in the example)
+        lhs: Pat,
+        /// The right-hand side of the `let` expression. (`9` in the example)
+        rhs: Expr,
+        /// The body of the `let`. (`x + 0` in the example)
+        body: Expr,
+    },
 }
 
 /// Resugared variants for patterns. This represent extra printing-only patterns, see [`super::PatKind::Resugared`].

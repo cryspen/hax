@@ -1,31 +1,106 @@
 use super::State;
 
-// pub(super) fn to_le_u32s<const L: usize>(bytes: &[u8]) -> [u32; L] {
-//     assert_eq!(L, bytes.len() / 4);
-//     let mut out = [0; L];
-//     for (i, block) in bytes.chunks(4).enumerate() {
-//         out[i] = u32::from_le_bytes(block.try_into().unwrap());
-//     }
-//     out
-// }
-
-macro_rules! to_le_u32s_impl {
-    ($name:ident,$l:literal) => {
-        pub(super) fn $name(bytes: &[u8]) -> [u32; $l] {
-            // assert_eq!($l, bytes.len() / 4);
-            let mut out = [0; $l];
-            // for (i, block) in bytes.chunks(4).enumerate() {
-            for i in 0..$l {
-                out[i] = u32::from_le_bytes(bytes[4 * i..4 * i + 4].try_into().unwrap());
-            }
-            out
-        }
-    };
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.to_le_u32s_3.spec bytes :
+  bytes.size = 12 →
+  ⦃ ⌜ True ⌝ ⦄
+  (Lean_chacha20.Hacspec_helper.to_le_u32s_3 bytes)
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  intros
+  open Spec.Nat in
+    mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_3]
+     <;> subst_eqs
+     <;> simp [Vector.size, USize.lt_iff_toNat_lt, USize.le_iff_toNat_le] at *
+    <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try rw [h_size])
+    <;> (try omega)
+  done
+"
+)]
+pub(super) fn to_le_u32s_3(bytes: &[u8]) -> [u32; 3] {
+    // assert_eq!($l, bytes.len() / 4);
+    let mut out = [0; 3];
+    // for (i, block) in bytes.chunks(4).enumerate() {
+    for i in 0..3 {
+        out[i] = u32::from_le_bytes(bytes[4 * i..4 * i + 4].try_into().unwrap());
+    }
+    out
 }
-to_le_u32s_impl!(to_le_u32s_3, 3);
-to_le_u32s_impl!(to_le_u32s_8, 8);
-to_le_u32s_impl!(to_le_u32s_16, 16);
 
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.to_le_u32s_8_spec (bytes : (Array u8)) :
+  bytes.size = 32 →
+  ⦃ ⌜ True ⌝ ⦄
+  ( Lean_chacha20.Hacspec_helper.to_le_u32s_8 bytes )
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  intros
+  open Spec.Nat in
+    mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_8]
+    <;> subst_eqs
+    <;> simp [Vector.size, USize.lt_iff_toNat_lt, USize.le_iff_toNat_le] at *
+    <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try rw [h_size])
+    <;> (try omega)
+  done
+"
+)]
+pub(super) fn to_le_u32s_8(bytes: &[u8]) -> [u32; 8] {
+    // assert_eq!(8, bytes.len() / 4);
+    let mut out = [0; 8];
+    // for (i, block) in bytes.chunks(4).enumerate() {
+    for i in 0..8 {
+        out[i] = u32::from_le_bytes(bytes[4 * i..4 * i + 4].try_into().unwrap());
+    }
+    out
+}
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.to_le_u32s_16_spec bytes :
+  bytes.size = 64 →
+  ⦃ ⌜ True ⌝ ⦄
+  (Lean_chacha20.Hacspec_helper.to_le_u32s_16 bytes)
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  intro
+  have := USize.le_size
+  open Spec.Nat in
+    mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_16]
+    <;> subst_eqs
+    <;> simp [Vector.size, USize.lt_iff_toNat_lt, USize.le_iff_toNat_le] at *
+    <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try rw [h_size])
+    <;> (try omega)
+  done
+"
+)]
+pub(super) fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
+    // assert_eq!(16, bytes.len() / 4);
+    let mut out = [0; 16];
+    // for (i, block) in bytes.chunks(4).enumerate() {
+    for i in 0..16 {
+        out[i] = u32::from_le_bytes(bytes[4 * i..4 * i + 4].try_into().unwrap());
+    }
+    out
+}
+
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 16)) :
+  ⦃ ⌜ True ⌝ ⦄
+  (Lean_chacha20.Hacspec_helper.u32s_to_le_bytes state)
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  intros
+  open Spec.Nat in
+    mvcgen [Lean_chacha20.Hacspec_helper.u32s_to_le_bytes, Core.Num.Impl_8.to_le_bytes]
+    <;> subst_eqs
+    <;> simp [Vector.size, USize.lt_iff_toNat_lt, USize.le_iff_toNat_le] at *
+    <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try simp_all)
+    <;> (try omega)
+  done
+"
+)]
 pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
     // <const L: usize>
     let mut out = [0; 64];
@@ -38,6 +113,23 @@ pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
     out
 }
 
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.xor_state_spec (state other: (Vector u32 16)) :
+  ⦃ ⌜ True ⌝ ⦄
+  (Lean_chacha20.Hacspec_helper.xor_state state other)
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  intros
+  open Spec.Nat in
+    mvcgen [Lean_chacha20.Hacspec_helper.xor_state, Core.Num.Impl_8.to_le_bytes]
+    <;> subst_eqs
+    <;> simp [Vector.size, USize.lt_iff_toNat_lt, USize.le_iff_toNat_le] at *
+    <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try simp_all)
+    <;> (try omega)
+  done
+"
+)]
 pub(super) fn xor_state(mut state: State, other: State) -> State {
     for i in 0..16 {
         state[i] = state[i] ^ other[i];
@@ -45,6 +137,21 @@ pub(super) fn xor_state(mut state: State, other: State) -> State {
     state
 }
 
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.add_state_spec (state : (Vector u32 16)) (other : (Vector u32 16)) :
+  ⦃ ⌜ True ⌝ ⦄
+  (Lean_chacha20.Hacspec_helper.add_state state other)
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  have := USize.le_size
+  mvcgen [Lean_chacha20.Hacspec_helper.add_state]
+  <;> simp [Vector.size] at *
+  <;> apply (USize.lt_ofNat_iff _).mp
+  <;> omega
+  done
+"
+)]
 pub(super) fn add_state(mut state: State, other: State) -> State {
     for i in 0..16 {
         state[i] = state[i].wrapping_add(other[i]);
@@ -52,6 +159,24 @@ pub(super) fn add_state(mut state: State, other: State) -> State {
     state
 }
 
+#[hax_lib::lean::after(
+    "
+@[spec]
+theorem Lean_chacha20.Hacspec_helper.update_array_spec (a: (Vector u8 64)) (v: Array u8) :
+  v.size ≤ 64 →
+  ⦃ ⌜ True ⌝ ⦄
+  (Lean_chacha20.Hacspec_helper.update_array a v)
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
+  intros
+  open Spec.Nat in
+    mvcgen [Lean_chacha20.Hacspec_helper.update_array, Hax_lib.assert]
+    <;> subst_eqs
+    <;> simp [Vector.size, USize.lt_iff_toNat_lt, USize.le_iff_toNat_le] at *
+    <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try simp_all)
+    <;> (try omega)
+  done
+"
+)]
 pub(super) fn update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64] {
     // <const L: usize>
     assert!(64 >= val.len());

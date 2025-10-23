@@ -10,7 +10,10 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    phase::reject_not_do_lean_dsl::RejectNotDoLeanDSL,
+    phase::{
+        explicit_monadic::ExplicitMonadic, reject_not_do_lean_dsl::RejectNotDoLeanDSL,
+        unreachable_by_invariant,
+    },
 };
 
 mod binops {
@@ -18,6 +21,10 @@ mod binops {
     pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
+
+use crate::names::rust_primitives::hax::explicit_monadic::{lift, pure};
+const LIFT: GlobalId = lift;
+const PURE: GlobalId = pure;
 
 /// The Lean printer
 #[setup_span_handling_struct]
@@ -115,6 +122,7 @@ impl Printer for LeanPrinter {
                 binops::Index::index,
             ])),
             Box::new(FunctionsToConstants),
+            Box::new(LetPure),
         ]
     }
 }
@@ -131,7 +139,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
-        vec![Box::new(RejectNotDoLeanDSL)]
+        vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
     }
 }
 
@@ -234,16 +242,6 @@ const _: () = {
         };
     }
 
-    // Special kind of unreachability that should be prevented by a phase
-    macro_rules! unreachable_by_invariant {
-        ($phase:ident) => {
-            unreachable!(
-                "The phase {} should make this unreachable",
-                stringify!($ident)
-            )
-        };
-    }
-
     // Methods for handling arguments of variants (or struct constructor)
     impl LeanPrinter {
         /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
@@ -321,6 +319,10 @@ const _: () = {
 
         fn pat_typed<A: 'static + Clone>(&self, pat: &Pat) -> DocBuilder<A> {
             docs![pat, reflow!(" :"), line!(), &pat.ty].parens().group()
+        }
+
+        fn do_block<A: 'static + Clone, D: ToDocument<Self, A>>(&self, body: D) -> DocBuilder<A> {
+            docs!["do", line!(), body].group()
         }
     }
 
@@ -427,16 +429,13 @@ set_option linter.unusedVariables false
                     else_,
                 } => {
                     if let Some(else_branch) = else_ {
-                        // TODO: have a proper monadic resugaring, see
-                        // https://github.com/cryspen/hax/issues/1620
                         docs![
-                            docs!["← if", line!(), condition, reflow!(" then do")].group(),
+                            docs!["if", line!(), condition, reflow!(" then")].group(),
                             docs![line!(), then].nest(INDENT),
                             line!(),
-                            reflow!("else do"),
+                            "else",
                             docs![line!(), else_branch].nest(INDENT)
                         ]
-                        .parens()
                         .group()
                     } else {
                         unreachable_by_invariant!(Local_mutation)
@@ -449,28 +448,24 @@ set_option linter.unusedVariables false
                     bounds_impls: _,
                     trait_: _,
                 } => {
-                    // TODO: have a proper monadic resugaring, see https://github.com/cryspen/hax/issues/1620
-                    let monadic_lift = if let ExprKind::GlobalId(head_id) = head.kind()
-                        && (head_id.is_constructor() || head_id.is_projector())
-                    {
-                        None
-                    } else {
-                        Some("← ")
-                    };
-                    let generic_args = (!generic_args.is_empty()).then_some(
-                        docs![line!(), intersperse!(generic_args, line!())]
-                            .nest(INDENT)
-                            .group(),
-                    );
-                    let args = (!args.is_empty()).then_some(
-                        docs![line!(), intersperse!(args, line!())]
-                            .nest(INDENT)
-                            .group(),
-                    );
-                    docs![monadic_lift, head, generic_args, args]
-                        .nest(INDENT)
-                        .parens()
-                        .group()
+                    match (&args[..], &generic_args[..], head.kind()) {
+                        ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
+                        ([arg], [], ExprKind::GlobalId(PURE)) => {
+                            docs![reflow!("pure "), arg].parens()
+                        }
+                        _ => {
+                            // Fallback for any application
+                            let generic_args = (!generic_args.is_empty()).then_some(
+                                docs![line!(), intersperse!(generic_args, line!())].group(),
+                            );
+                            let args = (!args.is_empty())
+                                .then_some(docs![line!(), intersperse!(args, line!())].group());
+                            docs![head, generic_args, args]
+                                .parens()
+                                .nest(INDENT)
+                                .group()
+                        }
+                    }
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
@@ -507,14 +502,20 @@ set_option linter.unusedVariables false
                             .group()
                     }
                 }
-                ExprKind::Let { lhs, rhs, body } => {
+                ExprKind::Let { lhs, rhs, body }
+                | ExprKind::Resugared(ResugaredExprKind::LetPure { lhs, rhs, body }) => {
+                    let binder = if matches!(**kind, ExprKind::Let { .. }) {
+                        " ←"
+                    } else {
+                        " :="
+                    };
                     docs![
                         docs![
                             docs![
                                 "let",
                                 line!(),
-                                // TODO: Remove this pattern-matching. See
-                                // https://github.com/cryspen/hax/issues/1620
+                                // TODO: Improve treatment of patterns in general. see
+                                // https://github.com/cryspen/hax/issues/1712
                                 match *lhs.kind.clone() {
                                     PatKind::Binding {
                                         mutable: false,
@@ -526,9 +527,9 @@ set_option linter.unusedVariables false
                                 },
                             ]
                             .group(),
-                            " ←",
-                            softline!(),
-                            docs!["pure", line!(), rhs].parens().group(),
+                            binder,
+                            line!(),
+                            rhs,
                             ";"
                         ]
                         .nest(INDENT)
@@ -539,19 +540,7 @@ set_option linter.unusedVariables false
                 }
                 ExprKind::GlobalId(global_id) => docs![global_id],
                 ExprKind::LocalId(local_id) => docs![local_id],
-                ExprKind::Ascription { e, ty } => docs![
-                    // TODO: This insertion should be done by a monadic phase (or resugaring). See
-                    // https://github.com/cryspen/hax/issues/1620
-                    match *e.kind {
-                        ExprKind::Literal(_) | ExprKind::Construct { .. } => None,
-                        _ => Some("← "),
-                    },
-                    e,
-                    reflow!(" : "),
-                    ty
-                ]
-                .parens()
-                .group(),
+                ExprKind::Ascription { e, ty } => docs![e, reflow!(" : "), ty].parens().group(),
                 ExprKind::Closure {
                     params,
                     body,
@@ -560,57 +549,41 @@ set_option linter.unusedVariables false
                     reflow!("fun "),
                     intersperse!(params, line!()).group(),
                     reflow!(" => "),
-                    // TODO: have a proper monadic resugaring, see https://github.com/cryspen/hax/issues/1620
-                    docs!["do", line!(), self.expr_typed_result(body)]
-                        .nest(INDENT)
-                        .parens()
-                        .group()
+                    self.do_block(self.expr_typed_result(body)).parens()
                 ]
                 .parens()
                 .group()
                 .nest(INDENT),
-                ExprKind::Resugared(resugared_expr_kind) => match resugared_expr_kind {
-                    ResugaredExprKind::BinOp {
-                        op,
-                        lhs,
-                        rhs,
-                        generic_args: _,
-                        bounds_impls: _,
-                        trait_: _,
-                    } => {
-                        // TODO : refactor this, moving this code directly in the `App` node (see
-                        // https://github.com/cryspen/hax/issues/1705)
-                        if *op == binops::Index::index {
-                            return docs!["← ", lhs, "[", line_!(), rhs, line_!(), "]_?"]
-                                .parens()
-                                .nest(INDENT)
-                                .group();
-                        }
-                        let symbol = match *op {
-                            binops::add => "+?",
-                            binops::sub => "-?",
-                            binops::mul => "*?",
-                            binops::div => "/?",
-                            binops::rem => "%?",
-                            binops::shr => ">>>?",
-                            binops::bitand => "&&&?",
-                            binops::bitxor => "^^^?",
-                            binops::logical_op_and => "&&?",
-                            binops::logical_op_or => "||?",
-                            _ => unreachable!(),
-                        };
 
-                        // TODO: This monad lifting should be handled by a phase/resugaring, see
-                        // https://github.com/cryspen/hax/issues/1620
-                        docs!["← ", lhs, line!(), docs![symbol, softline!(), rhs].group()]
-                            .group()
+                ExprKind::Resugared(ResugaredExprKind::BinOp { op, lhs, rhs, .. }) => {
+                    // TODO : refactor this, moving this code directly in the `App` node (see
+                    // https://github.com/cryspen/hax/issues/1705)
+                    if *op == binops::Index::index {
+                        return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
                             .nest(INDENT)
-                            .parens()
+                            .group();
                     }
-                    ResugaredExprKind::Tuple { .. } => {
-                        unreachable!("This printer doesn't use the tuple resugaring")
-                    }
-                },
+                    let symbol = match *op {
+                        binops::add => "+?",
+                        binops::sub => "-?",
+                        binops::mul => "*?",
+                        binops::div => "/?",
+                        binops::rem => "%?",
+                        binops::shr => ">>>?",
+                        binops::bitand => "&&&?",
+                        binops::bitxor => "^^^?",
+                        binops::logical_op_and => "&&?",
+                        binops::logical_op_or => "||?",
+                        _ => unreachable!(),
+                    };
+                    docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
+                        .group()
+                        .nest(INDENT)
+                        .parens()
+                }
+                ExprKind::Resugared(ResugaredExprKind::Tuple { .. }) => {
+                    unreachable!("This printer doesn't use the tuple resugaring")
+                }
                 ExprKind::Match { scrutinee, arms } => docs![
                     docs![
                         "match",
@@ -623,7 +596,6 @@ set_option linter.unusedVariables false
                         .group()
                         .nest(INDENT),
                 ]
-                .parens()
                 .group(),
 
                 ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
@@ -649,7 +621,7 @@ set_option linter.unusedVariables false
                     reflow!("| "),
                     &arm.pat,
                     line!(),
-                    docs!["=> do", line!(), &arm.body].nest(INDENT).group()
+                    docs!["=>", line!(), &arm.body].nest(INDENT).group()
                 ]
                 .nest(INDENT)
                 .group()
@@ -889,7 +861,6 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-
                 ItemKind::TyAlias {
                     name,
                     generics: _,
@@ -1055,7 +1026,7 @@ set_option linter.unusedVariables false
                         docs![
                             "Result.of_isOk",
                             line!(),
-                            docs!["do ", body].group().parens(),
+                            self.do_block(body).parens(),
                             line!(),
                             "(by rfl)"
                         ]

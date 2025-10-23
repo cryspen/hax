@@ -687,8 +687,15 @@ def Rust_primitives.Hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : 
     .fail (.arrayOutOfBounds)
 
 @[spec]
-def Rust_primitives.Hax.repeat {α} (v:α) (n:Nat) : Result (Vector α n) :=
-  pure (Vector.replicate n v)
+def Rust_primitives.Hax.repeat
+  {α int_type: Type}
+  {n: Nat} [ToNat int_type]
+  (v:α) (size:int_type) : Result (Vector α n)
+  :=
+  if (n = ToNat.toNat size) then
+    pure (Vector.replicate n v)
+  else
+    .fail Error.arrayOutOfBounds
 
 
 /- Warning : this function has been specialized, it should be turned into a typeclass -/
@@ -856,7 +863,7 @@ theorem Range.getElemArrayUSize_spec
   ⦃ ⇓ r => ⌜ r = Array.extract a s e ⌝ ⦄
 := by
   intros
-  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize] <;> grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize] ; grind
 
 @[spec]
 theorem Range.getElemVectorUSize_spec
@@ -868,7 +875,7 @@ theorem Range.getElemVectorUSize_spec
   ⦃ ⇓ r => ⌜ r = (Vector.extract a s e).toArray ⌝ ⦄
 := by
   intros
-  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize] <;> grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize] ; grind
 
 
 end Lookup
@@ -973,6 +980,10 @@ abbrev string_indirection : Type := String
 abbrev Alloc.String.String : Type := string_indirection
 
 abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
+
+inductive Core.Option.Option (α : Type) where
+| Some (x: α)
+| None
 
 -- Assume, Assert
 
