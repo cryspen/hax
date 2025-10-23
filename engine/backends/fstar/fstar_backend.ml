@@ -684,15 +684,31 @@ struct
         in
         F.term @@ F.AST.LetOperator ([ (F.id op, p, pexpr rhs) ], pexpr body)
     | Let { lhs; rhs; body; monadic = None } ->
-        let p =
-          (* TODO: temp patch that remove annotation when we see an associated type *)
-          if [%matches? TAssociatedType _] @@ U.remove_tuple1 lhs.typ then
-            ppat lhs
-          else
-            F.pat @@ F.AST.PatAscribed (ppat lhs, (pty lhs.span lhs.typ, None))
+        let rec ascribe_tuple_components pattern =
+          match pattern with
+          | { p = PConstruct { constructor = `TupleCons n1; fields; _ }; _ }
+            when n1 > 1 ->
+              (* F* type inference works better if the ascription is on each component intead of the whole tuple. *)
+              F.pat
+              @@ F.AST.PatTuple
+                   ( List.map
+                       ~f:(fun { pat } -> ascribe_tuple_components pat)
+                       fields,
+                     false )
+          | _ ->
+              (* TODO: temp patch that remove annotation when we see an associated type *)
+              if [%matches? TAssociatedType _] @@ U.remove_tuple1 pattern.typ
+              then ppat pattern
+              else
+                F.pat
+                @@ F.AST.PatAscribed
+                     (ppat pattern, (pty pattern.span pattern.typ, None))
         in
         F.term
-        @@ F.AST.Let (NoLetQualifier, [ (None, (p, pexpr rhs)) ], pexpr body)
+        @@ F.AST.Let
+             ( NoLetQualifier,
+               [ (None, (ascribe_tuple_components lhs, pexpr rhs)) ],
+               pexpr body )
     | EffectAction _ -> .
     | Match { scrutinee; arms } ->
         F.term

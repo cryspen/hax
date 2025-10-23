@@ -66,6 +66,10 @@ let max_isize = maxint ISIZE
 let range (n:int) (t:inttype) : bool =
   minint t <= n && n <= maxint t
 
+let included (t: inttype) (t': inttype) =
+  minint t' <= minint t && maxint t <= maxint t'
+
+
 let range_t t = x:int{range x t}
 
 type int_t t = | MkInt: range_t t -> int_t t
