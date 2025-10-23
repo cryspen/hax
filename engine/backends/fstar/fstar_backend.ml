@@ -1595,7 +1595,7 @@ struct
         (* This helps f* in type class resolution *)
         let constraints_export =
           constraints_fields
-          |> List.map ~f:(fun (super_name, _, attrs, typ) ->
+          |> List.map ~f:(fun (super_name, _, _, typ) ->
                  let super_name = FStar_Ident.string_of_id super_name in
                  let tc_name = FStar_Ident.string_of_id name_id in
                  let typ = FStar_Parser_AST.term_to_string typ in
