@@ -740,7 +740,7 @@ set_option linter.unusedVariables false
                 TyKind::Array { ty, length } => {
                     let v = length.kind().clone();
                     let ExprKind::Literal(int_lit @ Literal::Int { .. }) = v else {
-                        todo!("{}", DebugJSON(length))
+                        emit_error!(issue 1713, "Unsupported arrays where the size is not an integer literal")
                     };
                     docs!["RustArray", line!(), ty, line!(), &int_lit]
                         .parens()
