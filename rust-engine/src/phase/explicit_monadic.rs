@@ -24,9 +24,12 @@
 //! pure and some are not.
 use std::fmt::Debug;
 
+use crate::ast::identifiers::GlobalId;
 use crate::ast::*;
 use crate::ast::{diagnostics::*, visitors::*};
 use crate::phase::Phase;
+
+use crate::names::rust_primitives::hax::explicit_monadic::*;
 
 /// Placeholder struct for the Monadic phase
 #[derive(Default, Debug)]
@@ -51,61 +54,44 @@ impl Phase for ExplicitMonadic {
 }
 
 impl ExplicitMonadicVisitor {
+    /// Helper while waiting for a proper ast API. Wraps an expression in an application node, where
+    /// the head is a global id
+    fn wrap_app(expr: &Expr, head_id: GlobalId) -> Box<ExprKind> {
+        let expr = expr.clone();
+        Box::new(ExprKind::App {
+            head: Expr {
+                kind: Box::new(ExprKind::GlobalId(head_id)),
+                ty: Ty(Box::new(TyKind::Arrow {
+                    inputs: vec![expr.ty.clone()],
+                    output: expr.ty.clone(),
+                })),
+                meta: Metadata {
+                    span: expr.meta.span.clone(),
+                    attributes: vec![],
+                },
+            },
+            args: vec![expr],
+            generic_args: vec![],
+            bounds_impls: vec![],
+            trait_: None,
+        })
+    }
+
     /// Helper to coerce a expression into a given status. `from` should be the status of `expr`
     fn coerce(&mut self, expr: &mut Expr, from: MonadicStatus, to: MonadicStatus) {
         // If the status is already correct, nothing to do.
         if from == to {
             return;
         }
-        let inner = expr.clone();
-        match to {
-            // from = Value, to = Computation : we insert `pure`
-            MonadicStatus::Computation => {
-                // This is quite verbose because the rust-engine lacks API to build AST nodes
-                expr.kind = Box::new(ExprKind::App {
-                    head: Expr {
-                        kind: Box::new(ExprKind::GlobalId(
-                            crate::names::rust_primitives::hax::explicit_monadic::pure,
-                        )),
-                        ty: Ty(Box::new(TyKind::Arrow {
-                            inputs: vec![inner.ty.clone()],
-                            output: inner.ty.clone(),
-                        })),
-                        meta: Metadata {
-                            span: expr.meta.span.clone(),
-                            attributes: vec![],
-                        },
-                    },
-                    args: vec![expr.clone()],
-                    generic_args: vec![],
-                    bounds_impls: vec![],
-                    trait_: None,
-                });
-            }
-            // from = Computation, to = Value : we insert `lift`
-            MonadicStatus::Value => {
-                // This is quite verbose because the rust-engine lacks API to build AST nodes
-                expr.kind = Box::new(ExprKind::App {
-                    head: Expr {
-                        kind: Box::new(ExprKind::GlobalId(
-                            crate::names::rust_primitives::hax::explicit_monadic::lift,
-                        )),
-                        ty: Ty(Box::new(TyKind::Arrow {
-                            inputs: vec![inner.ty.clone()],
-                            output: inner.ty.clone(),
-                        })),
-                        meta: Metadata {
-                            span: expr.meta.span.clone(),
-                            attributes: vec![],
-                        },
-                    },
-                    args: vec![expr.clone()],
-                    generic_args: vec![],
-                    bounds_impls: vec![],
-                    trait_: None,
-                });
-            }
-        }
+        expr.kind = ExplicitMonadicVisitor::wrap_app(
+            expr,
+            match to {
+                // from = Value, to = Computation : we insert `pure`
+                MonadicStatus::Computation => pure,
+                // from = Computation, to = Value : we insert `lift`
+                MonadicStatus::Value => lift,
+            },
+        );
     }
 }
 
