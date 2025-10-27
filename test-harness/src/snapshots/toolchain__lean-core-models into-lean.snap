@@ -135,6 +135,103 @@ def Lean_core_models.Result.tests
           | (Core.Result.Result.Err err) => (pure (Core.Result.Result.Err err))
     | (Core.Result.Result.Err err) => (pure (Core.Result.Result.Err err))
 
+structure Lean_core_models.Option.S where
+  f1 : u32
+
+inductive Lean_core_models.Option.E : Type
+| C : u32 -> Lean_core_models.Option.E 
+
+
+instance Lean_core_models.Option.Impl :
+  Core.Default.Default Lean_core_models.Option.S
+  where
+  default (_ : Rust_primitives.Hax.Tuple0) := do
+    (pure (Lean_core_models.Option.S.mk (f1 := (42 : u32))))
+
+def Lean_core_models.Option.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Rust_primitives.Hax.Tuple0
+  := do
+  let o1 : (Core.Option.Option i32) := (Core.Option.Option.Some (4 : i32));
+  let o2 : (Core.Option.Option i32) := Core.Option.Option.None;
+  let o3 : Bool ←
+    (Core.Option.Impl.is_some_and i32 (i32 -> Result Bool)
+      (← (Core.Clone.Clone.clone o1))
+      (fun x => (do
+        (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : Result Bool)));
+  let o3 : Bool ←
+    (Core.Option.Impl.is_none_or i32 (i32 -> Result Bool)
+      (← (Core.Clone.Clone.clone o1))
+      (fun x => (do
+        (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : Result Bool)));
+  let o4 : i32 ←
+    (Core.Option.Impl.unwrap i32 (Core.Option.Option.Some (0 : i32)));
+  let o5 : i32 ←
+    (Core.Option.Impl.unwrap_or i32
+      (Core.Option.Option.Some (0 : i32))
+      (9 : i32));
+  let o6 : i32 ←
+    (Core.Option.Impl.unwrap_or_else
+      i32
+      (Rust_primitives.Hax.Tuple0 -> Result i32)
+      (Core.Option.Option.Some (0 : i32))
+      (fun _ => (do (pure (9 : i32)) : Result i32)));
+  let o7 : Lean_core_models.Option.S ←
+    (Core.Option.Impl.unwrap_or_default Lean_core_models.Option.S
+      Core.Option.Option.None);
+  let o8 : (Core.Option.Option i32) ←
+    (Core.Option.Impl.map i32 i32 (i32 -> Result i32)
+      (Core.Option.Option.Some (0 : i32))
+      (fun x => (do (x +? (1 : i32)) : Result i32)));
+  let o9 : i32 ←
+    (Core.Option.Impl.map_or i32 i32 (i32 -> Result i32)
+      (Core.Option.Option.Some (1 : i32))
+      (9 : i32)
+      (fun x => (do (x +? (1 : i32)) : Result i32)));
+  let o10 : i32 ←
+    (Core.Option.Impl.map_or_else
+      i32
+      i32
+      (Rust_primitives.Hax.Tuple0 -> Result i32)
+      (i32 -> Result i32)
+      (Core.Option.Option.Some (2 : i32))
+      (fun _ => (do (pure (9 : i32)) : Result i32))
+      (fun x => (do (x +? (1 : i32)) : Result i32)));
+  let o11 : (Core.Result.Result i32 Lean_core_models.Option.E) ←
+    (Core.Option.Impl.ok_or i32 Lean_core_models.Option.E
+      (Core.Option.Option.Some (3 : i32))
+      (Lean_core_models.Option.E.C (0 : u32)));
+  let o12 : (Core.Result.Result i32 Lean_core_models.Option.E) ←
+    (Core.Option.Impl.ok_or_else
+      i32
+      Lean_core_models.Option.E
+      (Rust_primitives.Hax.Tuple0 -> Result Lean_core_models.Option.E)
+      (Core.Option.Option.Some (1 : i32))
+      (fun _ => (do
+        (pure (Lean_core_models.Option.E.C (1 : u32))) : Result
+        Lean_core_models.Option.E)));
+  let o13 : (Core.Option.Option u32) ←
+    (Core.Option.Impl.and_then u32 u32 (u32 -> Result (Core.Option.Option u32))
+      Core.Option.Option.None
+      (fun x => (do
+        (pure (Core.Option.Option.Some x)) : Result (Core.Option.Option u32))));
+  let ⟨_, out⟩ ←
+    (Core.Option.Impl.take Lean_core_models.Option.S
+      (Core.Option.Option.Some
+        (Lean_core_models.Option.S.mk (f1 := (9 : u32)))));
+  let o14 : (Core.Option.Option Lean_core_models.Option.S) := out;
+  let o15 : Bool ←
+    (Core.Option.Impl.is_some i32 (Core.Option.Option.Some (1 : i32)));
+  let o16 : Bool ←
+    (Core.Option.Impl.is_none i32 (Core.Option.Option.Some (2 : i32)));
+  let o17 : i32 ←
+    (Core.Option.Impl.expect i32
+      (Core.Option.Option.Some (3 : i32))
+      "Should be Some");
+  let o18 : i32 ←
+    (Core.Option.Impl.unwrap i32 (Core.Option.Option.Some (4 : i32)));
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
 structure Lean_core_models.Default.Structs.S where
   f1 : usize
 
