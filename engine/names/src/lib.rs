@@ -304,3 +304,7 @@ mod hax {
     }
     fn box_new() {}
 }
+
+mod arithmetic {
+    fn neg() {}
+}

@@ -32,17 +32,19 @@ module Traits.Block_size
 open FStar.Mul
 open Core_models
 
-class t_BlockSizeUser (v_Self: Type0) = { f_BlockSize:Type0 }
+class t_BlockSizeUser (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_BlockSize:Type0
+}
 
 class t_ParBlocksSizeUser (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_0:t_BlockSizeUser v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_BlockSizeUser v_Self
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_ParBlocksSizeUser v_Self|} -> i._super_0
+let _ = fun (v_Self:Type0) {|i: t_ParBlocksSizeUser v_Self|} -> i._super_i0
 
 class t_BlockBackend (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_0:t_ParBlocksSizeUser v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_ParBlocksSizeUser v_Self;
   f_proc_block_pre:Alloc.Vec.t_Vec _ Alloc.Alloc.t_Global -> Type0;
   f_proc_block_post:Alloc.Vec.t_Vec _ Alloc.Alloc.t_Global -> Prims.unit -> Type0;
   f_proc_block:x0: Alloc.Vec.t_Vec _ Alloc.Alloc.t_Global
@@ -50,7 +52,7 @@ class t_BlockBackend (v_Self: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_BlockBackend v_Self|} -> i._super_0
+let _ = fun (v_Self:Type0) {|i: t_BlockBackend v_Self|} -> i._super_i0
 '''
 "Traits.Default_traits_parameters.fst" = '''
 module Traits.Default_traits_parameters
@@ -61,12 +63,12 @@ open Core_models
 class t_Bar (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Bar:Prims.unit }
 
 class t_Foo (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_0:t_Bar v_Self f_U;
-  f_U:Type0
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Bar v_Self f_U;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Foo v_Self|} -> i._super_0
+let _ = fun (v_Self:Type0) {|i: t_Foo v_Self|} -> i._super_i0
 '''
 "Traits.For_clauses.Issue_495_.Minimized_3_.fst" = '''
 module Traits.For_clauses.Issue_495_.Minimized_3_
@@ -175,7 +177,7 @@ module Traits.Impl_expr_in_goal
 open FStar.Mul
 open Core_models
 
-class t_T1 (v_Self: Type0) = { f_Assoc:Type0 }
+class t_T1 (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]f_Assoc:Type0 }
 
 class t_T2 (v_Self: Type0) = { __marker_trait_t_T2:Prims.unit }
 
@@ -436,13 +438,13 @@ let associated_function_caller
   ()
 
 class t_SubTrait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_0:t_Trait v_Self v_TypeArg v_ConstArg;
-  f_AssocType:Type0;
-  f_AssocType_0:t_Trait f_AssocType v_TypeArg v_ConstArg
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait v_Self v_TypeArg v_ConstArg;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
+  f_AssocType_i0:t_Trait f_AssocType v_TypeArg v_ConstArg
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_TypeArg:Type0) (v_ConstArg:usize) {|i: t_SubTrait v_Self v_TypeArg v_ConstArg|} -> i._super_0
+let _ = fun (v_Self:Type0) (v_TypeArg:Type0) (v_ConstArg:usize) {|i: t_SubTrait v_Self v_TypeArg v_ConstArg|} -> i._super_i0
 '''
 "Traits.Interlaced_consts_types.fst" = '''
 module Traits.Interlaced_consts_types
@@ -517,17 +519,17 @@ open FStar.Mul
 open Core_models
 
 class t_Trait1 (v_Self: Type0) = {
-  f_T:Type0;
-  f_T_0:t_Trait1 f_T
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_T:Type0;
+  f_T_i0:t_Trait1 f_T
 }
 
 class t_Trait2 (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_0:t_Trait1 v_Self;
-  f_U:Type0
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait1 v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Trait2 v_Self|} -> i._super_0
+let _ = fun (v_Self:Type0) {|i: t_Trait2 v_Self|} -> i._super_i0
 '''
 "Traits.Type_alias_bounds_issue_707_.fst" = '''
 module Traits.Type_alias_bounds_issue_707_
@@ -637,7 +639,7 @@ open FStar.Mul
 open Core_models
 
 class t_SuperTrait (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_0:Core_models.Clone.t_Clone v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_Self;
   f_function_of_super_trait_pre:v_Self -> Type0;
   f_function_of_super_trait_post:v_Self -> u32 -> Type0;
   f_function_of_super_trait:x0: v_Self
@@ -647,12 +649,12 @@ class t_SuperTrait (v_Self: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_SuperTrait v_Self|} -> i._super_0
+let _ = fun (v_Self:Type0) {|i: t_SuperTrait v_Self|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: t_SuperTrait i32 =
   {
-    _super_0 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_function_of_super_trait_pre = (fun (self: i32) -> true);
     f_function_of_super_trait_post = (fun (self: i32) (out: u32) -> true);
     f_function_of_super_trait
@@ -744,8 +746,8 @@ let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
   ()
 
 class t_Foo (v_Self: Type0) = {
-  f_AssocType:Type0;
-  f_AssocType_0:t_SuperTrait f_AssocType;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
+  f_AssocType_i0:t_SuperTrait f_AssocType;
   f_N:usize;
   f_assoc_f_pre:Prims.unit -> Type0;
   f_assoc_f_post:Prims.unit -> Prims.unit -> Type0;
@@ -765,7 +767,7 @@ class t_Foo (v_Self: Type0) = {
 }
 
 class t_Lang (v_Self: Type0) = {
-  f_Var:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Var:Type0;
   f_s_pre:v_Self -> i32 -> Type0;
   f_s_post:v_Self -> i32 -> (v_Self & f_Var) -> Type0;
   f_s:x0: v_Self -> x1: i32
@@ -783,7 +785,7 @@ let g (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Foo v_T) (x
 let impl_Foo_for_tuple_: t_Foo Prims.unit =
   {
     f_AssocType = i32;
-    f_AssocType_0 = FStar.Tactics.Typeclasses.solve;
+    f_AssocType_i0 = FStar.Tactics.Typeclasses.solve;
     f_N = mk_usize 32;
     f_assoc_f_pre = (fun (_: Prims.unit) -> true);
     f_assoc_f_post = (fun (_: Prims.unit) (out: Prims.unit) -> true);

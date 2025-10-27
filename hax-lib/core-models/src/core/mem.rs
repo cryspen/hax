@@ -1,6 +1,5 @@
 #![allow(unused_variables)]
 
-#[hax_lib::fstar::before("open Rust_primitives.Integers")]
 #[hax_lib::opaque]
 pub fn forget<T>(t: T) {
     panic!()
@@ -85,6 +84,11 @@ pub fn variant_count<T>() -> usize {
 
 #[hax_lib::opaque]
 pub unsafe fn zeroed<T>() -> T {
+    panic!()
+}
+
+#[hax_lib::opaque]
+pub unsafe fn transmute<Src, Dst>(src: Src) -> Dst {
     panic!()
 }
 

@@ -1,12 +1,11 @@
 module Core_models.Option
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 type t_Option (v_T: Type0) =
   | Option_Some : v_T -> t_Option v_T
   | Option_None : t_Option v_T
-
-open Rust_primitives.Integers
 
 let impl__is_some_and
       (#v_T #v_F: Type0)
@@ -45,9 +44,9 @@ let impl__unwrap_or (#v_T: Type0) (self: t_Option v_T) (v_default: v_T) : v_T =
 let impl__unwrap_or_else
       (#v_T #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i1:
+          i0:
           Core_models.Ops.Function.t_FnOnce v_F Prims.unit)
-      (#_: unit{i1.Core_models.Ops.Function.f_Output == v_T})
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
       (self: t_Option v_T)
       (f: v_F)
     : v_T =
@@ -62,7 +61,7 @@ let impl__unwrap_or_else
 
 let impl__unwrap_or_default
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core_models.Default.t_Default v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Default.t_Default v_T)
       (self: t_Option v_T)
     : v_T =
   match self <: t_Option v_T with
@@ -71,8 +70,8 @@ let impl__unwrap_or_default
 
 let impl__map
       (#v_T #v_U #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#_: unit{i3.Core_models.Ops.Function.f_Output == v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
       (self: t_Option v_T)
       (f: v_F)
     : t_Option v_U =
@@ -86,8 +85,8 @@ let impl__map
 
 let impl__map_or
       (#v_T #v_U #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#_: unit{i3.Core_models.Ops.Function.f_Output == v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
       (self: t_Option v_T)
       (v_default: v_U)
       (f: v_F)
@@ -99,12 +98,12 @@ let impl__map_or
 
 let impl__map_or_else
       (#v_T #v_U #v_D #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i4: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#_: unit{i4.Core_models.Ops.Function.f_Output == v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i5:
+          i1:
           Core_models.Ops.Function.t_FnOnce v_D Prims.unit)
-      (#_: unit{i5.Core_models.Ops.Function.f_Output == v_U})
+      (#_: unit{i1.Core_models.Ops.Function.f_Output == v_U})
       (self: t_Option v_T)
       (v_default: v_D)
       (f: v_F)
@@ -121,9 +120,9 @@ let impl__map_or_else
 
 let impl__map_or_default
       (#v_T #v_U #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#_: unit{i3.Core_models.Ops.Function.f_Output == v_U})
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i6: Core_models.Default.t_Default v_U)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Default.t_Default v_U)
       (self: t_Option v_T)
       (f: v_F)
     : v_U =
@@ -141,9 +140,9 @@ let impl__ok_or (#v_T #v_E: Type0) (self: t_Option v_T) (err: v_E)
 let impl__ok_or_else
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i7:
+          i0:
           Core_models.Ops.Function.t_FnOnce v_F Prims.unit)
-      (#_: unit{i7.Core_models.Ops.Function.f_Output == v_E})
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_E})
       (self: t_Option v_T)
       (err: v_F)
     : Core_models.Result.t_Result v_T v_E =
@@ -161,8 +160,8 @@ let impl__ok_or_else
 
 let impl__and_then
       (#v_T #v_U #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Core_models.Ops.Function.t_FnOnce v_F v_T)
-      (#_: unit{i3.Core_models.Ops.Function.f_Output == t_Option v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Option v_U})
       (self: t_Option v_T)
       (f: v_F)
     : t_Option v_U =

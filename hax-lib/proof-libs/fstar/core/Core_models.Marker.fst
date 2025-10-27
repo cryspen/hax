@@ -1,14 +1,14 @@
 module Core_models.Marker
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_Copy (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_15837849249852401974:Core_models.Clone.t_Clone
-  v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_Self
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) {|i: t_Copy v_Self|} -> i._super_15837849249852401974
+let _ = fun (v_Self:Type0) {|i: t_Copy v_Self|} -> i._super_i0
 
 class t_Send (v_Self: Type0) = { __marker_trait_t_Send:Prims.unit }
 
@@ -31,4 +31,4 @@ let impl_2 (#v_T: Type0) : t_Sized v_T = { __marker_trait_t_Sized = () }
 let impl_3
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
-    : t_Copy v_T = { _super_15837849249852401974 = FStar.Tactics.Typeclasses.solve }
+    : t_Copy v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }

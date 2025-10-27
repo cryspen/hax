@@ -1,6 +1,7 @@
 module Core_models.Result
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 type t_Result (v_T: Type0) (v_E: Type0) =
   | Result_Ok : v_T -> t_Result v_T v_E
@@ -35,10 +36,10 @@ let impl__map_or
 
 let impl__map_or_else
       (#v_T #v_E #v_U #v_D #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnOnce v_D v_E)
       (#_: unit{i1.Core_models.Ops.Function.f_Output == v_U})
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i2: Core_models.Ops.Function.t_FnOnce v_D v_E)
-      (#_: unit{i2.Core_models.Ops.Function.f_Output == v_U})
       (self: t_Result v_T v_E)
       (v_default: v_D)
       (f: v_F)
@@ -51,8 +52,8 @@ let impl__map_or_else
 
 let impl__map_err
       (#v_T #v_E #v_O #v_F: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i3: Core_models.Ops.Function.t_FnOnce v_O v_E)
-      (#_: unit{i3.Core_models.Ops.Function.f_Output == v_F})
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_O v_E)
+      (#_: unit{i0.Core_models.Ops.Function.f_Output == v_F})
       (self: t_Result v_T v_E)
       (op: v_O)
     : t_Result v_T v_F =
