@@ -119,7 +119,7 @@ def Lean_tests.Traits.Overlapping_methods.test
   (_ : Rust_primitives.Hax.Tuple0)
   : Result usize
   := do
-  let x := (9 : u32);
+  let x : u32 := (9 : u32);
   ((← ((← (Lean_tests.Traits.Overlapping_methods.T1.f x))
       +? (← (Lean_tests.Traits.Overlapping_methods.T2.f x))))
     +? (← (Lean_tests.Traits.Overlapping_methods.T3.f x)))
@@ -538,7 +538,7 @@ def Lean_tests.Loops.Errors.loop3
   : Result (Core.Result.Result u32 Lean_tests.Loops.Errors.Error)
   := do
   let x : u32 := (0 : u32);
-  let _end := (10 : u32);
+  let _end : u32 := (10 : u32);
   match
     (← (Rust_primitives.Hax.Folds.fold_range_return
       (1 : u32)
@@ -630,7 +630,7 @@ def Lean_tests.Enums.enums
     (Lean_tests.Enums.E.V5 (f1 := (23 : usize)) (f2 := (43 : usize)));
   let e_v6 : Lean_tests.Enums.E :=
     (Lean_tests.Enums.E.V6 (f1 := (12 : usize)) (f2 := (13 : usize)));
-  let nil := Lean_tests.Enums.MyList.Nil;
+  let nil : (Lean_tests.Enums.MyList usize) := Lean_tests.Enums.MyList.Nil;
   let cons_1 : (Lean_tests.Enums.MyList usize) :=
     (Lean_tests.Enums.MyList.Cons (hd := (1 : usize)) (tl := nil));
   let cons_2_1 : (Lean_tests.Enums.MyList usize) :=
@@ -809,7 +809,7 @@ def Lean_tests.Reject_do_dsl.test
     Rust_primitives.Hax.Tuple0.mk Rust_primitives.Hax.Tuple0.mk))
 
 def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : Result u32 := do
-  let x := (0 : u32);
+  let x : u32 := (0 : u32);
   let x : u32 ←
     (Rust_primitives.Hax.Folds.fold_range
       (1 : u32)
@@ -820,7 +820,7 @@ def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : Result u32 := do
   (pure x)
 
 def Lean_tests.Loops.loop2 (_ : Rust_primitives.Hax.Tuple0) : Result u32 := do
-  let x := (0 : u32);
+  let x : u32 := (0 : u32);
   match
     (← (Rust_primitives.Hax.Folds.fold_range_return
       (1 : u32)
