@@ -3,3 +3,4 @@
 #![allow(unused_variables)]
 
 pub mod default;
+pub mod function;
