@@ -726,6 +726,7 @@ set_option linter.unusedVariables false
                     "Result ",
                     output
                 ]
+                .parens()
                 .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
@@ -916,7 +917,12 @@ set_option linter.unusedVariables false
                         .group()
                     } else {
                         // Enums
-                        let applied_name: DocBuilder<A> = docs![name, line!(), generics].group();
+                        let applied_name: DocBuilder<A> =
+                            if generics.params.is_empty() && generics.constraints.is_empty() {
+                                docs![name]
+                            } else {
+                                docs![name, line!(), generics].group()
+                            };
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
