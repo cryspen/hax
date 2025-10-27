@@ -36,7 +36,7 @@ pub async fn hax_serialize(flags: &[&str]) -> Result<PathBuf> {
     let stderr = String::from_utf8_lossy(&out.stderr);
     let path = stdout
         .lines()
-        .flat_map(|s| serde_json::from_str::<HaxMessage>(s))
+        .flat_map(serde_json::from_str::<HaxMessage>)
         .find_map(|hax_message| match hax_message {
             HaxMessage::ProducedFile { path, .. } => Some(path.clone()),
             _ => None,

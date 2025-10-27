@@ -81,7 +81,7 @@ impl BackendTestContext {
         let output = hax_engine(
             &self.haxmeta,
             &self.test.module_name,
-            &out_dir,
+            out_dir,
             self.backend,
             &into_flags[..],
             &backend_flags[..],
@@ -259,7 +259,7 @@ impl BackendTestsContext {
 }
 
 /// Backend disabled by default.
-const DISABLED_BACKENDS: &'static [BackendName] = &[
+const DISABLED_BACKENDS: &[BackendName] = &[
     BackendName::Easycrypt,
     BackendName::Rust,
     BackendName::GenerateRustEngineNames,
@@ -282,7 +282,7 @@ async fn main() -> Result<()> {
         .collect();
 
     let cache_dir = options.cache_dir();
-    let _ = tokio::fs::create_dir_all(&cache_dir)
+    tokio::fs::create_dir_all(&cache_dir)
         .await
         .with_context(|| {
             format!(

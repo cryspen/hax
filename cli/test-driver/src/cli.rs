@@ -57,7 +57,6 @@ impl Cli {
     }
 
     /// Acquires a permit from the shared semaphore that limits concurrency.
-    #[must_use]
     pub async fn semaphore_permit_for_test<'a>(
         &'a self,
     ) -> Result<SemaphorePermit<'a>, AcquireError> {

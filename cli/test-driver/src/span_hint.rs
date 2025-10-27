@@ -65,12 +65,12 @@ pub async fn span_hint(owner_id: &DefId) -> Result<Option<&'static SpanHint>> {
 
 /// Builds the in-memory lookup table for span hints.
 pub fn init(items: &[Item<()>]) -> Result<()> {
-    Ok(SPAN_HINTS
+    SPAN_HINTS
         .set(
             items
                 .iter()
                 .map(|item| (item.owner_id.clone(), SpanHint::new(item)))
                 .collect(),
         )
-        .map_err(|_| anyhow::Error::msg("`collect` was called more than once"))?)
+        .map_err(|_| anyhow::Error::msg("`collect` was called more than once"))
 }
