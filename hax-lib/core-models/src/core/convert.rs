@@ -41,6 +41,7 @@ impl<T, U: From<T>> TryFrom<T> for U {
     }
 }
 
+// TODO: reimplement that in Rust when arrays and slices are added to core models
 #[hax_lib::fstar::after("
 instance impl_slice_try_into_array_refined (t: Type0) (len: usize): t_TryInto (s: t_Slice t) (t_Array t len) = {
   f_Error = Core_models.Array.t_TryFromSliceError;
