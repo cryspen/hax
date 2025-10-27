@@ -75,7 +75,7 @@ pub mod control_flow {
 }
 
 pub mod index {
-    trait Index<Idx> {
+    pub trait Index<Idx> {
         type Output;
         fn index(&self, i: Idx) -> &Self::Output;
     }
