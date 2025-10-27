@@ -1,4 +1,12 @@
-//! Collects directives that should be promoted back into source files.
+//! This modules deals with directives promotion.
+//!
+//! When [`cli::Cli::promote_directives`] is `true`, that is, when
+//! `--promote-directives` is set, directives will be promoted in the Rust
+//! source.
+//!
+//! This means that, for example, if in the test `foo`, the function `bar` fails
+//! to extract to F*, a directive `/// @fail(extraction): fstar` will be added
+//! to the Rust definition of `foo::bar`.
 
 use std::{
     collections::HashMap,
@@ -11,6 +19,7 @@ use std::{fs::read_to_string, sync::Mutex};
 use crate::directives::Directive;
 use anyhow::Result;
 
+/// Stores the edits to be made to rust source files
 static RUST_FILES: LazyLock<Mutex<HashMap<PathBuf, Vec<Line>>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 

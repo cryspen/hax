@@ -1,5 +1,7 @@
 //! Helper functions that implement small bits of logic used across modules.
 
+use std::{ffi::OsStr, path::Path};
+
 use hax_frontend_exporter::{DefId, DefPathItem, DisambiguatedDefPathItem};
 use hax_types::cli_options::BackendName;
 
@@ -58,4 +60,20 @@ impl BackendName {
             backend: self,
         }
     }
+}
+
+/// Delete sourcemap files (`*.map`) in a given directory, at any depth.
+pub fn delete_sourcemaps(dir: &Path) -> anyhow::Result<()> {
+    for entry in walkdir::WalkDir::new(dir)
+        .into_iter()
+        .filter_map(Result::ok)
+    {
+        let path = entry.path();
+        if path.is_file()
+            && let Some("map") = path.extension().map(OsStr::to_str).flatten()
+        {
+            std::fs::remove_file(path)?;
+        }
+    }
+    Ok(())
 }

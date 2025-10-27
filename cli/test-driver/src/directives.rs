@@ -1,4 +1,9 @@
 //! Parses `@` directives.
+//! A `@` directive is a doc-comment that starts with `@`, e.g. `/// @ DIRECTIVE_BODY`.
+//!
+//! A directive is a metadata used to customize how tests are run for a test module or an item.
+//!
+//! The exact grammar is available in [`parser::DirectivesParser`].
 
 use std::{
     collections::{HashMap, HashSet, hash_map::Entry},
@@ -17,6 +22,10 @@ use hax_types::cli_options::{BackendName, BackendOptions, Command, Options};
 use crate::directives::parser::FailEntry;
 
 /// Parses the payload of an `@cli:` directive.
+/// Such a payload is expected to be a valid `cargo hax` CLI command, starting with `into`.
+///
+/// A valid `cargo hax` command is of the shape `into <..INTO_FLAGS> <BACKEND> <..BACKEND_FLAGS>`.
+/// This function returns a triple (BACKEND, INTO_FLAGS, BACKEND_FLAGS).
 fn parse_cli(raw_cli: &str) -> Result<(BackendName, Vec<String>, Vec<String>)> {
     let cli = shlex::split(raw_cli)
                 .with_context(|| format!("Could not parse `{raw_cli}` as a valid shell command. This is probably due to unclosed quote."))?;
@@ -45,6 +54,8 @@ fn parse_cli(raw_cli: &str) -> Result<(BackendName, Vec<String>, Vec<String>)> {
         ..backend_options.clone()
     };
 
+    // `Options` can be parsed from a string, but we have no printer for CLI options.
+    // We need to split the options
     let backend = BackendName::from(&backend_options.backend);
     let (into_flags, backend_flags) = (0..cli.len())
         .find_map(|i| {
@@ -203,6 +214,7 @@ impl Display for FailureKind {
 #[derive(Clone, Debug, Eq, PartialEq)]
 /// Directives that apply to an entire test module.
 pub enum TestDirective {
+    /// e.g. `@cli: into fstar --z3rlimit 40`
     SetCli {
         /// The backend we are setting command line options for.
         backend: BackendName,
@@ -211,11 +223,16 @@ pub enum TestDirective {
         /// The flags to put on the `cargo hax into <backend>` command.
         backend_flags: Vec<String>,
     },
+    /// e.g. `@backend(fstar): <FSTAR_SPECIFIC_DIRECTIVE>`
     BackendDirective {
+        /// The name of the backend
         backend: BackendName,
+        /// The raw body of the directive
         directive: String,
     },
+    /// e.g. `@off: fstar, lean`
     Off {
+        /// The backends being disabled
         backends: HashSet<BackendName>,
     },
 }
@@ -223,8 +240,27 @@ pub enum TestDirective {
 #[derive(Clone, Debug, Eq, PartialEq)]
 /// Unified representation of every directive accepted by the driver.
 pub enum Directive {
+    /// A test-specific directive
     Test(TestDirective),
+    /// An item-specific directive
     Item(ItemDirective),
+}
+
+impl Directive {
+    /// Partitions given directives in (1) a vector of `TestDirective`s, and (2) a vector of `ItemDirective`s.
+    pub fn partition(directives: Vec<Self>) -> (Vec<TestDirective>, Vec<ItemDirective>) {
+        let mut test_directives = vec![];
+        let mut item_directives = vec![];
+        for directive in directives {
+            match directive {
+                Directive::Test(test_directive) => test_directives.push(test_directive),
+                Directive::Item(item_directive) => item_directives.push(item_directive),
+            }
+        }
+        test_directives.reverse();
+        item_directives.reverse();
+        (test_directives, item_directives)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

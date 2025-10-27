@@ -61,7 +61,7 @@ fmt:
   cargo fmt
   cd engine && dune fmt
 
-# Run hax tests: each test crate has a snapshot, so that we track changes in extracted code. If a snapshot changed, please review them with `just test-review`.
+# Run hax tests
 test *FLAGS:
   cargo run --release --bin test-driver -- ./tests {{FLAGS}}
 
