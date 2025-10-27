@@ -70,7 +70,7 @@ fn parse_cli(raw_cli: &str) -> Result<(BackendName, Vec<String>, Vec<String>)> {
             if let Ok(options) = Options::try_parse_from(cli)
                 && options.command == Command::Backend(backend_options_with_profile.clone())
             {
-                return Some((lhs[1..].to_vec(), rhs.to_vec()));
+                Some((lhs[1..].to_vec(), rhs.to_vec()))
             } else {
                 None
             }
@@ -125,7 +125,7 @@ impl FromStr for Directive {
     type Err = Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        Ok(Directive::try_from(parser::parse_directive(s)?)?)
+        Directive::try_from(parser::parse_directive(s)?)
     }
 }
 
@@ -307,7 +307,7 @@ impl ErrorCode {
 
 impl PartialEq for ErrorCode {
     fn eq(&self, other: &Self) -> bool {
-        &self.normalized == &other.normalized
+        self.normalized == other.normalized
     }
 }
 

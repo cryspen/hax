@@ -75,7 +75,7 @@ impl TestModule {
         self.test_directives
             .iter()
             .filter_map(|directive| match directive {
-                TestDirective::Off { backends } => Some(backends.into_iter()),
+                TestDirective::Off { backends } => Some(backends.iter()),
                 _ => None,
             })
             .flatten()
@@ -168,8 +168,7 @@ pub async fn compute_test_modules() -> Result<Vec<TestModule>> {
             let trying_to_add_a_test_directive_to_a_not_test = !test_directives.is_empty();
             if trying_to_add_a_test_directive_to_a_not_test {
                 bail!(
-                    "Item {:#?} has a test-level directive, but it is not a test. A test *has* to exactly be a module whose path is of size one: e.g. `my_krate::correct` is good, `my_crate::foo::bad` is bad.",
-                    def_id
+                    "Item {def_id:#?} has a test-level directive, but it is not a test. A test *has* to exactly be a module whose path is of size one: e.g. `my_krate::correct` is good, `my_crate::foo::bad` is bad."
                 )
             }
             // If the item `def_id` has no directive, it is useless to add an entry.

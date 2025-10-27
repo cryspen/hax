@@ -147,10 +147,10 @@ fn build_renderers() -> Vec<Box<dyn ReportRenderer + Send>> {
 }
 
 fn detect_renderer_kinds(stdout_is_terminal: bool) -> Vec<RendererKind> {
-    if let Some(from_env) = renderers_from_env() {
-        if !from_env.is_empty() {
-            return from_env;
-        }
+    if let Some(from_env) = renderers_from_env()
+        && !from_env.is_empty()
+    {
+        return from_env;
     }
 
     if std::env::var_os("CI").is_some() || !stdout_is_terminal {
@@ -263,7 +263,7 @@ impl CiRenderer {
     fn print_message(message: &str) {
         let mut lines = message.lines();
         if let Some(first) = lines.next() {
-            println!("  → {}", first);
+            println!("  → {first}");
         } else {
             println!("  →");
         }
@@ -276,7 +276,7 @@ impl CiRenderer {
         println!("  {label}:");
         let mut lines = content.lines();
         if let Some(first) = lines.next() {
-            println!("    → {}", first);
+            println!("    → {first}");
         } else {
             println!("    →");
         }
@@ -463,7 +463,7 @@ impl TuiRenderer {
         progress.println(format!("    {label}:"));
         let mut lines = content.lines();
         if let Some(first) = lines.next() {
-            progress.println(format!("      → {}", first));
+            progress.println(format!("      → {first}"));
         } else {
             progress.println("      →");
         }
@@ -591,7 +591,7 @@ impl ReportRenderer for TuiRenderer {
                         for message in &messages {
                             let mut lines = message.lines();
                             if let Some(first) = lines.next() {
-                                self.progress.println(format!("    → {}", first));
+                                self.progress.println(format!("    → {first}"));
                                 had_messages = true;
                             } else {
                                 self.progress.println("    →");
@@ -610,7 +610,7 @@ impl ReportRenderer for TuiRenderer {
                             }
                         }
                         self.progress
-                            .println(format!("  error: {}", err).red().to_string());
+                            .println(format!("  error: {err}").red().to_string());
                         self.failures.push(FailureDetails {
                             job: report.job.clone(),
                             error: err.to_string(),
@@ -634,7 +634,7 @@ impl ReportRenderer for TuiRenderer {
     fn finish(&mut self) {
         for (job, state) in self.jobs.drain() {
             let duration = SystemTime::now().duration_since(state.started_at).ok();
-            let mut line = format!("Incomplete job {}", job);
+            let mut line = format!("Incomplete job {job}");
             if let Some(duration) = duration {
                 line.push_str(&format!(" ({})", format_duration(duration)));
             }
@@ -650,7 +650,7 @@ impl ReportRenderer for TuiRenderer {
             for message in &messages {
                 let mut lines = message.lines();
                 if let Some(first) = lines.next() {
-                    self.progress.println(format!("    → {}", first));
+                    self.progress.println(format!("    → {first}"));
                     had_messages = true;
                 } else {
                     self.progress.println("    →");
@@ -714,7 +714,7 @@ impl ReportRenderer for TuiRenderer {
                 for message in &failure.messages {
                     let mut lines = message.lines();
                     if let Some(first) = lines.next() {
-                        println!("    → {}", first);
+                        println!("    → {first}");
                     } else {
                         println!("    →");
                     }
@@ -727,7 +727,7 @@ impl ReportRenderer for TuiRenderer {
                         println!("    stderr:");
                         let mut lines = stderr.lines();
                         if let Some(first) = lines.next() {
-                            println!("      → {}", first);
+                            println!("      → {first}");
                         } else {
                             println!("      →");
                         }
@@ -739,7 +739,7 @@ impl ReportRenderer for TuiRenderer {
                         println!("    stdout:");
                         let mut lines = stdout.lines();
                         if let Some(first) = lines.next() {
-                            println!("      → {}", first);
+                            println!("      → {first}");
                         } else {
                             println!("      →");
                         }
@@ -751,10 +751,10 @@ impl ReportRenderer for TuiRenderer {
             }
         }
 
-        if let Some(started_at) = self.overall_start {
-            if let Ok(total_duration) = SystemTime::now().duration_since(started_at) {
-                println!("Total time: {}", format_duration(total_duration));
-            }
+        if let Some(started_at) = self.overall_start
+            && let Ok(total_duration) = SystemTime::now().duration_since(started_at)
+        {
+            println!("Total time: {}", format_duration(total_duration));
         }
     }
 }

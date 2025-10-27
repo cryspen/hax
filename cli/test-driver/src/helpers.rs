@@ -70,7 +70,7 @@ pub fn delete_sourcemaps(dir: &Path) -> anyhow::Result<()> {
     {
         let path = entry.path();
         if path.is_file()
-            && let Some("map") = path.extension().map(OsStr::to_str).flatten()
+            && let Some("map") = path.extension().and_then(OsStr::to_str)
         {
             std::fs::remove_file(path)?;
         }
