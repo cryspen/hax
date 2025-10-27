@@ -12,9 +12,8 @@
 )]
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     env::set_current_dir,
-    ffi::OsStr,
     fs::{self},
     path::{Path, PathBuf},
     sync::{LazyLock, Mutex},
@@ -23,10 +22,13 @@ use std::{
 use anyhow::{Context as _, Result, bail};
 use clap::Parser;
 use futures::future::TryJoinAll;
-use hax_frontend_exporter::{DefId, DefKind};
-use hax_types::{cli_options::BackendName, driver_api::HaxMeta};
+use hax_frontend_exporter::DefId;
+use hax_types::cli_options::BackendName;
 
-use crate::directives::{Directive, ErrorCode, FailureKind, ItemDirective, TestDirective};
+use crate::{
+    directives::{ErrorCode, FailureKind},
+    test_module::{TestModule, compute_test_modules},
+};
 
 mod cli;
 mod commands;
@@ -35,184 +37,11 @@ mod helpers;
 mod log;
 mod promote_directives;
 mod span_hint;
+mod test_module;
 
 use commands::*;
 use helpers::BackendNameExt;
 use log::*;
-
-#[derive(Clone, Debug)]
-/// Representation of a test module extracted from the Hax metadata.
-struct TestModule {
-    module_name: String,
-    module_path: PathBuf,
-    def_id: DefId,
-    test_directives: Vec<TestDirective>,
-    items: Vec<(DefId, Vec<ItemDirective>)>,
-}
-
-impl TestModule {
-    /// Returns the diagnostics that should be emitted for the provided backend
-    /// and failure kind.
-    fn expected_diagnostics(
-        &self,
-        backend: BackendName,
-        kind: FailureKind,
-    ) -> Vec<(DefId, ErrorCode)> {
-        self.items
-            .iter()
-            .flat_map(|(def_id, directives)| {
-                directives.iter().flat_map(|directive| match directive {
-                    ItemDirective::Failure { kind: k, backends } if *k == kind => {
-                        Some(backends.iter().filter_map(|(b, errors)| {
-                            if backend == *b {
-                                Some(errors.iter().map(|e| (def_id.clone(), e.clone())))
-                            } else {
-                                None
-                            }
-                        }))
-                    }
-                    _ => None,
-                })
-            })
-            .flatten()
-            .flatten()
-            .collect()
-    }
-}
-
-#[extension_traits::extension(trait ExtIntoIterator)]
-impl<T, U: Iterator<Item = T>> U {
-    /// Ensures that the iterator produces at most one element.
-    fn expect_le_one(mut self) -> Result<Option<T>> {
-        match (self.next(), self.next()) {
-            (None, None) => Ok(None),
-            (Some(first), None) => Ok(Some(first)),
-            _ => bail!("expect_one_or_less: got 2 or more"),
-        }
-    }
-}
-
-impl TestModule {
-    /// Resolves the optional `@cli` directive attached to the module.
-    fn cli(&self, backend: BackendName) -> Result<(Vec<String>, Vec<String>)> {
-        Ok(self
-            .test_directives
-            .iter()
-            .filter_map(|directive| match directive {
-                TestDirective::SetCli {
-                    backend: b,
-                    into_flags,
-                    backend_flags,
-                } if *b == backend => Some((into_flags.clone(), backend_flags.clone())),
-                _ => None,
-            })
-            .expect_le_one()
-            .context("Multiple @cli flags for the same backend")?
-            .unwrap_or_default())
-    }
-    /// Returns the set of backends disabled for this module.
-    fn off(&self) -> HashSet<BackendName> {
-        self.test_directives
-            .iter()
-            .filter_map(|directive| match directive {
-                TestDirective::Off { backends } => Some(backends.into_iter()),
-                _ => None,
-            })
-            .flatten()
-            .copied()
-            .collect()
-    }
-}
-
-/// Builds the in-memory representation of every test module present in the
-/// serialized Hax metadata.
-async fn collect() -> Result<Vec<TestModule>> {
-    let (haxmeta, _): (HaxMeta<()>, _) =
-        HaxMeta::read(fs::File::open(&hax_serialize(&["--kind"]).await?)?);
-
-    span_hint::init(&haxmeta.items)?;
-
-    let map = haxmeta
-        .items
-        .iter()
-        .map(|item| {
-            let directives = item
-                .attributes
-                .attributes
-                .iter()
-                .map(|attr| directives::directive_of_attribute(attr))
-                .collect::<Result<Vec<Option<_>>>>()?
-                .into_iter()
-                .flatten();
-            Ok((item.owner_id.clone(), directives))
-        })
-        .collect::<Result<Vec<_>>>()?;
-    let mut tests: HashMap<String, TestModule> = HashMap::new();
-    let mut items: HashMap<String, Vec<_>> = HashMap::new();
-    for (def_id, directives) in map {
-        let Some(module_name) = helpers::module_name(&def_id) else {
-            continue;
-        };
-        let mut test_directives = vec![];
-        let mut item_directives = vec![];
-        for directive in directives {
-            match directive {
-                Directive::Test(test_directive) => test_directives.push(test_directive),
-                Directive::Item(item_directive) => item_directives.push(item_directive),
-            }
-        }
-        test_directives.reverse();
-        item_directives.reverse();
-        if def_id.path.len() == 1 {
-            if def_id.kind != DefKind::Mod {
-                continue;
-            }
-            let module_path = span_hint::span_hint(&def_id)
-                .await?
-                .context("internal error: every test module item should have a span hint")?;
-
-            let module_path = module_path
-                .module_file
-                .clone()
-                .with_context(|| format!("internal error: every test module item should have a `module_file`. Found none for {:?}.", helpers::string_of_def_id(&def_id)))?.canonicalize()
-                .context("internal error: cannot canonicalize module path")?;
-
-            tests.insert(
-                module_name.clone(),
-                TestModule {
-                    items: vec![(def_id.clone(), item_directives)],
-                    def_id,
-                    module_name,
-                    module_path,
-                    test_directives,
-                },
-            );
-        } else {
-            if !test_directives.is_empty() {
-                bail!(
-                    "Item {:#?} has a test-level directive, but it is not a test",
-                    def_id
-                )
-            }
-            if !item_directives.is_empty() {
-                items
-                    .entry(module_name)
-                    .or_default()
-                    .push((def_id, item_directives));
-            }
-        }
-    }
-    for (module_name, items) in items {
-        let test_module = tests
-            .get_mut(&module_name)
-            .expect("Loop above is supposed to populate `tests` correctly");
-        for (def_id, directives) in items {
-            test_module.items.push((def_id, directives))
-        }
-    }
-
-    Ok(tests.into_values().collect())
-}
 
 #[derive(Clone, Debug)]
 /// Snapshot of the context necessary to run all tests for one backend.
@@ -242,7 +71,7 @@ impl BackendTestContext {
             })
             .run(async |job| self.run_inner(job).await)
             .await?;
-        self.snapshots(&out_dir).await?;
+        self.move_to_snapshots_directory(&out_dir).await?;
         Ok(())
     }
 
@@ -304,7 +133,8 @@ impl BackendTestContext {
         }
     }
 
-    async fn snapshots(&self, out_dir: &Path) -> Result<()> {
+    /// Move the given output extraction directory to the canonical path the snapshots belongs to.
+    async fn move_to_snapshots_directory(&self, out_dir: &Path) -> Result<()> {
         static DIRS: LazyLock<Mutex<HashSet<PathBuf>>> =
             LazyLock::new(|| Mutex::new(HashSet::new()));
 
@@ -336,22 +166,8 @@ impl BackendTestContext {
             fs::remove_dir_all(&path_to_snapshots)?
         }
         fs::create_dir_all(path_to_snapshots.parent().unwrap())?;
-
         fs::rename(out_dir, &path_to_snapshots)?;
-
-        // drop `*.map` files
-        for entry in walkdir::WalkDir::new(path_to_snapshots)
-            .into_iter()
-            .filter_map(Result::ok)
-        {
-            let path = entry.path();
-            if path.is_file() {
-                if let Some("map") = path.extension().map(OsStr::to_str).flatten() {
-                    fs::remove_file(path)?;
-                }
-            }
-        }
-
+        helpers::delete_sourcemaps(&path_to_snapshots)?;
         Ok(())
     }
 
@@ -442,10 +258,18 @@ impl BackendTestsContext {
     }
 }
 
+/// Backend disabled by default.
+const DISABLED_BACKENDS: &'static [BackendName] = &[
+    BackendName::Easycrypt,
+    BackendName::Rust,
+    BackendName::GenerateRustEngineNames,
+];
+
 #[tokio::main]
 async fn main() -> Result<()> {
     let mut options = cli::Cli::parse();
     options.canonicalize()?;
+
     set_current_dir(options.tests_crate_dir()).with_context(|| {
         format!(
             "Could not change directory to {}",
@@ -453,13 +277,8 @@ async fn main() -> Result<()> {
         )
     })?;
 
-    let disabled_backends = [
-        BackendName::Easycrypt,
-        BackendName::Rust,
-        BackendName::GenerateRustEngineNames,
-    ];
     let backends: Vec<_> = BackendName::iter()
-        .filter(|backend| !disabled_backends.contains(backend))
+        .filter(|backend| !DISABLED_BACKENDS.contains(backend))
         .collect();
 
     let cache_dir = options.cache_dir();
@@ -472,7 +291,9 @@ async fn main() -> Result<()> {
             )
         })?;
 
-    let tests = JobKind::ResolveTests.run(|_| collect()).await?;
+    let tests = JobKind::ResolveTests
+        .run(|_| compute_test_modules())
+        .await?;
 
     let result = backends
         .iter()

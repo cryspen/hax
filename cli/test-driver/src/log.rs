@@ -32,6 +32,7 @@ pub enum BackendJobKind {
     CargoHaxInto {
         test: String,
     },
+    #[allow(unused)]
     Verification {
         test: String,
     },
