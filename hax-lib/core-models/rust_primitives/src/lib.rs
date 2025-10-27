@@ -10,7 +10,7 @@ pub mod slice {
     pub fn contains<T>(s: &[T], v: T) -> bool {
         panic!()
     }
-    pub fn array_from_fn<T, const N: usize, F>(f: F) -> [T; N] {
+    pub fn array_from_fn<T, const N: usize>(f: fn(usize) -> T) -> [T; N] {
         panic!()
     }
     pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
