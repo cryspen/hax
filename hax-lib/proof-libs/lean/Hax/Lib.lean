@@ -55,7 +55,7 @@ instance instPure: Pure Result where
   pure x := .ok x
 
 @[simp]
-def bind (x: Result α) (f: α -> Result β) := match x with
+def bind {α β : Type} (x: Result α) (f: α -> Result β) := match x with
   | .ok v => f v
   | .fail e => .fail e
   | .div => .div
@@ -237,7 +237,7 @@ instance : Coe usize (Result u32) where
            else Result.fail .integerOverflow
 
 @[simp]
-instance : OfNat (Result Nat) n where
+instance {n: Nat} : OfNat (Result Nat) n where
   ofNat := pure (n)
 
 instance {α n} [i: OfNat α n] : OfNat (Result α) n where
@@ -449,47 +449,6 @@ end Cast
 
 /-
 
-# Results
-
-Not to be confused with the underlying `Result` monad of the Lean encoding, the
-`result.Result` type models the rust `Result`.
-
--/
-section RustResult
-namespace Core.Result
-
-inductive Result α β
-| Ok : α -> Result α β
-| Err : β -> Result α β
-
-instance {β : Type} : Monad (fun α => Result α β) where
-  pure x := .Ok x
-  bind {α α'} x (f: α -> Result α' β) := match x with
-  | .Ok v => f v
-  | .Err e => .Err e
-
-/-- Rust unwrapping, panics if `x` is not `result.Result.ok _` -/
-def Impl.unwrap (α: Type) (β:Type) (x: Result α β) :=
-  match x with
-  | .Err _ => Result.fail .panic
-  | .Ok v => pure v
-
-@[spec]
-theorem Impl.unwrap.spec {α β} (x: Result α β) v :
-  x = Result.Ok v →
-  ⦃ ⌜ True ⌝ ⦄
-  (Impl.unwrap α β x)
-  ⦃ ⇓ r => ⌜ r = v ⌝ ⦄
-  := by
-  intros
-  mvcgen [Impl.unwrap] <;> try grind
-
-end Core.Result
-end RustResult
-
-
-/-
-
 # Folds
 
 Hax represents for-loops as folds over a range
@@ -697,27 +656,6 @@ def Rust_primitives.Hax.repeat
   else
     .fail Error.arrayOutOfBounds
 
-
-/- Warning : this function has been specialized, it should be turned into a typeclass -/
-def Core.Convert.TryInto.try_into {α n} (a: Array α) :
-   Result (Core.Result.Result (Vector α n) Core.Array.TryFromSliceError) :=
-   pure (
-     if h: a.size = n then
-       Core.Result.Result.Ok (Eq.mp (congrArg _ h) a.toVector)
-     else
-       .Err Core.Array.TryFromSliceError.array.TryFromSliceError
-     )
-
-@[spec]
-theorem Core.Convert.TryInto.try_into.spec {α n} (a: Array α) :
-  (h: a.size = n) →
-  ⦃ ⌜ True ⌝ ⦄
-  ( Core.Convert.TryInto.try_into a)
-  ⦃ ⇓ r => ⌜ r = .Ok (Eq.mp (congrArg _ h) a.toVector) ⌝ ⦄ := by
-  intro h
-  mvcgen [Core.Result.Impl.unwrap.spec, Core.Convert.TryInto.try_into]
-  grind
-
 end RustArray
 
 /-
@@ -747,7 +685,7 @@ section Lookup
 /--
 The classes `GetElemResult` implement lookup notation `xs[i]_?`.
 -/
-class GetElemResult (coll : Type u) (idx : Type v) (elem : outParam (Type w)) where
+class GetElemResult (coll : Type) (idx : Type) (elem : outParam (Type)) where
   /--
   The syntax `arr[i]_?` gets the `i`'th element of the collection `arr`. It
   can panic if the index is out of bounds.
@@ -775,7 +713,7 @@ Until the backend introduces notations, a definition for the explicit name
 def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (Result γ) := a[i]_?
 
 
-instance Range.instGetElemResultArrayUSize :
+instance Range.instGetElemResultArrayUSize {α: Type}:
   GetElemResult
     (Array α)
     (Range usize)
@@ -788,7 +726,7 @@ instance Range.instGetElemResultArrayUSize :
     else
       Result.fail Error.arrayOutOfBounds
 
-instance Range.instGetElemResultVectorUSize :
+instance Range.instGetElemResultVectorUSize {α : Type} {n : Nat} :
   GetElemResult
     (Vector α n)
     (Range usize)
@@ -940,36 +878,6 @@ end RustVectors
 
 
 
-/-
-
-# Closures
-
-Rust closures are represented as regular Lean functions. Yet, Rust uses a
-typeclass `Fn` when calling a closure, which uncurrifies the arguments. This is
-taken care of by the `Fn` class
-
--/
-
-namespace Core.Ops.Function
-
-class Fn α (β : outParam Type) γ where
-  call : α → β → γ
-
-instance {α β} : Fn (α → β) (Tuple1 α) β where
-  call f x := f x._0
-
-instance {α β γ} : Fn (α → β → γ) (Tuple2 α β) γ where
-  call f x := f x._0 x._1
-
-instance {α β} : Fn (α → β) (Tuple1 α) (Result β) where
-  call f x := pure (f x._0)
-
-instance {α β γ} : Fn (α → β → γ) (Tuple2 α β) (Result γ) where
-  call f x := pure (f x._0 x._1)
-
-end Core.Ops.Function
--- def Core.Ops.Function. {α β γ} [Fn α β γ] (f: α) (x: β) : γ := Fn.call f x --
-
 
 -- Miscellaneous
 def Core.Ops.Deref.Deref.deref {α Allocator} (v: Alloc.Vec.Vec α Allocator)
@@ -980,10 +888,6 @@ abbrev string_indirection : Type := String
 abbrev Alloc.String.String : Type := string_indirection
 
 abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
-
-inductive Core.Option.Option (α : Type) where
-| Some (x: α)
-| None
 
 -- Assume, Assert
 
