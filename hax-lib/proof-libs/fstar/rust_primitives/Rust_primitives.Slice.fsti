@@ -12,6 +12,6 @@ val array_map (#t: Type) (#u: Type) (l: usize)
   (s: t_Array t l) (f: t -> u): res: t_Array u l {forall i. Seq.index res i == f (Seq.index s i)}
 let array_as_slice (#t: Type) (l: usize) (s: t_Array t l): t_Slice t =
   s
-val array_from_fn (#t: Type) (len: usize) (f: usize -> t): 
+val array_from_fn (#t: Type) (len: usize) (f: (x: usize {x <. len}) -> t): 
   Pure (t_Array t len) (requires True) (ensures (fun a -> forall i. Seq.index a i == f (sz i)))
-
+let array_from_closure = array_from_fn
