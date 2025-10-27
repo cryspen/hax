@@ -13,6 +13,9 @@ pub mod slice {
     pub fn array_from_fn<T, const N: usize>(f: fn(usize) -> T) -> [T; N] {
         panic!()
     }
+    pub fn array_from_closure<T, const N: usize, F: FnOnce(usize) -> T>(f: F) -> [T; N] {
+        panic!()
+    }
     pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
         panic!()
     }

@@ -41,19 +41,20 @@ impl<T, U: From<T>> TryFrom<T> for U {
     }
 }
 
-// TODO: reimplement that in Rust when arrays and slices are added to core models
-#[hax_lib::fstar::after("
-instance impl_slice_try_into_array_refined (t: Type0) (len: usize): t_TryInto (s: t_Slice t) (t_Array t len) = {
-  f_Error = Core_models.Array.t_TryFromSliceError;
-  f_try_into_pre = (fun (s: t_Slice t) -> true);
-  f_try_into_post = (fun (s: t_Slice t) (out: Core_models.Result.t_Result (t_Array t len) Core_models.Array.t_TryFromSliceError) -> true);
-  f_try_into = (fun (s: t_Slice t) -> 
-    if Core_models.Slice.impl__len s = len
-    then Core_models.Result.Result_Ok (s <: t_Array t len)
-    else Core_models.Result.Result_Err Core_models.Array.TryFromSliceError
-  )
+use crate::array::TryFromSliceError;
+impl<T: Copy, const N: usize> TryFrom<&[T]> for [T; N] {
+    type Error = TryFromSliceError;
+    fn try_from(x: &[T]) -> Result<[T; N], TryFromSliceError> {
+        if x.len() == N {
+            Result::Ok(rust_primitives::slice::array_from_closure(|i| {
+                *rust_primitives::slice::slice_index(x, i)
+            }))
+        } else {
+            Result::Err(TryFromSliceError)
+        }
+    }
 }
-")]
+
 impl<T, U: TryFrom<T>> TryInto<U> for T {
     type Error = U::Error;
     fn try_into(self) -> Result<U, Self::Error> {

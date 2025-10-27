@@ -1,4 +1,4 @@
-struct TryFromSliceError;
+pub struct TryFromSliceError;
 
 // Dummy type to allow impls
 #[hax_lib::exclude]
@@ -38,6 +38,6 @@ impl<T, const N: usize> Array<T, N> {
     }
 }
 
-fn from_fn<T, const N: usize>(f: fn(usize) -> T) -> [T; N] {
+pub fn from_fn<T, const N: usize>(f: fn(usize) -> T) -> [T; N] {
     rust_primitives::slice::array_from_fn(f)
 }
