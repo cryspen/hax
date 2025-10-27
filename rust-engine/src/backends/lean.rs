@@ -726,6 +726,7 @@ set_option linter.unusedVariables false
                     "Result ",
                     output
                 ]
+                .parens()
                 .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
