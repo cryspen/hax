@@ -67,4 +67,25 @@ instance Lean_core_models.Default.Enums.Impl
   where
   default (_ : Rust_primitives.Hax.Tuple0) := do
     (pure (Lean_core_models.Default.Enums.E.C2
-      (← (Core.Default.Default.default Rust_primitives.Hax.Tuple0.mk))))'''
+      (← (Core.Default.Default.default Rust_primitives.Hax.Tuple0.mk))))
+
+def Lean_core_models.Function.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result u32
+  := do
+  let f_1 : (u32 -> Result u32) :=
+    (fun _ => (do (pure (9 : u32)) : Result u32));
+  let f_2 : (u32 -> u32 -> Result u32) :=
+    (fun x y => (do (x +? y) : Result u32));
+  let f_2_tuple : ((Rust_primitives.Hax.Tuple2 u32 u32) -> Result u32) :=
+    (fun ⟨x, y⟩ => (do (x +? y) : Result u32));
+  ((← ((← (Core.Ops.Function.Fn.call
+        f_1
+        (Rust_primitives.Hax.Tuple1.mk (0 : u32))))
+      +? (← (Core.Ops.Function.Fn.call
+        f_2
+        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
+    +? (← (Core.Ops.Function.Fn.call
+      f_2_tuple
+      (Rust_primitives.Hax.Tuple1.mk
+        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))'''
