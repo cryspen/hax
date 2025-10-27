@@ -20,31 +20,9 @@ abbrev Hax_Result := Result
 
 namespace Core.Result
 
-inductive Result α β
+inductive Result (α β : Type 0)
 | Ok : α -> Result α β
 | Err : β -> Result α β
-
-instance {β : Type} : Monad (fun α => Result α β) where
-  pure x := .Ok x
-  bind {α α'} x (f: α -> Result α' β) := match x with
-  | .Ok v => f v
-  | .Err e => .Err e
-
-/-- Rust unwrapping, panics if `x` is not `result.Result.ok _` -/
-def Impl.unwrap (α: Type) (β:Type) (x: Result α β) :=
-  match x with
-  | .Err _ => Result.fail .panic
-  | .Ok v => pure v
-
-@[spec]
-theorem Impl.unwrap.spec {α β} (x: Result α β) v :
-  x = Result.Ok v →
-  ⦃ ⌜ True ⌝ ⦄
-  (Impl.unwrap α β x)
-  ⦃ ⇓ r => ⌜ r = v ⌝ ⦄
-  := by
-  intros
-  mvcgen [Impl.unwrap] <;> try grind
 
 def Impl.map
   (T : Type)
@@ -62,7 +40,7 @@ def Impl.map
     | (Result.Err e)
       => (pure (Result.Err e))
 
-def Core.Result.Impl.map_or
+def Impl.map_or
   (T : Type)
   (E : Type)
   (U : Type)
@@ -78,7 +56,7 @@ def Core.Result.Impl.map_or
       => (Core.Ops.Function.FnOnce.call_once f t)
     | (Result.Err _e) => (pure default)
 
-def Core.Result.Impl.map_or_else
+def Impl.map_or_else
   (T : Type)
   (E : Type)
   (U : Type)
@@ -97,25 +75,23 @@ def Core.Result.Impl.map_or_else
     | (Result.Err e)
       => (Core.Ops.Function.FnOnce.call_once default e)
 
-def Core.Result.Impl.map_err
+def Impl.map_err
   (T : Type)
   (E : Type)
-  (O : Type)
   (F : Type)
+  (O : Type)
   [(Core.Ops.Function.FnOnce O E (Output := F))]
   (self : (Result T E))
   (op : O)
   : Hax_Result (Result T F)
   := do
   match self with
-    | (Result.Ok t)
-      => (pure (Result.Ok t))
-    | (Result.Err e)
-      =>
+    | (Result.Ok t) => (pure (Result.Ok t))
+    | (Result.Err e) =>
         (pure (Result.Err
           (← (Core.Ops.Function.FnOnce.call_once op e))))
 
-def Core.Result.Impl.is_ok
+def Impl.is_ok
   (T : Type) (E : Type) (self : (Result T E))
   : Hax_Result Bool
   := do
@@ -123,7 +99,15 @@ def Core.Result.Impl.is_ok
     | (Result.Ok _) => (pure true)
     | _ => (pure false)
 
-def Core.Result.Impl.and_then
+def Impl.is_err
+  (T : Type) (E : Type) (self : (Result T E))
+  : Hax_Result Bool
+  := do
+  match self with
+    | (Result.Ok _) => (pure false)
+    | _ => (pure true)
+
+def Impl.and_then
   (T : Type)
   (E : Type)
   (U : Type)
@@ -139,13 +123,7 @@ def Core.Result.Impl.and_then
     | (Result.Err e)
       => (pure (Result.Err e))
 
-def Core.Result.Impl.unwrap._.requires
-  (T : Type) (E : Type) (self_ : (Result T E))
-  : Hax_Result Bool
-  := do
-  (Core.Result.Impl.is_ok T E self_)
-
-def Core.Result.Impl.unwrap
+def Impl.unwrap
   (T : Type) (E : Type) (self : (Result T E))
   : Hax_Result T
   := do
@@ -154,14 +132,17 @@ def Core.Result.Impl.unwrap
     | (Result.Err _)
       => (Core.Panicking.Internal.panic T Rust_primitives.Hax.Tuple0.mk)
 
-def Core.Result.Impl.expect._.requires
-  (T : Type) (E : Type) (self_ : (Result T E))
-  (_msg : String)
-  : Hax_Result Bool
-  := do
-  (Core.Result.Impl.is_ok T E self_)
+@[spec]
+theorem Impl.unwrap.spec {α β} (x: Result α β) v :
+  x = Result.Ok v →
+  ⦃ ⌜ True ⌝ ⦄
+  (Impl.unwrap α β x)
+  ⦃ ⇓ r => ⌜ r = v ⌝ ⦄
+  := by
+  intros
+  mvcgen [Impl.unwrap] <;> try grind
 
-def Core.Result.Impl.expect
+def Impl.expect
   (T : Type) (E : Type) (self : (Result T E))
   (_msg : String)
   : Hax_Result T
