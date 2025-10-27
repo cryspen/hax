@@ -1,0 +1,70 @@
+---
+source: test-harness/src/harness.rs
+expression: snapshot
+info:
+  kind:
+    Translate:
+      backend: lean
+  info:
+    name: lean-core-models
+    manifest: lean-core-models/Cargo.toml
+    description: ~
+  spec:
+    optional: false
+    broken: false
+    issue_id: ~
+    positive: true
+    snapshot:
+      stderr: true
+      stdout: true
+    include_flag: ~
+    backend_options: ~
+---
+exit = 0
+stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
+
+[stdout]
+diagnostics = []
+
+[stdout.files]
+"Lean_core_models.lean" = '''
+
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
+
+structure Lean_core_models.Default.Structs.S where
+  f1 : usize
+
+instance Lean_core_models.Default.Structs.Impl :
+  Core.Default.Default Lean_core_models.Default.Structs.S
+  where
+  default (_ : Rust_primitives.Hax.Tuple0) := do
+    (pure (Lean_core_models.Default.Structs.S.mk (f1 := (0 : usize))))
+
+def Lean_core_models.Default.Structs.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result Lean_core_models.Default.Structs.S
+  := do
+  (Core.Default.Default.default Rust_primitives.Hax.Tuple0.mk)
+
+inductive Lean_core_models.Default.Enums.E (T : Type) : Type
+| C1 : u32 -> Lean_core_models.Default.Enums.E (T : Type) 
+| C2 : T -> Lean_core_models.Default.Enums.E (T : Type) 
+
+
+instance Lean_core_models.Default.Enums.Impl
+  (T : Type) [(Core.Default.Default T)] :
+  Core.Default.Default (Lean_core_models.Default.Enums.E T)
+  where
+  default (_ : Rust_primitives.Hax.Tuple0) := do
+    (pure (Lean_core_models.Default.Enums.E.C2
+      (← (Core.Default.Default.default Rust_primitives.Hax.Tuple0.mk))))'''
