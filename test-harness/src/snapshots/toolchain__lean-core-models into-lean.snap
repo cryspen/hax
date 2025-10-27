@@ -41,6 +41,100 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+inductive Lean_core_models.Result.E1 : Type
+| C1 : Lean_core_models.Result.E1 
+| C2 : u32 -> Lean_core_models.Result.E1 
+
+
+instance Lean_core_models.Result.Impl :
+  Core.Clone.Clone Lean_core_models.Result.E1
+  where
+
+
+inductive Lean_core_models.Result.E2 : Type
+| C1 : Lean_core_models.Result.E2 
+| C2 : u32 -> Lean_core_models.Result.E2 
+
+
+def Lean_core_models.Result.tests
+  (_ : Rust_primitives.Hax.Tuple0)
+  : Result (Core.Result.Result u32 Lean_core_models.Result.E1)
+  := do
+  let v1 : (Core.Result.Result u32 Lean_core_models.Result.E1) :=
+    (Core.Result.Result.Ok (1 : u32));
+  let v2 : (Core.Result.Result u32 Lean_core_models.Result.E1) :=
+    (Core.Result.Result.Err Lean_core_models.Result.E1.C1);
+  let f : (u32 -> Result u32) := (fun x => (do (x +? (1 : u32)) : Result u32));
+  let v5 : (Core.Result.Result i32 Lean_core_models.Result.E1) ←
+    (Core.Result.Impl.map i32 Lean_core_models.Result.E1 i32 (i32 -> Result i32)
+      (Core.Result.Result.Ok (1 : i32))
+      (fun v => (do (v +? (1 : i32)) : Result i32)));
+  let v6 : u32 ←
+    (Core.Result.Impl.map_or
+      u32
+      Lean_core_models.Result.E1
+      u32
+      (u32 -> Result u32) (Core.Result.Result.Ok (1 : u32)) (9 : u32) f);
+  let v7 : u32 ←
+    (Core.Result.Impl.map_or_else
+      u32
+      Lean_core_models.Result.E1
+      u32
+      (Lean_core_models.Result.E1 -> Result u32)
+      (u32 -> Result u32)
+      (Core.Result.Result.Ok (1 : u32))
+      (fun _ => (do (pure (10 : u32)) : Result u32))
+      f);
+  let v8 : (Core.Result.Result i32 Lean_core_models.Result.E2) ←
+    (Core.Result.Impl.map_err
+      i32
+      Lean_core_models.Result.E1
+      Lean_core_models.Result.E2
+      (Lean_core_models.Result.E1 -> Result Lean_core_models.Result.E2)
+      (Core.Result.Result.Ok (0 : i32))
+      (fun e => (do
+        match e with
+          | (Lean_core_models.Result.E1.C1 )
+            => (pure Lean_core_models.Result.E2.C1)
+          | (Lean_core_models.Result.E1.C2 x)
+            => (pure (Lean_core_models.Result.E2.C2 (← (x +? (1 : u32))))) :
+        Result Lean_core_models.Result.E2)));
+  let v9 : Bool ← (Core.Result.Impl.is_ok u32 Lean_core_models.Result.E1 v1);
+  let v10 : Bool ← (Core.Result.Impl.is_err u32 Lean_core_models.Result.E1 v1);
+  let v11 : (Core.Result.Result u32 Lean_core_models.Result.E1) ←
+    (Core.Result.Impl.and_then
+      u32
+      Lean_core_models.Result.E1
+      u32
+      (u32 -> Result (Core.Result.Result u32 Lean_core_models.Result.E1))
+      (← (Core.Clone.Clone.clone v1))
+      (fun x => (do
+        (pure (Core.Result.Result.Ok (← (x +? (1 : u32))))) : Result
+        (Core.Result.Result u32 Lean_core_models.Result.E1))));
+  let v12 : u32 ←
+    (Core.Result.Impl.unwrap u32 u32
+      (← (Core.Clone.Clone.clone (Core.Result.Result.Ok (0 : u32)))));
+  let v13 : u32 ←
+    (Core.Result.Impl.expect u32 u32
+      (← (Core.Clone.Clone.clone (Core.Result.Result.Ok (0 : u32))))
+      "Should be Ok");
+  match
+    (← (Core.Result.Impl.map
+      u32
+      Lean_core_models.Result.E1
+      u32
+      (u32 -> Result u32) v1 f))
+  with
+    | (Core.Result.Result.Ok hoist2)
+      =>
+        match v2 with
+          | (Core.Result.Result.Ok hoist1)
+            =>
+              let v3 : u32 ← (hoist2 +? hoist1);
+              (pure (Core.Result.Result.Ok v3))
+          | (Core.Result.Result.Err err) => (pure (Core.Result.Result.Err err))
+    | (Core.Result.Result.Err err) => (pure (Core.Result.Result.Err err))
+
 structure Lean_core_models.Default.Structs.S where
   f1 : usize
 
