@@ -1,5 +1,35 @@
 #![allow(unused_variables)]
 
+pub mod slice {
+    pub fn length<T>(s: &[T]) -> usize {
+        panic!()
+    }
+    pub fn split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
+        panic!()
+    }
+    pub fn contains<T>(s: &[T], v: T) -> bool {
+        panic!()
+    }
+    pub fn array_from_fn<T, const N: usize, F>(f: F) -> [T; N] {
+        panic!()
+    }
+    pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
+        panic!()
+    }
+    pub fn array_as_slice<T, const N: usize>(s: [T; N]) -> &'static [T] {
+        panic!()
+    }
+    pub fn slice_index<T>(s: &[T], i: usize) -> &T {
+        panic!()
+    }
+}
+
+pub mod mem {
+    pub fn replace<T: ?Sized>(src: &mut T, dst: &T) {
+        panic!()
+    }
+}
+
 pub mod arithmetic {
     use pastey::paste;
 
