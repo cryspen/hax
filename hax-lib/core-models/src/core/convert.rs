@@ -46,7 +46,7 @@ impl<T: Copy, const N: usize> TryFrom<&[T]> for [T; N] {
     type Error = TryFromSliceError;
     fn try_from(x: &[T]) -> Result<[T; N], TryFromSliceError> {
         if x.len() == N {
-            Result::Ok(rust_primitives::slice::array_from_closure(|i| {
+            Result::Ok(rust_primitives::slice::array_from_fn(|i| {
                 *rust_primitives::slice::slice_index(x, i)
             }))
         } else {

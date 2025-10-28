@@ -345,7 +345,7 @@ let impl_2
       if (Core_models.Slice.impl__len #v_T x <: usize) =. v_N
       then
         Core_models.Result.Result_Ok
-        (Rust_primitives.Slice.array_from_closure #v_T
+        (Rust_primitives.Slice.array_from_fn #v_T
             v_N
             (fun i ->
                 let i:usize = i in
