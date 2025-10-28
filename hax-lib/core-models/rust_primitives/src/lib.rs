@@ -10,10 +10,11 @@ pub mod slice {
     pub fn contains<T>(s: &[T], v: T) -> bool {
         panic!()
     }
-    pub fn array_from_fn<T, const N: usize>(f: fn(usize) -> T) -> [T; N] {
-        panic!()
-    }
-    pub fn array_from_closure<T, const N: usize, F: FnOnce(usize) -> T>(f: F) -> [T; N] {
+    // In the following two functions, F is actually a function type.
+    // Not constraining that here allows to call it with closures,
+    // or to pass parameters that implement the `Fn` trait for core_models.
+    // Each backend can type `f` as needed.
+    pub fn array_from_fn<T, const N: usize, F>(f: F) -> [T; N] {
         panic!()
     }
     pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
