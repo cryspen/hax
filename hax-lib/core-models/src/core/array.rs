@@ -2,34 +2,34 @@ pub struct TryFromSliceError;
 
 // Dummy type to allow impls
 #[hax_lib::exclude]
-struct Array<T, const N: usize>([T; N]);
+struct Dummy<T, const N: usize>([T; N]);
 
-// Dummy impls to get the right disambiguator
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
-impl<T> Array<T, 0> {}
+// Dummy impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
+impl<T> Dummy<T, 0> {}
 
-impl<T, const N: usize> Array<T, N> {
+impl<T, const N: usize> Dummy<T, N> {
     pub fn map<U>(s: [T; N], f: fn(T) -> U) -> [U; N] {
         rust_primitives::slice::array_map(s, f)
     }

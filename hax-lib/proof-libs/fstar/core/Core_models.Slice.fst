@@ -3,7 +3,7 @@ module Core_models.Slice
 open FStar.Mul
 open Rust_primitives
 
-let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.length #v_T s
+let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.slice_length #v_T s
 
 assume
 val impl__chunks': #v_T: Type0 -> s: t_Slice v_T -> cs: usize -> Core_models.Slice.Iter.t_Chunks v_T
@@ -91,7 +91,7 @@ let impl__clone_from_slice
 let impl__split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     : Prims.Pure (t_Slice v_T & t_Slice v_T)
       (requires mid <=. (impl__len #v_T s <: usize))
-      (fun _ -> Prims.l_True) = Rust_primitives.Slice.split_at #v_T s mid
+      (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_split_at #v_T s mid
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_1 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =

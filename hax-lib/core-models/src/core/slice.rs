@@ -12,7 +12,7 @@ pub mod iter {
 #[hax_lib::attributes]
 impl<T> Slice<T> {
     fn len(s: &[T]) -> usize {
-        rust_primitives::slice::length(s)
+        rust_primitives::slice::slice_length(s)
     }
     #[hax_lib::opaque]
     fn chunks(s: &[T], cs: usize) -> iter::Chunks<T> {
@@ -42,14 +42,14 @@ impl<T> Slice<T> {
     }
     #[hax_lib::requires(mid <= s.len())]
     fn split_at(s: &[T], mid: usize) -> (&[T], &[T]) {
-        rust_primitives::slice::split_at(s, mid)
+        rust_primitives::slice::slice_split_at(s, mid)
     }
     fn is_empty(s: &[T]) -> bool {
         s.len() == 0
     }
     #[hax_lib::opaque]
     fn contains(s: &[T], v: T) -> bool {
-        rust_primitives::slice::contains(s, v)
+        rust_primitives::slice::slice_contains(s, v)
     }
     #[hax_lib::opaque]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
