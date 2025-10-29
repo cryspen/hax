@@ -1,13 +1,16 @@
 #![allow(unused_variables)]
 
 pub mod slice {
-    pub fn length<T>(s: &[T]) -> usize {
+    pub fn slice_length<T>(s: &[T]) -> usize {
         panic!()
     }
-    pub fn split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
+    pub fn slice_split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
         panic!()
     }
-    pub fn contains<T>(s: &[T], v: T) -> bool {
+    pub fn slice_contains<T>(s: &[T], v: T) -> bool {
+        panic!()
+    }
+    pub fn slice_index<T>(s: &[T], i: usize) -> &T {
         panic!()
     }
     // In the following two functions, F is actually a function type.
@@ -21,9 +24,6 @@ pub mod slice {
         panic!()
     }
     pub fn array_as_slice<T, const N: usize>(s: [T; N]) -> &'static [T] {
-        panic!()
-    }
-    pub fn slice_index<T>(s: &[T], i: usize) -> &T {
         panic!()
     }
 }
