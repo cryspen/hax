@@ -4,12 +4,14 @@ pub mod slice {
     pub fn slice_length<T>(s: &[T]) -> usize {
         panic!()
     }
+    #[hax_lib::requires(mid <= slice_length(s))]
     pub fn slice_split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
         panic!()
     }
     pub fn slice_contains<T>(s: &[T], v: T) -> bool {
         panic!()
     }
+    #[hax_lib::requires(i < slice_length(s))]
     pub fn slice_index<T>(s: &[T], i: usize) -> &T {
         panic!()
     }
