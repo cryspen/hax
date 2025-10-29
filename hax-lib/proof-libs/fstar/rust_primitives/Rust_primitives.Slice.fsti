@@ -7,7 +7,7 @@ open Rust_primitives.Integers
 let slice_length (#a: Type) (s: t_Slice a): res: usize {res == sz (Seq.length s)} = sz (Seq.length s)
 let slice_split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize {mid <=. length s}): t_Slice v_T & t_Slice v_T = 
   Seq.slice s 0 (v mid), Seq.slice s (v mid) (Seq.length s)
-let slice_contains (#a: Type) (s: t_Slice a) (v: a): bool = Seq.mem x s
+let slice_contains (#a: Type) (s: t_Slice a) (v: a): bool = Seq.mem v s
 let slice_index (#t: Type) (s: t_Slice t) (i: usize {i <. length s}): t = Seq.index s (v i)
 val array_map (#t: Type) (#u: Type) (l: usize)
   (s: t_Array t l) (f: t -> u): res: t_Array u l {forall i. Seq.index res i == f (Seq.index s i)}
