@@ -522,25 +522,43 @@ impl ItemRef {
     #[cfg(feature = "rustc")]
     pub fn translate<'tcx, S: UnderOwnerState<'tcx>>(
         s: &S,
-        def_id: RDefId,
-        generics: ty::GenericArgsRef<'tcx>,
+        mut def_id: RDefId,
+        mut generics: ty::GenericArgsRef<'tcx>,
     ) -> ItemRef {
         use rustc_infer::infer::canonical::ir::TypeVisitableExt;
         let key = (def_id, generics);
         if let Some(item) = s.with_cache(|cache| cache.item_refs.get(&key).cloned()) {
             return item;
         }
-        let hax_def_id = def_id.sinto(s);
 
-        let mut impl_exprs = solve_item_required_traits(s, def_id, generics);
-        let mut hax_generics = generics.sinto(s);
-
+        let tcx = s.base().tcx;
         // If this is an associated item, resolve the trait reference.
-        let trait_info = self_clause_for_item(s, def_id, generics);
+        let mut trait_info = self_clause_for_item(s, def_id, generics);
+
+        // If the reference is a known trait impl and the impl implements the target item, we can
+        // point directly to the implemented item.
+        if let Some(tinfo) = &trait_info
+            && let ImplExprAtom::Concrete(impl_ref) = &tinfo.r#impl
+            && let impl_def_id = impl_ref.def_id.as_rust_def_id().unwrap()
+            && let Some(implemented_item) = tcx
+                .associated_items(impl_def_id)
+                .in_definition_order()
+                .find(|item| item.trait_item_def_id == Some(def_id))
+        {
+            let trait_def_id = tcx.parent(def_id);
+            def_id = implemented_item.def_id;
+            generics = generics.rebase_onto(tcx, trait_def_id, impl_ref.rustc_args(s));
+            trait_info = None;
+        }
+
+        let hax_def_id = def_id.sinto(s);
+        let mut hax_generics = generics.sinto(s);
+        let mut impl_exprs = solve_item_required_traits(s, def_id, generics);
+
         // Fixup the generics.
         if let Some(tinfo) = &trait_info {
             // The generics are split in two: the arguments of the trait and the arguments of the
-            // method.
+            // method/associated item.
             //
             // For instance, if we have:
             // ```
