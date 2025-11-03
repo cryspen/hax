@@ -173,7 +173,6 @@ let cast_mod (#t:inttype) (#t':inttype)
     (u1:int_t t) = 
     mk_int #t' (v u1 @%. t')
 
-#push-options "--split_queries always --z3rlimit 150 --z3version 4.13.3"
 /// Simplifies double casts when possible.
 /// For example, with `x` a i32, this lemma rewrites `x as i64 as i32` into `x`.
 let cast_identity_lemma
@@ -181,8 +180,7 @@ let cast_identity_lemma
   (n: int_t a)
   : Lemma (cast_mod #b #a (cast_mod #a #b n) == n)
     [SMTPat (cast_mod #b #a (cast_mod #a #b n))]
-  = ()
-#pop-options
+  = FStar.Math.Lemmas.small_mod (abs (v n)) (modulus a)
 
 /// Arithmetic operations
 /// 
