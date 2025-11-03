@@ -1,7 +1,7 @@
 module Coverage.Color
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   Rust_primitives.Hax.Folds.fold_range (mk_i32 0)

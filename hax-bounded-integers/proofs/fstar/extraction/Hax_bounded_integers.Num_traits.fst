@@ -1,6 +1,6 @@
 module Hax_bounded_integers.Num_traits
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
+open Core_models
 open FStar.Mul
 
 class t_BitOps (v_Self: Type0) = {
@@ -62,9 +62,9 @@ class t_BitOps (v_Self: Type0) = {
 class t_CheckedAdd (v_Self: Type0) (v_Rhs: Type0) = {
   f_Output:Type0;
   f_checked_add_pre:v_Self -> v_Rhs -> bool;
-  f_checked_add_post:v_Self -> v_Rhs -> Core.Option.t_Option f_Output -> bool;
+  f_checked_add_post:v_Self -> v_Rhs -> Core_models.Option.t_Option f_Output -> bool;
   f_checked_add:x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure (Core.Option.t_Option f_Output)
+    -> Prims.Pure (Core_models.Option.t_Option f_Output)
         (f_checked_add_pre x0 x1)
         (fun result -> f_checked_add_post x0 x1 result)
 }
@@ -72,9 +72,9 @@ class t_CheckedAdd (v_Self: Type0) (v_Rhs: Type0) = {
 class t_CheckedDiv (v_Self: Type0) (v_Rhs: Type0) = {
   f_Output:Type0;
   f_checked_div_pre:v_Self -> v_Rhs -> bool;
-  f_checked_div_post:v_Self -> v_Rhs -> Core.Option.t_Option f_Output -> bool;
+  f_checked_div_post:v_Self -> v_Rhs -> Core_models.Option.t_Option f_Output -> bool;
   f_checked_div:x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure (Core.Option.t_Option f_Output)
+    -> Prims.Pure (Core_models.Option.t_Option f_Output)
         (f_checked_div_pre x0 x1)
         (fun result -> f_checked_div_post x0 x1 result)
 }
@@ -82,9 +82,9 @@ class t_CheckedDiv (v_Self: Type0) (v_Rhs: Type0) = {
 class t_CheckedMul (v_Self: Type0) (v_Rhs: Type0) = {
   f_Output:Type0;
   f_checked_mul_pre:v_Self -> v_Rhs -> bool;
-  f_checked_mul_post:v_Self -> v_Rhs -> Core.Option.t_Option f_Output -> bool;
+  f_checked_mul_post:v_Self -> v_Rhs -> Core_models.Option.t_Option f_Output -> bool;
   f_checked_mul:x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure (Core.Option.t_Option f_Output)
+    -> Prims.Pure (Core_models.Option.t_Option f_Output)
         (f_checked_mul_pre x0 x1)
         (fun result -> f_checked_mul_post x0 x1 result)
 }
@@ -92,9 +92,9 @@ class t_CheckedMul (v_Self: Type0) (v_Rhs: Type0) = {
 class t_CheckedNeg (v_Self: Type0) = {
   f_Output:Type0;
   f_checked_neg_pre:v_Self -> bool;
-  f_checked_neg_post:v_Self -> Core.Option.t_Option f_Output -> bool;
+  f_checked_neg_post:v_Self -> Core_models.Option.t_Option f_Output -> bool;
   f_checked_neg:x0: v_Self
-    -> Prims.Pure (Core.Option.t_Option f_Output)
+    -> Prims.Pure (Core_models.Option.t_Option f_Output)
         (f_checked_neg_pre x0)
         (fun result -> f_checked_neg_post x0 result)
 }
@@ -102,9 +102,9 @@ class t_CheckedNeg (v_Self: Type0) = {
 class t_CheckedSub (v_Self: Type0) (v_Rhs: Type0) = {
   f_Output:Type0;
   f_checked_sub_pre:v_Self -> v_Rhs -> bool;
-  f_checked_sub_post:v_Self -> v_Rhs -> Core.Option.t_Option f_Output -> bool;
+  f_checked_sub_post:v_Self -> v_Rhs -> Core_models.Option.t_Option f_Output -> bool;
   f_checked_sub:x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure (Core.Option.t_Option f_Output)
+    -> Prims.Pure (Core_models.Option.t_Option f_Output)
         (f_checked_sub_pre x0 x1)
         (fun result -> f_checked_sub_post x0 x1 result)
 }
@@ -122,15 +122,15 @@ class t_FromBytes (v_Self: Type0) = {
 }
 
 class t_NumOps (v_Self: Type0) (v_Rhs: Type0) (v_Output: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9126539072073536218:Core.Ops.Arith.t_Add v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9126539072073536218:Core_models.Ops.Arith.t_Add v_Self
     v_Rhs;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9784678892199232396:Core.Ops.Arith.t_Sub v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9784678892199232396:Core_models.Ops.Arith.t_Sub v_Self
     v_Rhs;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_7005199110250618039:Core.Ops.Arith.t_Mul v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_7005199110250618039:Core_models.Ops.Arith.t_Mul v_Self
     v_Rhs;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12366019628759357413:Core.Ops.Arith.t_Div v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12366019628759357413:Core_models.Ops.Arith.t_Div v_Self
     v_Rhs;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_11859756759858186302:Core.Ops.Arith.t_Rem v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_11859756759858186302:Core_models.Ops.Arith.t_Rem v_Self
     v_Rhs
 }
 
@@ -203,28 +203,28 @@ class t_Zero (v_Self: Type0) = {
 }
 
 class t_MachineInt (v_Self: Type0) (v_Output: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_11581440318597584651:Core.Marker.t_Copy v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12866954522599331834:Core.Cmp.t_PartialOrd v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_11581440318597584651:Core_models.Marker.t_Copy v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12866954522599331834:Core_models.Cmp.t_PartialOrd v_Self
     v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_13035911912416111195:Core.Cmp.t_Ord v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12632649257025169145:Core.Cmp.t_PartialEq v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_13035911912416111195:Core_models.Cmp.t_Ord v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12632649257025169145:Core_models.Cmp.t_PartialEq v_Self
     v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_8099741844003281729:Core.Cmp.t_Eq v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_8099741844003281729:Core_models.Cmp.t_Eq v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_9841570312332416173:t_Zero v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_12668241202577409386:t_One v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9487321769118300762:Core.Ops.Bit.t_Not v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9487321769118300762:Core_models.Ops.Bit.t_Not v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_1980884762883925305:t_NumOps v_Self
     v_Self
     v_Output;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_13929479875548649875:Core.Ops.Bit.t_BitAnd v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_13929479875548649875:Core_models.Ops.Bit.t_BitAnd v_Self
     v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_1708325062211865233:Core.Ops.Bit.t_BitOr v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_1708325062211865233:Core_models.Ops.Bit.t_BitOr v_Self
     v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_1501688608269502122:Core.Ops.Bit.t_BitXor v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_1501688608269502122:Core_models.Ops.Bit.t_BitXor v_Self
     v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_15083490293093561556:Core.Ops.Bit.t_Shl v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_15083490293093561556:Core_models.Ops.Bit.t_Shl v_Self
     v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9065931548762825726:Core.Ops.Bit.t_Shr v_Self
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_9065931548762825726:Core_models.Ops.Bit.t_Shr v_Self
     v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_5052970308637232515:t_CheckedAdd v_Self v_Self;
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_739902999637339236:t_CheckedSub v_Self v_Self;
