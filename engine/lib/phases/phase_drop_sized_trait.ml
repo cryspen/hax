@@ -14,10 +14,11 @@ module Make (F : Features.T) =
         let ctx = Diagnostics.Context.Phase phase_id
       end)
 
+      let ident_is_sized : Ast.concrete_ident -> bool =
+        Concrete_ident.eq_name Core__marker__Sized
+
       let visitor =
-        let keep (ii : impl_ident) =
-          Concrete_ident.eq_name Core__marker__Sized ii.goal.trait |> not
-        in
+        let keep (ii : impl_ident) = ident_is_sized ii.goal.trait |> not in
         object
           inherit [_] Visitors.map as super
 
@@ -62,5 +63,11 @@ module Make (F : Features.T) =
             | _ -> ii'
         end
 
-      let ditems = List.map ~f:(visitor#visit_item ())
+      let ditems =
+        List.filter ~f:(fun item ->
+            match item.v with
+            (* Drop any implementation of the `Sized` trait. *)
+            | Impl { of_trait = tr, _; _ } when ident_is_sized tr -> false
+            | _ -> true)
+        >> List.map ~f:(visitor#visit_item ())
     end)

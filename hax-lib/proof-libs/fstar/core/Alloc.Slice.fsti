@@ -8,4 +8,4 @@ let impl__into_vec #t #a (s: Alloc.Boxed.t_Box (t_Slice t) a): t_Vec t a = s
 
 val impl__concat #t1 #t2 (s: t_Slice t1): t_Slice t2
 
-val impl__sort_by #t (s: t_Slice t) (f: t -> t -> Core.Cmp.t_Ordering): t_Slice t
+val impl__sort_by #t (s: t_Slice t) (f: t -> t -> Core_models.Cmp.t_Ordering): t_Slice t

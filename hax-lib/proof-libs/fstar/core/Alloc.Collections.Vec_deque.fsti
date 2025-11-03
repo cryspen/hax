@@ -14,8 +14,10 @@ let impl_5__pop_front #t #a (v: t_VecDeque t a): t_VecDeque t a & Core.Option.t_
 
 
 [@FStar.Tactics.Typeclasses.tcinstance]
-val from_vec_deque_array t a n: Core.Convert.t_From (Alloc.Collections.Vec_deque.t_VecDeque t a)
+val from_vec_deque_array t a n: Core_models.Convert.t_From (Alloc.Collections.Vec_deque.t_VecDeque t a)
         (Rust_primitives.Arrays.t_Array t
             (Rust_primitives.Integers.mk_usize n))
 
 
+val index_vec_deque t a: Core_models.Ops.Index.t_Index (Alloc.Collections.Vec_deque.t_VecDeque t a)
+        Rust_primitives.Integers.usize

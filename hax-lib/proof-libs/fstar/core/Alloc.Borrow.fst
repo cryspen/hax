@@ -1,5 +1,5 @@
 module Alloc.Borrow
-open Core.TypeClassPlaceHolder
+open Core_models.TypeClassPlaceHolder
 
 type t_Cow t = t
 
