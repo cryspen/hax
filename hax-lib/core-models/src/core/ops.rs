@@ -1,15 +1,66 @@
+pub mod arith {
+    pub trait Add<Rhs = Self> {
+        type Output;
+        fn add(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait Sub<Rhs = Self> {
+        type Output;
+        fn sub(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait Mul<Rhs = Self> {
+        type Output;
+        fn mul(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait Div<Rhs = Self> {
+        type Output;
+        fn div(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait AddAssign<Rhs = Self> {
+        type Output;
+        fn add_assign(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait SubAssign<Rhs = Self> {
+        type Output;
+        fn sub_assign(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait MulAssign<Rhs = Self> {
+        type Output;
+        fn mul_assign(self, rhs: Rhs) -> Self::Output;
+    }
+    pub trait DivAssign<Rhs = Self> {
+        type Output;
+        fn div_assign(self, rhs: Rhs) -> Self::Output;
+    }
+}
+
+pub mod bit {
+    trait Shr<Rhs = Self> {
+        type Output;
+        fn shr(self, rhs: Rhs) -> Self::Output;
+    }
+    trait BitXor<Rhs = Self> {
+        type Output;
+        fn bitxor(self, rhs: Rhs) -> Self::Output;
+    }
+    trait BitAnd<Rhs = Self> {
+        type Output;
+        fn bitand(self, rhs: Rhs) -> Self::Output;
+    }
+}
+
 pub mod control_flow {
-    pub enum ControlFlow<C, B> {
+    pub enum ControlFlow<B, C> {
         Continue(C),
         Break(B),
     }
 }
 
 pub mod index {
-
-    trait Index {
+    // TODO remove
+    #[hax_lib::fstar::before("open Rust_primitives.Integers")]
+    trait Index<Idx> {
         type Output;
-        fn index(&self, i: usize) -> &Self::Output;
+        fn index(&self, i: Idx) -> &Self::Output;
     }
 }
 

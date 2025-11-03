@@ -8,4 +8,4 @@ Currently the only backend supported is F*, and the extracted models coexist wit
 
 Here is a list of things to pay attention to when contributing to the models:
 * When using the `Fn` traits, the syntax shortcuts `Fn(T) -> U` are not available for the model traits. We need to write `Fn<T, Output = U>`
-* The `core.mem.take` function cannot be given a good model that fits the Rust interface, we can only make it use unsafe or the original version, or change the interface to something corresponding to the interface of translated code (state passing instead of `&mut`).
+* The `core::mem::take`, `core::mem::swap`, etc. functions cannot be given a good model that fits the Rust interface, we can only use unsafe or the original version, or change the interface to something corresponding to the interface of translated code (state passing instead of `&mut`).

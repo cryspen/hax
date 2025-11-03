@@ -31,7 +31,7 @@ let impl__map_or
   match self <: t_Result v_T v_E with
   | Result_Ok t ->
     Core_models.Ops.Function.f_call_once #v_F #v_T #FStar.Tactics.Typeclasses.solve f t
-  | Result_Err e -> v_default
+  | Result_Err e_e -> v_default
 
 let impl__map_or_else
       (#v_T #v_E #v_U #v_D #v_F: Type0)
