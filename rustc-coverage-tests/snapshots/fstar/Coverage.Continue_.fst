@@ -1,7 +1,7 @@
 module Coverage.Continue_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -11,7 +11,7 @@ let _ =
 
 let main (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:
@@ -120,13 +120,13 @@ let main (_: Prims.unit) : Prims.unit =
           match is_true <: bool with
           | false ->
             let x:i32 = mk_i32 1 in
-            Core.Ops.Control_flow.ControlFlow_Continue (mk_i32 3)
+            Core_models.Ops.Control_flow.ControlFlow_Continue (mk_i32 3)
             <:
-            Core.Ops.Control_flow.t_ControlFlow (Prims.unit & i32) i32
+            Core_models.Ops.Control_flow.t_ControlFlow (Prims.unit & i32) i32
           | _ ->
-            Core.Ops.Control_flow.ControlFlow_Break ((), x <: (Prims.unit & i32))
+            Core_models.Ops.Control_flow.ControlFlow_Break ((), x <: (Prims.unit & i32))
             <:
-            Core.Ops.Control_flow.t_ControlFlow (Prims.unit & i32) i32)
+            Core_models.Ops.Control_flow.t_ControlFlow (Prims.unit & i32) i32)
   in
   let _:i32 = x in
   ()

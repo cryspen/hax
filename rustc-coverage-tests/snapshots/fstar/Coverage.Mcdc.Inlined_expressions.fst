@@ -1,7 +1,7 @@
 module Coverage.Mcdc.Inlined_expressions
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let inlined_instance (a b: bool) : bool = a && b
 

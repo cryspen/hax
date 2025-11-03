@@ -29,8 +29,8 @@ diagnostics = []
 "Attributes.Ensures_on_arity_zero_fns.fst" = '''
 module Attributes.Ensures_on_arity_zero_fns
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let doing_nothing (_: Prims.unit)
     : Prims.Pure Prims.unit
@@ -51,28 +51,28 @@ let basically_a_constant (_: Prims.unit)
 "Attributes.Future_self.fst" = '''
 module Attributes.Future_self
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Dummy = | Dummy : t_Dummy
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1': Core.Marker.t_StructuralPartialEq t_Dummy
+val impl_1': Core_models.Marker.t_StructuralPartialEq t_Dummy
 
 unfold
 let impl_1 = impl_1'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_2': Core.Cmp.t_PartialEq t_Dummy t_Dummy
+val impl_2': Core_models.Cmp.t_PartialEq t_Dummy t_Dummy
 
 unfold
 let impl_2 = impl_2'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl': Core.Cmp.t_Eq t_Dummy
+val impl': Core_models.Cmp.t_Eq t_Dummy
 
 unfold
 let impl = impl'
@@ -88,8 +88,8 @@ let impl_Dummy__f (self: t_Dummy)
 "Attributes.Inlined_code_ensures_requires.fst" = '''
 module Attributes.Inlined_code_ensures_requires
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let increment_array (v: t_Array u8 (mk_usize 4))
     : Prims.Pure (t_Array u8 (mk_usize 4))
@@ -124,17 +124,17 @@ let increment_array (v: t_Array u8 (mk_usize 4))
 "Attributes.Int_model.fst" = '''
 module Attributes.Int_model
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 unfold type t_Int = int
 
-let impl_1: Core.Clone.t_Clone t_Int =
+let impl_1: Core_models.Clone.t_Clone t_Int =
   { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl': Core.Marker.t_Copy t_Int
+val impl': Core_models.Marker.t_Copy t_Int
 
 unfold
 let impl = impl'
@@ -152,8 +152,8 @@ unfold instance impl: Core.Ops.Arith.t_Sub t_Int t_Int =
 "Attributes.Issue_1266_.fst" = '''
 module Attributes.Issue_1266_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_T (v_Self: Type0) = {
   f_v_pre:v_Self -> Type0;
@@ -164,8 +164,8 @@ class t_T (v_Self: Type0) = {
 "Attributes.Issue_1276_.fst" = '''
 module Attributes.Issue_1276_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_S = | S : u8 -> t_S
 
@@ -177,8 +177,8 @@ let impl_S__f (self: t_S) (self_ self_0_ self_1_ self_2_: u8)
 "Attributes.Issue_evit_57_.fst" = '''
 module Attributes.Issue_evit_57_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Foo = | Foo : t_Foo
 
@@ -187,8 +187,8 @@ let impl_Foo__f (self: t_Foo) : Prims.Pure Prims.unit (requires true) (fun _ -> 
 "Attributes.Nested_refinement_elim.fst" = '''
 module Attributes.Nested_refinement_elim
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let t_DummyRefinement = x: u16{true}
 
@@ -197,22 +197,25 @@ let elim_twice (x: t_DummyRefinement) : u16 = ((x <: u16) <: t_DummyRefinement) 
 "Attributes.Newtype_pattern.fst" = '''
 module Attributes.Newtype_pattern
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let v_MAX: usize = mk_usize 10
 
 type t_SafeIndex = { f_i:f_i: usize{b2t (f_i <. v_MAX <: bool)} }
 
-let impl_SafeIndex__new (i: usize) : Core.Option.t_Option t_SafeIndex =
+let impl_SafeIndex__new (i: usize) : Core_models.Option.t_Option t_SafeIndex =
   if i <. v_MAX
-  then Core.Option.Option_Some ({ f_i = i } <: t_SafeIndex) <: Core.Option.t_Option t_SafeIndex
-  else Core.Option.Option_None <: Core.Option.t_Option t_SafeIndex
+  then
+    Core_models.Option.Option_Some ({ f_i = i } <: t_SafeIndex)
+    <:
+    Core_models.Option.t_Option t_SafeIndex
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option t_SafeIndex
 
 let impl_SafeIndex__as_usize (self: t_SafeIndex) : usize = self.f_i
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_T: Type0) : Core.Ops.Index.t_Index (t_Array v_T (mk_usize 10)) t_SafeIndex =
+let impl_1 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Array v_T (mk_usize 10)) t_SafeIndex =
   {
     f_Output = v_T;
     f_index_pre = (fun (self: t_Array v_T (mk_usize 10)) (index: t_SafeIndex) -> true);
@@ -223,16 +226,16 @@ let impl_1 (#v_T: Type0) : Core.Ops.Index.t_Index (t_Array v_T (mk_usize 10)) t_
 "Attributes.Postprocess_with.Somewhere.fst" = '''
 module Attributes.Postprocess_with.Somewhere
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let some_hypothetical_tactic (some_param: u8) : Prims.unit = ()
 '''
 "Attributes.Postprocess_with.fst" = '''
 module Attributes.Postprocess_with
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 [@@FStar.Tactics.postprocess_with (fun _ -> FStar.Tactics.trefl ())]
 
@@ -247,8 +250,8 @@ let g (_: Prims.unit) : Prims.unit = ()
 "Attributes.Pre_post_on_traits_and_impls.fst" = '''
 module Attributes.Pre_post_on_traits_and_impls
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_Operation (v_Self: Type0) = {
   f_double_pre:x: u8
@@ -322,26 +325,26 @@ let test
 "Attributes.Props.fst" = '''
 module Attributes.Props
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let f (x: Hax_lib.Prop.t_Prop) (y: bool) : Hax_lib.Prop.t_Prop =
   let (xprop: Hax_lib.Prop.t_Prop):Hax_lib.Prop.t_Prop = b2t y in
   let p:Hax_lib.Prop.t_Prop = b2t y /\ xprop /\ b2t y /\ b2t y in
   ~(p \/ b2t y ==>
-    (forall (x: u8). b2t (x <=. Core.Num.impl_u8__MAX <: bool)) /\
+    (forall (x: u8). b2t (x <=. Core_models.Num.impl_u8__MAX <: bool)) /\
     (exists (x: u16). b2t (x >. mk_u16 300 <: bool)))
 '''
 "Attributes.Refined_arithmetic.fst" = '''
 module Attributes.Refined_arithmetic
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Foo = | Foo : u8 -> t_Foo
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Ops.Arith.t_Add t_Foo t_Foo =
+let impl: Core_models.Ops.Arith.t_Add t_Foo t_Foo =
   {
     f_Output = t_Foo;
     f_add_pre = (fun (self_: t_Foo) (rhs: t_Foo) -> self_._0 <. (mk_u8 255 -! rhs._0 <: u8));
@@ -350,7 +353,7 @@ let impl: Core.Ops.Arith.t_Add t_Foo t_Foo =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Ops.Arith.t_Mul t_Foo t_Foo =
+let impl_1: Core_models.Ops.Arith.t_Mul t_Foo t_Foo =
   {
     f_Output = t_Foo;
     f_mul_pre
@@ -364,8 +367,8 @@ let impl_1: Core.Ops.Arith.t_Mul t_Foo t_Foo =
 "Attributes.Refined_indexes.fst" = '''
 module Attributes.Refined_indexes
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let v_MAX: usize = mk_usize 10
 
@@ -398,7 +401,7 @@ let mutation_example
   (t_MyArray & t_Slice u8 & Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Ops.Index.t_Index t_MyArray usize =
+let impl: Core_models.Ops.Index.t_Index t_MyArray usize =
   {
     f_Output = u8;
     f_index_pre = (fun (self_: t_MyArray) (index: usize) -> index <. v_MAX);
@@ -409,8 +412,8 @@ let impl: Core.Ops.Index.t_Index t_MyArray usize =
 "Attributes.Refinement_types.fst" = '''
 module Attributes.Refinement_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let t_BoundedU8 (v_MIN v_MAX: u8) = x: u8{x >=. v_MIN && x <=. v_MAX}
 
@@ -431,16 +434,16 @@ let double_refine (x: u8) : Prims.Pure t_Even (requires x <. mk_u8 127) (fun _ -
 let t_NoE =
   x:
   Alloc.String.t_String
-    { let _, out:(Core.Str.Iter.t_Chars & bool) =
-        Core.Iter.Traits.Iterator.f_any #Core.Str.Iter.t_Chars
+    { let _, out:(Core_models.Str.Iter.t_Chars & bool) =
+        Core_models.Iter.Traits.Iterator.f_any #Core_models.Str.Iter.t_Chars
           #FStar.Tactics.Typeclasses.solve
-          (Core.Str.impl_str__chars (Core.Ops.Deref.f_deref #Alloc.String.t_String
+          (Core_models.Str.impl_str__chars (Core_models.Ops.Deref.f_deref #Alloc.String.t_String
                   #FStar.Tactics.Typeclasses.solve
                   x
                 <:
                 string)
             <:
-            Core.Str.Iter.t_Chars)
+            Core_models.Str.Iter.t_Chars)
           (fun ch ->
               let ch:char = ch in
               ch =. ' ' <: bool)
@@ -472,54 +475,54 @@ let t_BoundedAbsI16 (v_B: usize) =
       (Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) <=
       (Rust_primitives.Hax.Int.from_machine v_B <: Hax_lib.Int.t_Int) }
 
-let impl (v_B: usize) : Core.Clone.t_Clone (t_BoundedAbsI16 v_B) =
+let impl (v_B: usize) : Core_models.Clone.t_Clone (t_BoundedAbsI16 v_B) =
   { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1': v_B: usize -> Core.Marker.t_Copy (t_BoundedAbsI16 v_B)
+val impl_1': v_B: usize -> Core_models.Marker.t_Copy (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_1 (v_B: usize) = impl_1' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_3': v_B: usize -> Core.Marker.t_StructuralPartialEq (t_BoundedAbsI16 v_B)
+val impl_3': v_B: usize -> Core_models.Marker.t_StructuralPartialEq (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_3 (v_B: usize) = impl_3' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_4': v_B: usize -> Core.Cmp.t_PartialEq (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
+val impl_4': v_B: usize -> Core_models.Cmp.t_PartialEq (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_4 (v_B: usize) = impl_4' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_2': v_B: usize -> Core.Cmp.t_Eq (t_BoundedAbsI16 v_B)
+val impl_2': v_B: usize -> Core_models.Cmp.t_Eq (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_2 (v_B: usize) = impl_2' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_6': v_B: usize -> Core.Cmp.t_PartialOrd (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
+val impl_6': v_B: usize -> Core_models.Cmp.t_PartialOrd (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_6 (v_B: usize) = impl_6' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_5': v_B: usize -> Core.Cmp.t_Ord (t_BoundedAbsI16 v_B)
+val impl_5': v_B: usize -> Core_models.Cmp.t_Ord (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_5 (v_B: usize) = impl_5' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_7': v_B: usize -> Core.Hash.t_Hash (t_BoundedAbsI16 v_B)
+val impl_7': v_B: usize -> Core_models.Hash.t_Hash (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_7 (v_B: usize) = impl_7' v_B
@@ -534,15 +537,19 @@ let double_abs_i16 (v_N v_M: usize) (x: t_BoundedAbsI16 v_N)
           <:
           Hax_lib.Int.t_Int))
       (fun _ -> Prims.l_True) =
-  Core.Ops.Arith.f_mul #(t_BoundedAbsI16 v_N) #i16 #FStar.Tactics.Typeclasses.solve x (mk_i16 2)
+  Core_models.Ops.Arith.f_mul #(t_BoundedAbsI16 v_N)
+    #i16
+    #FStar.Tactics.Typeclasses.solve
+    x
+    (mk_i16 2)
   <:
   t_BoundedAbsI16 v_M
 '''
 "Attributes.Reorder.fst" = '''
 module Attributes.Reorder
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Foo = {
   f_field_3_:u8;
@@ -566,8 +573,8 @@ type t_Bar =
 "Attributes.Replace_body.fst" = '''
 module Attributes.Replace_body
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let f (x y: u8) : u8 = magic x
 
@@ -586,8 +593,8 @@ let impl_1: Alloc.String.t_ToString t_Foo =
 "Attributes.Requires_mut.fst" = '''
 module Attributes.Requires_mut
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_Foo (v_Self: Type0) = {
   f_f_pre:x: u8 -> y: u8
@@ -658,8 +665,8 @@ let impl: t_Foo Prims.unit =
 "Attributes.Verifcation_status.fst" = '''
 module Attributes.Verifcation_status
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 #push-options "--admit_smt_queries true"
 
@@ -695,8 +702,8 @@ let another_panicfree_function (_: Prims.unit)
 "Attributes.fst" = '''
 module Attributes
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let u32_max: u32 = mk_u32 90000
 
@@ -791,6 +798,6 @@ let rec fib (x: usize) : Prims.Tot usize (decreases x) =
   if x <=. mk_usize 2
   then x
   else
-    Core.Num.impl_usize__wrapping_add (fib (x -! mk_usize 1 <: usize) <: usize)
+    Core_models.Num.impl_usize__wrapping_add (fib (x -! mk_usize 1 <: usize) <: usize)
       (fib (x -! mk_usize 2 <: usize) <: usize)
 '''
