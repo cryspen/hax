@@ -34,7 +34,7 @@ let pure_of_def_id ?constructor (def_id : Types.def_id_contents) : t option =
   let path_without_ctor =
     (* Get rid of extra [Ctor] *)
     let* init, last = last_init def_id.path in
-    let*? _ = [%matches? Types.Ctor] last.data in
+    let*? _ = [%matches? (Types.Ctor : Types.def_path_item)] last.data in
     Some init
   in
   let parent = def_id.parent in

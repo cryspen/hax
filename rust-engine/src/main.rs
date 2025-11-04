@@ -10,11 +10,15 @@ fn main() {
     };
     let (value, table) = input.destruct();
 
+    let hax_types::driver_api::Items::Legacy(input) = value.input else {
+        panic!("Internal error: expected legacy items, got FullDef.")
+    };
+
     let query = hax_rust_engine::ocaml_engine::Query {
         hax_version: value.hax_version,
         impl_infos: value.impl_infos,
         kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
-            input: value.input,
+            input,
             apply_phases: !matches!(&value.backend.backend, Backend::GenerateRustEngineNames),
             translation_options: value.backend.translation_options,
         },

@@ -131,6 +131,7 @@ impl Callbacks for ExtractionCallbacks {
                         .iter()
                         .flat_map(|item| item.span.filename.to_path().map(|path| path.to_path_buf()))
                 );
+                let items = hax_types::driver_api::Items::Legacy(items);
                 let haxmeta: HaxMeta<Body> = HaxMeta {
                     crate_name,
                     cg_metadata,

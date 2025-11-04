@@ -806,7 +806,7 @@ pub enum ImplAssocItemValue {
     },
     /// This is a non-overriden default method.
     /// FIXME: provide properly instantiated generics.
-    DefaultedFn {},
+    DefaultedFn,
     /// This is an associated const that reuses the trait declaration default. The default const
     /// value can be found in `decl_def`.
     DefaultedConst,
