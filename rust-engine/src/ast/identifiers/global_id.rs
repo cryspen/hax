@@ -54,6 +54,20 @@ struct DefIdInner {
     kind: DefKind,
 }
 
+impl From<hax_frontend_exporter::DefId> for DefIdInner {
+    fn from(value: hax_frontend_exporter::DefId) -> Self {
+        Self {
+            krate: value.krate.clone(),
+            path: value.path.clone(),
+            parent: value
+                .parent
+                .clone()
+                .map(|def_id| DefIdInner::from(def_id).intern()),
+            kind: value.kind.clone(),
+        }
+    }
+}
+
 impl DefIdInner {
     fn to_debug_string(&self) -> String {
         fn disambiguator_suffix(disambiguator: u32) -> String {
@@ -184,6 +198,16 @@ enum GlobalIdInner {
     Tuple(TupleId),
 }
 
+impl GlobalId {
+    // TODO remove
+    pub fn unit_constructor() -> Self {
+        GlobalId(GlobalIdInner::Tuple(TupleId::Constructor { length: 0 }).intern())
+    }
+    pub fn unit_ty() -> Self {
+        GlobalId(GlobalIdInner::Tuple(TupleId::Type { length: 0 }).intern())
+    }
+}
+
 #[derive_group_for_ast]
 #[derive(Copy)]
 /// Represents tuple-related identifier in Rust.
@@ -288,6 +312,20 @@ impl From<TupleId> for ConcreteId {
 pub struct GlobalId(Interned<GlobalIdInner>);
 
 impl GlobalId {
+    pub fn from_frontend(id: hax_frontend_exporter::DefId) -> Self {
+        //let contents = &*id;
+        let def_id: DefIdInner = id.into();
+        let inner = GlobalIdInner::Concrete(ConcreteId {
+            def_id: ExplicitDefId {
+                is_constructor: false,
+                def_id: def_id.intern(),
+            },
+            moved: None,
+            suffix: None,
+        });
+        Self(inner.intern())
+    }
+
     /// Extracts the Crate info
     pub fn krate(self) -> &'static str {
         &ConcreteId::from_global_id(self).def_id.def_id.krate
