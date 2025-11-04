@@ -915,12 +915,6 @@ pub enum ExprKind {
         inner: Expr,
     },
 
-    /// A dereference
-    ///
-    /// # Example:
-    /// `*x`
-    Deref(Expr),
-
     /// A `let` expression used in expressions.
     ///
     /// # Example:
