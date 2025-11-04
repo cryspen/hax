@@ -7,17 +7,17 @@ type missing_type = unit
 module B = Rust_engine_types
 
 let to_diagnostic_payload (span : Ast.span) (payload : string) =
-  try [%of_yojson: Types.diagnostic] (Yojson.Safe.from_string payload)
+  try [%of_yojson: Types.error_node] (Yojson.Safe.from_string payload)
   with _ ->
     let node : Types.fragment = Unknown "OCamlEngineError" in
     let info : B.diagnostic_info =
       {
         context = Import;
-        kind = Custom payload;
+        kind = OCamlEngineErrorPayload { payload };
         span = Span.to_rust_ast_span span;
       }
     in
-    { node; info }
+    { fragment = node; diagnostics = [ { node; info } ] }
 
 module Make (FA : Features.T) = struct
   open Ast

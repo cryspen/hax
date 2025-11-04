@@ -21,10 +21,17 @@ end
 module U = Ast_utils.Make (F)
 module Build = Ast_builder.Make (F)
 
-let from_diagnostic_payload (diagnostic : Types.diagnostic) : string =
-  match (diagnostic.node, diagnostic.info.kind) with
-  | Unknown "OCamlEngineError", Custom payload -> payload
-  | _ -> [%yojson_of: Types.diagnostic] diagnostic |> Yojson.Safe.to_string
+let from_error_node (error_node : Types.error_node) : string =
+  match error_node.diagnostics with
+  | [
+   {
+     node = Unknown "OCamlEngineError";
+     info = { kind = OCamlEngineErrorPayload { payload }; _ };
+     _;
+   };
+  ] ->
+      payload
+  | _ -> [%yojson_of: Types.error_node] error_node |> Yojson.Safe.to_string
 
 let dsafety_kind (safety : A.safety_kind) : B.safety_kind =
   match safety with Safe -> B.Safe | Unsafe -> B.Unsafe F.unsafe
@@ -58,7 +65,7 @@ let rec dty (Newtypety ty : A.ty) : B.ty =
   | Dyn goals ->
       TDyn { witness = F.dyn; goals = List.map ~f:ddyn_trait_goal goals }
   | Resugared _ -> refute_resugared "ty"
-  | Error s -> U.HaxFailure.Build.ty (from_diagnostic_payload s)
+  | Error s -> U.HaxFailure.Build.ty (from_error_node s)
 
 and dint_kind (ik : A.int_kind) : B.int_kind =
   let size : B.size =
@@ -220,7 +227,7 @@ and dpat' span parent_ty (pat : A.pat_kind) : B.pat' =
         }
   | Resugared _ -> refute_resugared "ty"
   | Error diag ->
-      let s = from_diagnostic_payload diag in
+      let s = from_error_node diag in
       (U.HaxFailure.Build.pat span parent_ty s).p
 
 and dbinding_mode (binding_mode : A.binding_mode) : B.binding_mode =
@@ -335,8 +342,7 @@ and dexpr' span typ (expr : A.expr_kind) : B.expr' =
         }
   | Quote { contents } -> Quote (dquote contents)
   | Resugared _ -> refute_resugared "ty"
-  | Error diag ->
-      (U.HaxFailure.Build.expr span typ (from_diagnostic_payload diag) "").e
+  | Error diag -> (U.HaxFailure.Build.expr span typ (from_error_node diag) "").e
 
 and dcontrol_flow_kind (cfk : A.control_flow_kind) : B.cf_kind =
   match cfk with BreakOnly -> B.BreakOnly | BreakOrReturn -> B.BreakOrReturn
@@ -599,7 +605,7 @@ let ditem' (item : A.item_kind) : B.item' =
   | A.Use { path; is_external; rename } -> B.Use { path; is_external; rename }
   | A.Quote { quote; origin } ->
       B.Quote { quote = dquote quote; origin = ditem_quote_origin origin }
-  | A.Error diag -> HaxError (from_diagnostic_payload diag)
+  | A.Error diag -> HaxError (from_error_node diag)
   | A.NotImplementedYet -> B.NotImplementedYet
   | Resugared _ -> refute_resugared "item_kind"
 

@@ -152,7 +152,7 @@ pub mod codegen {
         use crate::ast::visitors::*;
         impl AstVisitor for DefIdCollector {
             fn visit_global_id(&mut self, x: &GlobalId) {
-                let mut current = Some(x.def_id());
+                let mut current = x.def_id();
                 while let Some(def_id) = current {
                     self.0.insert(def_id.clone());
                     current = def_id.parent.map(|boxed| *boxed.clone());

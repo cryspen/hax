@@ -144,6 +144,10 @@ pub enum Kind {
         fstar_snippet: String,
         details: String,
     } = 13,
+
+    OCamlEngineErrorPayload {
+        payload: String,
+    } = 14,
 }
 
 impl Kind {
