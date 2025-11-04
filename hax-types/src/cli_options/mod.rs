@@ -533,6 +533,11 @@ pub struct ExtensibleOptions<E: Extension> {
     #[arg(long, default_value = "human")]
     pub message_format: MessageFormat,
 
+    /// Enables experimental FullDef format for items exported from the frontend
+    /// in the haxmeta file.
+    #[arg(long)]
+    pub experimental_full_def: bool,
+
     #[group(flatten)]
     pub extension: E::Options,
 }
@@ -584,6 +589,7 @@ pub struct ExporterOptions {
     /// When exporting, the driver sets `--cfg hax_backend_{backkend}`, thus we need this information.
     pub backend: Option<BackendName>,
     pub body_kinds: Vec<ExportBodyKind>,
+    pub experimental_full_def: bool,
 }
 
 #[derive_group(Serializers)]
@@ -622,6 +628,7 @@ impl From<&Options> for ExporterOptions {
             force_cargo_build: options.force_cargo_build.clone(),
             backend: options.command.backend_name(),
             body_kinds: options.command.body_kinds(),
+            experimental_full_def: options.experimental_full_def,
         }
     }
 }

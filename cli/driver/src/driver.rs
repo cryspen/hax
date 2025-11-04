@@ -125,6 +125,7 @@ fn main() {
     let mut callbacks: Box<dyn Callbacks + Send> = if translate_package {
         Box::new(exporter::ExtractionCallbacks {
             body_kinds: options.body_kinds.clone(),
+            experimental_full_def: options.experimental_full_def,
         })
     } else {
         struct CallbacksNoop;

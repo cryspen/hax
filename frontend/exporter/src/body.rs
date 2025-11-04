@@ -122,7 +122,9 @@ mod module {
         tcx.thir_body_safe(did).as_ref().unwrap_or_else(msg).clone()
     }
 
-    pub trait IsBody: Sized + std::fmt::Debug + Clone + 'static {
+    pub trait IsBody:
+        Sized + std::fmt::Debug + Clone + std::any::Any + Send + Sync + 'static
+    {
         fn body<'tcx, S: UnderOwnerState<'tcx>>(
             s: &S,
             did: RDefId,
