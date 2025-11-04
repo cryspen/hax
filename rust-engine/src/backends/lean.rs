@@ -974,6 +974,7 @@ set_option linter.unusedVariables false
                     name,
                     generics,
                     items,
+                    safety: _,
                 } => {
                     // Type parameters are also parameters of the class, but constraints are fields of the class
                     docs![
