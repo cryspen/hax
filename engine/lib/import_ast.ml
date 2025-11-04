@@ -143,7 +143,6 @@ let rec dty (Newtypety ty : A.ty) : B.ty =
   | RawPointer -> TRawPointer { witness = F.raw_pointer }
   | Dyn goals ->
       TDyn { witness = F.dyn; goals = List.map ~f:ddyn_trait_goal goals }
-  | Tuple _ -> failwith "kill tuple constructor!"
   | Resugared _ -> refute_resugared "ty"
   | Error s -> U.HaxFailure.Build.ty (from_diagnostic_payload s)
 
@@ -372,20 +371,20 @@ and dexpr' span typ (expr : A.expr_kind) : B.expr' =
           label = Option.map ~f:(fun (A.Newtypesymbol s) -> s) label;
           witness = F.loop;
         }
-  | Break { value; label } ->
+  | Break { value; label; state } ->
       Break
         {
           e = dexpr value;
           label = Option.map ~f:(fun (A.Newtypesymbol s) -> s) label;
-          acc = failwith "todo";
+          acc = Option.map ~f:(fun e -> (dexpr e, F.state_passing_loop)) state;
           witness = (F.break, F.loop);
         }
   | Return { value } -> Return { e = dexpr value; witness = F.early_exit }
-  | Continue { label } ->
+  | Continue { label; state } ->
       Continue
         {
           label = Option.map ~f:(fun (Newtypesymbol s) -> s) label;
-          acc = failwith "todo";
+          acc = Option.map ~f:(fun e -> (dexpr e, F.state_passing_loop)) state;
           witness = (F.continue, F.loop);
         }
   | Borrow { mutable'; inner } ->
@@ -410,8 +409,8 @@ and dexpr' span typ (expr : A.expr_kind) : B.expr' =
           captures = List.map ~f:dexpr captures;
         }
   | Quote { contents } -> Quote (dquote contents)
-  | Tuple _ | Deref _ -> failwith "TODO, remove me"
-  | Resugared _ -> refute_resugared "ty"
+  | Deref _ -> failwith "TODO"
+  | Resugared _ -> refute_resugared "expr"
   | Error diag ->
       (U.HaxFailure.Build.expr span typ (from_diagnostic_payload diag) "").e
 

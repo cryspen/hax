@@ -303,16 +303,21 @@ module Make (FA : Features.T) = struct
               Option.map ~f:(fun (k, _) -> dcontrol_flow_kind k) control_flow;
             label = Option.map ~f:(fun s -> B.Newtypesymbol s) label;
           }
-    | Break { e; acc = _; label; witness = _ } ->
+    | Break { e; acc; label; witness = _ } ->
         Break
           {
             value = dexpr e;
             label = Option.map ~f:(fun s -> B.Newtypesymbol s) label;
+            state = Option.map ~f:(fst >> dexpr) acc;
           }
     | Return { e; witness = _ } -> Return { value = dexpr e }
     | QuestionMark _ -> deprecated_node "QuestionMark"
-    | Continue { acc = _; label; witness = _ } ->
-        Continue { label = Option.map ~f:(fun s -> B.Newtypesymbol s) label }
+    | Continue { acc; label; witness = _ } ->
+        Continue
+          {
+            label = Option.map ~f:(fun s -> B.Newtypesymbol s) label;
+            state = Option.map ~f:(fst >> dexpr) acc;
+          }
     | Borrow { kind; e; witness = _ } ->
         Borrow
           {
