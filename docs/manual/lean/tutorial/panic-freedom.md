@@ -62,8 +62,8 @@ from the Rust book:
 > handle and lets you tell the process to stop instead of trying to
 > proceed with invalid or incorrect values.
 
-A Rust program should panics only in a situation where an assumption
-or an invariant is broken: a panics models an *invalid* state. Formal
+A Rust program should panic only in a situation where an assumption
+or an invariant is broken: a panic models an *invalid* state. Formal
 verification is about proving such invalid state cannot occur, at all.
 
 From this observation emerges the urge of proving Rust programs to be
@@ -108,7 +108,7 @@ fn square(x: u8) -> u8 {
 
 With this precondition, Lean is able to prove panic freedom. From now
 on, it is the responsibility of the clients of `square` to respect the
-contact. The next step is thus be to verify, through hax extraction,
+contract. The next step is thus be to verify, through hax extraction,
 that `square` is used correctly at every call site.\
 
 ## Common panicking situations
