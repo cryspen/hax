@@ -1,6 +1,7 @@
 use hax_frontend_exporter::SInto;
 use hax_frontend_exporter::state::LocalContextS;
 use hax_types::cli_options::PathOrDash;
+use hax_types::driver_api::Items;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::interface;
 use rustc_interface::interface::Compiler;
@@ -16,12 +17,12 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-/// Browse a crate and translate every item from HIR+THIR to "THIR'"
-/// (I call "THIR'" the AST described in this crate)
+/// Browse a crate and translate every item
 #[tracing::instrument(skip_all)]
-fn convert_thir<'tcx, Body: hax_frontend_exporter::IsBody>(
+fn export_crate<'tcx, Body: hax_frontend_exporter::IsBody>(
     options: &hax_frontend_exporter_options::Options,
     tcx: TyCtxt<'tcx>,
+    experimental_full_def: bool,
 ) -> (
     Vec<rustc_span::Span>,
     Vec<hax_frontend_exporter::DefId>,
@@ -29,16 +30,32 @@ fn convert_thir<'tcx, Body: hax_frontend_exporter::IsBody>(
         hax_frontend_exporter::DefId,
         hax_frontend_exporter::ImplInfos,
     )>,
-    Vec<hax_frontend_exporter::Item<Body>>,
+    Items<Body>,
     hax_frontend_exporter::id_table::Table,
 ) {
     use hax_frontend_exporter::WithGlobalCacheExt;
     let state = hax_frontend_exporter::state::State::new(tcx, options.clone());
 
-    let result = tcx
-        .hir_free_items()
-        .map(|id| tcx.hir_item(id).sinto(&state))
-        .collect();
+    let result = if experimental_full_def {
+        Items::FullDef(
+            tcx.hir_free_items()
+                .map(|id| {
+                    id.owner_id
+                        .to_def_id()
+                        .sinto(&state)
+                        .full_def(&state)
+                        .as_ref()
+                        .clone()
+                })
+                .collect(),
+        )
+    } else {
+        Items::Legacy(
+            tcx.hir_free_items()
+                .map(|id| tcx.hir_item(id).sinto(&state))
+                .collect(),
+        )
+    };
     let impl_infos = hax_frontend_exporter::impl_def_ids_to_impled_types_and_bounds(&state)
         .into_iter()
         .collect();
@@ -65,6 +82,7 @@ fn convert_thir<'tcx, Body: hax_frontend_exporter::IsBody>(
 #[derive(Debug, Clone, Serialize)]
 pub(crate) struct ExtractionCallbacks {
     pub body_kinds: Vec<hax_types::cli_options::ExportBodyKind>,
+    pub experimental_full_def: bool,
 }
 
 impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
@@ -126,13 +144,18 @@ impl Callbacks for ExtractionCallbacks {
             self.body_kinds.clone(),
             <Body>|| {
                 let (spans, def_ids, impl_infos, items, cache_map) =
-                    convert_thir(&self.clone().into(), tcx);
-                let files: HashSet<PathBuf> = HashSet::from_iter(
-                    items
+                    export_crate(&self.clone().into(), tcx, self.experimental_full_def);
+                let files: HashSet<PathBuf> =
+                    match &items {
+                        Items::Legacy(items) => HashSet::from_iter(items
                         .iter()
-                        .flat_map(|item| item.span.filename.to_path().map(|path| path.to_path_buf()))
-                );
-                let items = hax_types::driver_api::Items::Legacy(items);
+                        .flat_map(|item| item.span.filename.to_path().map(|path| path.to_path_buf()))),
+                        Items::FullDef(items) => HashSet::from_iter(items
+                            .iter()
+                            .flat_map(|item| item.span.filename.to_path().map(|path| path.to_path_buf()))),
+                    }
+
+                ;
                 let haxmeta: HaxMeta<Body> = HaxMeta {
                     crate_name,
                     cg_metadata,
