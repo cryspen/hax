@@ -997,6 +997,9 @@ pub enum ExprKind {
         value: Expr,
         /// What loop shall we break? By default, the parent enclosing loop.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Return from a function.
@@ -1015,6 +1018,9 @@ pub enum ExprKind {
     Continue {
         /// The loop we continue.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Closure (anonymous function)
