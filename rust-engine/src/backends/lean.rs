@@ -889,7 +889,7 @@ set_option linter.unusedVariables false
                 ]
                 .group(),
 
-                ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
+                ExprKind::Borrow { .. } => {
                     unreachable_by_invariant!(Drop_references)
                 }
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
