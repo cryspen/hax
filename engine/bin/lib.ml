@@ -258,17 +258,12 @@ let engine () =
       Logs.info (fun m -> m "Exiting Hax engine (with an unexpected failure)");
       Printexc.raise_with_backtrace exn bt
 
+module ExportFullAst = Export_ast.Make (Features.Full)
 module ExportRustAst = Export_ast.Make (Features.Rust)
 module ExportLeanAst = Export_ast.Make (Lean_backend.InputLanguage)
 
-(** Entry point for interacting with the Rust hax engine *)
-let driver_for_rust_engine () : unit =
-  let query : Rust_engine_types.query =
-    let json = load_table ~check_version:false in
-    [%of_yojson: Rust_engine_types.query] json
-  in
-  Concrete_ident.ImplInfoStore.init
-    (Concrete_ident_generated.impl_infos @ query.impl_infos);
+let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
+    Rust_engine_types.response =
   match query.kind with
   | Types.ImportThir { input; apply_phases; translation_options } ->
       (* Note: `apply_phases` comes from the type `QueryKind` in
@@ -286,6 +281,16 @@ let driver_for_rust_engine () : unit =
             imported_items
         else List.concat_map ~f:ExportRustAst.ditem imported_items
       in
-      let response = Rust_engine_types.ImportThir { output = rust_ast_items } in
-      Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
-      Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
+      Rust_engine_types.ImportThir { output = rust_ast_items }
+
+(** Entry point for interacting with the Rust hax engine *)
+let driver_for_rust_engine () : unit =
+  let query : Rust_engine_types.query =
+    let json = load_table ~check_version:false in
+    [%of_yojson: Rust_engine_types.query] json
+  in
+  Concrete_ident.ImplInfoStore.init
+    (Concrete_ident_generated.impl_infos @ query.impl_infos);
+  let response = driver_for_rust_engine_inner query in
+  Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
+  Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
