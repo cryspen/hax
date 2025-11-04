@@ -5,27 +5,40 @@ use hax_rust_engine::{
 use hax_types::{cli_options::Backend, engine_api::File};
 
 fn main() {
-    let ExtendedToEngine::Query(input) = hax_rust_engine::hax_io::read() else {
-        panic!()
-    };
+    let input = hax_rust_engine::hax_io::read_query();
     let (value, table) = input.destruct();
 
-    let hax_types::driver_api::Items::Legacy(input) = value.input else {
-        panic!("Internal error: expected legacy items, got FullDef.")
-    };
+    let items = match value.input {
+        hax_types::driver_api::Items::Legacy(input) => {
+            let query = hax_rust_engine::ocaml_engine::Query {
+                hax_version: value.hax_version,
+                impl_infos: value.impl_infos,
+                kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
+                    input,
+                    apply_phases: !matches!(
+                        &value.backend.backend,
+                        Backend::GenerateRustEngineNames
+                    ),
+                    translation_options: value.backend.translation_options,
+                },
+            };
 
-    let query = hax_rust_engine::ocaml_engine::Query {
-        hax_version: value.hax_version,
-        impl_infos: value.impl_infos,
-        kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
-            input,
-            apply_phases: !matches!(&value.backend.backend, Backend::GenerateRustEngineNames),
-            translation_options: value.backend.translation_options,
-        },
-    };
-
-    let Some(Response::ImportThir { output: items }) = query.execute(table) else {
-        panic!()
+            let Some(Response::ImportThir { output }) = query.execute(table) else {
+                panic!()
+            };
+            output
+        }
+        hax_types::driver_api::Items::FullDef(items) => items
+            .iter()
+            .filter(|item| {
+                !matches!(
+                    item.kind,
+                    hax_frontend_exporter::FullDefKind::Use
+                        | hax_frontend_exporter::FullDefKind::ExternCrate
+                )
+            })
+            .map(hax_rust_engine::import_thir::Import::import)
+            .collect(),
     };
 
     let files = match &value.backend.backend {

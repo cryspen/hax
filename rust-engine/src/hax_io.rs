@@ -21,6 +21,20 @@ pub fn read() -> ExtendedToEngine {
     ExtendedToEngine::deserialize(serde_stacker::Deserializer::new(&mut de))
         .expect("Could not parse as a `ExtendedToEngine` message!")
 }
+pub fn read_query()
+-> hax_frontend_exporter::id_table::WithTable<hax_types::engine_api::EngineOptions> {
+    let mut stdin = STDIN.lock().unwrap();
+    let mut slice = Vec::new();
+    stdin
+        .read_until(b'\n', &mut slice)
+        .expect("No message left! Did the engine crash?");
+    let mut de = serde_json::Deserializer::from_slice(&slice);
+    de.disable_recursion_limit();
+    hax_frontend_exporter::id_table::WithTable::deserialize(serde_stacker::Deserializer::new(
+        &mut de,
+    ))
+    .expect("Could not parse as a `ExtendedToEngine` message!")
+}
 
 /// Writes a `ExtendedFromEngine` message
 pub fn write(message: &FromEngine) {
