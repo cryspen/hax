@@ -1265,6 +1265,7 @@ set_option linter.unusedVariables false
                     name,
                     generics,
                     items,
+                    safety: _,
                 } => {
                     let generic_types = generics.type_constraints().collect::<Vec<_>>();
                     if generic_types.len() < generics.constraints.len() {

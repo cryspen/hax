@@ -571,13 +571,13 @@ let ditem' (item : A.item_kind) : B.item' =
           generics = dgenerics generics;
           ty = dty ty;
         }
-  | A.Trait { name; generics; items } ->
+  | A.Trait { name; generics; items; safety } ->
       B.Trait
         {
           name = dconcrete_ident name;
           generics = dgenerics generics;
           items = List.map ~f:dtrait_item items;
-          safety = failwith "TODO";
+          safety = dsafety_kind safety;
         }
   | A.Impl
       {
