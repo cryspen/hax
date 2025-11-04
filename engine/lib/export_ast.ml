@@ -6,18 +6,22 @@ type missing_type = unit
 
 module B = Rust_engine_types
 
-let to_diagnostic_payload (span : Ast.span) (payload : string) =
-  try [%of_yojson: Types.diagnostic] (Yojson.Safe.from_string payload)
+let to_error_node (span : Ast.span) (payload : string) : Types.error_node =
+  try [%of_yojson: Types.error_node] (Yojson.Safe.from_string payload)
   with _ ->
-    let node : Types.fragment = Unknown "OCamlEngineError" in
-    let info : B.diagnostic_info =
-      {
-        context = Import;
-        kind = Custom payload;
-        span = Span.to_rust_ast_span span;
-      }
+    let diagnostic : Types.diagnostic =
+      let node : Types.fragment = Unknown "OCamlEngineError" in
+      let info : B.diagnostic_info =
+        {
+          context = Import;
+          kind = OcamlEngineErrorPayload payload;
+          span = Span.to_rust_ast_span span;
+        }
+      in
+      { node; info }
     in
-    { node; info }
+
+    { fragment = Unknown "OCamlEngineError"; diagnostics = [ diagnostic ] }
 
 module Make (FA : Features.T) = struct
   open Ast
@@ -65,7 +69,7 @@ module Make (FA : Features.T) = struct
 
   and dty (span : Ast.span) (ty : A.ty) : B.ty =
     match U.HaxFailure.Destruct.ty ty with
-    | Some s -> Newtypety (Error (to_diagnostic_payload span s))
+    | Some s -> Newtypety (Error (to_error_node span s))
     | None -> dty_no_error span ty
 
   and dint_kind (ik : int_kind) : B.int_kind =
@@ -191,7 +195,7 @@ module Make (FA : Features.T) = struct
   and dpat (p : A.pat) : B.pat =
     let kind : B.pat_kind =
       match U.HaxFailure.Destruct.pat p with
-      | Some s -> Error (to_diagnostic_payload p.span s)
+      | Some s -> Error (to_error_node p.span s)
       | _ -> dpat' p.span p.p
     in
     { kind; meta = dmetadata p.span; ty = dty p.span p.typ }
@@ -237,7 +241,7 @@ module Make (FA : Features.T) = struct
   and dexpr (e : A.expr) : B.expr =
     let kind : B.expr_kind =
       match U.HaxFailure.Destruct.expr e with
-      | Some (s, _) -> Error (to_diagnostic_payload e.span s)
+      | Some (s, _) -> Error (to_error_node e.span s)
       | None -> dexpr' e.span e.e
     in
     { kind; ty = dty e.span e.typ; meta = dmetadata e.span }
@@ -572,7 +576,7 @@ module Make (FA : Features.T) = struct
         B.Quote
           { quote = dquote span quote; origin = ditem_quote_origin origin }
     | A.NotImplementedYet -> B.NotImplementedYet
-    | A.HaxError s -> Error (to_diagnostic_payload span s)
+    | A.HaxError s -> Error (to_error_node span s)
 
   let ditem (i : A.item) : B.item list =
     [
