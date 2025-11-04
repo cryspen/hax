@@ -84,7 +84,7 @@ module ImplInfoStore : sig
       [None] even though the supplied identifier points to an [Impl] block. *)
 end
 
-val def_id_to_rust_ast : Types.def_id_contents -> Types.def_id2
-val def_id_from_rust_ast : Types.def_id2 -> Types.def_id_contents
+val def_id_to_rust_ast : Types.def_id_contents -> Types.def_id_inner
+val def_id_from_rust_ast : Types.def_id_inner -> Types.def_id_contents
 val to_rust_ast : t -> Rust_engine_types.explicit_def_id
 val from_rust_ast : Rust_engine_types.explicit_def_id -> t
