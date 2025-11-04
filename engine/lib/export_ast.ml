@@ -538,12 +538,13 @@ module Make (FA : Features.T) = struct
             ty = dty span ty;
           }
     | A.IMacroInvokation _ -> deprecated_node "IMacroInvokation"
-    | A.Trait { name; generics; items; safety = _ } ->
+    | A.Trait { name; generics; items; safety } ->
         B.Trait
           {
             name = dconcrete_ident name;
             generics = dgenerics span generics;
             items = List.map ~f:dtrait_item items;
+            safety = dsafety_kind safety;
           }
     | A.Impl
         {

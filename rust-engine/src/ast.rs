@@ -1351,6 +1351,9 @@ pub enum ItemKind {
         /// # Example:
         /// `type Assoc;`, `fn m ...;`
         items: Vec<TraitItem>,
+
+        /// Safe or unsafe
+        safety: SafetyKind,
     },
 
     /// A trait implementation.
