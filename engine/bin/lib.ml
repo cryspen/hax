@@ -100,9 +100,15 @@ let run (options : Types.engine_options) : Types.output =
     let include_clauses =
       options.backend.translation_options.include_namespaces
     in
+    let input =
+      match options.input with
+      | Types.FullDef _ ->
+          failwith "Internal error: the ocaml engine does not support FullDef"
+      | Types.Legacy i -> i
+    in
     let items =
-      Profiling.profile ThirImport (List.length options.input) (fun _ ->
-          import_thir_items include_clauses options.input)
+      Profiling.profile ThirImport (List.length input) (fun _ ->
+          import_thir_items include_clauses input)
     in
     let items =
       if options.backend.extract_type_aliases then items

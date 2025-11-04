@@ -14,6 +14,10 @@ fn main() {
         profiling: value.backend.profile,
     });
 
+    let hax_types::driver_api::Items::Legacy(input) = value.input else {
+        panic!("Internal error: expected legacy items, got FullDef.")
+    };
+
     let query = hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
         input: value.input,
         translation_options: value.backend.translation_options,
