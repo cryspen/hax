@@ -8,7 +8,7 @@ type ThirBody = hax_frontend_exporter::ThirBody;
 pub struct EngineOptions {
     pub hax_version: String,
     pub backend: BackendOptions<()>,
-    pub input: Vec<hax_frontend_exporter::Item<ThirBody>>,
+    pub input: crate::driver_api::Items<ThirBody>,
     pub impl_infos: Vec<(
         hax_frontend_exporter::DefId,
         hax_frontend_exporter::ImplInfos,
@@ -125,6 +125,6 @@ pub struct WithDefIds<Body: hax_frontend_exporter::IsBody> {
         hax_frontend_exporter::DefId,
         hax_frontend_exporter::ImplInfos,
     )>,
-    pub items: Vec<hax_frontend_exporter::Item<Body>>,
+    pub items: crate::driver_api::Items<Body>,
     pub comments: Vec<(hax_frontend_exporter::Span, String)>,
 }

@@ -654,17 +654,34 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
 
                     /// Remove every item from an `HaxMeta` whose path is not `*::<root_module>::**`, where `root_module` is a string.
                     fn prune_haxmeta<B: IsBody>(haxmeta: &mut HaxMeta<B>, root_module: &str) {
-                        haxmeta.items.retain(|item| match &item.owner_id.path[..] {
-                            [] => true,
-                            [
-                                DisambiguatedDefPathItem {
-                                    data: DefPathItem::TypeNs(s),
-                                    disambiguator: 0,
-                                },
-                                ..,
-                            ] => s == root_module,
-                            _ => false,
-                        })
+                        match &mut haxmeta.items {
+                            Items::Legacy(items) => {
+                                items.retain(|item| match &item.owner_id.path[..] {
+                                    [] => true,
+                                    [
+                                        DisambiguatedDefPathItem {
+                                            data: DefPathItem::TypeNs(s),
+                                            disambiguator: 0,
+                                        },
+                                        ..,
+                                    ] => s == root_module,
+                                    _ => false,
+                                })
+                            }
+                            Items::FullDef(items) => {
+                                items.retain(|item| match &item.this.contents().def_id.path[..] {
+                                    [] => true,
+                                    [
+                                        DisambiguatedDefPathItem {
+                                            data: DefPathItem::TypeNs(s),
+                                            disambiguator: 0,
+                                        },
+                                        ..,
+                                    ] => s == root_module,
+                                    _ => false,
+                                })
+                            }
+                        };
                     }
                     prune_haxmeta(&mut haxmeta, root_module.as_str())
                 }
