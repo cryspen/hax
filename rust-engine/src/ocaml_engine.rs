@@ -41,6 +41,16 @@ pub enum QueryKind {
         /// Translation options which contains include clauses (items filtering)
         translation_options: hax_types::cli_options::TranslationOptions,
     },
+
+    ApplyPhases {
+        input: Vec<crate::ast::Item>,
+        phases: Vec<OCamlPhase>,
+    },
+}
+
+#[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
+pub enum OCamlPhase {
+    Noop,
 }
 
 /// A Response after a [`Query`]
@@ -49,6 +59,9 @@ pub enum Response {
     /// Return imported THIR as an internal AST from Rust engine
     ImportThir {
         /// The output Rust AST items
+        output: Vec<crate::ast::Item>,
+    },
+    ApplyPhases {
         output: Vec<crate::ast::Item>,
     },
 }
