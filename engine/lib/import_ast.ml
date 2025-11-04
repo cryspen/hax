@@ -21,92 +21,6 @@ end
 module U = Ast_utils.Make (F)
 module Build = Ast_builder.Make (F)
 
-module SpecialNames = struct
-  let rec map_strings (f : string -> string)
-      ({ kind; krate; parent; path } : Types.def_id2) : Types.def_id2 =
-    let path =
-      List.map
-        ~f:(fun { data; disambiguator } ->
-          let data =
-            match data with
-            | Types.CrateRoot { name } -> Types.CrateRoot { name = f name }
-            | Types.TypeNs s -> Types.TypeNs (f s)
-            | Types.ValueNs s -> Types.ValueNs (f s)
-            | Types.MacroNs s -> Types.MacroNs (f s)
-            | Types.LifetimeNs s -> Types.LifetimeNs (f s)
-            | other -> other
-          in
-          Types.{ data; disambiguator })
-        path
-    in
-    let parent = Option.map ~f:(map_strings f) parent in
-    Types.{ kind; krate; parent; path }
-
-  let g len nth s =
-    match String.chop_prefix ~prefix:"Tuple" s with
-    | Some n -> (
-        let n = Int.of_string_opt n in
-        match n with
-        | Some n ->
-            len := Some n;
-            "Tuple2"
-        | _ -> s)
-    | None -> (
-        let n = Int.of_string_opt s in
-        match n with
-        | Some n ->
-            nth := Some n;
-            "1"
-        | _ -> s)
-
-  let destruct_compare name (did : A.concrete_id) =
-    let len, nth = (ref None, ref None) in
-    let patched = map_strings (g len nth) did.def_id.def_id in
-    let nth = !nth in
-    let* len = !len in
-    let name = Concrete_ident_generated.def_id_of name in
-    let name = Explicit_def_id.def_id_to_rust_ast name.contents.value in
-    if [%eq: Types.def_id2] name patched then Some (len, nth) else None
-
-  let tuple_type (did : A.concrete_id) : int option =
-    let* len, _ = destruct_compare Rust_primitives__hax__Tuple2 did in
-    Some len
-
-  let tuple_cons (did : A.concrete_id) : int option =
-    let* len, _ = destruct_compare Rust_primitives__hax__Tuple2__Ctor did in
-    Some len
-
-  let tuple_field (did : A.concrete_id) : (int * int) option =
-    let* len, nth = destruct_compare Rust_primitives__hax__Tuple2__1 did in
-    let* nth = nth in
-    Some (len, nth)
-
-  let expect_tuple_global_id (did : A.concrete_id) : Ast.Global_ident.t option =
-    match tuple_type did with
-    | Some len -> Some (`TupleType len)
-    | None -> (
-        match tuple_cons did with
-        | Some len -> Some (`TupleCons len)
-        | None -> (
-            match tuple_field did with
-            | Some (len, nth) -> Some (`TupleField (nth, len))
-            | None -> None))
-
-  let conv (did : A.concrete_id) =
-    match expect_tuple_global_id did with
-    | Some id -> id
-    | None ->
-        let id = Concrete_ident.from_rust_ast did in
-        let eq n = Concrete_ident.eq_name n id in
-        if eq Rust_primitives__hax__deref_op then `Primitive Deref
-        else if eq Rust_primitives__hax__cast_op then `Primitive Cast
-        else if eq Rust_primitives__hax__logical_op_and then
-          `Primitive (LogicalOp And)
-        else if eq Rust_primitives__hax__logical_op_or then
-          `Primitive (LogicalOp Or)
-        else `Concrete id
-end
-
 let from_error_node (error_node : Types.error_node) : string =
   match (error_node.fragment, error_node.diagnostics) with
   | ( Unknown "OCamlEngineError",
@@ -173,16 +87,27 @@ and dint_kind (ik : A.int_kind) : B.int_kind =
 and dfloat_kind (fk : A.float_kind) : B.float_kind =
   match fk with F16 -> F16 | F32 -> F32 | F64 -> F64 | F128 -> F128
 
-and dglobal_ident (gi : A.global_id) : B.global_ident =
+and dglobal_ident (Newtypeglobal_id gi : A.global_id) : B.global_ident =
   match gi with
-  | Types.Concrete c -> SpecialNames.conv c
-  | Types.Projector c ->
-      let c = SpecialNames.conv c in
-      `Projector
-        (match c with
-        | `Concrete id -> `Concrete id
-        | `TupleField f -> `TupleField f
-        | _ -> broken_invariant "incorrect projector")
+  | Types.Concrete c -> (
+      let ci = Concrete_ident.from_rust_ast c in
+      match c.def_id.def_id.kind with
+      | Field -> `Projector (`Concrete ci)
+      | _ ->
+          let is name = Concrete_ident.eq_name name ci in
+          if is Rust_primitives__hax__deref_op then `Primitive Deref
+          else if is Rust_primitives__hax__cast_op then `Primitive Cast
+          else if is Rust_primitives__hax__logical_op_and then
+            `Primitive (LogicalOp And)
+          else if is Rust_primitives__hax__logical_op_or then
+            `Primitive (LogicalOp Or)
+          else `Concrete ci)
+  | Types.Tuple t -> (
+      match t with
+      | Types.Type { length } -> `TupleType (Int.of_string length)
+      | Types.Constructor { length } -> `TupleCons (Int.of_string length)
+      | Types.Field { length; field } ->
+          `TupleField (Int.of_string field, Int.of_string length))
 
 and dlocal_ident (Newtypelocal_id (Newtypesymbol li) : A.local_id) :
     B.local_ident =
