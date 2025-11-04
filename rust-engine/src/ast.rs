@@ -23,7 +23,7 @@ use crate::{ast::diagnostics::Context, symbol::Symbol};
 use diagnostics::Diagnostic;
 use fragment::Fragment;
 use hax_rust_engine_macros::*;
-use identifiers::*;
+pub use identifiers::*;
 use literals::*;
 use resugared::*;
 use span::Span;

@@ -14,17 +14,29 @@ fn main() {
         profiling: value.backend.profile,
     });
 
-    let hax_types::driver_api::Items::Legacy(input) = value.input else {
-        panic!("Internal error: expected legacy items, got FullDef.")
-    };
+    let items = match value.input {
+        hax_types::driver_api::Items::Legacy(input) => {
+            let query = hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
+                input: value.input,
+                translation_options: value.backend.translation_options,
+            };
 
-    let query = hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
-        input: value.input,
-        translation_options: value.backend.translation_options,
-    };
-
-    let Some(Response::ImportThir { output: items }) = query.execute(Some(table)) else {
-        panic!()
+            let Some(Response::ImportThir { output }) = query.execute(table) else {
+                panic!()
+            };
+            output
+        }
+        hax_types::driver_api::Items::FullDef(items) => items
+            .iter()
+            .filter(|item| {
+                !matches!(
+                    item.kind,
+                    hax_frontend_exporter::FullDefKind::Use
+                        | hax_frontend_exporter::FullDefKind::ExternCrate
+                )
+            })
+            .map(hax_rust_engine::import_thir::Import::import)
+            .collect(),
     };
 
     let files = match &value.backend.backend {
