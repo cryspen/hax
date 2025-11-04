@@ -282,6 +282,16 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
         else List.concat_map ~f:ExportRustAst.ditem imported_items
       in
       Rust_engine_types.ImportThir { output = rust_ast_items }
+  | Types.ApplyPhases { input; phases } ->
+      let items = List.concat_map ~f:Import_ast.ditem input in
+      let items =
+        List.fold ~init:items
+          ~f:(fun items phase ->
+            match phase with Rust_engine_types.Noop -> items)
+          phases
+      in
+      let output = List.concat_map ~f:ExportFullAst.ditem items in
+      Rust_engine_types.ApplyPhases { output }
 
 (** Entry point for interacting with the Rust hax engine *)
 let driver_for_rust_engine () : unit =
