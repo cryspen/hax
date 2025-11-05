@@ -805,6 +805,43 @@ module Rewrite_control_flow : PHASE_FULL = struct
 end
 
 
+module Rewrite_local_self : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phases.Rewrite_local_self (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
 module Simplify_hoisting : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1100,6 +1137,378 @@ module Trivialize_assign_lhs : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
+
+module Reject_arbitrary_lhs : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.Arbitrary_lhs (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_continue : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.Continue (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_question_mark : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.Question_mark (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_raw_or_mut_pointer : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.RawOrMutPointer (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_early_exit : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.EarlyExit (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_as_pattern : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.As_pattern (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_dyn : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.Dyn (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_trait_item_default : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.Trait_item_default (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Reject_unsafe : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    
+  end
+
+  module Phase = Phase_reject.Unsafe (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
+
+module Hoist_side_effects : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+    include Off.Monadic_binding
+include Off.For_index_loop
+  end
+
+  module Phase = Side_effect_utils.Hoist (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        let monadic_binding = reject
+let for_index_loop = reject
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
 let and_mut_defsite : (module PHASE_FULL) = (module And_mut_defsite)
 let bundle_cycles : (module PHASE_FULL) = (module Bundle_cycles)
 let cf_into_monads : (module PHASE_FULL) = (module Cf_into_monads)
@@ -1120,6 +1529,7 @@ let reconstruct_question_marks : (module PHASE_FULL) = (module Reconstruct_quest
 let reconstruct_while_loops : (module PHASE_FULL) = (module Reconstruct_while_loops)
 let reorder_fields : (module PHASE_FULL) = (module Reorder_fields)
 let rewrite_control_flow : (module PHASE_FULL) = (module Rewrite_control_flow)
+let rewrite_local_self : (module PHASE_FULL) = (module Rewrite_local_self)
 let simplify_hoisting : (module PHASE_FULL) = (module Simplify_hoisting)
 let simplify_match_return : (module PHASE_FULL) = (module Simplify_match_return)
 let simplify_question_marks : (module PHASE_FULL) = (module Simplify_question_marks)
@@ -1128,12 +1538,26 @@ let specialize : (module PHASE_FULL) = (module Specialize)
 let traits_specs : (module PHASE_FULL) = (module Traits_specs)
 let transform_hax_lib_inline : (module PHASE_FULL) = (module Transform_hax_lib_inline)
 let trivialize_assign_lhs : (module PHASE_FULL) = (module Trivialize_assign_lhs)
-let phases_list : (module PHASE_FULL) list = [and_mut_defsite;bundle_cycles;cf_into_monads;direct_and_mut;drop_blocks;drop_match_guards;drop_references;drop_return_break_continue;drop_sized_trait;functionalize_loops;hoist_disjunctive_patterns;local_mutation;newtype_as_refinement;reconstruct_asserts;reconstruct_for_index_loops;reconstruct_for_loops;reconstruct_question_marks;reconstruct_while_loops;reorder_fields;rewrite_control_flow;simplify_hoisting;simplify_match_return;simplify_question_marks;sort_items;specialize;traits_specs;transform_hax_lib_inline;trivialize_assign_lhs]
+let reject_arbitrary_lhs : (module PHASE_FULL) = (module Reject_arbitrary_lhs)
+let reject_continue : (module PHASE_FULL) = (module Reject_continue)
+let reject_question_mark : (module PHASE_FULL) = (module Reject_question_mark)
+let reject_raw_or_mut_pointer : (module PHASE_FULL) = (module Reject_raw_or_mut_pointer)
+let reject_early_exit : (module PHASE_FULL) = (module Reject_early_exit)
+let reject_as_pattern : (module PHASE_FULL) = (module Reject_as_pattern)
+let reject_dyn : (module PHASE_FULL) = (module Reject_dyn)
+let reject_trait_item_default : (module PHASE_FULL) = (module Reject_trait_item_default)
+let reject_unsafe : (module PHASE_FULL) = (module Reject_unsafe)
+let hoist_side_effects : (module PHASE_FULL) = (module Hoist_side_effects)
+let phases_list : (module PHASE_FULL) list = [and_mut_defsite;bundle_cycles;cf_into_monads;direct_and_mut;drop_blocks;drop_match_guards;drop_references;drop_return_break_continue;drop_sized_trait;functionalize_loops;hoist_disjunctive_patterns;local_mutation;newtype_as_refinement;reconstruct_asserts;reconstruct_for_index_loops;reconstruct_for_loops;reconstruct_question_marks;reconstruct_while_loops;reorder_fields;rewrite_control_flow;rewrite_local_self;simplify_hoisting;simplify_match_return;simplify_question_marks;sort_items;specialize;traits_specs;transform_hax_lib_inline;trivialize_assign_lhs;reject_arbitrary_lhs;reject_continue;reject_question_mark;reject_raw_or_mut_pointer;reject_early_exit;reject_as_pattern;reject_dyn;reject_trait_item_default;reject_unsafe;hoist_side_effects]
 
 let phase_of_name: string -> (module PHASE_FULL) option = 
     function
-    | "and_mut_defsite" -> Some and_mut_defsite| "bundle_cycles" -> Some bundle_cycles| "cf_into_monads" -> Some cf_into_monads| "direct_and_mut" -> Some direct_and_mut| "drop_blocks" -> Some drop_blocks| "drop_match_guards" -> Some drop_match_guards| "drop_references" -> Some drop_references| "drop_return_break_continue" -> Some drop_return_break_continue| "drop_sized_trait" -> Some drop_sized_trait| "functionalize_loops" -> Some functionalize_loops| "hoist_disjunctive_patterns" -> Some hoist_disjunctive_patterns| "local_mutation" -> Some local_mutation| "newtype_as_refinement" -> Some newtype_as_refinement| "reconstruct_asserts" -> Some reconstruct_asserts| "reconstruct_for_index_loops" -> Some reconstruct_for_index_loops| "reconstruct_for_loops" -> Some reconstruct_for_loops| "reconstruct_question_marks" -> Some reconstruct_question_marks| "reconstruct_while_loops" -> Some reconstruct_while_loops| "reorder_fields" -> Some reorder_fields| "rewrite_control_flow" -> Some rewrite_control_flow| "simplify_hoisting" -> Some simplify_hoisting| "simplify_match_return" -> Some simplify_match_return| "simplify_question_marks" -> Some simplify_question_marks| "sort_items" -> Some sort_items| "specialize" -> Some specialize| "traits_specs" -> Some traits_specs| "transform_hax_lib_inline" -> Some transform_hax_lib_inline| "trivialize_assign_lhs" -> Some trivialize_assign_lhs
+    | "and_mut_defsite" -> Some and_mut_defsite| "bundle_cycles" -> Some bundle_cycles| "cf_into_monads" -> Some cf_into_monads| "direct_and_mut" -> Some direct_and_mut| "drop_blocks" -> Some drop_blocks| "drop_match_guards" -> Some drop_match_guards| "drop_references" -> Some drop_references| "drop_return_break_continue" -> Some drop_return_break_continue| "drop_sized_trait" -> Some drop_sized_trait| "functionalize_loops" -> Some functionalize_loops| "hoist_disjunctive_patterns" -> Some hoist_disjunctive_patterns| "local_mutation" -> Some local_mutation| "newtype_as_refinement" -> Some newtype_as_refinement| "reconstruct_asserts" -> Some reconstruct_asserts| "reconstruct_for_index_loops" -> Some reconstruct_for_index_loops| "reconstruct_for_loops" -> Some reconstruct_for_loops| "reconstruct_question_marks" -> Some reconstruct_question_marks| "reconstruct_while_loops" -> Some reconstruct_while_loops| "reorder_fields" -> Some reorder_fields| "rewrite_control_flow" -> Some rewrite_control_flow| "rewrite_local_self" -> Some rewrite_local_self| "simplify_hoisting" -> Some simplify_hoisting| "simplify_match_return" -> Some simplify_match_return| "simplify_question_marks" -> Some simplify_question_marks| "sort_items" -> Some sort_items| "specialize" -> Some specialize| "traits_specs" -> Some traits_specs| "transform_hax_lib_inline" -> Some transform_hax_lib_inline| "trivialize_assign_lhs" -> Some trivialize_assign_lhs| "reject_arbitrary_lhs" -> Some reject_arbitrary_lhs| "reject_continue" -> Some reject_continue| "reject_question_mark" -> Some reject_question_mark| "reject_raw_or_mut_pointer" -> Some reject_raw_or_mut_pointer| "reject_early_exit" -> Some reject_early_exit| "reject_as_pattern" -> Some reject_as_pattern| "reject_dyn" -> Some reject_dyn| "reject_trait_item_default" -> Some reject_trait_item_default| "reject_unsafe" -> Some reject_unsafe| "hoist_side_effects" -> Some hoist_side_effects
     | _ -> None
 
-let phases: string list = ["and_mut_defsite";"bundle_cycles";"cf_into_monads";"direct_and_mut";"drop_blocks";"drop_match_guards";"drop_references";"drop_return_break_continue";"drop_sized_trait";"functionalize_loops";"hoist_disjunctive_patterns";"local_mutation";"newtype_as_refinement";"reconstruct_asserts";"reconstruct_for_index_loops";"reconstruct_for_loops";"reconstruct_question_marks";"reconstruct_while_loops";"reorder_fields";"rewrite_control_flow";"simplify_hoisting";"simplify_match_return";"simplify_question_marks";"sort_items";"specialize";"traits_specs";"transform_hax_lib_inline";"trivialize_assign_lhs"]
+let phases: string list = ["and_mut_defsite";"bundle_cycles";"cf_into_monads";"direct_and_mut";"drop_blocks";"drop_match_guards";"drop_references";"drop_return_break_continue";"drop_sized_trait";"functionalize_loops";"hoist_disjunctive_patterns";"local_mutation";"newtype_as_refinement";"reconstruct_asserts";"reconstruct_for_index_loops";"reconstruct_for_loops";"reconstruct_question_marks";"reconstruct_while_loops";"reorder_fields";"rewrite_control_flow";"rewrite_local_self";"simplify_hoisting";"simplify_match_return";"simplify_question_marks";"sort_items";"specialize";"traits_specs";"transform_hax_lib_inline";"trivialize_assign_lhs";"reject_arbitrary_lhs";"reject_continue";"reject_question_mark";"reject_raw_or_mut_pointer";"reject_early_exit";"reject_as_pattern";"reject_dyn";"reject_trait_item_default";"reject_unsafe";"hoist_side_effects"]
+
+(*
+and_mut_defsite, bundle_cycles, cf_into_monads, direct_and_mut, drop_blocks, drop_match_guards, drop_references, drop_return_break_continue, drop_sized_trait, functionalize_loops, hoist_disjunctive_patterns, local_mutation, newtype_as_refinement, reconstruct_asserts, reconstruct_for_index_loops, reconstruct_for_loops, reconstruct_question_marks, reconstruct_while_loops, reorder_fields, rewrite_control_flow, rewrite_local_self, simplify_hoisting, simplify_match_return, simplify_question_marks, sort_items, specialize, traits_specs, transform_hax_lib_inline, trivialize_assign_lhs, reject_arbitrary_lhs, reject_continue, reject_question_mark, reject_raw_or_mut_pointer, reject_early_exit, reject_as_pattern, reject_dyn, reject_trait_item_default, reject_unsafe, hoist_side_effects
+*)
 
