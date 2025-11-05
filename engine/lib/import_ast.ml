@@ -116,9 +116,12 @@ and dlocal_ident (Newtypelocal_id (Newtypesymbol li) : A.local_id) :
 and dconcrete_ident (gi : A.global_id) : B.concrete_ident =
   match dglobal_ident gi with
   | `Concrete id -> id
+  (* For variant fields *)
+  | `Projector (`Concrete id) -> id
   | _ ->
       broken_invariant
-        "dconcrete_ident: got something else than a [`Concrete _]"
+        ("dconcrete_ident: got something else than a [`Concrete _]: "
+        ^ [%show: A.global_id] gi)
 
 and ddyn_trait_goal (r : A.dyn_trait_goal) : B.dyn_trait_goal =
   {
