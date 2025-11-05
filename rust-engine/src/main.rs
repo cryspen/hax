@@ -1,26 +1,26 @@
 use hax_rust_engine::{
     backends,
-    ocaml_engine::{ExtendedToEngine, Response},
+    ocaml_engine::{self, Response},
 };
 use hax_types::{cli_options::Backend, engine_api::File};
 
 fn main() {
-    let ExtendedToEngine::Query(input) = hax_rust_engine::hax_io::read() else {
-        panic!()
-    };
-    let (value, table) = input.destruct();
+    let (value, table) = hax_rust_engine::hax_io::read_engine_input_message().destruct();
 
-    let query = hax_rust_engine::ocaml_engine::Query {
+    ocaml_engine::initialize(ocaml_engine::Meta {
         hax_version: value.hax_version,
         impl_infos: value.impl_infos,
-        kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
-            input: value.input,
-            apply_phases: matches!(&value.backend.backend, Backend::Lean),
-            translation_options: value.backend.translation_options,
-        },
+        debug_bind_phase: value.backend.debug_engine.is_some(),
+        profiling: value.backend.profile,
+    });
+
+    let query = hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
+        input: value.input,
+        apply_phases: false && !matches!(&value.backend.backend, Backend::GenerateRustEngineNames),
+        translation_options: value.backend.translation_options,
     };
 
-    let Some(Response::ImportThir { output: items }) = query.execute(table) else {
+    let Some(Response::ImportThir { output: items }) = query.execute(Some(table)) else {
         panic!()
     };
 

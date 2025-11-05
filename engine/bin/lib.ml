@@ -264,6 +264,8 @@ module ExportLeanAst = Export_ast.Make (Lean_backend.InputLanguage)
 
 let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
     Rust_engine_types.response =
+  Profiling.enabled := query.profiling;
+  if query.debug_bind_phase then Phase_utils.DebugBindPhase.enable ();
   match query.kind with
   | Types.ImportThir { input; apply_phases; translation_options } ->
       (* Note: `apply_phases` comes from the type `QueryKind` in
@@ -284,12 +286,14 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
       Rust_engine_types.ImportThir { output = rust_ast_items }
   | Types.ApplyPhases { input; phases } ->
       let items = List.concat_map ~f:Import_ast.ditem input in
-      let items =
-        List.fold ~init:items
-          ~f:(fun items phase ->
-            match phase with Rust_engine_types.Noop -> items)
-          phases
+      let module Phase =
+        (val List.map
+               ~f:(fun name ->
+                 Untyped_phases.phase_of_name name |> Option.value_exn)
+               phases
+             |> Untyped_phases.bind_list)
       in
+      let items = Phase.ditems items in
       let output = List.concat_map ~f:ExportFullAst.ditem items in
       Rust_engine_types.ApplyPhases { output }
 

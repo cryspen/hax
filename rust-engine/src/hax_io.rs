@@ -1,16 +1,18 @@
 //! This module helps communicating with `cargo-hax`.
 
-use crate::ocaml_engine::ExtendedToEngine;
 use hax_types::engine_api::protocol::FromEngine;
-use serde::Deserialize;
+use serde::de::DeserializeOwned;
 use std::io::{BufRead, BufReader, Stdin, stdin, stdout};
 use std::sync::{LazyLock, Mutex};
+
+use hax_frontend_exporter::id_table::WithTable;
+use hax_types::engine_api::{EngineOptions, protocol::ToEngine};
 
 static STDIN: LazyLock<Mutex<BufReader<Stdin>>> =
     LazyLock::new(|| Mutex::new(BufReader::new(stdin())));
 
-/// Reads a `ExtendedToEngine` message
-pub fn read() -> ExtendedToEngine {
+/// Reads a message of any type from stdin
+fn read<T: DeserializeOwned>() -> T {
     let mut stdin = STDIN.lock().unwrap();
     let mut slice = Vec::new();
     stdin
@@ -18,8 +20,22 @@ pub fn read() -> ExtendedToEngine {
         .expect("No message left! Did the engine crash?");
     let mut de = serde_json::Deserializer::from_slice(&slice);
     de.disable_recursion_limit();
-    ExtendedToEngine::deserialize(serde_stacker::Deserializer::new(&mut de))
-        .expect("Could not parse as a `ExtendedToEngine` message!")
+    T::deserialize(serde_stacker::Deserializer::new(&mut de)).unwrap_or_else(|err| {
+        panic!(
+            "Could not parse as a `{}` message! Error: {err}",
+            std::any::type_name::<T>()
+        )
+    })
+}
+
+/// Reads a `ToEngine` message from the engine
+pub fn read_to_engine_message() -> ToEngine {
+    read()
+}
+
+/// Reads the engine input JSON payload.
+pub fn read_engine_input_message() -> WithTable<EngineOptions> {
+    read()
 }
 
 /// Writes a `ExtendedFromEngine` message
