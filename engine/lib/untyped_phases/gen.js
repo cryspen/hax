@@ -8,6 +8,12 @@ let phases = readdirSync("../phases").filter(x => x.endsWith(".mli")).map(filena
   contents: f(readFileSync("../phases/" + filename).toString()),
 }));
 
+let rejections = readFileSync("../phases/phase_reject.ml")
+  .toString()
+  .split('\n')
+  .map(s => s.match(/^module ([a-z][a-z_]+)/i)?.[1])
+  .filter(s => s);
+
 console.log(`
 open Prelude
     
@@ -43,11 +49,39 @@ let bind_list : (module PHASE_FULL) list -> (module PHASE_FULL) =
 
 `);
 
+
 for (let phase of phases) {
   let name_lc = phase.filename.replace(/^phase_/, "").replace(/[.]mli$/, "");
   let name = name_lc.replace(/^(.)/, l => l.toUpperCase());
   phase.name_lc = name_lc;
   phase.name = name;
+  phase.module_expression = `Phases.${name}`;
+}
+
+
+for (let rejection of rejections) {
+  let name = 'Reject_' + rejection.replace(/^(.)/, l => l.toLowerCase()).replace(/[A-Z]/g, c => `_${c}`).toLowerCase();
+  phases.push({
+    name_lc: name.toLowerCase(),
+    name,
+    module_expression: 'Phase_reject.' + rejection,
+    contents: [],
+  });
+}
+
+phases.push({
+  name_lc: "hoist_side_effects",
+  name: 'Hoist_side_effects',
+  module_expression: 'Side_effect_utils.Hoist',
+  contents: [
+    ['Off', 'monadic_binding'],
+    ['Off', 'for_index_loop'],
+  ],
+});
+
+
+for (let phase of phases) {
+  let { name, module_expression } = phase;
 
   console.log(`
 module ${name} : PHASE_FULL = struct
@@ -62,7 +96,7 @@ module ${name} : PHASE_FULL = struct
     ${phase.contents.map(([status, f]) => `include ${status}.${f.replace(/^(.)/, l => l.toUpperCase())}`).join('\n')}
   end
 
-  module Phase = Phases.${name} (ExpectedFA)
+  module Phase = ${module_expression} (ExpectedFA)
 
   module Coerce =
     Feature_gate.Make (Features.Full) (ExpectedFA)
@@ -104,6 +138,10 @@ let phase_of_name: string -> (module PHASE_FULL) option =
     | _ -> None
 
 let phases: string list = [${phases.map(p => `"${p.name_lc}"`).join(';')}]
+
+(*
+${phases.map(p => `${p.name_lc}`).join(', ')}
+*)
 `);
 
 
