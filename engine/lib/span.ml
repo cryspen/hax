@@ -160,18 +160,12 @@ let to_rust_ast_span span : Rust_engine_types.span =
   {
     data = List.map ~f:Imported.span_to_thir span.data;
     id = Int.to_string span.id;
-    owner_hint =
-      Option.map
-        ~f:(fun (OwnerId n) -> Types.Newtypeowner_id (Int.to_string n))
-        span.owner_hint;
+    owner_hint = owner_hint span;
   }
 
 let from_rust_ast_span (span : Rust_engine_types.span) : t =
   {
     data = List.map ~f:Imported.span_of_thir span.data;
     id = Int.of_string span.id;
-    owner_hint =
-      Option.map
-        ~f:(fun (Types.Newtypeowner_id n) -> OwnerId (Int.of_string n))
-        span.owner_hint;
+    owner_hint = Option.map ~f:fresh_owner_id span.owner_hint;
   }
