@@ -157,7 +157,7 @@ let run (options : Types.engine_options) : Types.output =
   {
     diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;
     files = Option.value ~default:[] files;
-    debug_json = None;
+    debug_json = [];
   }
 
 (** Shallow parses a `id_table::Node<T>` (or a raw `T`) JSON *)
@@ -224,6 +224,10 @@ let parse_options () =
   Profiling.enabled := options.backend.profile;
   options
 
+let send_debug_strings =
+  Phase_utils.DebugBindPhase.export
+  >> List.iter ~f:(fun json -> DebugString json |> Hax_io.write)
+
 (** Entrypoint of the engine. Assumes `Hax_io.init` was called. *)
 let engine () =
   let options = Profiling.profile (Other "parse_options") 1 parse_options in
@@ -241,16 +245,12 @@ let engine () =
   in
   match result with
   | Ok results ->
-      let debug_json = Phase_utils.DebugBindPhase.export () in
-      let results = { results with debug_json } in
-      Logs.info (fun m -> m "Outputting JSON");
-
       List.iter
         ~f:(fun diag -> Diagnostic diag |> Hax_io.write)
         results.diagnostics;
       List.iter ~f:(fun file -> File file |> Hax_io.write) results.files;
 
-      Option.iter ~f:(fun json -> DebugString json |> Hax_io.write) debug_json;
+      send_debug_strings ();
       Hax_io.close ();
 
       Logs.info (fun m -> m "Exiting Hax engine (success)")
@@ -302,5 +302,6 @@ let driver_for_rust_engine () : unit =
   Concrete_ident.ImplInfoStore.init
     (Concrete_ident_generated.impl_infos @ query.impl_infos);
   let response = driver_for_rust_engine_inner query in
+  send_debug_strings ();
   Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
   Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
