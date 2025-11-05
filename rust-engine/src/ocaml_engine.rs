@@ -2,21 +2,27 @@
 //! interface, the rust engine can communicate with the OCaml engine, and reuse
 //! some of its components.
 
-use std::io::BufRead;
+use std::{io::BufRead, sync::OnceLock};
 
 use hax_frontend_exporter::{
     ThirBody,
     id_table::{Table, WithTable},
 };
-use hax_types::engine_api::{
-    EngineOptions,
-    protocol::{FromEngine, ToEngine},
-};
+use hax_types::engine_api::protocol::{FromEngine, ToEngine};
 use serde::Deserialize;
 
 /// A query for the OCaml engine
 #[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
 pub struct Query {
+    #[serde(flatten)]
+    meta: Meta,
+    /// The kind of query we want to send to the engine
+    kind: QueryKind,
+}
+
+/// The metadata required to perform a query.
+#[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
+pub struct Meta {
     /// The version of hax currently used
     pub hax_version: String,
     /// Dictionary from `DefId`s to `impl_infos`
@@ -24,8 +30,19 @@ pub struct Query {
         hax_frontend_exporter::DefId,
         hax_frontend_exporter::ImplInfos,
     )>,
-    /// The kind of query we want to send to the engine
-    pub kind: QueryKind,
+    /// Enable debugging of phases in the OCaml engine
+    pub debug_bind_phase: bool,
+    /// Enable profiling in the OCaml engine
+    pub profiling: bool,
+}
+
+static STATE: OnceLock<Meta> = OnceLock::new();
+
+/// Initialize query metadata.
+pub fn initialize(meta: Meta) {
+    STATE
+        .set(meta)
+        .expect("`ocaml_engine::initialize` was called more than once")
 }
 
 /// The payload of the query. [`Response`] below mirrors this enum to represent
@@ -42,17 +59,14 @@ pub enum QueryKind {
         translation_options: hax_types::cli_options::TranslationOptions,
     },
 
+    /// Ask the OCaml engine to run given phases on given items
     ApplyPhases {
+        /// The phases to run. See `untyped_phases.ml`.
+        phases: Vec<String>,
+        /// The items on which the phases will be applied.
         input: Vec<crate::ast::Item>,
-        phases: Vec<OCamlPhase>,
     },
 }
-
-#[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
-pub enum OCamlPhase {
-    Noop,
-}
-
 /// A Response after a [`Query`]
 #[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
 pub enum Response {
@@ -61,19 +75,11 @@ pub enum Response {
         /// The output Rust AST items
         output: Vec<crate::ast::Item>,
     },
+    /// Return items after phase application
     ApplyPhases {
+        /// The output Rust AST items after phases
         output: Vec<crate::ast::Item>,
     },
-}
-
-/// Extends the common `ToEngine` messages with one extra case: `Query`.
-#[derive(::serde::Deserialize, ::serde::Serialize)]
-#[serde(untagged)]
-pub enum ExtendedToEngine {
-    /// A standard `ToEngine` message
-    ToEngine(ToEngine),
-    /// A `Query`
-    Query(Box<WithTable<EngineOptions>>),
 }
 
 /// Extends the common `FromEngine` messages with one extra case: `Response`.
@@ -86,9 +92,16 @@ pub enum ExtendedFromEngine {
     Response(Response),
 }
 
-impl Query {
+impl QueryKind {
     /// Execute the query synchronously.
-    pub fn execute(&self, table: Table) -> Option<Response> {
+    pub fn execute(self, table: Option<Table>) -> Option<Response> {
+        let query = Query {
+            meta: STATE
+                .get()
+                .expect("`ocaml_engine::initialize` should be called first")
+                .clone(),
+            kind: self,
+        };
         use std::io::Write;
         use std::process::Command;
 
@@ -115,9 +128,13 @@ impl Query {
                 .expect("Could not write on stdin"),
         );
 
-        WithTable::run(table, self, |with_table| {
-            send!(stdin, with_table);
-        });
+        if let Some(table) = table {
+            WithTable::run(table, query, |with_table| {
+                send!(stdin, with_table);
+            });
+        } else {
+            send!(stdin, &(vec![] as Vec<()>, query));
+        }
 
         let mut response = None;
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());
@@ -145,11 +162,7 @@ impl Query {
                 ExtendedFromEngine::FromEngine(from_engine) => {
                     crate::hax_io::write(&from_engine);
                     if from_engine.requires_response() {
-                        let ExtendedToEngine::ToEngine(response) = crate::hax_io::read() else {
-                            panic!(
-                                "The frontend sent an incorrect message: expected `ExtendedToEngine::ToEngine` since we sent a `ExtendedFromEngine::FromEngine`."
-                            )
-                        };
+                        let response: ToEngine = crate::hax_io::read_to_engine_message();
                         send!(stdin, &response);
                     }
                 }
