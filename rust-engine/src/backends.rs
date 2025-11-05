@@ -21,6 +21,7 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{Item, Metadata, Module, span::Span},
+    phase::legacy::group_consecutive_ocaml_phases,
     printer::{Print, Printer},
 };
 use camino::Utf8PathBuf;
@@ -89,7 +90,7 @@ pub trait Backend {
 /// modules via [`Backend::items_to_module`], and then uses the backend's printer
 /// to generate source files with paths determined by [`Backend::module_path`].
 pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
-    for phase in backend.phases() {
+    for phase in group_consecutive_ocaml_phases(backend.phases()) {
         phase.apply(&mut items);
     }
 
