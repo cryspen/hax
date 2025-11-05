@@ -9,10 +9,6 @@ fn fresh_id() -> usize {
     CURRENT_ID.fetch_add(1, Ordering::Relaxed)
 }
 
-/// Identifier used to track the origin Rust item of a span
-#[derive_group_for_ast]
-pub struct OwnerId(usize);
-
 /// Position of a Rust source
 #[derive_group_for_ast]
 pub struct Span {
@@ -27,7 +23,7 @@ pub struct Span {
     /// A reference to the item in which this span lives. This information is
     /// used for debugging and profiling purposes, e.g. for `cargo hax into
     /// --stats backend`.
-    owner_hint: Option<OwnerId>,
+    owner_hint: Option<hax_frontend_exporter::DefId>,
 }
 
 impl Span {
