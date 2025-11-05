@@ -298,7 +298,7 @@ fn run_engine(
     let mut output = Output {
         diagnostics: vec![],
         files: vec![],
-        debug_json: None,
+        debug_json: vec![],
     };
     {
         let mut rctx = hax_types::diagnostics::report::ReportCtx::default();
@@ -396,9 +396,7 @@ fn run_engine(
                         HaxMessage::ProducedFile { path, wrote }.report(message_format, None)
                     }
                 }
-                FromEngine::DebugString(debug) => {
-                    output.debug_json = Some(debug);
-                }
+                FromEngine::DebugString(debug) => output.debug_json.push(debug),
                 FromEngine::PrettyPrintDiagnostic(diag) => {
                     send!(&ToEngine::PrettyPrintedDiagnostic(format!("{}", diag)));
                 }
@@ -447,8 +445,9 @@ fn run_engine(
     if backend.dry_run {
         serde_json::to_writer(std::io::BufWriter::new(std::io::stdout()), &output).unwrap()
     }
-    if let Some(debug_json) = &output.debug_json {
+    if !output.debug_json.is_empty() {
         use DebugEngineMode;
+        let debug_json = &format!("[{}]", output.debug_json.join(","));
         match &backend.debug_engine {
             Some(DebugEngineMode::Interactive) => {
                 eprintln!("----------------------------------------------");
