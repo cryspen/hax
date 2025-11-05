@@ -56,7 +56,7 @@ pub struct File {
 pub struct Output {
     pub diagnostics: Vec<crate::diagnostics::Diagnostics>,
     pub files: Vec<File>,
-    pub debug_json: Option<String>,
+    pub debug_json: Vec<String>,
 }
 
 #[derive_group(Serializers)]
