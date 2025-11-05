@@ -267,21 +267,12 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
   Profiling.enabled := query.profiling;
   if query.debug_bind_phase then Phase_utils.DebugBindPhase.enable ();
   match query.kind with
-  | Types.ImportThir { input; apply_phases; translation_options } ->
-      (* Note: `apply_phases` comes from the type `QueryKind` in
-       `ocaml_engine.rs`. This is a temporary flag that applies some phases while
-       importing THIR. In the future (when #1550 is merged), we will be able to
-       import THIR and then apply phases. *)
+  | Types.ImportThir { input; translation_options } ->
       let imported_items =
         import_thir_items translation_options.include_namespaces input
       in
       let rust_ast_items =
-        if apply_phases then
-          let imported_items = Lean_backend.apply_phases imported_items in
-          List.concat_map
-            ~f:(fun item -> ExportLeanAst.ditem item)
-            imported_items
-        else List.concat_map ~f:ExportRustAst.ditem imported_items
+        List.concat_map ~f:ExportRustAst.ditem imported_items
       in
       Rust_engine_types.ImportThir { output = rust_ast_items }
   | Types.ApplyPhases { input; phases } ->
