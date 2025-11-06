@@ -1,6 +1,5 @@
-
 open Prelude
-    
+
 module type PHASE_FULL =
   Phase_utils.PHASE
     with module FA = Features.Full
@@ -31,8 +30,6 @@ let bind_list : (module PHASE_FULL) list -> (module PHASE_FULL) =
   List.reduce ~f:bind
   >> Option.value ~default:(module IdentityFull : PHASE_FULL)
 
-
-
 module And_mut_defsite : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -43,10 +40,10 @@ module And_mut_defsite : PHASE_FULL = struct
     open Features
     include On
     include On.Mutable_variable
-include On.Mutable_reference
-include On.Nontrivial_lhs
-include On.Arbitrary_lhs
-include On.Reference
+    include On.Mutable_reference
+    include On.Nontrivial_lhs
+    include On.Arbitrary_lhs
+    include On.Reference
   end
 
   module Phase = Phases.And_mut_defsite (ExpectedFA)
@@ -59,10 +56,10 @@ include On.Reference
         include Feature_gate.DefaultSubtype
 
         let mutable_variable = fun _ _ -> Features.On.mutable_variable
-let mutable_reference = fun _ _ -> Features.On.mutable_reference
-let nontrivial_lhs = fun _ _ -> Features.On.nontrivial_lhs
-let arbitrary_lhs = fun _ _ -> Features.On.arbitrary_lhs
-let reference = fun _ _ -> Features.On.reference
+        let mutable_reference = fun _ _ -> Features.On.mutable_reference
+        let nontrivial_lhs = fun _ _ -> Features.On.nontrivial_lhs
+        let arbitrary_lhs = fun _ _ -> Features.On.arbitrary_lhs
+        let reference = fun _ _ -> Features.On.reference
 
         let metadata =
           Phase_reject.make_metadata
@@ -77,7 +74,6 @@ let reference = fun _ _ -> Features.On.reference
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Bundle_cycles : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -87,7 +83,6 @@ module Bundle_cycles : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Bundle_cycles (ExpectedFA)
@@ -99,8 +94,6 @@ module Bundle_cycles : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -114,7 +107,6 @@ module Bundle_cycles : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Cf_into_monads : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -125,7 +117,7 @@ module Cf_into_monads : PHASE_FULL = struct
     open Features
     include On
     include Off.Monadic_action
-include Off.Monadic_binding
+    include Off.Monadic_binding
   end
 
   module Phase = Phases.Cf_into_monads (ExpectedFA)
@@ -138,7 +130,7 @@ include Off.Monadic_binding
         include Feature_gate.DefaultSubtype
 
         let monadic_action = reject
-let monadic_binding = reject
+        let monadic_binding = reject
 
         let metadata =
           Phase_reject.make_metadata
@@ -153,7 +145,6 @@ let monadic_binding = reject
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Direct_and_mut : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -164,7 +155,7 @@ module Direct_and_mut : PHASE_FULL = struct
     open Features
     include On
     include Off.Raw_pointer
-include Off.Mutable_pointer
+    include Off.Mutable_pointer
   end
 
   module Phase = Phases.Direct_and_mut (ExpectedFA)
@@ -177,7 +168,7 @@ include Off.Mutable_pointer
         include Feature_gate.DefaultSubtype
 
         let raw_pointer = reject
-let mutable_pointer = reject
+        let mutable_pointer = reject
 
         let metadata =
           Phase_reject.make_metadata
@@ -192,7 +183,6 @@ let mutable_pointer = reject
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Drop_blocks : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -202,7 +192,6 @@ module Drop_blocks : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Drop_blocks (ExpectedFA)
@@ -214,8 +203,6 @@ module Drop_blocks : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -229,7 +216,6 @@ module Drop_blocks : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Drop_match_guards : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -239,7 +225,6 @@ module Drop_match_guards : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Drop_match_guards (ExpectedFA)
@@ -251,8 +236,6 @@ module Drop_match_guards : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -266,7 +249,6 @@ module Drop_match_guards : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Drop_references : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -277,7 +259,7 @@ module Drop_references : PHASE_FULL = struct
     open Features
     include On
     include Off.Raw_pointer
-include Off.Mutable_reference
+    include Off.Mutable_reference
   end
 
   module Phase = Phases.Drop_references (ExpectedFA)
@@ -290,7 +272,7 @@ include Off.Mutable_reference
         include Feature_gate.DefaultSubtype
 
         let raw_pointer = reject
-let mutable_reference = reject
+        let mutable_reference = reject
 
         let metadata =
           Phase_reject.make_metadata
@@ -305,7 +287,6 @@ let mutable_reference = reject
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Drop_return_break_continue : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -315,7 +296,6 @@ module Drop_return_break_continue : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Drop_return_break_continue (ExpectedFA)
@@ -327,8 +307,6 @@ module Drop_return_break_continue : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -342,7 +320,6 @@ module Drop_return_break_continue : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Drop_sized_trait : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -352,7 +329,6 @@ module Drop_sized_trait : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Drop_sized_trait (ExpectedFA)
@@ -364,8 +340,6 @@ module Drop_sized_trait : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -379,7 +353,6 @@ module Drop_sized_trait : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Functionalize_loops : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -390,8 +363,8 @@ module Functionalize_loops : PHASE_FULL = struct
     open Features
     include On
     include Off.Continue
-include Off.Early_exit
-include Off.Break
+    include Off.Early_exit
+    include Off.Break
   end
 
   module Phase = Phases.Functionalize_loops (ExpectedFA)
@@ -404,8 +377,8 @@ include Off.Break
         include Feature_gate.DefaultSubtype
 
         let continue = reject
-let early_exit = reject
-let break = reject
+        let early_exit = reject
+        let break = reject
 
         let metadata =
           Phase_reject.make_metadata
@@ -420,7 +393,6 @@ let break = reject
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Hoist_disjunctive_patterns : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -430,7 +402,6 @@ module Hoist_disjunctive_patterns : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Hoist_disjunctive_patterns (ExpectedFA)
@@ -442,8 +413,6 @@ module Hoist_disjunctive_patterns : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -457,7 +426,6 @@ module Hoist_disjunctive_patterns : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Local_mutation : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -468,13 +436,13 @@ module Local_mutation : PHASE_FULL = struct
     open Features
     include On
     include Off.Mutable_reference
-include Off.Mutable_pointer
-include Off.Raw_pointer
-include Off.Arbitrary_lhs
-include Off.Nontrivial_lhs
-include Off.Monadic_action
-include Off.Monadic_binding
-include Off.For_index_loop
+    include Off.Mutable_pointer
+    include Off.Raw_pointer
+    include Off.Arbitrary_lhs
+    include Off.Nontrivial_lhs
+    include Off.Monadic_action
+    include Off.Monadic_binding
+    include Off.For_index_loop
   end
 
   module Phase = Phases.Local_mutation (ExpectedFA)
@@ -487,13 +455,13 @@ include Off.For_index_loop
         include Feature_gate.DefaultSubtype
 
         let mutable_reference = reject
-let mutable_pointer = reject
-let raw_pointer = reject
-let arbitrary_lhs = reject
-let nontrivial_lhs = reject
-let monadic_action = reject
-let monadic_binding = reject
-let for_index_loop = reject
+        let mutable_pointer = reject
+        let raw_pointer = reject
+        let arbitrary_lhs = reject
+        let nontrivial_lhs = reject
+        let monadic_action = reject
+        let monadic_binding = reject
+        let for_index_loop = reject
 
         let metadata =
           Phase_reject.make_metadata
@@ -508,7 +476,6 @@ let for_index_loop = reject
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Newtype_as_refinement : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -518,7 +485,6 @@ module Newtype_as_refinement : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Newtype_as_refinement (ExpectedFA)
@@ -530,8 +496,6 @@ module Newtype_as_refinement : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -545,7 +509,6 @@ module Newtype_as_refinement : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reconstruct_asserts : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -555,7 +518,6 @@ module Reconstruct_asserts : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Reconstruct_asserts (ExpectedFA)
@@ -567,8 +529,6 @@ module Reconstruct_asserts : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -582,7 +542,6 @@ module Reconstruct_asserts : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reconstruct_for_index_loops : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -592,7 +551,6 @@ module Reconstruct_for_index_loops : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Reconstruct_for_index_loops (ExpectedFA)
@@ -604,8 +562,6 @@ module Reconstruct_for_index_loops : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -619,7 +575,6 @@ module Reconstruct_for_index_loops : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reconstruct_for_loops : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -629,7 +584,6 @@ module Reconstruct_for_loops : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Reconstruct_for_loops (ExpectedFA)
@@ -641,8 +595,6 @@ module Reconstruct_for_loops : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -656,7 +608,6 @@ module Reconstruct_for_loops : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reconstruct_question_marks : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -666,7 +617,6 @@ module Reconstruct_question_marks : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Reconstruct_question_marks (ExpectedFA)
@@ -678,8 +628,6 @@ module Reconstruct_question_marks : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -693,7 +641,6 @@ module Reconstruct_question_marks : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reconstruct_while_loops : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -703,7 +650,6 @@ module Reconstruct_while_loops : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Reconstruct_while_loops (ExpectedFA)
@@ -715,8 +661,6 @@ module Reconstruct_while_loops : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -730,7 +674,6 @@ module Reconstruct_while_loops : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reorder_fields : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -740,7 +683,6 @@ module Reorder_fields : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Reorder_fields (ExpectedFA)
@@ -752,8 +694,6 @@ module Reorder_fields : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -767,7 +707,6 @@ module Reorder_fields : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Rewrite_control_flow : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -777,7 +716,6 @@ module Rewrite_control_flow : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Rewrite_control_flow (ExpectedFA)
@@ -789,8 +727,6 @@ module Rewrite_control_flow : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -804,7 +740,6 @@ module Rewrite_control_flow : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Rewrite_local_self : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -814,7 +749,6 @@ module Rewrite_local_self : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Rewrite_local_self (ExpectedFA)
@@ -826,8 +760,6 @@ module Rewrite_local_self : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -841,7 +773,6 @@ module Rewrite_local_self : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Simplify_hoisting : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -851,7 +782,6 @@ module Simplify_hoisting : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Simplify_hoisting (ExpectedFA)
@@ -863,8 +793,6 @@ module Simplify_hoisting : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -878,7 +806,6 @@ module Simplify_hoisting : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Simplify_match_return : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -888,7 +815,6 @@ module Simplify_match_return : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Simplify_match_return (ExpectedFA)
@@ -900,8 +826,6 @@ module Simplify_match_return : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -915,7 +839,6 @@ module Simplify_match_return : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Simplify_question_marks : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -925,7 +848,6 @@ module Simplify_question_marks : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Simplify_question_marks (ExpectedFA)
@@ -937,8 +859,6 @@ module Simplify_question_marks : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -952,7 +872,6 @@ module Simplify_question_marks : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Sort_items : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -962,7 +881,6 @@ module Sort_items : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Sort_items (ExpectedFA)
@@ -974,8 +892,6 @@ module Sort_items : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -989,7 +905,6 @@ module Sort_items : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Specialize : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -999,7 +914,6 @@ module Specialize : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Specialize (ExpectedFA)
@@ -1011,8 +925,6 @@ module Specialize : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1026,7 +938,6 @@ module Specialize : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Traits_specs : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1036,7 +947,6 @@ module Traits_specs : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Traits_specs (ExpectedFA)
@@ -1048,8 +958,6 @@ module Traits_specs : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1063,7 +971,6 @@ module Traits_specs : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Transform_hax_lib_inline : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1073,7 +980,6 @@ module Transform_hax_lib_inline : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Transform_hax_lib_inline (ExpectedFA)
@@ -1085,8 +991,6 @@ module Transform_hax_lib_inline : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1100,7 +1004,6 @@ module Transform_hax_lib_inline : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Trivialize_assign_lhs : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1110,7 +1013,6 @@ module Trivialize_assign_lhs : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phases.Trivialize_assign_lhs (ExpectedFA)
@@ -1122,8 +1024,6 @@ module Trivialize_assign_lhs : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1137,7 +1037,6 @@ module Trivialize_assign_lhs : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_arbitrary_lhs : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1147,7 +1046,6 @@ module Reject_arbitrary_lhs : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.Arbitrary_lhs (ExpectedFA)
@@ -1159,8 +1057,6 @@ module Reject_arbitrary_lhs : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1174,7 +1070,6 @@ module Reject_arbitrary_lhs : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_continue : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1184,7 +1079,6 @@ module Reject_continue : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.Continue (ExpectedFA)
@@ -1196,8 +1090,6 @@ module Reject_continue : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1211,7 +1103,6 @@ module Reject_continue : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_question_mark : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1221,7 +1112,6 @@ module Reject_question_mark : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.Question_mark (ExpectedFA)
@@ -1233,8 +1123,6 @@ module Reject_question_mark : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1248,7 +1136,6 @@ module Reject_question_mark : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_raw_or_mut_pointer : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1258,7 +1145,6 @@ module Reject_raw_or_mut_pointer : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.RawOrMutPointer (ExpectedFA)
@@ -1270,8 +1156,6 @@ module Reject_raw_or_mut_pointer : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1285,7 +1169,6 @@ module Reject_raw_or_mut_pointer : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_early_exit : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1295,7 +1178,6 @@ module Reject_early_exit : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.EarlyExit (ExpectedFA)
@@ -1307,8 +1189,6 @@ module Reject_early_exit : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1322,7 +1202,6 @@ module Reject_early_exit : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_as_pattern : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1332,7 +1211,6 @@ module Reject_as_pattern : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.As_pattern (ExpectedFA)
@@ -1344,8 +1222,6 @@ module Reject_as_pattern : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1359,7 +1235,6 @@ module Reject_as_pattern : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_dyn : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1369,7 +1244,6 @@ module Reject_dyn : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.Dyn (ExpectedFA)
@@ -1381,8 +1255,6 @@ module Reject_dyn : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1396,7 +1268,6 @@ module Reject_dyn : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_trait_item_default : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1406,7 +1277,6 @@ module Reject_trait_item_default : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.Trait_item_default (ExpectedFA)
@@ -1418,8 +1288,6 @@ module Reject_trait_item_default : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1433,7 +1301,6 @@ module Reject_trait_item_default : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Reject_unsafe : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1443,7 +1310,6 @@ module Reject_unsafe : PHASE_FULL = struct
   module ExpectedFA = struct
     open Features
     include On
-    
   end
 
   module Phase = Phase_reject.Unsafe (ExpectedFA)
@@ -1455,8 +1321,6 @@ module Reject_unsafe : PHASE_FULL = struct
         module B = ExpectedFA
         include Feature_gate.DefaultSubtype
 
-        
-
         let metadata =
           Phase_reject.make_metadata
             (CoercionForUntypedPhase
@@ -1470,7 +1334,6 @@ module Reject_unsafe : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
-
 module Hoist_side_effects : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1481,7 +1344,7 @@ module Hoist_side_effects : PHASE_FULL = struct
     open Features
     include On
     include Off.Monadic_binding
-include Off.For_index_loop
+    include Off.For_index_loop
   end
 
   module Phase = Side_effect_utils.Hoist (ExpectedFA)
@@ -1494,7 +1357,7 @@ include Off.For_index_loop
         include Feature_gate.DefaultSubtype
 
         let monadic_binding = reject
-let for_index_loop = reject
+        let for_index_loop = reject
 
         let metadata =
           Phase_reject.make_metadata
@@ -1516,48 +1379,193 @@ let direct_and_mut : (module PHASE_FULL) = (module Direct_and_mut)
 let drop_blocks : (module PHASE_FULL) = (module Drop_blocks)
 let drop_match_guards : (module PHASE_FULL) = (module Drop_match_guards)
 let drop_references : (module PHASE_FULL) = (module Drop_references)
-let drop_return_break_continue : (module PHASE_FULL) = (module Drop_return_break_continue)
+
+let drop_return_break_continue : (module PHASE_FULL) =
+  (module Drop_return_break_continue)
+
 let drop_sized_trait : (module PHASE_FULL) = (module Drop_sized_trait)
 let functionalize_loops : (module PHASE_FULL) = (module Functionalize_loops)
-let hoist_disjunctive_patterns : (module PHASE_FULL) = (module Hoist_disjunctive_patterns)
+
+let hoist_disjunctive_patterns : (module PHASE_FULL) =
+  (module Hoist_disjunctive_patterns)
+
 let local_mutation : (module PHASE_FULL) = (module Local_mutation)
 let newtype_as_refinement : (module PHASE_FULL) = (module Newtype_as_refinement)
 let reconstruct_asserts : (module PHASE_FULL) = (module Reconstruct_asserts)
-let reconstruct_for_index_loops : (module PHASE_FULL) = (module Reconstruct_for_index_loops)
+
+let reconstruct_for_index_loops : (module PHASE_FULL) =
+  (module Reconstruct_for_index_loops)
+
 let reconstruct_for_loops : (module PHASE_FULL) = (module Reconstruct_for_loops)
-let reconstruct_question_marks : (module PHASE_FULL) = (module Reconstruct_question_marks)
-let reconstruct_while_loops : (module PHASE_FULL) = (module Reconstruct_while_loops)
+
+let reconstruct_question_marks : (module PHASE_FULL) =
+  (module Reconstruct_question_marks)
+
+let reconstruct_while_loops : (module PHASE_FULL) =
+  (module Reconstruct_while_loops)
+
 let reorder_fields : (module PHASE_FULL) = (module Reorder_fields)
 let rewrite_control_flow : (module PHASE_FULL) = (module Rewrite_control_flow)
 let rewrite_local_self : (module PHASE_FULL) = (module Rewrite_local_self)
 let simplify_hoisting : (module PHASE_FULL) = (module Simplify_hoisting)
 let simplify_match_return : (module PHASE_FULL) = (module Simplify_match_return)
-let simplify_question_marks : (module PHASE_FULL) = (module Simplify_question_marks)
+
+let simplify_question_marks : (module PHASE_FULL) =
+  (module Simplify_question_marks)
+
 let sort_items : (module PHASE_FULL) = (module Sort_items)
 let specialize : (module PHASE_FULL) = (module Specialize)
 let traits_specs : (module PHASE_FULL) = (module Traits_specs)
-let transform_hax_lib_inline : (module PHASE_FULL) = (module Transform_hax_lib_inline)
+
+let transform_hax_lib_inline : (module PHASE_FULL) =
+  (module Transform_hax_lib_inline)
+
 let trivialize_assign_lhs : (module PHASE_FULL) = (module Trivialize_assign_lhs)
 let reject_arbitrary_lhs : (module PHASE_FULL) = (module Reject_arbitrary_lhs)
 let reject_continue : (module PHASE_FULL) = (module Reject_continue)
 let reject_question_mark : (module PHASE_FULL) = (module Reject_question_mark)
-let reject_raw_or_mut_pointer : (module PHASE_FULL) = (module Reject_raw_or_mut_pointer)
+
+let reject_raw_or_mut_pointer : (module PHASE_FULL) =
+  (module Reject_raw_or_mut_pointer)
+
 let reject_early_exit : (module PHASE_FULL) = (module Reject_early_exit)
 let reject_as_pattern : (module PHASE_FULL) = (module Reject_as_pattern)
 let reject_dyn : (module PHASE_FULL) = (module Reject_dyn)
-let reject_trait_item_default : (module PHASE_FULL) = (module Reject_trait_item_default)
+
+let reject_trait_item_default : (module PHASE_FULL) =
+  (module Reject_trait_item_default)
+
 let reject_unsafe : (module PHASE_FULL) = (module Reject_unsafe)
 let hoist_side_effects : (module PHASE_FULL) = (module Hoist_side_effects)
-let phases_list : (module PHASE_FULL) list = [and_mut_defsite;bundle_cycles;cf_into_monads;direct_and_mut;drop_blocks;drop_match_guards;drop_references;drop_return_break_continue;drop_sized_trait;functionalize_loops;hoist_disjunctive_patterns;local_mutation;newtype_as_refinement;reconstruct_asserts;reconstruct_for_index_loops;reconstruct_for_loops;reconstruct_question_marks;reconstruct_while_loops;reorder_fields;rewrite_control_flow;rewrite_local_self;simplify_hoisting;simplify_match_return;simplify_question_marks;sort_items;specialize;traits_specs;transform_hax_lib_inline;trivialize_assign_lhs;reject_arbitrary_lhs;reject_continue;reject_question_mark;reject_raw_or_mut_pointer;reject_early_exit;reject_as_pattern;reject_dyn;reject_trait_item_default;reject_unsafe;hoist_side_effects]
 
-let phase_of_name: string -> (module PHASE_FULL) option = 
-    function
-    | "and_mut_defsite" -> Some and_mut_defsite| "bundle_cycles" -> Some bundle_cycles| "cf_into_monads" -> Some cf_into_monads| "direct_and_mut" -> Some direct_and_mut| "drop_blocks" -> Some drop_blocks| "drop_match_guards" -> Some drop_match_guards| "drop_references" -> Some drop_references| "drop_return_break_continue" -> Some drop_return_break_continue| "drop_sized_trait" -> Some drop_sized_trait| "functionalize_loops" -> Some functionalize_loops| "hoist_disjunctive_patterns" -> Some hoist_disjunctive_patterns| "local_mutation" -> Some local_mutation| "newtype_as_refinement" -> Some newtype_as_refinement| "reconstruct_asserts" -> Some reconstruct_asserts| "reconstruct_for_index_loops" -> Some reconstruct_for_index_loops| "reconstruct_for_loops" -> Some reconstruct_for_loops| "reconstruct_question_marks" -> Some reconstruct_question_marks| "reconstruct_while_loops" -> Some reconstruct_while_loops| "reorder_fields" -> Some reorder_fields| "rewrite_control_flow" -> Some rewrite_control_flow| "rewrite_local_self" -> Some rewrite_local_self| "simplify_hoisting" -> Some simplify_hoisting| "simplify_match_return" -> Some simplify_match_return| "simplify_question_marks" -> Some simplify_question_marks| "sort_items" -> Some sort_items| "specialize" -> Some specialize| "traits_specs" -> Some traits_specs| "transform_hax_lib_inline" -> Some transform_hax_lib_inline| "trivialize_assign_lhs" -> Some trivialize_assign_lhs| "reject_arbitrary_lhs" -> Some reject_arbitrary_lhs| "reject_continue" -> Some reject_continue| "reject_question_mark" -> Some reject_question_mark| "reject_raw_or_mut_pointer" -> Some reject_raw_or_mut_pointer| "reject_early_exit" -> Some reject_early_exit| "reject_as_pattern" -> Some reject_as_pattern| "reject_dyn" -> Some reject_dyn| "reject_trait_item_default" -> Some reject_trait_item_default| "reject_unsafe" -> Some reject_unsafe| "hoist_side_effects" -> Some hoist_side_effects
-    | _ -> None
+let phases_list : (module PHASE_FULL) list =
+  [
+    and_mut_defsite;
+    bundle_cycles;
+    cf_into_monads;
+    direct_and_mut;
+    drop_blocks;
+    drop_match_guards;
+    drop_references;
+    drop_return_break_continue;
+    drop_sized_trait;
+    functionalize_loops;
+    hoist_disjunctive_patterns;
+    local_mutation;
+    newtype_as_refinement;
+    reconstruct_asserts;
+    reconstruct_for_index_loops;
+    reconstruct_for_loops;
+    reconstruct_question_marks;
+    reconstruct_while_loops;
+    reorder_fields;
+    rewrite_control_flow;
+    rewrite_local_self;
+    simplify_hoisting;
+    simplify_match_return;
+    simplify_question_marks;
+    sort_items;
+    specialize;
+    traits_specs;
+    transform_hax_lib_inline;
+    trivialize_assign_lhs;
+    reject_arbitrary_lhs;
+    reject_continue;
+    reject_question_mark;
+    reject_raw_or_mut_pointer;
+    reject_early_exit;
+    reject_as_pattern;
+    reject_dyn;
+    reject_trait_item_default;
+    reject_unsafe;
+    hoist_side_effects;
+  ]
 
-let phases: string list = ["and_mut_defsite";"bundle_cycles";"cf_into_monads";"direct_and_mut";"drop_blocks";"drop_match_guards";"drop_references";"drop_return_break_continue";"drop_sized_trait";"functionalize_loops";"hoist_disjunctive_patterns";"local_mutation";"newtype_as_refinement";"reconstruct_asserts";"reconstruct_for_index_loops";"reconstruct_for_loops";"reconstruct_question_marks";"reconstruct_while_loops";"reorder_fields";"rewrite_control_flow";"rewrite_local_self";"simplify_hoisting";"simplify_match_return";"simplify_question_marks";"sort_items";"specialize";"traits_specs";"transform_hax_lib_inline";"trivialize_assign_lhs";"reject_arbitrary_lhs";"reject_continue";"reject_question_mark";"reject_raw_or_mut_pointer";"reject_early_exit";"reject_as_pattern";"reject_dyn";"reject_trait_item_default";"reject_unsafe";"hoist_side_effects"]
+let phase_of_name : string -> (module PHASE_FULL) option = function
+  | "and_mut_defsite" -> Some and_mut_defsite
+  | "bundle_cycles" -> Some bundle_cycles
+  | "cf_into_monads" -> Some cf_into_monads
+  | "direct_and_mut" -> Some direct_and_mut
+  | "drop_blocks" -> Some drop_blocks
+  | "drop_match_guards" -> Some drop_match_guards
+  | "drop_references" -> Some drop_references
+  | "drop_return_break_continue" -> Some drop_return_break_continue
+  | "drop_sized_trait" -> Some drop_sized_trait
+  | "functionalize_loops" -> Some functionalize_loops
+  | "hoist_disjunctive_patterns" -> Some hoist_disjunctive_patterns
+  | "local_mutation" -> Some local_mutation
+  | "newtype_as_refinement" -> Some newtype_as_refinement
+  | "reconstruct_asserts" -> Some reconstruct_asserts
+  | "reconstruct_for_index_loops" -> Some reconstruct_for_index_loops
+  | "reconstruct_for_loops" -> Some reconstruct_for_loops
+  | "reconstruct_question_marks" -> Some reconstruct_question_marks
+  | "reconstruct_while_loops" -> Some reconstruct_while_loops
+  | "reorder_fields" -> Some reorder_fields
+  | "rewrite_control_flow" -> Some rewrite_control_flow
+  | "rewrite_local_self" -> Some rewrite_local_self
+  | "simplify_hoisting" -> Some simplify_hoisting
+  | "simplify_match_return" -> Some simplify_match_return
+  | "simplify_question_marks" -> Some simplify_question_marks
+  | "sort_items" -> Some sort_items
+  | "specialize" -> Some specialize
+  | "traits_specs" -> Some traits_specs
+  | "transform_hax_lib_inline" -> Some transform_hax_lib_inline
+  | "trivialize_assign_lhs" -> Some trivialize_assign_lhs
+  | "reject_arbitrary_lhs" -> Some reject_arbitrary_lhs
+  | "reject_continue" -> Some reject_continue
+  | "reject_question_mark" -> Some reject_question_mark
+  | "reject_raw_or_mut_pointer" -> Some reject_raw_or_mut_pointer
+  | "reject_early_exit" -> Some reject_early_exit
+  | "reject_as_pattern" -> Some reject_as_pattern
+  | "reject_dyn" -> Some reject_dyn
+  | "reject_trait_item_default" -> Some reject_trait_item_default
+  | "reject_unsafe" -> Some reject_unsafe
+  | "hoist_side_effects" -> Some hoist_side_effects
+  | _ -> None
+
+let phases : string list =
+  [
+    "and_mut_defsite";
+    "bundle_cycles";
+    "cf_into_monads";
+    "direct_and_mut";
+    "drop_blocks";
+    "drop_match_guards";
+    "drop_references";
+    "drop_return_break_continue";
+    "drop_sized_trait";
+    "functionalize_loops";
+    "hoist_disjunctive_patterns";
+    "local_mutation";
+    "newtype_as_refinement";
+    "reconstruct_asserts";
+    "reconstruct_for_index_loops";
+    "reconstruct_for_loops";
+    "reconstruct_question_marks";
+    "reconstruct_while_loops";
+    "reorder_fields";
+    "rewrite_control_flow";
+    "rewrite_local_self";
+    "simplify_hoisting";
+    "simplify_match_return";
+    "simplify_question_marks";
+    "sort_items";
+    "specialize";
+    "traits_specs";
+    "transform_hax_lib_inline";
+    "trivialize_assign_lhs";
+    "reject_arbitrary_lhs";
+    "reject_continue";
+    "reject_question_mark";
+    "reject_raw_or_mut_pointer";
+    "reject_early_exit";
+    "reject_as_pattern";
+    "reject_dyn";
+    "reject_trait_item_default";
+    "reject_unsafe";
+    "hoist_side_effects";
+  ]
 
 (*
 and_mut_defsite, bundle_cycles, cf_into_monads, direct_and_mut, drop_blocks, drop_match_guards, drop_references, drop_return_break_continue, drop_sized_trait, functionalize_loops, hoist_disjunctive_patterns, local_mutation, newtype_as_refinement, reconstruct_asserts, reconstruct_for_index_loops, reconstruct_for_loops, reconstruct_question_marks, reconstruct_while_loops, reorder_fields, rewrite_control_flow, rewrite_local_self, simplify_hoisting, simplify_match_return, simplify_question_marks, sort_items, specialize, traits_specs, transform_hax_lib_inline, trivialize_assign_lhs, reject_arbitrary_lhs, reject_continue, reject_question_mark, reject_raw_or_mut_pointer, reject_early_exit, reject_as_pattern, reject_dyn, reject_trait_item_default, reject_unsafe, hoist_side_effects
 *)
-
