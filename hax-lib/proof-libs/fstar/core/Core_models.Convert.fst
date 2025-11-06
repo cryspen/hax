@@ -84,20 +84,20 @@ instance integer_try_into_u32_usize : t_TryInto u32 usize = {
 }
 
 instance integer_try_into_u32_u16: t_TryInto u32 u16 = {
-  f_Error = Core.Num.Error.t_TryFromIntError;
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
   f_try_into = (fun (x: u32) ->
     if range (v #U32 x) U16
-    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #U32 #U16 x)
-    else Core.Result.Result_Err ()
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #U32 #U16 x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
   )
 }
 
 instance integer_try_into_u64_u32: t_TryInto u64 u32 = {
-  f_Error = Core.Num.Error.t_TryFromIntError;
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
   f_try_into = (fun (x: u64) ->
     if range (v #U64 x) U32
-    then Core.Result.Result_Ok (Rust_primitives.Integers.cast #U64 #U32 x)
-    else Core.Result.Result_Err ()
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #U64 #U32 x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
   )
 }
 
