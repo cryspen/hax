@@ -119,6 +119,68 @@ val impl_u16__from_be_bytes: t_Array u8 (sz 2) -> u16
 val impl_u8__from_be_bytes: t_Array u8 (sz 1) -> u8
 val impl_usize__from_be_bytes: t_Array u8 (sz 8) -> usize
 
+val impl_u8__trailing_zeros: u8 -> shiftval U8 U32
+val impl_u16__trailing_zeros: u16 -> shiftval U16 U32
+val impl_u32__trailing_zeros: u32 -> shiftval U32 U32
+val impl_u64__trailing_zeros: u64 -> shiftval U64 U32
+val impl_u128__trailing_zeros: u128 -> shiftval U128 U32
+val impl_usize__trailing_zeros: usize -> shiftval USIZE U32
+
+val shift_right_trailing_zeros_nonzero_lemma_u8 (a:u8) :
+    Lemma (requires (v a <> 0))
+          (ensures (v (shift_right a (impl_u8__trailing_zeros a)) <> 0))
+          [SMTPat (shift_right a (impl_u8__trailing_zeros a))]
+
+val shift_right_trailing_zeros_nonzero_lemma_u16 (a:u16) :
+    Lemma (requires (v a <> 0))
+          (ensures (v (shift_right a (impl_u16__trailing_zeros a)) <> 0))
+          [SMTPat (shift_right a (impl_u16__trailing_zeros a))]
+
+val shift_right_trailing_zeros_nonzero_lemma_u32 (a:u32) :
+    Lemma (requires (v a <> 0))
+          (ensures (v (shift_right a (impl_u32__trailing_zeros a)) <> 0))
+          [SMTPat (shift_right a (impl_u32__trailing_zeros a))]
+
+val shift_right_trailing_zeros_nonzero_lemma_u64 (a:u64) :
+    Lemma (requires (v a <> 0))
+          (ensures (v (shift_right a (impl_u64__trailing_zeros a)) <> 0))
+          [SMTPat (shift_right a (impl_u64__trailing_zeros a))]
+
+val shift_right_trailing_zeros_nonzero_lemma_u128 (a:u128) :
+    Lemma (requires (v a <> 0))
+          (ensures (v (shift_right a (impl_u128__trailing_zeros a)) <> 0))
+          [SMTPat (shift_right a (impl_u128__trailing_zeros a))]
+
+val shift_right_trailing_zeros_nonzero_lemma_usize (a:usize) :
+    Lemma (requires (v a <> 0))
+          (ensures (v (shift_right a (impl_usize__trailing_zeros a)) <> 0))
+          [SMTPat (shift_right a (impl_usize__trailing_zeros a))]
+
+val shift_right_trailing_zeros_le_lemma_u8 (a:u8) :
+    Lemma (v (shift_right a (impl_u8__trailing_zeros a)) <= v a)
+          [SMTPat (shift_right a (impl_u8__trailing_zeros a))]
+
+val shift_right_trailing_zeros_le_lemma_u16 (a:u16) :
+    Lemma (v (shift_right a (impl_u16__trailing_zeros a)) <= v a)
+          [SMTPat (shift_right a (impl_u16__trailing_zeros a))]
+
+val shift_right_trailing_zeros_le_lemma_u32 (a:u32) :
+    Lemma (v (shift_right a (impl_u32__trailing_zeros a)) <= v a)
+          [SMTPat (shift_right a (impl_u32__trailing_zeros a))]
+
+val shift_right_trailing_zeros_le_lemma_u64 (a:u64) :
+    Lemma (v (shift_right a (impl_u64__trailing_zeros a)) <= v a)
+          [SMTPat (shift_right a (impl_u64__trailing_zeros a))]
+
+val shift_right_trailing_zeros_le_lemma_u128 (a:u128) :
+    Lemma (v (shift_right a (impl_u128__trailing_zeros a)) <= v a)
+          [SMTPat (shift_right a (impl_u128__trailing_zeros a))]
+
+val shift_right_trailing_zeros_le_lemma_usize (a:usize) :
+    Lemma (v (shift_right a (impl_usize__trailing_zeros a)) <= v a)
+          [SMTPat (shift_right a (impl_usize__trailing_zeros a))]
+
+
 let impl_i8__abs (a:i8{minint i8_inttype < v a}) : i8 = abs_int a
 let impl_i16__abs (a:i16{minint i16_inttype < v a}) : i16 = abs_int a
 let impl_i32__abs (a:i32{minint i32_inttype < v a}) : i32 = abs_int a

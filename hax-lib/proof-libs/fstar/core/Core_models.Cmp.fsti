@@ -6,7 +6,15 @@ class min_tc t = {
 }
 
 instance min_inttype (#t:inttype): min_tc (int_t t) = {
-  min = fun a b -> if a <. b then a else b
+  min = fun a b -> if b <. a then b else a
+}
+
+class max_tc t = {
+  max: t -> t -> t
+}
+
+instance max_inttype (#t:inttype): max_tc (int_t t) = {
+  max = fun a b -> if b <. a then a else b
 }
 
 class t_PartialEq (v_Self: Type) (v_Rhs: Type) = {
