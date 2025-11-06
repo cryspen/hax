@@ -68,8 +68,8 @@ let impl_usize__checked_sub (x: usize) (y: usize): Core_models.Option.t_Option u
 let impl_usize__checked_add (x: usize) (y: usize): Core_models.Option.t_Option usize =
   if range (v x + v y) USIZE then Core_models.Option.Option_Some (x +! y) else Core_models.Option.Option_None
 
-let impl_u32__checked_add (x: u32) (y: u32): Core.Option.t_Option u32 =
-  if range (v x + v y) U32 then Core.Option.Option_Some (x +! y) else Core.Option.Option_None
+let impl_u32__checked_add (x: u32) (y: u32): Core_models.Option.t_Option u32 =
+  if range (v x + v y) U32 then Core_models.Option.Option_Some (x +! y) else Core_models.Option.Option_None
 
 let impl_u8__wrapping_sub: u8 -> u8 -> u8 = sub_mod
 let impl_u16__wrapping_sub: u16 -> u16 ->  u16 = sub_mod
