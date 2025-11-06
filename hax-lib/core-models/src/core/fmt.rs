@@ -14,10 +14,26 @@ pub trait Debug {
     fn dbg_fmt(&self, f: &mut Formatter) -> Result;
 }
 
-pub struct Arguments;
+pub struct Arguments<'a>(&'a ());
 
 impl<T> Debug for T {
     fn dbg_fmt(&self, f: &mut Formatter) -> Result {
+        Result::Ok(())
+    }
+}
+
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {}
+impl<'a> Arguments<'a> {
+    fn write_fmt(f: &mut Formatter, args: Arguments) -> Result {
         Result::Ok(())
     }
 }
@@ -43,24 +59,30 @@ open Rust_primitives.Integers"
     }
 
     impl Argument<'_> {
+        #[hax_lib::opaque]
         fn new_display<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
+        #[hax_lib::opaque]
         fn new_debug<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
     }
-    impl Argument<'_> {
+    impl<'a> Argument<'a> {
+        #[hax_lib::opaque]
         fn new_binary<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
+        #[hax_lib::opaque]
         fn new_lower_hex<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
-        fn new_const<T, U>(x: &T, y: &U) -> super::Arguments {
+        #[hax_lib::opaque]
+        fn new_const<T, U>(x: &T, y: &U) -> super::Arguments<'a> {
             crate::panicking::internal::panic()
         }
-        fn new_v1<T, U, V, W>(x: &T, y: &U, z: &V, t: &W) -> super::Arguments {
+        #[hax_lib::opaque]
+        fn new_v1<T, U, V, W>(x: &T, y: &U, z: &V, t: &W) -> super::Arguments<'a> {
             crate::panicking::internal::panic()
         }
         fn none() -> [Self; 0] {
@@ -73,6 +95,7 @@ open Rust_primitives.Integers"
     impl Argument<'_> {}
 
     impl<'a> Argument<'a> {
+        #[hax_lib::opaque]
         fn new_v1_formatted<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }

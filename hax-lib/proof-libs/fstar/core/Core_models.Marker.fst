@@ -31,3 +31,5 @@ let impl_3
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
     : t_Copy v_T = { _super_i0 = FStar.Tactics.Typeclasses.solve }
+
+type t_PhantomData = | PhantomData : t_PhantomData
