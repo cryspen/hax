@@ -915,12 +915,6 @@ pub enum ExprKind {
         inner: Expr,
     },
 
-    /// A dereference
-    ///
-    /// # Example:
-    /// `*x`
-    Deref(Expr),
-
     /// A `let` expression used in expressions.
     ///
     /// # Example:
@@ -997,6 +991,9 @@ pub enum ExprKind {
         value: Expr,
         /// What loop shall we break? By default, the parent enclosing loop.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Return from a function.
@@ -1015,6 +1012,9 @@ pub enum ExprKind {
     Continue {
         /// The loop we continue.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Closure (anonymous function)
@@ -1345,6 +1345,9 @@ pub enum ItemKind {
         /// # Example:
         /// `type Assoc;`, `fn m ...;`
         items: Vec<TraitItem>,
+
+        /// Safe or unsafe
+        safety: SafetyKind,
     },
 
     /// A trait implementation.

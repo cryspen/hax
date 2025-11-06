@@ -139,7 +139,43 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
-        vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
+        use crate::phase::legacy::*;
+        vec![
+            reject_raw_or_mut_pointer(),
+            rewrite_local_self(),
+            transform_hax_lib_inline(),
+            specialize(),
+            drop_sized_trait(),
+            simplify_question_marks(),
+            and_mut_defsite(),
+            reconstruct_asserts(),
+            reconstruct_for_loops(),
+            reconstruct_while_loops(),
+            direct_and_mut(),
+            reject_arbitrary_lhs(),
+            drop_blocks(),
+            drop_match_guards(),
+            drop_references(),
+            trivialize_assign_lhs(),
+            hoist_side_effects(),
+            hoist_disjunctive_patterns(),
+            simplify_match_return(),
+            local_mutation(),
+            rewrite_control_flow(),
+            drop_return_break_continue(),
+            functionalize_loops(),
+            reject_question_mark(),
+            reject_as_pattern(),
+            traits_specs(),
+            simplify_hoisting(),
+            newtype_as_refinement(),
+            reject_trait_item_default(),
+            bundle_cycles(),
+            reorder_fields(),
+            sort_items(),
+            Box::new(RejectNotDoLeanDSL),
+            Box::new(ExplicitMonadic),
+        ]
     }
 }
 
@@ -598,7 +634,7 @@ set_option linter.unusedVariables false
                 ]
                 .group(),
 
-                ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
+                ExprKind::Borrow { .. } => {
                     unreachable_by_invariant!(Drop_references)
                 }
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
@@ -932,6 +968,7 @@ set_option linter.unusedVariables false
                     name,
                     generics,
                     items,
+                    safety: _,
                 } => {
                     // Type parameters are also parameters of the class, but constraints are fields of the class
                     docs![

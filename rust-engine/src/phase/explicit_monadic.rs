@@ -183,8 +183,7 @@ impl ExplicitMonadicVisitor {
             }
             ExprKind::Assign { value: inner, .. }
             | ExprKind::Borrow { inner, .. }
-            | ExprKind::AddressOf { inner, .. }
-            | ExprKind::Deref(inner) => {
+            | ExprKind::AddressOf { inner, .. } => {
                 self.visit_expr_coerce(MonadicStatus::Value, inner);
                 Some(MonadicStatus::Value)
             }
