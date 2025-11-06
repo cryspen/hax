@@ -47,6 +47,70 @@ impl From<FnDecorationKind> for AssociationRole {
     }
 }
 
+use syn::{Path, PathArguments};
+
+/// Returns `Some(Vec<String>)` if the path has only plain identifiers
+/// (no turbofish, no paren segments). Leading `::` is allowed.
+pub fn simple_path_idents(path: &Path) -> Option<Vec<String>> {
+    path.segments
+        .iter()
+        .map(|seg| match &seg.arguments {
+            PathArguments::None => Some(seg.ident.to_string()),
+            _ => None, // reject generic or parenthesized args
+        })
+        .collect()
+}
+
+use syn::{Attribute, Item};
+
+/// Returns a mutable reference to the item's `attrs` if that item kind carries attributes.
+pub fn item_attrs_mut(item: &mut Item) -> Option<&mut Vec<Attribute>> {
+    match item {
+        Item::Const(i) => Some(&mut i.attrs),
+        Item::Enum(i) => Some(&mut i.attrs),
+        Item::ExternCrate(i) => Some(&mut i.attrs),
+        Item::Fn(i) => Some(&mut i.attrs),
+        Item::ForeignMod(i) => Some(&mut i.attrs),
+        Item::Impl(i) => Some(&mut i.attrs),
+        Item::Macro(i) => Some(&mut i.attrs),
+        Item::Mod(i) => Some(&mut i.attrs),
+        Item::Static(i) => Some(&mut i.attrs),
+        Item::Struct(i) => Some(&mut i.attrs),
+        Item::Trait(i) => Some(&mut i.attrs),
+        Item::TraitAlias(i) => Some(&mut i.attrs),
+        Item::Type(i) => Some(&mut i.attrs),
+        Item::Union(i) => Some(&mut i.attrs),
+        Item::Use(i) => Some(&mut i.attrs),
+        Item::Verbatim(_) => None, // no attrs field exposed here
+        // forward-compat fallback in case new variants appear:
+        _ => None,
+    }
+}
+
+/// Returns a mutable reference to the item's `attrs` if that item kind carries attributes.
+pub fn impl_item_attrs_mut(item: &mut ImplItem) -> Option<&mut Vec<Attribute>> {
+    match item {
+        ImplItem::Const(impl_item_const) => Some(&mut impl_item_const.attrs),
+        ImplItem::Fn(impl_item_fn) => Some(&mut impl_item_fn.attrs),
+        ImplItem::Type(impl_item_type) => Some(&mut impl_item_type.attrs),
+        ImplItem::Macro(impl_item_macro) => Some(&mut impl_item_macro.attrs),
+        ImplItem::Verbatim(_) => None,
+        _ => None,
+    }
+}
+
+/// Returns a mutable reference to the item's `attrs` if that item kind carries attributes.
+pub fn impl_item_generics_mut(item: &mut ImplItem) -> Option<&mut Generics> {
+    match item {
+        ImplItem::Const(impl_item_const) => Some(&mut impl_item_const.generics),
+        ImplItem::Fn(impl_item_fn) => Some(&mut impl_item_fn.sig.generics),
+        ImplItem::Type(impl_item_type) => Some(&mut impl_item_type.generics),
+        ImplItem::Macro(impl_item_macro) => None,
+        ImplItem::Verbatim(token_stream) => None,
+        _ => None,
+    }
+}
+
 /// Merge two `syn::Generics`, respecting lifetime orders
 pub(crate) fn merge_generics(x: Generics, y: Generics) -> Generics {
     Generics {
@@ -183,7 +247,10 @@ impl VisitMut for RewriteFuture {
                     *e = parse_quote! {#arg};
                     return;
                 }
-                Some(format!("Cannot find an input `{arg}` of type `&mut _`. In the context, `future` can be called on the following inputs: {:?}.", self.0))
+                Some(format!(
+                    "Cannot find an input `{arg}` of type `&mut _`. In the context, `future` can be called on the following inputs: {:?}.",
+                    self.0
+                ))
             }
             Some(Err(error_kind)) => {
                 let message = match error_kind {
@@ -232,7 +299,7 @@ pub fn make_fn_decoration(
     mut phi: Expr,
     mut signature: Signature,
     kind: FnDecorationKind,
-    mut generics: Option<Generics>,
+    mut generics: Generics,
     self_type: Option<Type>,
 ) -> (TokenStream, AttrPayload) {
     let self_ident: Ident = {
@@ -245,9 +312,8 @@ pub fn make_fn_decoration(
         let mut rewriter = RewriteSelf::new(self_ident, self_type);
         rewriter.visit_expr_mut(&mut phi);
         rewriter.visit_signature_mut(&mut signature);
-        if let Some(generics) = generics.as_mut() {
-            rewriter.visit_generics_mut(generics);
-        }
+        rewriter.visit_generics_mut(&mut generics);
+
         rewriter.get_error()
     };
     let uid = ItemUid::fresh();
@@ -295,9 +361,7 @@ pub fn make_fn_decoration(
                 sig.inputs
                     .push(syn::parse_quote! {(#(#pats),*): (#(#tys),*)});
             }
-            if let Some(generics) = generics {
-                sig.generics = merge_generics(generics, sig.generics);
-            }
+            sig.generics = merge_generics(generics, sig.generics);
             sig.output = match &kind {
                 FnDecorationKind::Decreases | FnDecorationKind::SMTPat => {
                     syn::parse_quote! { -> () }
@@ -344,4 +408,35 @@ pub fn make_fn_decoration(
         item: uid,
     };
     (quote! {#error #decoration}, assoc_attr)
+}
+
+pub trait RetainMapExt<T> {
+    /// Applies `f` to each element, removing those for which `f` returns `Some(_)`
+    /// and returning the collected mapped results.
+    ///
+    /// Elements for which `f` returns `None` are kept in the original vector.
+    fn retain_map<U, F>(&mut self, f: F) -> Vec<U>
+    where
+        F: FnMut(&T) -> Option<U>;
+}
+
+impl<T> RetainMapExt<T> for Vec<T> {
+    fn retain_map<U, F>(&mut self, mut f: F) -> Vec<U>
+    where
+        F: FnMut(&T) -> Option<U>,
+    {
+        let mut out = Vec::new();
+        let mut keep = Vec::with_capacity(self.len());
+
+        for t in self.drain(..) {
+            if let Some(u) = f(&t) {
+                out.push(u);
+            } else {
+                keep.push(t);
+            }
+        }
+
+        *self = keep;
+        out
+    }
 }
