@@ -313,6 +313,8 @@ struct
             UB.make_closure [ bpat ] invariant invariant.span
           in
           let variant = UB.make_closure [ bpat ] variant variant.span in
+          (* The invariant should come before the condition. This allows to use the invariant
+             to prove panic freedom of the condition. *)
           UB.call fold_operator
             [ invariant; condition; variant; init; body ]
             span (dty span expr.typ)
