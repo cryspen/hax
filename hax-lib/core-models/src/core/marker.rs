@@ -9,3 +9,5 @@ impl<T> Send for T {}
 impl<T> Sync for T {}
 impl<T> Sized for T {}
 impl<T: Clone> Copy for T {}
+
+struct PhantomData;

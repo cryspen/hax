@@ -29,7 +29,7 @@ class t_Debug (v_Self: Type0) = {
         (fun result -> f_dbg_fmt_post x0 x1 result)
 }
 
-type t_Arguments = | Arguments : t_Arguments
+type t_Arguments = | Arguments : Prims.unit -> t_Arguments
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl (#v_T: Type0) : t_Debug v_T =
@@ -53,3 +53,12 @@ let impl (#v_T: Type0) : t_Debug v_T =
       in
       f, hax_temp_output <: (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
   }
+
+let impl_11__write_fmt (f: t_Formatter) (args: t_Arguments)
+    : (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error) =
+  let hax_temp_output:Core_models.Result.t_Result Prims.unit t_Error =
+    Core_models.Result.Result_Ok (() <: Prims.unit)
+    <:
+    Core_models.Result.t_Result Prims.unit t_Error
+  in
+  f, hax_temp_output <: (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
