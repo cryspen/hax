@@ -149,7 +149,7 @@ module FromRustAST = struct
       ({ krate; path; parent; kind; _ } : A.def_id) : B.def_id_contents =
     let f (o : A.def_id) : B.def_id =
       let contents : B.node_for__def_id_contents =
-        { value = def_id_contents_to_rust_ast o; id = Int64.of_int (-1) }
+        { value = def_id_contents_to_rust_ast o; id = Int64.zero }
       in
       { contents }
     in
@@ -159,7 +159,7 @@ module FromRustAST = struct
       path;
       parent;
       kind;
-      index = (Int64.of_int (-1), Int64.of_int (-1), None);
+      index = (Int64.zero, Int64.zero, None);
       is_local = false;
     }
 
