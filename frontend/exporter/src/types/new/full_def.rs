@@ -58,6 +58,42 @@ where
     let diagnostic_item;
     let kind;
     match def_id.promoted_id() {
+        _ if let Some(builtin) = def_id.as_fake_builtin_type(s) => {
+            let adt_kind = match builtin {
+                BuiltinType::Array => AdtKind::Array,
+                BuiltinType::Slice => AdtKind::Slice,
+                BuiltinType::Tuple(..) => AdtKind::Tuple,
+            };
+            let param_env = get_param_env(s, args);
+            let drop_impl = {
+                let drop_trait = tcx.lang_items().drop_trait().unwrap();
+                let type_of_self = inst_binder(tcx, s.typing_env(), args, tcx.type_of(rust_def_id));
+                virtual_impl_for(s, ty::TraitRef::new(tcx, drop_trait, [type_of_self]))
+            };
+            kind = FullDefKind::Adt {
+                param_env,
+                adt_kind,
+                variants: [].into_iter().collect(),
+                flags: AdtFlags::AdtFlags {
+                    todo: String::new(),
+                },
+                repr: ReprOptions {
+                    int_specified: false,
+                    typ: Ty::new(s, TyKind::Int(IntTy::Isize)),
+                    align: None,
+                    pack: None,
+                    flags: Default::default(),
+                },
+                drop_glue: get_drop_glue_shim(s, args),
+                drop_impl,
+            };
+
+            source_span = None;
+            attributes = Default::default();
+            visibility = Default::default();
+            lang_item = Default::default();
+            diagnostic_item = Default::default();
+        }
         None => {
             kind = translate_full_def_kind(s, rust_def_id, args);
 
@@ -73,7 +109,6 @@ where
                 .sinto(s);
             diagnostic_item = tcx.get_diagnostic_name(rust_def_id).sinto(s);
         }
-
         Some(promoted_id) => {
             let parent_def = def_id
                 .parent
@@ -144,12 +179,26 @@ impl DefId {
     /// referring to the item.
     pub fn def_span<'tcx>(&self, s: &impl BaseState<'tcx>) -> Span {
         use DefKind::*;
-        match &self.kind {
-            // These kinds cause `def_span` to panic.
-            ForeignMod => rustc_span::DUMMY_SP,
-            _ => s.base().tcx.def_span(self.underlying_rust_def_id()),
+        let tcx = s.base().tcx;
+        let def_id = self.underlying_rust_def_id();
+        if let ForeignMod = &self.kind {
+            // These kind causes `def_span` to panic.
+            rustc_span::DUMMY_SP
+        } else if let Some(ldid) = def_id.as_local()
+            && let hir_id = tcx.local_def_id_to_hir_id(ldid)
+            && matches!(tcx.hir_node(hir_id), rustc_hir::Node::Synthetic)
+        {
+            // Synthetic items (those we create ourselves) make `def_span` panic.
+            rustc_span::DUMMY_SP
+        } else {
+            tcx.def_span(def_id)
         }
         .sinto(s)
+    }
+
+    pub fn as_fake_builtin_type<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<BuiltinType> {
+        let def_id = self.underlying_rust_def_id();
+        s.with_global_cache(|c| c.reverse_builtin_map.get(&def_id).copied())
     }
 
     /// Get the full definition of this item.
