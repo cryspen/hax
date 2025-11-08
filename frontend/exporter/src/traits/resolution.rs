@@ -3,7 +3,7 @@
 //! state-tracking machinery.
 
 use hax_frontend_exporter_options::BoundsOptions;
-use itertools::Itertools;
+use itertools::{Either, Itertools};
 use std::collections::{HashMap, hash_map::Entry};
 
 use rustc_hir::def::DefKind;
@@ -520,86 +520,75 @@ impl<'tcx> PredicateSearcher<'tcx> {
                         Some((assoc.def_id, ty, impl_exprs))
                     })
                     .collect();
-                ImplExprAtom::Builtin {
-                    trait_data: BuiltinTraitData::Other,
-                    impl_exprs,
-                    types,
-                }
-            }
-            // Resolve `Destruct` trait impls by adding virtual impls when a real one can't be found.
-            Err(CodegenObligationError::Unimplemented)
-                if erased_tref.skip_binder().def_id == destruct_trait =>
-            {
-                let ty = erased_tref.skip_binder().args[0].as_type().unwrap();
-                // Source of truth are `ty::needs_drop_components` and `tcx.needs_drop_raw`.
-                let destruct_data = match ty.kind() {
-                    // TODO: Does `UnsafeBinder` drop its contents?
-                    ty::Bool
-                    | ty::Char
-                    | ty::Int(..)
-                    | ty::Uint(..)
-                    | ty::Float(..)
-                    | ty::Foreign(..)
-                    | ty::Str
-                    | ty::RawPtr(..)
-                    | ty::Ref(..)
-                    | ty::FnDef(..)
-                    | ty::FnPtr(..)
-                    | ty::UnsafeBinder(..)
-                    | ty::Never => Ok(DestructData::Noop),
-                    ty::Tuple(tys) if tys.is_empty() => Ok(DestructData::Noop),
-                    ty::Array(..)
-                    | ty::Pat(..)
-                    | ty::Slice(..)
-                    | ty::Tuple(..)
-                    | ty::Adt(..)
-                    | ty::Closure(..)
-                    | ty::Coroutine(..)
-                    | ty::CoroutineClosure(..)
-                    | ty::CoroutineWitness(..) => Ok(DestructData::Glue { ty }),
-                    // Every `dyn` has a `drop_in_place` in its vtable, ergo we pretend that every
-                    // `dyn` has `Destruct` in its list of traits.
-                    ty::Dynamic(..) => Err(ImplExprAtom::Dyn),
-                    ty::Param(..) | ty::Alias(..) | ty::Bound(..) => {
-                        if self.options.resolve_destruct {
-                            // We've added `Destruct` impls on everything, we should be able to resolve
-                            // it.
-                            match self.resolve_local(erased_tref.upcast(self.tcx), warn)? {
-                                Some(candidate) => Err(candidate.into_impl_expr(tcx)),
-                                None => {
-                                    let msg = format!(
-                                        "Cannot find virtual `Destruct` clause: `{tref:?}`"
-                                    );
-                                    return error(msg);
-                                }
-                            }
-                        } else {
-                            Ok(DestructData::Implicit)
-                        }
-                    }
 
-                    ty::Placeholder(..) | ty::Infer(..) | ty::Error(..) => {
-                        let msg = format!(
-                            "Cannot resolve clause `{tref:?}` \
-                                because of a type error"
-                        );
-                        return error(msg);
-                    }
-                };
-                match destruct_data {
-                    Ok(destruct_data) => {
-                        let impl_exprs = self.resolve_item_implied_predicates(
-                            trait_def_id,
-                            erased_tref.skip_binder().args,
-                            warn,
-                        )?;
-                        ImplExprAtom::Builtin {
-                            trait_data: BuiltinTraitData::Destruct(destruct_data),
-                            impl_exprs,
-                            types: vec![],
+                let trait_data = if erased_tref.skip_binder().def_id == destruct_trait {
+                    let ty = erased_tref.skip_binder().args[0].as_type().unwrap();
+                    // Source of truth are `ty::needs_drop_components` and `tcx.needs_drop_raw`.
+                    let destruct_data = match ty.kind() {
+                        // TODO: Does `UnsafeBinder` drop its contents?
+                        ty::Bool
+                        | ty::Char
+                        | ty::Int(..)
+                        | ty::Uint(..)
+                        | ty::Float(..)
+                        | ty::Foreign(..)
+                        | ty::Str
+                        | ty::RawPtr(..)
+                        | ty::Ref(..)
+                        | ty::FnDef(..)
+                        | ty::FnPtr(..)
+                        | ty::UnsafeBinder(..)
+                        | ty::Never => Either::Left(DestructData::Noop),
+                        ty::Tuple(tys) if tys.is_empty() => Either::Left(DestructData::Noop),
+                        ty::Array(..)
+                        | ty::Pat(..)
+                        | ty::Slice(..)
+                        | ty::Tuple(..)
+                        | ty::Adt(..)
+                        | ty::Closure(..)
+                        | ty::Coroutine(..)
+                        | ty::CoroutineClosure(..)
+                        | ty::CoroutineWitness(..) => Either::Left(DestructData::Glue { ty }),
+                        // Every `dyn` has a `drop_in_place` in its vtable, ergo we pretend that every
+                        // `dyn` has `Destruct` in its list of traits.
+                        ty::Dynamic(..) => Either::Right(ImplExprAtom::Dyn),
+                        ty::Param(..) | ty::Alias(..) | ty::Bound(..) => {
+                            if self.options.resolve_destruct {
+                                // We've added `Destruct` impls on everything, we should be able to resolve
+                                // it.
+                                match self.resolve_local(erased_tref.upcast(self.tcx), warn)? {
+                                    Some(candidate) => Either::Right(candidate.into_impl_expr(tcx)),
+                                    None => {
+                                        let msg = format!(
+                                            "Cannot find virtual `Destruct` clause: `{tref:?}`"
+                                        );
+                                        return error(msg);
+                                    }
+                                }
+                            } else {
+                                Either::Left(DestructData::Implicit)
+                            }
                         }
-                    }
-                    Err(atom) => atom,
+
+                        ty::Placeholder(..) | ty::Infer(..) | ty::Error(..) => {
+                            let msg = format!(
+                                "Cannot resolve clause `{tref:?}` \
+                                because of a type error"
+                            );
+                            return error(msg);
+                        }
+                    };
+                    destruct_data.map_left(BuiltinTraitData::Destruct)
+                } else {
+                    Either::Left(BuiltinTraitData::Other)
+                };
+                match trait_data {
+                    Either::Left(trait_data) => ImplExprAtom::Builtin {
+                        trait_data,
+                        impl_exprs,
+                        types,
+                    },
+                    Either::Right(atom) => atom,
                 }
             }
             Err(e) => {
