@@ -573,6 +573,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
                             impl_exprs: vec![resolve_drop(*inner_ty)?],
                         })
                     }
+                    ty::Tuple(tys) if tys.is_empty() => Ok(DropData::Noop),
                     ty::Tuple(tys) => Ok(DropData::Glue {
                         ty,
                         impl_exprs: tys.iter().map(resolve_drop).try_collect()?,
