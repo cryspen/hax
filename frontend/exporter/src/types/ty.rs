@@ -909,7 +909,7 @@ pub struct GenericParamDef {
         let parent = tcx.parent(self.def_id);
         match tcx.def_kind(parent) {
             Fn | AssocFn | Enum | Struct | Union | Ctor(..) | OpaqueTy => {
-                Some(tcx.variances_of(parent)[self.index as usize].sinto(s))
+                tcx.variances_of(parent).get(self.index as usize).sinto(s)
             }
             _ => None
         }
@@ -1142,9 +1142,28 @@ pub enum TyKind {
     Adt(ItemRef),
     #[custom_arm(FROM_TYPE::Foreign(def_id) => TO_TYPE::Foreign(translate_item_ref(s, *def_id, Default::default())),)]
     Foreign(ItemRef),
+    /// The `ItemRef` uses the fake `Array` def_id.
+    #[custom_arm(FROM_TYPE::Array(ty, len) => TO_TYPE::Array({
+        let def_id = s.with_global_cache(|c| c.get_builtin_def_id(s, BuiltinType::Array));
+        let args = s.base().tcx.mk_args(&[(*ty).into(), (*len).into()]);
+        ItemRef::translate(s, def_id, args)
+    }),)]
+    Array(ItemRef),
+    /// The `ItemRef` uses the fake `Slice` def_id.
+    #[custom_arm(FROM_TYPE::Slice(ty) => TO_TYPE::Slice({
+        let def_id = s.with_global_cache(|c| c.get_builtin_def_id(s, BuiltinType::Slice));
+        let args = s.base().tcx.mk_args(&[(*ty).into()]);
+        ItemRef::translate(s, def_id, args)
+    }),)]
+    Slice(ItemRef),
+    /// The `ItemRef` uses the fake `Tuple` def_id.
+    #[custom_arm(FROM_TYPE::Tuple(tys) => TO_TYPE::Tuple({
+        let def_id = s.with_global_cache(|c| c.get_builtin_def_id(s, BuiltinType::Tuple(tys.len())));
+        let args = s.base().tcx.mk_args_from_iter(tys.into_iter().map(ty::GenericArg::from));
+        ItemRef::translate(s, def_id, args)
+    }),)]
+    Tuple(ItemRef),
     Str,
-    Array(Box<Ty>, #[map(Box::new(x.sinto(s)))] Box<ConstantExpr>),
-    Slice(Box<Ty>),
     RawPtr(Box<Ty>, Mutability),
     Ref(Region, Box<Ty>, Mutability),
     #[custom_arm(FROM_TYPE::Dynamic(preds, region, _) => make_dyn(s, preds, region),)]
@@ -1159,7 +1178,6 @@ pub enum TyKind {
     #[custom_arm(FROM_TYPE::Coroutine(def_id, generics) => TO_TYPE::Coroutine(translate_item_ref(s, *def_id, generics)),)]
     Coroutine(ItemRef),
     Never,
-    Tuple(Vec<Ty>),
     #[custom_arm(FROM_TYPE::Alias(alias_kind, alias_ty) => Alias::from(s, alias_kind, alias_ty),)]
     Alias(Alias),
     Param(ParamTy),
@@ -1277,12 +1295,28 @@ pub struct CanonicalUserTypeAnnotation {
 
 /// Reflects [`ty::AdtKind`]
 #[derive_group(Serializers)]
-#[derive(AdtInto, Copy, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::AdtKind, state: S as _s)]
+#[derive(Copy, Clone, Debug, JsonSchema)]
 pub enum AdtKind {
     Struct,
     Union,
     Enum,
+    /// We sometimes pretend arrays are an ADT and generate a `FullDef` for them.
+    Array,
+    /// We sometimes pretend slices are an ADT and generate a `FullDef` for them.
+    Slice,
+    /// We sometimes pretend tuples are an ADT and generate a `FullDef` for them.
+    Tuple,
+}
+
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, AdtKind> for ty::AdtKind {
+    fn sinto(&self, _s: &S) -> AdtKind {
+        match self {
+            ty::AdtKind::Struct => AdtKind::Struct,
+            ty::AdtKind::Union => AdtKind::Union,
+            ty::AdtKind::Enum => AdtKind::Enum,
+        }
+    }
 }
 
 sinto_todo!(rustc_middle::ty, AdtFlags);
@@ -1309,7 +1343,7 @@ pub struct ReprOptions {
 
 /// The representation flags without the ones irrelevant outside of rustc.
 #[derive_group(Serializers)]
-#[derive(Clone, Debug, JsonSchema)]
+#[derive(Default, Clone, Debug, JsonSchema)]
 pub struct ReprFlags {
     pub is_c: bool,
     pub is_transparent: bool,
