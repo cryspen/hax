@@ -51,8 +51,8 @@ pub fn predicates_defined_on(tcx: TyCtxt<'_>, def_id: DefId) -> Predicates<'_> {
     result
 }
 
-/// Add `T: Drop` bounds for every generic parameter of the given item.
-fn add_drop_bounds<'tcx>(
+/// Add `T: Destruct` bounds for every generic parameter of the given item.
+fn add_destruct_bounds<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: DefId,
     predicates: &mut Vec<(Clause<'tcx>, Span)>,
@@ -60,18 +60,18 @@ fn add_drop_bounds<'tcx>(
     let def_kind = tcx.def_kind(def_id);
     if matches!(def_kind, DefKind::Closure) {
         // Closures have fictitious weird type parameters in their `own_args` that we don't want to
-        // add `Drop` bounds for.
+        // add `Destruct` bounds for.
         return;
     }
-    // Add a `T: Drop` bound for every generic.
-    let drop_trait = tcx.lang_items().drop_trait().unwrap();
+    // Add a `T: Destruct` bound for every generic.
+    let destruct_trait = tcx.lang_items().destruct_trait().unwrap();
     let extra_bounds = tcx
         .generics_of(def_id)
         .own_params
         .iter()
         .filter(|param| matches!(param.kind, GenericParamDefKind::Type { .. }))
         .map(|param| tcx.mk_param_from_def(param))
-        .map(|ty| Binder::dummy(TraitRef::new(tcx, drop_trait, [ty])))
+        .map(|ty| Binder::dummy(TraitRef::new(tcx, destruct_trait, [ty])))
         .map(|tref| tref.upcast(tcx))
         .map(|clause| (clause, DUMMY_SP));
     predicates.extend(extra_bounds);
@@ -122,10 +122,10 @@ pub fn required_predicates<'tcx>(
         let self_clause = self_predicate(tcx, trait_def_id).upcast(tcx);
         predicates.to_mut().insert(0, (self_clause, DUMMY_SP));
     }
-    if options.resolve_drop && !matches!(def_kind, Trait | TraitAlias) {
-        // Add a `T: Drop` bound for every generic. For traits we consider these predicates implied
-        // instead of required.
-        add_drop_bounds(tcx, def_id, predicates.to_mut());
+    if options.resolve_destruct && !matches!(def_kind, Trait | TraitAlias) {
+        // Add a `T: Destruct` bound for every generic. For traits we consider these predicates
+        // implied instead of required.
+        add_destruct_bounds(tcx, def_id, predicates.to_mut());
     }
     if options.prune_sized {
         prune_sized_predicates(tcx, &mut predicates);
@@ -163,13 +163,13 @@ pub fn implied_predicates<'tcx>(
         // We consider all predicates on traits to be outputs
         Trait | TraitAlias => {
             let mut predicates = predicates_defined_on(tcx, def_id);
-            if options.resolve_drop {
+            if options.resolve_destruct {
                 // Add a `T: Drop` bound for every generic, unless the current trait is `Drop` itself, or a
                 // built-in marker trait that we know doesn't need the bound.
                 if !matches!(
                     tcx.as_lang_item(def_id),
                     Some(
-                        LangItem::Drop
+                        LangItem::Destruct
                             | LangItem::Sized
                             | LangItem::MetaSized
                             | LangItem::PointeeSized
@@ -178,7 +178,7 @@ pub fn implied_predicates<'tcx>(
                             | LangItem::Tuple
                     )
                 ) {
-                    add_drop_bounds(tcx, def_id, predicates.to_mut());
+                    add_destruct_bounds(tcx, def_id, predicates.to_mut());
                 }
             }
             predicates
@@ -186,12 +186,12 @@ pub fn implied_predicates<'tcx>(
         AssocTy if matches!(tcx.def_kind(parent.unwrap()), Trait) => {
             // `skip_binder` is for the GAT `EarlyBinder`
             let mut predicates = Cow::Borrowed(tcx.explicit_item_bounds(def_id).skip_binder());
-            if options.resolve_drop {
+            if options.resolve_destruct {
                 // Add a `Drop` bound to the assoc item.
-                let drop_trait = tcx.lang_items().drop_trait().unwrap();
+                let destruct_trait = tcx.lang_items().destruct_trait().unwrap();
                 let ty =
                     Ty::new_projection(tcx, def_id, GenericArgs::identity_for_item(tcx, def_id));
-                let tref = Binder::dummy(TraitRef::new(tcx, drop_trait, [ty]));
+                let tref = Binder::dummy(TraitRef::new(tcx, destruct_trait, [ty]));
                 predicates.to_mut().push((tref.upcast(tcx), DUMMY_SP));
             }
             predicates

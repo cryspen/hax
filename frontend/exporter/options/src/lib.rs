@@ -107,9 +107,9 @@ pub struct Options {
 
 #[derive(Debug, Clone, Copy)]
 pub struct BoundsOptions {
-    /// Add `T: Drop` bounds to every type generic, so that we can build `ImplExpr`s to know what
-    /// code is run on drop.
-    pub resolve_drop: bool,
+    /// Add `T: Destruct` bounds to every type generic, so that we can build `ImplExpr`s to know
+    /// what code is run on drop.
+    pub resolve_destruct: bool,
     /// Prune `T: Sized` and `T: MetaSized` predicates.
     pub prune_sized: bool,
 }

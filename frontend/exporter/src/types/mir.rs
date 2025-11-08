@@ -463,10 +463,10 @@ fn translate_terminator_kind_drop<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>
 
     let local_decls = &s.mir().local_decls;
     let place_ty = place.ty(local_decls, tcx).ty;
-    let drop_trait = tcx.lang_items().drop_trait().unwrap();
+    let destruct_trait = tcx.lang_items().destruct_trait().unwrap();
     let impl_expr = solve_trait(
         s,
-        ty::Binder::dummy(ty::TraitRef::new(tcx, drop_trait, [place_ty])),
+        ty::Binder::dummy(ty::TraitRef::new(tcx, destruct_trait, [place_ty])),
     );
 
     TerminatorKind::Drop {

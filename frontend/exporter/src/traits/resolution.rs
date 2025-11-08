@@ -84,33 +84,28 @@ pub enum ImplExprAtom<'tcx> {
 
 #[derive(Debug, Clone)]
 pub enum BuiltinTraitData<'tcx> {
-    /// A virtual `Drop` implementation.
-    /// `Drop` doesn't work like a real trait but we want to pretend it does. If a type has a
-    /// user-defined `impl Drop for X` we just use the `Concrete` variant, but if it doesn't we use
-    /// this variant to supply the data needed to know what code will run on drop.
-    Drop(DropData<'tcx>),
+    /// A virtual `Destruct` implementation.
+    /// `Destruct` is implemented automatically for all types. For our purposes, we chose to attach
+    /// the information about `drop_in_place` to that trait. This data tells us what kind of
+    /// `drop_in_place` the target type has.
+    Destruct(DestructData<'tcx>),
     /// Some other builtin trait.
     Other,
 }
 
 #[derive(Debug, Clone)]
-pub enum DropData<'tcx> {
+pub enum DestructData<'tcx> {
     /// A drop that does nothing, e.g. for scalars and pointers.
     Noop,
-    /// An implicit `Drop` local clause, if the `resolve_drop_bounds` option is `false`. If that
-    /// option is `true`, we'll add `Drop` bounds to every type param, and use that to resolve
-    /// `Drop` impls of generics. If it's `false`, we use this variant to indicate that the drop
-    /// clause comes from a generic or associated type.
+    /// An implicit `Destruct` local clause, if the `resolve_destruct_bounds` option is `false`. If
+    /// that option is `true`, we'll add `Destruct` bounds to every type param, and use that to
+    /// resolve `Destruct` impls of generics. If it's `false`, we use this variant to indicate that
+    /// the clause comes from a generic or associated type.
     Implicit,
-    /// The implicit `Drop` impl that exists for every type without an explicit `Drop` impl. The
-    /// virtual impl is considered to have one `T: Drop` bound for each generic argument of the
-    /// target type; it then simply drops each field in order.
+    /// The `drop_in_place` is known and non-trivial.
     Glue {
         /// The type we're generating glue for.
         ty: Ty<'tcx>,
-        /// The `ImplExpr`s for the `T: Drop` bounds of the virtual impl. There is one for each
-        /// generic argument, in order.
-        impl_exprs: Vec<ImplExpr<'tcx>>,
     },
 }
 
@@ -243,7 +238,7 @@ pub struct PredicateSearcher<'tcx> {
     typing_env: rustc_middle::ty::TypingEnv<'tcx>,
     /// Local clauses available in the current context.
     candidates: HashMap<PolyTraitPredicate<'tcx>, Candidate<'tcx>>,
-    /// Whether to add `T: Drop` bounds for every type generic and associated item.
+    /// Resolution options.
     options: BoundsOptions,
     /// Count the number of bound clauses in scope; used to identify clauses uniquely.
     bound_clause_count: usize,
@@ -449,7 +444,7 @@ impl<'tcx> PredicateSearcher<'tcx> {
             BuiltinImplSource, ImplSource, ImplSourceUserDefinedData,
         };
         let tcx = self.tcx;
-        let drop_trait = tcx.lang_items().drop_trait().unwrap();
+        let destruct_trait = tcx.lang_items().destruct_trait().unwrap();
 
         let erased_tref = normalize_bound_val(self.tcx, self.typing_env, *tref);
         let trait_def_id = erased_tref.skip_binder().def_id;
@@ -531,28 +526,13 @@ impl<'tcx> PredicateSearcher<'tcx> {
                     types,
                 }
             }
-            // Resolve `Drop` trait impls by adding virtual impls when a real one can't be found.
+            // Resolve `Destruct` trait impls by adding virtual impls when a real one can't be found.
             Err(CodegenObligationError::Unimplemented)
-                if erased_tref.skip_binder().def_id == drop_trait =>
+                if erased_tref.skip_binder().def_id == destruct_trait =>
             {
-                // If we wanted to not skip this binder, we'd have to instantiate the bound
-                // regions, solve, then wrap the result in a binder. And track higher-kinded
-                // clauses better all over.
-                let mut resolve_drop = |ty: Ty<'tcx>| {
-                    let tref = ty::Binder::dummy(ty::TraitRef::new(tcx, drop_trait, [ty]));
-                    self.resolve(&tref, warn)
-                };
-                let find_drop_impl = |ty: Ty<'tcx>| {
-                    let mut dtor = None;
-                    tcx.for_each_relevant_impl(drop_trait, ty, |impl_did| {
-                        dtor = Some(impl_did);
-                    });
-                    dtor
-                };
-                // TODO: how to check if there is a real drop impl?????
                 let ty = erased_tref.skip_binder().args[0].as_type().unwrap();
                 // Source of truth are `ty::needs_drop_components` and `tcx.needs_drop_raw`.
-                let drop_data = match ty.kind() {
+                let destruct_data = match ty.kind() {
                     // TODO: Does `UnsafeBinder` drop its contents?
                     ty::Bool
                     | ty::Char
@@ -566,53 +546,35 @@ impl<'tcx> PredicateSearcher<'tcx> {
                     | ty::FnDef(..)
                     | ty::FnPtr(..)
                     | ty::UnsafeBinder(..)
-                    | ty::Never => Ok(DropData::Noop),
-                    ty::Array(inner_ty, _) | ty::Pat(inner_ty, _) | ty::Slice(inner_ty) => {
-                        Ok(DropData::Glue {
-                            ty,
-                            impl_exprs: vec![resolve_drop(*inner_ty)?],
-                        })
-                    }
-                    ty::Tuple(tys) if tys.is_empty() => Ok(DropData::Noop),
-                    ty::Tuple(tys) => Ok(DropData::Glue {
-                        ty,
-                        impl_exprs: tys.iter().map(resolve_drop).try_collect()?,
-                    }),
-                    ty::Adt(..) if let Some(_) = find_drop_impl(ty) => {
-                        // We should have been able to resolve the `T: Drop` clause above, if we
-                        // get here we don't know how to reconstruct the arguments to the impl.
-                        let msg = format!("Cannot resolve clause `{tref:?}`");
-                        return error(msg);
-                    }
-                    ty::Adt(_, args)
-                    | ty::Closure(_, args)
-                    | ty::Coroutine(_, args)
-                    | ty::CoroutineClosure(_, args)
-                    | ty::CoroutineWitness(_, args) => Ok(DropData::Glue {
-                        ty,
-                        impl_exprs: args
-                            .iter()
-                            .filter_map(|arg| arg.as_type())
-                            .map(resolve_drop)
-                            .try_collect()?,
-                    }),
-                    // Every `dyn` has a `Drop` in its vtable, ergo we pretend that every `dyn` has
-                    // `Drop` in its list of traits.
+                    | ty::Never => Ok(DestructData::Noop),
+                    ty::Tuple(tys) if tys.is_empty() => Ok(DestructData::Noop),
+                    ty::Array(..)
+                    | ty::Pat(..)
+                    | ty::Slice(..)
+                    | ty::Tuple(..)
+                    | ty::Adt(..)
+                    | ty::Closure(..)
+                    | ty::Coroutine(..)
+                    | ty::CoroutineClosure(..)
+                    | ty::CoroutineWitness(..) => Ok(DestructData::Glue { ty }),
+                    // Every `dyn` has a `drop_in_place` in its vtable, ergo we pretend that every
+                    // `dyn` has `Destruct` in its list of traits.
                     ty::Dynamic(..) => Err(ImplExprAtom::Dyn),
                     ty::Param(..) | ty::Alias(..) | ty::Bound(..) => {
-                        if self.options.resolve_drop {
-                            // We've added `Drop` impls on everything, we should be able to resolve
+                        if self.options.resolve_destruct {
+                            // We've added `Destruct` impls on everything, we should be able to resolve
                             // it.
                             match self.resolve_local(erased_tref.upcast(self.tcx), warn)? {
                                 Some(candidate) => Err(candidate.into_impl_expr(tcx)),
                                 None => {
-                                    let msg =
-                                        format!("Cannot find virtual `Drop` clause: `{tref:?}`");
+                                    let msg = format!(
+                                        "Cannot find virtual `Destruct` clause: `{tref:?}`"
+                                    );
                                     return error(msg);
                                 }
                             }
                         } else {
-                            Ok(DropData::Implicit)
+                            Ok(DestructData::Implicit)
                         }
                     }
 
@@ -624,15 +586,15 @@ impl<'tcx> PredicateSearcher<'tcx> {
                         return error(msg);
                     }
                 };
-                match drop_data {
-                    Ok(drop_data) => {
+                match destruct_data {
+                    Ok(destruct_data) => {
                         let impl_exprs = self.resolve_item_implied_predicates(
                             trait_def_id,
                             erased_tref.skip_binder().args,
                             warn,
                         )?;
                         ImplExprAtom::Builtin {
-                            trait_data: BuiltinTraitData::Drop(drop_data),
+                            trait_data: BuiltinTraitData::Destruct(destruct_data),
                             impl_exprs,
                             types: vec![],
                         }
