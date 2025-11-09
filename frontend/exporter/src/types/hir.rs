@@ -58,6 +58,16 @@ impl<S> SInto<S, Mutability> for hir::Mutability {
     }
 }
 
+#[cfg(feature = "rustc")]
+impl<S> SInto<S, Pinnedness> for hir::Pinnedness {
+    fn sinto(&self, _s: &S) -> Pinnedness {
+        match self {
+            Self::Pinned => true,
+            Self::Not => false,
+        }
+    }
+}
+
 /// Reflects [`hir::RangeEnd`]
 #[derive(AdtInto)]
 #[args(<S>, from: hir::RangeEnd, state: S as _s)]
@@ -409,18 +419,20 @@ pub struct Impl<Body: IsBody> {
     // pub defaultness: Defaultness,
     pub generics: Generics<Body>,
     #[map({
-        s.base().tcx
-            .impl_trait_ref(s.owner_id())
-            .map(|trait_ref| trait_ref.instantiate_identity())
-            .sinto(s)
+        x.map(|_|
+            s.base().tcx
+                .impl_trait_ref(s.owner_id())
+                .instantiate_identity()
+                .sinto(s)
+        )
     })]
     pub of_trait: Option<TraitRef>,
     pub self_ty: Ty,
     pub items: Vec<ImplItem<Body>>,
     #[value({
         let (tcx, owner_id) = (s.base().tcx, s.owner_id());
-        let trait_did = tcx.trait_id_of_impl(owner_id);
-        if let Some(trait_did) = trait_did {
+        if self.of_trait.is_some() {
+            let trait_did = tcx.impl_trait_id(owner_id);
             tcx.explicit_super_predicates_of(trait_did)
                 .iter_identity_copied()
                 .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
@@ -675,7 +687,7 @@ pub enum ItemKind<Body: IsBody> {
         GenericBounds,
         Vec<TraitItem<Body>>,
     ),
-    TraitAlias(Ident, Generics<Body>, GenericBounds),
+    TraitAlias(Constness, Ident, Generics<Body>, GenericBounds),
     Impl(Impl<Body>),
 }
 
@@ -928,7 +940,7 @@ impl<'tcx, S: BaseState<'tcx>, Body: IsBody> SInto<S, Item<Body>> for hir::Item<
             | Struct(i, ..)
             | Union(i, ..)
             | Trait(_, _, _, i, ..)
-            | TraitAlias(i, ..) => i.name.to_ident_string(),
+            | TraitAlias(_, i, ..) => i.name.to_ident_string(),
             Use(..) | ForeignMod { .. } | GlobalAsm { .. } | Impl { .. } => String::new(),
         };
         let s = &s.with_owner_id(self.owner_id.to_def_id());
@@ -1002,7 +1014,7 @@ pub struct BindingMode {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub enum ByRef {
-    Yes(Mutability),
+    Yes(Pinnedness, Mutability),
     No,
 }
 

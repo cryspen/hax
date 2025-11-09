@@ -707,7 +707,7 @@ pub fn shallow_resolve_trait_ref<'tcx>(
         ()
     });
 
-    let errors = ocx.select_all_or_error();
+    let errors = ocx.evaluate_obligations_error_on_ambiguity();
     if !errors.is_empty() {
         return Err(CodegenObligationError::Ambiguity);
     }

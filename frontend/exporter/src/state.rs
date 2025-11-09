@@ -329,10 +329,12 @@ impl ImplInfos {
         Self {
             generics: tcx.generics_of(did).sinto(s),
             typ: tcx.type_of(did).instantiate_identity().sinto(s),
-            trait_ref: tcx
-                .impl_trait_ref(did)
-                .map(|trait_ref| trait_ref.instantiate_identity())
-                .sinto(s),
+            trait_ref: match tcx.def_kind(did) {
+                rustc_hir::def::DefKind::Impl { of_trait: true } => {
+                    Some(tcx.impl_trait_ref(did).instantiate_identity().sinto(s))
+                }
+                _ => None,
+            },
             clauses: predicates_defined_on(tcx, did).as_ref().sinto(s),
         }
     }

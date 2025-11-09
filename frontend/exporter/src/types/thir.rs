@@ -486,7 +486,7 @@ pub enum PatKind {
         subpattern: Pat,
     },
     #[custom_arm(
-        thir::PatKind::Binding {name, mode, var, ty, subpattern, is_primary} => {
+        thir::PatKind::Binding {name, mode, var, ty, subpattern, is_primary, ..} => {
             let local_ctx = gstate.base().local_ctx;
             local_ctx.borrow_mut().vars.insert(*var, name.to_string());
             PatKind::Binding {

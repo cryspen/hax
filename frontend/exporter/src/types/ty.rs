@@ -375,13 +375,22 @@ pub enum LateParamRegionKind {
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::RegionKind<'tcx>, state: S as gstate)]
 pub enum RegionKind {
     ReEarlyParam(EarlyParamRegion),
-    ReBound(DebruijnIndex, BoundRegion),
+    ReBound(BoundVarIndexKind, BoundRegion),
     ReLateParam(LateParamRegion),
     ReStatic,
     ReVar(RegionVid),
     RePlaceholder(PlaceholderRegion),
     ReErased,
     ReError(ErrorGuaranteed),
+}
+
+/// Reflects [`ty::BoundVarIndexKind`]
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundVarIndexKind, state: S as gstate)]
+pub enum BoundVarIndexKind {
+    Bound(DebruijnIndex),
+    Canonical,
 }
 
 sinto_as_usize!(rustc_middle::ty, DebruijnIndex);
@@ -1100,7 +1109,7 @@ pub enum TyKind {
     #[custom_arm(FROM_TYPE::Alias(alias_kind, alias_ty) => Alias::from(s, alias_kind, alias_ty),)]
     Alias(Alias),
     Param(ParamTy),
-    Bound(DebruijnIndex, BoundTy),
+    Bound(BoundVarIndexKind, BoundTy),
     Placeholder(PlaceholderType),
     Infer(InferTy),
     #[custom_arm(FROM_TYPE::Error(..) => TO_TYPE::Error,)]
@@ -1805,7 +1814,6 @@ impl AssocItem {
                 let item = translate_item_ref(s, container_id, container_args);
                 let implemented_trait_ref = tcx
                     .impl_trait_ref(container_id)
-                    .unwrap()
                     .instantiate(tcx, container_args);
                 let implemented_trait_item = translate_item_ref(
                     s,

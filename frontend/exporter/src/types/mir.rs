@@ -647,7 +647,6 @@ pub enum StatementKind {
         place: Place,
         variant_index: VariantIdx,
     },
-    Deinit(Place),
     StorageLive(Local),
     StorageDead(Local),
     Retag(RetagKind, Place),
@@ -798,9 +797,6 @@ impl<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>> SInto<S, Place>
                         from_end: *from_end,
                     },
                     OpaqueCast(..) => ProjectionElem::OpaqueCast,
-                    // This is used for casts to a subtype, e.g. between `for<‘a> fn(&’a ())`
-                    // and `fn(‘static ())` (according to @compiler-errors on Zulip).
-                    Subtype { .. } => panic!("unexpected Subtype"),
                     Downcast { .. } => unreachable!(),
                     UnwrapUnsafeBinder { .. } => panic!("unsupported feature: unsafe binders"),
                 };
@@ -869,6 +865,7 @@ pub enum CastKind {
     PtrToPtr,
     FnPtrToPtr,
     Transmute,
+    Subtype,
 }
 
 #[cfg(feature = "rustc")]
@@ -893,6 +890,7 @@ impl CastKind {
             mir::CastKind::PtrToPtr => CastKind::PtrToPtr,
             mir::CastKind::FnPtrToPtr => CastKind::FnPtrToPtr,
             mir::CastKind::Transmute => CastKind::Transmute,
+            mir::CastKind::Subtype => CastKind::Subtype,
         }
     }
 }
@@ -909,8 +907,6 @@ pub enum CoercionSource {
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
 #[args(<'tcx, S: UnderOwnerState<'tcx> + HasMir<'tcx>>, from: rustc_middle::mir::NullOp<'tcx>, state: S as s)]
 pub enum NullOp {
-    SizeOf,
-    AlignOf,
     OffsetOf(Vec<(VariantIdx, FieldIdx)>),
     UbChecks,
     ContractChecks,

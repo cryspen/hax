@@ -189,9 +189,14 @@ pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
     span: rustc_span::Span,
 ) -> Option<(Clause, ImplExpr, Span)> {
     let tcx = s.base().tcx;
-    let impl_trait_ref = tcx
-        .impl_trait_ref(impl_did)
-        .map(|binder| rustc_middle::ty::Binder::dummy(binder.instantiate_identity()))?;
+    if !matches!(
+        tcx.def_kind(impl_did),
+        rustc_hir::def::DefKind::Impl { of_trait: true }
+    ) {
+        return None;
+    }
+    let impl_trait_ref =
+        rustc_middle::ty::Binder::dummy(tcx.impl_trait_ref(impl_did).instantiate_identity());
     let original_predicate_id = {
         // We don't want the id of the substituted clause id, but the
         // original clause id (with, i.e., `Self`)

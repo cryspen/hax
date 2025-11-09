@@ -258,7 +258,7 @@ where
             // We don't erase bound regions that are bound inside the expression we started with,
             // but we do erase those that point "outside of it".
             match r.kind() {
-                ty::ReBound(dbid, _) if dbid.as_u32() < self.depth => r,
+                ty::ReBound(BoundVarIndexKind::Bound(dbid), _) if dbid.as_u32() < self.depth => r,
                 _ => self.tcx.lifetimes.re_erased,
             }
         }

@@ -317,7 +317,6 @@ pub fn get_method_sig<'tcx>(
     // The trait predicate that is implemented by the surrounding impl block.
     let implemented_trait_ref = tcx
         .impl_trait_ref(impl_def_id)
-        .unwrap()
         .instantiate(tcx, method_args);
     // Construct arguments for the declared method generics in the context of the implemented
     // method generics.

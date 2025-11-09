@@ -49,6 +49,7 @@ pub enum Safety {
 }
 
 pub type Mutability = bool;
+pub type Pinnedness = bool;
 
 /// Reflects [`hir::def::CtorKind`]
 #[derive_group(Serializers)]
@@ -388,9 +389,11 @@ pub enum DefPathItem {
     LifetimeNs(Symbol),
     Closure,
     Ctor,
+    LateAnonConst,
     AnonConst,
     #[cfg_attr(not(feature = "extract_names_mode"), disable_mapping)]
     PromotedConst,
+    DesugaredAnonymousLifetime,
     OpaqueTy,
     OpaqueLifetime(Symbol),
     AnonAssocTy(Symbol),
