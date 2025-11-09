@@ -128,11 +128,22 @@ pub fn translate_constant_reference<'tcx>(
 /// Evaluate a `ty::Const`.
 pub fn eval_ty_constant<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
-    c: ty::Const<'tcx>,
+    uv: rustc_middle::ty::UnevaluatedConst<'tcx>,
 ) -> Option<ty::Const<'tcx>> {
+    use ty::TypeVisitableExt;
     let tcx = s.base().tcx;
-    let evaluated = tcx.try_normalize_erasing_regions(s.typing_env(), c).ok()?;
-    (evaluated != c).then_some(evaluated)
+    let typing_env = s.typing_env();
+    if uv.has_non_region_param() {
+        return None;
+    }
+    let span = tcx.def_span(uv.def);
+    let erased_uv = tcx.erase_regions(uv);
+    let val = tcx
+        .const_eval_resolve_for_typeck(typing_env, erased_uv, span)
+        .ok()?
+        .ok()?;
+    let ty = tcx.type_of(uv.def).instantiate(tcx, uv.args);
+    Some(ty::Const::new_value(tcx, val, ty))
 }
 
 /// Evaluate a `mir::Const`.
@@ -164,7 +175,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
 
             ty::ConstKind::Unevaluated(ucv) => match translate_constant_reference(s, span, ucv) {
                 Some(val) => val,
-                None => match eval_ty_constant(s, *self) {
+                None => match eval_ty_constant(s, ucv) {
                     Some(val) => val.sinto(s),
                     // TODO: This is triggered when compiling using `generic_const_exprs`
                     None => supposely_unreachable_fatal!(s, "TranslateUneval"; {self, ucv}),

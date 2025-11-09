@@ -1306,10 +1306,8 @@ fn const_value<'tcx, S: UnderOwnerState<'tcx>>(
     def_id: RDefId,
     args: ty::GenericArgsRef<'tcx>,
 ) -> Option<ConstantExpr> {
-    let tcx = s.base().tcx;
     let uneval = ty::UnevaluatedConst::new(def_id, args);
-    let c = ty::Const::new_unevaluated(tcx, uneval);
-    let c = eval_ty_constant(s, c)?;
+    let c = eval_ty_constant(s, uneval)?;
     match c.kind() {
         ty::ConstKind::Error(..) => None,
         _ => Some(c.sinto(s)),
