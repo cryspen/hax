@@ -271,35 +271,18 @@ fn translate_mir_const<'tcx, S: UnderOwnerState<'tcx>>(
                     });
                     Promoted(item)
                 }
-                None => Value(match translate_constant_reference(s, span, ucv.shrink()) {
-                    Some(val) => val,
+                None => match translate_constant_reference(s, span, ucv.shrink()) {
+                    Some(val) => Value(val),
                     None => match eval_mir_constant(s, konst) {
-                        Some(val) => val.sinto(s),
+                        Some(val) => translate_mir_const(s, span, val),
                         // TODO: This is triggered when compiling using `generic_const_exprs`. We
                         // might be able to get a MIR body from the def_id.
-                        None => ConstantExprKind::Todo("TranslateUneval".into())
-                            .decorate(ty.sinto(s), span.sinto(s)),
+                        None => Value(
+                            ConstantExprKind::Todo("TranslateUneval".into())
+                                .decorate(ty.sinto(s), span.sinto(s)),
+                        ),
                     },
-                }),
-            }
-        }
-    }
-}
-
-#[cfg(feature = "rustc")]
-/// This impl is used in THIR patterns.
-impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for rustc_middle::mir::Const<'tcx> {
-    fn sinto(&self, s: &S) -> ConstantExpr {
-        match translate_mir_const(s, rustc_span::DUMMY_SP, *self) {
-            ConstOperandKind::Value(val) => val,
-            ConstOperandKind::Promoted(p) => {
-                warning!(
-                    s, "Couldn't convert constant back to an expression, expected value, got promoted";
-                    {self, p}
-                );
-
-                ConstantExprKind::Todo("ConstEvalPromoted".into())
-                    .decorate(self.ty().sinto(s), rustc_span::DUMMY_SP.sinto(s))
+                },
             }
         }
     }
