@@ -137,6 +137,7 @@ where
                 ty,
                 kind: ConstKind::PromotedConst,
                 body: Body::from_mir(s, body),
+                value: None,
             };
 
             // None of these make sense for a promoted constant.
@@ -409,6 +410,7 @@ pub enum FullDefKind<Body> {
         ty: Ty,
         kind: ConstKind,
         body: Option<Body>,
+        value: Option<ConstantExpr>,
     },
     /// Associated constant: `trait MyTrait { const ASSOC: usize; }`
     AssocConst {
@@ -416,6 +418,7 @@ pub enum FullDefKind<Body> {
         associated_item: AssocItem,
         ty: Ty,
         body: Option<Body>,
+        value: Option<ConstantExpr>,
     },
     Static {
         param_env: ParamEnv,
@@ -847,6 +850,7 @@ where
                 ty: type_of_self().sinto(s),
                 kind,
                 body: get_body(s, args),
+                value: const_value(s, def_id, args_or_default()),
             }
         }
         RDefKind::AssocConst { .. } => FullDefKind::AssocConst {
@@ -854,6 +858,7 @@ where
             associated_item: AssocItem::sfrom_instantiated(s, &tcx.associated_item(def_id), args),
             ty: type_of_self().sinto(s),
             body: get_body(s, args),
+            value: const_value(s, def_id, args_or_default()),
         },
         RDefKind::Static {
             safety,
@@ -1293,4 +1298,18 @@ fn get_implied_predicates<'tcx, S: UnderOwnerState<'tcx>>(
         );
     }
     implied_predicates.sinto(s)
+}
+
+#[cfg(feature = "rustc")]
+fn const_value<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+    def_id: RDefId,
+    args: ty::GenericArgsRef<'tcx>,
+) -> Option<ConstantExpr> {
+    let uneval = ty::UnevaluatedConst::new(def_id, args);
+    let c = eval_ty_constant(s, uneval)?;
+    match c.kind() {
+        ty::ConstKind::Error(..) => None,
+        _ => Some(c.sinto(s)),
+    }
 }

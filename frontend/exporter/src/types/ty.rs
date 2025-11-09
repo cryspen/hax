@@ -1765,6 +1765,24 @@ pub struct ClosureArgs {
     pub upvar_tys: Vec<Ty>,
 }
 
+impl ClosureArgs {
+    /// Iterate over the upvars that are borrows with erased regions. These may require allocating
+    /// fresh regions.
+    pub fn iter_upvar_borrows(&self) -> impl Iterator<Item = &Ty> {
+        self.upvar_tys.iter().filter(|ty| {
+            matches!(
+                ty.kind(),
+                TyKind::Ref(
+                    Region {
+                        kind: RegionKind::ReErased
+                    },
+                    ..
+                )
+            )
+        })
+    }
+}
+
 #[cfg(feature = "rustc")]
 impl ClosureArgs {
     // Manual implementation because we need the `def_id` of the closure.
