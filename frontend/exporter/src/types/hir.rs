@@ -350,9 +350,10 @@ pub struct ImplItem<Body: IsBody> {
     pub owner_id: DefId,
     pub generics: Generics<Body>,
     pub kind: ImplItemKind<Body>,
-    pub defaultness: Defaultness,
     pub span: Span,
-    pub vis_span: Span,
+    // Removed fields. If these are used, will need to provide `#[value(..)]` implementations.
+    // pub defaultness: Defaultness,
+    // pub vis_span: Span,
     #[value(ItemAttributes::from_owner_id(s, *owner_id))]
     /// the attributes on this impl item
     pub attributes: ItemAttributes,
@@ -374,7 +375,7 @@ pub enum ImplItemKind<Body: IsBody> {
             let (tcx, owner_id) = (s.base().tcx, s.owner_id());
             let assoc_item = tcx.opt_associated_item(owner_id).unwrap();
             let impl_did = assoc_item.impl_container(tcx).unwrap();
-            tcx.explicit_item_bounds(assoc_item.trait_item_def_id.unwrap())
+            tcx.explicit_item_bounds(assoc_item.trait_item_def_id().unwrap())
                 .skip_binder() // Skips an `EarlyBinder`, likely for GATs
                 .iter()
                 .copied()
@@ -402,10 +403,10 @@ pub enum ImplItemKind<Body: IsBody> {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct Impl<Body: IsBody> {
-    pub safety: Safety,
-    pub polarity: ImplPolarity,
-    pub defaultness: Defaultness,
-    pub defaultness_span: Option<Span>,
+    // Removed fields. If these are used, will need to provide `#[value(..)]` implementations.
+    // pub safety: Safety,
+    // pub polarity: ImplPolarity,
+    // pub defaultness: Defaultness,
     pub generics: Generics<Body>,
     #[map({
         s.base().tcx
@@ -632,7 +633,7 @@ pub enum ItemKind<Body: IsBody> {
         def: FnDef<Body>,
     },
 
-    Macro(Ident, MacroDef, MacroKind),
+    Macro(Ident, MacroDef, MacroKinds),
     Mod(Ident, Vec<Item<Body>>),
     ForeignMod {
         abi: ExternAbi,

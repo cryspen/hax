@@ -135,6 +135,7 @@ pub enum ScopeData {
     Destruction,
     IfThen,
     IfThenRescope,
+    MatchGuard,
     Remainder(FirstStatementIndex),
 }
 
@@ -426,8 +427,6 @@ pub struct Ascription {
 }
 
 /// Reflects [`thir::PatRange`]
-#[derive(AdtInto)]
-#[args(<'tcx, S: UnderOwnerState<'tcx> + HasThir<'tcx>>, from: thir::PatRange<'tcx>, state: S as state)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct PatRange {
@@ -436,9 +435,25 @@ pub struct PatRange {
     pub end: RangeEnd,
 }
 
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, PatRange> for thir::PatRange<'tcx> {
+    fn sinto(&self, s: &S) -> PatRange {
+        let sinto_bdy = |bdy| match bdy {
+            thir::PatRangeBoundary::Finite(valtree) => PatRangeBoundary::Finite(
+                valtree_to_constant_expr(s, valtree, self.ty, rustc_span::DUMMY_SP),
+            ),
+            thir::PatRangeBoundary::NegInfinity => PatRangeBoundary::NegInfinity,
+            thir::PatRangeBoundary::PosInfinity => PatRangeBoundary::PosInfinity,
+        };
+        PatRange {
+            lo: sinto_bdy(self.lo),
+            hi: sinto_bdy(self.hi),
+            end: self.end.sinto(s),
+        }
+    }
+}
+
 /// Reflects [`thir::PatRangeBoundary`]
-#[derive(AdtInto)]
-#[args(<'tcx, S: UnderOwnerState<'tcx> + HasThir<'tcx>>, from: thir::PatRangeBoundary<'tcx>, state: S as state)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub enum PatRangeBoundary {

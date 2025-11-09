@@ -942,7 +942,6 @@ pub enum Rvalue {
     Ref(Region, BorrowKind, Place),
     ThreadLocalRef(DefId),
     RawPtr(RawPtrKind, Place),
-    Len(Place),
     #[custom_arm(
         FROM_TYPE::Cast(kind, op, tgt_ty) => {
             let src_ty = op.ty(&*s.mir(), s.base().tcx);

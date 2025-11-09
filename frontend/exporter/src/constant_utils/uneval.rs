@@ -111,8 +111,10 @@ pub fn translate_constant_reference<'tcx>(
         .try_normalize_erasing_regions(typing_env, ty)
         .unwrap_or(ty);
     let kind = if let Some(assoc) = s.base().tcx.opt_associated_item(ucv.def)
-        && (assoc.trait_item_def_id.is_some() || assoc.container == ty::AssocItemContainer::Trait)
-    {
+        && matches!(
+            assoc.container,
+            ty::AssocContainer::Trait | ty::AssocContainer::TraitImpl(..)
+        ) {
         // This is an associated constant in a trait.
         let name = assoc.name().to_string();
         let impl_expr = self_clause_for_item(s, ucv.def, ucv.args).unwrap();
@@ -137,7 +139,7 @@ pub fn eval_ty_constant<'tcx, S: UnderOwnerState<'tcx>>(
         return None;
     }
     let span = tcx.def_span(uv.def);
-    let erased_uv = tcx.erase_regions(uv);
+    let erased_uv = tcx.erase_and_anonymize_regions(uv);
     let val = tcx
         .const_eval_resolve_for_typeck(typing_env, erased_uv, span)
         .ok()?
@@ -191,6 +193,13 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
             }
             _ => fatal!(s[span], "unexpected case"),
         }
+    }
+}
+
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Value<'tcx> {
+    #[tracing::instrument(level = "trace", skip(s))]
+    fn sinto(&self, s: &S) -> ConstantExpr {
+        valtree_to_constant_expr(s, self.valtree, self.ty, rustc_span::DUMMY_SP)
     }
 }
 
@@ -422,7 +431,7 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
 pub fn const_value_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     ty: rustc_middle::ty::Ty<'tcx>,
-    val: mir::ConstValue<'tcx>,
+    val: mir::ConstValue,
     span: rustc_span::Span,
 ) -> InterpResult<'tcx, ConstantExpr> {
     let tcx = s.base().tcx;

@@ -476,7 +476,7 @@ pub enum FullDefKind<Body> {
 
     // Others
     /// Macros
-    Macro(MacroKind),
+    Macro(MacroKinds),
     /// A use of `global_asm!`.
     GlobalAsm,
     /// A synthetic coroutine body created by the lowering of a coroutine-closure, such as an async
@@ -496,12 +496,12 @@ fn gen_vtable_sig<'tcx>(
     let container_id = assoc_item.container_id(tcx);
 
     // Get the original trait method id.
-    let method_decl_id = match (assoc_item.trait_item_def_id, assoc_item.container) {
-        (Some(id), _) => id,
-        (None, ty::AssocItemContainer::Trait) => method_def_id,
+    let method_decl_id = match assoc_item.container {
+        ty::AssocContainer::TraitImpl(Ok(id)) => id,
+        ty::AssocContainer::Trait => method_def_id,
         _ => return None,
     };
-    let trait_id = tcx.trait_of_item(method_decl_id)?;
+    let trait_id = tcx.trait_of_assoc(method_decl_id)?;
 
     let decl_assoc_item = tcx.associated_item(method_decl_id);
     if !rustc_trait_selection::traits::is_vtable_safe_method(tcx, trait_id, decl_assoc_item) {
@@ -516,8 +516,8 @@ fn gen_vtable_sig<'tcx>(
     };
 
     let dyn_self = match assoc_item.container {
-        ty::AssocItemContainer::Trait => get_trait_decl_dyn_self_ty(s, args),
-        ty::AssocItemContainer::Impl => {
+        ty::AssocContainer::Trait => get_trait_decl_dyn_self_ty(s, args),
+        ty::AssocContainer::TraitImpl(..) => {
             // For impl methods, compute concrete dyn_self from the impl's trait reference
             let impl_def_id = assoc_item.container_id(tcx);
             let impl_trait_ref = tcx.impl_trait_ref(impl_def_id).unwrap();
@@ -525,10 +525,13 @@ fn gen_vtable_sig<'tcx>(
             let concrete_trait_ref = inst_binder(tcx, s.typing_env(), args, impl_trait_ref);
             dyn_self_ty(tcx, s.typing_env(), concrete_trait_ref)
         }
+        ty::AssocContainer::InherentImpl => {
+            unreachable!()
+        }
     }?;
 
     // dyn_self is of form `dyn Trait<Args...>`, we extract the trait args
-    let ty::Dynamic(preds, _, _) = dyn_self.kind() else {
+    let ty::Dynamic(preds, _) = dyn_self.kind() else {
         panic!("Unexpected dyn_self: {:?}", dyn_self);
     };
     // Safe to use `skip_binder` because we know the predicate we built in dyn_self_ty has no bound
@@ -659,8 +662,10 @@ where
         RDefKind::Impl { .. } => {
             use std::collections::HashMap;
             let param_env = get_param_env(s, args);
-            match inst_binder(tcx, s.typing_env(), args, tcx.impl_subject(def_id)) {
-                ty::ImplSubject::Inherent(ty) => {
+            match tcx.impl_trait_ref(def_id) {
+                None => {
+                    let ty = tcx.type_of(def_id);
+                    let ty = inst_binder(tcx, s.typing_env(), args, ty);
                     let items = tcx
                         .associated_items(def_id)
                         .in_definition_order()
@@ -680,7 +685,8 @@ where
                         items,
                     }
                 }
-                ty::ImplSubject::Trait(trait_ref) => {
+                Some(trait_ref) => {
+                    let trait_ref = inst_binder(tcx, s.typing_env(), args, trait_ref);
                     let polarity = tcx.impl_polarity(def_id);
                     let trait_pred = TraitPredicate {
                         trait_ref: trait_ref.sinto(s),
@@ -694,7 +700,7 @@ where
                     let mut item_map: HashMap<RDefId, _> = tcx
                         .associated_items(def_id)
                         .in_definition_order()
-                        .map(|assoc| (assoc.trait_item_def_id.unwrap(), assoc))
+                        .map(|assoc| (assoc.trait_item_def_id().unwrap(), assoc))
                         .collect();
                     let items = tcx
                         .associated_items(trait_ref.def_id)
@@ -919,7 +925,7 @@ where
             }
         }
         RDefKind::Field => FullDefKind::Field,
-        RDefKind::Macro(kind) => FullDefKind::Macro(kind.sinto(s)),
+        RDefKind::Macro(kinds) => FullDefKind::Macro(kinds.sinto(s)),
         RDefKind::GlobalAsm => FullDefKind::GlobalAsm,
         RDefKind::SyntheticCoroutineBody => FullDefKind::SyntheticCoroutineBody,
     }

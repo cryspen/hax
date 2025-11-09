@@ -70,17 +70,6 @@ pub enum CtorOf {
     Variant,
 }
 
-/// Reflects [`rustc_span::hygiene::MacroKind`]
-#[derive_group(Serializers)]
-#[derive(Debug, Copy, Hash, Clone, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema, AdtInto))]
-#[cfg_attr(not(feature = "extract_names_mode"), args(<S>, from: rustc_span::hygiene::MacroKind, state: S as _s))]
-pub enum MacroKind {
-    Bang,
-    Attr,
-    Derive,
-}
-
 /// The id of a promoted MIR constant.
 ///
 /// Reflects [`rustc_middle::mir::Promoted`].
@@ -128,7 +117,7 @@ pub enum DefKind {
     Ctor(CtorOf, CtorKind),
     AssocFn,
     AssocConst,
-    Macro(MacroKind),
+    Macro(MacroKinds),
     ExternCrate,
     Use,
     ForeignMod,
@@ -147,6 +136,8 @@ pub enum DefKind {
     Closure,
     SyntheticCoroutineBody,
 }
+
+sinto_todo!(rustc_hir::def, MacroKinds);
 
 /// Reflects [`rustc_hir::def_id::DefId`], augmented to also give ids to promoted constants (which
 /// have their own ad-hoc numbering scheme in rustc for now).
