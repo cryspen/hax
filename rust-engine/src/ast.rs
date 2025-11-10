@@ -1269,6 +1269,7 @@ pub struct Variant {
     pub arguments: Vec<(GlobalId, Ty, Attributes)>,
     /// True if fields are named
     pub is_record: bool,
+    // TODO Missing span
     /// Attributes of the variant
     pub attributes: Attributes,
 }
