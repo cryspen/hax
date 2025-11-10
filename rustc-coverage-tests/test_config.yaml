@@ -2,9 +2,9 @@ tests:
   attr::impl_:
     - json
     - coq
-    - lean
     - fstar
     - fstar-lax
+    - lean
   attr::module:
     - json
     - coq
@@ -24,7 +24,6 @@ tests:
     - json
     - coq
     - lean
-    - lean-tc
     - fstar
     - fstar-lax
   auxiliary::used_crate:
@@ -40,7 +39,7 @@ tests:
   condition::conditions:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   mcdc::condition_limit:
@@ -49,25 +48,24 @@ tests:
   mcdc::if_:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   mcdc::inlined_expressions:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   mcdc::nested_if:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
-    - lean
   mcdc::non_control_flow:
     - json
     - coq
-    - fstar 
+    - fstar
     - fstar-lax
     - lean
   abort:
@@ -83,7 +81,6 @@ tests:
   assert_ne:
     - json
     - coq
-    - lean
     - fstar
     - fstar-lax
   assert_not:
@@ -106,6 +103,9 @@ tests:
   color:
     - json
     - lean
+    - coq
+    - fstar
+    - fstar-lax
   conditions:
     - json
     - coq
@@ -114,7 +114,6 @@ tests:
   continue_:
     - json
     - fstar
-    - lean
   dead_code:
     - json
     - coq
@@ -136,7 +135,6 @@ tests:
     - json
     - coq
     - fstar
-    - lean
   if_:
     - json
     - coq
@@ -150,6 +148,9 @@ tests:
   if_not:
     - json
     - lean
+    - coq
+    - fstar
+    - fstar-lax
   ignore_map:
     - json
     - coq
@@ -166,19 +167,20 @@ tests:
     - json
     - coq
     - fstar
-    - lean
   inline:
     - json
     - lean
+    - coq
+    - fstar
   inner_items:
     - json
     - lean
   issue_83601:
     - json
     - coq
-    - lean
     - fstar
     - fstar-lax
+    - lean
   lazy_boolean:
     - json
     - coq
@@ -186,7 +188,6 @@ tests:
     - lean
   let_else_loop:
     - json
-    - lean
   long_and_wide:
     - json
     - lean
@@ -204,6 +205,7 @@ tests:
 
   loops_branches:
     - json
+    - fstar
     - lean
 
   macro_in_closure:
@@ -215,7 +217,6 @@ tests:
 
   match_or_pattern:
     - json
-    - lean
     - fstar
     - coq
 
@@ -302,11 +303,12 @@ tests:
 
   unicode:
     - json
+    - coq
+    - fstar
 
   unused:
     - json
     - fstar
-    - lean
 
   unused_mod:
     - json
@@ -318,9 +320,10 @@ tests:
   while_:
     - json
     - lean
-  
+    - fstar
+    - fstar-lax
+
   while_early_ret:
     - json
     - fstar
     - fstar-lax
-    - lean

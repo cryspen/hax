@@ -4,16 +4,14 @@
 use super::prelude::*;
 
 /// The Rust printer.
-#[derive(Default)]
+#[setup_span_handling_struct]
+#[derive(Default, Clone)]
 pub struct RustPrinter;
-impl_doc_allocator_for!(RustPrinter);
 
 impl Printer for RustPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![]
     }
-
-    const NAME: &'static str = "Rust";
 }
 
 const INDENT: isize = 4;
@@ -42,14 +40,16 @@ const _: () = {
     #[allow(unused)]
     macro_rules! concat {($($tt:tt)*) => {disambiguated_concat!($($tt)*)};}
 
-    impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for RustPrinter {
-        fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
+    impl<A: 'static + Clone> PrettyAst<A> for RustPrinter {
+        const NAME: &'static str = "Rust";
+
+        fn module(&self, module: &Module) -> DocBuilder<A> {
             intersperse!(&module.items, docs![hardline!(), hardline!()])
         }
-        fn item(&'a self, item: &'b Item) -> DocBuilder<'a, Self, A> {
+        fn item(&self, item: &Item) -> DocBuilder<A> {
             docs![&item.meta, item.kind()]
         }
-        fn item_kind(&'a self, item_kind: &'b ItemKind) -> DocBuilder<'a, Self, A> {
+        fn item_kind(&self, item_kind: &ItemKind) -> DocBuilder<A> {
             match item_kind {
                 ItemKind::Fn {
                     name,

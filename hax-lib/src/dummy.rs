@@ -1,5 +1,5 @@
 mod abstraction;
-pub use abstraction::*;
+pub use abstraction::Concretization;
 
 pub mod prop;
 pub use prop::*;

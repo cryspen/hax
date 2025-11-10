@@ -1,13 +1,13 @@
 module Coverage.Inline
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
-let length (#v_T: Type0) (xs: t_Slice v_T) : usize = Core.Slice.impl__len #v_T xs
+let length (#v_T: Type0) (xs: t_Slice v_T) : usize = Core_models.Slice.impl__len #v_T xs
 
 let swap
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
       (xs: t_Slice v_T)
       (i j: usize)
     : t_Slice v_T =
@@ -20,40 +20,63 @@ let swap
 
 let display
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Display v_T)
       (xs: t_Slice v_T)
     : Prims.unit =
   let _:Prims.unit =
-    Rust_primitives.Hax.failure "(FunctionalizeLoops) something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation"
-      "{\n for x in (core::iter::traits::collect::f_into_iter(xs)) {\n {\n let args: [core::fmt::rt::t_Argument; 1] = {\n [core::fmt::rt::impl__new_display::<T>(x)]\n };\n {\n let _: tuple0 = {\n std::io::stdio::e_p..."
-
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Slice
+            v_T)
+          #FStar.Tactics.Typeclasses.solve
+          xs
+        <:
+        Core_models.Slice.Iter.t_Iter v_T)
+      ()
+      (fun temp_0_ x ->
+          let _:Prims.unit = temp_0_ in
+          let x:v_T = x in
+          let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+            let list = [Core_models.Fmt.Rt.impl__new_display #v_T x] in
+            FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+            Rust_primitives.Hax.array_of_list 1 list
+          in
+          let _:Prims.unit =
+            Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 1)
+                  (mk_usize 1)
+                  (let list = [""] in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                    Rust_primitives.Hax.array_of_list 1 list)
+                  args
+                <:
+                Core_models.Fmt.t_Arguments)
+          in
+          ())
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
           (let list = ["\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list)
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   let _:Prims.unit = () in
   ()
 
 let error (_: Prims.unit) : Prims.unit =
-  Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.Rt.impl_1__new_const (mk_usize
-              1)
+  Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic_fmt (Core_models.Fmt.Rt.impl_1__new_const
+            (mk_usize 1)
             (let list = ["error"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
           <:
-          Core.Fmt.t_Arguments)
+          Core_models.Fmt.t_Arguments)
       <:
       Rust_primitives.Hax.t_Never)
 
 let rec permutate
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Fmt.t_Display v_T)
       (xs: t_Slice v_T)
       (k: usize)
     : t_Slice v_T =
@@ -88,8 +111,8 @@ let rec permutate
 
 let permutations
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core.Fmt.t_Display v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Fmt.t_Display v_T)
       (xs: t_Slice v_T)
     : Prims.unit =
   let ys:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global =

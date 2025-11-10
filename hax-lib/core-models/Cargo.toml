@@ -1,0 +1,13 @@
+[package]
+name = "core-models"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hax-lib = { "path" = ".." }
+
+# Workaround for https://github.com/rust-lang/cargo/issues/6745
+[workspace]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)'] }

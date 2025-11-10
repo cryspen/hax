@@ -34,7 +34,7 @@ impl DiagnosticInfo {
             hax_types::diagnostics::Diagnostics {
                 kind: self.kind.clone(),
                 span: self.span.data.clone(),
-                context: format!("{:?}", self.context),
+                context: format!("{}", self.context),
                 owner_id: None,
             },
         ))
@@ -68,4 +68,19 @@ pub enum Context {
     Import,
     /// Error during the projection from idenitfiers to views
     NameView,
+    /// Error in a printer
+    Printer(String),
+    /// Error in an engine phase
+    Phase(String),
+}
+
+impl std::fmt::Display for Context {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Context::Import => write!(f, "Importer"),
+            Context::NameView => write!(f, "Name rendering"),
+            Context::Printer(p) => write!(f, "{p} Printer"),
+            Context::Phase(p) => write!(f, "Engine phase ({p})"),
+        }
+    }
 }

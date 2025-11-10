@@ -76,7 +76,7 @@ pub struct Region;
 
 /// A indirection for the representation of types.
 #[derive_group_for_ast]
-pub struct Ty(Box<TyKind>);
+pub struct Ty(pub(crate) Box<TyKind>);
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
@@ -973,7 +973,7 @@ pub enum ExprKind {
         /// The body of the loop.
         body: Expr,
         /// The kind of loop (e.g. `while`, `loop`, `for`...).
-        kind: LoopKind,
+        kind: Box<LoopKind>,
         /// An optional loop state, that makes explicit the state mutated by the
         /// loop.
         state: Option<LoopState>,
@@ -1531,7 +1531,7 @@ pub mod traits {
     );
     derive_has_kind!(
         Item => ItemKind, Expr => ExprKind, Pat => PatKind, Guard => GuardKind,
-        GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind
+        GenericParam => GenericParamKind, ImplItem => ImplItemKind, TraitItem => TraitItemKind, ImplExpr => ImplExprKind
     );
 
     impl HasSpan for Attribute {

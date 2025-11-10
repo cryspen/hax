@@ -109,6 +109,30 @@ cargo hax into -i '+:mycrate::not_extracting_function' <BACKEND>
 - **Extracted Items**:
   - The type signature of `mycrate::not_extracting_function`, without its body or dependencies.
 
+
+
+#### **6. Including anonymous items using `hax_lib::include`**
+Some items like [trait impls](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait), or [inherent impls](https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.inherent) have no name so it is impossible to target them specifically using the `-i` flag.
+In this case, one can use [`hax_lib::include`](https://docs.rs/hax-lib/latest/hax_lib/attr.include.html) to extract these items, and override the default behavior for the rest of the module.
+```rust
+struct S;
+
+#[hax_lib::include]
+impl S {
+    fn f() {}
+}
+
+impl S {
+    #[hax_lib::include]
+    fn g() {}
+    fn h () {}
+}
+```
+To include only `S::f` and `S::g` in the example above, the `hax_lib::include` annotations does the trick, together with the following extraction command:
+```bash
+cargo hax into -i '-**' <BACKEND>
+```
+
 ### **Summary**
 The `-i` flag offers powerful control over extraction, allowing fine-grained inclusion and exclusion of items with various dependency handling strategies. Use it to:
 - Extract specific items and their dependencies (`+` or `+~`).

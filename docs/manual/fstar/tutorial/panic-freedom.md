@@ -12,7 +12,7 @@ in which the function `square` is defined.
 *Note: throughout this tutorial, you can edit the snippets of code and
 extract to F\* by clicking the play button (:material-play:), or even typecheck it with the button (:material-check:).*
 
-```{.rust .playable }
+```{.rust .playable .expect-failure }
 fn square(x: u8) -> u8 {
     x * x
 }
@@ -38,8 +38,8 @@ from the Rust book:
 > handle and lets you tell the process to stop instead of trying to
 > proceed with invalid or incorrect values.
 
-A Rust program should panics only in a situation where an assumption
-or an invariant is broken: a panics models an *invalid* state. Formal
+A Rust program should panic only in a situation where an assumption
+or an invariant is broken: a panic models an *invalid* state. Formal
 verification is about proving such invalid state cannot occur, at all.
 
 From this observation emerges the urge of proving Rust programs to be
@@ -86,12 +86,12 @@ on its inputs.
 The pre-conditions and post-conditions on a function form a
 *contract*: "if you give me some inputs that satisfies a given formula
 (*the precondition*), I will produce a return value that satisfy
-another formula (*the postcondition*)". Outside this contracts,
+another formula (*the postcondition*)". Outside this contract,
 anything might happen: the function might panic, might run forever,
 erase your disk, or anything.
 
 The helper crate
-[hax-lib](https://github.com/hacspec/hax/tree/main/hax-lib)
+[hax-lib](https://github.com/cryspen/hax/tree/main/hax-lib)
 provides the `requires`
 [proc-macro](https://doc.rust-lang.org/reference/procedural-macros.html)
 which lets user writing pre-conditions directly in Rust.
@@ -105,7 +105,7 @@ fn square_requires(x: u8) -> u8 {
 
 With this precondition, F\* is able to prove panic freedom. From now
 on, it is the responsibility of the clients of `square` to respect the
-contact. The next step is thus be to verify, through hax extraction,
+contract. The next step is thus be to verify, through hax extraction,
 that `square` is used correctly at every call site.
 
 ## Common panicking situations
@@ -117,11 +117,11 @@ Another source of panics is indexing. Indexing in an array, a slice or
 a vector is a partial operation: the index might be out of range.
 
 In the example folder of hax, you can find the [`chacha20`
-example](https://github.com/hacspec/hax/blob/main/examples/chacha20/src/lib.rs)
+example](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
 that makes use of pre-conditions to prove panic freedom.
 
 Another solution for safe indexing is to use the [newtype index
 pattern](https://matklad.github.io/2018/06/04/newtype-index-pattern.html),
 which is [also supported by
-hax](https://github.com/hacspec/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
+hax](https://github.com/cryspen/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
 

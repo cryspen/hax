@@ -11,11 +11,11 @@ val impl_14__len #t #u (x:t_BTreeSet t u) : usize
 
 val impl_14__insert #t #u (x:t_BTreeSet t u) (y:t) : (t_BTreeSet t u & bool)
 
-val btree_iter_iter (t: Type0): Core.Iter.Traits.Iterator.t_Iterator (t_Iter t)
+val btree_iter_iter (t: Type0): Core_models.Iter.Traits.Iterator.t_Iterator (t_Iter t)
 
 val impl_14__iter #t #u (x:t_BTreeSet t u): t_Iter t
 
-unfold instance impl t : Core.Iter.Traits.Iterator.t_Iterator (t_Iter t) = {
+unfold instance impl t : Core_models.Iter.Traits.Iterator.t_Iterator (t_Iter t) = {
   f_Item = t;
   f_next = (btree_iter_iter t).f_next;
   f_contains = (btree_iter_iter t).f_contains;

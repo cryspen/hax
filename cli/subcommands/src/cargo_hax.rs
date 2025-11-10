@@ -149,7 +149,12 @@ use hax_types::diagnostics::report::ReportCtx;
 
 #[extension_traits::extension(trait ExtHaxMessage)]
 impl HaxMessage {
-    fn report(self, message_format: MessageFormat, rctx: Option<&mut ReportCtx>) {
+    fn report(self, message_format: MessageFormat, mut rctx: Option<&mut ReportCtx>) {
+        if let (Some(r), HaxMessage::Diagnostic { diagnostic, .. }) = (rctx.as_mut(), &self)
+            && r.seen_already(diagnostic.clone())
+        {
+            return;
+        }
         match message_format {
             MessageFormat::Json => println!("{}", serde_json::to_string(&self).unwrap()),
             MessageFormat::Human => self.report_styled(rctx),
@@ -164,9 +169,12 @@ impl HaxMessage {
             } => {
                 let mut _rctx = None;
                 let rctx = rctx.unwrap_or_else(|| _rctx.get_or_insert(ReportCtx::default()));
-                diagnostic.with_message(rctx, &working_dir, Level::Error, |msg| {
-                    eprintln!("{}", renderer.render(msg))
-                });
+                diagnostic.with_message(
+                    rctx,
+                    working_dir.as_ref().map(PathBuf::as_path),
+                    Level::Error,
+                    |msg| eprintln!("{}", renderer.render(msg)),
+                );
             }
             Self::EngineNotFound {
                 is_opam_setup_correctly,
@@ -253,8 +261,8 @@ impl HaxMessage {
 fn run_engine(
     haxmeta: HaxMeta<hax_frontend_exporter::ThirBody>,
     id_table: id_table::Table,
-    working_dir: PathBuf,
-    manifest_dir: PathBuf,
+    working_dir: Option<PathBuf>,
+    manifest_dir: Option<PathBuf>,
     backend: &BackendOptions<()>,
     message_format: MessageFormat,
 ) -> bool {
@@ -321,7 +329,9 @@ fn run_engine(
             ]
             .iter()
             .collect();
-            manifest_dir.join(&relative_path)
+            manifest_dir
+                .map(|manifest_dir| manifest_dir.join(&relative_path))
+                .unwrap_or(relative_path)
         });
 
         let stdout = std::io::BufReader::new(engine_subprocess.stdout.take().unwrap());
@@ -366,10 +376,12 @@ fn run_engine(
                                 .iter()
                                 .map(PathBuf::from)
                                 .map(|path| {
-                                    if path.is_absolute() {
-                                        path
-                                    } else {
+                                    if let Some(working_dir) = working_dir.as_ref()
+                                        && path.is_relative()
+                                    {
                                         working_dir.join(path).to_path_buf()
+                                    } else {
+                                        path
                                     }
                                 })
                                 .map(|path| fs::read_to_string(path).ok())
@@ -505,6 +517,7 @@ fn get_hax_rustc_driver_path() -> PathBuf {
 /// in `TARGET`. One `haxmeta` file is produced by crate. Each
 /// `haxmeta` file contains the full AST of one crate.
 fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
+    let frontend_options = ExporterOptions::from(options);
     let mut cmd = {
         let mut cmd = process::Command::new("cargo");
         if let Some(toolchain) = toolchain() {
@@ -531,7 +544,7 @@ fn compute_haxmeta_files(options: &Options) -> (Vec<EmitHaxMetaMessage>, i32) {
             .env("HAX_CARGO_CACHE_KEY", get_hax_version())
             .env(
                 ENV_VAR_OPTIONS_FRONTEND,
-                serde_json::to_string(&options)
+                serde_json::to_string(&frontend_options)
                     .expect("Options could not be converted to a JSON string"),
             );
         cmd
@@ -634,8 +647,28 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
                 path,
             } in haxmeta_files
             {
-                let (haxmeta, id_table): (HaxMeta<Body>, _) =
+                let (mut haxmeta, id_table): (HaxMeta<Body>, _) =
                     HaxMeta::read(fs::File::open(&path).unwrap());
+
+                if let Some(root_module) = &backend.prune_haxmeta {
+                    use hax_frontend_exporter::{DefPathItem, DisambiguatedDefPathItem, IsBody};
+
+                    /// Remove every item from an `HaxMeta` whose path is not `*::<root_module>::**`, where `root_module` is a string.
+                    fn prune_haxmeta<B: IsBody>(haxmeta: &mut HaxMeta<B>, root_module: &str) {
+                        haxmeta.items.retain(|item| match &item.owner_id.path[..] {
+                            [] => true,
+                            [
+                                DisambiguatedDefPathItem {
+                                    data: DefPathItem::TypeNs(s),
+                                    disambiguator: 0,
+                                },
+                                ..,
+                            ] => s == root_module,
+                            _ => false,
+                        })
+                    }
+                    prune_haxmeta(&mut haxmeta, root_module.as_str())
+                }
 
                 error = error
                     || run_engine(
@@ -649,31 +682,50 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
             }
             error
         }
+        Command::Serialize { .. } => {
+            for EmitHaxMetaMessage { path, .. } in haxmeta_files {
+                HaxMessage::ProducedFile { path, wrote: true }.report(options.message_format, None);
+            }
+            false
+        }
     }
 }
 
 fn main() {
     let args: Vec<String> = get_args("hax");
     let mut options = match &args[..] {
-        [_, kw] if kw == "__json" => serde_json::from_str(
-            &std::env::var(ENV_VAR_OPTIONS_FRONTEND).unwrap_or_else(|_| {
+        [_, kw] if kw == "__json" => {
+            serde_json::from_str(&std::env::var(ENV_VAR_OPTIONS_FULL).unwrap_or_else(|_| {
                 panic!(
                     "Cannot find environnement variable {}",
-                    ENV_VAR_OPTIONS_FRONTEND
+                    ENV_VAR_OPTIONS_FULL
                 )
-            }),
-        )
-        .unwrap_or_else(|_| {
-            panic!(
-                "Invalid value for the environnement variable {}",
-                ENV_VAR_OPTIONS_FRONTEND
-            )
-        }),
+            }))
+            .unwrap_or_else(|_| {
+                panic!(
+                    "Invalid value for the environnement variable {}",
+                    ENV_VAR_OPTIONS_FULL
+                )
+            })
+        }
         _ => Options::parse_from(args.iter()),
     };
     options.normalize_paths();
 
-    let (haxmeta_files, exit_code) = compute_haxmeta_files(&options);
+    let (haxmeta_files, exit_code) = options
+        .haxmeta
+        .clone()
+        .map(|path| {
+            (
+                vec![EmitHaxMetaMessage {
+                    working_dir: None,
+                    manifest_dir: None,
+                    path,
+                }],
+                0,
+            )
+        })
+        .unwrap_or_else(|| compute_haxmeta_files(&options));
     let error = run_command(&options, haxmeta_files);
 
     std::process::exit(if exit_code == 0 && error {

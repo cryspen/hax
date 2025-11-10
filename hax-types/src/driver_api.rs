@@ -5,8 +5,8 @@ pub const HAX_DRIVER_STDERR_PREFIX: &str = "::hax-driver::";
 #[derive_group(Serializers)]
 #[derive(Debug, Clone)]
 pub struct EmitHaxMetaMessage {
-    pub working_dir: PathBuf,
-    pub manifest_dir: PathBuf,
+    pub working_dir: Option<PathBuf>,
+    pub manifest_dir: Option<PathBuf>,
     pub path: PathBuf,
 }
 #[derive_group(Serializers)]

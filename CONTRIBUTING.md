@@ -9,19 +9,19 @@ The processes described here is not to pester you but to increase and maintain c
 
 We use issues to organise and prioritise work items.
 
-**Assignee meaning in issues:** The assignee is the person responsible for addressing the issue and is typically the one actively working on it.
+**Assignee meaning in issues:** The assignee is the person responsible for following up on the issue (making sure it eventually gets addressed). It is usually (but not necessarily) the one working on it.
 
-After picking up an issue create a branch.
-There can be any number of branches and pull request for one issue.
+After picking up an issue, create a branch.
+There can be any number of branches and pull requests for one issue.
 But make sure that each issue is clearly linked to the pull request.
 There must be one pull request that closes the issue.
 If there are multiple PRs for an issue, make sure this is clear in the pull request.
 
 ## Pull Requests
 
-We use the Github based PR workflow.
-When starting to work on an issue create a branch and an according pull request that fixes the issue.
-The changeset in a pull requests must not be larger than 1000 lines.
+We use the GitHub-based PR workflow.
+When starting to work on an issue, create a branch and an according pull request that fixes the issue.
+The changeset in a pull request must not be larger than 1000 lines (with some exceptions for test snapshots or generated code).
 If an issue needs more work than that, split it into multiple pull requests.
 
 After submitting the pull request, verify that all [status checks](https://help.github.com/articles/about-status-checks/) are passing before asking for review.
@@ -79,6 +79,13 @@ If a user (developer or customer) wouldn’t notice or need to know, leave it ou
 
 ## Styleguides
 
+### Optional Title Prefixes for Issues
+To help quickly convey the focus of an issue, we sometimes add a short prefix in square brackets at the start of the title: `[prefix] Issue short title`. This is optional; you can just use it if the issue has a clear direction or goal.
+
+Keep it short and intuitive, think of it as a lightweight hint, not a strict taxonomy or replacements for labels or milestones.
+
+Use it when it helps. Leave it out when it doesn’t.
+
 ### Git Commit Messages
 
 - Use the present tense
@@ -111,7 +118,7 @@ As a reviewer always keep in mind the following principles
 
 ### Review Guidelines
 
-- Check that issue is assigned and linked.
+- Check that the issue is assigned and linked.
 - Commit title and message make sense and says what is being changed.
 - Check that the PR applies cleanly on the target branch.
 - Check new files for license and administrative issues.

@@ -1,4 +1,4 @@
-use hax_types::cli_options::{Command, ENV_VAR_OPTIONS_FRONTEND, Options};
+use hax_types::cli_options::{ENV_VAR_OPTIONS_FRONTEND, ExporterOptions};
 
 use rustc_ast::Crate;
 use rustc_driver::{Callbacks, Compilation};
@@ -10,7 +10,7 @@ use rustc_span::symbol::Symbol;
 /// configuration in the `config` phase of rustc
 pub struct CallbacksWrapper<'a> {
     pub sub: &'a mut (dyn Callbacks + Send + 'a),
-    pub options: Options,
+    pub options: ExporterOptions,
 }
 impl<'a> Callbacks for CallbacksWrapper<'a> {
     fn config(&mut self, config: &mut interface::Config) {

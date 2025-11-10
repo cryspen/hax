@@ -198,7 +198,9 @@ module Make (F : Features.T) = struct
           let span = Span.to_thir self#current_span in
           let kind = Types.AssertionFailure { details } in
           let ctx = Diagnostics.Context.GenericPrinter self#printer_name in
-          Diagnostics.SpanFreeError.raise ~span ctx kind
+          Diagnostics.SpanFreeError.raise ~span
+            (Span.owner_hint self#current_span)
+            ctx kind
       (** An assertion failed *)
 
       method unreachable : 'any. unit -> 'any =

@@ -1,6 +1,7 @@
 debug/
 target/
 **/*.rs.bk
+**/*.profraw
 node_modules
 TODO.org
 .direnv

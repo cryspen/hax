@@ -20,7 +20,9 @@ open Diagnostics
 
 let assertion_failure (span : Thir.span list) (details : string) =
   let kind = T.AssertionFailure { details } in
-  Diagnostics.SpanFreeError.raise ~span ThirImport kind
+  Diagnostics.SpanFreeError.raise ~span
+    (Span.dummy () |> Span.owner_hint)
+    ThirImport kind
 
 let unimplemented ~issue_id (span : Thir.span list) (details : string) =
   let kind =
@@ -30,7 +32,9 @@ let unimplemented ~issue_id (span : Thir.span list) (details : string) =
         details = String.(if details = "" then None else Some details);
       }
   in
-  Diagnostics.SpanFreeError.raise ~span ThirImport kind
+  Diagnostics.SpanFreeError.raise ~span
+    (Span.dummy () |> Span.owner_hint)
+    ThirImport kind
 
 module Ast = struct
   include Ast
@@ -239,7 +243,7 @@ module type EXPR = sig
   val c_trait_item' : Thir.trait_item -> Thir.trait_item_kind -> trait_item'
   val c_trait_ref : Thir.span -> Thir.trait_ref -> trait_goal
   val c_impl_expr : Thir.span -> Thir.impl_expr -> impl_expr
-  val c_clause : Thir.span -> Thir.clause -> generic_constraint option
+  val c_clause : Thir.span -> int -> Thir.clause -> generic_constraint option
 end
 
 (* BinOp to [core::ops::*] overloaded functions *)
@@ -1174,19 +1178,17 @@ end) : EXPR = struct
         (chunk : Thir.impl_expr_path_chunk) =
       match chunk with
       | AssocItem
-          { item; predicate = { value = { trait_ref; _ }; _ }; predicate_id; _ }
-        ->
+          { item; predicate = { value = { trait_ref; _ }; _ }; index; _ } ->
           let ident =
-            { goal = c_trait_ref span trait_ref; name = predicate_id }
+            { goal = c_trait_ref span trait_ref; name = "i" ^ index }
           in
           let item = Concrete_ident.of_def_id ~value:false item.value.def_id in
           let trait_ref = c_trait_ref span trait_ref in
           Projection
             { impl = { kind = item_kind; goal = trait_ref }; ident; item }
-      | Parent { predicate = { value = { trait_ref; _ }; _ }; predicate_id; _ }
-        ->
+      | Parent { predicate = { value = { trait_ref; _ }; _ }; index; _ } ->
           let ident =
-            { goal = c_trait_ref span trait_ref; name = predicate_id }
+            { goal = c_trait_ref span trait_ref; name = "i" ^ index }
           in
           let trait_ref = c_trait_ref span trait_ref in
           Parent { impl = { kind = item_kind; goal = trait_ref }; ident }
@@ -1196,8 +1198,8 @@ end) : EXPR = struct
         let trait = Concrete_ident.of_def_id ~value:false def_id in
         let args = List.map ~f:(c_generic_value span) generic_args in
         Concrete { trait; args }
-    | LocalBound { predicate_id; path; _ } ->
-        let init = LocalBound { id = predicate_id } in
+    | LocalBound { index; path; _ } ->
+        let init = LocalBound { id = "i" ^ index } in
         List.fold ~init ~f:browse_path path
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
@@ -1294,7 +1296,7 @@ end) : EXPR = struct
         let trait =
           Concrete_ident.of_def_id ~value:false trait_ref.value.def_id
         in
-        Some (GCType { goal = { trait; args }; name = id })
+        Some (GCType { goal = { trait; args }; name = "i" ^ Int.to_string id })
     | Projection { impl_expr; assoc_item; ty } ->
         let impl = c_impl_expr span impl_expr in
         let assoc_item =
@@ -1304,9 +1306,10 @@ end) : EXPR = struct
         Some (GCProjection { impl; assoc_item; typ })
     | _ -> None
 
-  let c_clause span (p : Thir.clause) : generic_constraint option =
-    let ({ kind; id } : Thir.clause) = p in
-    c_clause_kind span id kind.value
+  let c_clause span (index : int) (p : Thir.clause) : generic_constraint option
+      =
+    let ({ kind; _ } : Thir.clause) = p in
+    c_clause_kind span index kind.value
 
   let list_dedup (equal : 'a -> 'a -> bool) : 'a list -> 'a list =
     let rec aux (seen : 'a list) (todo : 'a list) : 'a list =
@@ -1318,8 +1321,18 @@ end) : EXPR = struct
     in
     aux []
 
+  let c_bounds span bounds =
+    List.fold_left ~init:(0, [])
+      ~f:(fun (i, clauses) c ->
+        match c_clause span i c with
+        | Some (GCType _ as c) -> (i + 1, c :: clauses)
+        | Some c -> (i, c :: clauses)
+        | None -> (i, clauses))
+      bounds
+    |> snd |> List.rev
+
   let c_generics (generics : Thir.generics) : generics =
-    let bounds = List.filter_map ~f:(c_clause generics.span) generics.bounds in
+    let bounds = c_bounds generics.span generics.bounds in
     {
       params = List.map ~f:c_generic_param generics.params;
       constraints = bounds |> list_dedup equal_generic_constraint;
@@ -1354,7 +1367,7 @@ end) : EXPR = struct
           }
     | Type (bounds, None) ->
         let bounds =
-          List.filter_map ~f:(c_clause span) bounds
+          c_bounds span bounds
           |> List.filter_map ~f:(fun bound ->
                  match bound with GCType impl -> Some impl | _ -> None)
         in
@@ -1376,7 +1389,7 @@ include struct
     c_trait_ref
 
   let import_clause :
-      Types.span -> Types.clause -> Ast.Rust.generic_constraint option =
+      Types.span -> int -> Types.clause -> Ast.Rust.generic_constraint option =
     c_clause
 end
 
@@ -1804,14 +1817,16 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                         {
                           typ = c_ty item.span ty;
                           parent_bounds =
-                            List.filter_map
-                              ~f:(fun (clause, impl_expr, span) ->
-                                let* bound = c_clause span clause in
-                                match bound with
-                                | GCType trait_goal ->
-                                    Some (c_impl_expr span impl_expr, trait_goal)
-                                | _ -> None)
-                              parent_bounds;
+                            List.fold_left ~init:(0, [])
+                              ~f:(fun (i, clauses) (clause, impl_expr, span) ->
+                                match c_clause span i clause with
+                                | Some (GCType trait_goal) ->
+                                    ( i + 1,
+                                      (c_impl_expr span impl_expr, trait_goal)
+                                      :: clauses )
+                                | _ -> (i, clauses))
+                              parent_bounds
+                            |> snd |> List.rev;
                         });
                 ii_ident;
                 ii_attrs = c_item_attrs item.attributes;
@@ -1830,9 +1845,9 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                    of_trait.value.generic_args );
              items;
              parent_bounds =
-               List.filter_map
-                 ~f:(fun (clause, impl_expr, span) ->
-                   let* bound = c_clause span clause in
+               List.filter_mapi
+                 ~f:(fun i (clause, impl_expr, span) ->
+                   let* bound = c_clause span i clause in
                    match bound with
                    | GCType trait_goal ->
                        Some (c_impl_expr span impl_expr, trait_goal)
@@ -1885,11 +1900,7 @@ let import_item ~type_only (item : Thir.item) :
     concrete_ident * (item list * Diagnostics.t list) =
   let ident = Concrete_ident.of_def_id ~value:false item.owner_id in
   let r, reports =
-    let f =
-      U.Mappers.rename_generic_constraints#visit_item
-        (true, Hashtbl.create (module String))
-      >> U.Reducers.disambiguate_local_idents
-    in
+    let f = U.Reducers.disambiguate_local_idents in
     Diagnostics.Core.capture (fun _ ->
         c_item item ~ident ~type_only |> List.map ~f)
   in

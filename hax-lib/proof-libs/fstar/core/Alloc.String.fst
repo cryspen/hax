@@ -10,12 +10,12 @@ let impl__String__push_str (self: t_String) (s: t_String): t_String =
 let impl__String__push (self: t_String) (ch: FStar.Char.char) = 
     self ^ (FStar.String.string_of_char ch)
 
-let impl__String__pop (self: t_String): (Alloc.String.t_String & Core.Option.t_Option FStar.Char.char) = 
+let impl__String__pop (self: t_String): (Alloc.String.t_String & Core_models.Option.t_Option FStar.Char.char) = 
     let l = FStar.String.length self in 
     if l > 0 then 
-        (FStar.String.sub self 0 (l - 1), Core.Option.Option_Some (FStar.String.index self (l - 1)))
-    else (self, Core.Option.Option_None)
+        (FStar.String.sub self 0 (l - 1), Core_models.Option.Option_Some (FStar.String.index self (l - 1)))
+    else (self, Core_models.Option.Option_None)
 
 /// Placeholder for the to_string typeclass
 assume
-val f_to_string (#t: Type) {| Core.TypeClassPlaceHolder.t_Placeholder |} (x:t) : Alloc.String.t_String
+val f_to_string (#t: Type) {| Core_models.TypeClassPlaceHolder.t_Placeholder |} (x:t) : Alloc.String.t_String

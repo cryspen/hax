@@ -1,6 +1,6 @@
 module Hax_lib.Int
 
-open Core
+open Core_models
 
 unfold type t_Int = int
 

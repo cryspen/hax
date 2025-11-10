@@ -97,10 +97,12 @@ type owner_id = OwnerId of int
 [@@deriving show, yojson, sexp, compare, eq, hash]
 
 let owner_id_list = ref []
+let owner_id_list_len = ref 0
 
 let fresh_owner_id (owner : Types.def_id) : owner_id =
-  let next_id = OwnerId (List.length !owner_id_list) in
+  let next_id = OwnerId !owner_id_list_len in
   owner_id_list := owner :: !owner_id_list;
+  owner_id_list_len := !owner_id_list_len + 1;
   next_id
 
 (** This state changes the behavior of `of_thir`: the hint placed into this
@@ -150,7 +152,9 @@ let default = { id = 0; data = []; owner_hint = None }
 
 let owner_hint span =
   span.owner_hint
-  |> Option.bind ~f:(fun (OwnerId id) -> List.nth !owner_id_list id)
+  |> Option.map ~f:(fun (OwnerId id) ->
+         Option.value_exn
+           (List.nth !owner_id_list (!owner_id_list_len - id - 1)))
 
 let to_span2 span : Types.span2 =
   {

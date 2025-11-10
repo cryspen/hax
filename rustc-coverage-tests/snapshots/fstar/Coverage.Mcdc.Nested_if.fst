@@ -1,10 +1,10 @@
 module Coverage.Mcdc.Nested_if
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let say (message: string) : Prims.unit =
-  let _:string = Core.Hint.black_box #string message in
+  let _:string = Core_models.Hint.black_box #string message in
   ()
 
 let nested_if_in_condition (a b c: bool) : Prims.unit =

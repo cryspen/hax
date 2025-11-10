@@ -4,7 +4,7 @@
 //! [`hax_rust_engine::ast::Resugaring`] for the definition of a
 //! resugaring). Each backend defines its own set of resugaring phases.
 
-use crate::ast::identifiers::global_id::ExplicitDefId;
+use crate::ast::identifiers::GlobalId;
 use crate::ast::resugared::*;
 use crate::ast::visitors::*;
 use crate::ast::*;
@@ -33,7 +33,7 @@ impl AstVisitorMut for FunctionsToConstants {
             return;
         }
         *item_kind = ItemKind::Resugared(ResugaredItemKind::Constant {
-            name: name.clone(),
+            name: *name,
             body: body.clone(),
             generics: generics.clone(),
         });
@@ -54,12 +54,12 @@ pub struct BinOp {
     /// backend can select its own set of identifiers Typically, if the backend
     /// has a special support for addition, `known_ops` will contain
     /// `hax::machine::int::add`
-    pub known_ops: HashSet<ExplicitDefId>,
+    pub known_ops: HashSet<GlobalId>,
 }
 
 impl BinOp {
     /// Adds a new binary operation from a list of (hax-introduced) names
-    pub fn new(known_ops: &[ExplicitDefId]) -> Self {
+    pub fn new(known_ops: &[GlobalId]) -> Self {
         Self {
             known_ops: HashSet::from_iter(known_ops.iter().cloned()),
         }
@@ -84,7 +84,7 @@ impl AstVisitorMut for BinOp {
         let [lhs, rhs] = &args[..] else { return };
         if self.known_ops.iter().any(|defid| id == defid) {
             *x = ExprKind::Resugared(ResugaredExprKind::BinOp {
-                op: id.clone(),
+                op: *id,
                 lhs: lhs.clone(),
                 rhs: rhs.clone(),
                 generic_args: generic_args.clone(),
@@ -118,7 +118,7 @@ impl AstVisitorMut for Tuples {
             ExprKind::GlobalId(constructor) => (constructor, &[][..]),
             _ => return,
         };
-        if constructor.is_tuple() {
+        if constructor.expect_tuple().is_some() {
             let args = fields.iter().map(|(_, e)| e).cloned().collect();
             *x = ExprKind::Resugared(ResugaredExprKind::Tuple(args))
         }
@@ -127,7 +127,7 @@ impl AstVisitorMut for Tuples {
         let TyKind::App { head, args } = x else {
             return;
         };
-        if head.is_tuple() {
+        if head.expect_tuple().is_some() {
             let Some(args) = args
                 .iter()
                 .map(GenericValue::expect_ty)
@@ -143,5 +143,38 @@ impl AstVisitorMut for Tuples {
 impl Resugaring for Tuples {
     fn name(&self) -> String {
         "tuples".to_string()
+    }
+}
+
+/// Let-pure resugaring. Use to identify expressions of the form `let x ← pure ..`, where the arrow
+/// can be turned into a normal assignment `:=`
+pub struct LetPure;
+
+impl AstVisitorMut for LetPure {
+    fn enter_expr_kind(&mut self, expr: &mut ExprKind) {
+        const PURE: GlobalId = crate::names::rust_primitives::hax::explicit_monadic::pure;
+        if let ExprKind::Let { lhs, rhs, body } = expr
+            && let ExprKind::App {
+                head,
+                args,
+                generic_args,
+                bounds_impls,
+                trait_: None,
+            } = rhs.kind()
+            && *head.kind() == ExprKind::GlobalId(PURE)
+            && let ([pure_rhs], [], []) = (&args[..], &generic_args[..], &bounds_impls[..])
+        {
+            *expr = ExprKind::Resugared(ResugaredExprKind::LetPure {
+                lhs: lhs.clone(),
+                rhs: pure_rhs.clone(),
+                body: body.clone(),
+            })
+        }
+    }
+}
+
+impl Resugaring for LetPure {
+    fn name(&self) -> String {
+        "let_pure".to_string()
     }
 }

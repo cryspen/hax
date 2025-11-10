@@ -1,7 +1,7 @@
 use super::Diagnostics;
 use annotate_snippets::*;
 use miette::SourceOffset;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 
@@ -9,6 +9,7 @@ use std::rc::Rc;
 #[derive(Clone, Debug, Default)]
 pub struct ReportCtx {
     files: HashMap<PathBuf, Rc<String>>,
+    seen: HashSet<Diagnostics>,
 }
 
 /// Translates a line and column position into an absolute offset
@@ -28,6 +29,11 @@ impl ReportCtx {
             })
             .clone()
     }
+
+    /// Check if `diagnostic` have been seen already, and mark `diagnostic` as seen.
+    pub fn seen_already(&mut self, diagnostic: Diagnostics) -> bool {
+        !self.seen.insert(diagnostic)
+    }
 }
 
 impl Diagnostics {
@@ -36,7 +42,7 @@ impl Diagnostics {
     pub fn with_message<R, F: for<'a> FnMut(Message<'a>) -> R>(
         &self,
         report_ctx: &mut ReportCtx,
-        working_dir: &Path,
+        working_dir: Option<&Path>,
         level: Level,
         mut then: F,
     ) -> R {
@@ -46,7 +52,9 @@ impl Diagnostics {
             if let Some(path) = span.filename.to_path() {
                 let source = {
                     let mut path = path.to_path_buf();
-                    if path.is_relative() {
+                    if let Some(working_dir) = working_dir
+                        && path.is_relative()
+                    {
                         path = working_dir.join(&path);
                     };
                     report_ctx.file_contents(path)

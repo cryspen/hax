@@ -1,7 +1,7 @@
 module Rust_primitives.Hax.Folds
 
 open Rust_primitives
-open Core.Ops.Range
+open Core_models.Ops.Range
 open FStar.Mul
 
 (**** `s.chunks_exact(chunk_size).enumerate()` *)
@@ -75,8 +75,8 @@ val fold_enumerated_slice_return
   (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
   (init: acc_t {inv init (sz 0)})
   (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) (*/\ inv acc  (fst i)*)}
-                 -> Core.Ops.Control_flow.t_ControlFlow (Core.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) (acc':acc_t)    (*{v (fst i) < v (length s) /\ inv acc' (fst i)}*)))
-  : result: Core.Ops.Control_flow.t_ControlFlow ret acc_t(* {inv result (length s)} *)
+                 -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) (acc':acc_t)    (*{v (fst i) < v (length s) /\ inv acc' (fst i)}*)))
+  : result: Core_models.Ops.Control_flow.t_ControlFlow ret acc_t(* {inv result (length s)} *)
 
 (**** `(start..end_).step_by(step)` *)
 unfold let fold_range_step_by_wf_index (#u: inttype)
@@ -146,18 +146,18 @@ let rec fold_range_cf
   (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
   (acc: acc_t )
   (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) }
-                  -> tuple:((Core.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
+                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
                     {
                       let acc = match tuple with 
-                        | Core.Ops.Control_flow.ControlFlow_Break ((), acc)
-                        | Core.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
                       inv acc (mk_int (v i + 1))}))
 : Tot acc_t (decreases v end_ - v start)
   =
   if v start < v end_
   then match f acc start with
-       | Core.Ops.Control_flow.ControlFlow_Break ((), acc) -> acc
-       | Core.Ops.Control_flow.ControlFlow_Continue acc ->
+       | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc) -> acc
+       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
          fold_range_cf (start +! mk_int 1) end_ inv acc f
   else acc
 
@@ -168,22 +168,22 @@ let rec fold_range_return
   (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
   (acc: acc_t )
   (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) }
-                  -> tuple:((Core.Ops.Control_flow.t_ControlFlow (Core.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t))) acc_t)
+                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t))) acc_t)
                     ))
-: Tot (Core.Ops.Control_flow.t_ControlFlow ret_t acc_t) (decreases v end_ - v start)
+: Tot (Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t) (decreases v end_ - v start)
   =
   if v start < v end_
   then match f acc start with
-       | Core.Ops.Control_flow.ControlFlow_Break (Core.Ops.Control_flow.ControlFlow_Break res)-> Core.Ops.Control_flow.ControlFlow_Break res
+       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Break res)-> Core_models.Ops.Control_flow.ControlFlow_Break res
        
-       | Core.Ops.Control_flow.ControlFlow_Break (Core.Ops.Control_flow.ControlFlow_Continue ((), res)) -> Core.Ops.Control_flow.ControlFlow_Continue res
-       | Core.Ops.Control_flow.ControlFlow_Continue acc ->
+       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Continue ((), res)) -> Core_models.Ops.Control_flow.ControlFlow_Continue res
+       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
          fold_range_return (start +! mk_int 1) end_ inv acc f
-  else Core.Ops.Control_flow.ControlFlow_Continue acc
+  else Core_models.Ops.Control_flow.ControlFlow_Continue acc
 
 val fold_return #it #acc #ret #item (i: it) (init: acc) 
   (f: acc -> item -> 
-    Core.Ops.Control_flow.t_ControlFlow  
-    (Core.Ops.Control_flow.t_ControlFlow ret (unit & acc)) acc): 
-  Core.Ops.Control_flow.t_ControlFlow ret acc
+    Core_models.Ops.Control_flow.t_ControlFlow  
+    (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc)) acc): 
+  Core_models.Ops.Control_flow.t_ControlFlow ret acc
   

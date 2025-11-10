@@ -9,14 +9,14 @@ let never_to_any #t: t_Never -> t = (fun _ -> match () with)
 let repeat #a (x: a) (len: usize): t_Array a len = 
   FStar.Seq.create (v len) x
 
-open Core.Ops.Index
+open Core_models.Ops.Index
 class update_at_tc self idx = {
   [@@@FStar.Tactics.Typeclasses.tcinstance]
   super_index: t_Index self idx;
   update_at: s: self -> i: idx {f_index_pre s i} -> super_index.f_Output -> self;
 }
 
-open Core.Slice
+open Core_models.Slice
 
 /// We have an instance for `int_t n`, but we often work with refined
 /// `int_t n`, and F* typeclass inference doesn't support subtyping
@@ -60,8 +60,8 @@ let box_new (#t:Type) (v: t): Alloc.Boxed.t_Box t Alloc.Alloc.t_Global = v
 
 class iterator_return (self: Type u#0): Type u#1 = {
   [@@@FStar.Tactics.Typeclasses.tcresolve]
-  parent_iterator: Core.Iter.Traits.Iterator.t_Iterator self;
-  f_fold_return: #b:Type0 -> s:self -> b -> (b -> i:parent_iterator.f_Item{parent_iterator.f_contains s i} -> Core.Ops.Control_flow.t_ControlFlow b b) -> Core.Ops.Control_flow.t_ControlFlow b b;
+  parent_iterator: Core_models.Iter.Traits.Iterator.t_Iterator self;
+  f_fold_return: #b:Type0 -> s:self -> b -> (b -> i:parent_iterator.f_Item{parent_iterator.f_contains s i} -> Core_models.Ops.Control_flow.t_ControlFlow b b) -> Core_models.Ops.Control_flow.t_ControlFlow b b;
 }
 let while_loop #acc_t 
   (condition: acc_t -> bool) 
@@ -86,9 +86,9 @@ assume val while_loop_return #acc_t #ret_t (condition: acc_t -> bool)
   (inv: acc_t -> Type0)
   (fuel: (a:acc_t -> nat))
   (init: acc_t ) 
-  (f: (acc_t -> Core.Ops.Control_flow.t_ControlFlow 
-  (Core.Ops.Control_flow.t_ControlFlow ret_t (Prims.unit & acc_t)) acc_t))
-  : Core.Ops.Control_flow.t_ControlFlow ret_t acc_t
+  (f: (acc_t -> Core_models.Ops.Control_flow.t_ControlFlow 
+  (Core_models.Ops.Control_flow.t_ControlFlow ret_t (Prims.unit & acc_t)) acc_t))
+  : Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t
 
 /// Represents backend failures
 let failure #t (_error: string) (_ast: string): Pure t False (fun _ -> True) = ()

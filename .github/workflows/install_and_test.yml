@@ -58,6 +58,5 @@ jobs:
       env:
         CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
       run: |
-        nix build .# .#fstar --json \
-          | jq -r '.[].outputs | to_entries[].value' \
+        nix-store -qR --include-outputs $(nix build .# --json | jq -r '.[].outputs | to_entries[].value') \
           | cachix push hax

@@ -42,7 +42,7 @@ report() {
             --jq "map(select(.mergedAt >= \"$start\" and .mergedAt <= \"$end\")) | .[] | {number, title, url, author}" | jq -s
     )
 
-    echo "In $(date -d "$year-$month-01" +"%B"), we successfully merged **$(echo "$pr_data" | jq -r 'length')** pull requests**!"
+    echo "In $(date -d "$year-$month-01" +"%B"), we successfully merged **$(echo "$pr_data" | jq -r 'length') pull requests**!"
     echo ""
     echo "<DESCRIPTION>"
     echo ""

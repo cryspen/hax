@@ -1,8 +1,15 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+pub mod comments;
+pub mod constants;
 pub mod enums;
+pub mod ite;
+pub mod loops;
+pub mod monadic;
+pub mod reject_do_dsl;
 pub mod structs;
+pub mod traits;
 
 const FORTYTWO: usize = 42;
 const MINUS_FORTYTWO: isize = -42;

@@ -43,14 +43,16 @@ struct
             =
           try f span x
           with S0.E err ->
-            let span = Span.to_thir span in
+            let thir_span = Span.to_thir span in
             let kind : Diagnostics.kind =
-              ExplicitRejection { reason = S0.explain err feature_kind }
+              ExplicitRejection
+                { reason = S0.explain err feature_kind; issue_id = None }
             in
             let context : Diagnostics.Context.t =
               Phase S0.metadata.current_phase
             in
-            Diagnostics.SpanFreeError.raise ~span context kind
+            Diagnostics.SpanFreeError.raise ~span:thir_span
+              (Span.owner_hint span) context kind
       end)
 
   include Subtype.Make (FA) (FB) (S)
