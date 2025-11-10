@@ -95,10 +95,7 @@ impl<'tcx> GlobalCache<'tcx> {
                 let (n_arg, n_feed) = mk_param(
                     "N",
                     rustc_hir::def::DefKind::ConstParam,
-                    ty::GenericParamDefKind::Const {
-                        has_default: false,
-                        synthetic: false,
-                    },
+                    ty::GenericParamDefKind::Const { has_default: false },
                 );
                 n_feed.type_of(ty::EarlyBinder::bind(tcx.types.usize));
 

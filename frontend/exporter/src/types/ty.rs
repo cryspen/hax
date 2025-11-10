@@ -20,18 +20,6 @@ pub struct Decorated<T> {
     pub attributes: Vec<Attribute>,
 }
 
-/// Reflects [`rustc_middle::infer::canonical::CanonicalTyVarKind`]
-#[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalTyVarKind, state: S as gstate)]
-pub enum CanonicalTyVarKind {
-    General(UniverseIndex),
-    Int,
-    Float,
-}
-
-sinto_as_usize!(rustc_middle::ty, UniverseIndex);
-
 /// Reflects [`ty::ParamTy`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -88,14 +76,6 @@ pub struct ExistentialProjection {
     pub term: Term,
 }
 
-/// Reflects [`ty::DynKind`]
-#[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<S>, from: ty::DynKind, state: S as _s)]
-pub enum DynKind {
-    Dyn,
-}
-
 /// Reflects [`ty::BoundTyKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -149,7 +129,6 @@ pub type PlaceholderType = Placeholder<BoundTy>;
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Placeholder<T> {
-    pub universe: UniverseIndex,
     pub bound: T,
 }
 
@@ -159,7 +138,6 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Placeholder<U>>
 {
     fn sinto(&self, s: &S) -> Placeholder<U> {
         Placeholder {
-            universe: self.universe.sinto(s),
             bound: self.bound.sinto(s),
         }
     }
@@ -169,8 +147,6 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Placeholder<U>>
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct Canonical<T> {
-    pub max_universe: UniverseIndex,
-    pub variables: Vec<CanonicalVarInfo>,
     pub value: T,
 }
 /// Reflects [`ty::CanonicalUserType`]
@@ -182,24 +158,9 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Canonical<U>>
 {
     fn sinto(&self, s: &S) -> Canonical<U> {
         Canonical {
-            max_universe: self.max_universe.sinto(s),
-            variables: self.variables.sinto(s),
             value: self.value.sinto(s),
         }
     }
-}
-
-/// Reflects [`rustc_middle::infer::canonical::CanonicalVarKind`]
-#[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalVarKind<'tcx>, state: S as gstate)]
-pub enum CanonicalVarInfo {
-    Ty(CanonicalTyVarKind),
-    PlaceholderTy(PlaceholderType),
-    Region(UniverseIndex),
-    PlaceholderRegion(PlaceholderRegion),
-    Const(UniverseIndex),
-    PlaceholderConst(PlaceholderConst),
 }
 
 /// Reflects [`ty::UserSelfTy`]
@@ -414,13 +375,22 @@ pub enum LateParamRegionKind {
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::RegionKind<'tcx>, state: S as gstate)]
 pub enum RegionKind {
     ReEarlyParam(EarlyParamRegion),
-    ReBound(DebruijnIndex, BoundRegion),
+    ReBound(BoundVarIndexKind, BoundRegion),
     ReLateParam(LateParamRegion),
     ReStatic,
     ReVar(RegionVid),
     RePlaceholder(PlaceholderRegion),
     ReErased,
     ReError(ErrorGuaranteed),
+}
+
+/// Reflects [`ty::BoundVarIndexKind`]
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundVarIndexKind, state: S as gstate)]
+pub enum BoundVarIndexKind {
+    Bound(DebruijnIndex),
+    Canonical,
 }
 
 sinto_as_usize!(rustc_middle::ty, DebruijnIndex);
@@ -543,7 +513,7 @@ impl ItemRef {
             && let Some(implemented_item) = tcx
                 .associated_items(impl_def_id)
                 .in_definition_order()
-                .find(|item| item.trait_item_def_id == Some(def_id))
+                .find(|item| item.trait_item_def_id() == Some(def_id))
         {
             let trait_def_id = tcx.parent(def_id);
             def_id = implemented_item.def_id;
@@ -766,48 +736,6 @@ pub enum FloatTy {
     F32,
     F64,
     F128,
-}
-
-#[cfg(feature = "rustc")]
-impl<'tcx, S> SInto<S, FloatTy> for rustc_ast::ast::FloatTy {
-    fn sinto(&self, _: &S) -> FloatTy {
-        use rustc_ast::ast::FloatTy as T;
-        match self {
-            T::F16 => FloatTy::F16,
-            T::F32 => FloatTy::F32,
-            T::F64 => FloatTy::F64,
-            T::F128 => FloatTy::F128,
-        }
-    }
-}
-
-#[cfg(feature = "rustc")]
-impl<'tcx, S> SInto<S, IntTy> for rustc_ast::ast::IntTy {
-    fn sinto(&self, _: &S) -> IntTy {
-        use rustc_ast::ast::IntTy as T;
-        match self {
-            T::Isize => IntTy::Isize,
-            T::I8 => IntTy::I8,
-            T::I16 => IntTy::I16,
-            T::I32 => IntTy::I32,
-            T::I64 => IntTy::I64,
-            T::I128 => IntTy::I128,
-        }
-    }
-}
-#[cfg(feature = "rustc")]
-impl<'tcx, S> SInto<S, UintTy> for rustc_ast::ast::UintTy {
-    fn sinto(&self, _: &S) -> UintTy {
-        use rustc_ast::ast::UintTy as T;
-        match self {
-            T::Usize => UintTy::Usize,
-            T::U8 => UintTy::U8,
-            T::U16 => UintTy::U16,
-            T::U32 => UintTy::U32,
-            T::U64 => UintTy::U64,
-            T::U128 => UintTy::U128,
-        }
-    }
 }
 
 /// Reflects [`rustc_type_ir::UintTy`]
@@ -1166,7 +1094,7 @@ pub enum TyKind {
     Str,
     RawPtr(Box<Ty>, Mutability),
     Ref(Region, Box<Ty>, Mutability),
-    #[custom_arm(FROM_TYPE::Dynamic(preds, region, _) => make_dyn(s, preds, region),)]
+    #[custom_arm(FROM_TYPE::Dynamic(preds, region) => make_dyn(s, preds, region),)]
     Dynamic(
         /// Fresh type parameter that we use as the `Self` type in the prediates below.
         ParamTy,
@@ -1181,7 +1109,7 @@ pub enum TyKind {
     #[custom_arm(FROM_TYPE::Alias(alias_kind, alias_ty) => Alias::from(s, alias_kind, alias_ty),)]
     Alias(Alias),
     Param(ParamTy),
-    Bound(DebruijnIndex, BoundTy),
+    Bound(BoundVarIndexKind, BoundTy),
     Placeholder(PlaceholderType),
     Infer(InferTy),
     #[custom_arm(FROM_TYPE::Error(..) => TO_TYPE::Error,)]
@@ -1876,35 +1804,32 @@ impl AssocItem {
         let container_id = item.container_id(tcx);
         let container_args = item_args.truncate_to(tcx, tcx.generics_of(container_id));
         let container = match item.container {
-            ty::AssocItemContainer::Trait => {
+            ty::AssocContainer::Trait => {
                 let trait_ref =
                     ty::TraitRef::new_from_args(tcx, container_id, container_args).sinto(s);
                 AssocItemContainer::TraitContainer { trait_ref }
             }
-            ty::AssocItemContainer::Impl => {
-                if let Some(implemented_item_id) = item.trait_item_def_id {
-                    let item = translate_item_ref(s, container_id, container_args);
-                    let implemented_trait_ref = tcx
-                        .impl_trait_ref(container_id)
-                        .unwrap()
-                        .instantiate(tcx, container_args);
-                    let implemented_trait_item = translate_item_ref(
-                        s,
-                        implemented_item_id,
-                        item_args.rebase_onto(tcx, container_id, implemented_trait_ref.args),
-                    );
-                    AssocItemContainer::TraitImplContainer {
-                        impl_: item,
-                        implemented_trait_ref: implemented_trait_ref.sinto(s),
-                        implemented_trait_item,
-                        overrides_default: tcx.defaultness(implemented_item_id).has_value(),
-                    }
-                } else {
-                    AssocItemContainer::InherentImplContainer {
-                        impl_id: container_id.sinto(s),
-                    }
+            ty::AssocContainer::TraitImpl(implemented_item_id) => {
+                let implemented_item_id = implemented_item_id.unwrap();
+                let item = translate_item_ref(s, container_id, container_args);
+                let implemented_trait_ref = tcx
+                    .impl_trait_ref(container_id)
+                    .instantiate(tcx, container_args);
+                let implemented_trait_item = translate_item_ref(
+                    s,
+                    implemented_item_id,
+                    item_args.rebase_onto(tcx, container_id, implemented_trait_ref.args),
+                );
+                AssocItemContainer::TraitImplContainer {
+                    impl_: item,
+                    implemented_trait_ref: implemented_trait_ref.sinto(s),
+                    implemented_trait_item,
+                    overrides_default: tcx.defaultness(implemented_item_id).has_value(),
                 }
             }
+            ty::AssocContainer::InherentImpl => AssocItemContainer::InherentImplContainer {
+                impl_id: container_id.sinto(s),
+            },
         };
         AssocItem {
             def_id: item.def_id.sinto(s),

@@ -117,7 +117,7 @@ pub fn required_predicates<'tcx>(
     // For methods and assoc consts in trait definitions, we add an explicit `Self: Trait` clause.
     // Associated types get to use the implicit `Self: Trait` clause instead.
     if !matches!(def_kind, AssocTy)
-        && let Some(trait_def_id) = tcx.trait_of_item(def_id)
+        && let Some(trait_def_id) = tcx.trait_of_assoc(def_id)
     {
         let self_clause = self_predicate(tcx, trait_def_id).upcast(tcx);
         predicates.to_mut().insert(0, (self_clause, DUMMY_SP));
@@ -221,7 +221,7 @@ where
         .unwrap_or(value)
 }
 
-/// Erase free regions from the given value. Largely copied from `tcx.erase_regions`, but also
+/// Erase free regions from the given value. Largely copied from `tcx.erase_and_anonymize_regions`, but also
 /// erases bound regions that are bound outside `value`, so we can call this function inside a
 /// `Binder`.
 pub fn erase_free_regions<'tcx, T>(tcx: TyCtxt<'tcx>, value: T) -> T
@@ -258,7 +258,7 @@ where
             // We don't erase bound regions that are bound inside the expression we started with,
             // but we do erase those that point "outside of it".
             match r.kind() {
-                ty::ReBound(dbid, _) if dbid.as_u32() < self.depth => r,
+                ty::ReBound(BoundVarIndexKind::Bound(dbid), _) if dbid.as_u32() < self.depth => r,
                 _ => self.tcx.lifetimes.re_erased,
             }
         }

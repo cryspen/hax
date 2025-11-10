@@ -211,9 +211,15 @@ pub fn get_def_attrs<'tcx>(
 ) -> &'tcx [rustc_hir::Attribute] {
     use RDefKind::*;
     match def_kind {
-        // These kinds cause `get_attrs_unchecked` to panic.
+        // These kinds cause `get_attrs` to panic.
         ConstParam | LifetimeParam | TyParam | ForeignMod => &[],
-        _ => tcx.get_attrs_unchecked(def_id),
+        _ => {
+            if let Some(ldid) = def_id.as_local() {
+                tcx.hir_attrs(tcx.local_def_id_to_hir_id(ldid))
+            } else {
+                tcx.attrs_for_def(def_id)
+            }
+        }
     }
 }
 
@@ -291,10 +297,7 @@ pub fn get_method_sig<'tcx>(
 ) -> ty::PolyFnSig<'tcx> {
     let real_sig = inst_binder(tcx, typing_env, method_args, tcx.fn_sig(def_id));
     let item = tcx.associated_item(def_id);
-    if !matches!(item.container, ty::AssocItemContainer::Impl) {
-        return real_sig;
-    }
-    let Some(decl_method_id) = item.trait_item_def_id else {
+    let ty::AssocContainer::TraitImpl(Ok(decl_method_id)) = item.container else {
         return real_sig;
     };
     let declared_sig = tcx.fn_sig(decl_method_id);
@@ -314,7 +317,6 @@ pub fn get_method_sig<'tcx>(
     // The trait predicate that is implemented by the surrounding impl block.
     let implemented_trait_ref = tcx
         .impl_trait_ref(impl_def_id)
-        .unwrap()
         .instantiate(tcx, method_args);
     // Construct arguments for the declared method generics in the context of the implemented
     // method generics.
@@ -390,15 +392,15 @@ pub fn dyn_self_ty<'tcx>(
         });
 
     let preds = {
-      // Stable sort predicates to prevent platform-specific ordering issues
-      let mut preds: Vec<_> = [main_pred].into_iter().chain(ty_constraints).collect();
-      preds.sort_by(|a, b| {
-        use crate::rustc_middle::ty::ExistentialPredicateStableCmpExt;
-        a.skip_binder().stable_cmp(tcx, &b.skip_binder())
-      });
-      tcx.mk_poly_existential_predicates(&preds)
+        // Stable sort predicates to prevent platform-specific ordering issues
+        let mut preds: Vec<_> = [main_pred].into_iter().chain(ty_constraints).collect();
+        preds.sort_by(|a, b| {
+            use crate::rustc_middle::ty::ExistentialPredicateStableCmpExt;
+            a.skip_binder().stable_cmp(tcx, &b.skip_binder())
+        });
+        tcx.mk_poly_existential_predicates(&preds)
     };
-    let ty = tcx.mk_ty_from_kind(ty::Dynamic(preds, re_erased, ty::DynKind::Dyn));
+    let ty = tcx.mk_ty_from_kind(ty::Dynamic(preds, re_erased));
     let ty = normalize(tcx, typing_env, ty);
     Some(ty)
 }
