@@ -6,7 +6,7 @@ use crate::prelude::*;
 /// A `PredicateId` is a unique identifier for a clause or a
 /// predicate. It is computed by hashing predicates and clause in a
 /// uniform and deterministic way.
-pub struct PredicateId(u64);
+pub struct PredicateId(pub u64);
 
 #[cfg(feature = "rustc")]
 mod rustc {
