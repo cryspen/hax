@@ -19,6 +19,7 @@ Changes to the frontend:
 Change to cargo-hax:
 
 Changes to hax-lib:
+ - Add `max`, `trailing_zeros`, and some `shift_right` lemmas for F* (#1757)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
