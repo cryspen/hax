@@ -114,7 +114,6 @@ pub type ConstantExpr = Decorated<ConstantExprKind>;
 // For ConstantKind we merge all the cases (Ty, Val, Unevaluated) into one
 pub type ConstantKind = ConstantExpr;
 
-#[cfg(feature = "rustc")]
 impl From<ConstantFieldExpr> for FieldExpr {
     fn from(c: ConstantFieldExpr) -> FieldExpr {
         FieldExpr {
@@ -124,7 +123,6 @@ impl From<ConstantFieldExpr> for FieldExpr {
     }
 }
 
-#[cfg(feature = "rustc")]
 impl From<ConstantExpr> for Expr {
     fn from(c: ConstantExpr) -> Expr {
         use ConstantExprKind::*;
@@ -188,7 +186,10 @@ impl From<ConstantExpr> for Expr {
         };
         Decorated {
             contents: Box::new(kind),
-            ..c
+            ty: c.ty,
+            span: c.span,
+            hir_id: c.hir_id,
+            attributes: c.attributes,
         }
     }
 }
