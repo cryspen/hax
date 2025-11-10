@@ -152,8 +152,15 @@ where
         .filter(|source_span| source_span.ctxt().is_root())
         .and_then(|source_span| tcx.sess.source_map().span_to_snippet(source_span).ok());
     let this = if can_have_generics(tcx, rust_def_id) {
-        let args_or_default =
-            args.unwrap_or_else(|| ty::GenericArgs::identity_for_item(tcx, rust_def_id));
+        let args_or_default = args.unwrap_or_else(|| {
+            if matches!(def_id.kind, DefKind::Closure) {
+                // For closures we use the args of their parent. Otherwise closure items get some
+                // special generics used for inference that we don't care about.
+                ty::GenericArgs::identity_for_item(tcx, tcx.typeck_root_def_id(rust_def_id))
+            } else {
+                ty::GenericArgs::identity_for_item(tcx, rust_def_id)
+            }
+        });
         let item = translate_item_ref(s, rust_def_id, args_or_default);
         // Tricky: hax's DefId has more info (could be a promoted const), we must be careful to use
         // the input DefId instead of the one derived from `rust_def_id`.
