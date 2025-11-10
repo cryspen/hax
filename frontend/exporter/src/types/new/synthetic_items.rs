@@ -1,37 +1,43 @@
 use crate::prelude::*;
 
+use rustc_hir::definitions::DisambiguatorState;
 use rustc_middle::ty;
+use rustc_span::DUMMY_SP;
+use rustc_span::Symbol;
 use rustc_span::def_id::DefId as RDefId;
+use rustc_type_ir::Upcast;
 
+/// We create some extra `DefId`s to represent things that rustc doesn't have a `DefId` for. This
+/// makes the pipeline much easier to have "real" def_ids for them.
 /// We generate fake struct-like items for each of: arrays, slices, and tuples. This makes it
 /// easier to emit trait impls for these types, especially with monomorphization. This enum tracks
 /// identifies these builtin types.
-#[derive(Debug, Hash, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum BuiltinType {
-    /// The `[T; N]` type.
+#[derive(Debug, Hash, Clone, Copy, PartialEq, Eq)]
+pub enum SyntheticItem {
+    /// Fake ADT representing the `[T; N]` type.
     Array,
-    /// The `[T]` typ.
+    /// Fake ADT representing the `[T]` type.
     Slice,
-    /// The length-n tuple `(A, B, ...)`.
+    /// Fake ADT representing the length-n tuple `(A, B, ...)`.
     Tuple(usize),
 }
 
 impl<'tcx> GlobalCache<'tcx> {
-    pub fn get_builtin_def_id(&mut self, s: &impl BaseState<'tcx>, builtin: BuiltinType) -> RDefId {
-        use rustc_hir::definitions::DisambiguatorState;
-        use rustc_span::DUMMY_SP;
-        use rustc_span::Symbol;
-        use rustc_type_ir::Upcast;
-        if let Some(def_id) = self.def_ids_of_builtins.get(&builtin) {
+    pub fn get_synthetic_def_id(
+        &mut self,
+        s: &impl BaseState<'tcx>,
+        item: SyntheticItem,
+    ) -> RDefId {
+        if let Some(def_id) = self.synthetic_def_ids.get(&item) {
             return *def_id;
         }
         let tcx = s.base().tcx;
         let mut disambiguator_state = DisambiguatorState::new();
 
-        let name = match builtin {
-            BuiltinType::Array => "<array>",
-            BuiltinType::Slice => "<slice>",
-            BuiltinType::Tuple(n) => &format!("<tuple_{n}>"),
+        let name = match item {
+            SyntheticItem::Array => "<array>",
+            SyntheticItem::Slice => "<slice>",
+            SyntheticItem::Tuple(n) => &format!("<tuple_{n}>"),
         };
         // Create a fake item, to which we'll assign generics and a param_env, which we can
         // then use to generate the `FullDefKind` we want.
@@ -44,8 +50,8 @@ impl<'tcx> GlobalCache<'tcx> {
         );
         let def_id = feed.def_id().to_def_id();
         // Insert the def_ids early so we record them even if we panic later in this function.
-        self.reverse_builtin_map.insert(def_id, builtin);
-        self.def_ids_of_builtins.insert(builtin, def_id);
+        self.reverse_synthetic_map.insert(def_id, item);
+        self.synthetic_def_ids.insert(item, def_id);
 
         let mut generics = ty::Generics {
             parent: None,
@@ -82,8 +88,8 @@ impl<'tcx> GlobalCache<'tcx> {
 
         let mut clauses = vec![];
         let sized_trait = tcx.lang_items().sized_trait().unwrap();
-        match builtin {
-            BuiltinType::Array => {
+        match item {
+            SyntheticItem::Array => {
                 let (t_arg, _) = mk_param(
                     "T",
                     rustc_hir::def::DefKind::TyParam,
@@ -109,7 +115,7 @@ impl<'tcx> GlobalCache<'tcx> {
                 let len_is_usize = ty::ClauseKind::ConstArgHasType(len, tcx.types.usize);
                 clauses.push(len_is_usize.upcast(tcx));
             }
-            BuiltinType::Slice => {
+            SyntheticItem::Slice => {
                 let (t_arg, _) = mk_param(
                     "T",
                     rustc_hir::def::DefKind::TyParam,
@@ -126,7 +132,7 @@ impl<'tcx> GlobalCache<'tcx> {
                 let ty_is_sized = ty::TraitRef::new(tcx, sized_trait, [item_ty]);
                 clauses.push(ty_is_sized.upcast(tcx));
             }
-            BuiltinType::Tuple(len) => {
+            SyntheticItem::Tuple(len) => {
                 let tys = (0..len).into_iter().map(|i| {
                     let name: String = if i < 26 {
                         format!("{}", (b'A' + i as u8) as char)

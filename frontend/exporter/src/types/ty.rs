@@ -1072,21 +1072,21 @@ pub enum TyKind {
     Foreign(ItemRef),
     /// The `ItemRef` uses the fake `Array` def_id.
     #[custom_arm(FROM_TYPE::Array(ty, len) => TO_TYPE::Array({
-        let def_id = s.with_global_cache(|c| c.get_builtin_def_id(s, BuiltinType::Array));
+        let def_id = s.with_global_cache(|c| c.get_synthetic_def_id(s, SyntheticItem::Array));
         let args = s.base().tcx.mk_args(&[(*ty).into(), (*len).into()]);
         ItemRef::translate(s, def_id, args)
     }),)]
     Array(ItemRef),
     /// The `ItemRef` uses the fake `Slice` def_id.
     #[custom_arm(FROM_TYPE::Slice(ty) => TO_TYPE::Slice({
-        let def_id = s.with_global_cache(|c| c.get_builtin_def_id(s, BuiltinType::Slice));
+        let def_id = s.with_global_cache(|c| c.get_synthetic_def_id(s, SyntheticItem::Slice));
         let args = s.base().tcx.mk_args(&[(*ty).into()]);
         ItemRef::translate(s, def_id, args)
     }),)]
     Slice(ItemRef),
     /// The `ItemRef` uses the fake `Tuple` def_id.
     #[custom_arm(FROM_TYPE::Tuple(tys) => TO_TYPE::Tuple({
-        let def_id = s.with_global_cache(|c| c.get_builtin_def_id(s, BuiltinType::Tuple(tys.len())));
+        let def_id = s.with_global_cache(|c| c.get_synthetic_def_id(s, SyntheticItem::Tuple(tys.len())));
         let args = s.base().tcx.mk_args_from_iter(tys.into_iter().map(ty::GenericArg::from));
         ItemRef::translate(s, def_id, args)
     }),)]

@@ -58,11 +58,11 @@ where
     let diagnostic_item;
     let kind;
     match def_id.promoted_id() {
-        _ if let Some(builtin) = def_id.as_fake_builtin_type(s) => {
-            let adt_kind = match builtin {
-                BuiltinType::Array => AdtKind::Array,
-                BuiltinType::Slice => AdtKind::Slice,
-                BuiltinType::Tuple(..) => AdtKind::Tuple,
+        _ if let Some(item) = def_id.as_synthetic(s) => {
+            let adt_kind = match item {
+                SyntheticItem::Array => AdtKind::Array,
+                SyntheticItem::Slice => AdtKind::Slice,
+                SyntheticItem::Tuple(..) => AdtKind::Tuple,
             };
             let param_env = get_param_env(s, args);
             let destruct_impl = {
@@ -204,9 +204,9 @@ impl DefId {
         .sinto(s)
     }
 
-    pub fn as_fake_builtin_type<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<BuiltinType> {
+    pub fn as_synthetic<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<SyntheticItem> {
         let def_id = self.underlying_rust_def_id();
-        s.with_global_cache(|c| c.reverse_builtin_map.get(&def_id).copied())
+        s.with_global_cache(|c| c.reverse_synthetic_map.get(&def_id).copied())
     }
 
     /// Get the full definition of this item.

@@ -90,10 +90,10 @@ mod types {
         pub id_table_session: id_table::Session,
         /// Map that recovers rustc args for a given `ItemRef`.
         pub reverse_item_refs_map: HashMap<id_table::Id, ty::GenericArgsRef<'tcx>>,
-        /// We add def_ids for arrays, slices and tuples to make it easier to generate trait `impl`
-        /// for them.
-        pub def_ids_of_builtins: HashMap<BuiltinType, RDefId>,
-        pub reverse_builtin_map: HashMap<RDefId, BuiltinType>,
+        /// We create some artificial items; their def_ids are stored here. See the
+        /// `synthetic_items` module.
+        pub synthetic_def_ids: HashMap<SyntheticItem, RDefId>,
+        pub reverse_synthetic_map: HashMap<RDefId, SyntheticItem>,
     }
 
     /// Defines a mapping from types to types, for use with `TypeMap`.
