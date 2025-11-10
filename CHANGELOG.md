@@ -27,6 +27,7 @@ Changes to the Lean backend:
    not introduce extra `do` block (#1746)
 
 Miscellaneous:
+- Reserve extraction folder for auto-generated files in Lean examples (#1754)
 
 ## 0.3.5
 
