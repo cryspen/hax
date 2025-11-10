@@ -35,7 +35,7 @@ fn main() {
                         | hax_frontend_exporter::FullDefKind::ExternCrate
                 )
             })
-            .map(hax_rust_engine::import_thir::Import::import)
+            .flat_map(hax_rust_engine::import_thir::Import::import)
             .collect(),
     };
 
