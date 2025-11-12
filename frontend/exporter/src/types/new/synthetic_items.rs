@@ -1,11 +1,12 @@
 use crate::prelude::*;
 
-use rustc_hir::definitions::DisambiguatorState;
-use rustc_middle::ty;
-use rustc_span::DUMMY_SP;
-use rustc_span::Symbol;
-use rustc_span::def_id::DefId as RDefId;
-use rustc_type_ir::Upcast;
+#[cfg(feature = "rustc")]
+use {
+    rustc_hir::definitions::DisambiguatorState,
+    rustc_middle::ty,
+    rustc_span::{DUMMY_SP, Symbol, def_id::DefId as RDefId},
+    rustc_type_ir::Upcast,
+};
 
 /// We create some extra `DefId`s to represent things that rustc doesn't have a `DefId` for. This
 /// makes the pipeline much easier to have "real" def_ids for them.
@@ -22,6 +23,7 @@ pub enum SyntheticItem {
     Tuple(usize),
 }
 
+#[cfg(feature = "rustc")]
 impl<'tcx> GlobalCache<'tcx> {
     pub fn get_synthetic_def_id(
         &mut self,
