@@ -413,8 +413,9 @@ pub enum ImplItemKind<Body: IsBody> {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct Impl<Body: IsBody> {
+    #[value(of_trait.map(|trait_impl_header| trait_impl_header.safety).unwrap_or(rustc_hir::Safety::Safe).sinto(s))]
+    pub safety: Safety,
     // Removed fields. If these are used, will need to provide `#[value(..)]` implementations.
-    // pub safety: Safety,
     // pub polarity: ImplPolarity,
     // pub defaultness: Defaultness,
     pub generics: Generics<Body>,
