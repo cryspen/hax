@@ -204,11 +204,6 @@ impl DefId {
         .sinto(s)
     }
 
-    pub fn as_synthetic<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<SyntheticItem> {
-        let def_id = self.underlying_rust_def_id();
-        s.with_global_cache(|c| c.reverse_synthetic_map.get(&def_id).copied())
-    }
-
     /// Get the full definition of this item.
     pub fn full_def<'tcx, S, Body>(&self, s: &S) -> Arc<FullDef<Body>>
     where

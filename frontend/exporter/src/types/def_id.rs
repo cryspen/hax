@@ -179,6 +179,15 @@ impl DefIdContents {
     }
 }
 
+/// Returns the [`SyntheticItem`] encoded by a [rustc `DefId`](RDefId), if any.
+#[cfg(feature = "rustc")]
+pub fn def_id_as_synthetic<'tcx>(
+    def_id: RDefId,
+    s: &impl BaseState<'tcx>,
+) -> Option<SyntheticItem> {
+    s.with_global_cache(|c| c.reverse_synthetic_map.get(&def_id).copied())
+}
+
 #[cfg(feature = "rustc")]
 impl DefId {
     /// The rustc def_id corresponding to this item, if there is one. Promoted constants don't have
@@ -197,6 +206,15 @@ impl DefId {
             krate: rustc_hir::def_id::CrateNum::from_u32(krate),
             index: rustc_hir::def_id::DefIndex::from_u32(index),
         }
+    }
+
+    /// Returns the [`SyntheticItem`] encoded by a [rustc `DefId`](RDefId), if
+    /// any.
+    ///
+    /// Note that this method relies on rustc indexes, which are session
+    /// specific. See [`Self`] documentation.
+    pub fn as_synthetic<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<SyntheticItem> {
+        def_id_as_synthetic(self.underlying_rust_def_id(), s)
     }
 
     /// Iterate over this element and its parents.
