@@ -75,6 +75,7 @@ impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
                 resolve_destruct: false,
                 prune_sized: true,
             },
+            item_ref_use_concrete_impl: false,
         }
     }
 }

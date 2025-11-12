@@ -103,6 +103,8 @@ pub struct Options {
     pub inline_anon_consts: bool,
     /// Options related to bounds.
     pub bounds_options: BoundsOptions,
+    /// Resolve definition identifiers to their concrete impl counterpart when possible in `ItemRef::translate`.
+    pub item_ref_use_concrete_impl: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
