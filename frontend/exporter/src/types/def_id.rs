@@ -319,6 +319,9 @@ pub(crate) fn get_def_kind<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> hir::
     tcx.def_kind(def_id)
 }
 
+/// The crate name under which synthetic items are exported under.
+pub(super) const SYNTHETIC_CRATE_NAME: &str = "<synthetic>";
+
 #[cfg(feature = "rustc")]
 pub(crate) fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> DefId {
     let tcx = s.base().tcx;
@@ -333,7 +336,11 @@ pub(crate) fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) 
     };
     let contents = DefIdContents {
         path,
-        krate: tcx.crate_name(def_id.krate).to_string(),
+        krate: if def_id_as_synthetic(def_id, s).is_some() {
+            SYNTHETIC_CRATE_NAME.to_string()
+        } else {
+            tcx.crate_name(def_id.krate).to_string()
+        },
         parent: tcx.opt_parent(def_id).sinto(s),
         index: (
             rustc_hir::def_id::CrateNum::as_u32(def_id.krate),
