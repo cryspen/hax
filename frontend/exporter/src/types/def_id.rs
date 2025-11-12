@@ -12,7 +12,7 @@
 
 use hax_adt_into::derive_group;
 
-#[cfg(all(not(feature = "extract_names_mode"), feature = "rustc"))]
+#[cfg(not(feature = "extract_names_mode"))]
 use crate::prelude::*;
 #[cfg(not(feature = "extract_names_mode"))]
 use crate::{AdtInto, JsonSchema};
@@ -138,7 +138,25 @@ pub enum DefKind {
     SyntheticCoroutineBody,
 }
 
-sinto_todo!(rustc_hir::def, MacroKinds);
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema))]
+pub struct MacroKinds {
+    bang: bool,
+    attr: bool,
+    derive: bool,
+}
+
+#[cfg(feature = "rustc")]
+impl<S> SInto<S, MacroKinds> for rustc_hir::def::MacroKinds {
+    fn sinto(&self, _s: &S) -> MacroKinds {
+        MacroKinds {
+            bang: self.contains(Self::BANG),
+            attr: self.contains(Self::ATTR),
+            derive: self.contains(Self::DERIVE),
+        }
+    }
+}
 
 /// Reflects [`rustc_hir::def_id::DefId`], augmented to also give ids to promoted constants (which
 /// have their own ad-hoc numbering scheme in rustc for now).
