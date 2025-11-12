@@ -58,7 +58,7 @@ let to_string ~(namespace : View.ModPath.t) :
     | Uint U128 -> Some "u128"
     | Float F32 -> Some "f32"
     | Float F64 -> Some "f64"
-    | Tuple [] -> Some "unit"
+    | Tuple { value = { generic_args = []; _ }; _ } -> Some "unit"
     | Adt { value = { def_id; generic_args = []; _ }; _ } ->
         Option.map ~f:escape (adt def_id)
     | _ -> None
@@ -66,14 +66,21 @@ let to_string ~(namespace : View.ModPath.t) :
   let apply left right = left ^ "_of_" ^ right in
   let rec arity1 (ty : Types.node_for__ty_kind) =
     match ty.value with
-    | Slice sub -> arity1 sub |> Option.map ~f:(apply "slice")
+    | Slice { value = { generic_args = [ Type sub ]; _ }; _ } ->
+        arity1 sub |> Option.map ~f:(apply "slice")
     | Ref (_, sub, _) -> arity1 sub |> Option.map ~f:(apply "ref")
     | Adt { value = { def_id; generic_args = [ Type arg ]; _ }; _ } ->
         let* adt = adt def_id in
         let* arg = arity1 arg in
         Some (apply adt arg)
-    | Tuple l ->
-        let* l = List.map ~f:arity0 l |> Option.all in
+    | Tuple { value = { generic_args; _ }; _ } ->
+        let* l =
+          List.map
+            ~f:(fun (arg : Types.generic_arg) ->
+              match arg with Type ty -> arity0 ty | _ -> None)
+            generic_args
+          |> Option.all
+        in
         Some ("tuple_" ^ String.concat ~sep:"_" l)
     | _ -> arity0 ty
   in

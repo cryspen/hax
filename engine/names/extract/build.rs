@@ -73,6 +73,8 @@ fn def_path_item_to_str(path_item: DefPathItem) -> String {
         DefPathItem::AnonAssocTy(..) => "AnonAssocTy".into(),
         DefPathItem::SyntheticCoroutineBody => "SyntheticCoroutineBody".into(),
         DefPathItem::NestedStatic => "NestedStatic".into(),
+        DefPathItem::LateAnonConst => "LateAnonConst".into(),
+        DefPathItem::DesugaredAnonymousLifetime => "DesugaredAnonymousLifetime".into(),
     }
 }
 
@@ -130,6 +132,11 @@ fn is_macro(did: &DefId) -> bool {
     matches!(last.data, DefPathItem::MacroNs { .. })
 }
 
+/// Checks wether a def id refers to a syntactic item (see `syntactic_item.rs` in hax' exporter)
+fn is_synthetic(did: &DefId) -> bool {
+    &did.contents.value.krate == hax_frontend_exporter_def_id::SYNTHETIC_CRATE_NAME
+}
+
 fn reader_to_str(s: String) -> String {
     let json: Value = match serde_json::from_str(&s) {
         Ok(v) => v,
@@ -141,6 +148,7 @@ fn reader_to_str(s: String) -> String {
     let def_ids = def_ids
         .into_iter()
         .filter(|did| !is_macro(did))
+        .filter(|did| !is_synthetic(did))
         .map(|did| {
             let (json, krate_name) = def_id_to_str(&did);
             (serde_json::to_string(&json).unwrap(), krate_name)
