@@ -30,6 +30,47 @@ pub mod slice {
     }
 }
 
+pub mod seq {
+    pub struct Seq<T, A>(Option<T>, Option<A>);
+    pub fn seq_empty<T, A>() -> Seq<T, A> {
+        panic!()
+    }
+    pub fn seq_from_slice<T, A>(_s: &[T]) -> Seq<T, A> {
+        panic!()
+    }
+    pub fn seq_concat<T, A>(s1: &mut Seq<T, A>, s2: Seq<T, A>) {
+        panic!()
+    }
+    pub fn seq_one<T, A>( x: T) -> Seq<T, A> {
+        panic!()
+    }
+    pub fn seq_len<T, A>(s: &Seq<T, A>) -> usize {
+        panic!()
+    }
+    pub fn seq_slice<T, A>(s: &Seq<T, A>, b: usize, e: usize) -> Seq<T, A> {
+        panic!()
+    } 
+    pub fn seq_last<T, A>(s: &Seq<T, A>) -> T {
+        panic!()
+    }
+
+}
+
+pub mod string {
+    pub fn str_concat(s1: &'static str, s2: &'static str) -> &'static str {
+        panic!()
+    }
+    pub fn str_of_char(c: char) -> &'static str {
+        panic!()
+    }
+    pub fn str_sub(s: &'static str, b: usize, e: usize) -> &'static str {
+        panic!()
+    }
+    pub fn str_index(s: &'static str, i: usize) -> char {
+        panic!()
+    }
+}
+
 pub mod mem {
     pub fn replace<T: ?Sized>(src: &mut T, dst: &T) {
         panic!()
