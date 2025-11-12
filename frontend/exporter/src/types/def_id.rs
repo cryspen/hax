@@ -323,7 +323,7 @@ pub(crate) fn get_def_kind<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> hir::
 pub(super) const SYNTHETIC_CRATE_NAME: &str = "<synthetic>";
 
 #[cfg(feature = "rustc")]
-pub(crate) fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> DefId {
+fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> DefId {
     let tcx = s.base().tcx;
     let path = {
         // Set the def_id so the `CrateRoot` path item can fetch the crate name.
