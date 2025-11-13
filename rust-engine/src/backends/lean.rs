@@ -517,6 +517,8 @@ set_option linter.unusedVariables false
                                 // TODO: Improve treatment of patterns in general. see
                                 // https://github.com/cryspen/hax/issues/1712
                                 match *lhs.kind.clone() {
+                                    PatKind::Ascription { .. } =>
+                                        docs![lhs, reflow!(" : "), &lhs.ty],
                                     PatKind::Binding {
                                         mutable: false,
                                         var,
@@ -726,6 +728,7 @@ set_option linter.unusedVariables false
                     "Result ",
                     output
                 ]
+                .parens()
                 .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
@@ -916,7 +919,12 @@ set_option linter.unusedVariables false
                         .group()
                     } else {
                         // Enums
-                        let applied_name: DocBuilder<A> = docs![name, line!(), generics].group();
+                        let applied_name: DocBuilder<A> =
+                            if generics.params.is_empty() && generics.constraints.is_empty() {
+                                docs![name]
+                            } else {
+                                docs![name, line!(), generics].group()
+                            };
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
