@@ -144,15 +144,16 @@ let rec fold_range_cf
   (start: int_t u)
   (end_: int_t u)
   (inv: acc_t -> (i:int_t u{fold_range_wf_index start end_ false (v i)}) -> Type0)
-  (acc: acc_t )
-  (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) }
+  (acc: acc_t {~(range_empty start end_) ==> inv acc start})
+  (f: (acc:acc_t -> i:int_t u {v i <= v end_ /\ fold_range_wf_index start end_ true (v i) /\ inv acc i}
                   -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
                     {
                       let acc = match tuple with 
                         | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
                         | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
                       inv acc (mk_int (v i + 1))}))
-: Tot acc_t (decreases v end_ - v start)
+: Tot (res: acc_t{if range_empty start end_ then res == acc else (exists (final: int_t u). v start <= v final /\ v final <= v end_ /\ inv res final)}) 
+ (decreases v end_ - v start)
   =
   if v start < v end_
   then match f acc start with

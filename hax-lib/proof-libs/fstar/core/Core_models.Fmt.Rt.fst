@@ -13,32 +13,69 @@ let t_ArgumentType = t_ArgumentType'
 
 type t_Argument = { f_ty:t_ArgumentType }
 
-let impl__new_display (#v_T: Type0) (x: v_T) : t_Argument =
-  Core_models.Panicking.Internal.panic #t_Argument ()
+assume
+val impl__new_display': #v_T: Type0 -> x: v_T -> t_Argument
 
-let impl__new_debug (#v_T: Type0) (x: v_T) : t_Argument =
-  Core_models.Panicking.Internal.panic #t_Argument ()
+unfold
+let impl__new_display (#v_T: Type0) = impl__new_display' #v_T
 
-let impl_1__new_binary (#v_T: Type0) (x: v_T) : t_Argument =
-  Core_models.Panicking.Internal.panic #t_Argument ()
+assume
+val impl__new_debug': #v_T: Type0 -> x: v_T -> t_Argument
 
-let impl_1__new_lower_hex (#v_T: Type0) (x: v_T) : t_Argument =
-  Core_models.Panicking.Internal.panic #t_Argument ()
+unfold
+let impl__new_debug (#v_T: Type0) = impl__new_debug' #v_T
 
-let impl_1__new_const (#v_T #v_U: Type0) (x: v_T) (y: v_U) : Core_models.Fmt.t_Arguments =
-  Core_models.Panicking.Internal.panic #Core_models.Fmt.t_Arguments ()
+assume
+val impl__new_lower_hex': #v_T: Type0 -> x: v_T -> t_Argument
 
-let impl_1__new_v1 (#v_T #v_U #v_V #v_W: Type0) (x: v_T) (y: v_U) (z: v_V) (t: v_W)
-    : Core_models.Fmt.t_Arguments =
-  Core_models.Panicking.Internal.panic #Core_models.Fmt.t_Arguments ()
+unfold
+let impl__new_lower_hex (#v_T: Type0) = impl__new_lower_hex' #v_T
+
+assume
+val impl_1__new_binary': #v_T: Type0 -> x: v_T -> t_Argument
+
+unfold
+let impl_1__new_binary (#v_T: Type0) = impl_1__new_binary' #v_T
+
+assume
+val impl_1__new_const': #v_T: Type0 -> #v_U: Type0 -> x: v_T -> y: v_U
+  -> Core_models.Fmt.t_Arguments
+
+unfold
+let impl_1__new_const (#v_T #v_U: Type0) = impl_1__new_const' #v_T #v_U
+
+assume
+val impl_1__new_v1':
+    #v_T: Type0 ->
+    #v_U: Type0 ->
+    #v_V: Type0 ->
+    #v_W: Type0 ->
+    x: v_T ->
+    y: v_U ->
+    z: v_V ->
+    t: v_W
+  -> Core_models.Fmt.t_Arguments
+
+unfold
+let impl_1__new_v1 (#v_T #v_U #v_V #v_W: Type0) = impl_1__new_v1' #v_T #v_U #v_V #v_W
 
 let impl_1__none (_: Prims.unit) : t_Array t_Argument (mk_usize 0) =
   let list:Prims.list t_Argument = [] in
   FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 0);
   Rust_primitives.Hax.array_of_list 0 list
 
-let impl_4__new_v1_formatted (#v_T: Type0) (x: v_T) : t_Argument =
-  Core_models.Panicking.Internal.panic #t_Argument ()
+assume
+val impl_1__new_v1_formatted':
+    #v_T: Type0 ->
+    #v_U: Type0 ->
+    #v_V: Type0 ->
+    x: v_T ->
+    y: v_U ->
+    z: v_V
+  -> Core_models.Fmt.t_Arguments
+
+unfold
+let impl_1__new_v1_formatted (#v_T #v_U #v_V: Type0) = impl_1__new_v1_formatted' #v_T #v_U #v_V
 
 type t_Count =
   | Count_Is : u16 -> t_Count

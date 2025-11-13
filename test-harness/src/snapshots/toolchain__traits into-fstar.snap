@@ -101,7 +101,7 @@ let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) 
             Core_models.Ops.Range.t_Range u8)
           (fun i ->
               let i:u8 = i in
-              let _, out:(Core_models.Slice.Iter.t_Iter u8 & bool) =
+              let (_: Core_models.Slice.Iter.t_Iter u8), (out: bool) =
                 Core_models.Iter.Traits.Iterator.f_any #(Core_models.Slice.Iter.t_Iter u8)
                   #FStar.Tactics.Typeclasses.solve
                   (Core_models.Slice.impl__iter #u8
@@ -734,7 +734,7 @@ let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
   let iter:Core_models.Option.t_IntoIter bool =
     iter_option #bool (Core_models.Option.Option_Some false <: Core_models.Option.t_Option bool)
   in
-  let tmp0, out:(Core_models.Option.t_IntoIter bool & Core_models.Option.t_Option bool) =
+  let (tmp0: Core_models.Option.t_IntoIter bool), (out: Core_models.Option.t_Option bool) =
     Core_models.Iter.Traits.Iterator.f_next #(Core_models.Option.t_IntoIter bool)
       #FStar.Tactics.Typeclasses.solve
       iter

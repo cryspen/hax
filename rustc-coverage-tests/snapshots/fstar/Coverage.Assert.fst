@@ -31,10 +31,10 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit u8 =
   let countdown:i32 =
     Rust_primitives.Hax.while_loop (fun countdown ->
           let countdown:i32 = countdown in
-          countdown >. mk_i32 0 <: bool)
+          true)
       (fun countdown ->
           let countdown:i32 = countdown in
-          true)
+          countdown >. mk_i32 0 <: bool)
       (fun countdown ->
           let countdown:i32 = countdown in
           Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
