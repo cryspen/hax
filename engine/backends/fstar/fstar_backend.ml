@@ -349,7 +349,7 @@ struct
   let rec pty span (t : ty) =
     match t with
     | TBool -> F.term_of_lid [ "bool" ]
-    | TChar -> F.term_of_lid [ "char" ]
+    | TChar -> F.term_of_lid [ "FStar"; "Char"; "char" ]
     | TInt k -> F.term_of_lid [ show_int_kind k ]
     | TStr -> F.term_of_lid [ "string" ]
     | TSlice { ty; _ } ->

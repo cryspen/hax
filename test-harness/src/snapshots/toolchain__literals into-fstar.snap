@@ -227,5 +227,5 @@ let fn_pointer_cast (_: Prims.unit) : Prims.unit =
   let (f: (u32 -> u32)): u32 -> u32 = fun x -> x in
   ()
 
-let null: char = '\0'
+let null: FStar.Char.char = '\0'
 '''
