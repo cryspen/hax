@@ -1653,7 +1653,13 @@ struct
           List.concat_map
             ~f:(fun { ii_span; ii_generics; ii_v; ii_ident } ->
               let name = (RenderId.render ii_ident).name in
-
+              let ii_generics =
+                {
+                  ii_generics with
+                  constraints =
+                    List.filter ~f:[%matches? GCType _] ii_generics.constraints;
+                }
+              in
               match ii_v with
               | IIFn { body; params } ->
                   let pats =

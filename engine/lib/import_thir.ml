@@ -237,7 +237,7 @@ module type EXPR = sig
   val c_expr_drop_body : Thir.decorated_for__expr_kind -> expr
   val c_ty : Thir.span -> Thir.ty -> ty
   val c_generic_value : Thir.span -> Thir.generic_arg -> generic_value
-  val c_generics : Thir.generics -> generics
+  val c_generics : ?offset:int -> Thir.generics -> generics
   val c_param : Thir.span -> Thir.param -> param
   val c_fn_params : Thir.span -> Thir.param list -> param list
   val c_trait_item' : Thir.trait_item -> Thir.trait_item_kind -> trait_item'
@@ -1321,8 +1321,8 @@ end) : EXPR = struct
     in
     aux []
 
-  let c_bounds span bounds =
-    List.fold_left ~init:(0, [])
+  let c_bounds ?(offset : int = 0) span bounds =
+    List.fold_left ~init:(offset, [])
       ~f:(fun (i, clauses) c ->
         match c_clause span i c with
         | Some (GCType _ as c) -> (i + 1, c :: clauses)
@@ -1331,8 +1331,8 @@ end) : EXPR = struct
       bounds
     |> snd |> List.rev
 
-  let c_generics (generics : Thir.generics) : generics =
-    let bounds = c_bounds generics.span generics.bounds in
+  let c_generics ?(offset : int = 0) (generics : Thir.generics) : generics =
+    let bounds = c_bounds ~offset generics.span generics.bounds in
     {
       params = List.map ~f:c_generic_param generics.params;
       constraints = bounds |> list_dedup equal_generic_constraint;
@@ -1737,6 +1737,11 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
           in
           let c_body = if sub_item_erased then c_expr_drop_body else c_body in
 
+          let generics = c_generics generics in
+          let offset =
+            List.count generics.constraints ~f:[%matches? GCType _]
+          in
+
           let v =
             match (item.kind : Thir.impl_item_kind) with
             | Fn { body; params; header = { safety; _ }; _ } ->
@@ -1748,8 +1753,8 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                   {
                     name = item_def_id;
                     generics =
-                      U.concat_generics (c_generics generics)
-                        (c_generics item.generics);
+                      U.concat_generics generics
+                        (c_generics ~offset item.generics);
                     body = c_body body;
                     params;
                     safety = c_header_safety safety;
@@ -1758,7 +1763,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                 Fn
                   {
                     name = item_def_id;
-                    generics = c_generics generics;
+                    generics;
                     (* does that make sense? can we have `const<T>`? *)
                     body = c_body e;
                     params = [];
@@ -1788,6 +1793,8 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
           ~f:(fun { attributes; _ } -> not (should_skip attributes))
           items
       in
+      let generics = c_generics generics in
+      let offset = List.count generics.constraints ~f:[%matches? GCType _] in
       let items =
         if erased then []
         else
@@ -1802,7 +1809,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
               in
               {
                 ii_span = Span.of_thir item.span;
-                ii_generics = c_generics item.generics;
+                ii_generics = c_generics ~offset item.generics;
                 ii_v =
                   (match (item.kind : Thir.impl_item_kind) with
                   | Fn { body; params; _ } ->
@@ -1836,7 +1843,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
       mk
       @@ Impl
            {
-             generics = c_generics generics;
+             generics;
              self_ty = c_ty item.span self_ty;
              of_trait =
                ( Concrete_ident.of_def_id ~value:false of_trait.value.def_id,
