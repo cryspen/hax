@@ -57,95 +57,91 @@ where
     let lang_item;
     let diagnostic_item;
     let kind;
-    match def_id.promoted_id() {
-        _ if let Some(item) = def_id.as_synthetic(s) => {
-            let adt_kind = match item {
-                SyntheticItem::Array => AdtKind::Array,
-                SyntheticItem::Slice => AdtKind::Slice,
-                SyntheticItem::Tuple(..) => AdtKind::Tuple,
-            };
-            let param_env = get_param_env(s, args);
-            let destruct_impl = {
-                let destruct_trait = tcx.lang_items().destruct_trait().unwrap();
-                let type_of_self = inst_binder(tcx, s.typing_env(), args, tcx.type_of(rust_def_id));
-                virtual_impl_for(s, ty::TraitRef::new(tcx, destruct_trait, [type_of_self]))
-            };
-            kind = FullDefKind::Adt {
-                param_env,
-                adt_kind,
-                variants: [].into_iter().collect(),
-                flags: AdtFlags::AdtFlags {
-                    todo: String::new(),
-                },
-                repr: ReprOptions {
-                    int_specified: false,
-                    typ: Ty::new(s, TyKind::Int(IntTy::Isize)),
-                    align: None,
-                    pack: None,
-                    flags: Default::default(),
-                },
-                drop_glue: get_drop_glue_shim(s, args),
-                destruct_impl,
-            };
+    if let Some(item) = def_id.as_synthetic(s) {
+        let adt_kind = match item {
+            SyntheticItem::Array => AdtKind::Array,
+            SyntheticItem::Slice => AdtKind::Slice,
+            SyntheticItem::Tuple(..) => AdtKind::Tuple,
+        };
+        let param_env = get_param_env(s, args);
+        let destruct_impl = {
+            let destruct_trait = tcx.lang_items().destruct_trait().unwrap();
+            let type_of_self = inst_binder(tcx, s.typing_env(), args, tcx.type_of(rust_def_id));
+            virtual_impl_for(s, ty::TraitRef::new(tcx, destruct_trait, [type_of_self]))
+        };
+        kind = FullDefKind::Adt {
+            param_env,
+            adt_kind,
+            variants: [].into_iter().collect(),
+            flags: AdtFlags::AdtFlags {
+                todo: String::new(),
+            },
+            repr: ReprOptions {
+                int_specified: false,
+                typ: Ty::new(s, TyKind::Int(IntTy::Isize)),
+                align: None,
+                pack: None,
+                flags: Default::default(),
+            },
+            drop_glue: get_drop_glue_shim(s, args),
+            destruct_impl,
+        };
 
-            source_span = None;
-            attributes = Default::default();
-            visibility = Default::default();
-            lang_item = Default::default();
-            diagnostic_item = Default::default();
-        }
-        None => {
-            kind = translate_full_def_kind(s, rust_def_id, args);
+        source_span = None;
+        attributes = Default::default();
+        visibility = Default::default();
+        lang_item = Default::default();
+        diagnostic_item = Default::default();
+    } else if let Some(promoted_id) = def_id.promoted_id() {
+        let parent_def = def_id
+            .parent
+            .as_ref()
+            .unwrap()
+            .full_def_maybe_instantiated::<_, Body>(s, args);
+        let parent_param_env = parent_def.param_env().unwrap();
+        let param_env = ParamEnv {
+            generics: TyGenerics {
+                parent: def_id.parent.clone(),
+                parent_count: parent_param_env.generics.count_total_params(),
+                params: vec![],
+                has_self: false,
+                has_late_bound_regions: None,
+            },
+            predicates: GenericPredicates { predicates: vec![] },
+            parent: Some(parent_def.this().clone()),
+        };
+        let body = get_promoted_mir(tcx, rust_def_id, promoted_id.as_rust_promoted_id());
+        let body = substitute(tcx, s.typing_env(), args, body);
+        source_span = Some(body.span);
 
-            let def_kind = get_def_kind(tcx, rust_def_id);
-            source_span = rust_def_id.as_local().map(|ldid| tcx.source_span(ldid));
-            attributes = get_def_attrs(tcx, rust_def_id, def_kind).sinto(s);
-            visibility = get_def_visibility(tcx, rust_def_id, def_kind);
-            lang_item = s
-                .base()
-                .tcx
-                .as_lang_item(rust_def_id)
-                .map(|litem| litem.name())
-                .sinto(s);
-            diagnostic_item = tcx.get_diagnostic_name(rust_def_id).sinto(s);
-        }
-        Some(promoted_id) => {
-            let parent_def = def_id
-                .parent
-                .as_ref()
-                .unwrap()
-                .full_def_maybe_instantiated::<_, Body>(s, args);
-            let parent_param_env = parent_def.param_env().unwrap();
-            let param_env = ParamEnv {
-                generics: TyGenerics {
-                    parent: def_id.parent.clone(),
-                    parent_count: parent_param_env.generics.count_total_params(),
-                    params: vec![],
-                    has_self: false,
-                    has_late_bound_regions: None,
-                },
-                predicates: GenericPredicates { predicates: vec![] },
-                parent: Some(parent_def.this().clone()),
-            };
-            let body = get_promoted_mir(tcx, rust_def_id, promoted_id.as_rust_promoted_id());
-            let body = substitute(tcx, s.typing_env(), args, body);
-            source_span = Some(body.span);
+        let ty: Ty = body.local_decls[rustc_middle::mir::Local::ZERO].ty.sinto(s);
+        kind = FullDefKind::Const {
+            param_env,
+            ty,
+            kind: ConstKind::PromotedConst,
+            body: Body::from_mir(s, body),
+            value: None,
+        };
 
-            let ty: Ty = body.local_decls[rustc_middle::mir::Local::ZERO].ty.sinto(s);
-            kind = FullDefKind::Const {
-                param_env,
-                ty,
-                kind: ConstKind::PromotedConst,
-                body: Body::from_mir(s, body),
-                value: None,
-            };
+        // None of these make sense for a promoted constant.
+        attributes = Default::default();
+        visibility = Default::default();
+        lang_item = Default::default();
+        diagnostic_item = Default::default();
+    } else {
+        kind = translate_full_def_kind(s, rust_def_id, args);
 
-            // None of these make sense for a promoted constant.
-            attributes = Default::default();
-            visibility = Default::default();
-            lang_item = Default::default();
-            diagnostic_item = Default::default();
-        }
+        let def_kind = get_def_kind(tcx, rust_def_id);
+        source_span = rust_def_id.as_local().map(|ldid| tcx.source_span(ldid));
+        attributes = get_def_attrs(tcx, rust_def_id, def_kind).sinto(s);
+        visibility = get_def_visibility(tcx, rust_def_id, def_kind);
+        lang_item = s
+            .base()
+            .tcx
+            .as_lang_item(rust_def_id)
+            .map(|litem| litem.name())
+            .sinto(s);
+        diagnostic_item = tcx.get_diagnostic_name(rust_def_id).sinto(s);
     }
 
     let source_text = source_span
@@ -202,11 +198,6 @@ impl DefId {
             tcx.def_span(def_id)
         }
         .sinto(s)
-    }
-
-    pub fn as_synthetic<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<SyntheticItem> {
-        let def_id = self.underlying_rust_def_id();
-        s.with_global_cache(|c| c.reverse_synthetic_map.get(&def_id).copied())
     }
 
     /// Get the full definition of this item.

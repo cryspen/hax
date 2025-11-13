@@ -492,6 +492,30 @@ impl ItemRef {
     #[cfg(feature = "rustc")]
     pub fn translate<'tcx, S: UnderOwnerState<'tcx>>(
         s: &S,
+        def_id: RDefId,
+        generics: ty::GenericArgsRef<'tcx>,
+    ) -> ItemRef {
+        Self::translate_maybe_resolve_impl(
+            s,
+            s.base().options.item_ref_use_concrete_impl,
+            def_id,
+            generics,
+        )
+    }
+
+    /// Makes a `ItemRef` from a `def_id` and generics.
+    ///
+    /// If `resolve_impl == true` and `(def_id, generics)` points to a trait item that
+    /// can be resolved to a specific `impl`, `translate` rewrites `def_id` to the
+    /// concrete associated item from that `impl` and re-bases the generics.
+    ///
+    /// For instance, [`<u32 as From<u8>>::from`] produces a [`ItemRef`] with a
+    /// [`DefId`] looking like `core::convert::num::Impl#42::from` when
+    /// `resolve_impl` is `true`, `core::convert::From::from` otherwise.
+    #[cfg(feature = "rustc")]
+    fn translate_maybe_resolve_impl<'tcx, S: UnderOwnerState<'tcx>>(
+        s: &S,
+        resolve_impl: bool,
         mut def_id: RDefId,
         mut generics: ty::GenericArgsRef<'tcx>,
     ) -> ItemRef {
@@ -507,7 +531,8 @@ impl ItemRef {
 
         // If the reference is a known trait impl and the impl implements the target item, we can
         // point directly to the implemented item.
-        if let Some(tinfo) = &trait_info
+        if resolve_impl
+            && let Some(tinfo) = &trait_info
             && let ImplExprAtom::Concrete(impl_ref) = &tinfo.r#impl
             && let impl_def_id = impl_ref.def_id.as_rust_def_id().unwrap()
             && let Some(implemented_item) = tcx
