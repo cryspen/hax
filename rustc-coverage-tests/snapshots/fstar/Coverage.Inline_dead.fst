@@ -8,8 +8,9 @@ let dead (_: Prims.unit) : u32 = mk_u32 42
 let live (v_B: bool) (_: Prims.unit) : u32 = if v_B then dead () else mk_u32 0
 
 let main (_: Prims.unit) : Prims.unit =
+  let args:u32 = live false () <: u32 in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_display #u32 (live false () <: u32)] in
+    let list = [Core_models.Fmt.Rt.impl__new_display #u32 args._1] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
