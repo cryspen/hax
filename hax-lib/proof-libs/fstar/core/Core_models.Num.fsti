@@ -120,11 +120,14 @@ let impl_i32__overflowing_mul: i32 -> i32 -> i32 * bool = mul_overflow
 let impl_i64__overflowing_mul: i64 -> i64 -> i64 * bool = mul_overflow
 let impl_i128__overflowing_mul: i128 -> i128 -> i128 * bool = mul_overflow
 
-val impl_u16__to_be_bytes: u16 -> t_Array u8 (sz 2)
 val impl_usize__to_be_bytes: usize -> t_Array u8 (sz 8)
-val impl_u8__to_be_bytes: u8 -> t_Array u8 (sz 1)
+val impl_u8__to_be_bytes: (x: u8) -> Pure (t_Array u8 (sz 1))
+  (requires True) (ensures (fun res -> Seq.index res 0 == x))
 val impl_u16__from_be_bytes: t_Array u8 (sz 2) -> u16
-val impl_u8__from_be_bytes: t_Array u8 (sz 1) -> u8
+val impl_u16__to_be_bytes: (x: u16) -> Pure (t_Array u8 (sz 2))
+  (requires True) (ensures (fun res -> impl_u16__from_be_bytes res =. x))
+val impl_u8__from_be_bytes: (a: t_Array u8 (sz 1)) -> Pure u8 
+  (requires True) (ensures (fun res -> res == Seq.index a 0)) 
 val impl_usize__from_be_bytes: t_Array u8 (sz 8) -> usize
 
 let impl_i8__abs (a:i8{minint i8_inttype < v a}) : i8 = abs_int a
@@ -141,7 +144,8 @@ val impl_u32__rotate_left: u32 -> u32 -> u32
 val impl_u32__from_le_bytes: t_Array u8 (sz 4) -> u32
 val impl_u32__from_be_bytes: t_Array u8 (sz 4) -> u32
 val impl_u32__to_le_bytes: u32 -> t_Array u8 (sz 4)
-val impl_u32__to_be_bytes: u32 -> t_Array u8 (sz 4)
+val impl_u32__to_be_bytes: (x: u32) -> Pure (t_Array u8 (sz 4)) 
+(requires True) (ensures (fun res -> impl_u32__from_be_bytes res =. x))
 val impl_u32__rotate_right: u32 -> u32 -> u32
 
 
@@ -149,7 +153,8 @@ val impl_u64__rotate_left: u64 -> u32 -> u64
 val impl_u64__from_le_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__from_be_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__to_le_bytes: u64 -> t_Array u8 (sz 8)
-val impl_u64__to_be_bytes: u64 -> t_Array u8 (sz 8)
+val impl_u64__to_be_bytes: (x: u64) -> Pure (t_Array u8 (sz 8))
+  (requires True) (ensures (fun res -> impl_u64__from_be_bytes res =. x))
 val impl_u64__rotate_right: u64 -> u64 -> u64
 let impl_u64__overflowing_sub (x y: u64): u64 * bool
   = let sub = v x - v y in
@@ -233,3 +238,8 @@ unfold instance sub_assign_num t
     f_sub_assign_post = (fun x y r -> x -. y = r);
     f_sub_assign = (fun x y -> x -. y);
   }
+
+val size_of_int_lemma
+  (a: inttype)
+  : Lemma (Core_models.Mem.size_of #(int_t a) () == mk_usize ((bits a) / 8))
+    [SMTPat (Core_models.Mem.size_of #(int_t a))]

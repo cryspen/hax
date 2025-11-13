@@ -26,16 +26,16 @@ unfold
 let impl__new_debug (#v_T: Type0) = impl__new_debug' #v_T
 
 assume
+val impl__new_lower_hex': #v_T: Type0 -> x: v_T -> t_Argument
+
+unfold
+let impl__new_lower_hex (#v_T: Type0) = impl__new_lower_hex' #v_T
+
+assume
 val impl_1__new_binary': #v_T: Type0 -> x: v_T -> t_Argument
 
 unfold
 let impl_1__new_binary (#v_T: Type0) = impl_1__new_binary' #v_T
-
-assume
-val impl_1__new_lower_hex': #v_T: Type0 -> x: v_T -> t_Argument
-
-unfold
-let impl_1__new_lower_hex (#v_T: Type0) = impl_1__new_lower_hex' #v_T
 
 assume
 val impl_1__new_const': #v_T: Type0 -> #v_U: Type0 -> x: v_T -> y: v_U
@@ -65,10 +65,17 @@ let impl_1__none (_: Prims.unit) : t_Array t_Argument (mk_usize 0) =
   Rust_primitives.Hax.array_of_list 0 list
 
 assume
-val impl_4__new_v1_formatted': #v_T: Type0 -> x: v_T -> t_Argument
+val impl_1__new_v1_formatted':
+    #v_T: Type0 ->
+    #v_U: Type0 ->
+    #v_V: Type0 ->
+    x: v_T ->
+    y: v_U ->
+    z: v_V
+  -> Core_models.Fmt.t_Arguments
 
 unfold
-let impl_4__new_v1_formatted (#v_T: Type0) = impl_4__new_v1_formatted' #v_T
+let impl_1__new_v1_formatted (#v_T #v_U #v_V: Type0) = impl_1__new_v1_formatted' #v_T #v_U #v_V
 
 type t_Count =
   | Count_Is : u16 -> t_Count

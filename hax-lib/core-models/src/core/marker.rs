@@ -10,4 +10,5 @@ impl<T> Sync for T {}
 impl<T> Sized for T {}
 impl<T: Clone> Copy for T {}
 
-struct PhantomData;
+#[hax_lib::fstar::replace("type t_PhantomData (v_T: Type0) = | PhantomData : t_PhantomData v_T")]
+struct PhantomData<T>(T);

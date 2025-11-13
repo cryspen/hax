@@ -173,6 +173,18 @@ let copy
     : v_T = x
 
 assume
+val take': #v_T: Type0 -> x: v_T -> (v_T & v_T)
+
+unfold
+let take (#v_T: Type0) = take' #v_T
+
+assume
+val take__panic_cold_explicit': Prims.unit -> Rust_primitives.Hax.t_Never
+
+unfold
+let take__panic_cold_explicit = take__panic_cold_explicit'
+
+assume
 val transmute_copy': #v_Src: Type0 -> #v_Dst: Type0 -> src: v_Src -> v_Dst
 
 unfold

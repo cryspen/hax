@@ -67,14 +67,14 @@ open Rust_primitives.Integers"
         fn new_debug<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
+        #[hax_lib::opaque]
+        fn new_lower_hex<T>(x: &T) -> Self {
+            crate::panicking::internal::panic()
+        }
     }
     impl<'a> Argument<'a> {
         #[hax_lib::opaque]
         fn new_binary<T>(x: &T) -> Self {
-            crate::panicking::internal::panic()
-        }
-        #[hax_lib::opaque]
-        fn new_lower_hex<T>(x: &T) -> Self {
             crate::panicking::internal::panic()
         }
         #[hax_lib::opaque]
@@ -88,15 +88,8 @@ open Rust_primitives.Integers"
         fn none() -> [Self; 0] {
             []
         }
-    }
-
-    // Empty impls are needed to ensure the disambiguators are the same as in core
-    impl Argument<'_> {}
-    impl Argument<'_> {}
-
-    impl<'a> Argument<'a> {
         #[hax_lib::opaque]
-        fn new_v1_formatted<T>(x: &T) -> Self {
+        fn new_v1_formatted<T, U, V>(x: &T, y: &U, z: &V) -> super::Arguments<'a> {
             crate::panicking::internal::panic()
         }
     }
