@@ -59,11 +59,9 @@ impl Import<ast::GenericParam> for frontend::GenericParamDef {
 impl SpannedImport<ast::GenericValue> for frontend::GenericArg {
     fn spanned_import(&self, span: ast::span::Span) -> ast::GenericValue {
         match self {
-            hax_frontend_exporter::GenericArg::Lifetime(_) => ast::GenericValue::Lifetime,
-            hax_frontend_exporter::GenericArg::Type(ty) => {
-                ast::GenericValue::Ty(ty.spanned_import(span))
-            }
-            hax_frontend_exporter::GenericArg::Const(decorated) => {
+            frontend::GenericArg::Lifetime(_) => ast::GenericValue::Lifetime,
+            frontend::GenericArg::Type(ty) => ast::GenericValue::Ty(ty.spanned_import(span)),
+            frontend::GenericArg::Const(decorated) => {
                 ast::GenericValue::Expr(frontend::Expr::from(decorated.clone()).import())
             }
         }
@@ -125,8 +123,8 @@ impl Import<ast::Generics> for frontend::ParamEnv {
 impl Import<ast::SafetyKind> for frontend::Safety {
     fn import(&self) -> ast::SafetyKind {
         match self {
-            hax_frontend_exporter::Safety::Unsafe => ast::SafetyKind::Unsafe,
-            hax_frontend_exporter::Safety::Safe => ast::SafetyKind::Safe,
+            frontend::Safety::Unsafe => ast::SafetyKind::Unsafe,
+            frontend::Safety::Safe => ast::SafetyKind::Safe,
         }
     }
 }
@@ -134,35 +132,35 @@ impl Import<ast::SafetyKind> for frontend::Safety {
 impl SpannedImport<ast::Ty> for frontend::Ty {
     fn spanned_import(&self, span: ast::span::Span) -> ast::Ty {
         let kind = match self.kind() {
-            hax_frontend_exporter::TyKind::Bool => todo!(),
-            hax_frontend_exporter::TyKind::Char => todo!(),
-            hax_frontend_exporter::TyKind::Int(int_ty) => todo!(),
-            hax_frontend_exporter::TyKind::Uint(uint_ty) => todo!(),
-            hax_frontend_exporter::TyKind::Float(float_ty) => todo!(),
-            hax_frontend_exporter::TyKind::FnDef { item, fn_sig } => todo!(),
-            hax_frontend_exporter::TyKind::Arrow(binder) => todo!(),
-            hax_frontend_exporter::TyKind::Closure(closure_args) => todo!(),
-            hax_frontend_exporter::TyKind::Adt(item_ref) => todo!(),
-            hax_frontend_exporter::TyKind::Foreign(item_ref) => todo!(),
-            hax_frontend_exporter::TyKind::Str => todo!(),
-            hax_frontend_exporter::TyKind::Array(ty, decorated) => todo!(),
-            hax_frontend_exporter::TyKind::Slice(ty) => todo!(),
-            hax_frontend_exporter::TyKind::RawPtr(ty, _) => todo!(),
-            hax_frontend_exporter::TyKind::Ref(region, ty, _) => todo!(),
-            hax_frontend_exporter::TyKind::Dynamic(param_ty, generic_predicates, region) => todo!(),
-            hax_frontend_exporter::TyKind::Coroutine(item_ref) => todo!(),
-            hax_frontend_exporter::TyKind::Never => todo!(),
-            hax_frontend_exporter::TyKind::Tuple(items) => ast::TyKind::App {
+            frontend::TyKind::Bool => todo!(),
+            frontend::TyKind::Char => todo!(),
+            frontend::TyKind::Int(int_ty) => todo!(),
+            frontend::TyKind::Uint(uint_ty) => todo!(),
+            frontend::TyKind::Float(float_ty) => todo!(),
+            frontend::TyKind::FnDef { item, fn_sig } => todo!(),
+            frontend::TyKind::Arrow(binder) => todo!(),
+            frontend::TyKind::Closure(closure_args) => todo!(),
+            frontend::TyKind::Adt(item_ref) => todo!(),
+            frontend::TyKind::Foreign(item_ref) => todo!(),
+            frontend::TyKind::Str => todo!(),
+            frontend::TyKind::Array(ty, decorated) => todo!(),
+            frontend::TyKind::Slice(ty) => todo!(),
+            frontend::TyKind::RawPtr(ty, _) => todo!(),
+            frontend::TyKind::Ref(region, ty, _) => todo!(),
+            frontend::TyKind::Dynamic(param_ty, generic_predicates, region) => todo!(),
+            frontend::TyKind::Coroutine(item_ref) => todo!(),
+            frontend::TyKind::Never => todo!(),
+            frontend::TyKind::Tuple(items) => ast::TyKind::App {
                 head: ast::GlobalId::unit_ty(),
                 args: Vec::new(),
             },
-            hax_frontend_exporter::TyKind::Alias(alias) => todo!(),
-            hax_frontend_exporter::TyKind::Param(param_ty) => todo!(),
-            hax_frontend_exporter::TyKind::Bound(_, bound_ty) => todo!(),
-            hax_frontend_exporter::TyKind::Placeholder(placeholder) => todo!(),
-            hax_frontend_exporter::TyKind::Infer(infer_ty) => todo!(),
-            hax_frontend_exporter::TyKind::Error => todo!(),
-            hax_frontend_exporter::TyKind::Todo(_) => todo!(),
+            frontend::TyKind::Alias(alias) => todo!(),
+            frontend::TyKind::Param(param_ty) => todo!(),
+            frontend::TyKind::Bound(_, bound_ty) => todo!(),
+            frontend::TyKind::Placeholder(placeholder) => todo!(),
+            frontend::TyKind::Infer(infer_ty) => todo!(),
+            frontend::TyKind::Error => todo!(),
+            frontend::TyKind::Todo(_) => todo!(),
         };
         ast::Ty(Box::new(kind))
     }
@@ -179,81 +177,81 @@ impl Import<ast::Expr> for frontend::Expr {
         } = self;
         let span = span.import();
         let kind = match contents.as_ref() {
-            hax_frontend_exporter::ExprKind::Box { value } => todo!(),
-            hax_frontend_exporter::ExprKind::If {
+            frontend::ExprKind::Box { value } => todo!(),
+            frontend::ExprKind::If {
                 if_then_scope,
                 cond,
                 then,
                 else_opt,
             } => todo!(),
-            hax_frontend_exporter::ExprKind::Call {
+            frontend::ExprKind::Call {
                 ty,
                 fun,
                 args,
                 from_hir_call,
                 fn_span,
             } => todo!(),
-            hax_frontend_exporter::ExprKind::Deref { arg } => todo!(),
-            hax_frontend_exporter::ExprKind::Binary { op, lhs, rhs } => todo!(),
-            hax_frontend_exporter::ExprKind::LogicalOp { op, lhs, rhs } => todo!(),
-            hax_frontend_exporter::ExprKind::Unary { op, arg } => todo!(),
-            hax_frontend_exporter::ExprKind::Cast { source } => todo!(),
-            hax_frontend_exporter::ExprKind::Use { source } => todo!(),
-            hax_frontend_exporter::ExprKind::NeverToAny { source } => todo!(),
-            hax_frontend_exporter::ExprKind::PointerCoercion { cast, source } => todo!(),
-            hax_frontend_exporter::ExprKind::Loop { body } => todo!(),
-            hax_frontend_exporter::ExprKind::Match { scrutinee, arms } => todo!(),
-            hax_frontend_exporter::ExprKind::Let { expr, pat } => todo!(),
-            hax_frontend_exporter::ExprKind::Block { block } => {
+            frontend::ExprKind::Deref { arg } => todo!(),
+            frontend::ExprKind::Binary { op, lhs, rhs } => todo!(),
+            frontend::ExprKind::LogicalOp { op, lhs, rhs } => todo!(),
+            frontend::ExprKind::Unary { op, arg } => todo!(),
+            frontend::ExprKind::Cast { source } => todo!(),
+            frontend::ExprKind::Use { source } => todo!(),
+            frontend::ExprKind::NeverToAny { source } => todo!(),
+            frontend::ExprKind::PointerCoercion { cast, source } => todo!(),
+            frontend::ExprKind::Loop { body } => todo!(),
+            frontend::ExprKind::Match { scrutinee, arms } => todo!(),
+            frontend::ExprKind::Let { expr, pat } => todo!(),
+            frontend::ExprKind::Block { block } => {
                 return block.expr.as_ref().unwrap().import();
             }
-            hax_frontend_exporter::ExprKind::Assign { lhs, rhs } => todo!(),
-            hax_frontend_exporter::ExprKind::AssignOp { op, lhs, rhs } => todo!(),
-            hax_frontend_exporter::ExprKind::Field { field, lhs } => todo!(),
-            hax_frontend_exporter::ExprKind::TupleField { field, lhs } => todo!(),
-            hax_frontend_exporter::ExprKind::Index { lhs, index } => todo!(),
-            hax_frontend_exporter::ExprKind::VarRef { id } => todo!(),
-            hax_frontend_exporter::ExprKind::ConstRef { id } => todo!(),
-            hax_frontend_exporter::ExprKind::GlobalName { item, constructor } => todo!(),
-            hax_frontend_exporter::ExprKind::UpvarRef {
+            frontend::ExprKind::Assign { lhs, rhs } => todo!(),
+            frontend::ExprKind::AssignOp { op, lhs, rhs } => todo!(),
+            frontend::ExprKind::Field { field, lhs } => todo!(),
+            frontend::ExprKind::TupleField { field, lhs } => todo!(),
+            frontend::ExprKind::Index { lhs, index } => todo!(),
+            frontend::ExprKind::VarRef { id } => todo!(),
+            frontend::ExprKind::ConstRef { id } => todo!(),
+            frontend::ExprKind::GlobalName { item, constructor } => todo!(),
+            frontend::ExprKind::UpvarRef {
                 closure_def_id,
                 var_hir_id,
             } => todo!(),
-            hax_frontend_exporter::ExprKind::Borrow { borrow_kind, arg } => todo!(),
-            hax_frontend_exporter::ExprKind::RawBorrow { mutability, arg } => todo!(),
-            hax_frontend_exporter::ExprKind::Break { label, value } => todo!(),
-            hax_frontend_exporter::ExprKind::Continue { label } => todo!(),
-            hax_frontend_exporter::ExprKind::Return { value } => todo!(),
-            hax_frontend_exporter::ExprKind::ConstBlock(item_ref) => todo!(),
-            hax_frontend_exporter::ExprKind::Repeat { value, count } => todo!(),
-            hax_frontend_exporter::ExprKind::Array { fields } => todo!(),
-            hax_frontend_exporter::ExprKind::Tuple { fields } => ast::ExprKind::Construct {
+            frontend::ExprKind::Borrow { borrow_kind, arg } => todo!(),
+            frontend::ExprKind::RawBorrow { mutability, arg } => todo!(),
+            frontend::ExprKind::Break { label, value } => todo!(),
+            frontend::ExprKind::Continue { label } => todo!(),
+            frontend::ExprKind::Return { value } => todo!(),
+            frontend::ExprKind::ConstBlock(item_ref) => todo!(),
+            frontend::ExprKind::Repeat { value, count } => todo!(),
+            frontend::ExprKind::Array { fields } => todo!(),
+            frontend::ExprKind::Tuple { fields } => ast::ExprKind::Construct {
                 constructor: ast::GlobalId::unit_constructor(),
                 is_record: false,
                 is_struct: true,
                 fields: Vec::new(),
                 base: None,
             },
-            hax_frontend_exporter::ExprKind::Adt(adt_expr) => todo!(),
-            hax_frontend_exporter::ExprKind::PlaceTypeAscription { source, user_ty } => todo!(),
-            hax_frontend_exporter::ExprKind::ValueTypeAscription { source, user_ty } => todo!(),
-            hax_frontend_exporter::ExprKind::Closure {
+            frontend::ExprKind::Adt(adt_expr) => todo!(),
+            frontend::ExprKind::PlaceTypeAscription { source, user_ty } => todo!(),
+            frontend::ExprKind::ValueTypeAscription { source, user_ty } => todo!(),
+            frontend::ExprKind::Closure {
                 params,
                 body,
                 upvars,
                 movability,
             } => todo!(),
-            hax_frontend_exporter::ExprKind::Literal { lit, neg } => todo!(),
-            hax_frontend_exporter::ExprKind::ZstLiteral { user_ty } => todo!(),
-            hax_frontend_exporter::ExprKind::NamedConst { item, user_ty } => todo!(),
-            hax_frontend_exporter::ExprKind::ConstParam { param, def_id } => todo!(),
-            hax_frontend_exporter::ExprKind::StaticRef {
+            frontend::ExprKind::Literal { lit, neg } => todo!(),
+            frontend::ExprKind::ZstLiteral { user_ty } => todo!(),
+            frontend::ExprKind::NamedConst { item, user_ty } => todo!(),
+            frontend::ExprKind::ConstParam { param, def_id } => todo!(),
+            frontend::ExprKind::StaticRef {
                 alloc_id,
                 ty,
                 def_id,
             } => todo!(),
-            hax_frontend_exporter::ExprKind::Yield { value } => todo!(),
-            hax_frontend_exporter::ExprKind::Todo(_) => todo!(),
+            frontend::ExprKind::Yield { value } => todo!(),
+            frontend::ExprKind::Todo(_) => todo!(),
         };
         ast::Expr {
             kind: Box::new(kind),
@@ -407,7 +405,11 @@ impl Import<Vec<ast::Item>> for frontend::FullDef<frontend::Expr> {
                     },
                 }
             }
-            frontend::FullDefKind::TyAlias { param_env, ty } => todo!(),
+            frontend::FullDefKind::TyAlias { param_env, ty } => ast::ItemKind::TyAlias {
+                name: ident,
+                generics: param_env.import(),
+                ty: ty.spanned_import(span.clone()),
+            },
             frontend::FullDefKind::ForeignTy => todo!(),
             frontend::FullDefKind::AssocTy {
                 param_env,
@@ -470,7 +472,27 @@ impl Import<Vec<ast::Item>> for frontend::FullDef<frontend::Expr> {
                 param_env,
                 ty,
                 items,
-            } => todo!(),
+            } => {
+                let mut items: Vec<_> = items
+                    .iter()
+                    .map(|assoc_item| {
+                        match &assoc_item.kind {
+                            // TODO #1763 Missing information about definitions of Const and Fn
+                            // in AssocKind
+                            frontend::AssocKind::Const { name } => ast::ItemKind::Fn {
+                                name: todo!(),
+                                generics: todo!(),
+                                body: todo!(),
+                                params: todo!(),
+                                safety: todo!(),
+                            },
+                            frontend::AssocKind::Fn { name, has_self } => todo!(),
+                            frontend::AssocKind::Type { data } => todo!(),
+                        }
+                    })
+                    .collect();
+                items.pop().unwrap() // TODO push items
+            }
             frontend::FullDefKind::Fn {
                 param_env,
                 sig,
@@ -505,13 +527,21 @@ impl Import<Vec<ast::Item>> for frontend::FullDef<frontend::Expr> {
                 once_shim,
                 drop_glue,
                 drop_impl,
-            } => todo!(),
+            } => todo!(), // TODO When do we get closures in items? Are they not happening only in expr?
             frontend::FullDefKind::Const {
                 param_env,
                 ty,
                 kind,
                 body,
-            } => todo!(),
+            } => {
+                ast::ItemKind::Fn {
+                    name: ident,
+                    generics: param_env.import(),
+                    body: body.as_ref().unwrap().import(), // TODO when is this None?
+                    params: Vec::new(),
+                    safety: ast::SafetyKind::Safe,
+                }
+            }
             frontend::FullDefKind::AssocConst {
                 param_env,
                 associated_item,
@@ -527,7 +557,7 @@ impl Import<Vec<ast::Item>> for frontend::FullDef<frontend::Expr> {
                 body,
             } => todo!(),
             frontend::FullDefKind::ExternCrate => todo!(),
-            frontend::FullDefKind::Use => todo!(),
+            frontend::FullDefKind::Use => todo!(), // TODO?
             frontend::FullDefKind::Mod { items } => todo!(),
             frontend::FullDefKind::ForeignMod { items } => todo!(),
             frontend::FullDefKind::TyParam => todo!(),
