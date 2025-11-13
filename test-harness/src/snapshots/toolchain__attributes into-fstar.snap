@@ -445,7 +445,7 @@ let t_NoE =
             <:
             Core_models.Str.Iter.t_Chars)
           (fun ch ->
-              let ch:char = ch in
+              let ch:FStar.Char.char = ch in
               ch =. ' ' <: bool)
       in
       ~.out }

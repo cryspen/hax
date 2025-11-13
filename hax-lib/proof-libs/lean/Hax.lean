@@ -23,3 +23,6 @@ import Hax.Rust_primitives
 
 /- Tactics -/
 import Hax.Tactics
+
+/- Core -/
+import Hax.Core
