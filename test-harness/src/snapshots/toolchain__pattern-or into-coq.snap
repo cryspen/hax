@@ -41,9 +41,9 @@ From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
 From Core Require Import Core.
 
-
-
 (* NotImplementedYet *)
+
+
 
 Inductive t_E : Type :=
 | E_A

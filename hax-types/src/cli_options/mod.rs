@@ -567,9 +567,10 @@ impl From<Options> for hax_frontend_exporter_options::Options {
         hax_frontend_exporter_options::Options {
             inline_anon_consts: true,
             bounds_options: hax_frontend_exporter_options::BoundsOptions {
-                resolve_drop: false,
+                resolve_destruct: false,
                 prune_sized: true,
             },
+            item_ref_use_concrete_impl: false,
         }
     }
 }

@@ -40,9 +40,9 @@ From RecordUpdate Require Import RecordSet.
 Import RecordSetNotations.
 From Core Require Import Core.
 
-
-
 (* NotImplementedYet *)
+
+
 
 Record Foo_record : Type :=
   {
@@ -56,7 +56,7 @@ Class t_Trait (v_Self : Type) : Type :=
   }.
 Arguments t_Trait (_).
 
-Instance t_Trait_572156424 : t_Trait ((t_Foo)) :=
+Instance t_Trait_810848144 : t_Trait ((t_Foo)) :=
   {
   }.
 

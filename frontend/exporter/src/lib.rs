@@ -23,7 +23,6 @@ cfg_feature_rustc! {
     extern crate rustc_abi;
     extern crate rustc_ast;
     extern crate rustc_ast_pretty;
-    extern crate rustc_attr_data_structures;
     extern crate rustc_apfloat;
     extern crate rustc_const_eval;
     extern crate rustc_data_structures;

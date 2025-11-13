@@ -10,7 +10,7 @@ Note: the error was labeled with context `reject_TraitItemDefault`.
 
 Last available AST for this item:
 
-#[<cfg>(any(feature = "json"))]#[feature(coverage_attribute)]#[<cfg>(any(feature = "json", feature = "lean", feature = "fstar", feature =
+#[<cfg_trace>(any(feature = "json"))]#[feature(coverage_attribute)]#[<cfg_trace>(any(feature = "json", feature = "lean", feature = "fstar", feature =
 "fstar-lax", feature = "coq"))]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait t_T<Self_>{fn f_f((self: Self)) -> tuple0{{let _: tuple0 = {std::io::stdio::e_print(core_models::fmt::rt::impl_1__new_const::<generic_value!(todo)>(["default\n"]))};{let _: tuple0 = {Tuple0};Tuple0}}}}
 
 Last AST:

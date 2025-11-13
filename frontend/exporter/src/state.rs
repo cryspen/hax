@@ -90,6 +90,10 @@ mod types {
         pub id_table_session: id_table::Session,
         /// Map that recovers rustc args for a given `ItemRef`.
         pub reverse_item_refs_map: HashMap<id_table::Id, ty::GenericArgsRef<'tcx>>,
+        /// We create some artificial items; their def_ids are stored here. See the
+        /// `synthetic_items` module.
+        pub synthetic_def_ids: HashMap<SyntheticItem, RDefId>,
+        pub reverse_synthetic_map: HashMap<RDefId, SyntheticItem>,
     }
 
     /// Defines a mapping from types to types, for use with `TypeMap`.
@@ -126,12 +130,8 @@ mod types {
         pub opt_def_id: Option<rustc_hir::def_id::DefId>,
         pub cache: Rc<RefCell<GlobalCache<'tcx>>>,
         pub tcx: ty::TyCtxt<'tcx>,
-        /// Rust doesn't enforce bounds on generic parameters in type
-        /// aliases. Thus, when translating type aliases, we need to
-        /// disable the resolution of implementation expressions. For
-        /// more details, please see
-        /// https://github.com/hacspec/hax/issues/707.
-        pub ty_alias_mode: bool,
+        /// Silence the warnings in case of trait resolution failure.
+        pub silence_resolution_errors: bool,
     }
 
     impl<'tcx> Base<'tcx> {
@@ -147,7 +147,7 @@ mod types {
                 // `opt_def_id` is used in `utils` for error reporting
                 opt_def_id: None,
                 local_ctx: Rc::new(RefCell::new(LocalContextS::new())),
-                ty_alias_mode: false,
+                silence_resolution_errors: false,
             }
         }
     }
@@ -329,10 +329,12 @@ impl ImplInfos {
         Self {
             generics: tcx.generics_of(did).sinto(s),
             typ: tcx.type_of(did).instantiate_identity().sinto(s),
-            trait_ref: tcx
-                .impl_trait_ref(did)
-                .map(|trait_ref| trait_ref.instantiate_identity())
-                .sinto(s),
+            trait_ref: match tcx.def_kind(did) {
+                rustc_hir::def::DefKind::Impl { of_trait: true } => {
+                    Some(tcx.impl_trait_ref(did).instantiate_identity().sinto(s))
+                }
+                _ => None,
+            },
             clauses: predicates_defined_on(tcx, did).as_ref().sinto(s),
         }
     }

@@ -103,13 +103,15 @@ pub struct Options {
     pub inline_anon_consts: bool,
     /// Options related to bounds.
     pub bounds_options: BoundsOptions,
+    /// Resolve definition identifiers to their concrete impl counterpart when possible in `ItemRef::translate`.
+    pub item_ref_use_concrete_impl: bool,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub struct BoundsOptions {
-    /// Add `T: Drop` bounds to every type generic, so that we can build `ImplExpr`s to know what
-    /// code is run on drop.
-    pub resolve_drop: bool,
+    /// Add `T: Destruct` bounds to every type generic, so that we can build `ImplExpr`s to know
+    /// what code is run on drop.
+    pub resolve_destruct: bool,
     /// Prune `T: Sized` and `T: MetaSized` predicates.
     pub prune_sized: bool,
 }

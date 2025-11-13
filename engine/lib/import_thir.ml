@@ -100,8 +100,8 @@ let c_borrow_kind span : Thir.borrow_kind -> borrow_kind = function
 
 let c_binding_mode : Thir.by_ref -> binding_mode = function
   | No -> ByValue
-  | Yes true -> ByRef (Mut W.mutable_reference, W.reference)
-  | Yes false -> ByRef (Shared, W.reference)
+  | Yes (_, true) -> ByRef (Mut W.mutable_reference, W.reference)
+  | Yes (_, false) -> ByRef (Shared, W.reference)
 
 let unit_typ : ty = TApp { ident = `TupleType 0; args = [] }
 
@@ -906,7 +906,7 @@ end) : EXPR = struct
             "constant_lit_to_lit: TraitConst | FnPtr | RawBorrow | Cast | \
              Memory"
       | Todo _ -> assertion_failure [ span ] "ConstantExpr::Todo"
-    and constant_lit_to_lit (l : Thir.constant_literal) _span :
+    and constant_lit_to_lit (l : Thir.constant_literal) span :
         Thir.lit_kind * bool =
       match l with
       | Bool v -> (Bool v, false)
@@ -922,6 +922,8 @@ end) : EXPR = struct
           | None -> (Float (v, Suffixed ty), false))
       | Str v -> (Str (v, Cooked), false)
       | ByteStr v -> (ByteStr (v, Cooked), false)
+      | PtrNoProvenance _ ->
+          assertion_failure [ span ] "constant_lit_to_lit: PtrNoProvenance"
     and constant_field_expr ({ field; value } : Thir.constant_field_expr) :
         Thir.field_expr =
       { field; value = constant_expr_to_expr value }
@@ -1080,9 +1082,25 @@ end) : EXPR = struct
         TApp { ident; args }
     | Foreign _ -> unimplemented ~issue_id:928 [ span ] "Foreign"
     | Str -> TStr
-    | Array (ty, len) ->
+    | Array item_ref ->
+        let ty, len =
+          match item_ref.value.generic_args with
+          | [ Type ty; Const len ] -> (ty, len)
+          | _ ->
+              assertion_failure [ span ]
+                "Wrong generics for array: expected a type and a constant. See \
+                 synthetic_items in hax frontend."
+        in
         TArray { typ = c_ty span ty; length = c_constant_expr len }
-    | Slice ty ->
+    | Slice item_ref ->
+        let ty =
+          match item_ref.value.generic_args with
+          | [ Type ty ] -> ty
+          | _ ->
+              assertion_failure [ span ]
+                "Wrong generics for slice: expected a type. See \
+                 synthetic_items in hax frontend."
+        in
         let ty = c_ty span ty in
         TSlice { ty; witness = W.slice }
     | RawPtr _ -> TRawPointer { witness = W.raw_pointer }
@@ -1091,7 +1109,17 @@ end) : EXPR = struct
         let mut = c_mutability W.mutable_reference mut in
         TRef { witness = W.reference; region = "todo"; typ; mut }
     | Never -> U.never_typ
-    | Tuple types ->
+    | Tuple item_ref ->
+        let types =
+          List.map
+            ~f:(function Types.Type ty -> Some ty | _ -> None)
+            item_ref.value.generic_args
+          |> Option.all
+          |> Option.value_or_thunk ~default:(fun _ ->
+                 assertion_failure [ span ]
+                   "Wrong generics for slice: expected a type. See \
+                    synthetic_items in hax frontend.")
+        in
         let types = List.map ~f:(fun ty -> GType (c_ty span ty)) types in
         TApp { ident = `TupleType (List.length types); args = types }
     | Alias { kind = Projection { assoc_item = _; impl_expr }; def_id; _ } ->

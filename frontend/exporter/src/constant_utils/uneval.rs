@@ -111,8 +111,10 @@ pub fn translate_constant_reference<'tcx>(
         .try_normalize_erasing_regions(typing_env, ty)
         .unwrap_or(ty);
     let kind = if let Some(assoc) = s.base().tcx.opt_associated_item(ucv.def)
-        && (assoc.trait_item_def_id.is_some() || assoc.container == ty::AssocItemContainer::Trait)
-    {
+        && matches!(
+            assoc.container,
+            ty::AssocContainer::Trait | ty::AssocContainer::TraitImpl(..)
+        ) {
         // This is an associated constant in a trait.
         let name = assoc.name().to_string();
         let impl_expr = self_clause_for_item(s, ucv.def, ucv.args).unwrap();
@@ -128,11 +130,22 @@ pub fn translate_constant_reference<'tcx>(
 /// Evaluate a `ty::Const`.
 pub fn eval_ty_constant<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
-    c: ty::Const<'tcx>,
+    uv: rustc_middle::ty::UnevaluatedConst<'tcx>,
 ) -> Option<ty::Const<'tcx>> {
+    use ty::TypeVisitableExt;
     let tcx = s.base().tcx;
-    let evaluated = tcx.try_normalize_erasing_regions(s.typing_env(), c).ok()?;
-    (evaluated != c).then_some(evaluated)
+    let typing_env = s.typing_env();
+    if uv.has_non_region_param() {
+        return None;
+    }
+    let span = tcx.def_span(uv.def);
+    let erased_uv = tcx.erase_and_anonymize_regions(uv);
+    let val = tcx
+        .const_eval_resolve_for_typeck(typing_env, erased_uv, span)
+        .ok()?
+        .ok()?;
+    let ty = tcx.type_of(uv.def).instantiate(tcx, uv.args);
+    Some(ty::Const::new_value(tcx, val, ty))
 }
 
 /// Evaluate a `mir::Const`.
@@ -164,7 +177,7 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
 
             ty::ConstKind::Unevaluated(ucv) => match translate_constant_reference(s, span, ucv) {
                 Some(val) => val,
-                None => match eval_ty_constant(s, *self) {
+                None => match eval_ty_constant(s, ucv) {
                     Some(val) => val.sinto(s),
                     // TODO: This is triggered when compiling using `generic_const_exprs`
                     None => supposely_unreachable_fatal!(s, "TranslateUneval"; {self, ucv}),
@@ -180,6 +193,13 @@ impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Const<'tcx> 
             }
             _ => fatal!(s[span], "unexpected case"),
         }
+    }
+}
+
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, ConstantExpr> for ty::Value<'tcx> {
+    #[tracing::instrument(level = "trace", skip(s))]
+    fn sinto(&self, s: &S) -> ConstantExpr {
+        valtree_to_constant_expr(s, self.valtree, self.ty, rustc_span::DUMMY_SP)
     }
 }
 
@@ -369,15 +389,24 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
             ConstantExprKind::FnPtr(item)
         }
         ty::RawPtr(..) | ty::Ref(..) => {
-            let op = ecx.deref_pointer(&op)?;
-            let val = op_to_const(s, span, ecx, op.into())?;
-            match ty.kind() {
-                ty::Ref(..) => ConstantExprKind::Borrow(val),
-                ty::RawPtr(.., mutability) => ConstantExprKind::RawBorrow {
-                    arg: val,
-                    mutability: mutability.sinto(s),
-                },
-                _ => unreachable!(),
+            if let Some(op) = ecx.deref_pointer(&op).discard_err() {
+                // Valid pointer case
+                let val = op_to_const(s, span, ecx, op.into())?;
+                match ty.kind() {
+                    ty::Ref(..) => ConstantExprKind::Borrow(val),
+                    ty::RawPtr(.., mutability) => ConstantExprKind::RawBorrow {
+                        arg: val,
+                        mutability: mutability.sinto(s),
+                    },
+                    _ => unreachable!(),
+                }
+            } else {
+                // Invalid pointer; try reading it as a raw address
+                let scalar = ecx.read_scalar(&op)?;
+                let scalar_int = scalar.try_to_scalar_int().unwrap();
+                let v = scalar_int.to_uint(scalar_int.size());
+                let lit = ConstantLiteral::PtrNoProvenance(v);
+                ConstantExprKind::Literal(lit)
             }
         }
         ty::FnPtr(..)
@@ -402,7 +431,7 @@ fn op_to_const<'tcx, S: UnderOwnerState<'tcx>>(
 pub fn const_value_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
     s: &S,
     ty: rustc_middle::ty::Ty<'tcx>,
-    val: mir::ConstValue<'tcx>,
+    val: mir::ConstValue,
     span: rustc_span::Span,
 ) -> InterpResult<'tcx, ConstantExpr> {
     let tcx = s.base().tcx;

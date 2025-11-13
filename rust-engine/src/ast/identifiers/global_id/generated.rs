@@ -4,12 +4,12 @@
 // calls `rust_engine::names::export_def_ids_to_mod`.
 
 static TABLE_AND_INTERNED_GLOBAL_IDS: (
-    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 639>,
-    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 639],
+    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 647>,
+    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 647],
 ) = {
     crate::interning::InterningTable::new_with_values(|| {
-        use crate::ast::identifiers::global_id::compact_serialization::deserialize;
         use crate::ast::identifiers::global_id::ExplicitDefId;
+        use crate::ast::identifiers::global_id::compact_serialization::deserialize;
         fn did_0() -> ExplicitDefId {
             deserialize(r##"["rust_primitives",[],"Mod",false]"##, None)
         }
@@ -307,13 +307,13 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_51() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
-                Some(did_622()),
+                Some(did_629()),
             )
         }
         fn did_52() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
-                Some(did_622()),
+                Some(did_629()),
             )
         }
         fn did_53() -> ExplicitDefId {
@@ -730,13 +730,13 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_122() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_624()),
+                Some(did_631()),
             )
         }
         fn did_123() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_625()),
+                Some(did_632()),
             )
         }
         fn did_124() -> ExplicitDefId {
@@ -748,7 +748,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_125() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
-                Some(did_626()),
+                Some(did_633()),
             )
         }
         fn did_126() -> ExplicitDefId {
@@ -766,7 +766,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_128() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
-                Some(did_628()),
+                Some(did_635()),
             )
         }
         fn did_129() -> ExplicitDefId {
@@ -1011,2822 +1011,2870 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         }
         fn did_169() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",82]],{"Impl":{"of_trait":true}},false]"##,
-                Some(did_168()),
-            )
-        }
-        fn did_170() -> ExplicitDefId {
-            deserialize(
                 r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"assert_failed"},0]],"Fn",false]"##,
                 Some(did_161()),
             )
         }
-        fn did_171() -> ExplicitDefId {
+        fn did_170() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Never"},0]],"Enum",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_172() -> ExplicitDefId {
+        fn did_171() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"never_to_any"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_173() -> ExplicitDefId {
+        fn did_172() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"panicking"},0],[{"ValueNs":"panic"},0]],"Fn",false]"##,
                 Some(did_161()),
             )
         }
-        fn did_174() -> ExplicitDefId {
+        fn did_173() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_629()),
+                Some(did_636()),
             )
         }
-        fn did_175() -> ExplicitDefId {
+        fn did_174() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
                 Some(did_76()),
             )
         }
-        fn did_176() -> ExplicitDefId {
+        fn did_175() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],["Impl",0],[{"ValueNs":"map_err"},0]],"AssocFn",false]"##,
-                Some(did_175()),
+                Some(did_174()),
             )
         }
-        fn did_177() -> ExplicitDefId {
+        fn did_176() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
                 Some(did_163()),
             )
         }
-        fn did_178() -> ExplicitDefId {
+        fn did_177() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],["Impl",0],[{"ValueNs":"is_some"},0]],"AssocFn",false]"##,
-                Some(did_177()),
+                Some(did_176()),
+            )
+        }
+        fn did_178() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_637()),
             )
         }
         fn did_179() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_630()),
-            )
-        }
-        fn did_180() -> ExplicitDefId {
             deserialize(
                 r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
                 Some(did_33()),
             )
         }
-        fn did_181() -> ExplicitDefId {
+        fn did_180() -> ExplicitDefId {
             deserialize(
                 r##"["alloc",[[{"TypeNs":"boxed"},0],["Impl",0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
-                Some(did_180()),
+                Some(did_179()),
             )
         }
-        fn did_182() -> ExplicitDefId {
+        fn did_181() -> ExplicitDefId {
             deserialize(
                 r##"["alloc",[[{"TypeNs":"string"},0]],"Mod",false]"##,
                 Some(did_2()),
             )
         }
-        fn did_183() -> ExplicitDefId {
+        fn did_182() -> ExplicitDefId {
             deserialize(
                 r##"["alloc",[[{"TypeNs":"string"},0],[{"TypeNs":"String"},0]],"Struct",false]"##,
-                Some(did_182()),
+                Some(did_181()),
             )
         }
-        fn did_184() -> ExplicitDefId {
+        fn did_183() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"Infallible"},0]],"Enum",false]"##,
                 Some(did_129()),
             )
         }
-        fn did_185() -> ExplicitDefId {
+        fn did_184() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0]],"Mod",false]"##,
                 Some(did_22()),
             )
         }
-        fn did_186() -> ExplicitDefId {
+        fn did_185() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0]],"Trait",false]"##,
+                Some(did_184()),
+            )
+        }
+        fn did_186() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0],[{"ValueNs":"from_residual"},0]],"AssocFn",false]"##,
                 Some(did_185()),
             )
         }
         fn did_187() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"FromResidual"},0],[{"ValueNs":"from_residual"},0]],"AssocFn",false]"##,
-                Some(did_186()),
-            )
-        }
-        fn did_188() -> ExplicitDefId {
-            deserialize(
                 r##"["core",[[{"TypeNs":"convert"},0],[{"TypeNs":"num"},0],["Impl",88]],{"Impl":{"of_trait":true}},false]"##,
                 Some(did_133()),
             )
         }
-        fn did_189() -> ExplicitDefId {
+        fn did_188() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],["Impl",28]],{"Impl":{"of_trait":true}},false]"##,
                 Some(did_76()),
             )
         }
-        fn did_190() -> ExplicitDefId {
+        fn did_189() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"index"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
                 Some(did_56()),
             )
         }
-        fn did_191() -> ExplicitDefId {
+        fn did_190() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0]],"Mod",false]"##,
                 Some(did_140()),
             )
         }
-        fn did_192() -> ExplicitDefId {
+        fn did_191() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0]],"Trait",false]"##,
+                Some(did_190()),
+            )
+        }
+        fn did_192() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"next"},0]],"AssocFn",false]"##,
                 Some(did_191()),
             )
         }
         fn did_193() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"next"},0]],"AssocFn",false]"##,
-                Some(did_192()),
-            )
-        }
-        fn did_194() -> ExplicitDefId {
-            deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0]],"Mod",false]"##,
                 Some(did_22()),
             )
         }
-        fn did_195() -> ExplicitDefId {
+        fn did_194() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0]],"Trait",false]"##,
+                Some(did_193()),
+            )
+        }
+        fn did_195() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"ValueNs":"add"},0]],"AssocFn",false]"##,
                 Some(did_194()),
             )
         }
         fn did_196() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"ValueNs":"add"},0]],"AssocFn",false]"##,
-                Some(did_195()),
-            )
-        }
-        fn did_197() -> ExplicitDefId {
-            deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"FnMut"},0]],"Trait",false]"##,
                 Some(did_151()),
             )
         }
-        fn did_198() -> ExplicitDefId {
+        fn did_197() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"fold"},0]],"AssocFn",false]"##,
-                Some(did_192()),
+                Some(did_191()),
+            )
+        }
+        fn did_198() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
+                Some(did_638()),
             )
         }
         fn did_199() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_631()),
-            )
-        }
-        fn did_200() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"convert"},0],["Impl",4]],{"Impl":{"of_trait":true}},false]"##,
                 Some(did_129()),
             )
         }
-        fn did_201() -> ExplicitDefId {
+        fn did_200() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
                 Some(did_147()),
             )
         }
-        fn did_202() -> ExplicitDefId {
+        fn did_201() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"function"},0],[{"TypeNs":"Fn"},0]],"Trait",false]"##,
                 Some(did_151()),
             )
         }
-        fn did_203() -> ExplicitDefId {
+        fn did_202() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
                 Some(did_147()),
             )
         }
-        fn did_204() -> ExplicitDefId {
+        fn did_203() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
                 Some(did_147()),
             )
         }
-        fn did_205() -> ExplicitDefId {
+        fn did_204() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0]],"Trait",false]"##,
                 Some(did_147()),
             )
         }
-        fn did_206() -> ExplicitDefId {
+        fn did_205() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"ToProp"},0],[{"ValueNs":"to_prop"},0]],"AssocFn",false]"##,
-                Some(did_205()),
+                Some(did_204()),
             )
         }
-        fn did_207() -> ExplicitDefId {
+        fn did_206() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",2]],{"Impl":{"of_trait":true}},false]"##,
                 Some(did_147()),
             )
         }
-        fn did_208() -> ExplicitDefId {
+        fn did_207() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0]],{"Impl":{"of_trait":false}},false]"##,
                 Some(did_147()),
             )
         }
-        fn did_209() -> ExplicitDefId {
+        fn did_208() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"implies"},0]],"AssocFn",false]"##,
-                Some(did_208()),
+                Some(did_207()),
+            )
+        }
+        fn did_209() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
+                Some(did_207()),
             )
         }
         fn did_210() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
-                Some(did_208()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
+                Some(did_207()),
             )
         }
         fn did_211() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"eq"},0]],"AssocFn",false]"##,
-                Some(did_208()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
+                Some(did_207()),
             )
         }
         fn did_212() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"not"},0]],"AssocFn",false]"##,
-                Some(did_208()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn",false]"##,
+                Some(did_207()),
             )
         }
         fn did_213() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"or"},0]],"AssocFn",false]"##,
-                Some(did_208()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn",false]"##,
+                Some(did_207()),
             )
         }
         fn did_214() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"and"},0]],"AssocFn",false]"##,
-                Some(did_208()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn",false]"##,
+                Some(did_207()),
             )
         }
         fn did_215() -> ExplicitDefId {
-            deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],["Impl",0],[{"ValueNs":"from_bool"},0]],"AssocFn",false]"##,
-                Some(did_208()),
-            )
-        }
-        fn did_216() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0]],"Mod",false]"##,
                 Some(did_147()),
             )
         }
-        fn did_217() -> ExplicitDefId {
+        fn did_216() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"exists"},0]],"Fn",false]"##,
-                Some(did_216()),
+                Some(did_215()),
+            )
+        }
+        fn did_217() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_218() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"forall"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_219() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"implies"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_220() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_221() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_222() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"or"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_223() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"or"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"and"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_224() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"and"},0]],"Fn",false]"##,
-                Some(did_216()),
+                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"from_bool"},0]],"Fn",false]"##,
+                Some(did_215()),
             )
         }
         fn did_225() -> ExplicitDefId {
-            deserialize(
-                r##"["hax_lib",[[{"TypeNs":"prop"},0],[{"TypeNs":"constructors"},0],[{"ValueNs":"from_bool"},0]],"Fn",false]"##,
-                Some(did_216()),
-            )
-        }
-        fn did_226() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0]],"Mod",false]"##,
                 Some(did_46()),
             )
         }
-        fn did_227() -> ExplicitDefId {
+        fn did_226() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"Iter"},0]],"Struct",false]"##,
-                Some(did_226()),
+                Some(did_225()),
             )
         }
-        fn did_228() -> ExplicitDefId {
+        fn did_227() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"iter"},0]],"AssocFn",false]"##,
                 Some(did_47()),
             )
         }
-        fn did_229() -> ExplicitDefId {
+        fn did_228() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"slice"},0],[{"TypeNs":"iter"},0],[{"TypeNs":"ChunksExact"},0]],"Struct",false]"##,
-                Some(did_226()),
+                Some(did_225()),
             )
         }
-        fn did_230() -> ExplicitDefId {
+        fn did_229() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"slice"},0],["Impl",0],[{"ValueNs":"chunks_exact"},0]],"AssocFn",false]"##,
                 Some(did_47()),
             )
         }
-        fn did_231() -> ExplicitDefId {
+        fn did_230() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0]],"Mod",false]"##,
                 Some(did_139()),
             )
         }
-        fn did_232() -> ExplicitDefId {
+        fn did_231() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0]],"Mod",false]"##,
+                Some(did_230()),
+            )
+        }
+        fn did_232() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0],[{"TypeNs":"Enumerate"},0]],"Struct",false]"##,
                 Some(did_231()),
             )
         }
         fn did_233() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"enumerate"},0],[{"TypeNs":"Enumerate"},0]],"Struct",false]"##,
-                Some(did_232()),
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"enumerate"},0]],"AssocFn",false]"##,
+                Some(did_191()),
             )
         }
         fn did_234() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"enumerate"},0]],"AssocFn",false]"##,
-                Some(did_192()),
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0]],"Mod",false]"##,
+                Some(did_230()),
             )
         }
         fn did_235() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0]],"Mod",false]"##,
-                Some(did_231()),
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0],[{"TypeNs":"StepBy"},0]],"Struct",false]"##,
+                Some(did_234()),
             )
         }
         fn did_236() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"adapters"},0],[{"TypeNs":"step_by"},0],[{"TypeNs":"StepBy"},0]],"Struct",false]"##,
-                Some(did_235()),
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"step_by"},0]],"AssocFn",false]"##,
+                Some(did_191()),
             )
         }
         fn did_237() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"ValueNs":"step_by"},0]],"AssocFn",false]"##,
-                Some(did_192()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0]],"Trait",false]"##,
+                Some(did_184()),
             )
         }
         fn did_238() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0]],"Trait",false]"##,
-                Some(did_185()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"branch"},0]],"AssocFn",false]"##,
+                Some(did_237()),
             )
         }
         fn did_239() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"branch"},0]],"AssocFn",false]"##,
-                Some(did_238()),
-            )
-        }
-        fn did_240() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],["Impl",27]],{"Impl":{"of_trait":true}},false]"##,
                 Some(did_76()),
             )
         }
-        fn did_241() -> ExplicitDefId {
+        fn did_240() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"RefineAs"},0]],"Trait",false]"##,
                 Some(did_100()),
             )
         }
-        fn did_242() -> ExplicitDefId {
+        fn did_241() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"RefineAs"},0],[{"ValueNs":"into_checked"},0]],"AssocFn",false]"##,
-                Some(did_241()),
+                Some(did_240()),
             )
         }
-        fn did_243() -> ExplicitDefId {
+        fn did_242() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"Refinement"},0]],"Trait",false]"##,
                 Some(did_100()),
             )
         }
-        fn did_244() -> ExplicitDefId {
+        fn did_243() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get"},0]],"AssocFn",false]"##,
-                Some(did_243()),
+                Some(did_242()),
+            )
+        }
+        fn did_244() -> ExplicitDefId {
+            deserialize(
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy",false]"##,
+                Some(did_242()),
             )
         }
         fn did_245() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"TypeNs":"InnerType"},0]],"AssocTy",false]"##,
-                Some(did_243()),
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
+                Some(did_242()),
             )
         }
         fn did_246() -> ExplicitDefId {
             deserialize(
-                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"new"},0]],"AssocFn",false]"##,
-                Some(did_243()),
+                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn",false]"##,
+                Some(did_242()),
             )
         }
         fn did_247() -> ExplicitDefId {
-            deserialize(
-                r##"["hax_lib",[[{"TypeNs":"Refinement"},0],[{"ValueNs":"get_mut"},0]],"AssocFn",false]"##,
-                Some(did_243()),
-            )
-        }
-        fn did_248() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0]],"Trait",false]"##,
                 Some(did_158()),
             )
         }
-        fn did_249() -> ExplicitDefId {
+        fn did_248() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"ValueNs":"bitand"},0]],"AssocFn",false]"##,
-                Some(did_248()),
+                Some(did_247()),
             )
         }
-        fn did_250() -> ExplicitDefId {
+        fn did_249() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0]],"Trait",false]"##,
                 Some(did_158()),
             )
         }
-        fn did_251() -> ExplicitDefId {
+        fn did_250() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"ValueNs":"bitxor"},0]],"AssocFn",false]"##,
-                Some(did_250()),
+                Some(did_249()),
+            )
+        }
+        fn did_251() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0]],"Trait",false]"##,
+                Some(did_193()),
             )
         }
         fn did_252() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0]],"Trait",false]"##,
-                Some(did_194()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"ValueNs":"div"},0]],"AssocFn",false]"##,
+                Some(did_251()),
             )
         }
         fn did_253() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"ValueNs":"div"},0]],"AssocFn",false]"##,
-                Some(did_252()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0]],"Trait",false]"##,
+                Some(did_193()),
             )
         }
         fn did_254() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0]],"Trait",false]"##,
-                Some(did_194()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"ValueNs":"mul"},0]],"AssocFn",false]"##,
+                Some(did_253()),
             )
         }
         fn did_255() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"ValueNs":"mul"},0]],"AssocFn",false]"##,
-                Some(did_254()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0]],"Trait",false]"##,
+                Some(did_193()),
             )
         }
         fn did_256() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0]],"Trait",false]"##,
-                Some(did_194()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"ValueNs":"sub"},0]],"AssocFn",false]"##,
+                Some(did_255()),
             )
         }
         fn did_257() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"ValueNs":"sub"},0]],"AssocFn",false]"##,
-                Some(did_256()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0]],"Trait",false]"##,
+                Some(did_193()),
             )
         }
         fn did_258() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0]],"Trait",false]"##,
-                Some(did_194()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"ValueNs":"neg"},0]],"AssocFn",false]"##,
+                Some(did_257()),
             )
         }
         fn did_259() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"ValueNs":"neg"},0]],"AssocFn",false]"##,
-                Some(did_258()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0]],"Trait",false]"##,
+                Some(did_193()),
             )
         }
         fn did_260() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0]],"Trait",false]"##,
-                Some(did_194()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"ValueNs":"rem"},0]],"AssocFn",false]"##,
+                Some(did_259()),
             )
         }
         fn did_261() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"ValueNs":"rem"},0]],"AssocFn",false]"##,
-                Some(did_260()),
-            )
-        }
-        fn did_262() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0]],"Trait",false]"##,
                 Some(did_158()),
             )
         }
-        fn did_263() -> ExplicitDefId {
+        fn did_262() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"ValueNs":"shl"},0]],"AssocFn",false]"##,
-                Some(did_262()),
+                Some(did_261()),
             )
         }
-        fn did_264() -> ExplicitDefId {
+        fn did_263() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0]],"Trait",false]"##,
                 Some(did_158()),
             )
         }
-        fn did_265() -> ExplicitDefId {
+        fn did_264() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"ValueNs":"shr"},0]],"AssocFn",false]"##,
-                Some(did_264()),
+                Some(did_263()),
             )
         }
-        fn did_266() -> ExplicitDefId {
+        fn did_265() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0]],"Trait",false]"##,
                 Some(did_158()),
             )
         }
-        fn did_267() -> ExplicitDefId {
+        fn did_266() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"ValueNs":"bitor"},0]],"AssocFn",false]"##,
-                Some(did_266()),
+                Some(did_265()),
             )
         }
-        fn did_268() -> ExplicitDefId {
+        fn did_267() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0]],"Trait",false]"##,
                 Some(did_155()),
             )
         }
-        fn did_269() -> ExplicitDefId {
+        fn did_268() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"lt"},0]],"AssocFn",false]"##,
-                Some(did_268()),
+                Some(did_267()),
+            )
+        }
+        fn did_269() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"gt"},0]],"AssocFn",false]"##,
+                Some(did_267()),
             )
         }
         fn did_270() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"gt"},0]],"AssocFn",false]"##,
-                Some(did_268()),
-            )
-        }
-        fn did_271() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_and"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_272() -> ExplicitDefId {
+        fn did_271() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"le"},0]],"AssocFn",false]"##,
-                Some(did_268()),
+                Some(did_267()),
+            )
+        }
+        fn did_272() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"ge"},0]],"AssocFn",false]"##,
+                Some(did_267()),
             )
         }
         fn did_273() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialOrd"},0],[{"ValueNs":"ge"},0]],"AssocFn",false]"##,
-                Some(did_268()),
-            )
-        }
-        fn did_274() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"PartialEq"},0],[{"ValueNs":"ne"},0]],"AssocFn",false]"##,
                 Some(did_156()),
             )
         }
-        fn did_275() -> ExplicitDefId {
+        fn did_274() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"marker"},0]],"Mod",false]"##,
                 Some(did_7()),
             )
         }
-        fn did_276() -> ExplicitDefId {
+        fn did_275() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Copy"},0]],"Trait",false]"##,
-                Some(did_275()),
+                Some(did_274()),
+            )
+        }
+        fn did_276() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Residual"},0]],"AssocTy",false]"##,
+                Some(did_237()),
             )
         }
         fn did_277() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Residual"},0]],"AssocTy",false]"##,
-                Some(did_238()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"from_output"},0]],"AssocFn",false]"##,
+                Some(did_237()),
             )
         }
         fn did_278() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"ValueNs":"from_output"},0]],"AssocFn",false]"##,
-                Some(did_238()),
-            )
-        }
-        fn did_279() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"Deref"},0],[{"TypeNs":"Target"},0]],"AssocTy",false]"##,
                 Some(did_24()),
             )
         }
-        fn did_280() -> ExplicitDefId {
+        fn did_279() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0]],"Trait",false]"##,
                 Some(did_23()),
             )
         }
-        fn did_281() -> ExplicitDefId {
+        fn did_280() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"deref"},0],[{"TypeNs":"DerefMut"},0],[{"ValueNs":"deref_mut"},0]],"AssocFn",false]"##,
-                Some(did_280()),
+                Some(did_279()),
             )
         }
-        fn did_282() -> ExplicitDefId {
+        fn did_281() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u128"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_283() -> ExplicitDefId {
+        fn did_282() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_282()),
+                Some(did_281()),
             )
         }
-        fn did_284() -> ExplicitDefId {
+        fn did_283() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_285() -> ExplicitDefId {
+        fn did_284() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u16"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_286() -> ExplicitDefId {
+        fn did_285() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_285()),
+                Some(did_284()),
             )
         }
-        fn did_287() -> ExplicitDefId {
+        fn did_286() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u64"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_288() -> ExplicitDefId {
+        fn did_287() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_287()),
+                Some(did_286()),
             )
         }
-        fn did_289() -> ExplicitDefId {
+        fn did_288() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"isize"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_290() -> ExplicitDefId {
+        fn did_289() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_289()),
+                Some(did_288()),
             )
         }
-        fn did_291() -> ExplicitDefId {
+        fn did_290() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0]],"Mod",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_292() -> ExplicitDefId {
+        fn did_291() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by"},0]],"Fn",false]"##,
-                Some(did_291()),
+                Some(did_290()),
             )
         }
-        fn did_293() -> ExplicitDefId {
+        fn did_292() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0]],"Fn",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_294() -> ExplicitDefId {
+        fn did_293() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1]],"Const",false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_294() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use",false]"##,
                 Some(did_293()),
             )
         }
         fn did_295() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use",false]"##,
-                Some(did_294()),
-            )
-        }
-        fn did_296() -> ExplicitDefId {
-            deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_297() -> ExplicitDefId {
+        fn did_296() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"dummy"},0]],"Fn",false]"##,
-                Some(did_293()),
+                Some(did_292()),
             )
         }
-        fn did_298() -> ExplicitDefId {
+        fn did_297() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u8"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_299() -> ExplicitDefId {
+        fn did_298() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_298()),
+                Some(did_297()),
             )
         }
-        fn did_300() -> ExplicitDefId {
+        fn did_299() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u32"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_301() -> ExplicitDefId {
+        fn did_300() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_300()),
+                Some(did_299()),
+            )
+        }
+        fn did_301() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_302() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const",false]"##,
+                Some(did_292()),
             )
         }
         fn did_303() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0]],"Const",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use",false]"##,
+                Some(did_302()),
             )
         }
         fn did_304() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use",false]"##,
-                Some(did_303()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_305() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_287()),
-            )
-        }
-        fn did_306() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0]],"Mod",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_307() -> ExplicitDefId {
+        fn did_306() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_306()),
+                Some(did_305()),
+            )
+        }
+        fn did_307() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_308() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_return"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn",false]"##,
+                Some(did_295()),
             )
         }
         fn did_309() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],[{"ValueNs":"crypto_abstractions"},0]],"Fn",false]"##,
-                Some(did_296()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_310() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_311() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_300()),
-            )
-        }
-        fn did_312() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i32"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_313() -> ExplicitDefId {
+        fn did_312() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_312()),
+                Some(did_311()),
             )
         }
-        fn did_314() -> ExplicitDefId {
+        fn did_313() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0]],"Mod",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_315() -> ExplicitDefId {
+        fn did_314() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_usize"},0]],"Fn",false]"##,
-                Some(did_314()),
+                Some(did_313()),
+            )
+        }
+        fn did_315() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn",false]"##,
+                Some(did_293()),
             )
         }
         fn did_316() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"f"},0]],"Fn",false]"##,
-                Some(did_294()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_317() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_318() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_300()),
-            )
-        }
-        fn did_319() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i16"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_320() -> ExplicitDefId {
+        fn did_319() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_319()),
+                Some(did_318()),
+            )
+        }
+        fn did_320() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_321() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn",false]"##,
+                Some(did_313()),
             )
         }
         fn did_322() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_from"},0]],"Fn",false]"##,
-                Some(did_314()),
-            )
-        }
-        fn did_323() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"usize"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_324() -> ExplicitDefId {
+        fn did_323() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0]],"Mod",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_325() -> ExplicitDefId {
+        fn did_324() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0]],"Mod",false]"##,
+                Some(did_323()),
+            )
+        }
+        fn did_325() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
                 Some(did_324()),
             )
         }
         fn did_326() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"moption"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
-                Some(did_325()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_327() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_312()),
-            )
-        }
-        fn did_328() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i8"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_329() -> ExplicitDefId {
+        fn did_328() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_328()),
+                Some(did_327()),
+            )
+        }
+        fn did_329() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_330() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_331() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"not"},0]],"Fn",false]"##,
-                Some(did_306()),
-            )
-        }
-        fn did_332() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i64"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_333() -> ExplicitDefId {
+        fn did_332() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_332()),
+                Some(did_331()),
+            )
+        }
+        fn did_333() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_334() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_335() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_336() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_337() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_312()),
-            )
-        }
-        fn did_338() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"MutRef"},0]],"Enum",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_339() -> ExplicitDefId {
+        fn did_338() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_285()),
+                Some(did_284()),
+            )
+        }
+        fn did_339() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_340() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_341() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_342() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_343() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_344() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use",false]"##,
+                Some(did_292()),
             )
         }
         fn did_345() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_346() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_347() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_348() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_349() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_289()),
-            )
-        }
-        fn did_350() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0]],"Mod",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_351() -> ExplicitDefId {
+        fn did_350() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_350()),
+                Some(did_349()),
+            )
+        }
+        fn did_351() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_352() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn",false]"##,
+                Some(did_313()),
             )
         }
         fn did_353() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range"},0]],"Fn",false]"##,
-                Some(did_314()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_354() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_355() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_356() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_328()),
-            )
-        }
-        fn did_357() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i128"},0]],"Mod",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_358() -> ExplicitDefId {
+        fn did_357() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_357()),
+                Some(did_356()),
+            )
+        }
+        fn did_358() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use",false]"##,
+                Some(did_292()),
             )
         }
         fn did_359() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_360() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_361() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_cf"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_362() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_363() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_364() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_365() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_366() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitxor"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_367() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_368() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_369() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_370() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_371() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_289()),
-            )
-        }
-        fn did_372() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_373() -> ExplicitDefId {
+        fn did_372() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range"},0]],"Fn",false]"##,
-                Some(did_291()),
+                Some(did_290()),
+            )
+        }
+        fn did_373() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_374() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_375() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_298()),
-            )
-        }
-        fn did_376() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"update_at"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_377() -> ExplicitDefId {
+        fn did_376() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"array_of_list"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_378() -> ExplicitDefId {
+        fn did_377() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_298()),
+                Some(did_297()),
+            )
+        }
+        fn did_378() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_379() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_380() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn",false]"##,
+                Some(did_313()),
             )
         }
         fn did_381() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_full"},0]],"Fn",false]"##,
-                Some(did_314()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_382() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use",false]"##,
+                Some(did_302()),
             )
         }
         fn did_383() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use",false]"##,
-                Some(did_303()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_384() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_385() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_386() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_387() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_388() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_389() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_cf"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_390() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_391() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_392() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_393() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_394() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_395() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_319()),
-            )
-        }
-        fn did_396() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"ValueNs":"offset"},0]],"Fn",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_397() -> ExplicitDefId {
+        fn did_396() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_623()),
+                Some(did_630()),
+            )
+        }
+        fn did_397() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_398() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_399() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_400() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_401() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_298()),
-            )
-        }
-        fn did_402() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[["Use",0]],"Use",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_403() -> ExplicitDefId {
+        fn did_402() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_282()),
+                Some(did_281()),
+            )
+        }
+        fn did_403() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use",false]"##,
+                Some(did_292()),
             )
         }
         fn did_404() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_405() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_406() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field",false]"##,
+                Some(did_630()),
             )
         }
         fn did_407() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field",false]"##,
-                Some(did_623()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_408() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_409() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_410() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_411() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_412() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_413() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_414() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_415() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_416() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_417() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_418() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_419() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_420() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_421() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_422() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_423() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_424() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_425() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_426() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod",false]"##,
+                Some(did_323()),
             )
         }
         fn did_427() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0]],"Mod",false]"##,
-                Some(did_324()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
+                Some(did_426()),
             )
         }
         fn did_428() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mresult"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
-                Some(did_427()),
-            )
-        }
-        fn did_429() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"repeat"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_430() -> ExplicitDefId {
+        fn did_429() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_298()),
+                Some(did_297()),
+            )
+        }
+        fn did_430() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_431() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_432() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_433() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_434() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_435() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_436() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_437() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_438() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn",false]"##,
+                Some(did_292()),
             )
         }
         fn did_439() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"refinements"},0]],"Fn",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_440() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_287()),
-            )
-        }
-        fn did_441() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_442() -> ExplicitDefId {
+        fn did_441() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_332()),
+                Some(did_331()),
+            )
+        }
+        fn did_442() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_443() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_444() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_445() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_446() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_447() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_448() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_cf"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_449() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_return"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_450() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_451() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_452() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_453() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_454() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_455() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_456() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_457() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_458() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_459() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_460() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"into_machine"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_461() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_462() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_463() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_300()),
-            )
-        }
-        fn did_464() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate",false]"##,
                 Some(did_0()),
             )
         }
-        fn did_465() -> ExplicitDefId {
+        fn did_464() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_298()),
+                Some(did_297()),
+            )
+        }
+        fn did_465() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_466() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_467() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_468() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_469() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_470() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_471() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_472() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_473() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_474() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use",false]"##,
+                Some(did_302()),
             )
         }
         fn did_475() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use",false]"##,
-                Some(did_303()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_476() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_cf"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_477() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_478() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_479() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_480() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait",false]"##,
+                Some(did_323()),
             )
         }
         fn did_481() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0]],"Trait",false]"##,
-                Some(did_324()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
+                Some(did_480()),
             )
         }
         fn did_482() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"ControlFlowMonad"},0],[{"ValueNs":"lift"},0]],"AssocFn",false]"##,
-                Some(did_481()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_483() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_484() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn",false]"##,
+                Some(did_292()),
             )
         }
         fn did_485() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"iterator_functions"},0]],"Fn",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_486() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_487() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_488() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_489() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_490() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_chunked_slice_return"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_491() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_492() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_493() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_494() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_495() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_496() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_497() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":"Bang"},false]"##,
-                Some(did_0()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_498() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_499() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_500() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_501() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_502() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_503() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_504() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_505() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_506() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_cf"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_507() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_508() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_509() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"from_machine"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_510() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_511() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_512() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_513() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_514() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_515() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_286()),
             )
         }
         fn did_516() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_297()),
             )
         }
         fn did_517() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_518() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_298()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use",false]"##,
+                Some(did_292()),
             )
         }
         fn did_519() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_520() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_521() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_return"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_522() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_523() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod",false]"##,
+                Some(did_323()),
             )
         }
         fn did_524() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_slice_return"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use",false]"##,
+                Some(did_295()),
             )
         }
         fn did_525() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0]],"Mod",false]"##,
-                Some(did_324()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_526() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use",false]"##,
-                Some(did_296()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_527() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_528() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_529() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_530() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_531() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn",false]"##,
+                Some(did_302()),
             )
         }
         fn did_532() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_533() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],[{"ValueNs":"arith"},0]],"Fn",false]"##,
-                Some(did_303()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_534() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_535() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_536() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_537() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_538() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitand"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_539() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_540() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_541() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn",false]"##,
+                Some(did_290()),
             )
         }
         fn did_542() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_543() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_enumerated_chunked_slice_return"},0]],"Fn",false]"##,
-                Some(did_291()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_544() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_545() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_546() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_547() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_548() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_549() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_550() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_551() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_349()),
             )
         }
         fn did_552() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_553() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"int"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_350()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
+                Some(did_523()),
             )
         }
         fn did_554() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"sub"},0]],"Fn",false]"##,
-                Some(did_285()),
-            )
-        }
-        fn did_555() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"control_flow_monad"},0],[{"TypeNs":"mexception"},0],[{"ValueNs":"run"},0]],"Fn",false]"##,
-                Some(did_525()),
-            )
-        }
-        fn did_556() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"logical_op_or"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_557() -> ExplicitDefId {
+        fn did_555() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"folds"},0],[{"ValueNs":"fold_range_step_by_cf"},0]],"Fn",false]"##,
-                Some(did_291()),
+                Some(did_290()),
             )
         }
-        fn did_558() -> ExplicitDefId {
+        fn did_556() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"dropped_body"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_559() -> ExplicitDefId {
+        fn did_557() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_287()),
+                Some(did_286()),
+            )
+        }
+        fn did_558() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_286()),
+            )
+        }
+        fn did_559() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_560() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u64"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_287()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_561() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_562() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_282()),
-            )
-        }
-        fn did_563() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_289()),
-            )
-        }
-        fn did_564() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"failure"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_565() -> ExplicitDefId {
+        fn did_563() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_328()),
+                Some(did_327()),
+            )
+        }
+        fn did_564() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_327()),
+            )
+        }
+        fn did_565() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_566() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_567() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"div"},0]],"Fn",false]"##,
-                Some(did_319()),
-            )
-        }
-        fn did_568() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_332()),
-            )
-        }
-        fn did_569() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_cf"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_570() -> ExplicitDefId {
+        fn did_568() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"question_mark_result"},0]],"Fn",false]"##,
-                Some(did_293()),
+                Some(did_292()),
+            )
+        }
+        fn did_569() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_356()),
+            )
+        }
+        fn did_570() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_571() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_572() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_573() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"lt"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_574() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
+                Some(did_311()),
             )
         }
         fn did_575() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"shr"},0]],"Fn",false]"##,
-                Some(did_300()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_576() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"shl"},0]],"Fn",false]"##,
-                Some(did_312()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn",false]"##,
+                Some(did_292()),
             )
         }
         fn did_577() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"gt"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use",false]"##,
+                Some(did_576()),
             )
         }
         fn did_578() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0]],"Fn",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_579() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use",false]"##,
-                Some(did_578()),
+                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_322()),
             )
         }
         fn did_580() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_581() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"usize"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_323()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_582() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use",false]"##,
+                Some(did_292()),
             )
         }
         fn did_583() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_584() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use",false]"##,
-                Some(did_293()),
+                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
+                Some(did_281()),
             )
         }
         fn did_585() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_331()),
             )
         }
         fn did_586() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u128"},0],[{"ValueNs":"neg"},0]],"Fn",false]"##,
-                Some(did_282()),
+                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_284()),
             )
         }
         fn did_587() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_588() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u16"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_285()),
+                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
+                Some(did_318()),
             )
         }
         fn did_589() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_590() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i16"},0],[{"ValueNs":"bit_xor"},0]],"Fn",false]"##,
-                Some(did_319()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_591() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"bitor"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
+                Some(did_327()),
             )
         }
         fn did_592() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"le"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_593() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i8"},0],[{"ValueNs":"add"},0]],"Fn",false]"##,
-                Some(did_328()),
+                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
+                Some(did_288()),
             )
         }
         fn did_594() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"ne"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_595() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"isize"},0],[{"ValueNs":"rem"},0]],"Fn",false]"##,
-                Some(did_289()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn",false]"##,
+                Some(did_313()),
             )
         }
         fn did_596() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"eq"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_305()),
             )
         }
         fn did_597() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"monomorphized_update_at"},0],[{"ValueNs":"update_at_range_to"},0]],"Fn",false]"##,
-                Some(did_314()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_598() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"machine_int"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_306()),
+                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
+                Some(did_356()),
             )
         }
         fn did_599() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"bit_or"},0]],"Fn",false]"##,
-                Some(did_357()),
+                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_299()),
             )
         }
         fn did_600() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i128"},0],[{"ValueNs":"mul"},0]],"Fn",false]"##,
-                Some(did_357()),
-            )
-        }
-        fn did_601() -> ExplicitDefId {
-            deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"u32"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_300()),
-            )
-        }
-        fn did_602() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"ValueNs":"while_loop_return"},0]],"Fn",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_603() -> ExplicitDefId {
+        fn did_601() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"i32"},0],[{"ValueNs":"ge"},0]],"Fn",false]"##,
-                Some(did_312()),
+                Some(did_311()),
+            )
+        }
+        fn did_602() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
+                Some(did_331()),
+            )
+        }
+        fn did_603() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"TypeNs":"Item"},0]],"AssocTy",false]"##,
+                Some(did_191()),
             )
         }
         fn did_604() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"i64"},0],[{"ValueNs":"bit_and"},0]],"Fn",false]"##,
-                Some(did_332()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_194()),
             )
         }
         fn did_605() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"iter"},0],[{"TypeNs":"traits"},0],[{"TypeNs":"iterator"},0],[{"TypeNs":"Iterator"},0],[{"TypeNs":"Item"},0]],"AssocTy",false]"##,
-                Some(did_192()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_255()),
             )
         }
         fn did_606() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Add"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_195()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_253()),
             )
         }
         fn did_607() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Sub"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_256()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_251()),
             )
         }
         fn did_608() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Mul"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_254()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_259()),
             )
         }
         fn did_609() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Div"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_252()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_249()),
             )
         }
         fn did_610() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Rem"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_260()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_247()),
             )
         }
         fn did_611() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitXor"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_250()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_265()),
             )
         }
         fn did_612() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitAnd"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_248()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_261()),
             )
         }
         fn did_613() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"BitOr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_266()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_263()),
             )
         }
         fn did_614() -> ExplicitDefId {
             deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shl"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_262()),
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_257()),
             )
         }
         fn did_615() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Shr"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_264()),
-            )
-        }
-        fn did_616() -> ExplicitDefId {
-            deserialize(
-                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"arith"},0],[{"TypeNs":"Neg"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_258()),
-            )
-        }
-        fn did_617() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"bit"},0],[{"TypeNs":"Not"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
                 Some(did_159()),
             )
         }
-        fn did_618() -> ExplicitDefId {
+        fn did_616() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"try_trait"},0],[{"TypeNs":"Try"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
-                Some(did_238()),
+                Some(did_237()),
             )
         }
-        fn did_619() -> ExplicitDefId {
+        fn did_617() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"explicit_monadic"},0]],"Mod",false]"##,
                 Some(did_1()),
             )
         }
-        fn did_620() -> ExplicitDefId {
+        fn did_618() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"explicit_monadic"},0],[{"ValueNs":"pure"},0]],"Fn",false]"##,
-                Some(did_619()),
+                Some(did_617()),
+            )
+        }
+        fn did_619() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"explicit_monadic"},0],[{"ValueNs":"lift"},0]],"Fn",false]"##,
+                Some(did_617()),
+            )
+        }
+        fn did_620() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"fmt"},0],[{"TypeNs":"num"},0],["Impl",54]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_168()),
             )
         }
         fn did_621() -> ExplicitDefId {
             deserialize(
-                r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"explicit_monadic"},0],[{"ValueNs":"lift"},0]],"Fn",false]"##,
-                Some(did_619()),
+                r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"Destruct"},0]],"Trait",false]"##,
+                Some(did_274()),
             )
         }
         fn did_622() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"Eq"},0]],"Trait",false]"##,
+                Some(did_155()),
+            )
+        }
+        fn did_623() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"cmp"},0],[{"TypeNs":"Ord"},0]],"Trait",false]"##,
+                Some(did_155()),
+            )
+        }
+        fn did_624() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"marker"},0],[{"TypeNs":"StructuralPartialEq"},0]],"Trait",false]"##,
+                Some(did_274()),
+            )
+        }
+        fn did_625() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Impl",1]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_626() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"TypeNs":"Foo"},0]],"Struct",false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_627() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Impl",0]],{"Impl":{"of_trait":true}},false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_628() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":{"bang":true,"attr":false,"derive":false}},false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_629() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_623() -> ExplicitDefId {
+        fn did_630() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",true]"##,
                 Some(did_1()),
             )
         }
-        fn did_624() -> ExplicitDefId {
+        fn did_631() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0]],"Variant",true]"##,
                 Some(did_121()),
             )
         }
-        fn did_625() -> ExplicitDefId {
+        fn did_632() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0]],"Variant",true]"##,
                 Some(did_121()),
             )
         }
-        fn did_626() -> ExplicitDefId {
+        fn did_633() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_627() -> ExplicitDefId {
+        fn did_634() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_628() -> ExplicitDefId {
+        fn did_635() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_629() -> ExplicitDefId {
+        fn did_636() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0]],"Variant",true]"##,
                 Some(did_77()),
             )
         }
-        fn did_630() -> ExplicitDefId {
+        fn did_637() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0]],"Variant",true]"##,
                 Some(did_164()),
             )
         }
-        fn did_631() -> ExplicitDefId {
+        fn did_638() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0]],"Variant",true]"##,
                 Some(did_77()),
             )
         }
-        fn did_632() -> ExplicitDefId {
+        fn did_639() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",true]"##,
                 Some(did_1()),
             )
         }
-        fn did_633() -> ExplicitDefId {
+        fn did_640() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
                 Some(did_20()),
             )
         }
-        fn did_634() -> ExplicitDefId {
+        fn did_641() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
                 Some(did_63()),
             )
         }
-        fn did_635() -> ExplicitDefId {
+        fn did_642() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0],[{"TypeNs":"X25519"},0]],"Variant",true]"##,
                 Some(did_65()),
             )
         }
-        fn did_636() -> ExplicitDefId {
+        fn did_643() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0],[{"TypeNs":"Chacha20Poly1305"},0]],"Variant",true]"##,
                 Some(did_84()),
             )
         }
-        fn did_637() -> ExplicitDefId {
+        fn did_644() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"None"},0]],"Variant",true]"##,
                 Some(did_164()),
             )
         }
-        fn did_638() -> ExplicitDefId {
+        fn did_645() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant",true]"##,
                 Some(did_162()),
+            )
+        }
+        fn did_646() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"TypeNs":"Foo"},0]],"Struct",true]"##,
+                Some(did_292()),
             )
         }
         [
@@ -4469,13 +4517,21 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
             did_636().into_global_id_inner(),
             did_637().into_global_id_inner(),
             did_638().into_global_id_inner(),
+            did_639().into_global_id_inner(),
+            did_640().into_global_id_inner(),
+            did_641().into_global_id_inner(),
+            did_642().into_global_id_inner(),
+            did_643().into_global_id_inner(),
+            did_644().into_global_id_inner(),
+            did_645().into_global_id_inner(),
+            did_646().into_global_id_inner(),
         ]
     })
 };
 
 static INTERNED_GLOBAL_IDS: [crate::interning::Interned<
     crate::ast::identifiers::global_id::GlobalIdInner,
->; 639] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
+>; 647] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
 
 impl crate::interning::Internable for crate::ast::identifiers::global_id::GlobalIdInner {
     fn interning_table() -> &'static std::sync::Mutex<crate::interning::InterningTable<Self>> {
@@ -4512,7 +4568,7 @@ pub mod alloc {
 
             #[doc = r##"This is the associated function [`::alloc::boxed::Impl::new`]."##]
             pub const new: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[181]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[180]);
         }
 
         #[doc = r##"This is the struct [`::alloc::boxed::Box`]."##]
@@ -4521,7 +4577,7 @@ pub mod alloc {
 
         #[doc = r##"This is an impl block."##]
         pub const Impl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[180]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[179]);
     }
     pub mod slice {
         #![doc = r##"This is the module [`::alloc::slice`]."##]
@@ -4561,7 +4617,7 @@ pub mod alloc {
 
         #[doc = r##"This is the struct [`::alloc::string::String`]."##]
         pub const String: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[183]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[182]);
     }
     pub mod vec {
         #![doc = r##"This is the module [`::alloc::vec`]."##]
@@ -4626,7 +4682,7 @@ pub mod alloc {
 
     #[doc = r##"This is the module [`::alloc::string`]."##]
     pub const string: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[182]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[181]);
 
     #[doc = r##"This is the module [`::alloc::vec`]."##]
     pub const vec: crate::ast::identifiers::global_id::GlobalId =
@@ -4716,7 +4772,7 @@ pub mod core {
 
             #[doc = r##"This is the associated function [`::core::cmp::PartialEq::ne`]."##]
             pub const ne: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[274]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[273]);
         }
         pub mod PartialOrd {
             #![doc = r##"This is the trait [`::core::cmp::PartialOrd`]."##]
@@ -4724,20 +4780,28 @@ pub mod core {
 
             #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::ge`]."##]
             pub const ge: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[273]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[272]);
 
             #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::gt`]."##]
             pub const gt: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[270]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[269]);
 
             #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::le`]."##]
             pub const le: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[272]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[271]);
 
             #[doc = r##"This is the associated function [`::core::cmp::PartialOrd::lt`]."##]
             pub const lt: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[269]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[268]);
         }
+
+        #[doc = r##"This is the trait [`::core::cmp::Eq`]."##]
+        pub const Eq: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[622]);
+
+        #[doc = r##"This is the trait [`::core::cmp::Ord`]."##]
+        pub const Ord: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[623]);
 
         #[doc = r##"This is the trait [`::core::cmp::PartialEq`]."##]
         pub const PartialEq: crate::ast::identifiers::global_id::GlobalId =
@@ -4745,7 +4809,7 @@ pub mod core {
 
         #[doc = r##"This is the trait [`::core::cmp::PartialOrd`]."##]
         pub const PartialOrd: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[268]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[267]);
     }
     pub mod convert {
         #![doc = r##"This is the module [`::core::convert`]."##]
@@ -4776,7 +4840,7 @@ pub mod core {
 
             #[doc = r##"This is an impl block."##]
             pub const Impl__88: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[188]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[187]);
         }
 
         #[doc = r##"This is the trait [`::core::convert::From`]."##]
@@ -4789,11 +4853,11 @@ pub mod core {
 
         #[doc = r##"This is an impl block."##]
         pub const Impl__4: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[200]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[199]);
 
         #[doc = r##"This is the enum [`::core::convert::Infallible`]."##]
         pub const Infallible: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[184]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[183]);
 
         #[doc = r##"This is the trait [`::core::convert::Into`]."##]
         pub const Into: crate::ast::identifiers::global_id::GlobalId =
@@ -4811,8 +4875,8 @@ pub mod core {
             use super::root;
 
             #[doc = r##"This is an impl block."##]
-            pub const Impl__82: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[169]);
+            pub const Impl__54: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[620]);
         }
 
         #[doc = r##"This is the struct [`::core::fmt::Arguments`]."##]
@@ -4839,7 +4903,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::iter::adapters::enumerate::Enumerate`]."##]
                 pub const Enumerate: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[233]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[232]);
             }
             pub mod step_by {
                 #![doc = r##"This is the module [`::core::iter::adapters::step_by`]."##]
@@ -4847,16 +4911,16 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::iter::adapters::step_by::StepBy`]."##]
                 pub const StepBy: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[236]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[235]);
             }
 
             #[doc = r##"This is the module [`::core::iter::adapters::enumerate`]."##]
             pub const enumerate: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[232]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[231]);
 
             #[doc = r##"This is the module [`::core::iter::adapters::step_by`]."##]
             pub const step_by: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[235]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[234]);
         }
         pub mod traits {
             #![doc = r##"This is the module [`::core::iter::traits`]."##]
@@ -4889,37 +4953,37 @@ pub mod core {
                     #[doc = r##"This is the associated type [`::core::iter::traits::iterator::Iterator::Item`]."##]
                     pub const Item: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[605],
+                            root::INTERNED_GLOBAL_IDS[603],
                         );
 
                     #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::enumerate`]."##]
                     pub const enumerate: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[234],
+                            root::INTERNED_GLOBAL_IDS[233],
                         );
 
                     #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::fold`]."##]
                     pub const fold: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[198],
+                            root::INTERNED_GLOBAL_IDS[197],
                         );
 
                     #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::next`]."##]
                     pub const next: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[193],
+                            root::INTERNED_GLOBAL_IDS[192],
                         );
 
                     #[doc = r##"This is the associated function [`::core::iter::traits::iterator::Iterator::step_by`]."##]
                     pub const step_by: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[237],
+                            root::INTERNED_GLOBAL_IDS[236],
                         );
                 }
 
                 #[doc = r##"This is the trait [`::core::iter::traits::iterator::Iterator`]."##]
                 pub const Iterator: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[192]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[191]);
             }
 
             #[doc = r##"This is the module [`::core::iter::traits::collect`]."##]
@@ -4928,12 +4992,12 @@ pub mod core {
 
             #[doc = r##"This is the module [`::core::iter::traits::iterator`]."##]
             pub const iterator: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[191]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[190]);
         }
 
         #[doc = r##"This is the module [`::core::iter::adapters`]."##]
         pub const adapters: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[231]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[230]);
 
         #[doc = r##"This is the module [`::core::iter::traits`]."##]
         pub const traits: crate::ast::identifiers::global_id::GlobalId =
@@ -4945,7 +5009,15 @@ pub mod core {
 
         #[doc = r##"This is the trait [`::core::marker::Copy`]."##]
         pub const Copy: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[276]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[275]);
+
+        #[doc = r##"This is the trait [`::core::marker::Destruct`]."##]
+        pub const Destruct: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[621]);
+
+        #[doc = r##"This is the trait [`::core::marker::StructuralPartialEq`]."##]
+        pub const StructuralPartialEq: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[624]);
     }
     pub mod num {
         #![doc = r##"This is the module [`::core::num`]."##]
@@ -4975,11 +5047,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::arith::Add::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[606]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[604]);
 
                 #[doc = r##"This is the associated function [`::core::ops::arith::Add::add`]."##]
                 pub const add: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[196]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[195]);
             }
             pub mod Div {
                 #![doc = r##"This is the trait [`::core::ops::arith::Div`]."##]
@@ -4987,11 +5059,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::arith::Div::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[609]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[607]);
 
                 #[doc = r##"This is the associated function [`::core::ops::arith::Div::div`]."##]
                 pub const div: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[253]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[252]);
             }
             pub mod Mul {
                 #![doc = r##"This is the trait [`::core::ops::arith::Mul`]."##]
@@ -4999,11 +5071,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::arith::Mul::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[608]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[606]);
 
                 #[doc = r##"This is the associated function [`::core::ops::arith::Mul::mul`]."##]
                 pub const mul: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[255]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[254]);
             }
             pub mod Neg {
                 #![doc = r##"This is the trait [`::core::ops::arith::Neg`]."##]
@@ -5011,11 +5083,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::arith::Neg::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[616]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[614]);
 
                 #[doc = r##"This is the associated function [`::core::ops::arith::Neg::neg`]."##]
                 pub const neg: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[259]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[258]);
             }
             pub mod Rem {
                 #![doc = r##"This is the trait [`::core::ops::arith::Rem`]."##]
@@ -5023,11 +5095,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::arith::Rem::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[610]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[608]);
 
                 #[doc = r##"This is the associated function [`::core::ops::arith::Rem::rem`]."##]
                 pub const rem: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[261]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[260]);
             }
             pub mod Sub {
                 #![doc = r##"This is the trait [`::core::ops::arith::Sub`]."##]
@@ -5035,36 +5107,36 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::arith::Sub::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[607]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[605]);
 
                 #[doc = r##"This is the associated function [`::core::ops::arith::Sub::sub`]."##]
                 pub const sub: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[257]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[256]);
             }
 
             #[doc = r##"This is the trait [`::core::ops::arith::Add`]."##]
             pub const Add: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[195]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[194]);
 
             #[doc = r##"This is the trait [`::core::ops::arith::Div`]."##]
             pub const Div: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[252]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[251]);
 
             #[doc = r##"This is the trait [`::core::ops::arith::Mul`]."##]
             pub const Mul: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[254]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[253]);
 
             #[doc = r##"This is the trait [`::core::ops::arith::Neg`]."##]
             pub const Neg: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[258]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[257]);
 
             #[doc = r##"This is the trait [`::core::ops::arith::Rem`]."##]
             pub const Rem: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[260]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[259]);
 
             #[doc = r##"This is the trait [`::core::ops::arith::Sub`]."##]
             pub const Sub: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[256]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[255]);
         }
         pub mod bit {
             #![doc = r##"This is the module [`::core::ops::bit`]."##]
@@ -5075,11 +5147,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::bit::BitAnd::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[612]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[610]);
 
                 #[doc = r##"This is the associated function [`::core::ops::bit::BitAnd::bitand`]."##]
                 pub const bitand: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[249]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[248]);
             }
             pub mod BitOr {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitOr`]."##]
@@ -5087,11 +5159,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::bit::BitOr::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[613]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[611]);
 
                 #[doc = r##"This is the associated function [`::core::ops::bit::BitOr::bitor`]."##]
                 pub const bitor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[267]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[266]);
             }
             pub mod BitXor {
                 #![doc = r##"This is the trait [`::core::ops::bit::BitXor`]."##]
@@ -5099,11 +5171,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::bit::BitXor::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[611]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[609]);
 
                 #[doc = r##"This is the associated function [`::core::ops::bit::BitXor::bitxor`]."##]
                 pub const bitxor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[251]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[250]);
             }
             pub mod Not {
                 #![doc = r##"This is the trait [`::core::ops::bit::Not`]."##]
@@ -5111,7 +5183,7 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::bit::Not::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[617]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[615]);
 
                 #[doc = r##"This is the associated function [`::core::ops::bit::Not::not`]."##]
                 pub const not: crate::ast::identifiers::global_id::GlobalId =
@@ -5123,11 +5195,11 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::bit::Shl::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[614]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[612]);
 
                 #[doc = r##"This is the associated function [`::core::ops::bit::Shl::shl`]."##]
                 pub const shl: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[263]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[262]);
             }
             pub mod Shr {
                 #![doc = r##"This is the trait [`::core::ops::bit::Shr`]."##]
@@ -5135,24 +5207,24 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::bit::Shr::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[615]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[613]);
 
                 #[doc = r##"This is the associated function [`::core::ops::bit::Shr::shr`]."##]
                 pub const shr: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[265]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[264]);
             }
 
             #[doc = r##"This is the trait [`::core::ops::bit::BitAnd`]."##]
             pub const BitAnd: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[248]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[247]);
 
             #[doc = r##"This is the trait [`::core::ops::bit::BitOr`]."##]
             pub const BitOr: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[266]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[265]);
 
             #[doc = r##"This is the trait [`::core::ops::bit::BitXor`]."##]
             pub const BitXor: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[250]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[249]);
 
             #[doc = r##"This is the trait [`::core::ops::bit::Not`]."##]
             pub const Not: crate::ast::identifiers::global_id::GlobalId =
@@ -5160,11 +5232,11 @@ pub mod core {
 
             #[doc = r##"This is the trait [`::core::ops::bit::Shl`]."##]
             pub const Shl: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[262]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[261]);
 
             #[doc = r##"This is the trait [`::core::ops::bit::Shr`]."##]
             pub const Shr: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[264]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[263]);
         }
         pub mod control_flow {
             #![doc = r##"This is the module [`::core::ops::control_flow`]."##]
@@ -5178,7 +5250,7 @@ pub mod core {
                     #[doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break::Constructor`]."##]
                     pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[624],
+                            root::INTERNED_GLOBAL_IDS[631],
                         );
 
                     #[doc = r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Break."##]
@@ -5193,7 +5265,7 @@ pub mod core {
                     #[doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue::Constructor`]."##]
                     pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[625],
+                            root::INTERNED_GLOBAL_IDS[632],
                         );
 
                     #[doc = r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Continue."##]
@@ -5217,7 +5289,7 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::deref::Deref::Target`]."##]
                 pub const Target: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[279]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[278]);
 
                 #[doc = r##"This is the associated function [`::core::ops::deref::Deref::deref`]."##]
                 pub const deref: crate::ast::identifiers::global_id::GlobalId =
@@ -5229,7 +5301,7 @@ pub mod core {
 
                 #[doc = r##"This is the associated function [`::core::ops::deref::DerefMut::deref_mut`]."##]
                 pub const deref_mut: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[281]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[280]);
             }
 
             #[doc = r##"This is the trait [`::core::ops::deref::Deref`]."##]
@@ -5238,7 +5310,7 @@ pub mod core {
 
             #[doc = r##"This is the trait [`::core::ops::deref::DerefMut`]."##]
             pub const DerefMut: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[280]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[279]);
         }
         pub mod function {
             #![doc = r##"This is the module [`::core::ops::function`]."##]
@@ -5246,11 +5318,11 @@ pub mod core {
 
             #[doc = r##"This is the trait [`::core::ops::function::Fn`]."##]
             pub const Fn: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[202]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[201]);
 
             #[doc = r##"This is the trait [`::core::ops::function::FnMut`]."##]
             pub const FnMut: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[197]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[196]);
 
             #[doc = r##"This is the trait [`::core::ops::function::FnOnce`]."##]
             pub const FnOnce: crate::ast::identifiers::global_id::GlobalId =
@@ -5281,7 +5353,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::Range::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[622]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[629]);
 
                 #[doc = r##"This is the field [`end`] from ::core::ops::range::Range."##]
                 pub const end: crate::ast::identifiers::global_id::GlobalId =
@@ -5297,7 +5369,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::RangeFrom::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[628]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[635]);
 
                 #[doc = r##"This is the field [`start`] from ::core::ops::range::RangeFrom."##]
                 pub const start: crate::ast::identifiers::global_id::GlobalId =
@@ -5309,7 +5381,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::RangeFull::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[627]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[634]);
             }
             pub mod RangeTo {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeTo`]."##]
@@ -5317,7 +5389,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::RangeTo::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[626]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[633]);
 
                 #[doc = r##"This is the field [`end`] from ::core::ops::range::RangeTo."##]
                 pub const end: crate::ast::identifiers::global_id::GlobalId =
@@ -5349,7 +5421,7 @@ pub mod core {
 
                 #[doc = r##"This is the associated function [`::core::ops::try_trait::FromResidual::from_residual`]."##]
                 pub const from_residual: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[187]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[186]);
             }
             pub mod Try {
                 #![doc = r##"This is the trait [`::core::ops::try_trait::Try`]."##]
@@ -5357,33 +5429,33 @@ pub mod core {
 
                 #[doc = r##"This is the associated type [`::core::ops::try_trait::Try::Output`]."##]
                 pub const Output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[618]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[616]);
 
                 #[doc = r##"This is the associated type [`::core::ops::try_trait::Try::Residual`]."##]
                 pub const Residual: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[277]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[276]);
 
                 #[doc = r##"This is the associated function [`::core::ops::try_trait::Try::branch`]."##]
                 pub const branch: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[239]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[238]);
 
                 #[doc = r##"This is the associated function [`::core::ops::try_trait::Try::from_output`]."##]
                 pub const from_output: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[278]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[277]);
             }
 
             #[doc = r##"This is the trait [`::core::ops::try_trait::FromResidual`]."##]
             pub const FromResidual: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[186]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[185]);
 
             #[doc = r##"This is the trait [`::core::ops::try_trait::Try`]."##]
             pub const Try: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[238]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[237]);
         }
 
         #[doc = r##"This is the module [`::core::ops::arith`]."##]
         pub const arith: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[194]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[193]);
 
         #[doc = r##"This is the module [`::core::ops::bit`]."##]
         pub const bit: crate::ast::identifiers::global_id::GlobalId =
@@ -5411,7 +5483,7 @@ pub mod core {
 
         #[doc = r##"This is the module [`::core::ops::try_trait`]."##]
         pub const try_trait: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[185]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[184]);
     }
     pub mod option {
         #![doc = r##"This is the module [`::core::option`]."##]
@@ -5422,7 +5494,7 @@ pub mod core {
 
             #[doc = r##"This is the associated function [`::core::option::Impl::is_some`]."##]
             pub const is_some: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[178]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[177]);
         }
         pub mod Option {
             #![doc = r##"This is the enum [`::core::option::Option`]."##]
@@ -5432,24 +5504,24 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::option::Option::None::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[637]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[644]);
             }
             pub mod Some {
                 use super::root;
 
                 #[doc = r##"This is the variant [`::core::option::Option::Some::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[630]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[637]);
 
                 #[doc = r##"This is the field [`_0`] from ::core::option::Option::Some."##]
                 pub const _0: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[179]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[178]);
             }
         }
 
         #[doc = r##"This is an impl block."##]
         pub const Impl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[177]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[176]);
 
         #[doc = r##"This is the enum [`::core::option::Option`]."##]
         pub const Option: crate::ast::identifiers::global_id::GlobalId =
@@ -5466,7 +5538,7 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::panicking::AssertKind::Eq::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[638]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[645]);
             }
         }
 
@@ -5476,11 +5548,11 @@ pub mod core {
 
         #[doc = r##"This is the function [`::core::panicking::assert_failed`]."##]
         pub const assert_failed: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[170]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[169]);
 
         #[doc = r##"This is the function [`::core::panicking::panic`]."##]
         pub const panic: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[173]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[172]);
     }
     pub mod ptr {
         #![doc = r##"This is the module [`::core::ptr`]."##]
@@ -5515,7 +5587,7 @@ pub mod core {
 
             #[doc = r##"This is the associated function [`::core::result::Impl::map_err`]."##]
             pub const map_err: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[176]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[175]);
         }
         pub mod Result {
             #![doc = r##"This is the enum [`::core::result::Result`]."##]
@@ -5525,36 +5597,36 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::result::Result::Err::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[629]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[636]);
 
                 #[doc = r##"This is the field [`_0`] from ::core::result::Result::Err."##]
                 pub const _0: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[174]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[173]);
             }
             pub mod Ok {
                 use super::root;
 
                 #[doc = r##"This is the variant [`::core::result::Result::Ok::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[631]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[638]);
 
                 #[doc = r##"This is the field [`_0`] from ::core::result::Result::Ok."##]
                 pub const _0: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[199]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[198]);
             }
         }
 
         #[doc = r##"This is an impl block."##]
         pub const Impl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[175]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[174]);
 
         #[doc = r##"This is an impl block."##]
         pub const Impl__27: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[240]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[239]);
 
         #[doc = r##"This is an impl block."##]
         pub const Impl__28: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[189]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[188]);
 
         #[doc = r##"This is the enum [`::core::result::Result`]."##]
         pub const Result: crate::ast::identifiers::global_id::GlobalId =
@@ -5569,11 +5641,11 @@ pub mod core {
 
             #[doc = r##"This is the associated function [`::core::slice::Impl::chunks_exact`]."##]
             pub const chunks_exact: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[230]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[229]);
 
             #[doc = r##"This is the associated function [`::core::slice::Impl::iter`]."##]
             pub const iter: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[228]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[227]);
 
             #[doc = r##"This is the associated function [`::core::slice::Impl::len`]."##]
             pub const len: crate::ast::identifiers::global_id::GlobalId =
@@ -5585,7 +5657,7 @@ pub mod core {
 
             #[doc = r##"This is an impl block."##]
             pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[190]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[189]);
 
             #[doc = r##"This is an impl block."##]
             pub const Impl__4: crate::ast::identifiers::global_id::GlobalId =
@@ -5601,11 +5673,11 @@ pub mod core {
 
             #[doc = r##"This is the struct [`::core::slice::iter::ChunksExact`]."##]
             pub const ChunksExact: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[229]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[228]);
 
             #[doc = r##"This is the struct [`::core::slice::iter::Iter`]."##]
             pub const Iter: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[227]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[226]);
         }
 
         #[doc = r##"This is an impl block."##]
@@ -5618,7 +5690,7 @@ pub mod core {
 
         #[doc = r##"This is the module [`::core::slice::iter`]."##]
         pub const iter: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[226]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[225]);
     }
     pub mod str {
         #![doc = r##"This is the module [`::core::str`]."##]
@@ -5671,7 +5743,7 @@ pub mod core {
 
     #[doc = r##"This is the module [`::core::marker`]."##]
     pub const marker: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[275]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[274]);
 
     #[doc = r##"This is the module [`::core::num`]."##]
     pub const num: crate::ast::identifiers::global_id::GlobalId =
@@ -5714,7 +5786,7 @@ pub mod hax_lib {
 
         #[doc = r##"This is the associated function [`::hax_lib::RefineAs::into_checked`]."##]
         pub const into_checked: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[242]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[241]);
     }
     pub mod Refinement {
         #![doc = r##"This is the trait [`::hax_lib::Refinement`]."##]
@@ -5722,19 +5794,19 @@ pub mod hax_lib {
 
         #[doc = r##"This is the associated type [`::hax_lib::Refinement::InnerType`]."##]
         pub const InnerType: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[245]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[244]);
 
         #[doc = r##"This is the associated function [`::hax_lib::Refinement::get`]."##]
         pub const get: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[244]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[243]);
 
         #[doc = r##"This is the associated function [`::hax_lib::Refinement::get_mut`]."##]
         pub const get_mut: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[247]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[246]);
 
         #[doc = r##"This is the associated function [`::hax_lib::Refinement::new`]."##]
         pub const new: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[246]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[245]);
     }
     pub mod abstraction {
         #![doc = r##"This is the module [`::hax_lib::abstraction`]."##]
@@ -5825,31 +5897,31 @@ pub mod hax_lib {
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::and`]."##]
             pub const and: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[214]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[213]);
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::eq`]."##]
             pub const eq: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[211]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[210]);
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::from_bool`]."##]
             pub const from_bool: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[215]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[214]);
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::implies`]."##]
             pub const implies: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[209]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[208]);
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::ne`]."##]
             pub const ne: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[210]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[209]);
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::not`]."##]
             pub const not: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[212]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[211]);
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::Impl::or`]."##]
             pub const or: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[213]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[212]);
         }
         pub mod ToProp {
             #![doc = r##"This is the trait [`::hax_lib::prop::ToProp`]."##]
@@ -5857,7 +5929,7 @@ pub mod hax_lib {
 
             #[doc = r##"This is the associated function [`::hax_lib::prop::ToProp::to_prop`]."##]
             pub const to_prop: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[206]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[205]);
         }
         pub mod constructors {
             #![doc = r##"This is the module [`::hax_lib::prop::constructors`]."##]
@@ -5865,48 +5937,48 @@ pub mod hax_lib {
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::and`]."##]
             pub const and: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[224]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[223]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::eq`]."##]
             pub const eq: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[221]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[220]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::exists`]."##]
             pub const exists: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[217]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[216]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::forall`]."##]
             pub const forall: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[218]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[217]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::from_bool`]."##]
             pub const from_bool: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[225]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[224]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::implies`]."##]
             pub const implies: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[219]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[218]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::ne`]."##]
             pub const ne: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[220]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[219]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::not`]."##]
             pub const not: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[222]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[221]);
 
             #[doc = r##"This is the function [`::hax_lib::prop::constructors::or`]."##]
             pub const or: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[223]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[222]);
         }
 
         #[doc = r##"This is an impl block."##]
         pub const Impl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[208]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[207]);
 
         #[doc = r##"This is an impl block."##]
         pub const Impl__2: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[207]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[206]);
 
         #[doc = r##"This is an impl block."##]
         pub const Impl__3: crate::ast::identifiers::global_id::GlobalId =
@@ -5918,32 +5990,32 @@ pub mod hax_lib {
 
         #[doc = r##"This is the trait [`::hax_lib::prop::ToProp`]."##]
         pub const ToProp: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[205]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[204]);
 
         #[doc = r##"This is the module [`::hax_lib::prop::constructors`]."##]
         pub const constructors: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[216]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[215]);
 
         #[doc = r##"This is the function [`::hax_lib::prop::exists`]."##]
         pub const exists: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[203]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[202]);
 
         #[doc = r##"This is the function [`::hax_lib::prop::forall`]."##]
         pub const forall: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[204]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[203]);
 
         #[doc = r##"This is the function [`::hax_lib::prop::implies`]."##]
         pub const implies: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[201]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[200]);
     }
 
     #[doc = r##"This is the trait [`::hax_lib::RefineAs`]."##]
     pub const RefineAs: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[241]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[240]);
 
     #[doc = r##"This is the trait [`::hax_lib::Refinement`]."##]
     pub const Refinement: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[243]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[242]);
 
     #[doc = r##"This is the function [`::hax_lib::_internal_loop_decreases`]."##]
     pub const _internal_loop_decreases: crate::ast::identifiers::global_id::GlobalId =
@@ -5999,7 +6071,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[636]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[643]);
             }
         }
         pub mod DHGroup {
@@ -6010,7 +6082,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[635]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[642]);
             }
         }
         pub mod HMACAlgorithm {
@@ -6021,7 +6093,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[634]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[641]);
             }
         }
         pub mod HashAlgorithm {
@@ -6032,7 +6104,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[633]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[640]);
             }
         }
         pub mod Impl {
@@ -6178,26 +6250,34 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the use item [`::rust_primitives::crypto_abstractions::Use`]."##]
         pub const Use: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[526]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[524]);
 
         #[doc = r##"This is the function [`::rust_primitives::crypto_abstractions::crypto_abstractions`]."##]
         pub const crypto_abstractions: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[309]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[308]);
     }
     pub mod dummy_hax_concrete_ident_wrapper {
         #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##]
         use super::root;
+        pub mod Foo {
+            #![doc = r##"This is the struct [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Foo`]."##]
+            use super::root;
+
+            #[doc = r##"This is the struct [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Foo::Constructor`]."##]
+            pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[646]);
+        }
         pub mod ___1 {
             #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
             use super::root;
 
             #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use`]."##]
             pub const Use: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[295]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[294]);
 
             #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::f`]."##]
             pub const f: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[316]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[315]);
         }
         pub mod _anonymous {
             #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
@@ -6205,19 +6285,19 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##]
             pub const Use: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[475]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[474]);
 
             #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##]
             pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[304]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[303]);
 
             #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##]
             pub const Use__2: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[383]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[382]);
 
             #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##]
             pub const arith: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[533]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[531]);
         }
         pub mod props {
             #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##]
@@ -6225,56 +6305,68 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props::Use`]."##]
             pub const Use: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[579]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[577]);
         }
+
+        #[doc = r##"This is the struct [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Foo`]."##]
+        pub const Foo: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[626]);
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[627]);
+
+        #[doc = r##"This is an impl block."##]
+        pub const Impl__1: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[625]);
 
         #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use`]."##]
         pub const Use: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[520]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[518]);
 
         #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__1`]."##]
         pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[584]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[582]);
 
         #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__2`]."##]
         pub const Use__2: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[404]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[403]);
 
         #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__3`]."##]
         pub const Use__3: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[359]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[358]);
 
         #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__4`]."##]
         pub const Use__4: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[345]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[344]);
 
         #[doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
         pub const ___1: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[294]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[293]);
 
         #[doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
         pub const _anonymous: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[303]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[302]);
 
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::dummy`]."##]
         pub const dummy: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[297]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[296]);
 
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##]
         pub const iterator_functions: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[485]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[484]);
 
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##]
         pub const props: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[578]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[576]);
 
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::question_mark_result`]."##]
         pub const question_mark_result: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[570]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[568]);
 
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::refinements`]."##]
         pub const refinements: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[439]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[438]);
     }
     pub mod hax {
         #![doc = r##"This is the module [`::rust_primitives::hax`]."##]
@@ -6285,7 +6377,7 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the struct [`::rust_primitives::hax::Failure::Constructor`]."##]
             pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[632]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[639]);
         }
         pub(in crate::ast::identifiers::global_id) mod Tuple2 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##]
@@ -6294,17 +6386,17 @@ pub mod rust_primitives {
             #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##]
             pub(in crate::ast::identifiers::global_id) const Constructor:
                 crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[623]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[630]);
 
             #[doc = r##"This is the field [`_0`] from ::rust_primitives::hax::Tuple2."##]
             pub(in crate::ast::identifiers::global_id) const _0:
                 crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[397]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[396]);
 
             #[doc = r##"This is the field [`_1`] from ::rust_primitives::hax::Tuple2."##]
             pub(in crate::ast::identifiers::global_id) const _1:
                 crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[407]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[406]);
         }
         pub mod control_flow_monad {
             #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##]
@@ -6315,7 +6407,7 @@ pub mod rust_primitives {
 
                 #[doc = r##"This is the associated function [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad::lift`]."##]
                 pub const lift: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[482]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[481]);
             }
             pub mod mexception {
                 #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##]
@@ -6323,7 +6415,7 @@ pub mod rust_primitives {
 
                 #[doc = r##"This is the function [`::rust_primitives::hax::control_flow_monad::mexception::run`]."##]
                 pub const run: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[555]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[553]);
             }
             pub mod moption {
                 #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##]
@@ -6331,7 +6423,7 @@ pub mod rust_primitives {
 
                 #[doc = r##"This is the function [`::rust_primitives::hax::control_flow_monad::moption::run`]."##]
                 pub const run: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[326]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[325]);
             }
             pub mod mresult {
                 #![doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##]
@@ -6339,24 +6431,24 @@ pub mod rust_primitives {
 
                 #[doc = r##"This is the function [`::rust_primitives::hax::control_flow_monad::mresult::run`]."##]
                 pub const run: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[428]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[427]);
             }
 
             #[doc = r##"This is the trait [`::rust_primitives::hax::control_flow_monad::ControlFlowMonad`]."##]
             pub const ControlFlowMonad: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[481]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[480]);
 
             #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mexception`]."##]
             pub const mexception: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[525]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[523]);
 
             #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::moption`]."##]
             pub const moption: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[325]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[324]);
 
             #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad::mresult`]."##]
             pub const mresult: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[427]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[426]);
         }
         pub mod explicit_monadic {
             #![doc = r##"This is the module [`::rust_primitives::hax::explicit_monadic`]."##]
@@ -6364,11 +6456,11 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the function [`::rust_primitives::hax::explicit_monadic::lift`]."##]
             pub const lift: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[621]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[619]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::explicit_monadic::pure`]."##]
             pub const pure: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[620]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[618]);
         }
         pub mod folds {
             #![doc = r##"This is the module [`::rust_primitives::hax::folds`]."##]
@@ -6376,73 +6468,73 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_cf`]."##]
             pub const fold_cf: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[476]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[475]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice`]."##]
             pub const fold_chunked_slice: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[456]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[455]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_cf`]."##]
             pub const fold_chunked_slice_cf: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[389]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[388]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_chunked_slice_return`]."##]
             pub const fold_chunked_slice_return: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[490]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[489]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice`]."##]
             pub const fold_enumerated_chunked_slice: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[382]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[381]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_cf`]."##]
             pub const fold_enumerated_chunked_slice_cf:
                 crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[506]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[504]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_chunked_slice_return`]."##]
             pub const fold_enumerated_chunked_slice_return:
                 crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[543]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[541]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice`]."##]
             pub const fold_enumerated_slice: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[422]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[421]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_cf`]."##]
             pub const fold_enumerated_slice_cf: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[361]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[360]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_enumerated_slice_return`]."##]
             pub const fold_enumerated_slice_return: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[524]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[522]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range`]."##]
             pub const fold_range: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[373]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[372]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_cf`]."##]
             pub const fold_range_cf: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[448]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[447]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_return`]."##]
             pub const fold_range_return: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[308]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[307]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by`]."##]
             pub const fold_range_step_by: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[292]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[291]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_cf`]."##]
             pub const fold_range_step_by_cf: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[557]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[555]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_range_step_by_return`]."##]
             pub const fold_range_step_by_return: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[521]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[519]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::folds::fold_return`]."##]
             pub const fold_return: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[449]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[448]);
         }
         pub mod int {
             #![doc = r##"This is the module [`::rust_primitives::hax::int`]."##]
@@ -6450,59 +6542,59 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::add`]."##]
             pub const add: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[493]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[492]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::div`]."##]
             pub const div: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[388]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[387]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::eq`]."##]
             pub const eq: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[553]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[551]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::from_machine`]."##]
             pub const from_machine: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[509]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[507]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::ge`]."##]
             pub const ge: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[421]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[420]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::gt`]."##]
             pub const gt: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[477]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[476]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::into_machine`]."##]
             pub const into_machine: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[460]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[459]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::le`]."##]
             pub const le: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[369]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[368]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::lt`]."##]
             pub const lt: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[527]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[525]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::mul`]."##]
             pub const mul: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[379]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[378]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::ne`]."##]
             pub const ne: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[433]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[432]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::neg`]."##]
             pub const neg: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[502]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[500]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::rem`]."##]
             pub const rem: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[494]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[493]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::int::sub`]."##]
             pub const sub: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[351]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[350]);
         }
         pub mod machine_int {
             #![doc = r##"This is the module [`::rust_primitives::hax::machine_int`]."##]
@@ -6510,71 +6602,71 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::add`]."##]
             pub const add: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[473]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[472]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::bitand`]."##]
             pub const bitand: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[538]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[536]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::bitor`]."##]
             pub const bitor: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[591]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[589]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::bitxor`]."##]
             pub const bitxor: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[366]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[365]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::div`]."##]
             pub const div: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[408]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[407]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::eq`]."##]
             pub const eq: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[390]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[389]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::ge`]."##]
             pub const ge: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[307]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[306]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::gt`]."##]
             pub const gt: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[516]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[514]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::le`]."##]
             pub const le: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[457]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[456]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::lt`]."##]
             pub const lt: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[511]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[509]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::mul`]."##]
             pub const mul: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[598]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[596]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::ne`]."##]
             pub const ne: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[484]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[483]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::not`]."##]
             pub const not: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[331]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[330]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::rem`]."##]
             pub const rem: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[500]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[498]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::shl`]."##]
             pub const shl: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[514]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[512]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::shr`]."##]
             pub const shr: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[495]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[494]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::machine_int::sub`]."##]
             pub const sub: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[551]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[549]);
         }
         pub mod monomorphized_update_at {
             #![doc = r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##]
@@ -6582,36 +6674,36 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range`]."##]
             pub const update_at_range: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[353]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[352]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_from`]."##]
             pub const update_at_range_from: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[322]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[321]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_full`]."##]
             pub const update_at_range_full: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[381]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[380]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_range_to`]."##]
             pub const update_at_range_to: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[597]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[595]);
 
             #[doc = r##"This is the function [`::rust_primitives::hax::monomorphized_update_at::update_at_usize`]."##]
             pub const update_at_usize: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[315]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[314]);
         }
 
         #[doc = r##"This is the struct [`::rust_primitives::hax::Failure`]."##]
         pub const Failure: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[372]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[371]);
 
         #[doc = r##"This is the enum [`::rust_primitives::hax::MutRef`]."##]
         pub const MutRef: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[338]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[337]);
 
         #[doc = r##"This is the enum [`::rust_primitives::hax::Never`]."##]
         pub const Never: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[171]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[170]);
 
         #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##]
         pub(in crate::ast::identifiers::global_id) const Tuple2:
@@ -6620,7 +6712,7 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::hax::array_of_list`]."##]
         pub const array_of_list: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[377]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[376]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::box_new`]."##]
         pub const box_new: crate::ast::identifiers::global_id::GlobalId =
@@ -6632,7 +6724,7 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the module [`::rust_primitives::hax::control_flow_monad`]."##]
         pub const control_flow_monad: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[324]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[323]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::deref_op`]."##]
         pub const deref_op: crate::ast::identifiers::global_id::GlobalId =
@@ -6640,63 +6732,63 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::hax::dropped_body`]."##]
         pub const dropped_body: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[558]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[556]);
 
         #[doc = r##"This is the module [`::rust_primitives::hax::explicit_monadic`]."##]
         pub const explicit_monadic: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[619]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[617]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::failure`]."##]
         pub const failure: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[564]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[562]);
 
         #[doc = r##"This is the module [`::rust_primitives::hax::folds`]."##]
         pub const folds: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[291]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[290]);
 
         #[doc = r##"This is the module [`::rust_primitives::hax::int`]."##]
         pub const int: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[350]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[349]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::logical_op_and`]."##]
         pub const logical_op_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[271]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[270]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::logical_op_or`]."##]
         pub const logical_op_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[556]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[554]);
 
         #[doc = r##"This is the module [`::rust_primitives::hax::machine_int`]."##]
         pub const machine_int: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[306]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[305]);
 
         #[doc = r##"This is the module [`::rust_primitives::hax::monomorphized_update_at`]."##]
         pub const monomorphized_update_at: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[314]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[313]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::never_to_any`]."##]
         pub const never_to_any: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[172]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[171]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::repeat`]."##]
         pub const repeat: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[429]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[428]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::update_at`]."##]
         pub const update_at: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[376]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[375]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::while_loop`]."##]
         pub const while_loop: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[441]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[440]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::while_loop_cf`]."##]
         pub const while_loop_cf: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[569]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[567]);
 
         #[doc = r##"This is the function [`::rust_primitives::hax::while_loop_return`]."##]
         pub const while_loop_return: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[602]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[600]);
     }
     pub mod i128 {
         #![doc = r##"This is the module [`::rust_primitives::i128`]."##]
@@ -6704,71 +6796,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::i128::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[393]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[392]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[545]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[543]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[599]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[597]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[571]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[569]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[472]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[471]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[596]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[594]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[585]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[583]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[418]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[417]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[547]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[545]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[529]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[527]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[600]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[598]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[594]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[592]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[583]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[581]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[360]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[359]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[358]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[357]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[370]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[369]);
 
         #[doc = r##"This is the function [`::rust_primitives::i128::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[400]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[399]);
     }
     pub mod i16 {
         #![doc = r##"This is the module [`::rust_primitives::i16`]."##]
@@ -6776,71 +6868,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::i16::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[340]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[339]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[537]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[535]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[335]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[334]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[590]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[588]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[567]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[565]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[580]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[578]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[336]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[335]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[577]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[575]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[548]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[546]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[546]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[544]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[417]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[416]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[395]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[394]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[362]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[361]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[532]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[530]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[320]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[319]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[364]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[363]);
 
         #[doc = r##"This is the function [`::rust_primitives::i16::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[489]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[488]);
     }
     pub mod i32 {
         #![doc = r##"This is the module [`::rust_primitives::i32`]."##]
@@ -6848,71 +6940,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::i32::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[367]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[366]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[474]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[473]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[501]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[499]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[513]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[511]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[432]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[431]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[523]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[521]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[603]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[601]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[528]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[526]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[337]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[336]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[327]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[326]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[467]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[466]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[487]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[486]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[313]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[312]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[347]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[346]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[576]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[574]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[374]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[373]);
 
         #[doc = r##"This is the function [`::rust_primitives::i32::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[355]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[354]);
     }
     pub mod i64 {
         #![doc = r##"This is the module [`::rust_primitives::i64`]."##]
@@ -6920,71 +7012,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::i64::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[510]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[508]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[604]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[602]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[496]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[495]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[333]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[332]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[445]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[444]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[587]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[585]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[568]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[566]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[446]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[445]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[582]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[580]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[455]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[454]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[503]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[501]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[423]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[422]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[406]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[405]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[442]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[441]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[469]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[468]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[491]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[490]);
 
         #[doc = r##"This is the function [`::rust_primitives::i64::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[541]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[539]);
     }
     pub mod i8 {
         #![doc = r##"This is the module [`::rust_primitives::i8`]."##]
@@ -6992,71 +7084,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::i8::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[593]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[591]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[542]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[540]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[344]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[343]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[566]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[564]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[329]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[328]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[420]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[419]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[414]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[413]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[352]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[351]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[592]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[590]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[426]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[425]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[444]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[443]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[356]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[355]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[392]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[391]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[565]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[563]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[363]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[362]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[438]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[437]);
 
         #[doc = r##"This is the function [`::rust_primitives::i8::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[410]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[409]);
     }
     pub mod isize {
         #![doc = r##"This is the module [`::rust_primitives::isize`]."##]
@@ -7064,71 +7156,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::isize::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[519]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[517]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[419]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[418]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[371]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[370]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[505]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[503]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[425]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[424]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[530]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[528]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[447]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[446]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[544]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[542]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[589]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[587]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[290]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[289]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[349]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[348]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[394]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[393]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[563]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[561]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[595]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[593]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[321]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[320]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[512]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[510]);
 
         #[doc = r##"This is the function [`::rust_primitives::isize::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[483]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[482]);
     }
     pub mod u128 {
         #![doc = r##"This is the module [`::rust_primitives::u128`]."##]
@@ -7136,71 +7228,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::u128::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[522]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[520]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[436]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[435]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[540]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[538]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[562]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[560]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[535]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[533]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[574]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[572]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[508]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[506]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[454]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[453]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[342]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[341]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[561]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[559]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[391]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[390]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[459]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[458]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[586]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[584]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[283]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[282]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[330]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[329]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[403]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[402]);
 
         #[doc = r##"This is the function [`::rust_primitives::u128::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[415]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[414]);
     }
     pub mod u16 {
         #![doc = r##"This is the module [`::rust_primitives::u16`]."##]
@@ -7208,71 +7300,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::u16::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[339]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[338]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[302]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[301]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[539]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[537]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[486]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[485]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[549]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[547]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[550]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[548]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[348]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[347]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[412]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[411]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[588]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[586]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[453]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[452]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[317]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[316]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[437]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[436]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[286]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[285]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[431]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[430]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[534]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[532]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[458]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[457]);
 
         #[doc = r##"This is the function [`::rust_primitives::u16::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[554]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[552]);
     }
     pub mod u32 {
         #![doc = r##"This is the module [`::rust_primitives::u32`]."##]
@@ -7280,71 +7372,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::u32::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[343]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[342]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[601]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[599]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[572]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[570]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[466]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[465]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[470]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[469]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[334]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[333]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[507]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[505]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[409]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[408]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[341]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[340]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[573]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[571]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[498]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[496]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[311]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[310]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[318]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[317]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[301]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[300]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[463]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[462]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[575]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[573]);
 
         #[doc = r##"This is the function [`::rust_primitives::u32::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[385]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[384]);
     }
     pub mod u64 {
         #![doc = r##"This is the module [`::rust_primitives::u64`]."##]
@@ -7352,71 +7444,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::u64::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[499]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[497]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[461]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[460]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[380]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[379]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[368]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[367]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[365]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[364]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[559]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[557]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[398]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[397]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[305]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[304]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[478]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[477]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[310]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[309]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[288]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[287]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[504]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[502]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[492]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[491]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[560]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[558]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[434]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[433]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[517]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[515]);
 
         #[doc = r##"This is the function [`::rust_primitives::u64::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[440]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[439]);
     }
     pub mod u8 {
         #![doc = r##"This is the module [`::rust_primitives::u8`]."##]
@@ -7424,71 +7516,71 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::u8::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[354]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[353]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[518]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[516]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[430]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[429]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[465]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[464]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[375]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[374]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[386]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[385]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[399]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[398]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[416]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[415]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[378]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[377]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[515]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[513]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[411]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[410]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[384]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[383]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[471]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[470]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[443]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[442]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[480]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[479]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[299]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[298]);
 
         #[doc = r##"This is the function [`::rust_primitives::u8::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[401]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[400]);
     }
     pub mod usize {
         #![doc = r##"This is the module [`::rust_primitives::usize`]."##]
@@ -7496,88 +7588,88 @@ pub mod rust_primitives {
 
         #[doc = r##"This is the function [`::rust_primitives::usize::add`]."##]
         pub const add: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[387]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[386]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::bit_and`]."##]
         pub const bit_and: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[488]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[487]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::bit_or`]."##]
         pub const bit_or: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[531]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[529]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::bit_xor`]."##]
         pub const bit_xor: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[413]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[412]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::div`]."##]
         pub const div: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[536]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[534]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::eq`]."##]
         pub const eq: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[581]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[579]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::ge`]."##]
         pub const ge: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[346]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[345]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::gt`]."##]
         pub const gt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[462]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[461]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::le`]."##]
         pub const le: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[479]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[478]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::lt`]."##]
         pub const lt: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[435]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[434]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::mul`]."##]
         pub const mul: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[468]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[467]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::ne`]."##]
         pub const ne: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[552]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[550]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::neg`]."##]
         pub const neg: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[405]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[404]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::rem`]."##]
         pub const rem: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[452]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[451]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::shl`]."##]
         pub const shl: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[451]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[450]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::shr`]."##]
         pub const shr: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[424]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[423]);
 
         #[doc = r##"This is the function [`::rust_primitives::usize::sub`]."##]
         pub const sub: crate::ast::identifiers::global_id::GlobalId =
-            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[450]);
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[449]);
     }
 
     #[doc = r##"This is the use item [`::rust_primitives::Use`]."##]
     pub const Use: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[402]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[401]);
 
     #[doc = r##"This is the extern crate [`::rust_primitives::alloc`]."##]
     pub const alloc: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[464]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[463]);
 
     #[doc = r##"This is the module [`::rust_primitives::crypto_abstractions`]."##]
     pub const crypto_abstractions: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[296]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[295]);
 
     #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper`]."##]
     pub const dummy_hax_concrete_ident_wrapper: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[293]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[292]);
 
     #[doc = r##"This is the module [`::rust_primitives::hax`]."##]
     pub const hax: crate::ast::identifiers::global_id::GlobalId =
@@ -7585,59 +7677,59 @@ pub mod rust_primitives {
 
     #[doc = r##"This is the module [`::rust_primitives::i128`]."##]
     pub const i128: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[357]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[356]);
 
     #[doc = r##"This is the module [`::rust_primitives::i16`]."##]
     pub const i16: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[319]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[318]);
 
     #[doc = r##"This is the module [`::rust_primitives::i32`]."##]
     pub const i32: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[312]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[311]);
 
     #[doc = r##"This is the module [`::rust_primitives::i64`]."##]
     pub const i64: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[332]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[331]);
 
     #[doc = r##"This is the module [`::rust_primitives::i8`]."##]
     pub const i8: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[328]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[327]);
 
     #[doc = r##"This is the macro [`::rust_primitives::impl_arith`]."##]
     pub const impl_arith: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[497]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[628]);
 
     #[doc = r##"This is the module [`::rust_primitives::isize`]."##]
     pub const isize: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[289]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[288]);
 
     #[doc = r##"This is the function [`::rust_primitives::offset`]."##]
     pub const offset: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[396]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[395]);
 
     #[doc = r##"This is the extern crate [`::rust_primitives::std`]."##]
     pub const std: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[284]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[283]);
 
     #[doc = r##"This is the module [`::rust_primitives::u128`]."##]
     pub const u128: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[282]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[281]);
 
     #[doc = r##"This is the module [`::rust_primitives::u16`]."##]
     pub const u16: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[285]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[284]);
 
     #[doc = r##"This is the module [`::rust_primitives::u32`]."##]
     pub const u32: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[300]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[299]);
 
     #[doc = r##"This is the module [`::rust_primitives::u64`]."##]
     pub const u64: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[287]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[286]);
 
     #[doc = r##"This is the module [`::rust_primitives::u8`]."##]
     pub const u8: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[298]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[297]);
 
     #[doc = r##"This is the function [`::rust_primitives::unsize`]."##]
     pub const unsize: crate::ast::identifiers::global_id::GlobalId =
@@ -7645,7 +7737,7 @@ pub mod rust_primitives {
 
     #[doc = r##"This is the module [`::rust_primitives::usize`]."##]
     pub const usize: crate::ast::identifiers::global_id::GlobalId =
-        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[323]);
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[322]);
 }
 
 #[doc = r##"This is the module [`::alloc`]."##]
