@@ -4,7 +4,8 @@ defaultTargets = ["Lean_barrett"]
 
 [[lean_lib]]
 name = "Lean_barrett"
+roots = ["extraction.Lean_barrett"]
 
 [[require]]
 name = "Hax"
-path = "../../../../../hax-lib/proof-libs/lean"
+path = "../../../../hax-lib/proof-libs/lean"
