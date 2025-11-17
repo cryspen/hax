@@ -10,17 +10,17 @@ let v_サビ (_: Prims.unit) : Prims.unit = ()
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Ops.Range.t_RangeInclusive
-            char)
+            FStar.Char.char)
           #FStar.Tactics.Typeclasses.solve
-          (Core_models.Ops.Range.impl_7__new #char 'Ð' 'Ð'
+          (Core_models.Ops.Range.impl_7__new #FStar.Char.char 'Ð' 'Ð'
             <:
-            Core_models.Ops.Range.t_RangeInclusive char)
+            Core_models.Ops.Range.t_RangeInclusive FStar.Char.char)
         <:
-        Core_models.Ops.Range.t_RangeInclusive char)
+        Core_models.Ops.Range.t_RangeInclusive FStar.Char.char)
       ()
       (fun temp_0_ e_İ ->
           let _:Prims.unit = temp_0_ in
-          let e_İ:char = e_İ in
+          let e_İ:FStar.Char.char = e_İ in
           ())
   in
   let _:Prims.unit =
