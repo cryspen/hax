@@ -14,7 +14,7 @@ set_option mvcgen.warning false
 
 /- Warning : this function has been specialized, it should be turned into a typeclass -/
 def Core.Convert.TryInto.try_into {α n} (a: Array α) :
-   Result (Core.Result.Result (Vector α n) Core.Array.TryFromSliceError) :=
+   RustM (Core.Result.Result (Vector α n) Core.Array.TryFromSliceError) :=
    pure (
      if h: a.size = n then
        Core.Result.Result.Ok (a.toVector.cast h)

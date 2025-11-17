@@ -28,6 +28,7 @@ Changes to the Lean backend:
  - Add support for base-expressions of structs (#1736)
  - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
    not introduce extra `do` block (#1746)
+ - Rename `Result` monad to `RustM`
 
 Miscellaneous:
 

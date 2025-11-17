@@ -22,7 +22,7 @@ set_option linter.unusedVariables false
 /-
 # Monadic encoding
 
-The encoding is based on the `Result` monad: all rust computations are wrapped
+The encoding is based on the `RustM` monad: all rust computations are wrapped
 in the monad, representing the fact that they are not total.
 
 -/
@@ -41,37 +41,40 @@ inductive Error where
 deriving Repr, BEq
 open Error
 
-/-- (Aeneas) Result monad, representing possible results of rust computations -/
-inductive Result.{u} (α : Type u) where
-  | ok (v: α): Result α
-  | fail (e: Error): Result α
+/--
+  RustM monad (corresponding to Aeneas's `Result` monad), representing
+  possible results of rust computations
+-/
+inductive RustM.{u} (α : Type u) where
+  | ok (v: α): RustM α
+  | fail (e: Error): RustM α
   | div
 deriving Repr, BEq
 
-namespace Result
+namespace RustM
 
 @[simp]
-instance instPure: Pure Result where
+instance instPure: Pure RustM where
   pure x := .ok x
 
 @[simp]
-def bind {α β : Type} (x: Result α) (f: α -> Result β) := match x with
+def bind {α β : Type} (x: RustM α) (f: α -> RustM β) := match x with
   | .ok v => f v
   | .fail e => .fail e
   | .div => .div
 
 @[simp]
-def ofOption {α} (x:Option α) (e: Error) : Result α := match x with
+def ofOption {α} (x:Option α) (e: Error) : RustM α := match x with
   | .some v => pure v
   | .none => .fail e
 
 @[reducible]
-def isOk {α : Type} (x: Result α) : Bool := match x with
+def isOk {α : Type} (x: RustM α) : Bool := match x with
 | .ok _ => true
 | _ => false
 
 @[reducible]
-def of_isOk {α : Type} (x: Result α) (h: Result.isOk x): α :=
+def of_isOk {α : Type} (x: RustM α) (h: RustM.isOk x): α :=
   match x with
   | .ok v => v
 
@@ -79,12 +82,12 @@ def of_isOk {α : Type} (x: Result α) (h: Result.isOk x): α :=
 def ok_of_isOk {α : Type} (v : α) (h: isOk (ok v)): (ok v).of_isOk h = v := by rfl
 
 @[simp]
-instance instMonad : Monad Result where
+instance instMonad : Monad RustM where
   pure := pure
-  bind := Result.bind
+  bind := RustM.bind
 
 @[simp]
-instance instLawfulMonad : LawfulMonad Result where
+instance instLawfulMonad : LawfulMonad RustM where
   id_map x := by
     dsimp [id, Functor.map]
     cases x;
@@ -113,14 +116,14 @@ instance instLawfulMonad : LawfulMonad Result where
     cases x; all_goals simp
 
 @[simp]
-instance instWP : WP Result (.except Error .pure) where
+instance instWP : WP RustM (.except Error .pure) where
   wp x := match x with
   | .ok v => wp (Pure.pure v : Except Error _)
   | .fail e => wp (throw e : Except Error _)
   | .div => PredTrans.const ⌜False⌝
 
 @[simp]
-instance instWPMonad : WPMonad Result (.except Error .pure) where
+instance instWPMonad : WPMonad RustM (.except Error .pure) where
   wp_pure := by intros; ext Q; simp [wp, PredTrans.pure, Pure.pure, Except.pure, Id.run]
   wp_bind x f := by
     simp only [instWP]
@@ -128,18 +131,18 @@ instance instWPMonad : WPMonad Result (.except Error .pure) where
     cases x <;> simp [PredTrans.bind, PredTrans.const, Bind.bind]
 
 @[default_instance]
-instance instCoe {α} : Coe α (Result α) where
+instance instCoe {α} : Coe α (RustM α) where
   coe x := pure x
 
 @[simp, spec, default_instance]
-instance {α} : Coe (Result (Result α)) (Result α) where
+instance {α} : Coe (RustM (RustM α)) (RustM α) where
   coe x := match x with
   | .ok y => y
   | .fail e => .fail e
   | .div => .div
 
 
-end Result
+end RustM
 
 
 /-
@@ -151,15 +154,15 @@ namespace Rust_primitives.Hax.Logical_op
 
 /-- Boolean conjunction. Cannot panic (always returns .ok ) -/
 @[simp, spec]
-def and (a b: Bool) : Result Bool := pure (a && b)
+def and (a b: Bool) : RustM Bool := pure (a && b)
 
 /-- Boolean disjunction. Cannot panic (always returns .ok )-/
 @[simp, spec]
-def or (a b: Bool) : Result Bool := pure (a || b)
+def or (a b: Bool) : RustM Bool := pure (a || b)
 
 /-- Boolean negation. Cannot panic (always returns .ok )-/
 @[simp, spec]
-def not (a :Bool) : Result Bool := pure (!a)
+def not (a :Bool) : RustM Bool := pure (!a)
 
 @[inherit_doc] infixl:35 " &&? " => and
 @[inherit_doc] infixl:30 " ||? " => or
@@ -208,7 +211,7 @@ instance : ToNat Nat where
 -/
 -- TODO : make sure all are necessary, document their use-cases
 @[simp, spec]
-instance : Coe i32 (Result i64) where
+instance : Coe i32 (RustM i64) where
   coe x := pure (x.toInt64)
 
 @[simp]
@@ -232,15 +235,15 @@ instance : Coe usize u32 where
   coe x := x.toUInt32
 
 @[simp]
-instance : Coe usize (Result u32) where
+instance : Coe usize (RustM u32) where
   coe x := if x.toNat < UInt32.size then pure (x.toUInt32)
-           else Result.fail .integerOverflow
+           else RustM.fail .integerOverflow
 
 @[simp]
-instance {n: Nat} : OfNat (Result Nat) n where
+instance {n: Nat} : OfNat (RustM Nat) n where
   ofNat := pure (n)
 
-instance {α n} [i: OfNat α n] : OfNat (Result α) n where
+instance {α n} [i: OfNat α n] : OfNat (RustM α) n where
   ofNat := pure (i.ofNat)
 
 infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
@@ -251,26 +254,26 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
 namespace Rust_primitives.Hax.Machine_int
 
 @[simp, spec]
-def eq {α} (x y: α) [BEq α] : Result Bool := pure (x == y)
+def eq {α} (x y: α) [BEq α] : RustM Bool := pure (x == y)
 @[simp, spec]
-def ne {α} (x y: α) [BEq α] : Result Bool := pure (x != y)
+def ne {α} (x y: α) [BEq α] : RustM Bool := pure (x != y)
 @[simp, spec]
-def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : Result Bool :=
+def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : RustM Bool :=
   pure (x < y)
 @[simp, spec]
-def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : Result Bool :=
+def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : RustM Bool :=
   pure (x ≤ y)
 @[simp, spec]
-def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : Result Bool :=
+def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : RustM Bool :=
   pure (x > y)
 @[simp, spec]
-def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : Result Bool :=
+def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool :=
   pure (x ≥ y)
 
 end Rust_primitives.Hax.Machine_int
 
 @[simp, spec]
-def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : Result α := pure (-x)
+def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
 
 
 /-
@@ -284,10 +287,10 @@ for each implementation of typeclasses
 
 namespace Core.Num.Impl_8
 @[simp, spec]
-def wrapping_add (x y: u32) : Result u32 := pure (x + y)
+def wrapping_add (x y: u32) : RustM u32 := pure (x + y)
 
 @[simp, spec]
-def rotate_left (x: u32) (n: Nat) : Result u32 :=
+def rotate_left (x: u32) (n: Nat) : RustM u32 :=
   pure (UInt32.ofBitVec (BitVec.rotateLeft x.toBitVec n))
 
 @[simp, spec]
@@ -298,7 +301,7 @@ def from_le_bytes (x: Vector u8 4) : u32 :=
   + (x[3].toUInt32 <<< 24)
 
 @[simp, spec]
-def to_le_bytes (x:u32) : Result (Vector u8 4) :=
+def to_le_bytes (x:u32) : RustM (Vector u8 4) :=
   #v[
     (x % 256).toUInt8,
     (x >>> 8 % 256).toUInt8,
@@ -416,13 +419,13 @@ open Rust_primitives.Hax
 -/
 section Cast
 
-/-- Hax-introduced explicit cast. It is partial (returns a `Result`) -/
+/-- Hax-introduced explicit cast. It is partial (returns a `RustM`) -/
 @[simp, spec]
-def Core.Convert.From.from {α β} [Coe α (Result β)] (x:α) : (Result β) := x
+def Core.Convert.From.from {α β} [Coe α (RustM β)] (x:α) : (RustM β) := x
 
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
-  cast : α → Result β
+  cast : α → RustM β
 
 /-- Wrapping cast, does not fail on overflow -/
 @[spec]
@@ -430,7 +433,7 @@ instance : Cast i64 i32 where
   cast x := pure (Int64.toInt32 x)
 
 @[spec]
-instance : Cast i64 (Result i32) where
+instance : Cast i64 (RustM i32) where
   cast x := pure (x.toInt32)
 
 @[spec]
@@ -442,7 +445,7 @@ instance : Cast String String where
   cast x := pure x
 
 @[simp, spec]
-def Rust_primitives.Hax.cast_op {α β} [c: Cast α β] (x:α) : (Result β) := c.cast x
+def Rust_primitives.Hax.cast_op {α β} [c: Cast α β] (x:α) : (RustM β) := c.cast x
 
 end Cast
 
@@ -472,17 +475,17 @@ open Core.Ops.Control_flow
 class Rust_primitives.Hax.Folds {int_type: Type} where
   fold_range {α : Type}
     (s e : int_type)
-    (inv : α -> int_type -> Result Bool)
+    (inv : α -> int_type -> RustM Bool)
     (init: α)
-    (body : α -> int_type -> Result α)
-    : Result α
+    (body : α -> int_type -> RustM α)
+    : RustM α
   fold_range_return  {α_acc α_ret : Type}
     (s e: int_type)
-    (inv : α_acc -> int_type -> Result Bool)
+    (inv : α_acc -> int_type -> RustM Bool)
     (init: α_acc)
     (body : α_acc -> int_type ->
-      Result (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc ))
-    : Result (ControlFlow α_ret α_acc)
+      RustM (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc ))
+    : RustM (ControlFlow α_ret α_acc)
 
 instance : Coe Nat Nat where
   coe x := x
@@ -514,9 +517,9 @@ produces a result that also satisfies the invariant.
 @[spec]
 theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   (s e : Nat)
-  (inv : α -> Nat -> Result Bool)
+  (inv : α -> Nat -> RustM Bool)
   (init: α)
-  (body : α -> Nat -> Result α) :
+  (body : α -> Nat -> RustM α) :
   s ≤ e →
   inv init s = pure true →
   (∀ (acc:α) (i:Nat),
@@ -554,9 +557,9 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
 @[spec]
 theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
   (s e : usize)
-  (inv : α -> usize -> Result Bool)
+  (inv : α -> usize -> RustM Bool)
   (init: α)
-  (body : α -> usize -> Result α) :
+  (body : α -> usize -> RustM α) :
   s ≤ e →
   inv init s = pure true →
   (∀ (acc:α) (i:usize),
@@ -623,7 +626,7 @@ inductive Core.Array.TryFromSliceError where
   | array.TryFromSliceError
 
 def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
-  (a: Vector α n) (i:Nat) (v:α) : Result (Vector α n) :=
+  (a: Vector α n) (i:Nat) (v:α) : RustM (Vector α n) :=
   if h: i < a.size then
     pure ( Vector.set a i v )
   else
@@ -639,7 +642,7 @@ theorem Rust_primitives.Hax.Monomorphized_update_at.update_at_usize.spec
 
 
 @[spec]
-def Rust_primitives.Hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : Result (Vector α n) :=
+def Rust_primitives.Hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : RustM (Vector α n) :=
   if i < n then
     pure ( Vector.setIfInBounds m i v)
   else
@@ -649,7 +652,7 @@ def Rust_primitives.Hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : 
 def Rust_primitives.Hax.repeat
   {α int_type: Type}
   {n: Nat} [ToNat int_type]
-  (v:α) (size:int_type) : Result (Vector α n)
+  (v:α) (size:int_type) : RustM (Vector α n)
   :=
   if (n = ToNat.toNat size) then
     pure (Vector.replicate n v)
@@ -690,7 +693,7 @@ class GetElemResult (coll : Type) (idx : Type) (elem : outParam (Type)) where
   The syntax `arr[i]_?` gets the `i`'th element of the collection `arr`. It
   can panic if the index is out of bounds.
   -/
-  getElemResult (xs : coll) (i : idx) : Result elem
+  getElemResult (xs : coll) (i : idx) : RustM elem
 
 export GetElemResult (getElemResult)
 
@@ -710,7 +713,7 @@ Until the backend introduces notations, a definition for the explicit name
 
 -/
 @[simp, spec]
-def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (Result γ) := a[i]_?
+def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (RustM γ) := a[i]_?
 
 
 instance Range.instGetElemResultArrayUSize {α: Type}:
@@ -724,7 +727,7 @@ instance Range.instGetElemResultArrayUSize {α: Type}:
     if s ≤ e && e ≤ size then
       pure ( xs.extract s e )
     else
-      Result.fail Error.arrayOutOfBounds
+      RustM.fail Error.arrayOutOfBounds
 
 instance Range.instGetElemResultVectorUSize {α : Type} {n : Nat} :
   GetElemResult
@@ -736,7 +739,7 @@ instance Range.instGetElemResultVectorUSize {α : Type} {n : Nat} :
     if s ≤ e && e ≤ n then
       pure (xs.extract s e).toArray
     else
-      Result.fail Error.arrayOutOfBounds
+      RustM.fail Error.arrayOutOfBounds
 
 
 instance usize.instGetElemResultArray {α} : GetElemResult (Array α) usize α where
@@ -765,7 +768,7 @@ theorem Nat.getElemArrayResult_spec
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
   ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
-  by mvcgen [Result.ofOption, Nat.instGetElemResultArray]
+  by mvcgen [RustM.ofOption, Nat.instGetElemResultArray]
 
 @[spec]
 theorem Nat.getElemVectorResult_spec
@@ -830,11 +833,11 @@ Rust slices are represented as Lean Arrays (variable size)
 
 
 @[spec]
-def Rust_primitives.unsize {α n} (a: Vector α n) : Result (Array α) :=
+def Rust_primitives.unsize {α n} (a: Vector α n) : RustM (Array α) :=
   pure (a.toArray)
 
 @[simp, spec]
-def Core.Slice.Impl.len α (a: Array α) : Result usize := pure a.size
+def Core.Slice.Impl.len α (a: Array α) : RustM usize := pure a.size
 
 /-
 
@@ -852,21 +855,21 @@ def Alloc.Alloc.Global : Type := Unit
 
 abbrev Alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
 
-def Alloc.Vec.Impl.new (α: Type) (_:Tuple0) : Result (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
+def Alloc.Vec.Impl.new (α: Type) (_:Tuple0) : RustM (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
   pure ((List.nil).toArray)
 
-def Alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) : Result usize :=
+def Alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) : RustM usize :=
   pure x.size
 
 def Alloc.Vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) (y: Array α)
-  : Result (Alloc.Vec.Vec α Alloc.Alloc.Global):=
+  : RustM (Alloc.Vec.Vec α Alloc.Alloc.Global):=
   pure (x.append y)
 
-def Alloc.Slice.Impl.to_vec α (a:  Array α) : Result (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
+def Alloc.Slice.Impl.to_vec α (a:  Array α) : RustM (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
   pure a
 
 -- For
-instance {α n} : Coe (Array α) (Result (Vector α n)) where
+instance {α n} : Coe (Array α) (RustM (Vector α n)) where
   coe x :=
     if h: x.size = n then by
       rw [←h]
@@ -881,7 +884,7 @@ end RustVectors
 
 -- Miscellaneous
 def Core.Ops.Deref.Deref.deref {α Allocator} (v: Alloc.Vec.Vec α Allocator)
-  : Result (Array α)
+  : RustM (Array α)
   := pure v
 
 abbrev string_indirection : Type := String
@@ -893,11 +896,11 @@ abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
 
 namespace Hax_lib
 
-abbrev assert (b:Bool) : Result Tuple0 :=
+abbrev assert (b:Bool) : RustM Tuple0 :=
   if b then pure ⟨ ⟩
   else .fail (Error.assertionFailure)
 
-abbrev assume : Prop -> Result Tuple0 := fun _ => pure ⟨ ⟩
+abbrev assume : Prop -> RustM Tuple0 := fun _ => pure ⟨ ⟩
 
 abbrev Prop.Constructors.from_bool (b :Bool) : Prop := (b = true)
 
