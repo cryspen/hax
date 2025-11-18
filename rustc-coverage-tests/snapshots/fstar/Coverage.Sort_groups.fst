@@ -48,7 +48,7 @@ let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     if Core_models.Hint.black_box #bool false
     then
-      let _:Prims.unit = generic_fn #char cond in
+      let _:Prims.unit = generic_fn #FStar.Char.char cond in
       ()
   in
   let _:Prims.unit = generic_fn #i32 cond in

@@ -123,11 +123,11 @@ let permutations
 
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
-    permutations #char
+    permutations #FStar.Char.char
       ((let list = ['a'; 'b'; 'c'] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
           Rust_primitives.Hax.array_of_list 3 list)
         <:
-        t_Slice char)
+        t_Slice FStar.Char.char)
   in
   ()
