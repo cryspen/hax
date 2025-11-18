@@ -15,6 +15,8 @@ Changes to the Rust Engine:
    lift monadic computations into values) (#1746)
 
 Changes to the frontend:
+ - Update the pin of rustc (#1765)
+ - Miscellaneous changes related to Charon (#1765)
 
 Change to cargo-hax:
 
