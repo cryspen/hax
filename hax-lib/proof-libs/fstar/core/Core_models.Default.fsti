@@ -1,7 +1,6 @@
 module Core_models.Default
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 class t_Default (v_Self: Type0) = {
   f_default_pre:x: Prims.unit

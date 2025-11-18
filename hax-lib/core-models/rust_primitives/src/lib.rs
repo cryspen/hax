@@ -38,6 +38,9 @@ pub mod seq {
     pub fn seq_from_slice<T, A>(_s: &[T]) -> Seq<T, A> {
         panic!()
     }
+    pub fn seq_to_slice<T, A>(_s: &Seq<T, A>) -> &[T] {
+        panic!()
+    }
     pub fn seq_concat<T, A>(s1: &mut Seq<T, A>, s2: Seq<T, A>) {
         panic!()
     }

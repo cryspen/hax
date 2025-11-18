@@ -1,7 +1,6 @@
 module Core_models.Array
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 type t_TryFromSliceError = | TryFromSliceError : t_TryFromSliceError
 

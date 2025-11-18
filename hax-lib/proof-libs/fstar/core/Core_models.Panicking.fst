@@ -1,7 +1,6 @@
 module Core_models.Panicking
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 assume
 val panic_explicit': Prims.unit
