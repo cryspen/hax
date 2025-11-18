@@ -31,7 +31,7 @@ let impl_1
     fun (self: t_Firework v_T) ->
       let args:v_T = self.f_strength <: v_T in
       let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-        let list = [Core_models.Fmt.Rt.impl__new_display #v_T args._1] in
+        let list = [Core_models.Fmt.Rt.impl__new_display #v_T args] in
         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
         Rust_primitives.Hax.array_of_list 1 list
       in

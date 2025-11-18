@@ -16,7 +16,7 @@ let used_only_from_bin_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args._1] in
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -40,7 +40,7 @@ let used_only_from_this_lib_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args._1] in
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -64,7 +64,7 @@ let used_from_bin_crate_and_lib_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args._1] in
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -88,7 +88,7 @@ let used_with_same_type_from_bin_crate_and_lib_crate_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args._1] in
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -114,7 +114,7 @@ let unused_generic_function
     : Prims.unit =
   let args:v_T = arg <: v_T in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args._1] in
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
