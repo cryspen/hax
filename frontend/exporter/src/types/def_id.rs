@@ -12,7 +12,7 @@
 
 use hax_adt_into::derive_group;
 
-#[cfg(all(not(feature = "extract_names_mode"), feature = "rustc"))]
+#[cfg(not(feature = "extract_names_mode"))]
 use crate::prelude::*;
 #[cfg(not(feature = "extract_names_mode"))]
 use crate::{AdtInto, JsonSchema};
@@ -49,6 +49,7 @@ pub enum Safety {
 }
 
 pub type Mutability = bool;
+pub type Pinnedness = bool;
 
 /// Reflects [`hir::def::CtorKind`]
 #[derive_group(Serializers)]
@@ -68,17 +69,6 @@ pub enum CtorKind {
 pub enum CtorOf {
     Struct,
     Variant,
-}
-
-/// Reflects [`rustc_span::hygiene::MacroKind`]
-#[derive_group(Serializers)]
-#[derive(Debug, Copy, Hash, Clone, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema, AdtInto))]
-#[cfg_attr(not(feature = "extract_names_mode"), args(<S>, from: rustc_span::hygiene::MacroKind, state: S as _s))]
-pub enum MacroKind {
-    Bang,
-    Attr,
-    Derive,
 }
 
 /// The id of a promoted MIR constant.
@@ -128,7 +118,7 @@ pub enum DefKind {
     Ctor(CtorOf, CtorKind),
     AssocFn,
     AssocConst,
-    Macro(MacroKind),
+    Macro(MacroKinds),
     ExternCrate,
     Use,
     ForeignMod,
@@ -146,6 +136,26 @@ pub enum DefKind {
     },
     Closure,
     SyntheticCoroutineBody,
+}
+
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[cfg_attr(not(feature = "extract_names_mode"), derive(JsonSchema))]
+pub struct MacroKinds {
+    bang: bool,
+    attr: bool,
+    derive: bool,
+}
+
+#[cfg(feature = "rustc")]
+impl<S> SInto<S, MacroKinds> for rustc_hir::def::MacroKinds {
+    fn sinto(&self, _s: &S) -> MacroKinds {
+        MacroKinds {
+            bang: self.contains(Self::BANG),
+            attr: self.contains(Self::ATTR),
+            derive: self.contains(Self::DERIVE),
+        }
+    }
 }
 
 /// Reflects [`rustc_hir::def_id::DefId`], augmented to also give ids to promoted constants (which
@@ -187,6 +197,15 @@ impl DefIdContents {
     }
 }
 
+/// Returns the [`SyntheticItem`] encoded by a [rustc `DefId`](RDefId), if any.
+#[cfg(feature = "rustc")]
+pub fn def_id_as_synthetic<'tcx>(
+    def_id: RDefId,
+    s: &impl BaseState<'tcx>,
+) -> Option<SyntheticItem> {
+    s.with_global_cache(|c| c.reverse_synthetic_map.get(&def_id).copied())
+}
+
 #[cfg(feature = "rustc")]
 impl DefId {
     /// The rustc def_id corresponding to this item, if there is one. Promoted constants don't have
@@ -205,6 +224,15 @@ impl DefId {
             krate: rustc_hir::def_id::CrateNum::from_u32(krate),
             index: rustc_hir::def_id::DefIndex::from_u32(index),
         }
+    }
+
+    /// Returns the [`SyntheticItem`] encoded by a [rustc `DefId`](RDefId), if
+    /// any.
+    ///
+    /// Note that this method relies on rustc indexes, which are session
+    /// specific. See [`Self`] documentation.
+    pub fn as_synthetic<'tcx>(&self, s: &impl BaseState<'tcx>) -> Option<SyntheticItem> {
+        def_id_as_synthetic(self.underlying_rust_def_id(), s)
     }
 
     /// Iterate over this element and its parents.
@@ -309,8 +337,11 @@ pub(crate) fn get_def_kind<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> hir::
     tcx.def_kind(def_id)
 }
 
+/// The crate name under which synthetic items are exported under.
+pub(super) const SYNTHETIC_CRATE_NAME: &str = "<synthetic>";
+
 #[cfg(feature = "rustc")]
-pub(crate) fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> DefId {
+fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) -> DefId {
     let tcx = s.base().tcx;
     let path = {
         // Set the def_id so the `CrateRoot` path item can fetch the crate name.
@@ -323,7 +354,11 @@ pub(crate) fn translate_def_id<'tcx, S: BaseState<'tcx>>(s: &S, def_id: RDefId) 
     };
     let contents = DefIdContents {
         path,
-        krate: tcx.crate_name(def_id.krate).to_string(),
+        krate: if def_id_as_synthetic(def_id, s).is_some() {
+            SYNTHETIC_CRATE_NAME.to_string()
+        } else {
+            tcx.crate_name(def_id.krate).to_string()
+        },
         parent: tcx.opt_parent(def_id).sinto(s),
         index: (
             rustc_hir::def_id::CrateNum::as_u32(def_id.krate),
@@ -397,9 +432,11 @@ pub enum DefPathItem {
     LifetimeNs(Symbol),
     Closure,
     Ctor,
+    LateAnonConst,
     AnonConst,
     #[cfg_attr(not(feature = "extract_names_mode"), disable_mapping)]
     PromotedConst,
+    DesugaredAnonymousLifetime,
     OpaqueTy,
     OpaqueLifetime(Symbol),
     AnonAssocTy(Symbol),

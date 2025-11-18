@@ -1,0 +1,9 @@
+[package]
+name = "tuples"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+
+[package.metadata.hax-tests]
+into."fstar" = { snapshot = "stdout" }

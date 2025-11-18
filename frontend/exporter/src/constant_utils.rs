@@ -24,6 +24,7 @@ pub enum ConstantLiteral {
     Char(char),
     Float(String, FloatTy),
     Int(ConstantInt),
+    PtrNoProvenance(u128),
     Str(String),
     ByteStr(Vec<u8>),
 }
@@ -146,6 +147,7 @@ impl From<ConstantExpr> for Expr {
                         }
                     }
                     Float(f, ty) => LitKind::Float(f, LitFloatType::Suffixed(ty)),
+                    PtrNoProvenance(p) => LitKind::Int(p, LitIntType::Unsigned(UintTy::Usize)),
                     ByteStr(raw) => LitKind::ByteStr(raw, StrStyle::Cooked),
                     Str(raw) => LitKind::Str(raw, StrStyle::Cooked),
                 };

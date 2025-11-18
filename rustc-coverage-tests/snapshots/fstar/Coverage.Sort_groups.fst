@@ -12,10 +12,9 @@ let _ =
 let generic_fn (#v_T: Type0) (cond: bool) : Prims.unit =
   if cond
   then
+    let args:string = Core_models.Any.type_name #v_T () <: string in
     let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-      let list =
-        [Core_models.Fmt.Rt.impl__new_display #string (Core_models.Any.type_name #v_T () <: string)]
-      in
+      let list = [Core_models.Fmt.Rt.impl__new_display #string args] in
       FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
       Rust_primitives.Hax.array_of_list 1 list
     in
@@ -48,7 +47,7 @@ let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     if Core_models.Hint.black_box #bool false
     then
-      let _:Prims.unit = generic_fn #char cond in
+      let _:Prims.unit = generic_fn #FStar.Char.char cond in
       ()
   in
   let _:Prims.unit = generic_fn #i32 cond in
