@@ -1,7 +1,6 @@
 module Core_models.Result
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 type t_Result (v_T: Type0) (v_E: Type0) =
   | Result_Ok : v_T -> t_Result v_T v_E

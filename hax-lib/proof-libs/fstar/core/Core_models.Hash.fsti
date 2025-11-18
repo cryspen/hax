@@ -1,7 +1,6 @@
 module Core_models.Hash
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 class t_Hasher (v_Self: Type0) = { __marker_trait_t_Hasher:Prims.unit }
 

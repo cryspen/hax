@@ -1,7 +1,6 @@
 module Core_models.Option
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 type t_Option (v_T: Type0) =
   | Option_Some : v_T -> t_Option v_T

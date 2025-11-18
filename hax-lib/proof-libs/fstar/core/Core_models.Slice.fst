@@ -1,7 +1,6 @@
 module Core_models.Slice
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.slice_length #v_T s
 

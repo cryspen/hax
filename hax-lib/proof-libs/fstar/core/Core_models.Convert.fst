@@ -1,7 +1,6 @@
 module Core_models.Convert
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 class t_Into (v_Self: Type0) (v_T: Type0) = {
   f_into_pre:self_: v_Self -> pred: Type0{true ==> pred};
@@ -289,7 +288,7 @@ let impl_35: t_From isize i32 =
   }
 
 class t_TryInto (v_Self: Type0) (v_T: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_Error:Type0;
+  f_Error:Type0;
   f_try_into_pre:self_: v_Self -> pred: Type0{true ==> pred};
   f_try_into_post:v_Self -> Core_models.Result.t_Result v_T f_Error -> Type0;
   f_try_into:x0: v_Self
@@ -299,7 +298,7 @@ class t_TryInto (v_Self: Type0) (v_T: Type0) = {
 }
 
 class t_TryFrom (v_Self: Type0) (v_T: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_Error:Type0;
+  f_Error:Type0;
   f_try_from_pre:x: v_T -> pred: Type0{true ==> pred};
   f_try_from_post:v_T -> Core_models.Result.t_Result v_Self f_Error -> Type0;
   f_try_from:x0: v_T

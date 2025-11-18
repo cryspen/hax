@@ -1,7 +1,6 @@
 module Core_models.Ops.Try_trait
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 class t_FromResidual (v_Self: Type0) (v_R: Type0) = {
   f_from_residual_pre:v_R -> Type0;
@@ -11,8 +10,8 @@ class t_FromResidual (v_Self: Type0) (v_R: Type0) = {
 }
 
 class t_Try (v_Self: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_Residual:Type0;
+  f_Output:Type0;
+  f_Residual:Type0;
   f_from_output_pre:f_Output -> Type0;
   f_from_output_post:f_Output -> v_Self -> Type0;
   f_from_output:x0: f_Output

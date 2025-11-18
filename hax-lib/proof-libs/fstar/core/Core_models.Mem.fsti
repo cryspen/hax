@@ -1,7 +1,6 @@
 module Core_models.Mem
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Rust_primitives
 
 val forget (#v_T: Type0) (t: v_T) : Prims.Pure Prims.unit Prims.l_True (fun _ -> Prims.l_True)
 

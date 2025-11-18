@@ -79,7 +79,9 @@ mod collections {
         }
     }
     mod vec_deque {
-        pub type VecDeque<T, A> = rust_primitives::seq::Seq<T, A>;
+        use rust_primitives::seq::*;
+        pub struct VecDeque<T, A>(pub Seq<T, A>);
+        // TODO
     }
 }
 
@@ -97,8 +99,9 @@ mod slice {
 
     impl Dummy {
         fn to_vec<T>(s: &[T]) -> Vec<T, crate::alloc::Global> {
-            rust_primitives::seq::seq_from_slice(s)
+            Vec(rust_primitives::seq::seq_from_slice(s))
         }
+        // TODO
     }
 }
 
@@ -129,61 +132,76 @@ mod string {
 }
 
 pub mod vec {
-    #[hax_lib::fstar::before("unfold type t_Vec t (_: unit) = t_Slice t")]
+    // TODO drain (to be done with iterators)
     use rust_primitives::seq::*;
 
-    pub type Vec<T, A> = Seq<T, A>;
+    pub struct Vec<T, A>(pub Seq<T, A>);
 
-    // struct Vec<T, A>(Seq<T>, A);
-
-    #[hax_lib::exclude]
-    struct Dummy<T, A>(Option<T>, Option<A>);
-
-    impl <T> Dummy<T, crate::alloc::Global> {
+    impl <T> Vec<T, crate::alloc::Global> {
         fn new() -> Vec<T, crate::alloc::Global> {
-            seq_empty()
+            Vec(seq_empty())
         }
         fn with_capacity() -> Vec<T, crate::alloc::Global> {
-            seq_empty()
+            Vec(seq_empty())
         }
     }
 
     #[hax_lib::attributes]
-    impl <T, A> Dummy<T, A> {
-        fn len(v: &Vec<T, A>) -> usize {
-            seq_len(v)
+    impl <T, A> Vec<T, A> {
+        fn len(&self) -> usize {
+            seq_len(&self.0)
         }
-        #[hax_lib::requires(seq_len(v) < usize::MAX)]
-        fn push(v: &mut Vec<T, A>, x: T) {
-            seq_concat(v, seq_one(x))
+        #[hax_lib::requires(seq_len(&self.0) < usize::MAX)]
+        fn push(&mut self, x: T) {
+            seq_concat(&mut self.0, seq_one(x))
         } 
-        fn pop(v: &mut Vec<T, A>) -> Option<T> {
-            if seq_len(v) == 0 {
+        fn pop(&mut self) -> Option<T> {
+            if seq_len(&self.0) == 0 {
                 None
             } else {
-                *v = seq_slice(v, 0, seq_len(v) - 1);
-                Some(seq_last(v))
+                self.0 = seq_slice(&self.0, 0, seq_len(&self.0) - 1);
+                Some(seq_last(&self.0))
             }
         }
-        fn is_empty(v: &Vec<T, A>) -> bool {
-            seq_len(v) == 0
+        fn is_empty(&self) -> bool {
+            seq_len(&self.0) == 0
         }
-        #[hax_lib::requires(index <= seq_len(v))]
-        fn insert(v: &mut Vec<T, A>, index: usize, element: T) {
-            let mut left = seq_slice(v, 0, index);
-            let right = seq_slice(v, index, seq_len(v));
+        #[hax_lib::requires(index <= seq_len(&self.0))]
+        fn insert(&mut self, index: usize, element: T) {
+            let mut left = seq_slice(&self.0, 0, index);
+            let right = seq_slice(&self.0, index, seq_len(&self.0));
             seq_concat(&mut left, seq_one(element));
             seq_concat(&mut left, right);
-            *v = left;
+            self.0 = left;
         } 
+        fn as_slice(&self) -> &[T] {
+            seq_to_slice(&self.0)
+        }
+        #[hax_lib::opaque]
+        fn truncate(&mut self, n: usize) {}
+        #[hax_lib::opaque]
+        fn swap_remove(&mut self, n: usize) -> T {seq_last(&self.0)}
+        #[hax_lib::opaque]
+        #[hax_lib::ensures(|_| future(self).len() == new_size)]
+        fn resize(&mut self, new_size: usize, value: &T) {}
+        #[hax_lib::opaque]
+        fn remove(&mut self, index: usize) -> T {
+            seq_last(&self.0)
+        }
+        #[hax_lib::opaque]
+        fn clear(&mut self) {}
+        #[hax_lib::opaque]
+        fn append(&mut self, other: &mut Vec<T, A>) {}
     }
 
     use hax_lib::ToInt;
     #[hax_lib::attributes]
-    impl <T, A> Dummy<T, A>  {
-        #[hax_lib::requires(seq_len(s).to_int() + other.len().to_int() <= usize::MAX.to_int())]
+    impl <T, A> Vec<T, A>  {
+        #[hax_lib::requires(seq_len(&s.0).to_int() + other.len().to_int() <= usize::MAX.to_int())]
         fn extend_from_slice(s: &mut Vec<T, A>, other: &[T]){
-            seq_concat(s, seq_from_slice(other))
+            seq_concat(&mut s.0, seq_from_slice(other))
         }
     }
+    
+
 }
