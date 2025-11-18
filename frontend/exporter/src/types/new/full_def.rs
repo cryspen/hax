@@ -1114,6 +1114,19 @@ impl<Body> FullDef<Body> {
         }
         children
     }
+
+    /// Gives the list of DefIds for associated items when self is a container
+    pub fn associated_def_ids(&self) -> Vec<DefId> {
+        match self.kind() {
+            FullDefKind::InherentImpl { items, .. } | FullDefKind::Trait { items, .. } => {
+                items.iter().map(|item| item.def_id.clone()).collect()
+            }
+            FullDefKind::TraitImpl { items, .. } => {
+                items.iter().map(|item| item.def_id().clone()).collect()
+            }
+            _ => vec![],
+        }
+    }
 }
 
 impl ImplAssocItem {
