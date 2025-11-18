@@ -1131,10 +1131,25 @@ pub struct GenericParam {
 /// Generic parameters and constraints (contained between `<>` in function declarations)
 #[derive_group_for_ast]
 pub struct Generics {
-    /// A vector of genreric parameters.
+    /// A vector of generic parameters.
     pub params: Vec<GenericParam>,
-    /// A vector of genreric constraints.
+    /// A vector of generic constraints.
     pub constraints: Vec<GenericConstraint>,
+}
+
+impl Generics {
+    pub fn concat(mut self, other: Self) -> Self {
+        self.constraints.extend(other.constraints);
+        self.params.extend(other.params);
+        use std::cmp::Ordering;
+        self.params.sort_by(|a, b| match (a.kind(), b.kind()) {
+            (GenericParamKind::Lifetime, GenericParamKind::Lifetime) => Ordering::Equal,
+            (GenericParamKind::Lifetime, _) => Ordering::Less,
+            (_, GenericParamKind::Lifetime) => Ordering::Greater,
+            _ => Ordering::Equal,
+        });
+        self
+    }
 }
 
 /// Safety level of a function.
