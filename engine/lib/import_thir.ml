@@ -663,11 +663,14 @@ end) : EXPR = struct
             }
       | TupleField { lhs; field } ->
           (* TODO: refactor *)
-          let tuple_len =
-            0
-            (* todo, lookup type *)
-          in
           let lhs = c_expr lhs in
+          let tuple_len =
+            match lhs.typ with
+            | TApp { ident = `TupleType len; _ } -> len
+            | _ ->
+                assertion_failure [ e.span ]
+                  "LHS of tuple field projection is not typed as a tuple."
+          in
           let projector =
             GlobalVar
               (`Projector (`TupleField (Int.of_string field, tuple_len)))

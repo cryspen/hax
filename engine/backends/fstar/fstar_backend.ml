@@ -589,6 +589,12 @@ struct
         F.term @@ F.AST.QExists (binders, ([], []), phi)
     | App
         {
+          f = { e = GlobalVar (`Projector (`TupleField (_, 1))) };
+          args = [ arg ];
+        } ->
+        pexpr arg
+    | App
+        {
           f = { e = GlobalVar (`Projector (`TupleField (n, len))) };
           args = [ arg ];
         } ->
