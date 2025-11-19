@@ -109,6 +109,7 @@
 use hax_frontend_exporter::{CtorOf, DefKind, DefPathItem, ImplInfos};
 
 use crate::{
+    ast::GlobalId,
     ast::identifiers::global_id::{DefId, ExplicitDefId},
     symbol::Symbol,
 };
@@ -585,6 +586,17 @@ impl PathSegment<AssocItemContainerKind> {
     pub fn lift(&self) -> PathSegment<AnyKind> {
         self.clone()
             .map(|kind, _| AnyKind::AssocItemContainer(kind))
+    }
+}
+
+impl<K> PartialEq<GlobalId> for PathSegment<K> {
+    fn eq(&self, other: &GlobalId) -> bool {
+        match other.0.get() {
+            super::GlobalIdInner::Concrete(concrete_id) => {
+                concrete_id.def_id.def_id == self.identifier
+            }
+            _ => false,
+        }
     }
 }
 
