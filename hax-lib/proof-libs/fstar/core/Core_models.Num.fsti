@@ -62,6 +62,20 @@ let impl_i32__saturating_add: i32 -> i32 -> i32 = add_sat
 let impl_i64__saturating_add: i64 -> i64 -> i64 = add_sat
 let impl_i128__saturating_add: i128 -> i128 -> i128 = add_sat
 
+let impl_usize__checked_sub (x: usize) (y: usize): Core_models.Option.t_Option usize =
+  if x >=. y then Core_models.Option.Option_Some (x -! y) else Core_models.Option.Option_None
+
+let impl_usize__checked_add (x: usize) (y: usize): Core_models.Option.t_Option usize =
+  if range (v x + v y) USIZE then Core_models.Option.Option_Some (x +! y) else Core_models.Option.Option_None
+
+let impl_u32__checked_add (x: u32) (y: u32): Core_models.Option.t_Option u32 =
+  if range (v x + v y) U32 then Core_models.Option.Option_Some (x +! y) else Core_models.Option.Option_None
+
+let impl_u64__checked_add (x: u64) (y: u64): Core_models.Option.t_Option u64 =
+  if range (v x + v y) U64 then Core_models.Option.Option_Some (x +! y) else Core_models.Option.Option_None
+
+let impl_u64__checked_mul (x: u64) (y: u64): Core_models.Option.t_Option u64 =
+  if range FStar.Mul.(v x * v y) U64 then Core_models.Option.Option_Some (x *! y) else Core_models.Option.Option_None
 
 let impl_u8__wrapping_sub: u8 -> u8 -> u8 = sub_mod
 let impl_u16__wrapping_sub: u16 -> u16 ->  u16 = sub_mod
@@ -112,11 +126,14 @@ let impl_i32__overflowing_mul: i32 -> i32 -> i32 * bool = mul_overflow
 let impl_i64__overflowing_mul: i64 -> i64 -> i64 * bool = mul_overflow
 let impl_i128__overflowing_mul: i128 -> i128 -> i128 * bool = mul_overflow
 
-val impl_u16__to_be_bytes: u16 -> t_Array u8 (sz 2)
 val impl_usize__to_be_bytes: usize -> t_Array u8 (sz 8)
-val impl_u8__to_be_bytes: u8 -> t_Array u8 (sz 1)
+val impl_u8__to_be_bytes: (x: u8) -> Pure (t_Array u8 (sz 1))
+  (requires True) (ensures (fun res -> Seq.index res 0 == x))
 val impl_u16__from_be_bytes: t_Array u8 (sz 2) -> u16
-val impl_u8__from_be_bytes: t_Array u8 (sz 1) -> u8
+val impl_u16__to_be_bytes: (x: u16) -> Pure (t_Array u8 (sz 2))
+  (requires True) (ensures (fun res -> impl_u16__from_be_bytes res =. x))
+val impl_u8__from_be_bytes: (a: t_Array u8 (sz 1)) -> Pure u8 
+  (requires True) (ensures (fun res -> res == Seq.index a 0)) 
 val impl_usize__from_be_bytes: t_Array u8 (sz 8) -> usize
 
 let impl_i8__abs (a:i8{minint i8_inttype < v a}) : i8 = abs_int a
@@ -133,7 +150,8 @@ val impl_u32__rotate_left: u32 -> u32 -> u32
 val impl_u32__from_le_bytes: t_Array u8 (sz 4) -> u32
 val impl_u32__from_be_bytes: t_Array u8 (sz 4) -> u32
 val impl_u32__to_le_bytes: u32 -> t_Array u8 (sz 4)
-val impl_u32__to_be_bytes: u32 -> t_Array u8 (sz 4)
+val impl_u32__to_be_bytes: (x: u32) -> Pure (t_Array u8 (sz 4)) 
+(requires True) (ensures (fun res -> impl_u32__from_be_bytes res =. x))
 val impl_u32__rotate_right: u32 -> u32 -> u32
 
 
@@ -141,7 +159,8 @@ val impl_u64__rotate_left: u64 -> u32 -> u64
 val impl_u64__from_le_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__from_be_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__to_le_bytes: u64 -> t_Array u8 (sz 8)
-val impl_u64__to_be_bytes: u64 -> t_Array u8 (sz 8)
+val impl_u64__to_be_bytes: (x: u64) -> Pure (t_Array u8 (sz 8))
+  (requires True) (ensures (fun res -> impl_u64__from_be_bytes res =. x))
 val impl_u64__rotate_right: u64 -> u64 -> u64
 let impl_u64__overflowing_sub (x y: u64): u64 * bool
   = let sub = v x - v y in
@@ -225,3 +244,8 @@ unfold instance sub_assign_num t
     f_sub_assign_post = (fun x y r -> x -. y = r);
     f_sub_assign = (fun x y -> x -. y);
   }
+
+val size_of_int_lemma
+  (a: inttype)
+  : Lemma (Core_models.Mem.size_of #(int_t a) () == mk_usize ((bits a) / 8))
+    [SMTPat (Core_models.Mem.size_of #(int_t a))]

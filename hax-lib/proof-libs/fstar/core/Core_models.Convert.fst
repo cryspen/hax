@@ -44,17 +44,6 @@ class t_TryFrom self t = {
   f_try_from: t -> Core_models.Result.t_Result self f_Error;
 }
 
-instance integer_try_from (t:inttype) (t':inttype) : t_TryFrom (int_t t) (int_t t') = {
-  f_Error = Core_models.Num.Error.t_TryFromIntError;
-  f_try_from_pre = (fun _ -> true);
-  f_try_from_post = (fun _ _ -> true);
-  f_try_from = (fun (x: int_t t') ->
-    if range (v #t' x) t
-    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #t' #t x)
-    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
-  )
-}
-
 instance integer_into
   (t:inttype) (t':inttype { minint t >= minint t' /\ maxint t <= maxint t' })
   : t_From (int_t t') (int_t t)
@@ -85,7 +74,70 @@ let try_into_from_try_from a b {| i1: t_TryFrom a b |}: t_TryInto b a = {
   f_try_into = (fun x -> f_try_from x)
 }
 
-instance integer_try_into (t:inttype) (t':inttype) : t_TryInto (int_t t) (int_t t') = {
+instance integer_try_into_u32_usize : t_TryInto u32 usize = {
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
+  f_try_into = (fun (x: u32) ->
+    if range (v #U32 x) USIZE
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #U32 #USIZE x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
+  )
+}
+
+instance integer_try_into_u32_u16: t_TryInto u32 u16 = {
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
+  f_try_into = (fun (x: u32) ->
+    if range (v #U32 x) U16
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #U32 #U16 x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
+  )
+}
+
+instance integer_try_into_u64_u32: t_TryInto u64 u32 = {
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
+  f_try_into = (fun (x: u64) ->
+    if range (v #U64 x) U32
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #U64 #U32 x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
+  )
+}
+
+instance integer_try_from_u8_usize : t_TryFrom u8 usize = {
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
+  f_try_from = (fun (x: usize) ->
+    if range (v #USIZE x) U8
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #USIZE #U8 x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
+  );
+  f_try_from_pre = (fun _ -> true);
+  f_try_from_post = (fun _ _ -> true);
+}
+
+instance integer_try_from_u16_usize : t_TryFrom u16 usize = {
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
+  f_try_from = (fun (x: usize) ->
+    if range (v #USIZE x) U16
+    then Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #USIZE #U16 x)
+    else Core_models.Result.Result_Err (Core_models.Num.Error.TryFromIntError ())
+  );
+  f_try_from_pre = (fun _ -> true);
+  f_try_from_post = (fun _ _ -> true);
+}
+
+instance integer_try_into_usize_u64 : t_TryInto usize u64 = {
+  f_Error = Core_models.Num.Error.t_TryFromIntError;
+  f_try_into = (fun (x: usize) ->
+    Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #USIZE #U64 x)
+  )
+}
+
+instance integer_try_into_infallible (t:inttype) (t':inttype) {|included t t'|} : t_TryInto (int_t t) (int_t t') = {
+  f_Error = t_Infallible;
+  f_try_into = (fun (x: int_t t) ->
+    Core_models.Result.Result_Ok (Rust_primitives.Integers.cast #t #t' x)
+  )
+}
+
+instance integer_try_into (t:inttype) (t':inttype) {|~ (included t t')|} : t_TryInto (int_t t) (int_t t') = {
   f_Error = Core_models.Num.Error.t_TryFromIntError;
   f_try_into = (fun (x: int_t t) ->
     if range (v #t x) t'

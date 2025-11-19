@@ -81,7 +81,8 @@ unfold instance fnonce_arrow_binder t u
     f_call_once_pre = (fun _ _ -> true);
     f_call_once_post = (fun (x0: (_:t -> u)) (x1: t) (res: u) -> res == x0 x1);
     f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
-  } "
+  }
+"
     )]
     #[hax_lib::attributes]
     pub trait FnOnce<Args> {

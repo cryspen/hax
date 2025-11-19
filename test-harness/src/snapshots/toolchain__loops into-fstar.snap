@@ -54,7 +54,7 @@ let looping (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
   array
 
 let looping_2_ (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
-  let array, result:(t_Array u8 (mk_usize 5) & Prims.unit) =
+  let (array: t_Array u8 (mk_usize 5)), (result: Prims.unit) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
       (Core_models.Slice.impl__len #u8 (array <: t_Slice u8) <: usize)
       (fun array temp_1_ ->
@@ -112,16 +112,16 @@ let double_sum (_: Prims.unit) : i32 =
 let double_sum2 (_: Prims.unit) : i32 =
   let sum:i32 = mk_i32 0 in
   let sum2:i32 = mk_i32 0 in
-  let sum, sum2:(i32 & i32) =
+  let (sum: i32), (sum2: i32) =
     Rust_primitives.Hax.Folds.fold_range_cf (mk_i32 1)
       (mk_i32 10)
       (fun temp_0_ temp_1_ ->
-          let sum, sum2:(i32 & i32) = temp_0_ in
+          let (sum: i32), (sum2: i32) = temp_0_ in
           let _:i32 = temp_1_ in
           true)
       (sum, sum2 <: (i32 & i32))
       (fun temp_0_ i ->
-          let sum, sum2:(i32 & i32) = temp_0_ in
+          let (sum: i32), (sum2: i32) = temp_0_ in
           let i:i32 = i in
           if i <. mk_i32 0 <: bool
           then
@@ -182,7 +182,7 @@ let double_sum2_return (v: t_Slice i32) : i32 =
         Core_models.Slice.Iter.t_Iter i32)
       (sum, sum2 <: (i32 & i32))
       (fun temp_0_ i ->
-          let sum, sum2:(i32 & i32) = temp_0_ in
+          let (sum: i32), (sum2: i32) = temp_0_ in
           let i:i32 = i in
           if i <. mk_i32 0 <: bool
           then
@@ -211,10 +211,10 @@ let bigger_power_2_ (x: i32) : i32 =
   let pow:i32 = mk_i32 1 in
   Rust_primitives.Hax.while_loop_cf (fun pow ->
         let pow:i32 = pow in
-        pow <. mk_i32 1000000 <: bool)
+        true)
     (fun pow ->
         let pow:i32 = pow in
-        true)
+        pow <. mk_i32 1000000 <: bool)
     (fun pow ->
         let pow:i32 = pow in
         Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
@@ -710,7 +710,7 @@ let pattern (arr: Alloc.Vec.t_Vec (usize & usize) Alloc.Alloc.t_Global) : usize 
       acc
       (fun acc temp_1_ ->
           let acc:usize = acc in
-          let x, y:(usize & usize) = temp_1_ in
+          let (x: usize), (y: usize) = temp_1_ in
           acc +! (x *! y <: usize) <: usize)
   in
   acc
@@ -739,7 +739,7 @@ let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
       acc
       (fun acc temp_1_ ->
           let acc:usize = acc in
-          let i, chunk:(usize & t_Slice usize) = temp_1_ in
+          let (i: usize), (chunk: t_Slice usize) = temp_1_ in
           Rust_primitives.Hax.Folds.fold_enumerated_slice chunk
             (fun acc temp_1_ ->
                 let acc:usize = acc in
@@ -748,7 +748,7 @@ let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
             acc
             (fun acc temp_1_ ->
                 let acc:usize = acc in
-                let j, x:(usize & usize) = temp_1_ in
+                let (j: usize), (x: usize) = temp_1_ in
                 (i +! j <: usize) +! x <: usize)
           <:
           usize)
@@ -865,10 +865,10 @@ let f (_: Prims.unit) : u8 =
   let x:u8 =
     Rust_primitives.Hax.while_loop (fun x ->
           let x:u8 = x in
-          x <. mk_u8 10 <: bool)
+          true)
       (fun x ->
           let x:u8 = x in
-          true)
+          x <. mk_u8 10 <: bool)
       (fun x ->
           let x:u8 = x in
           Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
@@ -885,10 +885,10 @@ let while_invariant_decr (_: Prims.unit) : u8 =
   let x:u8 =
     Rust_primitives.Hax.while_loop (fun x ->
           let x:u8 = x in
-          x <. mk_u8 10 <: bool)
+          b2t (x <=. mk_u8 10 <: bool))
       (fun x ->
           let x:u8 = x in
-          b2t (x <=. mk_u8 10 <: bool))
+          x <. mk_u8 10 <: bool)
       (fun x ->
           let x:u8 = x in
           Rust_primitives.Hax.Int.from_machine (mk_u8 10 -! x <: u8) <: Hax_lib.Int.t_Int)
@@ -905,10 +905,10 @@ let while_invariant_decr_rev (_: Prims.unit) : u8 =
   let x:u8 =
     Rust_primitives.Hax.while_loop (fun x ->
           let x:u8 = x in
-          x <. mk_u8 10 <: bool)
+          b2t (x <=. mk_u8 10 <: bool))
       (fun x ->
           let x:u8 = x in
-          b2t (x <=. mk_u8 10 <: bool))
+          x <. mk_u8 10 <: bool)
       (fun x ->
           let x:u8 = x in
           Rust_primitives.Hax.Int.from_machine (mk_u8 10 -! x <: u8) <: Hax_lib.Int.t_Int)
