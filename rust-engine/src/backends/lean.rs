@@ -4,10 +4,14 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::LazyLock;
 
+use hax_types::engine_api::File;
+
 use super::prelude::*;
+use crate::ast::identifiers::global_id::view::View;
+use crate::ast::span::Span;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
     phase::{
@@ -29,9 +33,19 @@ const PURE: GlobalId = pure;
 /// The Lean printer
 #[setup_span_handling_struct]
 #[derive(Default, Clone)]
-pub struct LeanPrinter;
-
+pub struct LeanPrinter {
+    current_namespace: Option<GlobalId>,
+}
 const INDENT: isize = 2;
+const FILE_HEADER: &str = "
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import Std.Tactic.Do
+open Std.Do
+set_option mvcgen.warning false
+
+";
 
 static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     HashSet::from_iter(
@@ -54,6 +68,27 @@ impl RenderView for LeanPrinter {
     fn separator(&self) -> &str {
         "."
     }
+
+    fn render_string(&self, view: &View) -> String {
+        self.render_strings(view)
+            .collect::<Vec<_>>()
+            .join(self.separator())
+    }
+
+    fn render_strings(&self, view: &View) -> impl Iterator<Item = String> {
+        let mut path = view.segments();
+        if let Some(namespace) = self.current_namespace
+            && let Some((i, _)) = path
+                .iter()
+                .enumerate()
+                .find(|(_, segment)| *segment == &namespace)
+        {
+            path = path.get((i + 1)..).unwrap_or(path);
+        };
+        path.iter()
+            .flat_map(|segment| self.render_path_segment(segment))
+    }
+
     fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         fn uppercase_first(s: &str) -> String {
             let mut c = s.chars();
@@ -62,6 +97,7 @@ impl RenderView for LeanPrinter {
                 Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
             }
         }
+
         // Returning None indicates that the default rendering should be used
         (match chunk.kind() {
             AnyKind::Mod => {
@@ -140,6 +176,64 @@ impl Backend for LeanBackend {
 
     fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
         vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
+    }
+
+    fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
+        // This is incorrect, as it ignores dependencies
+        let mut modules: HashMap<_, Vec<_>> = HashMap::new();
+        for item in items {
+            let module_ident = item.ident.mod_only_closest_parent();
+            modules.entry(module_ident).or_default().push(item);
+        }
+        modules
+            .into_iter()
+            .map(|(ident, items)| Module {
+                ident,
+                items,
+                meta: Metadata {
+                    span: Span::dummy(),
+                    attributes: vec![],
+                },
+            })
+            .collect()
+    }
+
+    fn apply(&self, mut items: Vec<Item>) -> Vec<File> {
+        // This function decides how the Lean backend turns a list of items into a list of
+        // files. Right now, all items are bundled in a single file.
+
+        // Applying Rust-engine phases (OCaml engines phases have already been applied at this
+        // point)
+        for phase in self.phases() {
+            phase.apply(&mut items);
+        }
+
+        // All modules are bundled in a single file, named after the crate
+        let krate = items
+            .first()
+            .expect("The list of items should be non-empty")
+            .ident
+            .krate();
+        let mut path = camino::Utf8PathBuf::new();
+        path.push(krate);
+        path.set_extension("lean");
+
+        // The split in modules is used to introduce namespaces
+        let modules = self.items_to_module(items);
+        let content = modules
+            .into_iter()
+            .map(|module: Module| self.printer().print(module).0)
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        let header: String = FILE_HEADER.to_string();
+
+        // Single bundle output
+        vec![File {
+            path: path.into_string(),
+            contents: header + &content,
+            sourcemap: None,
+        }]
     }
 }
 
@@ -352,33 +446,30 @@ const _: () = {
         }
 
         fn module(&self, module: &Module) -> DocBuilder<A> {
+            let current_namespace = module.ident;
+            let new_printer = LeanPrinter {
+                current_namespace: Some(current_namespace),
+                ..LeanPrinter::default()
+            };
             let items = &module.items;
+
             docs![
-                intersperse!(
-                    "
--- Experimental lean backend for Hax
--- The Hax prelude library can be found in hax/proof-libs/lean
-import Hax
-import Std.Tactic.Do
-import Std.Do.Triple
-import Std.Tactic.Do.Syntax
-open Std.Do
-open Std.Tactic
-
-set_option mvcgen.warning false
-set_option linter.unusedVariables false
-
-
-"
-                    .lines(),
-                    hardline!(),
-                ),
+                "namespace ",
+                current_namespace,
+                hardline!(),
+                hardline!(),
                 intersperse!(
                     items
                         .iter()
-                        .filter(|item| LeanPrinter::printable_item(item)),
+                        .filter(|item| LeanPrinter::printable_item(item))
+                        .map(|item| { item.to_document(&new_printer) }),
                     docs![hardline!(), hardline!()]
-                )
+                ),
+                hardline!(),
+                "end ",
+                current_namespace,
+                hardline!(),
+                hardline!(),
             ]
         }
 

@@ -81,31 +81,31 @@ pub trait Backend {
 
     /// Compute the relative filesystem path where a given module should be written.
     fn module_path(&self, module: &Module) -> Utf8PathBuf;
-}
 
-/// Apply a backend to a collection of AST items, producing output files.
-///
-/// This runs all of the backend's [`Backend::phases`], groups the items into
-/// modules via [`Backend::items_to_module`], and then uses the backend's printer
-/// to generate source files with paths determined by [`Backend::module_path`].
-pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
-    for phase in backend.phases() {
-        phase.apply(&mut items);
+    /// Apply a backend to a collection of AST items, producing output files.
+    ///
+    /// This runs all of the backend's [`Backend::phases`], groups the items into
+    /// modules via [`Backend::items_to_module`], and then uses the backend's printer
+    /// to generate source files with paths determined by [`Backend::module_path`].
+    fn apply(&self, mut items: Vec<Item>) -> Vec<File> {
+        for phase in self.phases() {
+            phase.apply(&mut items);
+        }
+
+        let modules = self.items_to_module(items);
+        modules
+            .into_iter()
+            .map(|module: Module| {
+                let path = self.module_path(&module).into_string();
+                let (contents, _) = self.printer().print(module);
+                File {
+                    path,
+                    contents,
+                    sourcemap: None,
+                }
+            })
+            .collect()
     }
-
-    let modules = backend.items_to_module(items);
-    modules
-        .into_iter()
-        .map(|module: Module| {
-            let path = backend.module_path(&module).into_string();
-            let (contents, _) = backend.printer().print(module);
-            File {
-                path,
-                contents,
-                sourcemap: None,
-            }
-        })
-        .collect()
 }
 
 mod prelude {
