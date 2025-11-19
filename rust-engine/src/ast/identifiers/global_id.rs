@@ -450,7 +450,7 @@ impl ConcreteId {
         let def_id = parents
             .into_iter()
             .take_while(|id| matches!(id.def_id.kind, DefKind::Mod))
-            .next()
+            .last()
             .expect("Invariant broken: a DefId must always contain at least on `mod` segment (the crate)");
         Self {
             def_id,
