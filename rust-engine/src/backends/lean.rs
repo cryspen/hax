@@ -1098,8 +1098,22 @@ set_option linter.unusedVariables false
                         ]))
                     ]
                 }
-                TraitItemKind::Default { .. } =>
-                    emit_error!(issue 1707, "Unsupported default implementation for trait items"),
+                TraitItemKind::Default { params, body } => docs![
+                    docs![
+                        name,
+                        softline!(),
+                        generics,
+                        zip_right!(params, line!()).group(),
+                        docs![": RustM ", body.ty].group(),
+                        line!(),
+                        ":= do",
+                    ]
+                    .group(),
+                    line!(),
+                    body,
+                ]
+                .group()
+                .nest(INDENT),
                 TraitItemKind::Resugared(_) => {
                     unreachable!("This backend has no resugaring for trait items")
                 }
