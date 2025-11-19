@@ -1,6 +1,7 @@
 module Core_models.Marker
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_Copy (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_Self

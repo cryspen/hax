@@ -1,9 +1,10 @@
 module Core_models.Ops.Function
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_FnOnce (v_Self: Type0) (v_Args: Type0) = {
-  f_Output:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_call_once_pre:self_: v_Self -> args: v_Args -> pred: Type0{true ==> pred};
   f_call_once_post:v_Self -> v_Args -> f_Output -> Type0;
   f_call_once:x0: v_Self -> x1: v_Args

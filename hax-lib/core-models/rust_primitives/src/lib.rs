@@ -41,7 +41,7 @@ pub mod seq {
     pub fn seq_to_slice<T, A>(_s: &Seq<T, A>) -> &[T] {
         panic!()
     }
-    pub fn seq_concat<T, A>(s1: &mut Seq<T, A>, s2: Seq<T, A>) {
+    pub fn seq_concat<T, A>(s1: &mut Seq<T, A>, s2: &Seq<T, A>) {
         panic!()
     }
     pub fn seq_one<T, A>( x: T) -> Seq<T, A> {
@@ -54,6 +54,9 @@ pub mod seq {
         panic!()
     } 
     pub fn seq_last<T, A>(s: &Seq<T, A>) -> T {
+        panic!()
+    }
+    pub fn seq_index<T, A>(s: &Seq<T, A>, i: usize) -> &T {
         panic!()
     }
 

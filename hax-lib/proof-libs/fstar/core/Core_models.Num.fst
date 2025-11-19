@@ -1,6 +1,7 @@
 module Core_models.Num
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 let impl_u8__MIN: u8 = mk_u8 0
 

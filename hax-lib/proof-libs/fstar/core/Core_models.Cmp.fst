@@ -1,6 +1,7 @@
 module Core_models.Cmp
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
   f_eq_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
