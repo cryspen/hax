@@ -182,6 +182,59 @@ def Lean_tests.Traits.Inheritance.test
   let s : Lean_tests.Traits.Inheritance.S := Lean_tests.Traits.Inheritance.S.mk;
   ((← (Lean_tests.Traits.Inheritance.T3.f3 s)) +? (1 : usize))
 
+class Lean_tests.Traits.Default.Easy (Self : Type) where
+  dft (self : Self) : RustM usize := do (pure (32 : usize))
+
+instance Lean_tests.Traits.Default.Impl :
+  Lean_tests.Traits.Default.Easy usize
+  where
+  dft (self : usize) := do (self +? (1 : usize))
+
+instance Lean_tests.Traits.Default.Impl_1 :
+  Lean_tests.Traits.Default.Easy u32
+  where
+
+
+class Lean_tests.Traits.Default.T1 (Self : Type) where
+  f1 : (Self -> RustM usize)
+  f2 (self : Self) : RustM usize := do (pure (1 : usize))
+  f3 (A : Type) (self : Self) (x : A) : RustM usize := do (pure (1 : usize))
+  f4 (A : Type) [(Lean_tests.Traits.Default.Easy A)] (self : Self)
+    (x : A)
+    : RustM usize
+    := do
+    ((← (Lean_tests.Traits.Default.Easy.dft x)) +? (1 : usize))
+
+structure Lean_tests.Traits.Default.S (A : Type) where
+  _0 : usize
+  _1 : A
+
+instance Lean_tests.Traits.Default.Impl_2 :
+  Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S usize)
+  where
+  f1 (self : (Lean_tests.Traits.Default.S usize)) := do
+    ((Lean_tests.Traits.Default.S._0 self)
+      +? (Lean_tests.Traits.Default.S._1 self))
+  f2 (self : (Lean_tests.Traits.Default.S usize)) := do
+    (pure (Lean_tests.Traits.Default.S._1 self))
+
+instance Lean_tests.Traits.Default.Impl_3 :
+  Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S Bool)
+  where
+  f1 (self : (Lean_tests.Traits.Default.S Bool)) := do
+    if (Lean_tests.Traits.Default.S._1 self) then
+      (pure (Lean_tests.Traits.Default.S._0 self))
+    else
+      (pure (9 : usize))
+  f2 (self : (Lean_tests.Traits.Default.S Bool)) := do
+    ((Lean_tests.Traits.Default.S._0 self) +? (1 : usize))
+
+instance Lean_tests.Traits.Default.Impl_4 :
+  Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S Alloc.String.String)
+  where
+  f1 (self : (Lean_tests.Traits.Default.S Alloc.String.String)) := do
+    (pure (0 : usize))
+
 class Lean_tests.Traits.Bounds.T1 (Self : Type) where
   f1 : (Self -> RustM usize)
 
