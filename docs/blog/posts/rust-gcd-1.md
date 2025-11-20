@@ -565,6 +565,211 @@ loop {
 
 *What's to love:* Kani requires amazingly little manual labor to set up!
 
+
+### Verus
+
+[Install Verus](https://github.com/verus-lang/verus/blob/main/INSTALL.md).
+(We use version `0.2025.11.07.a99b6c7`.)
+
+To start verifying with Verus,
+we add the following import to `src/lib.rs`:
+```rust
+use vstd::prelude::*;
+```
+And we wrap the function `$euclid` that we would like to verify into
+```rust
+verus! {
+
+}
+```
+Now we can try to run Verus:
+```
+verus src/lib.rs --crate-type=lib
+```
+We get:
+```
+error: loop must have a decreases clause
+```
+From our discussion above, we know that the variable `b` decreases in the loop. Let's tell Verus about that:
+```rust
+while b != 0 decreases b {
+    let temp = a;
+    a = b;
+    b = temp;
+
+    b %= a;
+}
+```
+Running Verus again now yields:
+```
+verification results:: 12 verified, 0 errors
+```
+The `$euclid` function terminates and is panic-free!
+
+Next, we wrap the `$binary` function into `verus! { ... }` as well.
+Running Verus now results in an error:
+```
+error: `core::num::impl&%11::trailing_zeros` is not supported
+```
+The `trailing_zeros` function is present in Verus's library, but only for certain bit sizes. We could add the missing functions, but to simplify things, let's simply comment out the large bit sizes:
+```rust
+gcd_impl! {
+    (u8) binary_u8 euclid_u8,
+    (u16) binary_u16 euclid_u16,
+    (u32) binary_u32 euclid_u32,
+    (u64) binary_u64 euclid_u64//,
+    // (u128) binary_u128 euclid_u128,
+    // (usize) binary_usize euclid_usize
+}
+```
+and
+```rust
+gcd_impl_nonzero! {
+    (NonZeroU8) binary_nonzero_u8/binary_u8 euclid_nonzero_u8/euclid_u8,
+    (NonZeroU16) binary_nonzero_u16/binary_u16 euclid_nonzero_u16/euclid_u16,
+    (NonZeroU32) binary_nonzero_u32/binary_u32 euclid_nonzero_u32/euclid_u32,
+    (NonZeroU64) binary_nonzero_u64/binary_u64 euclid_nonzero_u64/euclid_u64//,
+    // (NonZeroU128) binary_nonzero_u128/binary_u128 euclid_nonzero_u128/euclid_u128,
+    // (NonZeroUsize) binary_nonzero_usize/binary_usize euclid_nonzero_usize/euclid_usize
+}
+```
+The next error that we get is:
+```
+error: loop must have a decreases clause
+```
+Let us reuse the same measure as we have used for Hax:
+```rust
+loop
+    decreases if v < u { u } else { v }
+{
+    v >>= v.trailing_zeros();
+
+    if u > v {
+        let temp = u;
+        u = v;
+        v = temp;
+    }
+
+    v -= u; // here v >= u
+
+    if v == 0 { break; }
+}
+```
+
+Our next error is:
+```
+error: possible bit shift underflow/overflow
+   --> src/lib.rs:45:13
+    |
+45  |               u >>= shift;
+```
+We can make our lives easier by simply commenting
+out the two lines
+```rust
+u >>= shift;
+v >>= shift;
+```
+Note that this does not change the function's behavior.
+The following line and the first line of the loop
+will shift `v` and `u` by all trailing zeros anyway.
+There is no need to shift them by their common trailing
+zeros before that.
+
+With those lines commented out, we now get:
+```
+error: decreases not satisfied at end of loop
+```
+Our measure does actually decrease, but Verus is unable to prove it. First, we need to add a loop invariant
+that `u` and `v` are nonzero. If one of them was zero, then subtracting one from the other would not make the measure decrease.
+```rust
+loop
+    invariant_except_break u != 0 && v != 0
+    decreases if v < u { u } else { v }
+{   
+```
+Also, Verus has trouble figuring out
+that the line
+```
+v >>= v.trailing_zeros();
+```
+will never make `v` larger and will never cause `v` to become `0`.
+We can add the following assumptions to
+fix this temporarily:
+```
+assume(v != 0 ==> v >> v.trailing_zeros() != 0);
+assume(forall |i: u8| v >> i <= v);
+v >>= v.trailing_zeros();
+```
+The next error we get is:
+```
+error: invariant not satisfied before loop
+   --> src/lib.rs:50:40
+    |
+50  |                   invariant_except_break u != 0 && v != 0
+```
+This is because Verus cannot see that
+```
+u >>= u.trailing_zeros();
+```
+cannot make `u` become zero.
+We can fix this temporarily using another assumption:
+```rust
+assume(u != 0 ==> u >> u.trailing_zeros() != 0);
+u >>= u.trailing_zeros();
+```
+The only remaining error is:
+```
+error: possible bit shift underflow/overflow
+   --> src/lib.rs:71:13
+    |
+71  |               u << shift
+```
+This error occurs because shift could in principle be equal to the full number of bits of `u` when `u | v` is zero.
+Adding the following assumption above the definition of `shift`, helps Verus figure out that this cannot happen:
+```rust
+assume(u != 0 && v != 0 ==> u | v != 0);
+let shift = (u | v).trailing_zeros();
+```
+Now verification succeeds:
+```
+$ verus src/lib.rs --crate-type=lib
+verification results:: 16 verified, 0 errors
+```
+However, this confirms termination
+and panic freedom only up to the assumptions we have inserted using `assume`.
+
+Let's try to prove them.
+The `bit_vector` tactic can prove some of them:
+```
+assert(u != 0 && v != 0 ==> u | v != 0) by (bit_vector);
+```
+and
+```
+assert(forall |i: u8| v >> i <= v) by (bit_vector);
+```
+We can use these lines to replace the corresponding `assume`s.
+
+The remaining two `assume`s are harder to prove.
+We will simply add them as an axiom by adding the following
+function to our `gcd_impl` macro:
+```
+#[verifier::external_body]
+proof fn $trailing_zeros_axiom(x: $T) 
+    ensures x != 0 ==> x >> #[trigger] x.trailing_zeros() != 0
+{}
+```
+Then, we can replace
+the two remaining assumes by
+```
+proof! { $trailing_zeros_axiom(u); }
+```
+and
+```
+proof! { $trailing_zeros_axiom(v); }
+```
+
+*What's to love:* Verus allows us to work directly with the Rust code!
+
 ### Aeneas
 
 [Install Aeneas](https://github.com/AeneasVerif/aeneas?tab=readme-ov-file#installation--build).
@@ -944,207 +1149,3 @@ decreasing_by all_goals scalar_decr_tac
 No more errors! So Aeneas, too, agrees that `binary_u8` terminates and does not panic.
 
 *What's to love:* Aeneas leaves our source code completely untouched!
-
-### Verus
-
-[Install Verus](https://github.com/verus-lang/verus/blob/main/INSTALL.md).
-(We use version `0.2025.11.07.a99b6c7`.)
-
-To start verifying with Verus,
-we add the following import to `src/lib.rs`:
-```rust
-use vstd::prelude::*;
-```
-And we wrap the function `$euclid` that we would like to verify into
-```rust
-verus! {
-
-}
-```
-Now we can try to run Verus:
-```
-verus src/lib.rs --crate-type=lib
-```
-We get:
-```
-error: loop must have a decreases clause
-```
-From our discussion above, we know that the variable `b` decreases in the loop. Let's tell Verus about that:
-```rust
-while b != 0 decreases b {
-    let temp = a;
-    a = b;
-    b = temp;
-
-    b %= a;
-}
-```
-Running Verus again now yields:
-```
-verification results:: 12 verified, 0 errors
-```
-The `$euclid` function terminates and is panic-free!
-
-Next, we wrap the `$binary` function into `verus! { ... }` as well.
-Running Verus now results in an error:
-```
-error: `core::num::impl&%11::trailing_zeros` is not supported
-```
-The `trailing_zeros` function is present in Verus's library, but only for certain bit sizes. We could add the missing functions, but to simplify things, let's simply comment out the large bit sizes:
-```rust
-gcd_impl! {
-    (u8) binary_u8 euclid_u8,
-    (u16) binary_u16 euclid_u16,
-    (u32) binary_u32 euclid_u32,
-    (u64) binary_u64 euclid_u64//,
-    // (u128) binary_u128 euclid_u128,
-    // (usize) binary_usize euclid_usize
-}
-```
-and
-```rust
-gcd_impl_nonzero! {
-    (NonZeroU8) binary_nonzero_u8/binary_u8 euclid_nonzero_u8/euclid_u8,
-    (NonZeroU16) binary_nonzero_u16/binary_u16 euclid_nonzero_u16/euclid_u16,
-    (NonZeroU32) binary_nonzero_u32/binary_u32 euclid_nonzero_u32/euclid_u32,
-    (NonZeroU64) binary_nonzero_u64/binary_u64 euclid_nonzero_u64/euclid_u64//,
-    // (NonZeroU128) binary_nonzero_u128/binary_u128 euclid_nonzero_u128/euclid_u128,
-    // (NonZeroUsize) binary_nonzero_usize/binary_usize euclid_nonzero_usize/euclid_usize
-}
-```
-The next error that we get is:
-```
-error: loop must have a decreases clause
-```
-Let us reuse the same measure as we have used for Hax:
-```rust
-loop
-    decreases if v < u { u } else { v }
-{
-    v >>= v.trailing_zeros();
-
-    if u > v {
-        let temp = u;
-        u = v;
-        v = temp;
-    }
-
-    v -= u; // here v >= u
-
-    if v == 0 { break; }
-}
-```
-
-Our next error is:
-```
-error: possible bit shift underflow/overflow
-   --> src/lib.rs:45:13
-    |
-45  |               u >>= shift;
-```
-We can make our lives easier by simply commenting
-out the two lines
-```rust
-u >>= shift;
-v >>= shift;
-```
-Note that this does not change the function's behavior.
-The following line and the first line of the loop
-will shift `v` and `u` by all trailing zeros anyway.
-There is no need to shift them by their common trailing
-zeros before that.
-
-With those lines commented out, we now get:
-```
-error: decreases not satisfied at end of loop
-```
-Our measure does actually decrease, but Verus is unable to prove it. First, we need to add a loop invariant
-that `u` and `v` are nonzero. If one of them was zero, then subtracting one from the other would not make the measure decrease.
-```rust
-loop
-    invariant_except_break u != 0 && v != 0
-    decreases if v < u { u } else { v }
-{   
-```
-Also, Verus has trouble figuring out
-that the line
-```
-v >>= v.trailing_zeros();
-```
-will never make `v` larger and will never cause `v` to become `0`.
-We can add the following assumptions to
-fix this temporarily:
-```
-assume(v != 0 ==> v >> v.trailing_zeros() != 0);
-assume(forall |i: u8| v >> i <= v);
-v >>= v.trailing_zeros();
-```
-The next error we get is:
-```
-error: invariant not satisfied before loop
-   --> src/lib.rs:50:40
-    |
-50  |                   invariant_except_break u != 0 && v != 0
-```
-This is because Verus cannot see that
-```
-u >>= u.trailing_zeros();
-```
-cannot make `u` become zero.
-We can fix this temporarily using another assumption:
-```rust
-assume(u != 0 ==> u >> u.trailing_zeros() != 0);
-u >>= u.trailing_zeros();
-```
-The only remaining error is:
-```
-error: possible bit shift underflow/overflow
-   --> src/lib.rs:71:13
-    |
-71  |               u << shift
-```
-This error occurs because shift could in principle be equal to the full number of bits of `u` when `u | v` is zero.
-Adding the following assumption above the definition of `shift`, helps Verus figure out that this cannot happen:
-```rust
-assume(u != 0 && v != 0 ==> u | v != 0);
-let shift = (u | v).trailing_zeros();
-```
-Now verification succeeds:
-```
-$ verus src/lib.rs --crate-type=lib
-verification results:: 16 verified, 0 errors
-```
-However, this confirms termination
-and panic freedom only up to the assumptions we have inserted using `assume`.
-
-Let's try to prove them.
-The `bit_vector` tactic can prove some of them:
-```
-assert(u != 0 && v != 0 ==> u | v != 0) by (bit_vector);
-```
-and
-```
-assert(forall |i: u8| v >> i <= v) by (bit_vector);
-```
-We can use these lines to replace the corresponding `assume`s.
-
-The remaining two `assume`s are harder to prove.
-We will simply add them as an axiom by adding the following
-function to our `gcd_impl` macro:
-```
-#[verifier::external_body]
-proof fn $trailing_zeros_axiom(x: $T) 
-    ensures x != 0 ==> x >> #[trigger] x.trailing_zeros() != 0
-{}
-```
-Then, we can replace
-the two remaining assumes by
-```
-proof! { $trailing_zeros_axiom(u); }
-```
-and
-```
-proof! { $trailing_zeros_axiom(v); }
-```
-
-*What's to love:* Verus allows us to work directly with the Rust code!
