@@ -56,13 +56,11 @@ unfold let array_of_list (#t:Type)
   : t_Array t (sz n)
   = Seq.seq_of_list l
 
-let box_new (#t:Type) (v: t): Alloc.Boxed.t_Box t Alloc.Alloc.t_Global = v
-
-class iterator_return (self: Type u#0): Type u#1 = {
+(* class iterator_return (self: Type u#0): Type u#1 = {
   [@@@FStar.Tactics.Typeclasses.tcresolve]
   parent_iterator: Core_models.Iter.Traits.Iterator.t_Iterator self;
   f_fold_return: #b:Type0 -> s:self -> b -> (b -> i:parent_iterator.f_Item{parent_iterator.f_contains s i} -> Core_models.Ops.Control_flow.t_ControlFlow b b) -> Core_models.Ops.Control_flow.t_ControlFlow b b;
-}
+} *)
 let while_loop #acc_t 
   (condition: acc_t -> bool) 
   (inv: acc_t -> Type0)
