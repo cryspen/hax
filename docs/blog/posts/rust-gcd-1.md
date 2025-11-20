@@ -565,7 +565,7 @@ loop {
 ### Aeneas
 
 [Install Aeneas](https://github.com/AeneasVerif/aeneas?tab=readme-ov-file#installation--build).
-We use commit `f90a279b` here.
+We use commit `f2fbd655` here.
 
 [Install Lean](https://lean-lang.org/install/). 
 
@@ -595,7 +595,7 @@ lake +v4.24.0 init Gcd lib
 ```
 
 Add the following lines to `lakefile.toml` to
-add the Aeneas Lean library as a dependency:
+add the Aeneas Lean library as a dependency, adjusting the path as needed:
 ```toml
 [[require]]
 name = "aeneas"
@@ -640,23 +640,24 @@ The `euclid_u8` funciton for example looks as follows:
 ```lean
 /- [gcd::euclid_u8]: loop 0:
    Source: 'src/lib.rs', lines 75:12-82:13 -/
-def euclid_u8_loop (a : U8) (b : U8) : Result U8 :=
+def euclid_u8_loop (a : U8) (b : U8) : Result U8 := do
   if b != 0#u8
-  then do
-       let b1 ← a % b
+  then let b1 ← a % b
        euclid_u8_loop b b1
   else ok a
 partial_fixpoint
 
 /- [gcd::euclid_u8]:
    Source: 'src/lib.rs', lines 65:8-85:9 -/
-def euclid_u8 (a : U8) (b : U8) : Result U8 :=
-  do
+def euclid_u8 (a : U8) (b : U8) : Result U8 := do
   let (a1, b1) ← if a > b
                    then ok (a, b)
                    else ok (b, a)
   euclid_u8_loop a1 b1
 ```
+
+#### Euclidean GCD
+
 Now we can start proving. Open the file `Gcd.lean`.
 Let us verify termination and panic-freedom of `euclid_u8`.
 This can be expressed in Lean as follows:
@@ -723,15 +724,221 @@ theorem euclid_loop_u8_spec (a b : U8) :
   unfold euclid_u8_loop
   progress*
 termination_by b.val
-decreasing_by scalar_tac
+decreasing_by scalar_decr_tac
 ```
-Unfortunately, `scalar_tac` fails. We need to add the following command above the theorem to make `scalar_tac` go through:
-```
-attribute [scalar_tac_simps] bne_iff_ne
-```
-This command tells `scalar_tac` to use the lemma `bne_iff_ne`, which is needed here to complete the termination proof.
 
 Now all errors have disappeared and there are little check marks in the margin. That means `euclid_u8` really terminates and is panic-free!
+
+#### Binary GCD
+
+Now, let's try to verify the binary version as well.
+The Lean translation looks like this:
+```lean
+/- [gcd::binary_u8]: loop 0:
+   Source: 'src/lib.rs', lines 45:12-59:13 -/
+def binary_u8_loop (u : U8) (v : U8) : Result U8 := do
+  let i ← core.num.U8.trailing_zeros v
+  let v1 ← v >>> i
+  let (u1, v2) ← if u > v1
+                   then ok (v1, u)
+                   else ok (u, v1)
+  let v3 ← v2 - u1
+  if v3 = 0#u8
+  then ok u1
+  else binary_u8_loop u1 v3
+partial_fixpoint
+
+/- [gcd::binary_u8]:
+   Source: 'src/lib.rs', lines 35:8-62:9 -/
+def binary_u8 (u : U8) (v : U8) : Result U8 := do
+  if u = 0#u8
+  then ok v
+  else
+    if v = 0#u8
+    then ok u
+    else
+      let i ← (↑(u ||| v) : Result U8)
+      let shift ← core.num.U8.trailing_zeros i
+      let u1 ← u >>> shift
+      let v1 ← v >>> shift
+      let i1 ← core.num.U8.trailing_zeros u1
+      let u2 ← u1 >>> i1
+      let u3 ← binary_u8_loop u2 v1
+      u3 <<< shift
+```
+We use the same approach as for `euclid_u8`, adding the following code to `Gdc.lean`:
+```lean
+theorem binary_u8_spec (a b : U8) :
+    ∃ y, binary_u8 a b = ok y := by
+  unfold binary_u8
+  progress*
+```
+We get the following error:
+```
+unsolved goals
+a b : U8
+h✝¹ : ¬a = 0#u8
+h✝ : ¬b = 0#u8
+i : U8
+_ : [> let i ← ↑(a ||| b) <]
+i_post_1 : ↑i = ↑(a ||| b)
+i_post_2 : i.bv = a.bv ||| b.bv
+⊢ ∃ y,
+  (do
+      let shift ← core.num.U8.trailing_zeros i
+      let u1 ← a >>> shift
+      let v1 ← b >>> shift
+      let i1 ← core.num.U8.trailing_zeros u1
+      let u2 ← u1 >>> i1
+      let u3 ← binary_u8_loop u2 v1
+      u3 <<< shift) =
+    ok y
+```
+The `progress*` tactic gets stuck at `core.num.U8.trailing_zeros` because there is no specification about this function.
+Let's provide one, for instance directly above `binary_u8_spec`:
+```lean
+@[progress]
+theorem trailing_zeros_spec (v : U8) (hv : v ≠ 0#u8):
+  ∃ y, core.num.U8.trailing_zeros v = .ok y ∧ y < 8#u32 := sorry
+```
+Here, we have added the fact that `trailing_zeros` will be less than the bit length when the input is nonzero
+since we have seen above that this is crucial for verification of binary GCD.
+
+Next, we get the error:
+```
+unsolved goals
+case hv
+a b : U8
+h✝¹ : ¬a = 0#u8
+h✝ : ¬b = 0#u8
+i : U8
+_ : [> let i ← ↑(a ||| b) <]
+i_post_1 : ↑i = ↑(a ||| b)
+i_post_2 : i.bv = a.bv ||| b.bv
+⊢ i ≠ 0#u8
+```
+The tactic gets stuck because there is no specification saying that bitwise or (`|||`) will not yield zero when the inputs are nonzero.
+Let's add that:
+```lean
+@[progress]
+theorem bor_spec (u v : U8) (hu : u ≠ 0#u8) (hv : v ≠ 0#u8) :
+  ∃ y, (↑(u ||| v) : Result U8) = .ok y ∧
+    y ≠ 0#u8 := sorry
+```
+
+The next error is:
+```
+unsolved goals
+case hv
+a b : U8
+h✝¹ : ¬a = 0#u8
+h✝ : ¬b = 0#u8
+i : U8
+_✝² : [> let i ← ↑(a ||| b) <]
+i_post : i ≠ 0#u8
+shift : U32
+_✝¹ : [> let shift ← core.num.U8.trailing_zeros i <]
+shift_post : shift < 8#u32
+u1 : U8
+_✝ : [> let u1 ← a >>> shift <]
+u1_post_1 : ↑u1 = ↑a >>> ↑shift
+u1_post_2 : u1.bv = a.bv >>> ↑shift
+v1 : U8
+_ : [> let v1 ← b >>> shift <]
+v1_post_1 : ↑v1 = ↑b >>> ↑shift
+v1_post_2 : v1.bv = b.bv >>> ↑shift
+⊢ u1 ≠ 0#u8
+```
+
+Here, we need to tell Lean that right shifting by the number of trailing zeros (or less) will not turn a nonzero number into zero.
+Here is a first attempt to state that:
+```lean
+@[progress]
+theorem shift_right_spec (u : U8) (v : U32) (hu : u ≠ 0#u8) (hv : v ≤ core.num.U8.trailing_zeros u):
+  ∃ y, u >>> v = .ok y ∧ y ≠ 0#u8 := sorry
+```
+Unfortunately, this does not work because `core.num.U8.trailing_zeros` lives in the `Result` monad, i.e., it's type is `U8 → Result U32`, not `U8 → U32`.
+To get around this issue, we define another function `trailing_zeros`:
+```lean
+def trailing_zeros : U8 → U32 := sorry
+```
+Since implementing it is beyond the scope of this blog post, we use the placeholder `sorry`.
+Now, we extend our specification of `core.num.U8.trailing_zeros` to state that it will always return the same result as prescibed by our new `trailing_zeros` function:
+```lean
+@[progress]
+theorem trailing_zeros_spec (v : U8) (hv : v ≠ 0#u8):
+  ∃ y, core.num.U8.trailing_zeros v = .ok y ∧ y < 8#u32 ∧ y = trailing_zeros v := sorry
+```
+Then we can fix the specification of right-shift using our new function:
+```lean
+@[progress]
+theorem shift_right_spec (u : U8) (v : U32) (hu : u ≠ 0#u8) (hv : v ≤ trailing_zeros u):
+  ∃ y, u >>> v = .ok y ∧ y ≠ 0#u8 := sorry
+```
+The next error is this:
+```
+unsolved goals
+case hv
+a b : U8
+h✝¹ : ¬a = 0#u8
+h✝ : ¬b = 0#u8
+i : U8
+_✝ : [> let i ← ↑(a ||| b) <]
+i_post : i ≠ 0#u8
+shift : U32
+_ : [> let shift ← core.num.U8.trailing_zeros i <]
+shift_post_1 : shift < 8#u32
+shift_post_2 : shift = trailing_zeros i
+⊢ shift ≤ trailing_zeros a
+```
+What's missing here, is that bitwise or (`|||`) will always yield less trailing zeros than in the inputs.
+We can edit the specification of bitwise or to fix that:
+```lean
+@[progress]
+theorem bor_spec (u v : U8) (hu : u ≠ 0#u8) (hv : v ≠ 0#u8) :
+  ∃ y, (↑(u ||| v) : Result U8) = .ok y ∧
+    trailing_zeros y ≤ trailing_zeros u ∧
+    trailing_zeros y ≤ trailing_zeros v ∧
+    y ≠ 0#u8 := sorry
+```
+Next, the tactic gets stuck on:
+```
+⊢ ∃ y,
+  (do
+      let u3 ← binary_u8_loop u2 v1
+      u3 <<< shift) =
+    ok y
+```
+This is because we don't have a specification for `binary_u8_loop` yet. Let's add one:
+```lean
+@[progress]
+theorem binary_u8_loop_spec (a b : U8) :
+    ∃ y, binary_u8_loop a b = ok y := by
+  unfold binary_u8_loop
+  progress*
+termination_by max a.val b.val
+decreasing_by all_goals scalar_decr_tac
+```
+Since the tactic is recursive, we need to provide a measure for termination. We'll use the maximum of `a` and `b`, just like we have done above.
+We add `all_goals` because `decreasing_by` is decreasing two goals here.
+This still fails because we are missing two more things:
+First, we need to extend or specification of right-shift to state that it will make the input smaller:
+```
+@[progress]
+theorem shift_right_spec (u : U8) (v : U32) (hu : u ≠ 0#u8) (hv : v ≤ trailing_zeros u):
+  ∃ y, u >>> v = .ok y ∧ y ≠ 0#u8 ∧ y ≤ u := sorry
+```
+Second, we need to add what corresponds to a loop invariant in the specification of `binary_u8_loop`:
+```lean
+@[progress]
+theorem binary_u8_loop_spec (a b : U8) (ha : a ≠ 0#u8) (hb : b ≠ 0#u8) :
+    ∃ y, binary_u8_loop a b = ok y ∧ y ≠ 0#u8 := by
+  unfold binary_u8_loop
+  progress*
+termination_by max a.val b.val
+decreasing_by all_goals scalar_decr_tac
+```
+No more errors! So Aeneas, too, agrees that `binary_u8` terminates and does not panic.
 
 ### Verus
 
