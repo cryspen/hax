@@ -42,8 +42,8 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 inductive Lean_core_models.Result.E1 : Type
-| C1 : Lean_core_models.Result.E1 
-| C2 : u32 -> Lean_core_models.Result.E1 
+| C1 : Lean_core_models.Result.E1
+| C2 : u32 -> Lean_core_models.Result.E1
 
 
 instance Lean_core_models.Result.Impl :
@@ -52,45 +52,45 @@ instance Lean_core_models.Result.Impl :
 
 
 inductive Lean_core_models.Result.E2 : Type
-| C1 : Lean_core_models.Result.E2 
-| C2 : u32 -> Lean_core_models.Result.E2 
+| C1 : Lean_core_models.Result.E2
+| C2 : u32 -> Lean_core_models.Result.E2
 
 
 def Lean_core_models.Result.tests
   (_ : Rust_primitives.Hax.Tuple0)
-  : Result (Core.Result.Result u32 Lean_core_models.Result.E1)
+  : RustM (Core.Result.Result u32 Lean_core_models.Result.E1)
   := do
   let v1 : (Core.Result.Result u32 Lean_core_models.Result.E1) :=
     (Core.Result.Result.Ok (1 : u32));
   let v2 : (Core.Result.Result u32 Lean_core_models.Result.E1) :=
     (Core.Result.Result.Err Lean_core_models.Result.E1.C1);
-  let f : (u32 -> Result u32) := (fun x => (do (x +? (1 : u32)) : Result u32));
+  let f : (u32 -> RustM u32) := (fun x => (do (x +? (1 : u32)) : RustM u32));
   let v5 : (Core.Result.Result i32 Lean_core_models.Result.E1) ←
-    (Core.Result.Impl.map i32 Lean_core_models.Result.E1 i32 (i32 -> Result i32)
+    (Core.Result.Impl.map i32 Lean_core_models.Result.E1 i32 (i32 -> RustM i32)
       (Core.Result.Result.Ok (1 : i32))
-      (fun v => (do (v +? (1 : i32)) : Result i32)));
+      (fun v => (do (v +? (1 : i32)) : RustM i32)));
   let v6 : u32 ←
     (Core.Result.Impl.map_or
       u32
       Lean_core_models.Result.E1
       u32
-      (u32 -> Result u32) (Core.Result.Result.Ok (1 : u32)) (9 : u32) f);
+      (u32 -> RustM u32) (Core.Result.Result.Ok (1 : u32)) (9 : u32) f);
   let v7 : u32 ←
     (Core.Result.Impl.map_or_else
       u32
       Lean_core_models.Result.E1
       u32
-      (Lean_core_models.Result.E1 -> Result u32)
-      (u32 -> Result u32)
+      (Lean_core_models.Result.E1 -> RustM u32)
+      (u32 -> RustM u32)
       (Core.Result.Result.Ok (1 : u32))
-      (fun _ => (do (pure (10 : u32)) : Result u32))
+      (fun _ => (do (pure (10 : u32)) : RustM u32))
       f);
   let v8 : (Core.Result.Result i32 Lean_core_models.Result.E2) ←
     (Core.Result.Impl.map_err
       i32
       Lean_core_models.Result.E1
       Lean_core_models.Result.E2
-      (Lean_core_models.Result.E1 -> Result Lean_core_models.Result.E2)
+      (Lean_core_models.Result.E1 -> RustM Lean_core_models.Result.E2)
       (Core.Result.Result.Ok (0 : i32))
       (fun e => (do
         match e with
@@ -98,7 +98,7 @@ def Lean_core_models.Result.tests
             => (pure Lean_core_models.Result.E2.C1)
           | (Lean_core_models.Result.E1.C2 x)
             => (pure (Lean_core_models.Result.E2.C2 (← (x +? (1 : u32))))) :
-        Result Lean_core_models.Result.E2)));
+        RustM Lean_core_models.Result.E2)));
   let v9 : Bool ← (Core.Result.Impl.is_ok u32 Lean_core_models.Result.E1 v1);
   let v10 : Bool ← (Core.Result.Impl.is_err u32 Lean_core_models.Result.E1 v1);
   let v11 : (Core.Result.Result u32 Lean_core_models.Result.E1) ←
@@ -106,10 +106,10 @@ def Lean_core_models.Result.tests
       u32
       Lean_core_models.Result.E1
       u32
-      (u32 -> Result (Core.Result.Result u32 Lean_core_models.Result.E1))
+      (u32 -> RustM (Core.Result.Result u32 Lean_core_models.Result.E1))
       (← (Core.Clone.Clone.clone v1))
       (fun x => (do
-        (pure (Core.Result.Result.Ok (← (x +? (1 : u32))))) : Result
+        (pure (Core.Result.Result.Ok (← (x +? (1 : u32))))) : RustM
         (Core.Result.Result u32 Lean_core_models.Result.E1))));
   let v12 : u32 ←
     (Core.Result.Impl.unwrap u32 u32
@@ -123,7 +123,7 @@ def Lean_core_models.Result.tests
       u32
       Lean_core_models.Result.E1
       u32
-      (u32 -> Result u32) v1 f))
+      (u32 -> RustM u32) v1 f))
   with
     | (Core.Result.Result.Ok hoist2)
       =>
@@ -139,7 +139,7 @@ structure Lean_core_models.Option.S where
   f1 : u32
 
 inductive Lean_core_models.Option.E : Type
-| C : u32 -> Lean_core_models.Option.E 
+| C : u32 -> Lean_core_models.Option.E
 
 
 instance Lean_core_models.Option.Impl :
@@ -150,20 +150,20 @@ instance Lean_core_models.Option.Impl :
 
 def Lean_core_models.Option.test
   (_ : Rust_primitives.Hax.Tuple0)
-  : Result Rust_primitives.Hax.Tuple0
+  : RustM Rust_primitives.Hax.Tuple0
   := do
   let o1 : (Core.Option.Option i32) := (Core.Option.Option.Some (4 : i32));
   let o2 : (Core.Option.Option i32) := Core.Option.Option.None;
   let o3 : Bool ←
-    (Core.Option.Impl.is_some_and i32 (i32 -> Result Bool)
+    (Core.Option.Impl.is_some_and i32 (i32 -> RustM Bool)
       (← (Core.Clone.Clone.clone o1))
       (fun x => (do
-        (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : Result Bool)));
+        (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : RustM Bool)));
   let o3 : Bool ←
-    (Core.Option.Impl.is_none_or i32 (i32 -> Result Bool)
+    (Core.Option.Impl.is_none_or i32 (i32 -> RustM Bool)
       (← (Core.Clone.Clone.clone o1))
       (fun x => (do
-        (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : Result Bool)));
+        (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : RustM Bool)));
   let o4 : i32 ←
     (Core.Option.Impl.unwrap i32 (Core.Option.Option.Some (0 : i32)));
   let o5 : i32 ←
@@ -173,30 +173,30 @@ def Lean_core_models.Option.test
   let o6 : i32 ←
     (Core.Option.Impl.unwrap_or_else
       i32
-      (Rust_primitives.Hax.Tuple0 -> Result i32)
+      (Rust_primitives.Hax.Tuple0 -> RustM i32)
       (Core.Option.Option.Some (0 : i32))
-      (fun _ => (do (pure (9 : i32)) : Result i32)));
+      (fun _ => (do (pure (9 : i32)) : RustM i32)));
   let o7 : Lean_core_models.Option.S ←
     (Core.Option.Impl.unwrap_or_default Lean_core_models.Option.S
       Core.Option.Option.None);
   let o8 : (Core.Option.Option i32) ←
-    (Core.Option.Impl.map i32 i32 (i32 -> Result i32)
+    (Core.Option.Impl.map i32 i32 (i32 -> RustM i32)
       (Core.Option.Option.Some (0 : i32))
-      (fun x => (do (x +? (1 : i32)) : Result i32)));
+      (fun x => (do (x +? (1 : i32)) : RustM i32)));
   let o9 : i32 ←
-    (Core.Option.Impl.map_or i32 i32 (i32 -> Result i32)
+    (Core.Option.Impl.map_or i32 i32 (i32 -> RustM i32)
       (Core.Option.Option.Some (1 : i32))
       (9 : i32)
-      (fun x => (do (x +? (1 : i32)) : Result i32)));
+      (fun x => (do (x +? (1 : i32)) : RustM i32)));
   let o10 : i32 ←
     (Core.Option.Impl.map_or_else
       i32
       i32
-      (Rust_primitives.Hax.Tuple0 -> Result i32)
-      (i32 -> Result i32)
+      (Rust_primitives.Hax.Tuple0 -> RustM i32)
+      (i32 -> RustM i32)
       (Core.Option.Option.Some (2 : i32))
-      (fun _ => (do (pure (9 : i32)) : Result i32))
-      (fun x => (do (x +? (1 : i32)) : Result i32)));
+      (fun _ => (do (pure (9 : i32)) : RustM i32))
+      (fun x => (do (x +? (1 : i32)) : RustM i32)));
   let o11 : (Core.Result.Result i32 Lean_core_models.Option.E) ←
     (Core.Option.Impl.ok_or i32 Lean_core_models.Option.E
       (Core.Option.Option.Some (3 : i32))
@@ -205,16 +205,16 @@ def Lean_core_models.Option.test
     (Core.Option.Impl.ok_or_else
       i32
       Lean_core_models.Option.E
-      (Rust_primitives.Hax.Tuple0 -> Result Lean_core_models.Option.E)
+      (Rust_primitives.Hax.Tuple0 -> RustM Lean_core_models.Option.E)
       (Core.Option.Option.Some (1 : i32))
       (fun _ => (do
-        (pure (Lean_core_models.Option.E.C (1 : u32))) : Result
+        (pure (Lean_core_models.Option.E.C (1 : u32))) : RustM
         Lean_core_models.Option.E)));
   let o13 : (Core.Option.Option u32) ←
-    (Core.Option.Impl.and_then u32 u32 (u32 -> Result (Core.Option.Option u32))
+    (Core.Option.Impl.and_then u32 u32 (u32 -> RustM (Core.Option.Option u32))
       Core.Option.Option.None
       (fun x => (do
-        (pure (Core.Option.Option.Some x)) : Result (Core.Option.Option u32))));
+        (pure (Core.Option.Option.Some x)) : RustM (Core.Option.Option u32))));
   let ⟨_, out⟩ ←
     (Core.Option.Impl.take Lean_core_models.Option.S
       (Core.Option.Option.Some
@@ -243,7 +243,7 @@ instance Lean_core_models.Default.Structs.Impl :
 
 def Lean_core_models.Default.Structs.test
   (_ : Rust_primitives.Hax.Tuple0)
-  : Result Lean_core_models.Default.Structs.S
+  : RustM Lean_core_models.Default.Structs.S
   := do
   (Core.Default.Default.default Rust_primitives.Hax.Tuple0.mk)
 
@@ -262,14 +262,12 @@ instance Lean_core_models.Default.Enums.Impl
 
 def Lean_core_models.Function.test
   (_ : Rust_primitives.Hax.Tuple0)
-  : Result u32
+  : RustM u32
   := do
-  let f_1 : (u32 -> Result u32) :=
-    (fun _ => (do (pure (9 : u32)) : Result u32));
-  let f_2 : (u32 -> u32 -> Result u32) :=
-    (fun x y => (do (x +? y) : Result u32));
-  let f_2_tuple : ((Rust_primitives.Hax.Tuple2 u32 u32) -> Result u32) :=
-    (fun ⟨x, y⟩ => (do (x +? y) : Result u32));
+  let f_1 : (u32 -> RustM u32) := (fun _ => (do (pure (9 : u32)) : RustM u32));
+  let f_2 : (u32 -> u32 -> RustM u32) := (fun x y => (do (x +? y) : RustM u32));
+  let f_2_tuple : ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32) :=
+    (fun ⟨x, y⟩ => (do (x +? y) : RustM u32));
   ((← ((← (Core.Ops.Function.Fn.call
         f_1
         (Rust_primitives.Hax.Tuple1.mk (0 : u32))))
