@@ -1957,7 +1957,6 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   List.append [ opts; "open FStar.Mul" ]
     (if
        hax_core_models_extraction
-       && String.is_prefix ~prefix:"Core_models" mod_name
      then [ "open Rust_primitives" ]
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"

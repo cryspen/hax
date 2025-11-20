@@ -16,7 +16,7 @@ mod borrow {
 }
 
 mod boxed {
-    struct Box<T, A>(T, Option<A>);
+    pub struct Box<T, A>(pub T, pub Option<A>);
     impl <T, A> Box<T, A> {
         fn new(v: T) -> Box<T, A> {
             Box(v, None)
@@ -120,20 +120,21 @@ mod fmt {
 }
 
 mod slice {
-    struct Dummy;
+    #[hax_lib::exclude]
+    struct Dummy<T>(T);
 
     use super::vec::Vec;
     use rust_primitives::seq::*;
 
-    impl Dummy {
-        fn to_vec<T>(s: &[T]) -> Vec<T, crate::alloc::Global> {
+    impl <T> Dummy<T> {
+        fn to_vec(s: &[T]) -> Vec<T, crate::alloc::Global> {
             Vec(seq_from_slice(s))
         }
-        fn into_vec<T, A>(s: super::boxed::Box<&[T], A>) -> Vec<T, A> {
+        fn into_vec<A>(s: super::boxed::Box<&[T], A>) -> Vec<T, A> {
             Vec(seq_from_slice(s.0))
         }
         #[hax_lib::opaque]
-        fn sort_by<T, F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
+        fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
     }
 }
 
