@@ -13,6 +13,7 @@ members = [
         "mut-ref-functionalization",
         "generics",
         "lean-tests",
+        "lean-core-models",
         "loops",
         "even",
         "odd",
