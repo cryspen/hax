@@ -1,7 +1,7 @@
 module Coverage.Conditions
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let main__v_B: u32 = mk_u32 100
 
@@ -17,7 +17,7 @@ let main (_: Prims.unit) : Prims.unit =
   if countdown >. mk_u32 7
   then
     let countdown:u32 = countdown -! mk_u32 4 in
-    let countdown, x:(u32 & u32) = countdown, main__v_B <: (u32 & u32) in
+    let (countdown: u32), (x: u32) = countdown, main__v_B <: (u32 & u32) in
     let countdown:i32 = mk_i32 0 in
     let countdown:i32 =
       if true
@@ -53,11 +53,11 @@ let main (_: Prims.unit) : Prims.unit =
           if countdown >. mk_i32 7
           then
             let countdown:i32 = countdown -! mk_i32 4 in
-            let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+            let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               ()
             else
               if countdown >. mk_i32 2
@@ -70,7 +70,7 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
           else
             if countdown >. mk_i32 2
@@ -83,11 +83,11 @@ let main (_: Prims.unit) : Prims.unit =
                 else countdown
               in
               let countdown:i32 = countdown -! mk_i32 5 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -100,17 +100,17 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               let should_be_reachable:i32 = countdown in
               let _:Prims.unit =
-                Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                       (let list = ["reached\n"] in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                         Rust_primitives.Hax.array_of_list 1 list)
                     <:
-                    Core.Fmt.t_Arguments)
+                    Core_models.Fmt.t_Arguments)
               in
               let _:Prims.unit = () in
               ()
@@ -136,11 +136,11 @@ let main (_: Prims.unit) : Prims.unit =
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -153,7 +153,7 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               if countdown >. mk_i32 2
@@ -166,11 +166,11 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -183,17 +183,17 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 let should_be_reachable:i32 = countdown in
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                  Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                         (let list = ["reached\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:
-                      Core.Fmt.t_Arguments)
+                      Core_models.Fmt.t_Arguments)
                 in
                 let _:Prims.unit = () in
                 ()
@@ -209,11 +209,11 @@ let main (_: Prims.unit) : Prims.unit =
         if countdown >. mk_i32 7
         then
           let countdown:i32 = countdown -! mk_i32 4 in
-          let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+          let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
           if countdown >. mk_i32 7
           then
             let countdown:i32 = countdown -! mk_i32 4 in
-            let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+            let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
             ()
           else
             if countdown >. mk_i32 2
@@ -226,7 +226,7 @@ let main (_: Prims.unit) : Prims.unit =
                 else countdown
               in
               let countdown:i32 = countdown -! mk_i32 5 in
-              let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               ()
         else
           if countdown >. mk_i32 2
@@ -239,11 +239,11 @@ let main (_: Prims.unit) : Prims.unit =
               else countdown
             in
             let countdown:i32 = countdown -! mk_i32 5 in
-            let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+            let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               ()
             else
               if countdown >. mk_i32 2
@@ -256,17 +256,17 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
           else
             let should_be_reachable:i32 = countdown in
             let _:Prims.unit =
-              Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+              Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                     (let list = ["reached\n"] in
                       FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                       Rust_primitives.Hax.array_of_list 1 list)
                   <:
-                  Core.Fmt.t_Arguments)
+                  Core_models.Fmt.t_Arguments)
             in
             let _:Prims.unit = () in
             ()
@@ -305,11 +305,11 @@ let main (_: Prims.unit) : Prims.unit =
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -322,7 +322,7 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               if countdown >. mk_i32 2
@@ -335,11 +335,11 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -352,17 +352,17 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 let should_be_reachable:i32 = countdown in
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                  Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                         (let list = ["reached\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:
-                      Core.Fmt.t_Arguments)
+                      Core_models.Fmt.t_Arguments)
                 in
                 let _:Prims.unit = () in
                 ()
@@ -388,11 +388,11 @@ let main (_: Prims.unit) : Prims.unit =
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -405,7 +405,7 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 if countdown >. mk_i32 2
@@ -418,11 +418,11 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   if countdown >. mk_i32 7
                   then
                     let countdown:i32 = countdown -! mk_i32 4 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
                   else
                     if countdown >. mk_i32 2
@@ -435,17 +435,17 @@ let main (_: Prims.unit) : Prims.unit =
                         else countdown
                       in
                       let countdown:i32 = countdown -! mk_i32 5 in
-                      let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                      let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                       ()
                 else
                   let should_be_reachable:i32 = countdown in
                   let _:Prims.unit =
-                    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["reached\n"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
                         <:
-                        Core.Fmt.t_Arguments)
+                        Core_models.Fmt.t_Arguments)
                   in
                   let _:Prims.unit = () in
                   ()
@@ -461,11 +461,11 @@ let main (_: Prims.unit) : Prims.unit =
           if countdown >. mk_i32 7
           then
             let countdown:i32 = countdown -! mk_i32 4 in
-            let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+            let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               ()
             else
               if countdown >. mk_i32 2
@@ -478,7 +478,7 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
           else
             if countdown >. mk_i32 2
@@ -491,11 +491,11 @@ let main (_: Prims.unit) : Prims.unit =
                 else countdown
               in
               let countdown:i32 = countdown -! mk_i32 5 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -508,17 +508,17 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               let should_be_reachable:i32 = countdown in
               let _:Prims.unit =
-                Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                       (let list = ["reached\n"] in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                         Rust_primitives.Hax.array_of_list 1 list)
                     <:
-                    Core.Fmt.t_Arguments)
+                    Core_models.Fmt.t_Arguments)
               in
               let _:Prims.unit = () in
               ()
@@ -533,7 +533,7 @@ let main (_: Prims.unit) : Prims.unit =
         else countdown
       in
       let countdown:u32 = countdown -! mk_u32 5 in
-      let countdown, x:(u32 & u32) = countdown, countdown <: (u32 & u32) in
+      let (countdown: u32), (x: u32) = countdown, countdown <: (u32 & u32) in
       let countdown:i32 = mk_i32 0 in
       let countdown:i32 =
         if true
@@ -569,11 +569,11 @@ let main (_: Prims.unit) : Prims.unit =
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -586,7 +586,7 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               if countdown >. mk_i32 2
@@ -599,11 +599,11 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -616,17 +616,17 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 let should_be_reachable:i32 = countdown in
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                  Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                         (let list = ["reached\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:
-                      Core.Fmt.t_Arguments)
+                      Core_models.Fmt.t_Arguments)
                 in
                 let _:Prims.unit = () in
                 ()
@@ -652,11 +652,11 @@ let main (_: Prims.unit) : Prims.unit =
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -669,7 +669,7 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 if countdown >. mk_i32 2
@@ -682,11 +682,11 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   if countdown >. mk_i32 7
                   then
                     let countdown:i32 = countdown -! mk_i32 4 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
                   else
                     if countdown >. mk_i32 2
@@ -699,17 +699,17 @@ let main (_: Prims.unit) : Prims.unit =
                         else countdown
                       in
                       let countdown:i32 = countdown -! mk_i32 5 in
-                      let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                      let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                       ()
                 else
                   let should_be_reachable:i32 = countdown in
                   let _:Prims.unit =
-                    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["reached\n"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
                         <:
-                        Core.Fmt.t_Arguments)
+                        Core_models.Fmt.t_Arguments)
                   in
                   let _:Prims.unit = () in
                   ()
@@ -725,11 +725,11 @@ let main (_: Prims.unit) : Prims.unit =
           if countdown >. mk_i32 7
           then
             let countdown:i32 = countdown -! mk_i32 4 in
-            let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+            let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               ()
             else
               if countdown >. mk_i32 2
@@ -742,7 +742,7 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
           else
             if countdown >. mk_i32 2
@@ -755,11 +755,11 @@ let main (_: Prims.unit) : Prims.unit =
                 else countdown
               in
               let countdown:i32 = countdown -! mk_i32 5 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -772,17 +772,17 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               let should_be_reachable:i32 = countdown in
               let _:Prims.unit =
-                Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                       (let list = ["reached\n"] in
                         FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                         Rust_primitives.Hax.array_of_list 1 list)
                     <:
-                    Core.Fmt.t_Arguments)
+                    Core_models.Fmt.t_Arguments)
               in
               let _:Prims.unit = () in
               ()
@@ -821,11 +821,11 @@ let main (_: Prims.unit) : Prims.unit =
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -838,7 +838,7 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 if countdown >. mk_i32 2
@@ -851,11 +851,11 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   if countdown >. mk_i32 7
                   then
                     let countdown:i32 = countdown -! mk_i32 4 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
                   else
                     if countdown >. mk_i32 2
@@ -868,17 +868,17 @@ let main (_: Prims.unit) : Prims.unit =
                         else countdown
                       in
                       let countdown:i32 = countdown -! mk_i32 5 in
-                      let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                      let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                       ()
                 else
                   let should_be_reachable:i32 = countdown in
                   let _:Prims.unit =
-                    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["reached\n"] in
                             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                             Rust_primitives.Hax.array_of_list 1 list)
                         <:
-                        Core.Fmt.t_Arguments)
+                        Core_models.Fmt.t_Arguments)
                   in
                   let _:Prims.unit = () in
                   ()
@@ -904,11 +904,11 @@ let main (_: Prims.unit) : Prims.unit =
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   if countdown >. mk_i32 7
                   then
                     let countdown:i32 = countdown -! mk_i32 4 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
                   else
                     if countdown >. mk_i32 2
@@ -921,7 +921,7 @@ let main (_: Prims.unit) : Prims.unit =
                         else countdown
                       in
                       let countdown:i32 = countdown -! mk_i32 5 in
-                      let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                      let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                       ()
                 else
                   if countdown >. mk_i32 2
@@ -934,11 +934,11 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     if countdown >. mk_i32 7
                     then
                       let countdown:i32 = countdown -! mk_i32 4 in
-                      let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                      let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                       ()
                     else
                       if countdown >. mk_i32 2
@@ -952,17 +952,19 @@ let main (_: Prims.unit) : Prims.unit =
                           else countdown
                         in
                         let countdown:i32 = countdown -! mk_i32 5 in
-                        let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                        let (countdown: i32), (w: Prims.unit) =
+                          countdown, () <: (i32 & Prims.unit)
+                        in
                         ()
                   else
                     let should_be_reachable:i32 = countdown in
                     let _:Prims.unit =
-                      Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                      Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                             (let list = ["reached\n"] in
                               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                               Rust_primitives.Hax.array_of_list 1 list)
                           <:
-                          Core.Fmt.t_Arguments)
+                          Core_models.Fmt.t_Arguments)
                     in
                     let _:Prims.unit = () in
                     ()
@@ -978,11 +980,11 @@ let main (_: Prims.unit) : Prims.unit =
             if countdown >. mk_i32 7
             then
               let countdown:i32 = countdown -! mk_i32 4 in
-              let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+              let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
               if countdown >. mk_i32 7
               then
                 let countdown:i32 = countdown -! mk_i32 4 in
-                let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 ()
               else
                 if countdown >. mk_i32 2
@@ -995,7 +997,7 @@ let main (_: Prims.unit) : Prims.unit =
                     else countdown
                   in
                   let countdown:i32 = countdown -! mk_i32 5 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
             else
               if countdown >. mk_i32 2
@@ -1008,11 +1010,11 @@ let main (_: Prims.unit) : Prims.unit =
                   else countdown
                 in
                 let countdown:i32 = countdown -! mk_i32 5 in
-                let countdown, z:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                let (countdown: i32), (z: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                 if countdown >. mk_i32 7
                 then
                   let countdown:i32 = countdown -! mk_i32 4 in
-                  let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                  let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                   ()
                 else
                   if countdown >. mk_i32 2
@@ -1025,17 +1027,17 @@ let main (_: Prims.unit) : Prims.unit =
                       else countdown
                     in
                     let countdown:i32 = countdown -! mk_i32 5 in
-                    let countdown, w:(i32 & Prims.unit) = countdown, () <: (i32 & Prims.unit) in
+                    let (countdown: i32), (w: Prims.unit) = countdown, () <: (i32 & Prims.unit) in
                     ()
               else
                 let should_be_reachable:i32 = countdown in
                 let _:Prims.unit =
-                  Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_const (mk_usize 1)
+                  Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                         (let list = ["reached\n"] in
                           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
                           Rust_primitives.Hax.array_of_list 1 list)
                       <:
-                      Core.Fmt.t_Arguments)
+                      Core_models.Fmt.t_Arguments)
                 in
                 let _:Prims.unit = () in
                 ()

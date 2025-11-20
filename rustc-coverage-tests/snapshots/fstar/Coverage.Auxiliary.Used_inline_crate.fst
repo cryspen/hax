@@ -1,7 +1,7 @@
 module Coverage.Auxiliary.Used_inline_crate
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -11,85 +11,89 @@ let _ =
 
 let used_only_from_bin_crate_generic_function
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Debug v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Debug v_T)
       (arg: v_T)
     : Prims.unit =
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core.Fmt.Rt.impl__new_debug #v_T arg] in
+  let args:v_T = arg <: v_T in
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = ["used_only_from_bin_crate_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   let _:Prims.unit = () in
   ()
 
 let used_only_from_this_lib_crate_generic_function
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Debug v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Debug v_T)
       (arg: v_T)
     : Prims.unit =
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core.Fmt.Rt.impl__new_debug #v_T arg] in
+  let args:v_T = arg <: v_T in
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = ["used_only_from_this_lib_crate_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   let _:Prims.unit = () in
   ()
 
 let used_from_bin_crate_and_lib_crate_generic_function
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Debug v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Debug v_T)
       (arg: v_T)
     : Prims.unit =
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core.Fmt.Rt.impl__new_debug #v_T arg] in
+  let args:v_T = arg <: v_T in
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = ["used_from_bin_crate_and_lib_crate_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   let _:Prims.unit = () in
   ()
 
 let used_with_same_type_from_bin_crate_and_lib_crate_generic_function
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Debug v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Debug v_T)
       (arg: v_T)
     : Prims.unit =
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core.Fmt.Rt.impl__new_debug #v_T arg] in
+  let args:v_T = arg <: v_T in
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list =
               ["used_with_same_type_from_bin_crate_and_lib_crate_generic_function with "; "\n"]
@@ -98,37 +102,38 @@ let used_with_same_type_from_bin_crate_and_lib_crate_generic_function
             Rust_primitives.Hax.array_of_list 2 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   let _:Prims.unit = () in
   ()
 
 let unused_generic_function
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Fmt.t_Debug v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Debug v_T)
       (arg: v_T)
     : Prims.unit =
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core.Fmt.Rt.impl__new_debug #v_T arg] in
+  let args:v_T = arg <: v_T in
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list = [Core_models.Fmt.Rt.impl__new_debug #v_T args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = ["unused_generic_function with "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   let _:Prims.unit = () in
   ()
 
 let unused_function (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:
@@ -143,7 +148,7 @@ let unused_function (_: Prims.unit) : Prims.unit =
 
 let unused_private_function (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:
@@ -188,7 +193,7 @@ let uuse_this_lib_crate (_: Prims.unit) : Prims.unit =
 
 let used_function (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:
@@ -208,7 +213,7 @@ let used_function (_: Prims.unit) : Prims.unit =
 
 let used_inline_function (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:

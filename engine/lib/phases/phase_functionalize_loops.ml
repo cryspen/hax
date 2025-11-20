@@ -313,8 +313,10 @@ struct
             UB.make_closure [ bpat ] invariant invariant.span
           in
           let variant = UB.make_closure [ bpat ] variant variant.span in
+          (* The invariant should come before the condition. This allows to use the invariant
+             to prove panic freedom of the condition. *)
           UB.call fold_operator
-            [ condition; invariant; variant; init; body ]
+            [ invariant; condition; variant; init; body ]
             span (dty span expr.typ)
       | Loop _ ->
           Error.unimplemented ~issue_id:933 ~details:"Unhandled loop kind" span

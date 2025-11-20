@@ -29,27 +29,30 @@ diagnostics = []
 "Naming.Ambiguous_names.fst" = '''
 module Naming.Ambiguous_names
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let debug (label value: u32) : Prims.unit =
   let args:(u32 & u32) = label, value <: (u32 & u32) in
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 2) =
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 2) =
     let list =
-      [Core.Fmt.Rt.impl__new_display #u32 args._1; Core.Fmt.Rt.impl__new_display #u32 args._2]
+      [
+        Core_models.Fmt.Rt.impl__new_display #u32 args._1;
+        Core_models.Fmt.Rt.impl__new_display #u32 args._2
+      ]
     in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
     Rust_primitives.Hax.array_of_list 2 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 3)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 3)
           (mk_usize 2)
           (let list = ["["; "] a="; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
             Rust_primitives.Hax.array_of_list 3 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   ()
 
@@ -84,41 +87,35 @@ let ff_expand (_: Prims.unit) : Prims.unit =
 "Naming.Functions_defined_in_trait_impls.fst" = '''
 module Naming.Functions_defined_in_trait_impls
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_A = | A : t_A
 
-let f_eq__impl__panic_cold_explicit (_: Prims.unit) : Rust_primitives.Hax.t_Never =
-  Core.Panicking.panic_explicit ()
-
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Cmp.t_PartialEq t_A t_A =
+let impl: Core_models.Cmp.t_PartialEq t_A t_A =
   {
     f_eq_pre = (fun (self: t_A) (other: t_A) -> true);
     f_eq_post = (fun (self: t_A) (other: t_A) (out: bool) -> true);
     f_eq
     =
     fun (self: t_A) (other: t_A) ->
-      Rust_primitives.Hax.never_to_any (f_eq__impl__panic_cold_explicit ()
+      Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic "explicit panic"
           <:
           Rust_primitives.Hax.t_Never)
   }
 
 type t_B = | B : t_B
 
-let f_eq__impl_1__panic_cold_explicit (_: Prims.unit) : Rust_primitives.Hax.t_Never =
-  Core.Panicking.panic_explicit ()
-
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Cmp.t_PartialEq t_B t_B =
+let impl_1: Core_models.Cmp.t_PartialEq t_B t_B =
   {
     f_eq_pre = (fun (self: t_B) (other: t_B) -> true);
     f_eq_post = (fun (self: t_B) (other: t_B) (out: bool) -> true);
     f_eq
     =
     fun (self: t_B) (other: t_B) ->
-      Rust_primitives.Hax.never_to_any (f_eq__impl_1__panic_cold_explicit ()
+      Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic "explicit panic"
           <:
           Rust_primitives.Hax.t_Never)
   }
@@ -126,8 +123,8 @@ let impl_1: Core.Cmp.t_PartialEq t_B t_B =
 "Naming.fst" = '''
 module Naming
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Foo =
   | Foo_A : t_Foo

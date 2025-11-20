@@ -66,6 +66,10 @@ let max_isize = maxint ISIZE
 let range (n:int) (t:inttype) : bool =
   minint t <= n && n <= maxint t
 
+let included (t: inttype) (t': inttype) =
+  minint t' <= minint t && maxint t <= maxint t'
+
+
 let range_t t = x:int{range x t}
 
 type int_t t = | MkInt: range_t t -> int_t t
@@ -169,7 +173,6 @@ let cast_mod (#t:inttype) (#t':inttype)
     (u1:int_t t) = 
     mk_int #t' (v u1 @%. t')
 
-#push-options "--split_queries always --z3rlimit 150 --z3version 4.13.3"
 /// Simplifies double casts when possible.
 /// For example, with `x` a i32, this lemma rewrites `x as i64 as i32` into `x`.
 let cast_identity_lemma
@@ -177,8 +180,7 @@ let cast_identity_lemma
   (n: int_t a)
   : Lemma (cast_mod #b #a (cast_mod #a #b n) == n)
     [SMTPat (cast_mod #b #a (cast_mod #a #b n))]
-  = ()
-#pop-options
+  = FStar.Math.Lemmas.small_mod (abs (v n)) (modulus a)
 
 /// Arithmetic operations
 /// 
@@ -511,7 +513,7 @@ val get_bit_cast_extend #t #u
           [SMTPat (get_bit (cast_mod #t #u x) nth)]
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-instance default_int #t: Core.Default.t_Default (int_t t) = {
+instance default_int #t: Core_models.Default.t_Default (int_t t) = {
   f_default_pre = (fun () -> true);
   f_default_post = (fun () (res: int_t t) -> res =. mk_int #t 0);
   f_default = (fun () -> mk_int #t 0);

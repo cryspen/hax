@@ -1,13 +1,13 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     flake-utils.url = "github:numtide/flake-utils";
     crane = { url = "github:ipetkov/crane"; };
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    fstar.url = "github:FStarLang/FStar/v2025.03.25";
+    fstar.url = "github:FStarLang/FStar/v2025.10.06";
     hacl-star = {
       url = "github:hacl-star/hacl-star";
       flake = false;

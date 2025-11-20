@@ -1,7 +1,7 @@
 module Coverage.Inner_items
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -14,20 +14,21 @@ let main__t_in_mod__v_IN_MOD_CONST: u32 = mk_u32 1000
 let main__in_func (a: u32) : Prims.unit =
   let b:u32 = mk_u32 1 in
   let c:u32 = a +! b in
-  let args:t_Array Core.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core.Fmt.Rt.impl__new_display #u32 c] in
+  let args:u32 = c <: u32 in
+  let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+    let list = [Core_models.Fmt.Rt.impl__new_display #u32 args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
   let _:Prims.unit =
-    Std.Io.Stdio.e_print (Core.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
+    Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 2)
           (mk_usize 1)
           (let list = ["c = "; "\n"] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 2);
             Rust_primitives.Hax.array_of_list 2 list)
           args
         <:
-        Core.Fmt.t_Arguments)
+        Core_models.Fmt.t_Arguments)
   in
   ()
 
@@ -42,7 +43,7 @@ Note: the error was labeled with context `reject_TraitItemDefault`.
 
 Last available AST for this item:
 
-#[<cfg>(any(feature = "json", feature = "lean"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;
+#[<cfg_trace>(any(feature = "json", feature = "lean"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;
 #[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_post(_: Self,_: int,_: Self) -> bool;
 fn main__f_trait_func(_: Self,_: int) -> Self;
 fn main__f_default_trait_func((self: Self)) -> Self{{let _: tuple0 = {coverage::inner_items::main__in_func(coverage::inner_items::main__v_IN_CONST)};{let self: Self = {coverage::inner_items::main__f_trait_func(self,coverage::inner_items::main__v_IN_CONST)};self}}}}
@@ -122,7 +123,7 @@ let main__impl: main__t_InTrait main__t_InStruct =
 
 let main (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:

@@ -1,7 +1,7 @@
 module Coverage.Match_or_pattern
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -11,7 +11,7 @@ let _ =
 
 let main (_: Prims.unit) : Prims.unit =
   let is_true:bool =
-    (Core.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
+    (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args
         #FStar.Tactics.Typeclasses.solve
         (Std.Env.args () <: Std.Env.t_Args)
       <:
@@ -20,7 +20,7 @@ let main (_: Prims.unit) : Prims.unit =
   in
   let (a: u8):u8 = mk_u8 0 in
   let (b: u8):u8 = mk_u8 0 in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 2 in
@@ -36,7 +36,7 @@ let main (_: Prims.unit) : Prims.unit =
     | Rust_primitives.Integers.MkInt 1, Rust_primitives.Integers.MkInt 3 -> ()
     | _ -> ()
   in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 0 in
@@ -52,7 +52,7 @@ let main (_: Prims.unit) : Prims.unit =
     | Rust_primitives.Integers.MkInt 1, Rust_primitives.Integers.MkInt 3 -> ()
     | _ -> ()
   in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 2 in
@@ -68,7 +68,7 @@ let main (_: Prims.unit) : Prims.unit =
     | Rust_primitives.Integers.MkInt 1, Rust_primitives.Integers.MkInt 3 -> ()
     | _ -> ()
   in
-  let a, b:(u8 & u8) =
+  let (a: u8), (b: u8) =
     if is_true
     then
       let a:u8 = mk_u8 0 in

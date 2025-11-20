@@ -100,8 +100,8 @@ let c_borrow_kind span : Thir.borrow_kind -> borrow_kind = function
 
 let c_binding_mode : Thir.by_ref -> binding_mode = function
   | No -> ByValue
-  | Yes true -> ByRef (Mut W.mutable_reference, W.reference)
-  | Yes false -> ByRef (Shared, W.reference)
+  | Yes (_, true) -> ByRef (Mut W.mutable_reference, W.reference)
+  | Yes (_, false) -> ByRef (Shared, W.reference)
 
 let unit_typ : ty = TApp { ident = `TupleType 0; args = [] }
 
@@ -237,13 +237,13 @@ module type EXPR = sig
   val c_expr_drop_body : Thir.decorated_for__expr_kind -> expr
   val c_ty : Thir.span -> Thir.ty -> ty
   val c_generic_value : Thir.span -> Thir.generic_arg -> generic_value
-  val c_generics : Thir.generics -> generics
+  val c_generics : ?offset:int -> Thir.generics -> generics
   val c_param : Thir.span -> Thir.param -> param
   val c_fn_params : Thir.span -> Thir.param list -> param list
   val c_trait_item' : Thir.trait_item -> Thir.trait_item_kind -> trait_item'
   val c_trait_ref : Thir.span -> Thir.trait_ref -> trait_goal
   val c_impl_expr : Thir.span -> Thir.impl_expr -> impl_expr
-  val c_clause : Thir.span -> Thir.clause -> generic_constraint option
+  val c_clause : Thir.span -> int -> Thir.clause -> generic_constraint option
 end
 
 (* BinOp to [core::ops::*] overloaded functions *)
@@ -663,11 +663,14 @@ end) : EXPR = struct
             }
       | TupleField { lhs; field } ->
           (* TODO: refactor *)
-          let tuple_len =
-            0
-            (* todo, lookup type *)
-          in
           let lhs = c_expr lhs in
+          let tuple_len =
+            match lhs.typ with
+            | TApp { ident = `TupleType len; _ } -> len
+            | _ ->
+                assertion_failure [ e.span ]
+                  "LHS of tuple field projection is not typed as a tuple."
+          in
           let projector =
             GlobalVar
               (`Projector (`TupleField (Int.of_string field, tuple_len)))
@@ -906,7 +909,7 @@ end) : EXPR = struct
             "constant_lit_to_lit: TraitConst | FnPtr | RawBorrow | Cast | \
              Memory"
       | Todo _ -> assertion_failure [ span ] "ConstantExpr::Todo"
-    and constant_lit_to_lit (l : Thir.constant_literal) _span :
+    and constant_lit_to_lit (l : Thir.constant_literal) span :
         Thir.lit_kind * bool =
       match l with
       | Bool v -> (Bool v, false)
@@ -922,6 +925,8 @@ end) : EXPR = struct
           | None -> (Float (v, Suffixed ty), false))
       | Str v -> (Str (v, Cooked), false)
       | ByteStr v -> (ByteStr (v, Cooked), false)
+      | PtrNoProvenance _ ->
+          assertion_failure [ span ] "constant_lit_to_lit: PtrNoProvenance"
     and constant_field_expr ({ field; value } : Thir.constant_field_expr) :
         Thir.field_expr =
       { field; value = constant_expr_to_expr value }
@@ -1080,9 +1085,25 @@ end) : EXPR = struct
         TApp { ident; args }
     | Foreign _ -> unimplemented ~issue_id:928 [ span ] "Foreign"
     | Str -> TStr
-    | Array (ty, len) ->
+    | Array item_ref ->
+        let ty, len =
+          match item_ref.value.generic_args with
+          | [ Type ty; Const len ] -> (ty, len)
+          | _ ->
+              assertion_failure [ span ]
+                "Wrong generics for array: expected a type and a constant. See \
+                 synthetic_items in hax frontend."
+        in
         TArray { typ = c_ty span ty; length = c_constant_expr len }
-    | Slice ty ->
+    | Slice item_ref ->
+        let ty =
+          match item_ref.value.generic_args with
+          | [ Type ty ] -> ty
+          | _ ->
+              assertion_failure [ span ]
+                "Wrong generics for slice: expected a type. See \
+                 synthetic_items in hax frontend."
+        in
         let ty = c_ty span ty in
         TSlice { ty; witness = W.slice }
     | RawPtr _ -> TRawPointer { witness = W.raw_pointer }
@@ -1091,7 +1112,17 @@ end) : EXPR = struct
         let mut = c_mutability W.mutable_reference mut in
         TRef { witness = W.reference; region = "todo"; typ; mut }
     | Never -> U.never_typ
-    | Tuple types ->
+    | Tuple item_ref ->
+        let types =
+          List.map
+            ~f:(function Types.Type ty -> Some ty | _ -> None)
+            item_ref.value.generic_args
+          |> Option.all
+          |> Option.value_or_thunk ~default:(fun _ ->
+                 assertion_failure [ span ]
+                   "Wrong generics for slice: expected a type. See \
+                    synthetic_items in hax frontend.")
+        in
         let types = List.map ~f:(fun ty -> GType (c_ty span ty)) types in
         TApp { ident = `TupleType (List.length types); args = types }
     | Alias { kind = Projection { assoc_item = _; impl_expr }; def_id; _ } ->
@@ -1178,19 +1209,17 @@ end) : EXPR = struct
         (chunk : Thir.impl_expr_path_chunk) =
       match chunk with
       | AssocItem
-          { item; predicate = { value = { trait_ref; _ }; _ }; predicate_id; _ }
-        ->
+          { item; predicate = { value = { trait_ref; _ }; _ }; index; _ } ->
           let ident =
-            { goal = c_trait_ref span trait_ref; name = predicate_id }
+            { goal = c_trait_ref span trait_ref; name = "i" ^ index }
           in
           let item = Concrete_ident.of_def_id ~value:false item.value.def_id in
           let trait_ref = c_trait_ref span trait_ref in
           Projection
             { impl = { kind = item_kind; goal = trait_ref }; ident; item }
-      | Parent { predicate = { value = { trait_ref; _ }; _ }; predicate_id; _ }
-        ->
+      | Parent { predicate = { value = { trait_ref; _ }; _ }; index; _ } ->
           let ident =
-            { goal = c_trait_ref span trait_ref; name = predicate_id }
+            { goal = c_trait_ref span trait_ref; name = "i" ^ index }
           in
           let trait_ref = c_trait_ref span trait_ref in
           Parent { impl = { kind = item_kind; goal = trait_ref }; ident }
@@ -1200,8 +1229,8 @@ end) : EXPR = struct
         let trait = Concrete_ident.of_def_id ~value:false def_id in
         let args = List.map ~f:(c_generic_value span) generic_args in
         Concrete { trait; args }
-    | LocalBound { predicate_id; path; _ } ->
-        let init = LocalBound { id = predicate_id } in
+    | LocalBound { index; path; _ } ->
+        let init = LocalBound { id = "i" ^ index } in
         List.fold ~init ~f:browse_path path
     | Dyn -> Dyn
     | SelfImpl { path; _ } -> List.fold ~init:Self ~f:browse_path path
@@ -1298,7 +1327,7 @@ end) : EXPR = struct
         let trait =
           Concrete_ident.of_def_id ~value:false trait_ref.value.def_id
         in
-        Some (GCType { goal = { trait; args }; name = id })
+        Some (GCType { goal = { trait; args }; name = "i" ^ Int.to_string id })
     | Projection { impl_expr; assoc_item; ty } ->
         let impl = c_impl_expr span impl_expr in
         let assoc_item =
@@ -1308,9 +1337,10 @@ end) : EXPR = struct
         Some (GCProjection { impl; assoc_item; typ })
     | _ -> None
 
-  let c_clause span (p : Thir.clause) : generic_constraint option =
-    let ({ kind; id } : Thir.clause) = p in
-    c_clause_kind span id kind.value
+  let c_clause span (index : int) (p : Thir.clause) : generic_constraint option
+      =
+    let ({ kind; _ } : Thir.clause) = p in
+    c_clause_kind span index kind.value
 
   let list_dedup (equal : 'a -> 'a -> bool) : 'a list -> 'a list =
     let rec aux (seen : 'a list) (todo : 'a list) : 'a list =
@@ -1322,8 +1352,18 @@ end) : EXPR = struct
     in
     aux []
 
-  let c_generics (generics : Thir.generics) : generics =
-    let bounds = List.filter_map ~f:(c_clause generics.span) generics.bounds in
+  let c_bounds ?(offset : int = 0) span bounds =
+    List.fold_left ~init:(offset, [])
+      ~f:(fun (i, clauses) c ->
+        match c_clause span i c with
+        | Some (GCType _ as c) -> (i + 1, c :: clauses)
+        | Some c -> (i, c :: clauses)
+        | None -> (i, clauses))
+      bounds
+    |> snd |> List.rev
+
+  let c_generics ?(offset : int = 0) (generics : Thir.generics) : generics =
+    let bounds = c_bounds ~offset generics.span generics.bounds in
     {
       params = List.map ~f:c_generic_param generics.params;
       constraints = bounds |> list_dedup equal_generic_constraint;
@@ -1358,7 +1398,7 @@ end) : EXPR = struct
           }
     | Type (bounds, None) ->
         let bounds =
-          List.filter_map ~f:(c_clause span) bounds
+          c_bounds span bounds
           |> List.filter_map ~f:(fun bound ->
                  match bound with GCType impl -> Some impl | _ -> None)
         in
@@ -1380,7 +1420,7 @@ include struct
     c_trait_ref
 
   let import_clause :
-      Types.span -> Types.clause -> Ast.Rust.generic_constraint option =
+      Types.span -> int -> Types.clause -> Ast.Rust.generic_constraint option =
     c_clause
 end
 
@@ -1728,6 +1768,11 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
           in
           let c_body = if sub_item_erased then c_expr_drop_body else c_body in
 
+          let generics = c_generics generics in
+          let offset =
+            List.count generics.constraints ~f:[%matches? GCType _]
+          in
+
           let v =
             match (item.kind : Thir.impl_item_kind) with
             | Fn { body; params; header = { safety; _ }; _ } ->
@@ -1739,8 +1784,8 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                   {
                     name = item_def_id;
                     generics =
-                      U.concat_generics (c_generics generics)
-                        (c_generics item.generics);
+                      U.concat_generics generics
+                        (c_generics ~offset item.generics);
                     body = c_body body;
                     params;
                     safety = c_header_safety safety;
@@ -1749,7 +1794,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                 Fn
                   {
                     name = item_def_id;
-                    generics = c_generics generics;
+                    generics;
                     (* does that make sense? can we have `const<T>`? *)
                     body = c_body e;
                     params = [];
@@ -1779,6 +1824,8 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
           ~f:(fun { attributes; _ } -> not (should_skip attributes))
           items
       in
+      let generics = c_generics generics in
+      let offset = List.count generics.constraints ~f:[%matches? GCType _] in
       let items =
         if erased then []
         else
@@ -1793,7 +1840,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
               in
               {
                 ii_span = Span.of_thir item.span;
-                ii_generics = c_generics item.generics;
+                ii_generics = c_generics ~offset item.generics;
                 ii_v =
                   (match (item.kind : Thir.impl_item_kind) with
                   | Fn { body; params; _ } ->
@@ -1808,14 +1855,16 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                         {
                           typ = c_ty item.span ty;
                           parent_bounds =
-                            List.filter_map
-                              ~f:(fun (clause, impl_expr, span) ->
-                                let* bound = c_clause span clause in
-                                match bound with
-                                | GCType trait_goal ->
-                                    Some (c_impl_expr span impl_expr, trait_goal)
-                                | _ -> None)
-                              parent_bounds;
+                            List.fold_left ~init:(0, [])
+                              ~f:(fun (i, clauses) (clause, impl_expr, span) ->
+                                match c_clause span i clause with
+                                | Some (GCType trait_goal) ->
+                                    ( i + 1,
+                                      (c_impl_expr span impl_expr, trait_goal)
+                                      :: clauses )
+                                | _ -> (i, clauses))
+                              parent_bounds
+                            |> snd |> List.rev;
                         });
                 ii_ident;
                 ii_attrs = c_item_attrs item.attributes;
@@ -1825,7 +1874,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
       mk
       @@ Impl
            {
-             generics = c_generics generics;
+             generics;
              self_ty = c_ty item.span self_ty;
              of_trait =
                ( Concrete_ident.of_def_id ~value:false of_trait.value.def_id,
@@ -1834,9 +1883,9 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                    of_trait.value.generic_args );
              items;
              parent_bounds =
-               List.filter_map
-                 ~f:(fun (clause, impl_expr, span) ->
-                   let* bound = c_clause span clause in
+               List.filter_mapi
+                 ~f:(fun i (clause, impl_expr, span) ->
+                   let* bound = c_clause span i clause in
                    match bound with
                    | GCType trait_goal ->
                        Some (c_impl_expr span impl_expr, trait_goal)
@@ -1889,11 +1938,7 @@ let import_item ~type_only (item : Thir.item) :
     concrete_ident * (item list * Diagnostics.t list) =
   let ident = Concrete_ident.of_def_id ~value:false item.owner_id in
   let r, reports =
-    let f =
-      U.Mappers.rename_generic_constraints#visit_item
-        (true, Hashtbl.create (module String))
-      >> U.Reducers.disambiguate_local_idents
-    in
+    let f = U.Reducers.disambiguate_local_idents in
     Diagnostics.Core.capture (fun _ ->
         c_item item ~ident ~type_only |> List.map ~f)
   in

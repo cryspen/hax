@@ -15,10 +15,14 @@ Changes to the Rust Engine:
    lift monadic computations into values) (#1746)
 
 Changes to the frontend:
+ - Update the pin of rustc (#1765)
+ - Miscellaneous changes related to Charon (#1765)
 
 Change to cargo-hax:
 
 Changes to hax-lib:
+ - Add Lean core models for options, results, default (#1747)
+ - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)

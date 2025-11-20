@@ -105,6 +105,12 @@ end
 let module_name (ns : string list) : string =
   String.concat ~sep:"." (List.map ~f:(map_first_letter String.uppercase) ns)
 
+(** Set to true when extracting core_models (HAX_CORE_MODELS_EXTRACTION_MODE set
+    to 'on') *)
+let hax_core_models_extraction =
+  Sys.getenv "HAX_CORE_MODELS_EXTRACTION_MODE"
+  |> [%equal: string option] (Some "on")
+
 module Make
     (Attrs : Attrs.WITH_ITEMS)
     (Ctx : sig
@@ -343,7 +349,7 @@ struct
   let rec pty span (t : ty) =
     match t with
     | TBool -> F.term_of_lid [ "bool" ]
-    | TChar -> F.term_of_lid [ "char" ]
+    | TChar -> F.term_of_lid [ "FStar"; "Char"; "char" ]
     | TInt k -> F.term_of_lid [ show_int_kind k ]
     | TStr -> F.term_of_lid [ "string" ]
     | TSlice { ty; _ } ->
@@ -404,7 +410,7 @@ struct
 
   and pimpl_expr span (ie : impl_expr) =
     let some = Option.some in
-    let hax_unstable_impl_exprs = false in
+    let hax_unstable_impl_exprs = hax_core_models_extraction in
     match ie.kind with
     | Concrete tr -> c_trait_goal span tr |> some
     | LocalBound { id } ->
@@ -414,6 +420,10 @@ struct
         F.term @@ F.AST.Var (F.lid_of_id @@ plocal_ident local_ident) |> some
     | ImplApp { impl; _ } when not hax_unstable_impl_exprs ->
         pimpl_expr span impl
+    | Parent { impl; ident }
+      when hax_unstable_impl_exprs && [%matches? Self _] impl.kind ->
+        let trait = "_super_" ^ ident.name in
+        F.term_of_lid [ trait ] |> some
     | Parent { impl; ident } when hax_unstable_impl_exprs ->
         let* impl = pimpl_expr span impl in
         let trait = "_super_" ^ ident.name in
@@ -579,6 +589,12 @@ struct
         F.term @@ F.AST.QExists (binders, ([], []), phi)
     | App
         {
+          f = { e = GlobalVar (`Projector (`TupleField (_, 1))) };
+          args = [ arg ];
+        } ->
+        pexpr arg
+    | App
+        {
           f = { e = GlobalVar (`Projector (`TupleField (n, len))) };
           args = [ arg ];
         } ->
@@ -684,15 +700,31 @@ struct
         in
         F.term @@ F.AST.LetOperator ([ (F.id op, p, pexpr rhs) ], pexpr body)
     | Let { lhs; rhs; body; monadic = None } ->
-        let p =
-          (* TODO: temp patch that remove annotation when we see an associated type *)
-          if [%matches? TAssociatedType _] @@ U.remove_tuple1 lhs.typ then
-            ppat lhs
-          else
-            F.pat @@ F.AST.PatAscribed (ppat lhs, (pty lhs.span lhs.typ, None))
+        let rec ascribe_tuple_components pattern =
+          match pattern with
+          | { p = PConstruct { constructor = `TupleCons n1; fields; _ }; _ }
+            when n1 > 1 ->
+              (* F* type inference works better if the ascription is on each component intead of the whole tuple. *)
+              F.pat
+              @@ F.AST.PatTuple
+                   ( List.map
+                       ~f:(fun { pat } -> ascribe_tuple_components pat)
+                       fields,
+                     false )
+          | _ ->
+              (* TODO: temp patch that remove annotation when we see an associated type *)
+              if [%matches? TAssociatedType _] @@ U.remove_tuple1 pattern.typ
+              then ppat pattern
+              else
+                F.pat
+                @@ F.AST.PatAscribed
+                     (ppat pattern, (pty pattern.span pattern.typ, None))
         in
         F.term
-        @@ F.AST.Let (NoLetQualifier, [ (None, (p, pexpr rhs)) ], pexpr body)
+        @@ F.AST.Let
+             ( NoLetQualifier,
+               [ (None, (ascribe_tuple_components lhs, pexpr rhs)) ],
+               pexpr body )
     | EffectAction _ -> .
     | Match { scrutinee; arms } ->
         F.term
@@ -798,9 +830,20 @@ struct
       | GCType { goal; name } ->
           let typ = c_trait_goal span goal in
           Some { kind = Tcresolve; ident = F.id name; typ }
-      | GCProjection _ ->
-          (* TODO: Not yet implemented, see https://github.com/hacspec/hax/issues/785 *)
-          None
+      | GCProjection { impl = { kind = LocalBound { id }; _ }; assoc_item; typ }
+        ->
+          let proj =
+            F.term
+            @@ F.AST.Project
+                 (F.term @@ F.AST.Var (F.lid [ id ]), pconcrete_ident assoc_item)
+          in
+          let typ =
+            F.mk_refined "_" (F.term_of_string "unit") (fun ~x ->
+                F.term
+                @@ F.AST.Op (FStar_Ident.id_of_text "==", [ proj; pty span typ ]))
+          in
+          Some { kind = Implicit; typ; ident = FStar_Ident.id_of_text "_" }
+      | _ -> None
 
     let of_generics span generics : t list =
       List.map ~f:(of_generic_param span) generics.params
@@ -1616,7 +1659,13 @@ struct
           List.concat_map
             ~f:(fun { ii_span; ii_generics; ii_v; ii_ident } ->
               let name = (RenderId.render ii_ident).name in
-
+              let ii_generics =
+                {
+                  ii_generics with
+                  constraints =
+                    List.filter ~f:[%matches? GCType _] ii_generics.constraints;
+                }
+              in
               match ii_v with
               | IIFn { body; params } ->
                   let pats =
@@ -1804,7 +1853,7 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
       |> Set.to_list
       |> List.filter ~f:(fun m ->
              (* Special treatment for modules handled specifically in our F* libraries *)
-             String.is_prefix ~prefix:"Core." m |> not
+             String.is_prefix ~prefix:"Core_models." m |> not
              && String.is_prefix ~prefix:"Alloc." m |> not
              && String.equal "Hax_lib.Int" m |> not)
       |> List.map ~f:(fun mod_path -> "let open " ^ mod_path ^ " in")
@@ -1896,12 +1945,19 @@ let string_of_items ~mod_name ~bundles (bo : BackendOptions.t) m items :
   ( string_for (function `Impl s -> Some (replace s) | _ -> None),
     string_for (function `Intf s -> Some (replace s) | _ -> None) )
 
-let fstar_headers (bo : BackendOptions.t) =
+let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
   let opts =
     Printf.sprintf {|#set-options "--fuel %Ld --ifuel %Ld --z3rlimit %Ld"|}
       bo.fuel bo.ifuel bo.z3rlimit
   in
-  [ opts; "open Core"; "open FStar.Mul" ] |> String.concat ~sep:"\n"
+
+  List.append [ opts; "open FStar.Mul" ]
+    (if
+       hax_core_models_extraction
+       && String.is_prefix ~prefix:"Core_models" mod_name
+     then []
+     else [ "open Core_models" ])
+  |> String.concat ~sep:"\n"
 
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
@@ -1922,8 +1978,8 @@ let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
                  {
                    path = mod_name ^ "." ^ ext;
                    contents =
-                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo ^ "\n\n"
-                     ^ body ^ "\n";
+                     "module " ^ mod_name ^ "\n" ^ fstar_headers bo mod_name
+                     ^ "\n\n" ^ body ^ "\n";
                    sourcemap = None;
                  }
          in
