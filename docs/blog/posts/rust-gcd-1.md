@@ -9,6 +9,7 @@ date: 2025-11-19
 
 In this post,
 we are going to use hax and F\* to verify a small real world Rust crate.
+Then, we will try other verification tools (Kani, Verus, Aeneas) to the same thing.
 The Rust crate [gcd](https://crates.io/crates/gcd) by Corey Farwell that we are going to verify implements
 functions to compute the greatest common divisor of two integers.
 We will focus on proving termination and panic freedom for now.
@@ -535,7 +536,7 @@ Now verification is much faster, and it verifies all possible inputs:
 ```
 Complete - 12 successfully verified harnesses, 0 failures, 12 total.
 ```
-However, in contrast to the approach without loop contracts, this does not verify termination.
+However, in contrast to the approach without loop contracts, this does not verify termination!
 
 Similarly, we can also verify the function `$binary` using loop contracts. However, using `true` as an invariant does not work here because the line
 ```rust
@@ -561,6 +562,8 @@ loop {
     if v == 0 { break; }
 }
 ```
+
+*What's to love:* Kani requires amazingly little manual labor to set up!
 
 ### Aeneas
 
@@ -940,6 +943,8 @@ decreasing_by all_goals scalar_decr_tac
 ```
 No more errors! So Aeneas, too, agrees that `binary_u8` terminates and does not panic.
 
+*What's to love:* Aeneas leaves our source code completely untouched!
+
 ### Verus
 
 [Install Verus](https://github.com/verus-lang/verus/blob/main/INSTALL.md).
@@ -1141,3 +1146,5 @@ and
 ```
 proof! { $trailing_zeros_axiom(v); }
 ```
+
+*What's to love:* Verus allows us to work directly with the Rust code!
