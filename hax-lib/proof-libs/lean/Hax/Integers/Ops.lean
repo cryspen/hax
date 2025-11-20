@@ -17,56 +17,56 @@ set_option linter.unusedVariables false
 # Arithmetic operations
 
 The Rust arithmetic operations have their own notations, using a `?`. They
-return a `Result`, that is `.fail` when arithmetic overflows occur.
+return a `RustM`, that is `.fail` when arithmetic overflows occur.
 
 -/
 
-/-- The notation typeclass for homogeneous addition that returns a Result.  This
+/-- The notation typeclass for homogeneous addition that returns a RustM.  This
 enables the notation `a +? b : α` where `a : α`, `b : α`. For now, there is no
 heterogeneous version -/
 class HaxAdd α where
   /-- `a +? b` computes the panicking sum of `a` and `b`.  The meaning of this
   notation is type-dependent. -/
-  add : α → α → Result α
+  add : α → α → RustM α
 
-/-- The notation typeclass for homogeneous subtraction that returns a Result.
+/-- The notation typeclass for homogeneous subtraction that returns a RustM.
 This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
 no heterogeneous version -/
 class HaxSub α where
   /-- `a -? b` computes the panicking subtraction of `a` and `b`.
   The meaning of this notation is type-dependent. -/
-  sub : α → α → Result α
+  sub : α → α → RustM α
 
-/-- The notation typeclass for homogeneous multiplication that returns a Result.
-This enables the notation `a *? b : Result α` where `a b : α`. For now, there is
+/-- The notation typeclass for homogeneous multiplication that returns a RustM.
+This enables the notation `a *? b : RustM α` where `a b : α`. For now, there is
 no heterogeneous version -/
 class HaxMul α where
   /-- `a *? b` computes the panicking multiplication of `a` and `b`.  The
   meaning of this notation is type-dependent. -/
-  mul : α → α → Result α
+  mul : α → α → RustM α
 
-/-- The notation typeclass for homogeneous division that returns a Result.  This
-enables the notation `a /? b : Result α` where `a b : α`. For now, there is no
+/-- The notation typeclass for homogeneous division that returns a RustM.  This
+enables the notation `a /? b : RustM α` where `a b : α`. For now, there is no
 heterogeneous version -/
 class HaxDiv α where
   /-- `a /? b` computes the panicking division of `a` and `b`.  The
   meaning of this notation is type-dependent. -/
-  div : α → α → Result α
+  div : α → α → RustM α
 
-/--The notation typeclass for right shift that returns a Result. It enables the
- notation `a >>>? b : Result α` where `a : α` and `b : β`. -/
+/--The notation typeclass for right shift that returns a RustM. It enables the
+ notation `a >>>? b : RustM α` where `a : α` and `b : β`. -/
 class HaxShiftRight α β where
   /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
   of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
   -/
-  shiftRight : α → β → Result α
+  shiftRight : α → β → RustM α
 
 /-- The notation typeclass for remainder.  This enables the notation `a %? b :
-Result α` where `a b : α`.  -/
+RustM α` where `a b : α`.  -/
 class HaxRem α where
   /-- `a %? b` computes the panicking remainder upon dividing `a` by `b`.  The
   meaning of this notation is type-dependent. It panics if b is zero -/
-  rem : α → α → Result α
+  rem : α → α → RustM α
 
 @[inherit_doc] infixl:65 " +? "   => HaxAdd.add
 @[inherit_doc] infixl:65 " -? "   => HaxSub.sub

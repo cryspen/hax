@@ -13,6 +13,7 @@ import Hax.Core.Panicking
 import Hax.Core.Result
 open Rust_primitives.Hax
 open Core.Ops
+open Core.Result
 open Std.Do
 set_option mvcgen.warning false
 
@@ -26,7 +27,7 @@ def Impl.is_some_and
   (T : Type) (F : Type) [(Function.FnOnce (Output := Bool) F T)] (self :
   (Option T))
   (f : F)
-  : Result Bool
+  : RustM Bool
   := do
   match self with
     | (Option.None ) => (pure false)
@@ -37,7 +38,7 @@ def Impl.is_none_or
   (T : Type) (F : Type) [(Function.FnOnce (Output := Bool) F T)] (self :
   (Option T))
   (f : F)
-  : Result Bool
+  : RustM Bool
   := do
   match self with
     | (Option.None ) => (pure true)
@@ -46,7 +47,7 @@ def Impl.is_none_or
 
 def Impl.as_ref
   (T : Type) (self : (Option T))
-  : Result (Option T)
+  : RustM (Option T)
   := do
   match self with
     | (Option.Some x)
@@ -56,7 +57,7 @@ def Impl.as_ref
 def Impl.unwrap_or
   (T : Type) (self : (Option T))
   (default : T)
-  : Result T
+  : RustM T
   := do
   match self with
     | (Option.Some x) => (pure x)
@@ -68,7 +69,7 @@ def Impl.unwrap_or_else
   [(Function.FnOnce F Rust_primitives.Hax.Tuple0 (Output := T))]
   (self : (Option T))
   (f : F)
-  : Result T
+  : RustM T
   := do
   match self with
     | (Option.Some x) => (pure x)
@@ -77,7 +78,7 @@ def Impl.unwrap_or_else
 def Impl.unwrap_or_default
   (T : Type) [(Core.Default.Default T)] (self :
   (Option T))
-  : Result T
+  : RustM T
   := do
   match self with
     | (Option.Some x) => (pure x)
@@ -90,7 +91,7 @@ def Impl.map
   [(Function.FnOnce F T (Output := U))]
   (self : (Option T))
   (f : F)
-  : Result (Option U)
+  : RustM (Option U)
   := do
   match self with
     | (Option.Some x) => (pure (Option.Some (← (Function.FnOnce.call_once f x))))
@@ -104,7 +105,7 @@ def Impl.map_or
   (self : (Option T))
   (default : U)
   (f : F)
-  : Result U
+  : RustM U
   := do
   match self with
     | (Option.Some t) => (Function.FnOnce.call_once f t)
@@ -120,7 +121,7 @@ def Impl.map_or_else
   (self : (Option T))
   (default : D)
   (f : F)
-  : Result U
+  : RustM U
   := do
   match self with
     | (Option.Some t) => (Function.FnOnce.call_once f t)
@@ -134,7 +135,7 @@ def Impl.map_or_default
   [(Core.Default.Default U)]
   (self : (Option T))
   (f : F)
-  : Result U
+  : RustM U
   := do
   match self with
     | (Option.Some t)
@@ -146,13 +147,13 @@ def Impl.map_or_default
 def Impl.ok_or
   (T : Type) (E : Type) (self : (Option T))
   (err : E)
-  : Result (Core.Result.Result T E)
+  : RustM (Result T E)
   := do
   match self with
     | (Option.Some v)
-      => (pure (Core.Result.Result.Ok v))
+      => (pure (Result.Ok v))
     | (Option.None )
-      => (pure (Core.Result.Result.Err err))
+      => (pure (Result.Err err))
 
 def Impl.ok_or_else
   (T : Type)
@@ -161,14 +162,14 @@ def Impl.ok_or_else
   [(Function.FnOnce F Rust_primitives.Hax.Tuple0 (Output := E))]
   (self : (Option T))
   (err : F)
-  : Result (Core.Result.Result T E)
+  : RustM (Result T E)
   := do
   match self with
     | (Option.Some v)
-      => (pure (Core.Result.Result.Ok v))
+      => (pure (Result.Ok v))
     | (Option.None )
       =>
-        (pure (Core.Result.Result.Err
+        (pure (Result.Err
           (← (Function.FnOnce.call_once
             err
             Rust_primitives.Hax.Tuple0.mk))))
@@ -180,7 +181,7 @@ def Impl.and_then
   [(Function.FnOnce F T (Output := Option U))]
   (self : (Option T))
   (f : F)
-  : Result (Option U)
+  : RustM (Option U)
   := do
   match self with
     | (Option.Some x)
@@ -189,7 +190,7 @@ def Impl.and_then
 
 def Impl.take
   (T : Type) (self : (Option T))
-  : Result
+  : RustM
   (Rust_primitives.Hax.Tuple2
     (Option T)
     (Option T))
@@ -198,7 +199,7 @@ def Impl.take
 
 def Impl.is_some
   (T : Type) (self : (Option T))
-  : Result Bool
+  : RustM Bool
   := do
   match self with
     | (Option.Some _) => (pure true)
@@ -217,7 +218,7 @@ def Impl.is_some.spec
 
 def Impl.is_none
   (T : Type) (self : (Option T))
-  : Result Bool
+  : RustM Bool
   := do
   match self with
     | (Option.Some _) => (pure false)
@@ -226,7 +227,7 @@ def Impl.is_none
 def Impl.expect
   (T : Type) (self : (Option T))
   (_msg : String)
-  : Result T
+  : RustM T
   := do
   match self with
     | (Option.Some val) => (pure val)
@@ -235,13 +236,13 @@ def Impl.expect
 
 def Impl.unwrap._.requires
   (T : Type) (self_ : (Option T))
-  : Result Bool
+  : RustM Bool
   := do
   (Impl.is_some T self_)
 
 def Impl.unwrap
   (T : Type) (self : (Option T))
-  : Result T
+  : RustM T
   := do
   match self with
     | (Option.Some val) => (pure val)

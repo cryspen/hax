@@ -29,6 +29,7 @@ Changes to the Lean backend:
  - Add support for base-expressions of structs (#1736)
  - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
    not introduce extra `do` block (#1746)
+ - Rename `Result` monad to `RustM` to avoid confusion with Rust `Result` type (#1768)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)

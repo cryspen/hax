@@ -306,13 +306,13 @@ const _: () = {
             zip_right!(params, line!())
         }
 
-        /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
+        /// Renders expressions with an explicit ascription `(e : RustM ty)`. Used for the body of closure, for
         /// numeric literals, etc.
         fn expr_typed_result<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
             docs![
                 expr,
                 reflow!(" : "),
-                docs!["Result", line!(), &expr.ty].group()
+                docs!["RustM", line!(), &expr.ty].group()
             ]
             .group()
         }
@@ -725,7 +725,7 @@ set_option linter.unusedVariables false
                 }
                 TyKind::Arrow { inputs, output } => docs![
                     zip_right!(inputs, docs![line!(), reflow!("-> ")]),
-                    "Result ",
+                    "RustM ",
                     output
                 ]
                 .parens()
@@ -854,7 +854,7 @@ set_option linter.unusedVariables false
                         line!(),
                         generics,
                         params,
-                        docs![": Result", line!(), &body.ty].group(),
+                        docs![": RustM", line!(), &body.ty].group(),
                         line!(),
                         ":= do"
                     ]
@@ -1032,7 +1032,7 @@ set_option linter.unusedVariables false
                         .group(),
                         line!(),
                         docs![
-                            "Result.of_isOk",
+                            "RustM.of_isOk",
                             line!(),
                             self.do_block(body).parens(),
                             line!(),
