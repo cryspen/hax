@@ -324,6 +324,16 @@ const _: () = {
         fn do_block<A: 'static + Clone, D: ToDocument<Self, A>>(&self, body: D) -> DocBuilder<A> {
             docs!["do", line!(), body].group()
         }
+
+        /// Produces a fresh name for a constraint on an associated type. It needs a fresh name to
+        /// be added as an extra field
+        fn fresh_constraint_name(
+            &self,
+            associated_type_name: &String,
+            constraint: &ImplIdent,
+        ) -> String {
+            format!("_constr_{}_{}", associated_type_name, constraint.name)
+        }
     }
 
     impl<A: 'static + Clone> PrettyAst<A> for LeanPrinter {
@@ -961,7 +971,7 @@ set_option linter.unusedVariables false
                                 .map(|constraint: &GenericConstraint| {
                                     match constraint {
                                         GenericConstraint::Type(tc_constraint) => docs![
-                                            format!("_constr_{}", tc_constraint.name),
+                                            self.fresh_constraint_name(&self.render_last(name), tc_constraint),
                                             " :",
                                             line!(),
                                             constraint
@@ -1077,7 +1087,7 @@ set_option linter.unusedVariables false
                         concat!(constraints.iter().map(|c| docs![
                             hardline!(),
                             docs![
-                                format!("_constr_{}", c.name),
+                                self.fresh_constraint_name(&name, c),
                                 reflow!(" :"),
                                 line!(),
                                 &c.goal
