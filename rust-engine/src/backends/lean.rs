@@ -1724,21 +1724,15 @@ const _: () = {
                         } else {
                             docs![zip_left!(
                                 hardline!(),
-                                if items.is_empty() {
-                                    comment!["no fields"]
-                                } else {
-                                    docs![
-                                        items.iter().filter(|item| {
-                                            !(
-                                                // TODO: should be treated directly by name rendering, see :
-                                                // https://github.com/cryspen/hax/issues/1646
-                                                item.ident.is_precondition() || item.ident.is_postcondition() ||
-                                                // Associated types are encoded into a separate type class
-                                                matches!(item.kind, ImplItemKind::Type { .. })
-                                            )
-                                        })
-                                    ]
-                                }
+                                items.iter().filter(|item| {
+                                    !(
+                                        // TODO: should be treated directly by name rendering, see :
+                                        // https://github.com/cryspen/hax/issues/1646
+                                        item.ident.is_precondition() || item.ident.is_postcondition() ||
+                                        // Associated types are encoded into a separate type class
+                                        matches!(item.kind, ImplItemKind::Type { .. })
+                                    )
+                                })
                             )]
                             .nest(INDENT)
                         },
