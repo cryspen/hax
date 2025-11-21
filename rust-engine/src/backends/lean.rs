@@ -9,6 +9,7 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::sync::LazyLock;
 
+use capitalize::Capitalize;
 use hax_types::engine_api::File;
 
 use super::prelude::*;
@@ -46,6 +47,7 @@ import Hax
 import Std.Tactic.Do
 open Std.Do
 set_option mvcgen.warning false
+set_option linter.unusedVariables false
 
 ";
 
@@ -246,12 +248,19 @@ impl Backend for LeanBackend {
 
         drop_skip_late_items(&mut items);
 
+        // Removing unprintable items
+        let items: Vec<Item> = items
+            .into_iter()
+            .filter(LeanPrinter::printable_item)
+            .collect();
+
         // All modules are bundled in a single file, named after the crate
         let krate = items
             .first()
             .expect("The list of items should be non-empty")
             .ident
-            .krate();
+            .krate()
+            .capitalize();
         let mut path = camino::Utf8PathBuf::new();
         path.push(krate);
         path.set_extension("lean");
@@ -779,12 +788,10 @@ const _: () = {
                 hardline!(),
                 hardline!(),
                 intersperse!(
-                    items
-                        .iter()
-                        .filter(|item| LeanPrinter::printable_item(item))
-                        .map(|item| { item.to_document(&new_printer) }),
+                    items.iter().map(|item| { item.to_document(&new_printer) }),
                     docs![hardline!(), hardline!()]
                 ),
+                hardline!(),
                 hardline!(),
                 "end ",
                 current_namespace,
@@ -1392,7 +1399,9 @@ const _: () = {
                                 "Structures should always have a constructor (even empty ones)"
                             )
                         };
-                        let args = if !variant.is_record {
+                        let args = if variant.arguments.is_empty() {
+                            comment!["no fields"]
+                        } else if !variant.is_record {
                             // Tuple-like structure, using positional arguments
                             intersperse!(
                                 variant.arguments.iter().enumerate().map(|(i, (_, ty, _))| {
@@ -1428,11 +1437,16 @@ const _: () = {
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
-                            concat!(variants.iter().map(|variant| docs![
-                                "| ",
-                                docs![variant, applied_name.clone()].group().nest(INDENT),
+                            intersperse!(
+                                variants.iter().map(|variant| docs![
+                                    "| ",
+                                    variant,
+                                    applied_name.clone()
+                                ]
+                                .group()
+                                .nest(INDENT)),
                                 hardline!()
-                            ])),
+                            ),
                         ]
                     }
                 }
@@ -1710,15 +1724,21 @@ const _: () = {
                         } else {
                             docs![zip_left!(
                                 hardline!(),
-                                items.iter().filter(|item| {
-                                    !(
-                                        // TODO: should be treated directly by name rendering, see :
-                                        // https://github.com/cryspen/hax/issues/1646
-                                        item.ident.is_precondition() || item.ident.is_postcondition() ||
-                                    // Associated types are encoded into a separate type class
-                                    matches!(item.kind, ImplItemKind::Type { .. })
-                                    )
-                                })
+                                if items.is_empty() {
+                                    comment!["no fields"]
+                                } else {
+                                    docs![
+                                        items.iter().filter(|item| {
+                                            !(
+                                                // TODO: should be treated directly by name rendering, see :
+                                                // https://github.com/cryspen/hax/issues/1646
+                                                item.ident.is_precondition() || item.ident.is_postcondition() ||
+                                                // Associated types are encoded into a separate type class
+                                                matches!(item.kind, ImplItemKind::Type { .. })
+                                            )
+                                        })
+                                    ]
+                                }
                             )]
                             .nest(INDENT)
                         },
