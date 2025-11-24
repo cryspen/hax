@@ -132,8 +132,8 @@ pub struct FreshModule {
 
 impl FreshModule {
     /// Renders a view of the fresh module identifier.
-    pub fn view(&self) -> view::View {
-        unimplemented!("Missing support for fresh modules")
+    fn view(&self) -> view::View {
+        self.clone().into()
     }
 }
 
