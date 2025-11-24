@@ -26,7 +26,7 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   let minValue := mkIdent (typeName.getId ++ `minValue)
   let grind : TSyntax `tactic ←
     if signed then `(tactic| grind)
-    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_lt, toNat_mul_of_lt])
+    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_le', toNat_mul_of_lt])
 
   let mut cmds ← Syntax.getArgs <$> `(
     namespace $typeName
