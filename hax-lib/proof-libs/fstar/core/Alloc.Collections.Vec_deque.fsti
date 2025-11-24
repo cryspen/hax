@@ -4,7 +4,8 @@ open FStar.Mul
 open Core_models
 
 type t_VecDeque (v_T: Type0) (v_A: Type0) =
-  | VecDeque : Rust_primitives.Seq.t_Seq v_T v_A -> t_VecDeque v_T v_A
+  | VecDeque : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A
+    -> t_VecDeque v_T v_A
 
 val impl_5__push_back (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A) (x: v_T)
     : Prims.Pure (t_VecDeque v_T v_A) Prims.l_True (fun _ -> Prims.l_True)
@@ -25,5 +26,5 @@ let impl_6 (#v_T #v_A: Type0) : Core_models.Ops.Index.t_Index (t_VecDeque v_T v_
     f_index_post = (fun (self: t_VecDeque v_T v_A) (i: usize) (out: v_T) -> true);
     f_index
     =
-    fun (self: t_VecDeque v_T v_A) (i: usize) -> Rust_primitives.Seq.seq_index #v_T #v_A self._0 i
+    fun (self: t_VecDeque v_T v_A) (i: usize) -> Rust_primitives.Sequence.seq_index #v_T self._0 i
   }

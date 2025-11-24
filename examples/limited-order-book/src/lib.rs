@@ -151,8 +151,10 @@ where
                 // Goal 3: prove `other.quantity` does not underflow
                 other.quantity -= m.quantity;
                 if other.quantity > 0 {
+                    hax_lib::assume!(other_side.len() < usize::MAX);
                     other_side.push(From::from(other.clone()));
                 }
+                hax_lib::assume!(matches.len() < usize::MAX);
                 matches.push(m);
             } else {
                 done = true;

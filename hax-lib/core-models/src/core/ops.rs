@@ -125,3 +125,18 @@ mod try_trait {
         fn branch(&self) -> super::control_flow::ControlFlow<Self::Residual, Self::Output>;
     }
 }
+
+mod deref {
+    pub trait Deref {
+        type Target: ?Sized;
+
+        fn deref(&self) -> &Self::Target;
+    }
+
+    impl<T> Deref for &T {
+        type Target = T;
+        fn deref(&self) -> &T {
+            &self
+        }
+    }
+}

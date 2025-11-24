@@ -8,6 +8,7 @@ pub trait StructuralPartialEq {}
 impl<T> Send for T {}
 impl<T> Sync for T {}
 impl<T> Sized for T {}
+#[hax_lib::fstar::after("type t_PhantomData (v_T: Type0) = | PhantomData : t_PhantomData v_T")]
 impl<T: Clone> Copy for T {}
 
 #[hax_lib::fstar::replace("type t_PhantomData (v_T: Type0) = | PhantomData : t_PhantomData v_T")]

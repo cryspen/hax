@@ -30,36 +30,35 @@ pub mod slice {
     }
 }
 
-pub mod seq {
-    pub struct Seq<T, A>(Option<T>, Option<A>);
-    pub fn seq_empty<T, A>() -> Seq<T, A> {
+pub mod sequence {
+    pub struct Seq<T>(Option<T>);
+    pub fn seq_empty<T>() -> Seq<T> {
         panic!()
     }
-    pub fn seq_from_slice<T, A>(_s: &[T]) -> Seq<T, A> {
+    pub fn seq_from_slice<T>(_s: &[T]) -> Seq<T> {
         panic!()
     }
-    pub fn seq_to_slice<T, A>(_s: &Seq<T, A>) -> &[T] {
+    pub fn seq_to_slice<T>(_s: &Seq<T>) -> &[T] {
         panic!()
     }
-    pub fn seq_concat<T, A>(s1: &mut Seq<T, A>, s2: &Seq<T, A>) {
+    pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &Seq<T>) {
         panic!()
     }
-    pub fn seq_one<T, A>( x: T) -> Seq<T, A> {
+    pub fn seq_one<T>(x: T) -> Seq<T> {
         panic!()
     }
-    pub fn seq_len<T, A>(s: &Seq<T, A>) -> usize {
+    pub fn seq_len<T>(s: &Seq<T>) -> usize {
         panic!()
     }
-    pub fn seq_slice<T, A>(s: &Seq<T, A>, b: usize, e: usize) -> Seq<T, A> {
-        panic!()
-    } 
-    pub fn seq_last<T, A>(s: &Seq<T, A>) -> T {
+    pub fn seq_slice<T>(s: &Seq<T>, b: usize, e: usize) -> Seq<T> {
         panic!()
     }
-    pub fn seq_index<T, A>(s: &Seq<T, A>, i: usize) -> &T {
+    pub fn seq_last<T>(s: &Seq<T>) -> T {
         panic!()
     }
-
+    pub fn seq_index<T>(s: &Seq<T>, i: usize) -> &T {
+        panic!()
+    }
 }
 
 pub mod string {
