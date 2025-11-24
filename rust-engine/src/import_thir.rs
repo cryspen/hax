@@ -440,10 +440,7 @@ pub fn import_item(
             param_env,
             adt_kind,
             variants,
-            flags,
-            repr,
-            drop_glue,
-            drop_impl,
+            ..
         } => {
             let generics = param_env.import();
             let variants = variants.import();
@@ -465,6 +462,7 @@ pub fn import_item(
                     frontend::AdtKind::Struct => true,
                     frontend::AdtKind::Union => todo!(), // TODO proper hax error
                     frontend::AdtKind::Enum => false,
+                    _ => todo!(), // TODO
                 },
             }
         }
@@ -483,6 +481,7 @@ pub fn import_item(
             implied_predicates,
             self_predicate,
             items,
+            ..
         } => {
             let generics = param_env.import();
             ast::ItemKind::Trait {
@@ -492,16 +491,13 @@ pub fn import_item(
             }
         }
 
-        frontend::FullDefKind::TraitAlias {
-            param_env,
-            implied_predicates,
-            self_predicate,
-        } => todo!(), // TODO proper hax error
+        frontend::FullDefKind::TraitAlias { .. } => todo!(), // TODO proper hax error
         frontend::FullDefKind::TraitImpl {
             param_env,
             trait_pred,
             implied_impl_exprs,
             items,
+            ..
         } => {
             let generics = param_env.import();
             let trait_ref = trait_pred.trait_ref.contents();
@@ -532,7 +528,7 @@ pub fn import_item(
                       (param_env.import(), ast::ImplItemKind::Type { ty: expect_body(value).spanned_import(span.clone()), parent_bounds: Vec::new() }),// TODO(missing) #1763 ImplExpr for associated types in trait impls
                     hax_frontend_exporter::FullDefKind::AssocFn { param_env, body, .. } =>
                        (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),// TODO(missing) #1763 Change TyFnSignature to add parameter binders
-                    hax_frontend_exporter::FullDefKind::AssocConst { param_env, associated_item, ty, body } =>
+                    hax_frontend_exporter::FullDefKind::AssocConst { param_env, associated_item, ty, body, value } =>
                       (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),
                     _ => panic!("All pointers to associated items should correspond to an actual associated item definition.")
                 };
@@ -610,21 +606,13 @@ pub fn import_item(
                 safety: sig.value.safety.import(),
             }
         }
-        frontend::FullDefKind::Closure {
-            args,
-            is_const,
-            fn_once_impl,
-            fn_mut_impl,
-            fn_impl,
-            once_shim,
-            drop_glue,
-            drop_impl,
-        } => panic!("We should never encounter closure items"), // TODO convert to a hax error
+        frontend::FullDefKind::Closure { .. } => panic!("We should never encounter closure items"), // TODO convert to a hax error
         frontend::FullDefKind::Const {
             param_env,
             ty,
             kind,
             body,
+            value,
         } => ast::ItemKind::Fn {
             name: ident,
             generics: param_env.import(),
