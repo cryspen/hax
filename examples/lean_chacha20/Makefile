@@ -6,5 +6,5 @@ default:
    lake build)
 
 clean:
-	-rm -f proofs/lean/extraction/lean_chacha20.lean
+	-rm -f proofs/lean/extraction/
 	-cd proofs/lean && lake clean
