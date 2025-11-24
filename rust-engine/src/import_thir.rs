@@ -30,7 +30,14 @@ impl Import<ast::span::Span> for frontend::Span {
 
 impl Import<ast::Attribute> for frontend::Attribute {
     fn import(&self) -> ast::Attribute {
-        todo!()
+        // TODO
+        ast::Attribute {
+            kind: ast::AttributeKind::Tool {
+                path: "TODO".to_string(),
+                tokens: "".to_string(),
+            },
+            span: ast::span::Span::dummy(),
+        }
     }
 }
 
@@ -71,7 +78,9 @@ impl SpannedImport<ast::GenericValue> for frontend::GenericArg {
 
 impl SpannedImport<Vec<ast::GenericValue>> for Vec<frontend::GenericArg> {
     fn spanned_import(&self, span: ast::span::Span) -> Vec<ast::GenericValue> {
-        self.iter().map(|ga| ga.spanned_import(span.clone())).collect()
+        self.iter()
+            .map(|ga| ga.spanned_import(span.clone()))
+            .collect()
     }
 }
 
@@ -88,10 +97,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
     fn spanned_import(&self, span: ast::span::Span) -> Option<ast::GenericConstraint> {
         match &self.kind.value {
             frontend::ClauseKind::Trait(trait_predicate) => {
-                let args = trait_predicate
-                    .trait_ref
-                    .generic_args
-                    .spanned_import(span);
+                let args = trait_predicate.trait_ref.generic_args.spanned_import(span);
                 let trait_ = trait_predicate.trait_ref.def_id.import();
                 let goal = ast::TraitGoal { trait_, args };
 
@@ -136,7 +142,12 @@ impl Import<ast::SafetyKind> for frontend::Safety {
 
 impl SpannedImport<ast::Ty> for frontend::Ty {
     fn spanned_import(&self, span: ast::span::Span) -> ast::Ty {
-        let kind = match self.kind() {
+        ast::Ty(Box::new(ast::TyKind::App {
+            head: ast::GlobalId::unit_ty(),
+            args: Vec::new(),
+        }))
+        // TODO implement
+        /* let kind = match self.kind() {
             frontend::TyKind::Bool => todo!(),
             frontend::TyKind::Char => todo!(),
             frontend::TyKind::Int(int_ty) => todo!(),
@@ -167,7 +178,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
             frontend::TyKind::Error => todo!(),
             frontend::TyKind::Todo(_) => todo!(),
         };
-        ast::Ty(Box::new(kind))
+        ast::Ty(Box::new(kind)) */
     }
 }
 
@@ -181,6 +192,17 @@ impl Import<ast::Expr> for frontend::Expr {
             attributes,
         } = self;
         let span = span.import();
+        macro_rules! todo {
+            () => {
+                ast::ExprKind::Construct {
+                    constructor: ast::GlobalId::unit_constructor(),
+                    is_record: false,
+                    is_struct: true,
+                    fields: Vec::new(),
+                    base: None,
+                }
+            };
+        }
         let kind = match contents.as_ref() {
             frontend::ExprKind::Box { value } => todo!(),
             frontend::ExprKind::If {
@@ -300,18 +322,16 @@ impl<I, A: Import<B>, B> Import<Vec<B>> for frontend::IndexVec<I, A> {
 
 impl Import<ast::TraitItem> for frontend::AssocItem {
     fn import(&self) -> ast::TraitItem {
-        // TODO #1763 missing metadata for trait item
+        // TODO refactor and inline or inject context
         let meta = ast::Metadata {
             span: ast::span::Span::dummy(),
             attributes: Vec::new(),
         };
-        // TODO #17663 missing generics/param_env for trait items
         let generics = ast::Generics {
             params: Vec::new(),
             constraints: Vec::new(),
         };
         let kind = match &self.kind {
-            // TODO #1763 Missing type for Fn and Const. Bounds for Ty?
             _ if self.has_value => ast::TraitItemKind::Default {
                 params: todo!(),
                 body: todo!(),
@@ -333,22 +353,25 @@ impl SpannedImport<ast::TraitGoal> for frontend::TraitRef {
     fn spanned_import(&self, span: ast::span::Span) -> ast::TraitGoal {
         let trait_ = self.def_id.import();
         let args = self.generic_args.spanned_import(span);
-        ast::TraitGoal {
-            trait_,
-            args,
-        }
+        ast::TraitGoal { trait_, args }
     }
 }
 
 impl SpannedImport<ast::ImplExprKind> for frontend::ImplExprAtom {
-    // TODO this needs the goal so it should not be a trait impl
+    // TODO refactor this needs the goal so it should not be a trait impl
     fn spanned_import(&self, span: ast::span::Span) -> ast::ImplExprKind {
         match self {
-            frontend::ImplExprAtom::Concrete(item_ref) => ast::ImplExprKind::Concrete(item_ref.spanned_import(span)),
+            frontend::ImplExprAtom::Concrete(item_ref) => {
+                ast::ImplExprKind::Concrete(item_ref.spanned_import(span))
+            }
             frontend::ImplExprAtom::LocalBound { index, path, .. } => todo!(),
             frontend::ImplExprAtom::SelfImpl { r#trait, path } => todo!(),
             frontend::ImplExprAtom::Dyn => ast::ImplExprKind::Dyn,
-            frontend::ImplExprAtom::Builtin { trait_data, impl_exprs, types } => todo!(),
+            frontend::ImplExprAtom::Builtin {
+                trait_data,
+                impl_exprs,
+                types,
+            } => todo!(),
             frontend::ImplExprAtom::Error(_) => todo!(),
         }
     }
@@ -360,18 +383,21 @@ impl SpannedImport<ast::ImplExpr> for frontend::ImplExpr {
         let impl_ = ast::ImplExpr {
             kind: Box::new(self.r#impl.spanned_import(span.clone())),
             goal: goal.clone(),
-        }; 
+        };
         match &self.r#impl {
             frontend::ImplExprAtom::Concrete(item_ref) if !item_ref.impl_exprs.is_empty() => {
-                let args = item_ref.impl_exprs.iter().map(|ie| ie.spanned_import(span.clone())).collect();
+                let args = item_ref
+                    .impl_exprs
+                    .iter()
+                    .map(|ie| ie.spanned_import(span.clone()))
+                    .collect();
                 ast::ImplExpr {
                     kind: Box::new(ast::ImplExprKind::ImplApp { impl_, args }),
-                    goal
+                    goal,
                 }
-            },
+            }
             _ => impl_,
         }
-        
     }
 }
 
@@ -382,7 +408,7 @@ fn cast_of_enum(
     span: ast::span::Span,
     variants: &Vec<ast::Variant>,
 ) -> ast::Item {
-    todo!() // TODO Implement to evaluate what is needed in #1763
+    todo!() // TODO refactor Implement to evaluate what is needed in #1763
 }
 
 fn expect_body<Body>(optional: &Option<Body>) -> &Body {
@@ -391,9 +417,9 @@ fn expect_body<Body>(optional: &Option<Body>) -> &Body {
 
 use std::collections::HashMap;
 
-fn import_item(
+pub fn import_item(
     item: &frontend::FullDef<frontend::Expr>,
-    all_items: &HashMap<frontend::DefId, frontend::FullDef<frontend::Expr>>,
+    all_items: &HashMap<frontend::DefId, &frontend::FullDef<frontend::Expr>>,
 ) -> Vec<ast::Item> {
     let frontend::FullDef::<frontend::Expr> {
         this,
@@ -437,7 +463,7 @@ fn import_item(
                 variants,
                 is_struct: match adt_kind {
                     frontend::AdtKind::Struct => true,
-                    frontend::AdtKind::Union => todo!(),
+                    frontend::AdtKind::Union => todo!(), // TODO proper hax error
                     frontend::AdtKind::Enum => false,
                 },
             }
@@ -450,8 +476,8 @@ fn import_item(
                 ty: ty.spanned_import(span.clone()),
             }
         }
-        frontend::FullDefKind::ForeignTy => todo!(),
-        frontend::FullDefKind::OpaqueTy => todo!(),
+        frontend::FullDefKind::ForeignTy => todo!(), // TODO proper hax error
+        frontend::FullDefKind::OpaqueTy => todo!(), // TODO proper hax error (the frontend should resolve this and produce a type alias)
         frontend::FullDefKind::Trait {
             param_env,
             implied_predicates,
@@ -470,7 +496,7 @@ fn import_item(
             param_env,
             implied_predicates,
             self_predicate,
-        } => todo!(),
+        } => todo!(), // TODO proper hax error
         frontend::FullDefKind::TraitImpl {
             param_env,
             trait_pred,
@@ -490,11 +516,12 @@ fn import_item(
             let [ast::GenericValue::Ty(self_ty), ..] = &of_trait.1[..] else {
                 panic!("Self should always be the first generic argument of a trait application.")
             };
-            let parent_bounds = implied_impl_exprs.iter().filter_map(|impl_expr|
-                {
-                    todo!() // TODO(missing) #1763 need a clause here (and a span?)
-                }
-            ).collect();
+            let parent_bounds = implied_impl_exprs
+                .iter()
+                .filter_map(|impl_expr| {
+                    None // TODO the clause we need here comes from param_env
+                })
+                .collect();
             let items = items.iter().map(|assoc_item| {
                 let ident = assoc_item.decl_def_id.import();
                 let assoc_item = all_items.get(&assoc_item.decl_def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
@@ -502,7 +529,7 @@ fn import_item(
                 let attributes = assoc_item.attributes.import();
                 let (generics, kind) = match assoc_item.kind() {
                     hax_frontend_exporter::FullDefKind::AssocTy { param_env, value, .. } =>
-                      (param_env.import(), ast::ImplItemKind::Type { ty: expect_body(value).spanned_import(span), parent_bounds: todo!() }),// TODO(missing) #1763 ImplExpr for associated types in trait impls
+                      (param_env.import(), ast::ImplItemKind::Type { ty: expect_body(value).spanned_import(span.clone()), parent_bounds: Vec::new() }),// TODO(missing) #1763 ImplExpr for associated types in trait impls
                     hax_frontend_exporter::FullDefKind::AssocFn { param_env, body, .. } =>
                        (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),// TODO(missing) #1763 Change TyFnSignature to add parameter binders
                     hax_frontend_exporter::FullDefKind::AssocConst { param_env, associated_item, ty, body } =>
@@ -613,23 +640,17 @@ fn import_item(
             ty,
             body,
         } => todo!(),
-        frontend::FullDefKind::ExternCrate => todo!(),
-        frontend::FullDefKind::Use => todo!(), // TODO?
+        frontend::FullDefKind::ExternCrate
+        | frontend::FullDefKind::Use
+        | frontend::FullDefKind::TyParam
+        | frontend::FullDefKind::ConstParam
+        | frontend::FullDefKind::LifetimeParam
+        | frontend::FullDefKind::Variant
+        | frontend::FullDefKind::Ctor { .. }
+        | frontend::FullDefKind::Field
+        | frontend::FullDefKind::Macro(_) => return Vec::new(),
         frontend::FullDefKind::Mod { items } => todo!(),
         frontend::FullDefKind::ForeignMod { items } => todo!(),
-        frontend::FullDefKind::TyParam => todo!(),
-        frontend::FullDefKind::ConstParam => todo!(),
-        frontend::FullDefKind::LifetimeParam => todo!(),
-        frontend::FullDefKind::Variant => todo!(),
-        frontend::FullDefKind::Ctor {
-            adt_def_id,
-            ctor_of,
-            variant_id,
-            fields,
-            output_ty,
-        } => todo!(),
-        frontend::FullDefKind::Field => todo!(),
-        frontend::FullDefKind::Macro(macro_kind) => todo!(),
         frontend::FullDefKind::GlobalAsm => todo!(),
         frontend::FullDefKind::SyntheticCoroutineBody => todo!(),
         frontend::FullDefKind::AssocConst { .. }
