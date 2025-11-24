@@ -3,18 +3,22 @@ mod collections {
         mod map {
             #[hax_lib::opaque]
             struct HashMap<K, V, S>(Option<K>, Option<V>, Option<S>);
-            impl <K, V> HashMap<K, V, crate::hash::random::RandomState> {
+            impl<K, V> HashMap<K, V, crate::hash::random::RandomState> {
                 fn new() -> HashMap<K, V, crate::hash::random::RandomState> {
                     HashMap(None, None, None)
-                } 
+                }
             }
             // Dummy impl for disambiguator (https://github.com/cryspen/hax/issues/828)
-            impl HashMap<usize, usize, usize>{}
-            impl <K, V, S> HashMap<K, V, S> {
+            impl HashMap<usize, usize, usize> {}
+            impl<K, V, S> HashMap<K, V, S> {
                 fn get<Y>(m: HashMap<K, V, S>, k: K) -> core_models::option::Option<V> {
                     core_models::panicking::internal::panic()
                 }
-                fn insert(m: HashMap<K, V, S>, k: K, v: V) -> (HashMap<K, V, S>, core_models::option::Option<V>) {
+                fn insert(
+                    m: HashMap<K, V, S>,
+                    k: K,
+                    v: V,
+                ) -> (HashMap<K, V, S>, core_models::option::Option<V>) {
                     core_models::panicking::internal::panic()
                 }
             }
@@ -132,7 +136,6 @@ mod io {
                 let amt = core::cmp::min(buf.len(), self.len());
                 let (a, b) = self.split_at(amt);
 
-                
                 buf[..amt].copy_from_slice(a);
 
                 *self = b;
@@ -147,14 +150,12 @@ mod io {
                 }
                 let (a, b) = self.split_at(buf.len());
 
-                
                 buf.copy_from_slice(a);
 
                 *self = b;
                 Ok(())
             }
         }
-
     }
     mod stdio {
         fn e_print(args: core::fmt::Arguments) {}

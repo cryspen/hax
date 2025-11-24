@@ -7,7 +7,7 @@ function extract_and_copy() {
     cp proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p std \; into fstar --interfaces '+!**' 
     cp std/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p alloc \; into fstar --interfaces '+!**::collections::**' 
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p alloc \; into fstar --interfaces '+!**::collections::btree::** +!**::collections::vec_deque::**' 
     cp alloc/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p rand_core \; into fstar --interfaces '+!**' 
     cp rand_core/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
