@@ -268,7 +268,7 @@ impl TupleId {
         }
     }
 
-    /// Creates a static ConcreteId from a TupleId: `Tuple(1)` returns `Tuple1`. The function is
+    /// Creates a static [`ConcreteId`] from a [`TupleId`]: `Tuple(1)` returns `Tuple1`. The function is
     /// memoized (as the same tuple ids may appear a lot in a program), and inserts identifiers in
     /// the GlobalId table to return a static lifetime.
     pub fn as_concreteid(self) -> &'static ConcreteId {
