@@ -772,6 +772,8 @@ impl PathSegment {
 
 mod view_encapsulation {
     //! Encapsulation module to scope [`View`]'s invariants
+    use crate::ast::{identifiers::global_id::FreshModule, span::Span};
+
     use super::*;
     /// A view for an [`ExplicitDefId`], materialized as a list of typed
     /// [`PathSegment`]s ordered from the crate root/module towards the item.
@@ -834,6 +836,30 @@ mod view_encapsulation {
             inner.reverse();
             debug_assert!(!inner.is_empty()); // invariant: non-empty
             Self(inner)
+        }
+    }
+
+    impl From<FreshModule> for View {
+        fn from(value: FreshModule) -> Self {
+            use crate::ast::diagnostics::{Context, DiagnosticInfo};
+            (DiagnosticInfo {
+            context: Context::NameView,
+            span: Span::dummy(),
+            kind: hax_types::diagnostics::Kind::Unimplemented {
+                issue_id: Some(1779),
+                details: Some(
+                    "Unsupported fresh modules, which should only come from the fstar-phase for bundling"
+                        .into(),
+                ),
+            },
+        }).emit();
+            // dummy value
+            value
+                .hints
+                .first()
+                .expect("The list of hints should be non-empty")
+                .clone()
+                .into()
         }
     }
 }
