@@ -3,6 +3,7 @@ use hax_rust_engine::{
     ocaml_engine::{self, Response},
 };
 use hax_types::{cli_options::Backend, engine_api::File};
+use std::collections::HashMap;
 
 fn main() {
     let (value, table) = hax_rust_engine::hax_io::read_engine_input_message().destruct();
@@ -26,17 +27,27 @@ fn main() {
             };
             output
         }
-        hax_types::driver_api::Items::FullDef(items) => items
-            .iter()
-            .filter(|item| {
-                !matches!(
-                    item.kind,
-                    hax_frontend_exporter::FullDefKind::Use
-                        | hax_frontend_exporter::FullDefKind::ExternCrate
-                )
-            })
-            .flat_map(hax_rust_engine::import_thir::Import::import)
-            .collect(),
+        hax_types::driver_api::Items::FullDef(items) => {
+            let items: Vec<_> = items
+                .into_iter()
+                .filter(|item| {
+                    !matches!(
+                        item.kind,
+                        hax_frontend_exporter::FullDefKind::Use
+                            | hax_frontend_exporter::FullDefKind::ExternCrate
+                    )
+                })
+                .collect();
+            let items_by_def_id = HashMap::from_iter(
+                items
+                    .iter()
+                    .map(|item| (item.this.contents().def_id.clone(), item)),
+            );
+            items
+                .iter()
+                .flat_map(|item| hax_rust_engine::import_thir::import_item(&item, &items_by_def_id))
+                .collect()
+        }
     };
 
     let files = match &value.backend.backend {
