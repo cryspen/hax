@@ -131,16 +131,16 @@ class Lean_tests.Traits.Inheritance.T2 (Self : Type) where
   f2 : (Self -> RustM usize)
 
 class Lean_tests.Traits.Inheritance.T3 (Self : Type) where
-  [_constr_i0 : (Lean_tests.Traits.Inheritance.T2 Self)]
-  [_constr_i1 : (Lean_tests.Traits.Inheritance.T1 Self)]
+  [_constr_T3_i0 : (Lean_tests.Traits.Inheritance.T2 Self)]
+  [_constr_T3_i1 : (Lean_tests.Traits.Inheritance.T1 Self)]
   f3 : (Self -> RustM usize)
 
 class Lean_tests.Traits.Inheritance.Tp1 (Self : Type) where
   f1 : (Self -> RustM usize)
 
 class Lean_tests.Traits.Inheritance.Tp2 (Self : Type) where
-  [_constr_i0 : (Lean_tests.Traits.Inheritance.Tp1 Self)]
-  [_constr_i1 : (Lean_tests.Traits.Inheritance.T3 Self)]
+  [_constr_Tp2_i0 : (Lean_tests.Traits.Inheritance.Tp1 Self)]
+  [_constr_Tp2_i1 : (Lean_tests.Traits.Inheritance.T3 Self)]
   fp2 : (Self -> RustM usize)
 
 structure Lean_tests.Traits.Inheritance.S where
@@ -242,8 +242,8 @@ class Lean_tests.Traits.Bounds.T2 (Self : Type) where
   f2 : (Self -> RustM usize)
 
 class Lean_tests.Traits.Bounds.Test (Self : Type) (T : Type) where
-  [_constr_i0 : (Lean_tests.Traits.Bounds.T2 Self)]
-  [_constr_i1 : (Lean_tests.Traits.Bounds.T1 T)]
+  [_constr_Test_i0 : (Lean_tests.Traits.Bounds.T2 Self)]
+  [_constr_Test_i1 : (Lean_tests.Traits.Bounds.T1 T)]
   f_test : (Self -> T -> RustM usize)
 
 structure Lean_tests.Traits.Bounds.S1 where
@@ -330,9 +330,9 @@ class Lean_tests.Traits.Associated_types.T1 (Self : Type) where
 
 class Lean_tests.Traits.Associated_types.T3 (Self : Type) where
   T : Type
-  [_constr_i0 : (Lean_tests.Traits.Associated_types.Bar T)]
+  [_constr_T_i0 : (Lean_tests.Traits.Associated_types.Bar T)]
   Tp : Type
-  [_constr_i0 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
+  [_constr_Tp_i0 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
   f (A : Type) [(Lean_tests.Traits.Associated_types.Bar A)] :
     (Self -> T -> Tp -> RustM usize)
 
@@ -345,7 +345,7 @@ instance Lean_tests.Traits.Associated_types.Impl :
 
 class Lean_tests.Traits.Associated_types.T2 (Self : Type) where
   T : Type
-  [_constr_i0 : (Lean_tests.Traits.Associated_types.T1 T)]
+  [_constr_T_i0 : (Lean_tests.Traits.Associated_types.T1 T)]
   f : (Self -> T -> RustM usize)
 
 instance Lean_tests.Traits.Associated_types.Impl_1 :
