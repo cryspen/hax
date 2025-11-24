@@ -242,7 +242,7 @@ impl From<TupleId> for GlobalId {
 
 impl TupleId {
     /// Creates a ConcreteId from a TupleId: `Tuple(1)` returns `Tuple1`
-    fn into_owned_concreteid(self) -> ConcreteId {
+    fn into_owned_concrete_id(self) -> ConcreteId {
         fn patch_def_id(template: GlobalId, length: usize, field: usize) -> ConcreteId {
             let GlobalIdInner::Concrete(mut concrete_id) = template.0.get().clone() else {
                 // `patch_def_id` is called with constant values (`hax::Tuple2`
@@ -302,7 +302,7 @@ impl TupleId {
         MEMO.with(|memo| {
             let mut memo = memo.borrow_mut();
             let reference: &'static ConcreteId = memo.entry(self).or_insert_with(|| {
-                match GlobalIdInner::Concrete(self.into_owned_concreteid())
+                match GlobalIdInner::Concrete(self.into_owned_concrete_id())
                     .intern()
                     .get()
                 {
