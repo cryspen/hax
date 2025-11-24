@@ -23,6 +23,16 @@ fn loop2() -> u32 {
     x
 }
 
+#[hax_lib::ensures(|r| true)]
+fn while_loop1(s: u32) -> u32 {
+    let mut x: u32 = s;
+    while x > 0 {
+        hax_lib::loop_decreases!(x);
+        x = x - 1;
+    }
+    x
+}
+
 mod errors {
     enum Error {
         Foo,

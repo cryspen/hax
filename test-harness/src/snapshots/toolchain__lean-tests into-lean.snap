@@ -1061,6 +1061,65 @@ def Lean_tests.Loops.Errors.loop4
     | (Core.Ops.Control_flow.ControlFlow.Continue e)
       => (pure (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk e e)))
 
+def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
+  let x : u32 := (0 : u32);
+  let x : u32 ←
+    (Rust_primitives.Hax.Folds.fold_range
+      (1 : u32)
+      (10 : u32)
+      (fun x _ => (do (pure true) : RustM Bool))
+      x
+      (fun x i => (do (x +? i) : RustM u32)));
+  (pure x)
+
+def Lean_tests.Loops.loop2 (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
+  let x : u32 := (0 : u32);
+  match
+    (← (Rust_primitives.Hax.Folds.fold_range_return
+      (1 : u32)
+      (10 : u32)
+      (fun x _ => (do (pure true) : RustM Bool))
+      x
+      (fun x i => (do
+        if (← (Rust_primitives.Hax.Machine_int.eq i (5 : u32))) then
+          (pure (Core.Ops.Control_flow.ControlFlow.Break
+            (Core.Ops.Control_flow.ControlFlow.Break x)))
+        else
+          (pure (Core.Ops.Control_flow.ControlFlow.Continue (← (x +? i)))) :
+        RustM
+        (Core.Ops.Control_flow.ControlFlow
+          (Core.Ops.Control_flow.ControlFlow
+            u32
+            (Rust_primitives.Hax.Tuple2 Rust_primitives.Hax.Tuple0 u32))
+          u32)))))
+  with
+    | (Core.Ops.Control_flow.ControlFlow.Break ret) => (pure ret)
+    | (Core.Ops.Control_flow.ControlFlow.Continue x) => (pure x)
+
+def Lean_tests.Loops.while_loop1 (s : u32) : RustM u32 := do
+  let x : u32 := s;
+  let x : u32 ←
+    (Rust_primitives.Hax.while_loop
+      (fun x => (do (pure true) : RustM Bool))
+      (fun x => (do
+        (Rust_primitives.Hax.Machine_int.gt x (0 : u32)) : RustM Bool))
+      (fun x => (do
+        (Rust_primitives.Hax.Int.from_machine x) : RustM Hax_lib.Int.Int))
+      x
+      (fun x => (do let x : u32 ← (x -? (1 : u32)); (pure x) : RustM u32)));
+  (pure x)
+
+@[spec]
+def Lean_tests.Loops.while_loop1.spec (s : u32)  :
+    Spec
+      (requires := pure True)
+      (ensures := fun r => (pure true))
+      (Lean_tests.Loops.while_loop1 (s : u32) ) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Lean_tests.Loops.while_loop1] <;> try grind
+}
+
 def Lean_tests.Floats.N : f32 := RustM.of_isOk (do (pure (1.0 : f32))) (by rfl)
 
 def Lean_tests.Floats.test
@@ -1620,41 +1679,6 @@ def Lean_tests.Matching.test_binding_subpattern_matching
         ((← ((← (a +? b)) +? (Rust_primitives.Hax.Tuple2._0 pair)))
           +? (Rust_primitives.Hax.Tuple2._1 pair))
     | _ => (pure (0 : u8))
-
-def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
-  let x : u32 := (0 : u32);
-  let x : u32 ←
-    (Rust_primitives.Hax.Folds.fold_range
-      (1 : u32)
-      (10 : u32)
-      (fun x _ => (do (pure true) : RustM Bool))
-      x
-      (fun x i => (do (x +? i) : RustM u32)));
-  (pure x)
-
-def Lean_tests.Loops.loop2 (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
-  let x : u32 := (0 : u32);
-  match
-    (← (Rust_primitives.Hax.Folds.fold_range_return
-      (1 : u32)
-      (10 : u32)
-      (fun x _ => (do (pure true) : RustM Bool))
-      x
-      (fun x i => (do
-        if (← (Rust_primitives.Hax.Machine_int.eq i (5 : u32))) then
-          (pure (Core.Ops.Control_flow.ControlFlow.Break
-            (Core.Ops.Control_flow.ControlFlow.Break x)))
-        else
-          (pure (Core.Ops.Control_flow.ControlFlow.Continue (← (x +? i)))) :
-        RustM
-        (Core.Ops.Control_flow.ControlFlow
-          (Core.Ops.Control_flow.ControlFlow
-            u32
-            (Rust_primitives.Hax.Tuple2 Rust_primitives.Hax.Tuple0 u32))
-          u32)))))
-  with
-    | (Core.Ops.Control_flow.ControlFlow.Break ret) => (pure ret)
-    | (Core.Ops.Control_flow.ControlFlow.Continue x) => (pure x)
 
 def Lean_tests.Ite.test1 (_ : Rust_primitives.Hax.Tuple0) : RustM i32 := do
   let x : i32 ← if true then (pure (0 : i32)) else (pure (1 : i32));
