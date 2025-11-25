@@ -15,10 +15,7 @@ pub struct RustPrinter {
 
 impl Printer for RustPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(FunctionsToConstants),
-            Box::new(Tuples),
-        ]
+        vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
     }
 
     const NAME: &str = "Rust";
@@ -136,20 +133,14 @@ const _: () = {
     }
 
     impl<'a, 'b> RustPrinter {
-        fn generic_params<A: Clone>(
-            &'a self,
-            generic_params: &'b [GenericParam],
-        ) -> DocBuilder<A> {
+        fn generic_params<A: Clone>(&'a self, generic_params: &'b [GenericParam]) -> DocBuilder<A> {
             let generic_params = generic_params
                 .iter()
                 .filter(|p| !matches!(&p.kind, GenericParamKind::Lifetime if p.ident.0.to_string() == "_"))
                 .collect::<Vec<_>>();
             sep_opt!("<", generic_params, ">")
         }
-        fn where_clause<A: Clone>(
-            &'a self,
-            constraints: &'b [GenericConstraint],
-        ) -> DocBuilder<A> {
+        fn where_clause<A: Clone>(&'a self, constraints: &'b [GenericConstraint]) -> DocBuilder<A> {
             if constraints.is_empty() {
                 return nil!();
             }
@@ -288,10 +279,7 @@ const _: () = {
                 }
             ]
         }
-        fn generic_constraint(
-            &self,
-            generic_constraint: &GenericConstraint,
-        ) -> DocBuilder<A> {
+        fn generic_constraint(&self, generic_constraint: &GenericConstraint) -> DocBuilder<A> {
             match generic_constraint {
                 GenericConstraint::Lifetime(s) => docs![s.clone()],
                 GenericConstraint::Type(impl_ident) => docs![impl_ident],
@@ -357,10 +345,7 @@ const _: () = {
                 TyKind::Error(_) => todo!("resugaring"),
             }
         }
-        fn resugared_ty_kind(
-            &self,
-            resugared_ty_kind: &ResugaredTyKind,
-        ) -> DocBuilder<A> {
+        fn resugared_ty_kind(&self, resugared_ty_kind: &ResugaredTyKind) -> DocBuilder<A> {
             match resugared_ty_kind {
                 ResugaredTyKind::Tuple(types) => print_tuple!(types),
             }
@@ -603,10 +588,7 @@ const _: () = {
                 ExprKind::Error { .. } => todo!("resugaring"),
             }
         }
-        fn resugared_expr_kind(
-            &self,
-            resugared_expr_kind: &ResugaredExprKind,
-        ) -> DocBuilder<A> {
+        fn resugared_expr_kind(&self, resugared_expr_kind: &ResugaredExprKind) -> DocBuilder<A> {
             match resugared_expr_kind {
                 ResugaredExprKind::BinOp { .. } => unreachable!("BinOp resugaring not active"),
                 ResugaredExprKind::Tuple(values) => print_tuple!(values),
@@ -658,10 +640,7 @@ const _: () = {
         fn item(&self, item: &Item) -> DocBuilder<A> {
             docs![&item.meta, item.kind()]
         }
-        fn resugared_item_kind(
-            &self,
-            resugared_item_kind: &ResugaredItemKind,
-        ) -> DocBuilder<A> {
+        fn resugared_item_kind(&self, resugared_item_kind: &ResugaredItemKind) -> DocBuilder<A> {
             match resugared_item_kind {
                 ResugaredItemKind::Constant { name, body, .. } => {
                     docs![
