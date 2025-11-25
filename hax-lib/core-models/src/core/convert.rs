@@ -1,26 +1,26 @@
 use super::result::Result;
 
 #[hax_lib::attributes]
-trait TryInto<T> {
+pub trait TryInto<T> {
     type Error;
     #[hax_lib::requires(true)]
     fn try_into(self) -> Result<T, Self::Error>;
 }
 
 #[hax_lib::attributes]
-trait Into<T> {
+pub trait Into<T> {
     #[hax_lib::requires(true)]
     fn into(self) -> T;
 }
 
 #[hax_lib::attributes]
-trait From<T> {
+pub trait From<T> {
     #[hax_lib::requires(true)]
     fn from(x: T) -> Self;
 }
 
 #[hax_lib::attributes]
-trait TryFrom<T>: Sized {
+pub trait TryFrom<T>: Sized {
     type Error;
     #[hax_lib::requires(true)]
     fn try_from(x: T) -> Result<Self, Self::Error>;
@@ -68,7 +68,7 @@ impl<T> From<T> for T {
     }
 }
 
-trait AsRef<T> {
+pub trait AsRef<T> {
     fn as_ref(self) -> T;
 }
 
