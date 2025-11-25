@@ -32,7 +32,7 @@ impl<T, U: From<T>> Into<U> for T {
     }
 }
 
-pub struct Infallible;
+pub enum Infallible {}
 
 impl<T, U: From<T>> TryFrom<T> for U {
     type Error = Infallible;
