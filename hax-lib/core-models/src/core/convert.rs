@@ -1,5 +1,7 @@
 use super::result::Result;
 
+pub enum Infallible {}
+
 #[hax_lib::attributes]
 trait TryInto<T> {
     type Error;
@@ -31,8 +33,6 @@ impl<T, U: From<T>> Into<U> for T {
         U::from(self)
     }
 }
-
-pub struct Infallible;
 
 impl<T, U: From<T>> TryFrom<T> for U {
     type Error = Infallible;
