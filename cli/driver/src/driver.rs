@@ -37,7 +37,7 @@ mod features;
 use callbacks_wrapper::*;
 use features::*;
 
-use hax_types::cli_options::{BackendOptions, Command, ENV_VAR_OPTIONS_FRONTEND};
+use hax_types::cli_options::{ENV_VAR_OPTIONS_FRONTEND, ExporterOptions};
 
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::interface;
@@ -74,7 +74,7 @@ const HAX_VANILLA_RUSTC: &str = "HAX_VANILLA_RUSTC";
 fn main() {
     setup_logging();
 
-    let options: hax_types::cli_options::Options = serde_json::from_str(
+    let options: ExporterOptions = serde_json::from_str(
         &std::env::var(ENV_VAR_OPTIONS_FRONTEND).unwrap_or_else(|_| {
             panic!(
                 "Cannot find environnement variable {}",
@@ -124,7 +124,7 @@ fn main() {
         !vanilla_rustc && !is_build_script && (options.deps || is_primary_package);
     let mut callbacks: Box<dyn Callbacks + Send> = if translate_package {
         Box::new(exporter::ExtractionCallbacks {
-            body_types: options.command.body_kinds(),
+            body_kinds: options.body_kinds.clone(),
         })
     } else {
         struct CallbacksNoop;
@@ -149,11 +149,9 @@ fn main() {
                 "--cfg".into(),
                 hax_lib_macros_types::HAX_CFG_OPTION_NAME.into(),
             ])
-            .chain(match &options.command {
-                Command::Backend(BackendOptions { backend, .. }) => {
-                    vec!["--cfg".into(), format!("hax_backend_{backend}")]
-                }
-                _ => vec![],
+            .chain(match &options.backend {
+                Some(backend) => vec!["--cfg".into(), format!("hax_backend_{backend}")],
+                None => vec![],
             })
             .chain(features.into_iter().map(|s| format!("-Zcrate-attr={}", s)))
             .chain(rustc_args[1..].iter().cloned())

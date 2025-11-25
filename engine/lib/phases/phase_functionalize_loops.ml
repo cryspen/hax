@@ -205,22 +205,7 @@ struct
       let module M = UB.M in
       let module MS = (val M.make span) in
       match expr.e with
-      | Loop
-          {
-            body;
-            kind = ForLoop { it; pat; _ };
-            state = Some _ as state;
-            control_flow;
-            _;
-          }
-      | Loop
-          {
-            body;
-            kind = ForLoop { it; pat; _ };
-            state;
-            control_flow = Some (BreakOrReturn, _) as control_flow;
-            _;
-          } ->
+      | Loop { body; kind = ForLoop { it; pat; _ }; state; control_flow; _ } ->
           let bpat, init =
             match state with
             | Some { bpat; init; _ } -> (dpat bpat, dexpr init)
@@ -264,22 +249,8 @@ struct
                 (fold, [ it; init; fn ])
           in
           UB.call f args span (dty span expr.typ)
-      | Loop
-          {
-            body;
-            kind = WhileLoop { condition; _ };
-            state = Some _ as state;
-            control_flow;
-            _;
-          }
-      | Loop
-          {
-            body;
-            kind = WhileLoop { condition; _ };
-            state;
-            control_flow = Some (BreakOrReturn, _) as control_flow;
-            _;
-          } ->
+      | Loop { body; kind = WhileLoop { condition; _ }; state; control_flow; _ }
+        ->
           let bpat, init =
             match state with
             | Some { bpat; init; _ } -> (dpat bpat, dexpr init)
@@ -342,12 +313,11 @@ struct
             UB.make_closure [ bpat ] invariant invariant.span
           in
           let variant = UB.make_closure [ bpat ] variant variant.span in
+          (* The invariant should come before the condition. This allows to use the invariant
+             to prove panic freedom of the condition. *)
           UB.call fold_operator
-            [ condition; invariant; variant; init; body ]
+            [ invariant; condition; variant; init; body ]
             span (dty span expr.typ)
-      | Loop { state = None; _ } ->
-          Error.unimplemented ~issue_id:405 ~details:"Loop without mutation"
-            span
       | Loop _ ->
           Error.unimplemented ~issue_id:933 ~details:"Unhandled loop kind" span
       | [%inline_arms "dexpr'.*" - Loop - Break - Continue - Return] ->

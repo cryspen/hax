@@ -20,18 +20,6 @@ pub struct Decorated<T> {
     pub attributes: Vec<Attribute>,
 }
 
-/// Reflects [`rustc_middle::infer::canonical::CanonicalTyVarKind`]
-#[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalTyVarKind, state: S as gstate)]
-pub enum CanonicalTyVarKind {
-    General(UniverseIndex),
-    Int,
-    Float,
-}
-
-sinto_as_usize!(rustc_middle::ty, UniverseIndex);
-
 /// Reflects [`ty::ParamTy`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -88,14 +76,6 @@ pub struct ExistentialProjection {
     pub term: Term,
 }
 
-/// Reflects [`ty::DynKind`]
-#[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
-#[args(<S>, from: ty::DynKind, state: S as _s)]
-pub enum DynKind {
-    Dyn,
-}
-
 /// Reflects [`ty::BoundTyKind`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
@@ -149,7 +129,6 @@ pub type PlaceholderType = Placeholder<BoundTy>;
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Placeholder<T> {
-    pub universe: UniverseIndex,
     pub bound: T,
 }
 
@@ -159,7 +138,6 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Placeholder<U>>
 {
     fn sinto(&self, s: &S) -> Placeholder<U> {
         Placeholder {
-            universe: self.universe.sinto(s),
             bound: self.bound.sinto(s),
         }
     }
@@ -169,8 +147,6 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Placeholder<U>>
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema)]
 pub struct Canonical<T> {
-    pub max_universe: UniverseIndex,
-    pub variables: Vec<CanonicalVarInfo>,
     pub value: T,
 }
 /// Reflects [`ty::CanonicalUserType`]
@@ -182,24 +158,9 @@ impl<'tcx, S: UnderOwnerState<'tcx>, T: SInto<S, U>, U> SInto<S, Canonical<U>>
 {
     fn sinto(&self, s: &S) -> Canonical<U> {
         Canonical {
-            max_universe: self.max_universe.sinto(s),
-            variables: self.variables.sinto(s),
             value: self.value.sinto(s),
         }
     }
-}
-
-/// Reflects [`rustc_middle::infer::canonical::CanonicalVarKind`]
-#[derive_group(Serializers)]
-#[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_middle::infer::canonical::CanonicalVarKind<'tcx>, state: S as gstate)]
-pub enum CanonicalVarInfo {
-    Ty(CanonicalTyVarKind),
-    PlaceholderTy(PlaceholderType),
-    Region(UniverseIndex),
-    PlaceholderRegion(PlaceholderRegion),
-    Const(UniverseIndex),
-    PlaceholderConst(PlaceholderConst),
 }
 
 /// Reflects [`ty::UserSelfTy`]
@@ -414,13 +375,22 @@ pub enum LateParamRegionKind {
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::RegionKind<'tcx>, state: S as gstate)]
 pub enum RegionKind {
     ReEarlyParam(EarlyParamRegion),
-    ReBound(DebruijnIndex, BoundRegion),
+    ReBound(BoundVarIndexKind, BoundRegion),
     ReLateParam(LateParamRegion),
     ReStatic,
     ReVar(RegionVid),
     RePlaceholder(PlaceholderRegion),
     ReErased,
     ReError(ErrorGuaranteed),
+}
+
+/// Reflects [`ty::BoundVarIndexKind`]
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Copy, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::BoundVarIndexKind, state: S as gstate)]
+pub enum BoundVarIndexKind {
+    Bound(DebruijnIndex),
+    Canonical,
 }
 
 sinto_as_usize!(rustc_middle::ty, DebruijnIndex);
@@ -464,6 +434,8 @@ pub struct ItemRefContents {
     pub in_trait: Option<ImplExpr>,
     /// Whether this contains any reference to a type/lifetime/const parameter.
     pub has_param: bool,
+    /// Whether this contains any reference to a type/const parameter.
+    pub has_non_lt_param: bool,
 }
 
 /// Reference to an item, with generics. Basically any mention of an item (function, type, etc)
@@ -523,20 +495,65 @@ impl ItemRef {
         def_id: RDefId,
         generics: ty::GenericArgsRef<'tcx>,
     ) -> ItemRef {
+        Self::translate_maybe_resolve_impl(
+            s,
+            s.base().options.item_ref_use_concrete_impl,
+            def_id,
+            generics,
+        )
+    }
+
+    /// Makes a `ItemRef` from a `def_id` and generics.
+    ///
+    /// If `resolve_impl == true` and `(def_id, generics)` points to a trait item that
+    /// can be resolved to a specific `impl`, `translate` rewrites `def_id` to the
+    /// concrete associated item from that `impl` and re-bases the generics.
+    ///
+    /// For instance, [`<u32 as From<u8>>::from`] produces a [`ItemRef`] with a
+    /// [`DefId`] looking like `core::convert::num::Impl#42::from` when
+    /// `resolve_impl` is `true`, `core::convert::From::from` otherwise.
+    #[cfg(feature = "rustc")]
+    fn translate_maybe_resolve_impl<'tcx, S: UnderOwnerState<'tcx>>(
+        s: &S,
+        resolve_impl: bool,
+        mut def_id: RDefId,
+        mut generics: ty::GenericArgsRef<'tcx>,
+    ) -> ItemRef {
         use rustc_infer::infer::canonical::ir::TypeVisitableExt;
         let key = (def_id, generics);
         if let Some(item) = s.with_cache(|cache| cache.item_refs.get(&key).cloned()) {
             return item;
         }
-        let mut impl_exprs = solve_item_required_traits(s, def_id, generics);
-        let mut generic_args = generics.sinto(s);
 
+        let tcx = s.base().tcx;
         // If this is an associated item, resolve the trait reference.
-        let trait_info = self_clause_for_item(s, def_id, generics);
+        let mut trait_info = self_clause_for_item(s, def_id, generics);
+
+        // If the reference is a known trait impl and the impl implements the target item, we can
+        // point directly to the implemented item.
+        if resolve_impl
+            && let Some(tinfo) = &trait_info
+            && let ImplExprAtom::Concrete(impl_ref) = &tinfo.r#impl
+            && let impl_def_id = impl_ref.def_id.as_rust_def_id().unwrap()
+            && let Some(implemented_item) = tcx
+                .associated_items(impl_def_id)
+                .in_definition_order()
+                .find(|item| item.trait_item_def_id() == Some(def_id))
+        {
+            let trait_def_id = tcx.parent(def_id);
+            def_id = implemented_item.def_id;
+            generics = generics.rebase_onto(tcx, trait_def_id, impl_ref.rustc_args(s));
+            trait_info = None;
+        }
+
+        let hax_def_id = def_id.sinto(s);
+        let mut hax_generics = generics.sinto(s);
+        let mut impl_exprs = solve_item_required_traits(s, def_id, generics);
+
         // Fixup the generics.
         if let Some(tinfo) = &trait_info {
             // The generics are split in two: the arguments of the trait and the arguments of the
-            // method.
+            // method/associated item.
             //
             // For instance, if we have:
             // ```
@@ -553,21 +570,25 @@ impl ItemRef {
             // split into `<T, u32>` and `<U>`.
             let trait_ref = tinfo.r#trait.hax_skip_binder_ref();
             let num_trait_generics = trait_ref.generic_args.len();
-            generic_args.drain(0..num_trait_generics);
-            let num_trait_trait_clauses = trait_ref.impl_exprs.len();
-            // Associated items take a `Self` clause as first clause, we skip that one too. Note: that
-            // clause is the same as `tinfo`.
-            impl_exprs.drain(0..num_trait_trait_clauses + 1);
+            hax_generics.drain(0..num_trait_generics);
+            let mut num_trait_trait_clauses = trait_ref.impl_exprs.len();
+            // Items other than associated types get an extra `Self: Trait` clause as the first
+            // clause, we skip that one too. Note: that clause is the same as `tinfo`.
+            if !matches!(hax_def_id.kind, DefKind::AssocTy) {
+                num_trait_trait_clauses += 1;
+            };
+            impl_exprs.drain(0..num_trait_trait_clauses);
         }
 
         let content = ItemRefContents {
-            def_id: def_id.sinto(s),
-            generic_args,
+            def_id: hax_def_id,
+            generic_args: hax_generics,
             impl_exprs,
             in_trait: trait_info,
             has_param: generics.has_param()
                 || generics.has_escaping_bound_vars()
                 || generics.has_free_regions(),
+            has_non_lt_param: generics.has_param(),
         };
         let item = content.intern(s);
         s.with_cache(|cache| {
@@ -588,6 +609,7 @@ impl ItemRef {
             impl_exprs: Default::default(),
             in_trait: Default::default(),
             has_param: false,
+            has_non_lt_param: false,
         };
         let item = content.intern(s);
         s.with_global_cache(|cache| {
@@ -596,6 +618,26 @@ impl ItemRef {
                 .insert(item.id(), ty::GenericArgsRef::default());
         });
         item
+    }
+
+    /// For an `ItemRef` that refers to a trait, this returns values for each of the non-gat
+    /// associated types of this trait and its parents, in a fixed order.
+    #[cfg(feature = "rustc")]
+    pub fn trait_associated_types<'tcx, S: UnderOwnerState<'tcx>>(&self, s: &S) -> Vec<Ty> {
+        if !matches!(self.def_id.kind, DefKind::Trait | DefKind::TraitAlias) {
+            panic!("`ItemRef::trait_associated_types` expected a trait")
+        }
+        let tcx = s.base().tcx;
+        let typing_env = s.typing_env();
+        let def_id = self.def_id.as_rust_def_id().unwrap();
+        let generics = self.rustc_args(s);
+        let tref = ty::TraitRef::new(tcx, def_id, generics);
+        rustc_utils::assoc_tys_for_trait(tcx, typing_env, tref)
+            .into_iter()
+            .map(|alias_ty| ty::Ty::new_alias(tcx, ty::Projection, alias_ty))
+            .map(|ty| normalize(tcx, typing_env, ty))
+            .map(|ty| ty.sinto(s))
+            .collect()
     }
 
     /// Erase lifetimes from the generic arguments of this item.
@@ -721,48 +763,6 @@ pub enum FloatTy {
     F128,
 }
 
-#[cfg(feature = "rustc")]
-impl<'tcx, S> SInto<S, FloatTy> for rustc_ast::ast::FloatTy {
-    fn sinto(&self, _: &S) -> FloatTy {
-        use rustc_ast::ast::FloatTy as T;
-        match self {
-            T::F16 => FloatTy::F16,
-            T::F32 => FloatTy::F32,
-            T::F64 => FloatTy::F64,
-            T::F128 => FloatTy::F128,
-        }
-    }
-}
-
-#[cfg(feature = "rustc")]
-impl<'tcx, S> SInto<S, IntTy> for rustc_ast::ast::IntTy {
-    fn sinto(&self, _: &S) -> IntTy {
-        use rustc_ast::ast::IntTy as T;
-        match self {
-            T::Isize => IntTy::Isize,
-            T::I8 => IntTy::I8,
-            T::I16 => IntTy::I16,
-            T::I32 => IntTy::I32,
-            T::I64 => IntTy::I64,
-            T::I128 => IntTy::I128,
-        }
-    }
-}
-#[cfg(feature = "rustc")]
-impl<'tcx, S> SInto<S, UintTy> for rustc_ast::ast::UintTy {
-    fn sinto(&self, _: &S) -> UintTy {
-        use rustc_ast::ast::UintTy as T;
-        match self {
-            T::Usize => UintTy::Usize,
-            T::U8 => UintTy::U8,
-            T::U16 => UintTy::U16,
-            T::U32 => UintTy::U32,
-            T::U64 => UintTy::U64,
-            T::U128 => UintTy::U128,
-        }
-    }
-}
-
 /// Reflects [`rustc_type_ir::UintTy`]
 #[derive(AdtInto)]
 #[args(<S>, from: rustc_type_ir::UintTy, state: S as _s)]
@@ -862,7 +862,7 @@ pub struct GenericParamDef {
         let parent = tcx.parent(self.def_id);
         match tcx.def_kind(parent) {
             Fn | AssocFn | Enum | Struct | Union | Ctor(..) | OpaqueTy => {
-                Some(tcx.variances_of(parent)[self.index as usize].sinto(s))
+                tcx.variances_of(parent).get(self.index as usize).sinto(s)
             }
             _ => None
         }
@@ -1095,12 +1095,31 @@ pub enum TyKind {
     Adt(ItemRef),
     #[custom_arm(FROM_TYPE::Foreign(def_id) => TO_TYPE::Foreign(translate_item_ref(s, *def_id, Default::default())),)]
     Foreign(ItemRef),
+    /// The `ItemRef` uses the fake `Array` def_id.
+    #[custom_arm(FROM_TYPE::Array(ty, len) => TO_TYPE::Array({
+        let def_id = s.with_global_cache(|c| c.get_synthetic_def_id(s, SyntheticItem::Array));
+        let args = s.base().tcx.mk_args(&[(*ty).into(), (*len).into()]);
+        ItemRef::translate(s, def_id, args)
+    }),)]
+    Array(ItemRef),
+    /// The `ItemRef` uses the fake `Slice` def_id.
+    #[custom_arm(FROM_TYPE::Slice(ty) => TO_TYPE::Slice({
+        let def_id = s.with_global_cache(|c| c.get_synthetic_def_id(s, SyntheticItem::Slice));
+        let args = s.base().tcx.mk_args(&[(*ty).into()]);
+        ItemRef::translate(s, def_id, args)
+    }),)]
+    Slice(ItemRef),
+    /// The `ItemRef` uses the fake `Tuple` def_id.
+    #[custom_arm(FROM_TYPE::Tuple(tys) => TO_TYPE::Tuple({
+        let def_id = s.with_global_cache(|c| c.get_synthetic_def_id(s, SyntheticItem::Tuple(tys.len())));
+        let args = s.base().tcx.mk_args_from_iter(tys.into_iter().map(ty::GenericArg::from));
+        ItemRef::translate(s, def_id, args)
+    }),)]
+    Tuple(ItemRef),
     Str,
-    Array(Box<Ty>, #[map(Box::new(x.sinto(s)))] Box<ConstantExpr>),
-    Slice(Box<Ty>),
     RawPtr(Box<Ty>, Mutability),
     Ref(Region, Box<Ty>, Mutability),
-    #[custom_arm(FROM_TYPE::Dynamic(preds, region, _) => make_dyn(s, preds, region),)]
+    #[custom_arm(FROM_TYPE::Dynamic(preds, region) => make_dyn(s, preds, region),)]
     Dynamic(
         /// Fresh type parameter that we use as the `Self` type in the prediates below.
         ParamTy,
@@ -1112,11 +1131,10 @@ pub enum TyKind {
     #[custom_arm(FROM_TYPE::Coroutine(def_id, generics) => TO_TYPE::Coroutine(translate_item_ref(s, *def_id, generics)),)]
     Coroutine(ItemRef),
     Never,
-    Tuple(Vec<Ty>),
     #[custom_arm(FROM_TYPE::Alias(alias_kind, alias_ty) => Alias::from(s, alias_kind, alias_ty),)]
     Alias(Alias),
     Param(ParamTy),
-    Bound(DebruijnIndex, BoundTy),
+    Bound(BoundVarIndexKind, BoundTy),
     Placeholder(PlaceholderType),
     Infer(InferTy),
     #[custom_arm(FROM_TYPE::Error(..) => TO_TYPE::Error,)]
@@ -1230,12 +1248,28 @@ pub struct CanonicalUserTypeAnnotation {
 
 /// Reflects [`ty::AdtKind`]
 #[derive_group(Serializers)]
-#[derive(AdtInto, Copy, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::AdtKind, state: S as _s)]
+#[derive(Copy, Clone, Debug, JsonSchema)]
 pub enum AdtKind {
     Struct,
     Union,
     Enum,
+    /// We sometimes pretend arrays are an ADT and generate a `FullDef` for them.
+    Array,
+    /// We sometimes pretend slices are an ADT and generate a `FullDef` for them.
+    Slice,
+    /// We sometimes pretend tuples are an ADT and generate a `FullDef` for them.
+    Tuple,
+}
+
+#[cfg(feature = "rustc")]
+impl<'tcx, S: UnderOwnerState<'tcx>> SInto<S, AdtKind> for ty::AdtKind {
+    fn sinto(&self, _s: &S) -> AdtKind {
+        match self {
+            ty::AdtKind::Struct => AdtKind::Struct,
+            ty::AdtKind::Union => AdtKind::Union,
+            ty::AdtKind::Enum => AdtKind::Enum,
+        }
+    }
 }
 
 sinto_todo!(rustc_middle::ty, AdtFlags);
@@ -1245,7 +1279,10 @@ sinto_todo!(rustc_middle::ty, AdtFlags);
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
 #[args(<'tcx, S: UnderOwnerState<'tcx>>, from: rustc_abi::ReprOptions, state: S as s)]
 pub struct ReprOptions {
-    pub int: Option<IntegerType>,
+    /// Whether an explicit integer representation was specified.
+    #[value(self.int.is_some())]
+    pub int_specified: bool,
+    /// The actual discriminant type resulting from the representation options.
     #[value({
         use crate::rustc_middle::ty::util::IntTypeExt;
         self.discr_type().to_ty(s.base().tcx).sinto(s)
@@ -1253,13 +1290,29 @@ pub struct ReprOptions {
     pub typ: Ty,
     pub align: Option<Align>,
     pub pack: Option<Align>,
+    #[value(ReprFlags { is_c: self.c(), is_transparent: self.transparent(), is_simd: self.simd() })]
     pub flags: ReprFlags,
-    pub field_shuffle_seed: u64,
 }
 
-sinto_todo!(rustc_abi, IntegerType);
-sinto_todo!(rustc_abi, ReprFlags);
-sinto_todo!(rustc_abi, Align);
+/// The representation flags without the ones irrelevant outside of rustc.
+#[derive_group(Serializers)]
+#[derive(Default, Clone, Debug, JsonSchema)]
+pub struct ReprFlags {
+    pub is_c: bool,
+    pub is_transparent: bool,
+    pub is_simd: bool,
+}
+
+/// Reflects [`ty::Align`], but directly stores the number of bytes as a u64.
+#[derive_group(Serializers)]
+#[derive(AdtInto, Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[args(<'tcx, S: BaseState<'tcx>>, from: rustc_abi::Align, state: S as _s)]
+pub struct Align {
+    #[value({
+        self.bytes()
+    })]
+    pub bytes: u64,
+}
 
 /// Reflects [`ty::adjustment::PointerCoercion`]
 #[derive_group(Serializers)]
@@ -1665,6 +1718,24 @@ pub struct ClosureArgs {
     pub upvar_tys: Vec<Ty>,
 }
 
+impl ClosureArgs {
+    /// Iterate over the upvars that are borrows with erased regions. These may require allocating
+    /// fresh regions.
+    pub fn iter_upvar_borrows(&self) -> impl Iterator<Item = &Ty> {
+        self.upvar_tys.iter().filter(|ty| {
+            matches!(
+                ty.kind(),
+                TyKind::Ref(
+                    Region {
+                        kind: RegionKind::ReErased
+                    },
+                    ..
+                )
+            )
+        })
+    }
+}
+
 #[cfg(feature = "rustc")]
 impl ClosureArgs {
     // Manual implementation because we need the `def_id` of the closure.
@@ -1758,35 +1829,32 @@ impl AssocItem {
         let container_id = item.container_id(tcx);
         let container_args = item_args.truncate_to(tcx, tcx.generics_of(container_id));
         let container = match item.container {
-            ty::AssocItemContainer::Trait => {
+            ty::AssocContainer::Trait => {
                 let trait_ref =
                     ty::TraitRef::new_from_args(tcx, container_id, container_args).sinto(s);
                 AssocItemContainer::TraitContainer { trait_ref }
             }
-            ty::AssocItemContainer::Impl => {
-                if let Some(implemented_item_id) = item.trait_item_def_id {
-                    let item = translate_item_ref(s, container_id, container_args);
-                    let implemented_trait_ref = tcx
-                        .impl_trait_ref(container_id)
-                        .unwrap()
-                        .instantiate(tcx, container_args);
-                    let implemented_trait_item = translate_item_ref(
-                        s,
-                        implemented_item_id,
-                        item_args.rebase_onto(tcx, container_id, implemented_trait_ref.args),
-                    );
-                    AssocItemContainer::TraitImplContainer {
-                        impl_: item,
-                        implemented_trait_ref: implemented_trait_ref.sinto(s),
-                        implemented_trait_item,
-                        overrides_default: tcx.defaultness(implemented_item_id).has_value(),
-                    }
-                } else {
-                    AssocItemContainer::InherentImplContainer {
-                        impl_id: container_id.sinto(s),
-                    }
+            ty::AssocContainer::TraitImpl(implemented_item_id) => {
+                let implemented_item_id = implemented_item_id.unwrap();
+                let item = translate_item_ref(s, container_id, container_args);
+                let implemented_trait_ref = tcx
+                    .impl_trait_ref(container_id)
+                    .instantiate(tcx, container_args);
+                let implemented_trait_item = translate_item_ref(
+                    s,
+                    implemented_item_id,
+                    item_args.rebase_onto(tcx, container_id, implemented_trait_ref.args),
+                );
+                AssocItemContainer::TraitImplContainer {
+                    impl_: item,
+                    implemented_trait_ref: implemented_trait_ref.sinto(s),
+                    implemented_trait_item,
+                    overrides_default: tcx.defaultness(implemented_item_id).has_value(),
                 }
             }
+            ty::AssocContainer::InherentImpl => AssocItemContainer::InherentImplContainer {
+                impl_id: container_id.sinto(s),
+            },
         };
         AssocItem {
             def_id: item.def_id.sinto(s),

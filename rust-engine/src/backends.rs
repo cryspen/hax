@@ -108,24 +108,26 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
         .collect()
 }
 
-#[allow(unused)]
 mod prelude {
     //! Small "bring-into-scope" set used by backend modules.
     //!
     //! Importing this prelude saves repetitive `use` lists in per-backend
     //! modules without forcing these names on downstream users.
     pub use super::Backend;
-    pub use crate::ast::identifiers::global_id::view::AnyKind;
-    pub use crate::ast::identifiers::*;
-    pub use crate::ast::literals::*;
-    pub use crate::ast::resugared::*;
-    pub use crate::ast::*;
-    pub use crate::printer::render_view::*;
-    pub use crate::printer::*;
+    pub use crate::ast::{
+        identifiers::{global_id::view::AnyKind, *},
+        literals::*,
+        resugared::*,
+        *,
+    };
+    pub use crate::printer::{
+        pretty_ast::{DocBuilder, PrettyAst, ToDocument, install_pretty_helpers},
+        render_view::*,
+        *,
+    };
+    pub use crate::resugarings::*;
     pub use crate::symbol::Symbol;
-    pub use hax_rust_engine_macros::prepend_associated_functions_with;
-    pub use pretty::DocAllocator;
-    pub use pretty::DocBuilder;
-    pub use pretty::Pretty;
-    pub use pretty_ast::install_pretty_helpers;
+    pub use hax_rust_engine_macros::{
+        prepend_associated_functions_with, setup_span_handling_struct,
+    };
 }

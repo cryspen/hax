@@ -7,18 +7,15 @@ use std::cell::RefCell;
 mod renamings;
 
 /// The Rust printer.
+#[setup_span_handling_struct]
 #[derive(Default, Clone)]
 pub struct RustPrinter {
     current_namespace: RefCell<Option<Vec<String>>>,
 }
-impl_doc_allocator_for!(RustPrinter);
 
 impl Printer for RustPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(crate::resugarings::FunctionsToConstants),
-            Box::new(crate::resugarings::Tuples),
-        ]
+        vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
     }
 
     const NAME: &str = "Rust";
@@ -136,20 +133,14 @@ const _: () = {
     }
 
     impl<'a, 'b> RustPrinter {
-        fn generic_params<A: Clone + 'a>(
-            &'a self,
-            generic_params: &'b [GenericParam],
-        ) -> DocBuilder<'a, Self, A> {
+        fn generic_params<A: Clone>(&'a self, generic_params: &'b [GenericParam]) -> DocBuilder<A> {
             let generic_params = generic_params
                 .iter()
                 .filter(|p| !matches!(&p.kind, GenericParamKind::Lifetime if p.ident.0.to_string() == "_"))
                 .collect::<Vec<_>>();
             sep_opt!("<", generic_params, ">")
         }
-        fn where_clause<A: Clone + 'a>(
-            &'a self,
-            constraints: &'b [GenericConstraint],
-        ) -> DocBuilder<'a, Self, A> {
+        fn where_clause<A: Clone>(&'a self, constraints: &'b [GenericConstraint]) -> DocBuilder<A> {
             if constraints.is_empty() {
                 return nil!();
             }
@@ -165,7 +156,7 @@ const _: () = {
             .nest(INDENT)
             .group()
         }
-        fn attributes<A: Clone + 'a>(&'a self, attrs: &'b [Attribute]) -> DocBuilder<'a, Self, A> {
+        fn attributes<A: Clone>(&'a self, attrs: &'b [Attribute]) -> DocBuilder<A> {
             concat!(
                 attrs
                     .iter()
@@ -177,7 +168,7 @@ const _: () = {
             )
         }
 
-        fn id_name<A: Clone + 'a>(&'a self, id: GlobalId) -> DocBuilder<'a, Self, A> {
+        fn id_name<A: Clone>(&'a self, id: GlobalId) -> DocBuilder<A> {
             let view = id.view();
             let path = <RustPrinter as RenderView>::render_strings(self, &view);
             let name = path.last().unwrap().clone();
@@ -189,10 +180,10 @@ const _: () = {
         }
     }
 
-    impl<'a, 'b, A: 'a + Clone> PrettyAst<'a, 'b, A> for RustPrinter {
+    impl<A: Clone + 'static> PrettyAst<A> for RustPrinter {
         const NAME: &'static str = "Rust";
 
-        fn module(&'a self, module: &'b Module) -> DocBuilder<'a, Self, A> {
+        fn module(&self, module: &Module) -> DocBuilder<A> {
             let previous = self.current_namespace.borrow().clone();
             let view = module.ident.view();
             let module_path = <Self as RenderView>::module(self, &view);
@@ -202,23 +193,23 @@ const _: () = {
             doc
         }
 
-        fn safety_kind(&'a self, safety_kind: &'b SafetyKind) -> DocBuilder<'a, Self, A> {
+        fn safety_kind(&self, safety_kind: &SafetyKind) -> DocBuilder<A> {
             match safety_kind {
                 SafetyKind::Safe => nil!(),
                 SafetyKind::Unsafe => docs![text!("unsafe"), space!()],
             }
         }
-        fn param(&'a self, param: &'b Param) -> DocBuilder<'a, Self, A> {
+        fn param(&self, param: &Param) -> DocBuilder<A> {
             docs![&param.pat, ":", space!(), &param.ty]
         }
-        fn binding_mode(&'a self, binding_mode: &'b BindingMode) -> DocBuilder<'a, Self, A> {
+        fn binding_mode(&self, binding_mode: &BindingMode) -> DocBuilder<A> {
             match binding_mode {
                 BindingMode::ByRef(BorrowKind::Mut) => docs!["ref mut", space!()],
                 BindingMode::ByRef(_) => docs!["ref", space!()],
                 _ => nil!(),
             }
         }
-        fn pat(&'a self, pat: &'b Pat) -> DocBuilder<'a, Self, A> {
+        fn pat(&self, pat: &Pat) -> DocBuilder<A> {
             match &*pat.kind {
                 PatKind::Wild => docs!["_"],
                 PatKind::Ascription { pat, ty } => docs![pat, ":", space!(), ty],
@@ -250,7 +241,7 @@ const _: () = {
                 PatKind::Error(_) => todo!("resugaring"),
             }
         }
-        fn primitive_ty(&'a self, primitive_ty: &'b PrimitiveTy) -> DocBuilder<'a, Self, A> {
+        fn primitive_ty(&self, primitive_ty: &PrimitiveTy) -> DocBuilder<A> {
             match primitive_ty {
                 PrimitiveTy::Bool => docs!["bool"],
                 PrimitiveTy::Int(int_kind) => docs![int_kind],
@@ -259,23 +250,23 @@ const _: () = {
                 PrimitiveTy::Str => docs!["str"],
             }
         }
-        fn signedness(&'a self, signedness: &'b Signedness) -> DocBuilder<'a, Self, A> {
-            match signedness {
-                Signedness::Signed => docs!["i"],
-                Signedness::Unsigned => docs!["u"],
-            }
-        }
-        fn int_size(&'a self, int_size: &'b IntSize) -> DocBuilder<'a, Self, A> {
-            docs![match int_size {
-                IntSize::S8 => "8",
-                IntSize::S16 => "16",
-                IntSize::S32 => "32",
-                IntSize::S64 => "64",
-                IntSize::S128 => "128",
-                IntSize::SSize => "size",
+        fn int_kind(&self, int_kind: &IntKind) -> DocBuilder<A> {
+            docs![match (&int_kind.signedness, &int_kind.size) {
+                (Signedness::Signed, IntSize::S8) => "i8",
+                (Signedness::Signed, IntSize::S16) => "i16",
+                (Signedness::Signed, IntSize::S32) => "i32",
+                (Signedness::Signed, IntSize::S64) => "i64",
+                (Signedness::Signed, IntSize::S128) => "i128",
+                (Signedness::Signed, IntSize::SSize) => "isize",
+                (Signedness::Unsigned, IntSize::S8) => "u8",
+                (Signedness::Unsigned, IntSize::S16) => "u16",
+                (Signedness::Unsigned, IntSize::S32) => "u32",
+                (Signedness::Unsigned, IntSize::S64) => "u64",
+                (Signedness::Unsigned, IntSize::S128) => "u128",
+                (Signedness::Unsigned, IntSize::SSize) => "usize",
             }]
         }
-        fn generic_param(&'a self, generic_param: &'b GenericParam) -> DocBuilder<'a, Self, A> {
+        fn generic_param(&self, generic_param: &GenericParam) -> DocBuilder<A> {
             docs![
                 match &generic_param.kind {
                     GenericParamKind::Const { .. } => docs!["const", space!()],
@@ -288,17 +279,14 @@ const _: () = {
                 }
             ]
         }
-        fn generic_constraint(
-            &'a self,
-            generic_constraint: &'b GenericConstraint,
-        ) -> DocBuilder<'a, Self, A> {
+        fn generic_constraint(&self, generic_constraint: &GenericConstraint) -> DocBuilder<A> {
             match generic_constraint {
                 GenericConstraint::Lifetime(s) => docs![s.clone()],
                 GenericConstraint::Type(impl_ident) => docs![impl_ident],
                 GenericConstraint::Projection(projection_predicate) => docs![projection_predicate],
             }
         }
-        fn impl_ident(&'a self, impl_ident: &'b ImplIdent) -> DocBuilder<'a, Self, A> {
+        fn impl_ident(&self, impl_ident: &ImplIdent) -> DocBuilder<A> {
             let trait_goal = &impl_ident.goal;
             let [self_ty, args @ ..] = &trait_goal.args[..] else {
                 panic!()
@@ -313,7 +301,7 @@ const _: () = {
             ]
         }
 
-        fn ty(&'a self, ty: &'b Ty) -> DocBuilder<'a, Self, A> {
+        fn ty(&self, ty: &Ty) -> DocBuilder<A> {
             match ty.kind() {
                 TyKind::Primitive(primitive_ty) => docs![primitive_ty],
                 // TyKind::Tuple(items) => intersperse!(items, docs![",", line!()])
@@ -357,15 +345,12 @@ const _: () = {
                 TyKind::Error(_) => todo!("resugaring"),
             }
         }
-        fn resugared_ty_kind(
-            &'a self,
-            resugared_ty_kind: &'b ResugaredTyKind,
-        ) -> DocBuilder<'a, Self, A> {
+        fn resugared_ty_kind(&self, resugared_ty_kind: &ResugaredTyKind) -> DocBuilder<A> {
             match resugared_ty_kind {
                 ResugaredTyKind::Tuple(types) => print_tuple!(types),
             }
         }
-        fn literal(&'a self, literal: &'b Literal) -> DocBuilder<'a, Self, A> {
+        fn literal(&self, literal: &Literal) -> DocBuilder<A> {
             match literal {
                 Literal::String(symbol) => docs![symbol],
                 Literal::Char(ch) => text!(format!("{}", ch)),
@@ -382,10 +367,7 @@ const _: () = {
                 } => docs![if *negative { docs!["-"] } else { nil!() }, value, kind],
             }
         }
-        fn int_kind(&'a self, int_kind: &'b IntKind) -> DocBuilder<'a, Self, A> {
-            docs![&int_kind.signedness, &int_kind.size]
-        }
-        fn trait_goal(&'a self, trait_goal: &'b TraitGoal) -> DocBuilder<'a, Self, A> {
+        fn trait_goal(&self, trait_goal: &TraitGoal) -> DocBuilder<A> {
             let [self_ty, args @ ..] = &trait_goal.args[..] else {
                 panic!()
             };
@@ -399,14 +381,14 @@ const _: () = {
             ]
             .enclose("<", ">")
         }
-        fn generic_value(&'a self, generic_value: &'b GenericValue) -> DocBuilder<'a, Self, A> {
+        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
             match generic_value {
                 GenericValue::Ty(ty) => docs![ty],
                 GenericValue::Expr(expr) => docs![expr],
                 GenericValue::Lifetime => docs!["'_"],
             }
         }
-        fn arm(&'a self, arm: &'b Arm) -> DocBuilder<'a, Self, A> {
+        fn arm(&self, arm: &Arm) -> DocBuilder<A> {
             docs![
                 &arm.pat,
                 arm.guard.as_ref().map(|guard| docs!["if", space!(), guard]),
@@ -414,7 +396,7 @@ const _: () = {
                 block![&arm.body],
             ]
         }
-        fn expr(&'a self, expr: &'b Expr) -> DocBuilder<'a, Self, A> {
+        fn expr(&self, expr: &Expr) -> DocBuilder<A> {
             match &*expr.kind {
                 ExprKind::If {
                     condition,
@@ -606,17 +588,15 @@ const _: () = {
                 ExprKind::Error { .. } => todo!("resugaring"),
             }
         }
-        fn resugared_expr_kind(
-            &'a self,
-            resugared_expr_kind: &'b ResugaredExprKind,
-        ) -> DocBuilder<'a, Self, A> {
+        fn resugared_expr_kind(&self, resugared_expr_kind: &ResugaredExprKind) -> DocBuilder<A> {
             match resugared_expr_kind {
                 ResugaredExprKind::BinOp { .. } => unreachable!("BinOp resugaring not active"),
                 ResugaredExprKind::Tuple(values) => print_tuple!(values),
+                ResugaredExprKind::LetPure { .. } => unreachable!("LetPure resugaring not active"),
             }
         }
 
-        fn lhs(&'a self, lhs: &'b Lhs) -> DocBuilder<'a, Self, A> {
+        fn lhs(&self, lhs: &Lhs) -> DocBuilder<A> {
             match lhs {
                 Lhs::LocalVar { var, ty: _ } => docs![var],
                 Lhs::ArbitraryExpr(expr) => docs![std::ops::Deref::deref(expr)],
@@ -628,7 +608,7 @@ const _: () = {
                 }
             }
         }
-        fn global_id(&'a self, global_id: &'b GlobalId) -> DocBuilder<'a, Self, A> {
+        fn global_id(&self, global_id: &GlobalId) -> DocBuilder<A> {
             let view = global_id.view();
             let module = <Self as RenderView>::module(self, &view);
             if Some(module) == *self.current_namespace.borrow() {
@@ -638,7 +618,7 @@ const _: () = {
                 docs![self.render_string(&view)]
             }
         }
-        fn variant(&'a self, variant: &'b Variant) -> DocBuilder<'a, Self, A> {
+        fn variant(&self, variant: &Variant) -> DocBuilder<A> {
             let payload = variant.arguments.iter().map(|(id, ty, attrs)| {
                 docs![
                     self.attributes(attrs),
@@ -657,13 +637,10 @@ const _: () = {
                 sep!("(", payload, ")")
             }
         }
-        fn item(&'a self, item: &'b Item) -> DocBuilder<'a, Self, A> {
+        fn item(&self, item: &Item) -> DocBuilder<A> {
             docs![&item.meta, item.kind()]
         }
-        fn resugared_item_kind(
-            &'a self,
-            resugared_item_kind: &'b ResugaredItemKind,
-        ) -> DocBuilder<'a, Self, A> {
+        fn resugared_item_kind(&self, resugared_item_kind: &ResugaredItemKind) -> DocBuilder<A> {
             match resugared_item_kind {
                 ResugaredItemKind::Constant { name, body, .. } => {
                     docs![
@@ -680,7 +657,7 @@ const _: () = {
                 }
             }
         }
-        fn item_kind(&'a self, item_kind: &'b ItemKind) -> DocBuilder<'a, Self, A> {
+        fn item_kind(&self, item_kind: &ItemKind) -> DocBuilder<A> {
             match item_kind {
                 ItemKind::Fn {
                     name,
@@ -790,7 +767,7 @@ const _: () = {
                 ItemKind::NotImplementedYet => docs!["/* `NotImplementedYet` item */"],
             }
         }
-        fn impl_item(&'a self, impl_item: &'b ImplItem) -> DocBuilder<'a, Self, A> {
+        fn impl_item(&self, impl_item: &ImplItem) -> DocBuilder<A> {
             match &impl_item.kind {
                 ImplItemKind::Type {
                     ty,
@@ -819,10 +796,10 @@ const _: () = {
                 ImplItemKind::Resugared(_resugared_impl_item_kind) => todo!(),
             }
         }
-        fn metadata(&'a self, metadata: &'b Metadata) -> DocBuilder<'a, Self, A> {
+        fn metadata(&self, metadata: &Metadata) -> DocBuilder<A> {
             self.attributes(&metadata.attributes)
         }
-        fn attribute(&'a self, attribute: &'b Attribute) -> DocBuilder<'a, Self, A> {
+        fn attribute(&self, attribute: &Attribute) -> DocBuilder<A> {
             match &attribute.kind {
                 AttributeKind::Tool { .. } => nil!(),
                 AttributeKind::DocComment { kind, body } => match kind {

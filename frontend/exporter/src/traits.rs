@@ -137,36 +137,31 @@ pub enum ImplExprAtom {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
 pub enum BuiltinTraitData {
-    /// A virtual `Drop` implementation.
-    /// `Drop` doesn't work like a real trait but we want to pretend it does. If a type has a
-    /// user-defined `impl Drop for X` we just use the `Concrete` variant, but if it doesn't we use
-    /// this variant to supply the data needed to know what code will run on drop.
-    Drop(DropData),
+    /// A virtual `Destruct` implementation.
+    /// `Destruct` is implemented automatically for all types. For our purposes, we chose to attach
+    /// the information about `drop_in_place` to that trait. This data tells us what kind of
+    /// `drop_in_place` the target type has.
+    Destruct(DestructData),
     /// Some other builtin trait.
     Other,
 }
 
 #[derive(AdtInto)]
-#[args(<'tcx, S: UnderOwnerState<'tcx> >, from: resolution::DropData<'tcx>, state: S as s)]
+#[args(<'tcx, S: UnderOwnerState<'tcx> >, from: resolution::DestructData<'tcx>, state: S as s)]
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, JsonSchema)]
-pub enum DropData {
+pub enum DestructData {
     /// A drop that does nothing, e.g. for scalars and pointers.
     Noop,
-    /// An implicit `Drop` local clause, if the `resolve_drop_bounds` option is `false`. If that
-    /// option is `true`, we'll add `Drop` bounds to every type param, and use that to resolve
-    /// `Drop` impls of generics. If it's `false`, we use this variant to indicate that the drop
-    /// clause comes from a generic or associated type.
+    /// An implicit `Destruct` local clause, if the `resolve_destruct_bounds` option is `false`. If
+    /// that option is `true`, we'll add `Destruct` bounds to every type param, and use that to
+    /// resolve `Destruct` impls of generics. If it's `false`, we use this variant to indicate that
+    /// the clause comes from a generic or associated type.
     Implicit,
-    /// The implicit `Drop` impl that exists for every type without an explicit `Drop` impl. The
-    /// virtual impl is considered to have one `T: Drop` bound for each generic argument of the
-    /// target type; it then simply drops each field in order.
+    /// The `drop_in_place` is known and non-trivial.
     Glue {
         /// The type we're generating glue for.
         ty: Ty,
-        /// The `ImplExpr`s for the `T: Drop` bounds of the virtual impl. There is one for each
-        /// generic argument, in order.
-        impl_exprs: Vec<ImplExpr>,
     },
 }
 
@@ -194,9 +189,14 @@ pub fn super_clause_to_clause_and_impl_expr<'tcx, S: UnderOwnerState<'tcx>>(
     span: rustc_span::Span,
 ) -> Option<(Clause, ImplExpr, Span)> {
     let tcx = s.base().tcx;
-    let impl_trait_ref = tcx
-        .impl_trait_ref(impl_did)
-        .map(|binder| rustc_middle::ty::Binder::dummy(binder.instantiate_identity()))?;
+    if !matches!(
+        tcx.def_kind(impl_did),
+        rustc_hir::def::DefKind::Impl { of_trait: true }
+    ) {
+        return None;
+    }
+    let impl_trait_ref =
+        rustc_middle::ty::Binder::dummy(tcx.impl_trait_ref(impl_did).instantiate_identity());
     let original_predicate_id = {
         // We don't want the id of the substituted clause id, but the
         // original clause id (with, i.e., `Self`)
@@ -224,7 +224,7 @@ pub fn solve_trait<'tcx, S: UnderOwnerState<'tcx>>(
     trait_ref: rustc_middle::ty::PolyTraitRef<'tcx>,
 ) -> ImplExpr {
     let warn = |msg: &str| {
-        if !s.base().ty_alias_mode {
+        if !s.base().silence_resolution_errors {
             crate::warning!(s, "{}", msg)
         }
     };
@@ -334,7 +334,7 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
 ) -> Option<ImplExpr> {
     let tcx = s.base().tcx;
 
-    let tr_def_id = tcx.trait_of_item(def_id)?;
+    let tr_def_id = tcx.trait_of_assoc(def_id)?;
     // The "self" predicate in the context of the trait.
     let self_pred = self_predicate(tcx, tr_def_id);
     // Substitute to be in the context of the current item.
@@ -343,4 +343,14 @@ pub fn self_clause_for_item<'tcx, S: UnderOwnerState<'tcx>>(
 
     // Resolve
     Some(solve_trait(s, self_pred))
+}
+
+/// Solve the `T: Sized` predicate.
+#[cfg(feature = "rustc")]
+pub fn solve_sized<'tcx, S: UnderOwnerState<'tcx>>(s: &S, ty: ty::Ty<'tcx>) -> ImplExpr {
+    let tcx = s.base().tcx;
+    let sized_trait = tcx.lang_items().sized_trait().unwrap();
+    let ty = erase_free_regions(tcx, ty);
+    let tref = ty::Binder::dummy(ty::TraitRef::new(tcx, sized_trait, [ty]));
+    solve_trait(s, tref)
 }

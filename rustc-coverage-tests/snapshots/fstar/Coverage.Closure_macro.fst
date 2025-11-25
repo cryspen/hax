@@ -32,8 +32,9 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
         Core_models.Result.t_Result Alloc.String.t_String Alloc.String.t_String)
       (fun e ->
           let e:Alloc.String.t_String = e in
+          let args:Alloc.String.t_String = e <: Alloc.String.t_String in
           let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-            let list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String e] in
+            let list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String args] in
             FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
             Rust_primitives.Hax.array_of_list 1 list
           in
@@ -52,8 +53,9 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit Alloc.String.t
           in
           if (Alloc.String.impl_String__len message <: usize) >. mk_usize 0
           then
+            let args:Alloc.String.t_String = message <: Alloc.String.t_String in
             let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-              let list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String message] in
+              let list = [Core_models.Fmt.Rt.impl__new_display #Alloc.String.t_String args] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list
             in

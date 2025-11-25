@@ -4,8 +4,9 @@ open FStar.Mul
 open Core_models
 
 let might_fail_assert (one_plus_one: u32) : Prims.unit =
+  let args:u32 = one_plus_one <: u32 in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_display #u32 one_plus_one] in
+    let list = [Core_models.Fmt.Rt.impl__new_display #u32 args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -31,10 +32,10 @@ let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit u8 =
   let countdown:i32 =
     Rust_primitives.Hax.while_loop (fun countdown ->
           let countdown:i32 = countdown in
-          countdown >. mk_i32 0 <: bool)
+          true)
       (fun countdown ->
           let countdown:i32 = countdown in
-          true)
+          countdown >. mk_i32 0 <: bool)
       (fun countdown ->
           let countdown:i32 = countdown in
           Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)

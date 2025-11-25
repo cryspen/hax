@@ -24,9 +24,33 @@ let display
       (xs: t_Slice v_T)
     : Prims.unit =
   let _:Prims.unit =
-    Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-      "{\n for x in (core_models::iter::traits::collect::f_into_iter(xs)) {\n {\n let args: [core_models::fmt::rt::t_Argument; 1] = {\n [core_models::fmt::rt::impl__new_display::<T>(x)]\n };\n {\n let _: tuple0 = {..."
-
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Slice
+            v_T)
+          #FStar.Tactics.Typeclasses.solve
+          xs
+        <:
+        Core_models.Slice.Iter.t_Iter v_T)
+      ()
+      (fun temp_0_ x ->
+          let _:Prims.unit = temp_0_ in
+          let x:v_T = x in
+          let args:v_T = x <: v_T in
+          let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
+            let list = [Core_models.Fmt.Rt.impl__new_display #v_T args] in
+            FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+            Rust_primitives.Hax.array_of_list 1 list
+          in
+          let _:Prims.unit =
+            Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_v1 (mk_usize 1)
+                  (mk_usize 1)
+                  (let list = [""] in
+                    FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
+                    Rust_primitives.Hax.array_of_list 1 list)
+                  args
+                <:
+                Core_models.Fmt.t_Arguments)
+          in
+          ())
   in
   let _:Prims.unit =
     Std.Io.Stdio.e_print (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
@@ -100,11 +124,11 @@ let permutations
 
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
-    permutations #char
+    permutations #FStar.Char.char
       ((let list = ['a'; 'b'; 'c'] in
           FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 3);
           Rust_primitives.Hax.array_of_list 3 list)
         <:
-        t_Slice char)
+        t_Slice FStar.Char.char)
   in
   ()

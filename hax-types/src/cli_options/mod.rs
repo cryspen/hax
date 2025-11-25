@@ -195,16 +195,7 @@ pub enum Backend<E: Extension> {
 
 impl fmt::Display for Backend<()> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Backend::Fstar { .. } => write!(f, "fstar"),
-            Backend::Coq { .. } => write!(f, "coq"),
-            Backend::Ssprove { .. } => write!(f, "ssprove"),
-            Backend::Easycrypt { .. } => write!(f, "easycrypt"),
-            Backend::ProVerif { .. } => write!(f, "proverif"),
-            Backend::Lean { .. } => write!(f, "lean"),
-            Backend::Rust { .. } => write!(f, "rust"),
-            Backend::GenerateRustEngineNames { .. } => write!(f, "generate_rust_engine_names"),
-        }
+        BackendName::from(self).fmt(f)
     }
 }
 
@@ -350,6 +341,14 @@ pub struct BackendOptions<E: Extension> {
     #[arg(long)]
     pub profile: bool,
 
+    /// Prune Rust items that are not under the provided top-level module name.
+    /// This will effectively remove all items that don't match `*::<prune_haxmetadata>::**`.
+    /// This prunning occurs directly on the `haxmeta` file, in the frontend.
+    /// This is independent from any engine options.
+    #[arg(long)]
+    #[clap(hide = true)]
+    pub prune_haxmeta: Option<String>,
+
     /// Enable engine debugging: dumps the AST at each phase.
     ///
     /// The value of `<DEBUG_ENGINE>` can be either:
@@ -432,6 +431,29 @@ pub enum Command<E: Extension> {
         include_extra: bool,
     },
 
+    /// Serialize to a `haxmeta` file, the internal binary format used by hax to
+    /// store the ASTs produced by the hax exporter.
+    #[clap(hide = true)]
+    Serialize {
+        /// Whether the bodies are exported as THIR, built MIR, const
+        /// MIR, or a combination. Repeat this option to extract a
+        /// combination (e.g. `-k thir -k mir-built`). Pass `--kind`
+        /// alone with no value to disable body extraction.
+        #[arg(
+            value_enum,
+            short,
+            long = "kind",
+            num_args = 0..=3,
+            default_values_t = [ExportBodyKind::Thir]
+        )]
+        kind: Vec<ExportBodyKind>,
+
+        /// When extracting to a given backend, the exporter is called with different `cfg` options.
+        /// This option allows to set the same flags as `cargo hax into` would pick.
+        #[arg(short)]
+        backend: Option<BackendName>,
+    },
+
     #[command(flatten)]
     CliExtension(E::Command),
 }
@@ -440,7 +462,16 @@ impl<E: Extension> Command<E> {
     pub fn body_kinds(&self) -> Vec<ExportBodyKind> {
         match self {
             Command::JSON { kind, .. } => kind.clone(),
-            _ => vec![ExportBodyKind::Thir],
+            Command::Serialize { kind, .. } => kind.clone(),
+            Command::Backend { .. } | Command::CliExtension { .. } => vec![ExportBodyKind::Thir],
+        }
+    }
+    pub fn backend_name(&self) -> Option<BackendName> {
+        match self {
+            Command::Backend(backend_options) => Some((&backend_options.backend).into()),
+            Command::JSON { .. } => None,
+            Command::Serialize { backend, .. } => backend.clone(),
+            Command::CliExtension(_) => None,
         }
     }
 }
@@ -463,25 +494,6 @@ pub enum ExportBodyKind {
     long_about = None
 )]
 pub struct ExtensibleOptions<E: Extension> {
-    /// Replace the expansion of each macro matching PATTERN by their
-    /// invocation. PATTERN denotes a rust path (i.e. `A::B::c`) in
-    /// which glob patterns are allowed. The glob pattern * matches
-    /// any name, the glob pattern ** matches zero, one or more
-    /// names. For instance, `A::B::C::D::X` and `A::E::F::D::Y`
-    /// matches `A::**::D::*`.
-    #[arg(
-        short = 'i',
-        long = "inline-macro-call",
-        value_name = "PATTERN",
-        value_parser,
-        value_delimiter = ',',
-        default_values = [
-            "hacspec_lib::array::array", "hacspec_lib::array::public_bytes", "hacspec_lib::array::bytes",
-            "hacspec_lib::math_integers::public_nat_mod", "hacspec_lib::math_integers::unsigned_public_integer",
-        ],
-    )]
-    pub inline_macro_calls: Vec<Namespace>,
-
     /// Semi-colon terminated list of arguments to pass to the
     /// `cargo build` invocation. For example, to apply this
     /// program on a package `foo`, use `-C -p foo ;`. (make sure
@@ -502,6 +514,12 @@ pub struct ExtensibleOptions<E: Extension> {
     /// options like `-C -p <PKG> ;`).
     #[arg(long = "deps")]
     pub deps: bool,
+
+    /// Provide a precomputed haxmeta file explicitly.
+    /// Setting this option bypasses rustc and the exporter altogether.
+    #[arg(long)]
+    #[clap(hide = true)]
+    pub haxmeta: Option<PathBuf>,
 
     /// By default, hax uses `$CARGO_TARGET_DIR/hax` as target folder,
     /// to avoid recompilation when working both with `cargo hax` and
@@ -549,11 +567,79 @@ impl From<Options> for hax_frontend_exporter_options::Options {
         hax_frontend_exporter_options::Options {
             inline_anon_consts: true,
             bounds_options: hax_frontend_exporter_options::BoundsOptions {
-                resolve_drop: false,
+                resolve_destruct: false,
                 prune_sized: true,
             },
+            item_ref_use_concrete_impl: false,
+        }
+    }
+}
+
+/// The subset of `Options` the frontend is sensible to.
+#[derive_group(Serializers)]
+#[derive(JsonSchema, Debug, Clone)]
+pub struct ExporterOptions {
+    pub deps: bool,
+    pub force_cargo_build: ForceCargoBuild,
+    /// When exporting, the driver sets `--cfg hax_backend_{backkend}`, thus we need this information.
+    pub backend: Option<BackendName>,
+    pub body_kinds: Vec<ExportBodyKind>,
+}
+
+#[derive_group(Serializers)]
+#[derive(JsonSchema, ValueEnum, Debug, Clone, Copy)]
+pub enum BackendName {
+    Fstar,
+    Coq,
+    Ssprove,
+    Easycrypt,
+    ProVerif,
+    Lean,
+    Rust,
+    GenerateRustEngineNames,
+}
+
+impl fmt::Display for BackendName {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let name = match self {
+            BackendName::Fstar => "fstar",
+            BackendName::Coq => "coq",
+            BackendName::Ssprove => "ssprove",
+            BackendName::Easycrypt => "easycrypt",
+            BackendName::ProVerif => "proverif",
+            BackendName::Lean => "lean",
+            BackendName::Rust => "rust",
+            BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
+        };
+        write!(f, "{name}")
+    }
+}
+
+impl From<&Options> for ExporterOptions {
+    fn from(options: &Options) -> Self {
+        ExporterOptions {
+            deps: options.deps,
+            force_cargo_build: options.force_cargo_build.clone(),
+            backend: options.command.backend_name(),
+            body_kinds: options.command.body_kinds(),
+        }
+    }
+}
+
+impl<E: Extension> From<&Backend<E>> for BackendName {
+    fn from(backend: &Backend<E>) -> Self {
+        match backend {
+            Backend::Fstar { .. } => BackendName::Fstar,
+            Backend::Coq { .. } => BackendName::Coq,
+            Backend::Ssprove { .. } => BackendName::Ssprove,
+            Backend::Easycrypt { .. } => BackendName::Easycrypt,
+            Backend::ProVerif { .. } => BackendName::ProVerif,
+            Backend::Lean { .. } => BackendName::Lean,
+            Backend::Rust { .. } => BackendName::Rust,
+            Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
         }
     }
 }
 
 pub const ENV_VAR_OPTIONS_FRONTEND: &str = "DRIVER_HAX_FRONTEND_OPTS";
+pub const ENV_VAR_OPTIONS_FULL: &str = "DRIVER_HAX_FRONTEND_FULL_OPTS";

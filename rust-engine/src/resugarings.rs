@@ -145,3 +145,36 @@ impl Resugaring for Tuples {
         "tuples".to_string()
     }
 }
+
+/// Let-pure resugaring. Use to identify expressions of the form `let x ← pure ..`, where the arrow
+/// can be turned into a normal assignment `:=`
+pub struct LetPure;
+
+impl AstVisitorMut for LetPure {
+    fn enter_expr_kind(&mut self, expr: &mut ExprKind) {
+        const PURE: GlobalId = crate::names::rust_primitives::hax::explicit_monadic::pure;
+        if let ExprKind::Let { lhs, rhs, body } = expr
+            && let ExprKind::App {
+                head,
+                args,
+                generic_args,
+                bounds_impls,
+                trait_: None,
+            } = rhs.kind()
+            && *head.kind() == ExprKind::GlobalId(PURE)
+            && let ([pure_rhs], [], []) = (&args[..], &generic_args[..], &bounds_impls[..])
+        {
+            *expr = ExprKind::Resugared(ResugaredExprKind::LetPure {
+                lhs: lhs.clone(),
+                rhs: pure_rhs.clone(),
+                body: body.clone(),
+            })
+        }
+    }
+}
+
+impl Resugaring for LetPure {
+    fn name(&self) -> String {
+        "let_pure".to_string()
+    }
+}

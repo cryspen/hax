@@ -1,0 +1,11 @@
+name = "Lean_chacha20"
+version = "0.1.0"
+defaultTargets = ["Lean_chacha20"]
+
+[[lean_lib]]
+name = "Lean_chacha20"
+roots = ["extraction.Lean_chacha20"]
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"

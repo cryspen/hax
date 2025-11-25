@@ -14,8 +14,9 @@ let main__t_in_mod__v_IN_MOD_CONST: u32 = mk_u32 1000
 let main__in_func (a: u32) : Prims.unit =
   let b:u32 = mk_u32 1 in
   let c:u32 = a +! b in
+  let args:u32 = c <: u32 in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_display #u32 c] in
+    let list = [Core_models.Fmt.Rt.impl__new_display #u32 args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -35,14 +36,14 @@ type main__t_InStruct = { main__f_in_struct_field:u32 }
 
 let main__v_IN_CONST: u32 = mk_u32 1234
 
-(* item error backend: ExplicitRejection { reason: "a node of kind [Trait_item_default] have been found in the AST" }
-
+(* item error backend: Explicit rejection by a phase in the Hax engine:
+a node of kind [Trait_item_default] have been found in the AST
 
 Note: the error was labeled with context `reject_TraitItemDefault`.
 
 Last available AST for this item:
 
-#[<cfg>(any(feature = "json", feature = "lean"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;
+#[<cfg_trace>(any(feature = "json", feature = "lean"))]#[allow(unused_assignments, unused_variables, dead_code)]#[feature(coverage_attribute)]#[allow(unused_attributes)]#[allow(dead_code)]#[allow(unreachable_code)]#[feature(register_tool)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_pre(_: Self,_: int) -> bool;
 #[_hax::json("\"TraitMethodNoPrePost\"")]fn main__f_trait_func_post(_: Self,_: int,_: Self) -> bool;
 fn main__f_trait_func(_: Self,_: int) -> Self;
 fn main__f_default_trait_func((self: Self)) -> Self{{let _: tuple0 = {coverage::inner_items::main__in_func(coverage::inner_items::main__v_IN_CONST)};{let self: Self = {coverage::inner_items::main__f_trait_func(self,coverage::inner_items::main__v_IN_CONST)};self}}}}

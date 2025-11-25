@@ -30,7 +30,12 @@ class t_Debug (v_Self: Type0) = {
         (fun result -> f_dbg_fmt_post x0 x1 result)
 }
 
-type t_Arguments = | Arguments : t_Arguments
+type t_Arguments = | Arguments : Prims.unit -> t_Arguments
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl (#v_T: Type0) : t_Debug v_T
+
+val impl_11__write_fmt (f: t_Formatter) (args: t_Arguments)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)

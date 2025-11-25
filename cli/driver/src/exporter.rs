@@ -1,6 +1,6 @@
 use hax_frontend_exporter::SInto;
 use hax_frontend_exporter::state::LocalContextS;
-use hax_types::cli_options::{Backend, ENV_VAR_OPTIONS_FRONTEND, PathOrDash};
+use hax_types::cli_options::PathOrDash;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::interface;
 use rustc_interface::interface::Compiler;
@@ -64,7 +64,7 @@ fn convert_thir<'tcx, Body: hax_frontend_exporter::IsBody>(
 /// Callback for extraction
 #[derive(Debug, Clone, Serialize)]
 pub(crate) struct ExtractionCallbacks {
-    pub body_types: Vec<hax_types::cli_options::ExportBodyKind>,
+    pub body_kinds: Vec<hax_types::cli_options::ExportBodyKind>,
 }
 
 impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
@@ -72,9 +72,10 @@ impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
         hax_frontend_exporter_options::Options {
             inline_anon_consts: true,
             bounds_options: hax_frontend_exporter_options::BoundsOptions {
-                resolve_drop: false,
+                resolve_destruct: false,
                 prune_sized: true,
             },
+            item_ref_use_concrete_impl: false,
         }
     }
 }
@@ -122,7 +123,7 @@ impl Callbacks for ExtractionCallbacks {
 
         use hax_types::driver_api::{HaxMeta, with_kind_type};
         with_kind_type!(
-            self.body_types.clone(),
+            self.body_kinds.clone(),
             <Body>|| {
                 let (spans, def_ids, impl_infos, items, cache_map) =
                     convert_thir(&self.clone().into(), tcx);
@@ -152,11 +153,12 @@ impl Callbacks for ExtractionCallbacks {
         let manifest_dir = std::path::Path::new(&manifest_dir);
 
         let data = hax_types::driver_api::EmitHaxMetaMessage {
-            manifest_dir: manifest_dir.to_path_buf(),
-            working_dir: opts
-                .working_dir
-                .to_path(rustc_span::FileNameDisplayPreference::Local)
-                .to_path_buf(),
+            manifest_dir: Some(manifest_dir.to_path_buf()),
+            working_dir: Some(
+                opts.working_dir
+                    .to_path(rustc_span::FileNameDisplayPreference::Local)
+                    .to_path_buf(),
+            ),
             path: haxmeta_path,
         };
         eprintln!(

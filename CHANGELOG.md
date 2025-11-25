@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Add a rejection phase for interleaving of expressions and statements not
+   supported by the Lean do-notation syntax (#1739).
+ - Add a phase to handle the monadic encoding: it explicitly introduces two new
+   Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
+   lift monadic computations into values) (#1746)
+
+Changes to the frontend:
+ - Update the pin of rustc (#1765)
+ - Miscellaneous changes related to Charon (#1765)
+
+Change to cargo-hax:
+
+Changes to hax-lib:
+ - Add Lean core models for options, results, default (#1747)
+ - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
+
+Changes to the Lean backend:
+ - Support for constants with arbitrary computation (#1738)
+ - Add support for base-expressions of structs (#1736)
+ - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
+   not introduce extra `do` block (#1746)
+ - Rename `Result` monad to `RustM` to avoid confusion with Rust `Result` type (#1768)
+
+Miscellaneous:
+- Reserve extraction folder for auto-generated files in Lean examples (#1754)
+
+## 0.3.5
+
+Changes to the Rust Engine:
  - The module `names` now produces `ExplicitDefId`s instead of `DefId`s (#1648)
  - Add a resugaring `FunctionsToConstants` (#1559)
  - Drop the tuple nodes of the AST, add resugaring node for tuples (#1662)
@@ -17,6 +46,10 @@ Changes to the Rust Engine:
  - Printers now emit proper diagnostics (PR #1669)
  - Global identifiers are now interned (#1689)
  - Global identifiers are encapsulated properly, and provide easy destructuring as tuple identifiers (#1693)
+ - Add support for `trait` and `impl` in the Lean backend (#1679): trait definitions, trait bounds
+   on functions, impl definitions. The typeclass resolution in the generated code is left implicit
+   (relies on Lean). Limited support for associated types. No support for default implementations.
+ - Refactor of the printing infrastructure: lowers the boilerplate, get rid of most lifetimes annotation, add proper contextual span support (#1735)
  - Add a proper Rust backend (evit fork: #114)
 
 Changes to the frontend:
@@ -31,8 +64,19 @@ Changes to the frontend:
 - Add infrastructure to get a monomorphized `FullDef`; this is used in charon to monomorphize a crate graph (#1559)
 - Fix a regression affecting projection predicates (#1678)
 
+Change to cargo-hax:
+- Improve the caching of rustc when using `cargo hax` commands (#1719)
+- Add hidden commands and flags to explicitly manipulate `haxmeta` files (#1722)
+
 Changes to hax-lib:
 - New behavior for `hax_lib::include`: it now forces inclusion when in contradiction with `-i` flag.
+- hax-lib requires edition 2021 instead of 2024 (#1726)
+- Improved `VecDeque` model in F* proof lib (#1728)
+- Split the Lean library into several files, update to lean 4.23.0 (#1696)
+
+Changes to the Lean backend:
+- Improve support for functionalized loops (#1695)
+- Improve error messages, having each error (coming from the Lean backend) point to a specific github issue (#1717).
 
 Miscellaneous:
  - A lean tutorial has been added to the hax website (#1626)

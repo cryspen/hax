@@ -73,6 +73,11 @@ pub fn copy<T: Copy>(x: &T) -> T {
 }
 
 #[hax_lib::opaque]
+pub unsafe fn take<T>(x: &mut T) -> T {
+    panic!()
+}
+
+#[hax_lib::opaque]
 pub unsafe fn transmute_copy<Src, Dst>(src: &Src) -> Dst {
     panic!()
 }

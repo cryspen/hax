@@ -58,13 +58,29 @@ let if_not (cond: bool) : Prims.unit =
 
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let _:Prims.unit =
-    Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-      "{\n for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {\n f_start: 0,\n f_end: 8,\n })) {\n coverage::if_not::if_not(core_models::hint::black_box::<bool>(true))\n }\n }"
-
+    Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
+      (mk_i32 8)
+      (fun temp_0_ temp_1_ ->
+          let _:Prims.unit = temp_0_ in
+          let _:i32 = temp_1_ in
+          true)
+      ()
+      (fun temp_0_ temp_1_ ->
+          let _:Prims.unit = temp_0_ in
+          let _:i32 = temp_1_ in
+          if_not (Core_models.Hint.black_box #bool true <: bool) <: Prims.unit)
   in
-  Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-    "{\n for _ in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {\n f_start: 0,\n f_end: 4,\n })) {\n coverage::if_not::if_not(core_models::hint::black_box::<bool>(false))\n }\n ..."
-  ,
+  Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
+    (mk_i32 4)
+    (fun temp_0_ temp_1_ ->
+        let _:Prims.unit = temp_0_ in
+        let _:i32 = temp_1_ in
+        true)
+    ()
+    (fun temp_0_ temp_1_ ->
+        let _:Prims.unit = temp_0_ in
+        let _:i32 = temp_1_ in
+        if_not (Core_models.Hint.black_box #bool false <: bool) <: Prims.unit),
   ()
   <:
   (Prims.unit & Prims.unit)

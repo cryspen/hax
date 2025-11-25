@@ -27,11 +27,23 @@ let impl: Core_models.Fmt.t_Debug t_DebugTest =
         let _:Prims.unit =
           if false
           then
-            Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-              "{\n while true {\n Tuple0\n }\n }"
+            Rust_primitives.Hax.while_loop (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  true)
+              (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  true)
+              (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
+              ()
+              (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  ())
         in
-        let tmp0, out:(Core_models.Fmt.t_Formatter &
-          Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
+        let
+        (tmp0: Core_models.Fmt.t_Formatter),
+        (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
           Core_models.Fmt.impl_11__write_fmt f
             (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                 (let list = ["cool"] in
@@ -59,11 +71,24 @@ let impl: Core_models.Fmt.t_Debug t_DebugTest =
                       let _:Prims.unit =
                         if false
                         then
-                          Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-                            "{\n while true {\n Tuple0\n }\n }"
+                          Rust_primitives.Hax.while_loop (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                true)
+                            (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                true)
+                            (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int
+                            )
+                            ()
+                            (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                ())
                       in
-                      let tmp0, out:(Core_models.Fmt.t_Formatter &
-                        Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
+                      let
+                      (tmp0: Core_models.Fmt.t_Formatter),
+                      (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                         Core_models.Fmt.impl_11__write_fmt f
                           (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                               (let list = ["cool"] in
@@ -157,11 +182,23 @@ let impl: Core_models.Fmt.t_Debug t_DebugTest =
                   let _:Prims.unit =
                     if false
                     then
-                      Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-                        "{\n while true {\n Tuple0\n }\n }"
+                      Rust_primitives.Hax.while_loop (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            true)
+                        (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            true)
+                        (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
+                        ()
+                        (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            ())
                   in
-                  let tmp0, out:(Core_models.Fmt.t_Formatter &
-                    Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
+                  let
+                  (tmp0: Core_models.Fmt.t_Formatter),
+                  (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                     Core_models.Fmt.impl_11__write_fmt f
                       (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["cool"] in
@@ -273,11 +310,23 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
                   let _:Prims.unit =
                     if false
                     then
-                      Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-                        "{\n while true {\n Tuple0\n }\n }"
+                      Rust_primitives.Hax.while_loop (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            true)
+                        (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            true)
+                        (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
+                        ()
+                        (fun temp_0_ ->
+                            let _:Prims.unit = temp_0_ in
+                            ())
                   in
-                  let tmp0, out:(Core_models.Fmt.t_Formatter &
-                    Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
+                  let
+                  (tmp0: Core_models.Fmt.t_Formatter),
+                  (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                     Core_models.Fmt.impl_11__write_fmt f
                       (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                           (let list = ["cool"] in
@@ -338,11 +387,23 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
         let _:Prims.unit =
           if false
           then
-            Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-              "{\n while true {\n Tuple0\n }\n }"
+            Rust_primitives.Hax.while_loop (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  true)
+              (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  true)
+              (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
+              ()
+              (fun temp_0_ ->
+                  let _:Prims.unit = temp_0_ in
+                  ())
         in
-        let tmp0, out:(Core_models.Fmt.t_Formatter &
-          Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
+        let
+        (tmp0: Core_models.Fmt.t_Formatter),
+        (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
           Core_models.Fmt.impl_11__write_fmt f
             (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                 (let list = ["cool"] in
@@ -378,11 +439,24 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
                       let _:Prims.unit =
                         if false
                         then
-                          Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-                            "{\n while true {\n Tuple0\n }\n }"
+                          Rust_primitives.Hax.while_loop (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                true)
+                            (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                true)
+                            (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int
+                            )
+                            ()
+                            (fun temp_0_ ->
+                                let _:Prims.unit = temp_0_ in
+                                ())
                       in
-                      let tmp0, out:(Core_models.Fmt.t_Formatter &
-                        Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
+                      let
+                      (tmp0: Core_models.Fmt.t_Formatter),
+                      (out: Core_models.Result.t_Result Prims.unit Core_models.Fmt.t_Error) =
                         Core_models.Fmt.impl_11__write_fmt f
                           (Core_models.Fmt.Rt.impl_1__new_const (mk_usize 1)
                               (let list = ["cool"] in
@@ -455,8 +529,9 @@ let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
 
 let main (_: Prims.unit) : Prims.unit =
   let debug_test:t_DebugTest = DebugTest <: t_DebugTest in
+  let args:t_DebugTest = debug_test <: t_DebugTest in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_debug #t_DebugTest debug_test] in
+    let list = [Core_models.Fmt.Rt.impl__new_debug #t_DebugTest args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in
@@ -472,8 +547,9 @@ let main (_: Prims.unit) : Prims.unit =
   in
   let _:Prims.unit = () in
   let display_test:t_DisplayTest = DisplayTest <: t_DisplayTest in
+  let args:t_DisplayTest = display_test <: t_DisplayTest in
   let args:t_Array Core_models.Fmt.Rt.t_Argument (mk_usize 1) =
-    let list = [Core_models.Fmt.Rt.impl__new_display #t_DisplayTest display_test] in
+    let list = [Core_models.Fmt.Rt.impl__new_display #t_DisplayTest args] in
     FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
     Rust_primitives.Hax.array_of_list 1 list
   in

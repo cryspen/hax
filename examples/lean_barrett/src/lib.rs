@@ -40,27 +40,23 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
 #[hax_lib::lean::before("@[simp, spec]")]
 #[hax_lib::lean::after(
     "
+set_option maxHeartbeats 1000000 in
+-- quite computation intensive
 theorem barrett_spec (value: i32) :
-  ⦃ Lean_barrett.__4.requires (value) = pure true ⦄
-  (Lean_barrett.barrett_reduce value)
-  ⦃ ⇓ result => Lean_barrett.__5.ensures value result = pure true ⦄
+  ⦃ ⌜ Lean_barrett.__4.requires (value) = pure true ⌝ ⦄
+  (do
+    let result ← Lean_barrett.barrett_reduce value;
+    Lean_barrett.__5.ensures value result)
+  ⦃ ⇓ post => ⌜post = true⌝ ⦄
 := by
-  mvcgen
+  open Spec.BV in mvcgen [Lean_barrett.__5.ensures]
+  <;> simp_all! [Lean_barrett.__4.requires]
   hax_bv_decide
-  simp [Lean_barrett.__5.ensures] at *
-  rw [i32.HaxRem_spec_bv_rw] ; simp ;
-  rw [i32.HaxAdd_spec_bv_rw] ; simp ;
-  rw [i32.HaxSub_spec_bv_rw] ; simp
-  hax_bv_decide
-  expose_names
-  have ⟨ h1, h2 ⟩ := h; clear h
   simp [Int32.eq_iff_toBitVec_eq,
-          Int32.lt_iff_toBitVec_slt,
-          Int32.le_iff_toBitVec_sle,
-          Int64.eq_iff_toBitVec_eq,
-          Int64.lt_iff_toBitVec_slt,
-          Int64.le_iff_toBitVec_sle,
-          ] at *
+        Int32.lt_iff_toBitVec_slt,
+        Int64.le_iff_toBitVec_sle,
+        ] at *
+  expose_names; have ⟨ _ , _ ⟩ := h ; clear h
   generalize Int32.toBitVec value = bv_value at * ; clear value
   bv_decide (config := {timeout := 120})
 "

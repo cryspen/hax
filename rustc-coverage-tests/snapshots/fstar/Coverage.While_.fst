@@ -5,8 +5,19 @@ open Core_models
 
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let num:i32 = mk_i32 9 in
-  Rust_primitives.Hax.failure "something is not implemented yet.This is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nLoop without mutation\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/405.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `FunctionalizeLoops`.\n"
-    "{\n while rust_primitives::hax::machine_int::ge(num, 10) {\n Tuple0\n }\n }",
+  Rust_primitives.Hax.while_loop (fun temp_0_ ->
+        let _:Prims.unit = temp_0_ in
+        true)
+    (fun temp_0_ ->
+        let _:Prims.unit = temp_0_ in
+        num >=. mk_i32 10 <: bool)
+    (fun temp_0_ ->
+        let _:Prims.unit = temp_0_ in
+        Rust_primitives.Hax.Int.from_machine (mk_u32 0) <: Hax_lib.Int.t_Int)
+    ()
+    (fun temp_0_ ->
+        let _:Prims.unit = temp_0_ in
+        ()),
   ()
   <:
   (Prims.unit & Prims.unit)

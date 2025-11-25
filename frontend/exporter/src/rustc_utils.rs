@@ -211,9 +211,15 @@ pub fn get_def_attrs<'tcx>(
 ) -> &'tcx [rustc_hir::Attribute] {
     use RDefKind::*;
     match def_kind {
-        // These kinds cause `get_attrs_unchecked` to panic.
+        // These kinds cause `get_attrs` to panic.
         ConstParam | LifetimeParam | TyParam | ForeignMod => &[],
-        _ => tcx.get_attrs_unchecked(def_id),
+        _ => {
+            if let Some(ldid) = def_id.as_local() {
+                tcx.hir_attrs(tcx.local_def_id_to_hir_id(ldid))
+            } else {
+                tcx.attrs_for_def(def_id)
+            }
+        }
     }
 }
 
@@ -291,10 +297,7 @@ pub fn get_method_sig<'tcx>(
 ) -> ty::PolyFnSig<'tcx> {
     let real_sig = inst_binder(tcx, typing_env, method_args, tcx.fn_sig(def_id));
     let item = tcx.associated_item(def_id);
-    if !matches!(item.container, ty::AssocItemContainer::Impl) {
-        return real_sig;
-    }
-    let Some(decl_method_id) = item.trait_item_def_id else {
+    let ty::AssocContainer::TraitImpl(Ok(decl_method_id)) = item.container else {
         return real_sig;
     };
     let declared_sig = tcx.fn_sig(decl_method_id);
@@ -314,7 +317,6 @@ pub fn get_method_sig<'tcx>(
     // The trait predicate that is implemented by the surrounding impl block.
     let implemented_trait_ref = tcx
         .impl_trait_ref(impl_def_id)
-        .unwrap()
         .instantiate(tcx, method_args);
     // Construct arguments for the declared method generics in the context of the implemented
     // method generics.
@@ -324,6 +326,83 @@ pub fn get_method_sig<'tcx>(
     // (once in impl parameters, second in the method declaration late-bound vars).
     let sig = tcx.anonymize_bound_vars(sig);
     normalize(tcx, typing_env, sig)
+}
+
+/// Generates a list of `<trait_ref>::Ty` type aliases for each non-gat associated type of the
+/// given trait and its parents, in a specific order.
+pub fn assoc_tys_for_trait<'tcx>(
+    tcx: ty::TyCtxt<'tcx>,
+    typing_env: ty::TypingEnv<'tcx>,
+    tref: ty::TraitRef<'tcx>,
+) -> Vec<ty::AliasTy<'tcx>> {
+    fn gather_assoc_tys<'tcx>(
+        tcx: ty::TyCtxt<'tcx>,
+        typing_env: ty::TypingEnv<'tcx>,
+        assoc_tys: &mut Vec<ty::AliasTy<'tcx>>,
+        tref: ty::TraitRef<'tcx>,
+    ) {
+        assoc_tys.extend(
+            tcx.associated_items(tref.def_id)
+                .in_definition_order()
+                .filter(|assoc| matches!(assoc.kind, ty::AssocKind::Type { .. }))
+                .filter(|assoc| tcx.generics_of(assoc.def_id).own_params.is_empty())
+                .map(|assoc| ty::AliasTy::new(tcx, assoc.def_id, tref.args)),
+        );
+        for clause in tcx
+            .explicit_super_predicates_of(tref.def_id)
+            .map_bound(|clauses| clauses.iter().map(|(clause, _span)| *clause))
+            .iter_instantiated(tcx, tref.args)
+        {
+            if let Some(pred) = clause.as_trait_clause() {
+                let tref = erase_and_norm(tcx, typing_env, pred.skip_binder().trait_ref);
+                gather_assoc_tys(tcx, typing_env, assoc_tys, tref);
+            }
+        }
+    }
+    let mut ret = vec![];
+    gather_assoc_tys(tcx, typing_env, &mut ret, tref);
+    ret
+}
+
+/// Generates a `dyn Trait<Args.., Ty = <Self as Trait>::Ty..>` type for the given trait ref.
+pub fn dyn_self_ty<'tcx>(
+    tcx: ty::TyCtxt<'tcx>,
+    typing_env: ty::TypingEnv<'tcx>,
+    tref: ty::TraitRef<'tcx>,
+) -> Option<ty::Ty<'tcx>> {
+    let re_erased = tcx.lifetimes.re_erased;
+    if !tcx.is_dyn_compatible(tref.def_id) {
+        return None;
+    }
+
+    // The main `Trait<Args>` predicate.
+    let main_pred = ty::Binder::dummy(ty::ExistentialPredicate::Trait(
+        ty::ExistentialTraitRef::erase_self_ty(tcx, tref),
+    ));
+
+    let ty_constraints = assoc_tys_for_trait(tcx, typing_env, tref)
+        .into_iter()
+        .map(|alias_ty| {
+            let proj = ty::ProjectionPredicate {
+                projection_term: alias_ty.into(),
+                term: ty::Ty::new_alias(tcx, ty::Projection, alias_ty).into(),
+            };
+            let proj = ty::ExistentialProjection::erase_self_ty(tcx, proj);
+            ty::Binder::dummy(ty::ExistentialPredicate::Projection(proj))
+        });
+
+    let preds = {
+        // Stable sort predicates to prevent platform-specific ordering issues
+        let mut preds: Vec<_> = [main_pred].into_iter().chain(ty_constraints).collect();
+        preds.sort_by(|a, b| {
+            use crate::rustc_middle::ty::ExistentialPredicateStableCmpExt;
+            a.skip_binder().stable_cmp(tcx, &b.skip_binder())
+        });
+        tcx.mk_poly_existential_predicates(&preds)
+    };
+    let ty = tcx.mk_ty_from_kind(ty::Dynamic(preds, re_erased));
+    let ty = normalize(tcx, typing_env, ty);
+    Some(ty)
 }
 
 pub fn closure_once_shim<'tcx>(
