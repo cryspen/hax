@@ -1375,7 +1375,10 @@ struct
                     (*       { typ = TApp { ident = i.ti_ident } }) *)
                     (*     bounds *)
                     (* in *)
-                    (F.id name, None, [], t)
+                    ( F.id name,
+                      None,
+                      [ F.term @@ F.AST.Var FStar_Parser_Const.no_method_lid ],
+                      t )
                     :: List.map
                          ~f:(fun
                              { goal = { trait; args }; name = impl_ident_name }
@@ -1955,7 +1958,7 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
     (if
        hax_core_models_extraction
        && String.is_prefix ~prefix:"Core_models" mod_name
-     then []
+     then [ "open Rust_primitives" ]
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"
 

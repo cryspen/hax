@@ -50,6 +50,7 @@ Changes to the Rust Engine:
    on functions, impl definitions. The typeclass resolution in the generated code is left implicit
    (relies on Lean). Limited support for associated types. No support for default implementations.
  - Refactor of the printing infrastructure: lowers the boilerplate, get rid of most lifetimes annotation, add proper contextual span support (#1735)
+ - Add a proper Rust backend (evit fork: #114)
 
 Changes to the frontend:
 - Add an explicit `Self: Trait` clause to trait methods and consts (#1559)

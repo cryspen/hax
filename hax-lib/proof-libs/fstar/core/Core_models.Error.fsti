@@ -1,6 +1,7 @@
 module Core_models.Error
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 class t_Error (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Fmt.t_Display v_Self;

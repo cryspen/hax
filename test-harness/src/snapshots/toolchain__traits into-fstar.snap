@@ -32,7 +32,9 @@ module Traits.Block_size
 open FStar.Mul
 open Core_models
 
-class t_BlockSizeUser (v_Self: Type0) = { f_BlockSize:Type0 }
+class t_BlockSizeUser (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_BlockSize:Type0
+}
 
 class t_ParBlocksSizeUser (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_BlockSizeUser v_Self
@@ -62,7 +64,7 @@ class t_Bar (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Bar:Prims.unit }
 
 class t_Foo (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Bar v_Self f_U;
-  f_U:Type0
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -175,7 +177,7 @@ module Traits.Impl_expr_in_goal
 open FStar.Mul
 open Core_models
 
-class t_T1 (v_Self: Type0) = { f_Assoc:Type0 }
+class t_T1 (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]f_Assoc:Type0 }
 
 class t_T2 (v_Self: Type0) = { __marker_trait_t_T2:Prims.unit }
 
@@ -437,7 +439,7 @@ let associated_function_caller
 
 class t_SubTrait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait v_Self v_TypeArg v_ConstArg;
-  f_AssocType:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
   f_AssocType_i0:t_Trait f_AssocType v_TypeArg v_ConstArg
 }
 
@@ -517,13 +519,13 @@ open FStar.Mul
 open Core_models
 
 class t_Trait1 (v_Self: Type0) = {
-  f_T:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_T:Type0;
   f_T_i0:t_Trait1 f_T
 }
 
 class t_Trait2 (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait1 v_Self;
-  f_U:Type0
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -744,7 +746,7 @@ let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
   ()
 
 class t_Foo (v_Self: Type0) = {
-  f_AssocType:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
   f_AssocType_i0:t_SuperTrait f_AssocType;
   f_N:usize;
   f_assoc_f_pre:Prims.unit -> Type0;
@@ -765,7 +767,7 @@ class t_Foo (v_Self: Type0) = {
 }
 
 class t_Lang (v_Self: Type0) = {
-  f_Var:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Var:Type0;
   f_s_pre:v_Self -> i32 -> Type0;
   f_s_post:v_Self -> i32 -> (v_Self & f_Var) -> Type0;
   f_s:x0: v_Self -> x1: i32

@@ -1,14 +1,11 @@
 module Core_models.Bundle
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 type t_Option (v_T: Type0) =
   | Option_Some : v_T -> t_Option v_T
   | Option_None : t_Option v_T
-
-open Rust_primitives.Integers
-
-type t_Dummy = | Dummy : t_Dummy
 
 let impl__is_some_and
       (#v_T #v_F: Type0)

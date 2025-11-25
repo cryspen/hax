@@ -11,9 +11,10 @@ let
     src = lib.cleanSourceWith {
       src = craneLib.path ./..;
       filter = path: type:
-        builtins.isNull (builtins.match ".*/tests/.*" path)
-        && (craneLib.filterCargoSources path type
-          || is-webapp-static-asset path);
+        (builtins.isNull (builtins.match ".*/tests/.*" path)
+          && (craneLib.filterCargoSources path type
+            || is-webapp-static-asset path))
+        || !(builtins.isNull (builtins.match ".*/renamings" path));
     };
     inherit buildInputs doCheck;
     doNotRemoveReferencesToRustToolchain = true;

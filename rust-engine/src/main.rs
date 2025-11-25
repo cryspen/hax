@@ -15,7 +15,7 @@ fn main() {
         impl_infos: value.impl_infos,
         kind: hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
             input: value.input,
-            apply_phases: !matches!(&value.backend.backend, Backend::GenerateRustEngineNames),
+            apply_phases: matches!(&value.backend.backend, Backend::Lean),
             translation_options: value.backend.translation_options,
         },
     };
