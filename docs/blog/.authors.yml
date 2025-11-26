@@ -2,16 +2,16 @@ authors:
   franziskus:
     name: Franziskus Kiefer
     description: Creator
-    avatar: https://cryspen.com/images/franziskus_hu_bbe22df7ad1ab9d5.jpg
+    avatar: /blog/avatars/franziskus.jpg
   lucas:
     name: Lucas Franceschino
     description: Creator
-    avatar: https://cryspen.com/images/lucas_hu_32c53e525a1b3324.jpg
+    avatar: /blog/avatars/lucas.jpg
   clement:
     name: Clement Blaudeau
     description: Engineer
-    avatar: https://cryspen.com/images/clement_hu_da447295a2bd189d.jpg
+    avatar: /blog/avatars/clement.jpg
   maxime:
     name: Maxime Buyse
     description: Engineer
-    avatar: https://cryspen.com/images/maxime_hu_8da610acc29fd826.png
+    avatar: /blog/avatars/maxime.png
