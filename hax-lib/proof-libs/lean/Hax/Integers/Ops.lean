@@ -61,6 +61,14 @@ class HaxShiftRight α β where
   -/
   shiftRight : α → β → RustM α
 
+/--The notation typeclass for left shift that returns a RustM. It enables the
+ notation `a <<<? b : RustM α` where `a : α` and `b : β`. -/
+class HaxShiftLeft α β where
+  /-- `a <<<? b` computes the panicking left-shift of `a` by `b`.  The meaning
+  of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
+  -/
+  shiftLeft : α → β → RustM α
+
 /-- The notation typeclass for remainder.  This enables the notation `a %? b :
 RustM α` where `a b : α`.  -/
 class HaxRem α where
@@ -72,6 +80,7 @@ class HaxRem α where
 @[inherit_doc] infixl:65 " -? "   => HaxSub.sub
 @[inherit_doc] infixl:70 " *? "   => HaxMul.mul
 @[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
+@[inherit_doc] infixl:75 " <<<? " => HaxShiftLeft.shiftLeft
 @[inherit_doc] infixl:70 " %? "   => HaxRem.rem
 @[inherit_doc] infixl:70 " /? "   => HaxDiv.div
 
@@ -85,7 +94,8 @@ class UnSigned (α: Type)
           (Mul α),
           (Div α),
           (Mod α),
-          (ShiftRight α)
+          (ShiftRight α),
+          (ShiftLeft α)
   where
   [deq : DecidableEq α]
   width    : Nat
@@ -174,6 +184,12 @@ instance {α : Type} [UnSigned α]: HaxShiftRight α α where
     if (UnSigned.width α) ≤ (UnSigned.toNat y) then .fail .integerOverflow
     else pure (x >>> y)
 
+/- Left shift on unsigned rust integers. Panics when shifting by more than the size -/
+instance {α : Type} [UnSigned α]: HaxShiftLeft α α where
+  shiftLeft x y :=
+    if (UnSigned.width α) ≤ (UnSigned.toNat y) then .fail .integerOverflow
+    else pure (x <<< y)
+
 /- Signed operations -/
 class Signed (α: Type)
   extends (LE α),
@@ -183,7 +199,8 @@ class Signed (α: Type)
           (Mul α),
           (Div α),
           (Mod α),
-          (ShiftRight α) where
+          (ShiftRight α),
+          (ShiftLeft α) where
   [dec: DecidableEq α]
   width    : Nat
   toBitVec : α → BitVec width
@@ -274,6 +291,15 @@ instance {α : Type} [Signed α] : HaxShiftRight α α where
     else
       .fail .integerOverflow
 
+/- Left shifting on signed integers. Panics when shifting by a negative number,
+   or when shifting by more than the size. -/
+instance {α : Type} [Signed α] : HaxShiftLeft α α where
+  shiftLeft x y :=
+    if 0 ≤ (Signed.toInt y) && (Signed.toInt y) < Int.ofNat (Signed.width α) then
+      pure (x <<< y)
+    else
+      .fail .integerOverflow
+
 /- Check that all operations are implemented -/
 
 class Operations α where
@@ -283,6 +309,7 @@ class Operations α where
   [instHaxDiv: HaxDiv α]
   [instHaxRem: HaxRem α]
   [instHaxShiftRight: HaxShiftRight α α]
+  [instHaxShiftLeft: HaxShiftLeft α α]
 
 instance : Operations u8 where
 instance : Operations u16 where

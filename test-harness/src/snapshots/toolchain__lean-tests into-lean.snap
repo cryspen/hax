@@ -730,6 +730,7 @@ def Lean_tests.binop_resugarings (x : u32) : RustM u32 := do
   let rem : u32 ← (mul %? (4 : u32));
   let div : u32 ← (rem /? (5 : u32));
   let rshift : u32 ← (div >>>? x);
+  let lshift : u32 ← (div <<<? x);
   (pure x)
 
 def Lean_tests.Reject_do_dsl.rejected
