@@ -4,6 +4,7 @@
 pub mod comments;
 pub mod constants;
 pub mod enums;
+pub mod floats;
 pub mod ite;
 pub mod loops;
 pub mod monadic;
