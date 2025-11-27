@@ -654,6 +654,20 @@ def Lean_tests.Loops.Errors.loop4
     | (Core.Ops.Control_flow.ControlFlow.Continue e)
       => (pure (Core.Result.Result.Ok (Rust_primitives.Hax.Tuple2.mk e e)))
 
+def Lean_tests.Floats.N : f32 := RustM.of_isOk (do (pure (1.0 : f32))) (by rfl)
+
+def Lean_tests.Floats.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let l0 : f64 := (1.0 : f64);
+  let l1 : f64 := (0.9 : f64);
+  let l2 : f32 := (5.0 : f32);
+  let l5 : f32 := Lean_tests.Floats.N;
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Lean_tests.Floats.f (x : f64) (y : f32) : RustM f32 := do (pure y)
+
 inductive Lean_tests.Enums.E : Type
 | V1 : Lean_tests.Enums.E
 | V2 : Lean_tests.Enums.E
