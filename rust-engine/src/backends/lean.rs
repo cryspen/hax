@@ -430,9 +430,6 @@ set_option linter.unusedVariables false
 
         fn expr(&self, Expr { kind, ty, meta: _ }: &Expr) -> DocBuilder<A> {
             match &**kind {
-                ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
-                    docs![int_lit, reflow!(" : "), ty].parens().group()
-                }
                 ExprKind::If {
                     condition,
                     then,
@@ -476,6 +473,12 @@ set_option linter.unusedVariables false
                                 .group()
                         }
                     }
+                }
+                ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
+                    docs![int_lit, reflow!(" : "), ty].parens().group()
+                }
+                ExprKind::Literal(float_lit @ Literal::Float { .. }) => {
+                    docs![float_lit, reflow!(" : "), ty].parens().group()
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
@@ -783,7 +786,11 @@ set_option linter.unusedVariables false
                     negative,
                     kind: _,
                 } => format!("{}{value}", if *negative { "-" } else { "" }),
-                Literal::Float { .. } => emit_error!(issue 1715, "Unsupported Float literal"),
+                Literal::Float {
+                    value,
+                    negative,
+                    kind,
+                } => format!("{}{value}", if *negative { "-" } else { "" }),
             }]
         }
 
@@ -800,7 +807,7 @@ set_option linter.unusedVariables false
             match primitive_ty {
                 PrimitiveTy::Bool => docs!["Bool"],
                 PrimitiveTy::Int(int_kind) => docs![int_kind],
-                PrimitiveTy::Float(_) => emit_error!(issue 1715, "Unsupported Float type"),
+                PrimitiveTy::Float(float_kind) => docs![float_kind],
                 PrimitiveTy::Char => docs!["Char"],
                 PrimitiveTy::Str => docs!["String"],
             }
@@ -820,6 +827,15 @@ set_option linter.unusedVariables false
                 (Signedness::Unsigned, IntSize::S64) => "u64",
                 (Signedness::Unsigned, IntSize::S128) => "u128",
                 (Signedness::Unsigned, IntSize::SSize) => "usize",
+            }]
+        }
+
+        fn float_kind(&self, float_kind: &FloatKind) -> DocBuilder<A> {
+            docs![match float_kind {
+                FloatKind::F16 => "f16",
+                FloatKind::F32 => "f32",
+                FloatKind::F64 => "f64",
+                FloatKind::F128 => "f128",
             }]
         }
 
@@ -1241,10 +1257,6 @@ set_option linter.unusedVariables false
 
         fn region(&self, _region: &Region) -> DocBuilder<A> {
             unreachable_by_invariant!(Drop_references)
-        }
-
-        fn float_kind(&self, _float_kind: &FloatKind) -> DocBuilder<A> {
-            emit_error!(issue 1715, "floats are unsupported")
         }
 
         fn dyn_trait_goal(&self, _dyn_trait_goal: &DynTraitGoal) -> DocBuilder<A> {
