@@ -61,5 +61,6 @@ fn binop_resugarings(x: u32) -> u32 {
     let rem = mul % 4;
     let div = rem / 5;
     let rshift = div >> x;
+    let lshift = div << x;
     x
 }
