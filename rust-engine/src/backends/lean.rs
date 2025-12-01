@@ -836,8 +836,7 @@ set_option linter.unusedVariables false
             docs![match float_kind {
                 FloatKind::F32 => "f32",
                 FloatKind::F64 => "f64",
-                _ =>
-                    emit_error!("The only supported float types are `f32` and `f64`."),
+                _ => emit_error!(issue 1787, "The only supported float types are `f32` and `f64`."),
             }]
         }
 
