@@ -662,9 +662,12 @@ set_option linter.unusedVariables false
                     emit_error!(issue 1712, "Unsupported pattern-matching on arrays")
                 }
                 PatKind::Deref { .. } => unreachable_by_invariant!(Drop_references),
-                PatKind::Constant { .. } => {
-                    emit_error!(issue 1712, "Unsupported pattern-matching on constants")
+                PatKind::Constant {
+                    lit: Literal::Float { .. },
+                } => {
+                    emit_error!(issue 1788, "Unsupported pattern-matching on floats")
                 }
+                PatKind::Constant { lit } => docs![lit],
                 PatKind::Construct {
                     constructor,
                     is_record,
