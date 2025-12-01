@@ -832,11 +832,11 @@ set_option linter.unusedVariables false
 
         fn float_kind(&self, float_kind: &FloatKind) -> DocBuilder<A> {
             docs![match float_kind {
-                FloatKind::F16 => 
+                FloatKind::F16 =>
                     emit_error!("The only supported float types are `f32` and `f64`."),
                 FloatKind::F32 => "f32",
                 FloatKind::F64 => "f64",
-                FloatKind::F128 => 
+                FloatKind::F128 =>
                     emit_error!("The only supported float types are `f32` and `f64`."),
             }]
         }
