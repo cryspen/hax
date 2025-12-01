@@ -30,6 +30,7 @@ Changes to the Lean backend:
  - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
    not introduce extra `do` block (#1746)
  - Rename `Result` monad to `RustM` to avoid confusion with Rust `Result` type (#1768)
+ - Add support for shift-left (#1785)
  - Add support for default methods of traits (#1777)
  - Add support for pattern matching on constant literals (#1789)
 
