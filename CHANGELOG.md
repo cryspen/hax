@@ -31,6 +31,7 @@ Changes to the Lean backend:
    not introduce extra `do` block (#1746)
  - Rename `Result` monad to `RustM` to avoid confusion with Rust `Result` type (#1768)
  - Add support for default methods of traits (#1777)
+ - Add support for pattern matching on constant literals (#1789)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
