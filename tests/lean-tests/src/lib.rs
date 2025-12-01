@@ -7,6 +7,7 @@ pub mod enums;
 pub mod floats;
 pub mod ite;
 pub mod loops;
+pub mod matching;
 pub mod monadic;
 pub mod reject_do_dsl;
 pub mod structs;

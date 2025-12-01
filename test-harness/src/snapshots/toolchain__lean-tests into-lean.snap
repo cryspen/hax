@@ -875,6 +875,21 @@ def Lean_tests.Reject_do_dsl.test
   (pure (Rust_primitives.Hax.Tuple2.mk
     Rust_primitives.Hax.Tuple0.mk Rust_primitives.Hax.Tuple0.mk))
 
+def Lean_tests.Matching.test_matching
+  (x : u32)
+  (c : Char)
+  (s : String)
+  (b : Bool)
+  : RustM u32
+  := do
+  let x : u32 ← match x with | 0 => (pure (42 : u32)) | _ => (pure (0 : u32));
+  let c : u32 ← match c with | 'a' => (pure (42 : u32)) | _ => (pure (0 : u32));
+  let s : u32 ←
+    match s with | "Hello" => (pure (42 : u32)) | _ => (pure (0 : u32));
+  let b : u32 ←
+    match b with | true => (pure (42 : u32)) | false => (pure (0 : u32));
+  ((← ((← (x +? c)) +? s)) +? b)
+
 def Lean_tests.Loops.loop1 (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
   let x : u32 := (0 : u32);
   let x : u32 ←
