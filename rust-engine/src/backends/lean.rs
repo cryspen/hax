@@ -653,8 +653,8 @@ set_option linter.unusedVariables false
                     (true, _, _) => unreachable_by_invariant!(Local_mutation),
                     (false, BindingMode::ByRef(_), _) => unreachable_by_invariant!(Drop_references),
                     (false, BindingMode::ByValue, None) => docs![var],
-                    (false, BindingMode::ByValue, Some(_)) => {
-                        emit_error!(issue 1712, "Unsupported as-pattern")
+                    (false, BindingMode::ByValue, Some(pat)) => {
+                        docs![var, "@", softline_!(), pat].group()
                     }
                 },
                 PatKind::Or { sub_pats } => docs![intersperse!(sub_pats, reflow!(" | "))].group(),
