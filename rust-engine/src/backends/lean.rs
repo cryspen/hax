@@ -850,7 +850,14 @@ set_option linter.unusedVariables false
         }
 
         fn param(&self, param: &Param) -> DocBuilder<A> {
-            self.pat_typed(&param.pat)
+            if matches!(
+                *param.pat.kind,
+                PatKind::Wild | PatKind::Ascription { .. } | PatKind::Binding { sub_pat: None, .. }
+            ) {
+                self.pat_typed(&param.pat)
+            } else {
+                emit_error!(issue 1791, "Function parameters must not contain patterns")
+            }
         }
 
         fn item(&self, Item { ident, kind, meta }: &Item) -> DocBuilder<A> {
