@@ -15,6 +15,7 @@ include
       include On.Dyn
       include On.Unsafe
       include On.Trait_item_default
+      include On.As_pattern
     end)
     (struct
       let backend = Diagnostics.Backend.FStar
@@ -33,7 +34,7 @@ module SubtypeToInputLanguage
          and type raw_pointer = Features.Off.raw_pointer
          and type early_exit = Features.Off.early_exit
          and type question_mark = Features.Off.question_mark
-         and type as_pattern = Features.Off.as_pattern
+         and type as_pattern = Features.On.as_pattern
          and type lifetime = Features.Off.lifetime
          and type monadic_action = Features.Off.monadic_action
          and type arbitrary_lhs = Features.Off.arbitrary_lhs
@@ -117,7 +118,6 @@ module TransformToInputLanguage =
   |> Phases.Drop_return_break_continue
   |> Phases.Functionalize_loops
   |> Phases.Reject.Question_mark
-  |> Phases.Reject.As_pattern
   |> Phases.Traits_specs
   |> Phases.Simplify_hoisting
   |> Phases.Newtype_as_refinement
