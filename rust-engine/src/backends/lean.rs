@@ -475,11 +475,8 @@ set_option linter.unusedVariables false
                         }
                     }
                 }
-                ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
-                    docs![int_lit, reflow!(" : "), ty].parens().group()
-                }
-                ExprKind::Literal(float_lit @ Literal::Float { .. }) => {
-                    docs![float_lit, reflow!(" : "), ty].parens().group()
+                ExprKind::Literal(numeric_lit @ (Literal::Float { .. } | Literal::Int { .. })) => {
+                    docs![numeric_lit, reflow!(" : "), ty].parens().group()
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
