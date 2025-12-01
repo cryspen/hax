@@ -794,7 +794,7 @@ set_option linter.unusedVariables false
                 Literal::Float {
                     value,
                     negative,
-                    kind,
+                    kind: _,
                 } => format!("{}{value}", if *negative { "-" } else { "" }),
             }]
         }
