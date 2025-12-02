@@ -35,6 +35,7 @@ Changes to the Lean backend:
  - Add support for floats (#1784)
  - Add support for pattern matching on constant literals (#1789)
  - Add support for binding subpatterns in match constructs (#1790)
+ - Add error when using patterns in function parameters (#1792)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
