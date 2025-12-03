@@ -860,20 +860,25 @@ set_option linter.unusedVariables false
                     safety: _,
                 } => docs![
                     docs![
-                        docs!["def", line!(), name].group(),
+                        docs![
+                            docs!["def", line!(), name].group(),
+                            line!(),
+                            generics,
+                            params,
+                            docs![": RustM", line!(), &body.ty].group(),
+                            line!(),
+                            ":= do"
+                        ]
+                        .group(),
                         line!(),
-                        generics,
-                        params,
-                        docs![": RustM", line!(), &body.ty].group(),
-                        line!(),
-                        ":= do"
+                        body
                     ]
-                    .group(),
+                    .group()
+                    .nest(INDENT),
                     line!(),
-                    body
-                ]
-                .group()
-                .nest(INDENT),
+                    line!(),
+                    docs!["example : 1 = 1 := by rfl"].group().nest(INDENT),
+                ],
                 ItemKind::TyAlias {
                     name,
                     generics: _,
