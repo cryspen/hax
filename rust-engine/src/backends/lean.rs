@@ -491,6 +491,7 @@ const _: () = {
                     TraitItemKind::Resugared(_) => {
                         unreachable!("This backend has no resugaring for trait items")
                     }
+                    TraitItemKind::Error(e) => docs![e],
                 }]
             }
         }
@@ -1468,7 +1469,6 @@ set_option linter.unusedVariables false
                     of_trait: (trait_, args),
                     items,
                     parent_bounds: _,
-                    safety: _,
                 } => docs![
                     // An impl is encoded as two Lean instances:
                     // One for the associated types...
@@ -1600,6 +1600,7 @@ set_option linter.unusedVariables false
                 ImplItemKind::Resugared(_) => {
                     unreachable!("This backend has no resugaring for impl items")
                 }
+                ImplItemKind::Error(err) => docs!(err),
             }
         }
 

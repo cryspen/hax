@@ -560,7 +560,7 @@ module Make (FA : Features.T) = struct
           of_trait = trait_id, trait_generics;
           items;
           parent_bounds;
-          safety;
+          _;
         } ->
         B.Impl
           {
@@ -575,7 +575,6 @@ module Make (FA : Features.T) = struct
                 ~f:(fun (impl, ident) ->
                   (dimpl_expr span impl, dimpl_ident span ident))
                 parent_bounds;
-            safety = dsafety_kind safety;
           }
     | A.Alias { name; item } ->
         B.Alias { name = dconcrete_ident name; item = dconcrete_ident item }

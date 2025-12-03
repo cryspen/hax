@@ -201,7 +201,7 @@ pub enum TyKind {
 }
 
 #[derive_group_for_ast]
-/// Represent a node of the AST where an error occured.
+/// Represent a node of the AST where an error occurred.
 pub struct ErrorNode {
     /// The node from the AST at the time something failed
     pub fragment: Box<Fragment>,
@@ -593,6 +593,8 @@ pub enum ImplExprKind {
     Dyn,
     /// A trait implemented natively by rust.
     Builtin(TraitGoal),
+    /// Fallback constructor to carry errors.
+    Error(ErrorNode),
 }
 
 /// Represents an impl item (associated type or function)
@@ -655,6 +657,9 @@ pub enum ImplItemKind {
     /// This variant is introduced before printing only.
     /// Phases must not produce this variant.
     Resugared(ResugaredImplItemKind),
+
+    /// Fallback constructor to carry errors.
+    Error(ErrorNode),
 }
 
 /// Represents a trait item (associated type, fn, or default)
@@ -706,6 +711,9 @@ pub enum TraitItemKind {
     /// This variant is introduced before printing only.
     /// Phases must not produce this variant.
     Resugared(ResugaredTraitItemKind),
+
+    /// Fallback constructor to carry errors.
+    Error(ErrorNode),
 }
 
 /// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
@@ -1447,9 +1455,6 @@ pub enum ItemKind {
 
         /// Implementations of traits required for this impl
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
-
-        /// Safe or unsafe
-        safety: SafetyKind,
     },
 
     /// Internal node introduced by phases, corresponds to an alias to any item.

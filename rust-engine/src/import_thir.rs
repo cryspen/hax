@@ -2,6 +2,42 @@ use crate::ast;
 use crate::symbol::Symbol;
 use hax_frontend_exporter as frontend;
 
+fn unsupported(msg: &str, issue_id: u32, span: &ast::span::Span) -> ast::ErrorNode {
+    let fragment = ast::fragment::Fragment::Unknown(msg.to_owned());
+    let diagnostic = ast::diagnostics::Diagnostic::new(
+        fragment.clone(),
+        ast::diagnostics::DiagnosticInfo {
+            context: ast::diagnostics::Context::Import,
+            span: span.clone(),
+            kind: hax_types::diagnostics::Kind::Unimplemented {
+                issue_id: Some(issue_id),
+                details: Some(msg.to_owned()),
+            },
+        },
+    );
+    ast::ErrorNode {
+        fragment: Box::new(fragment),
+        diagnostics: vec![diagnostic],
+    }
+}
+fn failure(msg: &str, span: &ast::span::Span) -> ast::ErrorNode {
+    let fragment = ast::fragment::Fragment::Unknown(msg.to_owned());
+    let diagnostic = ast::diagnostics::Diagnostic::new(
+        fragment.clone(),
+        ast::diagnostics::DiagnosticInfo {
+            context: ast::diagnostics::Context::Import,
+            span: span.clone(),
+            kind: hax_types::diagnostics::Kind::AssertionFailure {
+                details: msg.to_owned(),
+            },
+        },
+    );
+    ast::ErrorNode {
+        fragment: Box::new(fragment),
+        diagnostics: vec![diagnostic],
+    }
+}
+
 trait SpannedImport<Out> {
     fn spanned_import(&self, span: ast::span::Span) -> Out;
 }
@@ -267,30 +303,36 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 let args = item_ref.generic_args.spanned_import(span.clone());
                 ast::TyKind::App { head, args }
             }
-            frontend::TyKind::Foreign(..) => unimplemented!(), // TODO proper hax error for issue 928
+            frontend::TyKind::Foreign(..) => {
+                ast::TyKind::Error(unsupported("Foreign type", 928, &span))
+            }
             frontend::TyKind::Str => ast::TyKind::Primitive(ast::PrimitiveTy::Str),
             frontend::TyKind::Array(item_ref) => {
-                let [
+                if let [
                     frontend::GenericArg::Type(ty),
                     frontend::GenericArg::Const(length),
                 ] = &item_ref.generic_args[..]
-                else {
-                    panic!(
-                        "Wrong generics for array: expected a type and a constant. See synthetic_items in hax frontend."
-                    )
-                };
-                ast::TyKind::Array {
-                    ty: ty.spanned_import(span.clone()),
-                    length: Box::new(length.import()),
+                {
+                    ast::TyKind::Array {
+                        ty: ty.spanned_import(span.clone()),
+                        length: Box::new(length.import()),
+                    }
+                } else {
+                    ast::TyKind::Error(failure(
+                        "Wrong generics for array: expected a type and a constant. See synthetic_items in hax frontend.",
+                        &span,
+                    ))
                 }
             }
             frontend::TyKind::Slice(ty) => {
-                let [frontend::GenericArg::Type(ty)] = &ty.generic_args[..] else {
-                    panic!(
-                        "Wrong generics for slice: expected a type. See synthetic_items in hax frontend."
-                    )
-                };
-                ast::TyKind::Slice(ty.spanned_import(span.clone()))
+                if let [frontend::GenericArg::Type(ty)] = &ty.generic_args[..] {
+                    ast::TyKind::Slice(ty.spanned_import(span.clone()))
+                } else {
+                    ast::TyKind::Error(failure(
+                        "Wrong generics for slice: expected a type. See synthetic_items in hax frontend.",
+                        &span,
+                    ))
+                }
             }
             frontend::TyKind::RawPtr(..) => ast::TyKind::RawPointer,
             frontend::TyKind::Ref(_region, ty, mutable) => ast::TyKind::Ref {
@@ -305,17 +347,22 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                     .map(|(clause, _span)| match &clause.kind.value {
                         frontend::ClauseKind::Trait(frontend::TraitPredicate {
                             trait_ref, ..
-                        }) => ast::DynTraitGoal {
+                        }) => Ok(ast::DynTraitGoal {
                             trait_: trait_ref.def_id.import(),
                             non_self_args: trait_ref.generic_args.spanned_import(span.clone())[1..]
                                 .to_vec(),
-                        },
-                        _ => panic!("type Dyn with non trait predicate"),
+                        }),
+                        _ => Err(failure("type Dyn with non trait predicate", &span)),
                     })
-                    .collect();
-                ast::TyKind::Dyn(goals)
+                    .collect::<Result<Vec<_>, _>>();
+                match goals {
+                    Ok(goals) => ast::TyKind::Dyn(goals),
+                    Err(e) => ast::TyKind::Error(e),
+                }
             }
-            frontend::TyKind::Coroutine(_) => unimplemented!("coroutines are not supported by hax"), // TODO link to hax issue 924
+            frontend::TyKind::Coroutine(_) => {
+                ast::TyKind::Error(unsupported("Coroutine type", 924, &span))
+            }
             frontend::TyKind::Never => ast::TyKind::App {
                 head: crate::names::rust_primitives::hax::Never,
                 args: Vec::new(),
@@ -337,23 +384,31 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Inherent,
                 ..
-            }) => panic!("Ty::Alias with AliasTyKind::Inherent"),
+            }) => ast::TyKind::Error(failure("Ty::Alias with AliasTyKind::Inherent", &span)),
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Free,
                 ..
-            }) => panic!("Ty::Alias with AliasTyKind::Free"),
+            }) => ast::TyKind::Error(failure("Ty::Alias with AliasTyKind::Free", &span)),
             frontend::TyKind::Param(frontend::ParamTy { name, .. }) => {
                 ast::TyKind::Param(ast::LocalId(Symbol::new(name.clone())))
             }
-            frontend::TyKind::Bound(..) => panic!("type Bound: should be gone after typechecking"),
-            frontend::TyKind::Placeholder(..) => {
-                panic!("type Placeholder: should be gone after typechecking")
-            }
-            frontend::TyKind::Infer(..) => panic!("type Infer: should be gone after typechecking"),
-            frontend::TyKind::Error => {
-                panic!("got type `Error`: Rust compilation probably failed.")
-            }
-            frontend::TyKind::Todo(_) => panic!("type Todo"),
+            frontend::TyKind::Bound(..) => ast::TyKind::Error(failure(
+                "type Bound: should be gone after typechecking",
+                &span,
+            )),
+            frontend::TyKind::Placeholder(..) => ast::TyKind::Error(failure(
+                "type Placeholder: should be gone after typechecking",
+                &span,
+            )),
+            frontend::TyKind::Infer(..) => ast::TyKind::Error(failure(
+                "type Infer: should be gone after typechecking",
+                &span,
+            )),
+            frontend::TyKind::Error => ast::TyKind::Error(failure(
+                "got type `Error`: Rust compilation probably failed.",
+                &span,
+            )),
+            frontend::TyKind::Todo(_) => ast::TyKind::Error(failure("type Todo", &span)),
         };
         ast::Ty(Box::new(kind))
     }
@@ -672,9 +727,10 @@ fn import_trait_item(item: &frontend::FullDef<frontend::ThirBody>) -> ast::Trait
         }
         frontend::FullDefKind::AssocTy {
             value: Some(..), ..
-        } => panic!(
-            "Associate types defaults are not supported by hax yet (it is a nightly feature)"
-        ), // TODO proper hax error (issue 929)
+        } => ast::TraitItemKind::Error(failure(
+            "Associate types defaults are not supported by hax yet (it is a nightly feature)",
+            &span,
+        )),
         frontend::FullDefKind::AssocTy {
             implied_predicates, ..
         } => ast::TraitItemKind::Type(
@@ -687,13 +743,13 @@ fn import_trait_item(item: &frontend::FullDef<frontend::ThirBody>) -> ast::Trait
                 })
                 .collect(),
         ),
-        _ => panic!("Found associated item of an unknown kind."),
+        _ => ast::TraitItemKind::Error(failure("Found associated item of an unknown kind.", &span)),
     };
     let (frontend::FullDefKind::AssocConst { param_env, .. }
     | frontend::FullDefKind::AssocFn { param_env, .. }
     | frontend::FullDefKind::AssocTy { param_env, .. }) = &item.kind
     else {
-        panic!("Found associated item of an unknown kind.")
+        unreachable!("Found associated item of an unknown kind.")
     };
     ast::TraitItem {
         meta,
@@ -796,7 +852,7 @@ fn import_impl_expr_atom(
         }
         frontend::ImplExprAtom::Dyn => ast::ImplExprKind::Dyn,
         frontend::ImplExprAtom::Builtin { .. } => ast::ImplExprKind::Builtin(goal),
-        frontend::ImplExprAtom::Error(msg) => todo!("{}", msg), // TODO proper error
+        frontend::ImplExprAtom::Error(msg) => ast::ImplExprKind::Error(failure(msg, &span)),
     }
 }
 
@@ -838,8 +894,11 @@ fn cast_of_enum(
     todo!() // TODO refactor Implement to evaluate what is needed in #1763
 }
 
-fn expect_body<Body>(optional: &Option<Body>) -> &Body {
-    optional.as_ref().expect("Expected body") // TODO proper hax error
+fn expect_body<'a, Body>(
+    optional: &'a Option<Body>,
+    span: &ast::span::Span,
+) -> Result<&'a Body, ast::ErrorNode> {
+    optional.as_ref().ok_or(failure("Expected body", span))
 }
 
 use std::collections::HashMap;
@@ -851,13 +910,9 @@ pub fn import_item(
     let frontend::FullDef {
         this,
         span,
-        source_span,
-        source_text,
         attributes,
-        visibility,
-        lang_item,
-        diagnostic_item,
         kind,
+        ..
     } = item;
     let ident = this.contents().def_id.clone().import();
     let span = span.import();
@@ -881,16 +936,23 @@ pub fn import_item(
                     &variants,
                 )); */
             }
-            ast::ItemKind::Type {
-                name: ident,
-                generics,
-                variants,
-                is_struct: match adt_kind {
-                    frontend::AdtKind::Struct => true,
-                    frontend::AdtKind::Union => todo!(), // TODO proper hax error
-                    frontend::AdtKind::Enum => false,
-                    _ => todo!(), // TODO
+            match adt_kind {
+                frontend::AdtKind::Union => {
+                    ast::ItemKind::Error(unsupported("Union type", 998, &span))
+                }
+                frontend::AdtKind::Enum | frontend::AdtKind::Struct => ast::ItemKind::Type {
+                    name: ident,
+                    generics,
+                    variants,
+                    is_struct: match adt_kind {
+                        frontend::AdtKind::Enum => false,
+                        frontend::AdtKind::Struct => true,
+                        _ => unreachable!(),
+                    },
                 },
+                frontend::AdtKind::Array => ast::ItemKind::Error(failure("Array ADT type", &span)),
+                frontend::AdtKind::Slice => ast::ItemKind::Error(failure("Slice ADT type", &span)),
+                frontend::AdtKind::Tuple => ast::ItemKind::Error(failure("Tuple ADT type", &span)),
             }
         }
         frontend::FullDefKind::TyAlias { param_env, ty } => {
@@ -901,8 +963,13 @@ pub fn import_item(
                 ty: ty.spanned_import(span.clone()),
             }
         }
-        frontend::FullDefKind::ForeignTy => todo!(), // TODO proper hax error
-        frontend::FullDefKind::OpaqueTy => todo!(), // TODO proper hax error (the frontend should resolve this and produce a type alias)
+        frontend::FullDefKind::ForeignTy => {
+            ast::ItemKind::Error(unsupported("Foreign type", 928, &span))
+        }
+        frontend::FullDefKind::OpaqueTy => ast::ItemKind::Error(failure(
+            "OpaqueTy should be replaced by Alias in the frontend",
+            &span,
+        )),
         frontend::FullDefKind::Trait {
             param_env,
             implied_predicates,
@@ -926,7 +993,9 @@ pub fn import_item(
             }
         }
 
-        frontend::FullDefKind::TraitAlias { .. } => todo!(), // TODO proper hax error
+        frontend::FullDefKind::TraitAlias { .. } => {
+            ast::ItemKind::Error(failure("Trait Alias", &span))
+        }
         frontend::FullDefKind::TraitImpl {
             param_env,
             trait_pred,
@@ -944,9 +1013,6 @@ pub fn import_item(
                     .map(|ga| ga.spanned_import(span.clone()))
                     .collect(),
             );
-            let [ast::GenericValue::Ty(self_ty), ..] = &of_trait.1[..] else {
-                panic!("Self should always be the first generic argument of a trait application.")
-            };
             let parent_bounds = implied_impl_exprs
                 .iter()
                 .enumerate()
@@ -959,61 +1025,47 @@ pub fn import_item(
                     (ie, impl_ident)
                 })
                 .collect();
-            let items = items
-                .iter()
-                .map(|assoc_item| {
-                    let ident = assoc_item.decl_def_id.import();
-                    let assoc_item = all_items.get(&assoc_item.decl_def_id).unwrap(); // TODO error: All assoc items should be included in the list of items produced by the frontend.
-                    let span = assoc_item.span.import();
-                    let attributes = assoc_item.attributes.import();
-                    let (generics, kind) = match assoc_item.kind() {
-                        frontend::FullDefKind::AssocTy {
-                            param_env, value, ..
-                        } => (
-                            param_env.import(),
-                            ast::ImplItemKind::Type {
-                                ty: expect_body(value).spanned_import(span.clone()),
-                                parent_bounds: Vec::new(),
-                            },
-                        ), // TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
-                        frontend::FullDefKind::AssocFn {
-                            param_env, body, ..
-                        } => {
-                            let body = expect_body(body);
-                            (
-                                param_env.import(),
-                                ast::ImplItemKind::Fn {
-                                    body: body.import(),
-                                    params: body.params.spanned_import(span.clone()),
-                                },
-                            )
-                        } // TODO(missing) #1763 Change TyFnSignature to add parameter binders (change the body type in THIR to be a tuple (expr,param))
-                        frontend::FullDefKind::AssocConst {
-                            param_env, body, ..
-                        } => (
-                            param_env.import(),
-                            ast::ImplItemKind::Fn {
-                                body: expect_body(body).import(),
-                                params: Vec::new(),
-                            },
-                        ),
-                        _ => todo!("error"), // panic!("All pointers to associated items should correspond to an actual associated item definition.")
-                    };
-                    ast::ImplItem {
-                        meta: ast::Metadata { span, attributes },
-                        generics,
-                        kind,
-                        ident,
-                    }
-                })
-                .collect();
-            ast::ItemKind::Impl {
-                generics,
-                self_ty: self_ty.clone(),
-                of_trait,
-                items,
-                parent_bounds,
-                safety: ast::SafetyKind::Safe, // TODO(missing) #1763 trait impl safety (remove from AST?)
+            let items = items.iter().map(|assoc_item| {
+                let ident = assoc_item.decl_def_id.import();
+                let assoc_item = all_items.get(&assoc_item.decl_def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
+                let span = assoc_item.span.import();
+                let attributes = assoc_item.attributes.import();
+                let (generics, kind) = match assoc_item.kind() {
+                    frontend::FullDefKind::AssocTy { param_env, value, .. } =>
+                    (param_env.import(),match expect_body(value, &span) {
+                      Ok(body) =>  ast::ImplItemKind::Type { ty: body.spanned_import(span.clone()), parent_bounds: Vec::new() },
+                      Err(error) => ast::ImplItemKind::Error(error),
+                    }),// TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
+                    frontend::FullDefKind::AssocFn { param_env, body, .. } =>
+                       (param_env.import(), match expect_body(body, &span) { Ok(body) =>
+                        ast::ImplItemKind::Fn { body: body.import(), params: Vec::new() }, Err(error) => ast::ImplItemKind::Error(error)}),// TODO(missing) #1763 Change TyFnSignature to add parameter binders (change the body type in THIR to be a tuple (expr,param))
+                    frontend::FullDefKind::AssocConst { param_env, body, .. } =>
+                      (param_env.import(), match expect_body(body, &span) { Ok(body) =>ast::ImplItemKind::Fn { body: body.import(), params: Vec::new() },
+                    Err(error) => ast::ImplItemKind::Error(error)}
+                    ),
+                    _ => unreachable!("All pointers to associated items should correspond to an actual associated item definition.")
+                };
+                ast::ImplItem {
+                    meta: ast::Metadata { span, attributes },
+                    generics,
+                    kind,
+                    ident,
+                }
+            }).collect();
+
+            if let [ast::GenericValue::Ty(self_ty), ..] = &of_trait.1[..] {
+                ast::ItemKind::Impl {
+                    generics,
+                    self_ty: self_ty.clone(),
+                    of_trait,
+                    items,
+                    parent_bounds,
+                }
+            } else {
+                ast::ItemKind::Error(failure(
+                    "Self should always be the first generic argument of a trait application.",
+                    &span,
+                ))
             }
         }
         frontend::FullDefKind::InherentImpl {
@@ -1030,31 +1082,40 @@ pub fn import_item(
                         let kind = match assoc_item.kind() {
                             frontend::FullDefKind::AssocTy { param_env, value, .. } => {
                                 let generics = impl_generics.clone().concat(param_env.import());
-                                ast::ItemKind::TyAlias {
+                                match expect_body(value, &span) {
+                                    Ok(body) => ast::ItemKind::TyAlias {
                                     name: ident,
                                     generics,
-                                    ty: expect_body(value).spanned_import(span.clone()),
+                                    ty: body.spanned_import(span.clone()),
+                                },
+                                Err(err) => ast::ItemKind::Error(err)
                                 }
                             },
                             frontend::FullDefKind::AssocFn { param_env, sig, body , ..} => {
                                 let generics = impl_generics.clone().concat(param_env.import());
-                                ast::ItemKind::Fn {
+                                match expect_body(body, &span) {
+                                    Ok(body) =>ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
-                                    body: expect_body(body).import(),
+                                    body: body.import(),
                                     params: Vec::new(), // TODO(missing) #1763 Change TyFnSignature to add parameter binders
                                     safety: sig.value.safety.import(),
+                                },
+                                Err(err) => ast::ItemKind::Error(err)
                                 }}
-                            frontend::FullDefKind::AssocConst { param_env, body, .. } =>{
+                            frontend::FullDefKind::AssocConst { param_env, body, .. } => {
                                 let generics = impl_generics.clone().concat(param_env.import());
-                                 ast::ItemKind::Fn {
+                                match expect_body(body, &span) {
+                                    Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
-                                    body: expect_body(body).import(),
+                                    body: body.import(),
                                     params: Vec::new(),
                                     safety: ast::SafetyKind::Safe,
+                                },
+                                Err(err) => ast::ItemKind::Error(err)
                                 }}
-                            _ => panic!("All pointers to associated items should correspond to an actual associated item definition.")
+                            _ => ast::ItemKind::Error(failure("All pointers to associated items should correspond to an actual associated item definition.", &span))
                         };
                         ast::Item { ident, kind, meta: ast::Metadata { span, attributes } }
                     })
@@ -1066,45 +1127,51 @@ pub fn import_item(
             body,
             ..
         } => {
-            let body = expect_body(body);
-            ast::ItemKind::Fn {
+            match expect_body(body, &span) {
+                Ok(body) => ast::ItemKind::Fn {
+                    name: ident,
+                    generics: param_env.import(),
+                    body: body.import(),
+                    params: body.params.spanned_import(span.clone()),
+                    safety: sig.value.safety.import(),
+                },
+                Err(err) => ast::ItemKind::Error(err),
+            }
+        }
+        frontend::FullDefKind::Closure { .. } => {
+            ast::ItemKind::Error(failure("Closure item", &span))
+        }
+        frontend::FullDefKind::Const {
+            param_env, body, ..
+        } => match expect_body(body, &span) {
+            Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: param_env.import(),
                 body: body.import(),
-                params: body.params.spanned_import(span.clone()),
-                safety: sig.value.safety.import(),
-            }
-        }
-        frontend::FullDefKind::Closure { .. } => panic!("We should never encounter closure items"), // TODO convert to a hax error
-        frontend::FullDefKind::Const {
-            param_env,
-            ty,
-            kind,
-            body,
-            value,
-        } => ast::ItemKind::Fn {
-            name: ident,
-            generics: param_env.import(),
-            body: expect_body(body).import(),
-            params: Vec::new(),
-            safety: ast::SafetyKind::Safe,
+                params: Vec::new(),
+                safety: ast::SafetyKind::Safe,
+            },
+            Err(err) => ast::ItemKind::Error(err),
         },
         frontend::FullDefKind::Static {
             mutability: true, ..
-        } => panic!("Mutable static items are not supported."), // TODO proper hax error for issue 1343
+        } => ast::ItemKind::Error(unsupported("Mutable static item", 1343, &span)),
         frontend::FullDefKind::Static {
             mutability: false,
             body,
             ..
-        } => ast::ItemKind::Fn {
-            name: ident,
-            generics: ast::Generics {
+        } => match expect_body(body, &span) {
+            Ok(body) => ast::ItemKind::Fn {
+                name: ident,
+                generics: ast::Generics {
+                    params: Vec::new(),
+                    constraints: Vec::new(),
+                },
+                body: body.import(),
                 params: Vec::new(),
-                constraints: Vec::new(),
+                safety: ast::SafetyKind::Safe,
             },
-            body: expect_body(body).import(),
-            params: Vec::new(),
-            safety: ast::SafetyKind::Safe,
+            Err(err) => ast::ItemKind::Error(err),
         },
         frontend::FullDefKind::ExternCrate
         | frontend::FullDefKind::Use
@@ -1118,7 +1185,9 @@ pub fn import_item(
         | frontend::FullDefKind::Mod { .. }
         | frontend::FullDefKind::ForeignMod { .. }
         | frontend::FullDefKind::SyntheticCoroutineBody => return Vec::new(),
-        frontend::FullDefKind::GlobalAsm => panic!("Inline assembly blocks are not supported"), // TODO hax error for 1344
+        frontend::FullDefKind::GlobalAsm => {
+            ast::ItemKind::Error(unsupported("Inline assembly item", 1344, &span))
+        }
         frontend::FullDefKind::AssocConst { .. }
         | frontend::FullDefKind::AssocFn { .. }
         | frontend::FullDefKind::AssocTy { .. } => return Vec::new(), // These item kinds are handled by the case of Impl
