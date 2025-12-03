@@ -257,16 +257,9 @@ impl Import<ast::SafetyKind> for frontend::Safety {
     }
 }
 
-fn unit_ty() -> ast::TyKind {
-    ast::TyKind::App {
-        head: ast::GlobalId::unit_ty(),
-        args: Vec::new(),
-    }
-}
-
 fn import_fn_sig(fn_sig: &frontend::TyFnSig, span: ast::span::Span) -> ast::TyKind {
     let inputs = if fn_sig.inputs.is_empty() {
-        vec![ast::Ty(Box::new(unit_ty()))]
+        vec![ast::Ty(Box::new(ast::TyKind::unit()))]
     } else {
         fn_sig
             .inputs
@@ -369,7 +362,10 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 head: crate::names::rust_primitives::hax::Never,
                 args: Vec::new(),
             },
-            frontend::TyKind::Tuple(items) => unit_ty(), //  TODO helper
+            frontend::TyKind::Tuple(items) => {
+                let args = items.generic_args.spanned_import(span.clone());
+                ast::TyKind::tuple(args)
+            }
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Projection { impl_expr, .. },
                 def_id,
@@ -886,14 +882,89 @@ impl SpannedImport<ast::ImplExpr> for frontend::ImplExpr {
     }
 }
 
+fn generic_param_to_value(p: &ast::GenericParam) -> ast::GenericValue {
+    match &p.kind {
+        ast::GenericParamKind::Lifetime => ast::GenericValue::Lifetime,
+        ast::GenericParamKind::Type => {
+            ast::GenericValue::Ty(ast::TyKind::Param(p.ident.clone()).promote())
+        }
+        ast::GenericParamKind::Const { ty } => ast::GenericValue::Expr(
+            ast::ExprKind::LocalId(p.ident.clone()).promote(ty.clone(), p.meta.span.clone()),
+        ),
+    }
+}
+
 fn cast_of_enum(
     type_id: ast::GlobalId,
     generics: &ast::Generics,
     ty: ast::Ty,
     span: ast::span::Span,
-    variants: &Vec<ast::Variant>,
+    variants: &Vec<(ast::Variant, frontend::VariantDef)>,
 ) -> ast::Item {
-    todo!() // TODO refactor Implement to evaluate what is needed in #1763
+    let type_ref = ast::TyKind::App {
+        head: type_id,
+        args: generics.params.iter().map(generic_param_to_value).collect(),
+    }
+    .promote();
+    let name = ast::GlobalId::with_suffix(type_id, ast::global_id::ReservedSuffix::Cast);
+    let ast::TyKind::Primitive(ast::PrimitiveTy::Int(int_kind)) = &*ty.0 else {
+        return ast::ItemKind::Error(failure(
+            &format!("cast_of_enum: expected int type, got {:?}", ty),
+            &span,
+        ))
+        .promote(name, span);
+    };
+    let mut arms = Vec::new();
+    let mut previous_explicit_determinator = None;
+    for (variant, variant_def) in variants {
+        // Each variant comes with a [rustc_middle::ty::VariantDiscr]. Some variant have [Explicit] discr (i.e. an expression)
+        // while other have [Relative] discr (the distance to the previous last explicit discr).
+        let body = match &variant_def.discr_def {
+            frontend::DiscriminantDefinition::Relative(m) => {
+                ast::ExprKind::Literal(ast::literals::Literal::Int {
+                    value: Symbol::new(m.to_string()),
+                    negative: false,
+                    kind: int_kind.clone(),
+                })
+                .promote(ty.clone(), span.clone())
+            }
+            frontend::DiscriminantDefinition::Explicit(did) => {
+                let e = ast::ExprKind::GlobalId(did.import()).promote(ty.clone(), span.clone());
+                previous_explicit_determinator = Some(e.clone());
+                e
+            }
+        };
+        let pat = ast::PatKind::Construct {
+            constructor: variant.name,
+            is_record: variant.is_record,
+            is_struct: false,
+            fields: variant
+                .arguments
+                .iter()
+                .map(|(cid, ty, _)| (*cid, ast::PatKind::Wild.promote(ty.clone(), span.clone())))
+                .collect(),
+        }
+        .promote(ty.clone(), span.clone());
+        arms.push(ast::Arm::non_guarded(pat, body, span.clone()));
+    }
+    let scrutinee_var = ast::LocalId(Symbol::new("x"));
+    let scrutinee =
+        ast::ExprKind::LocalId(scrutinee_var.clone()).promote(type_ref.clone(), span.clone());
+    let params = vec![ast::Param {
+        pat: ast::PatKind::var_pat(scrutinee_var).promote(type_ref, span.clone()),
+        ty: ty.clone(),
+        ty_span: None,
+        attributes: Vec::new(),
+    }];
+    let body = ast::ExprKind::Match { scrutinee, arms }.promote(ty, span.clone());
+    ast::ItemKind::Fn {
+        name: name.clone(),
+        generics: generics.clone(),
+        body,
+        params,
+        safety: ast::SafetyKind::Safe,
+    }
+    .promote(name, span)
 }
 
 fn expect_body<'a, Body>(
@@ -926,27 +997,23 @@ pub fn import_item(
             param_env,
             adt_kind,
             variants,
+            repr,
             ..
         } => {
             let generics = param_env.import();
-            let variants = variants.import();
-            if let frontend::AdtKind::Enum = adt_kind {
-                // TODO reactivate this when cast_of_enum is implemented
-                /*  items.push(cast_of_enum(
-                    ident,
-                    &generics,
-                    repr.typ.spanned_import(span.clone()),
-                    span.clone(),
-                    &variants,
-                )); */
-            }
-            match adt_kind {
+            let variants_with_def: Vec<(ast::Variant, frontend::VariantDef)> = variants
+                .clone()
+                .into_iter()
+                .map(|v| (v.import(), v))
+                .collect();
+            let variants = variants_with_def.iter().map(|(v, _)| v.clone()).collect();
+            let res_kind = match adt_kind {
                 frontend::AdtKind::Union => {
                     ast::ItemKind::Error(unsupported("Union type", 998, &span))
                 }
                 frontend::AdtKind::Enum | frontend::AdtKind::Struct => ast::ItemKind::Type {
                     name: ident,
-                    generics,
+                    generics: generics.clone(),
                     variants,
                     is_struct: match adt_kind {
                         frontend::AdtKind::Enum => false,
@@ -957,6 +1024,19 @@ pub fn import_item(
                 frontend::AdtKind::Array => ast::ItemKind::Error(failure("Array ADT type", &span)),
                 frontend::AdtKind::Slice => ast::ItemKind::Error(failure("Slice ADT type", &span)),
                 frontend::AdtKind::Tuple => ast::ItemKind::Error(failure("Tuple ADT type", &span)),
+            };
+            if let frontend::AdtKind::Enum = adt_kind {
+                // TODO discs
+                let cast_item = cast_of_enum(
+                    ident,
+                    &generics,
+                    repr.typ.spanned_import(span.clone()),
+                    span.clone(),
+                    &variants_with_def,
+                );
+                return vec![res_kind.promote(ident, span), cast_item];
+            } else {
+                res_kind
             }
         }
         frontend::FullDefKind::TyAlias { param_env, ty } => {
