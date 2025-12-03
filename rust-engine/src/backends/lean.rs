@@ -1062,7 +1062,6 @@ set_option linter.unusedVariables false
                     of_trait: (trait_, args),
                     items,
                     parent_bounds: _,
-                    safety: _,
                 } => docs![
                     docs![
                         docs![reflow!("instance "), ident, line!(), generics, ":"].group(),
@@ -1178,6 +1177,7 @@ set_option linter.unusedVariables false
                 TraitItemKind::Resugared(_) => {
                     unreachable!("This backend has no resugaring for trait items")
                 }
+                TraitItemKind::Error(e) => docs![e],
             }]
         }
 
@@ -1213,6 +1213,7 @@ set_option linter.unusedVariables false
                 ImplItemKind::Resugared(_) => {
                     unreachable!("This backend has no resugaring for impl items")
                 }
+                ImplItemKind::Error(err) => docs!(err),
             }
         }
 
