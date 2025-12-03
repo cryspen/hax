@@ -664,7 +664,7 @@ fn browse_path(
     span: ast::span::Span,
 ) -> ast::ImplExprKind {
     match chunk {
-        hax_frontend_exporter::ImplExprPathChunk::AssocItem {
+        frontend::ImplExprPathChunk::AssocItem {
             item,
             predicate:
                 frontend::Binder {
@@ -688,7 +688,7 @@ fn browse_path(
                 ident,
             }
         }
-        hax_frontend_exporter::ImplExprPathChunk::Parent {
+        frontend::ImplExprPathChunk::Parent {
             predicate:
                 frontend::Binder {
                     value: frontend::TraitPredicate { trait_ref, .. },
@@ -908,11 +908,11 @@ pub fn import_item(
                 let span = assoc_item.span.import();
                 let attributes = assoc_item.attributes.import();
                 let (generics, kind) = match assoc_item.kind() {
-                    hax_frontend_exporter::FullDefKind::AssocTy { param_env, value, .. } =>
+                    frontend::FullDefKind::AssocTy { param_env, value, .. } =>
                       (param_env.import(), ast::ImplItemKind::Type { ty: expect_body(value).spanned_import(span.clone()), parent_bounds: Vec::new() }),// TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
-                    hax_frontend_exporter::FullDefKind::AssocFn { param_env, body, .. } =>
+                    frontend::FullDefKind::AssocFn { param_env, body, .. } =>
                        (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),// TODO(missing) #1763 Change TyFnSignature to add parameter binders (change the body type in THIR to be a tuple (expr,param))
-                    hax_frontend_exporter::FullDefKind::AssocConst { param_env, body, .. } =>
+                    frontend::FullDefKind::AssocConst { param_env, body, .. } =>
                       (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),
                     _ => panic!("All pointers to associated items should correspond to an actual associated item definition.")
                 };
