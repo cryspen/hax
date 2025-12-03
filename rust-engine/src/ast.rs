@@ -1146,6 +1146,7 @@ pub struct Generics {
 }
 
 impl Generics {
+    /// Concatenate two generics
     pub fn concat(mut self, other: Self) -> Self {
         self.constraints.extend(other.constraints);
         self.params.extend(other.params);

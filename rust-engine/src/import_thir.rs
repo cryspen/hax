@@ -1,3 +1,5 @@
+//! This modules allows to import the THIR AST produced by the frontend, and convert it to the engine's internal AST
+
 use crate::ast;
 use crate::symbol::Symbol;
 use hax_frontend_exporter as frontend;
@@ -42,7 +44,7 @@ trait SpannedImport<Out> {
     fn spanned_import(&self, span: ast::span::Span) -> Out;
 }
 
-pub trait Import<Out> {
+trait Import<Out> {
     fn import(&self) -> Out;
 }
 
@@ -903,6 +905,8 @@ fn expect_body<'a, Body>(
 
 use std::collections::HashMap;
 
+/// Import a `FullDef` item produced by the frontend, and produce the corresponding item
+/// (or items for inherent impls)
 pub fn import_item(
     item: &frontend::FullDef<frontend::ThirBody>,
     all_items: &HashMap<frontend::DefId, &frontend::FullDef<frontend::ThirBody>>,
@@ -973,11 +977,12 @@ pub fn import_item(
         frontend::FullDefKind::Trait {
             param_env,
             implied_predicates,
-            self_predicate,
             items,
             ..
         } => {
-            let generics = param_env.import();
+            let mut generics = param_env.import();
+            let mut implied_predicates = implied_predicates.import();
+            generics.constraints.append(&mut implied_predicates);
             ast::ItemKind::Trait {
                 name: ident,
                 generics,
