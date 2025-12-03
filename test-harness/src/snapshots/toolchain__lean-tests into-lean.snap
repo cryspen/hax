@@ -717,6 +717,96 @@ def Lean_tests.Enums.enums
     | (Lean_tests.Enums.E.V6 (f1 := f1) (f2 := other_name_for_f2))
       => (pure Rust_primitives.Hax.Tuple0.mk)
 
+--  Function with const parameter
+def Lean_tests.Constants.Const_parameters.f
+  (N : usize) (_ : Rust_primitives.Hax.Tuple0)
+  : RustM usize
+  := do
+  (pure N)
+
+def Lean_tests.Constants.Const_parameters.N0 : usize :=
+  RustM.of_isOk (do (pure (1 : usize))) (by rfl)
+
+def Lean_tests.Constants.Const_parameters.N1 : usize :=
+  RustM.of_isOk (do (pure (10 : usize))) (by rfl)
+
+def Lean_tests.Constants.Const_parameters.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ←
+    ((← (Lean_tests.Constants.Const_parameters.f ((9 : usize))
+        Rust_primitives.Hax.Tuple0.mk))
+      +? (← (Lean_tests.Constants.Const_parameters.f ((10 : usize))
+        Rust_primitives.Hax.Tuple0.mk)));
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+--  Trait definition
+class Lean_tests.Constants.Const_parameters.T
+  (Self : Type) (N_TRAIT : usize)
+  where
+  f (N_FIELD : usize) : (Self -> RustM usize)
+
+--  Struct definition
+structure Lean_tests.Constants.Const_parameters.S (N : usize) where
+  _0 : u32
+
+instance Lean_tests.Constants.Const_parameters.Impl (N_TRAIT : usize) :
+  Lean_tests.Constants.Const_parameters.T
+  (Lean_tests.Constants.Const_parameters.S (N_TRAIT))
+  (N_TRAIT)
+  where
+  f (N_FIELD : usize) (self :
+    (Lean_tests.Constants.Const_parameters.S (N_TRAIT)))
+    := do
+    (N_TRAIT -? N_FIELD)
+
+
+/--
+error: Application type mismatch: The argument
+  s
+has type
+  S 10
+but is expected to have type
+  usize
+in the application
+  T.f 1 s
+---
+error: Application type mismatch: The argument
+  x
+has type
+  A
+but is expected to have type
+  usize
+in the application
+  T.f 11 x
+---
+error: Application type mismatch: The argument
+  x
+has type
+  A
+but is expected to have type
+  usize
+in the application
+  T.f 4 x
+-/
+#guard_msgs in
+
+def Lean_tests.Constants.Const_parameters.test2
+  (N2 : usize) (A : Type) [(Lean_tests.Constants.Const_parameters.T A (N2))] (x
+  :
+  A)
+  : RustM usize
+  := do
+  let s : (Lean_tests.Constants.Const_parameters.S ((10 : usize))) :=
+    (Lean_tests.Constants.Const_parameters.S.mk (9 : u32));
+  let _ ←
+    ((← (Lean_tests.Constants.Const_parameters.T.f ((1 : usize)) s))
+      +? (← (Lean_tests.Constants.Const_parameters.T.f ((11 : usize)) x)));
+  let s : (Lean_tests.Constants.Const_parameters.S ((3 : usize))) :=
+    (Lean_tests.Constants.Const_parameters.S.mk (9 : u32));
+  (Lean_tests.Constants.Const_parameters.T.f ((4 : usize)) x)
+
 def Lean_tests.Constants.C1 : u32 :=
   RustM.of_isOk (do (pure (5678 : u32))) (by rfl)
 
