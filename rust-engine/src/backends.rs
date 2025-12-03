@@ -140,12 +140,7 @@ mod prelude {
     //! Importing this prelude saves repetitive `use` lists in per-backend
     //! modules without forcing these names on downstream users.
     pub use super::Backend;
-    pub use crate::ast::{
-        identifiers::{global_id::view::AnyKind, *},
-        literals::*,
-        resugared::*,
-        *,
-    };
+    pub use crate::ast::{identifiers::global_id::view::AnyKind, literals::*, resugared::*, *};
     pub use crate::printer::{
         pretty_ast::{DocBuilder, PrettyAst, ToDocument, install_pretty_helpers},
         render_view::*,

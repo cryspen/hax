@@ -37,6 +37,8 @@ pub fn read_to_engine_message() -> ToEngine {
 pub fn read_engine_input_message() -> WithTable<EngineOptions> {
     read()
 }
+
+/// Reads a table of `EngineOptions`
 pub fn read_query()
 -> hax_frontend_exporter::id_table::WithTable<hax_types::engine_api::EngineOptions> {
     let mut stdin = STDIN.lock().unwrap();
@@ -49,7 +51,7 @@ pub fn read_query()
     hax_frontend_exporter::id_table::WithTable::deserialize(serde_stacker::Deserializer::new(
         &mut de,
     ))
-    .expect("Could not parse as a `ExtendedToEngine` message!")
+    .expect("Could not parse as a table of EngineOptions!")
 }
 
 /// Writes a `ExtendedFromEngine` message
