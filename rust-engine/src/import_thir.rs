@@ -554,6 +554,12 @@ impl Import<(ast::GlobalId, ast::Ty, Vec<ast::Attribute>)> for frontend::FieldDe
     }
 }
 
+impl Import<ast::Expr> for frontend::ThirBody {
+    fn import(&self) -> ast::Expr {
+        self.expr.import()
+    }
+}
+
 impl Import<ast::Variant> for frontend::VariantDef {
     fn import(&self) -> ast::Variant {
         ast::Variant {
@@ -572,7 +578,7 @@ impl<I, A: Import<B>, B> Import<Vec<B>> for frontend::IndexVec<I, A> {
     }
 }
 
-fn import_trait_item(item: &frontend::FullDef<frontend::Expr>) -> ast::TraitItem {
+fn import_trait_item(item: &frontend::FullDef<frontend::ThirBody>) -> ast::TraitItem {
     let span = item.span.import();
     let attributes = item.attributes.import();
     let meta = ast::Metadata {
@@ -782,10 +788,10 @@ fn expect_body<Body>(optional: &Option<Body>) -> &Body {
 use std::collections::HashMap;
 
 pub fn import_item(
-    item: &frontend::FullDef<frontend::Expr>,
-    all_items: &HashMap<frontend::DefId, &frontend::FullDef<frontend::Expr>>,
+    item: &frontend::FullDef<frontend::ThirBody>,
+    all_items: &HashMap<frontend::DefId, &frontend::FullDef<frontend::ThirBody>>,
 ) -> Vec<ast::Item> {
-    let frontend::FullDef::<frontend::Expr> {
+    let frontend::FullDef {
         this,
         span,
         source_span,

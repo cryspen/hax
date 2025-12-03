@@ -600,7 +600,13 @@ pub struct Param {
     pub attributes: Vec<Attribute>,
 }
 
-pub type ThirBody = Expr;
+#[derive_group(Serializers)]
+#[derive(Clone, Debug, JsonSchema)]
+pub struct ThirBody {
+    pub expr: Expr,
+    pub params: Vec<Param>,
+}
+
 pub type Expr = Decorated<ExprKind>;
 
 /// Reflects [`thir::ExprKind`]

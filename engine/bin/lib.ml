@@ -22,7 +22,7 @@ end)
 module Attrs = Attr_payloads.MakeBase (Error)
 
 let import_thir_items (include_clauses : Types.inclusion_clause list)
-    (items : Types.item_for__decorated_for__expr_kind list) : Ast.Rust.item list
+    (items : Types.item_for__thir_body list) : Ast.Rust.item list
     =
   let imported_items =
     List.map

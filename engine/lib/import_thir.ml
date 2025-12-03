@@ -1,15 +1,15 @@
 module Thir = struct
   include Types
 
-  type item = item_for__decorated_for__expr_kind
-  type item_kind = item_kind_for__decorated_for__expr_kind
-  type impl_item = impl_item_for__decorated_for__expr_kind
-  type impl_item_kind = impl_item_kind_for__decorated_for__expr_kind
-  type generics = generics_for__decorated_for__expr_kind
-  type trait_item_kind = trait_item_kind_for__decorated_for__expr_kind
-  type generic_param = generic_param_for__decorated_for__expr_kind
-  type generic_param_kind = generic_param_kind_for__decorated_for__expr_kind
-  type trait_item = trait_item_for__decorated_for__expr_kind
+  type item = item_for__thir_body
+  type item_kind = item_kind_for__thir_body
+  type impl_item = impl_item_for__thir_body
+  type impl_item_kind = impl_item_kind_for__thir_body
+  type generics = generics_for__thir_body
+  type trait_item_kind = trait_item_kind_for__thir_body
+  type generic_param = generic_param_for__thir_body
+  type generic_param_kind = generic_param_kind_for__thir_body
+  type trait_item = trait_item_for__thir_body
   type ty = node_for__ty_kind
   type item_ref = node_for__item_ref_contents
   type trait_ref = item_ref
@@ -1375,7 +1375,11 @@ end) : EXPR = struct
     match item with
     | Const (_, Some default) ->
         TIDefault
-          { params = []; body = c_expr default; witness = W.trait_item_default }
+          {
+            params = [];
+            body = c_expr default.expr;
+            witness = W.trait_item_default;
+          }
     | Const (ty, None) -> TIFn (c_ty span ty)
     | RequiredFn (sg, _) ->
         let (Thir.{ inputs; output; _ } : Thir.fn_decl) = sg.decl in
@@ -1393,7 +1397,7 @@ end) : EXPR = struct
         TIDefault
           {
             params = c_fn_params span params;
-            body = c_expr body;
+            body = c_expr body.expr;
             witness = W.trait_item_default;
           }
     | Type (bounds, None) ->
@@ -1471,8 +1475,7 @@ let generic_param_to_value ({ ident; kind; span; _ } : generic_param) :
 
 (** Generate a cast function from an inductive to its represantant type. *)
 let cast_of_enum typ_name generics typ thir_span
-    (variants : (variant * Types.variant_for__decorated_for__expr_kind) list) :
-    item =
+    (variants : (variant * Types.variant_for__thir_body) list) : item =
   let span = Span.of_thir thir_span in
   let (module M) = Ast_builder.make span in
   let self =
@@ -1596,7 +1599,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
            {
              name = Concrete_ident.of_def_id ~value:true (assert_item_def_id ());
              generics = c_generics generics;
-             body = c_body body;
+             body = c_body body.expr;
              params = [];
              safety = Safe;
            }
@@ -1606,7 +1609,15 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
   | Static (false, _, _ty, body) ->
       let name = Concrete_ident.of_def_id ~value:true (assert_item_def_id ()) in
       let generics = { params = []; constraints = [] } in
-      mk (Fn { name; generics; body = c_body body; params = []; safety = Safe })
+      mk
+        (Fn
+           {
+             name;
+             generics;
+             body = c_body body.expr;
+             params = [];
+             safety = Safe;
+           })
   | TyAlias (_, generics, ty) ->
       mk
       @@ TyAlias
@@ -1622,7 +1633,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
            {
              name = Concrete_ident.of_def_id ~value:true (assert_item_def_id ());
              generics = c_generics generics;
-             body = c_body body;
+             body = c_body body.expr;
              params = c_fn_params item.span params;
              safety = c_header_safety safety;
            }
@@ -1642,7 +1653,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
         |> List.map ~f:(fun Types.{ def_id; body; _ } ->
                let name = Concrete_ident.of_def_id ~value:true def_id in
                let generics = { params = []; constraints = [] } in
-               let body = c_expr body in
+               let body = c_expr body.expr in
                {
                  v = Fn { name; generics; body; params = []; safety = Safe };
                  span;
@@ -1786,7 +1797,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                     generics =
                       U.concat_generics generics
                         (c_generics ~offset item.generics);
-                    body = c_body body;
+                    body = c_body body.expr;
                     params;
                     safety = c_header_safety safety;
                   }
@@ -1796,7 +1807,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                     name = item_def_id;
                     generics;
                     (* does that make sense? can we have `const<T>`? *)
-                    body = c_body e;
+                    body = c_body e.expr;
                     params = [];
                     safety = Safe;
                   }
@@ -1848,8 +1859,8 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                         if List.is_empty params then [ U.make_unit_param span ]
                         else List.map ~f:(c_param item.span) params
                       in
-                      IIFn { body = c_expr body; params }
-                  | Const (_ty, e) -> IIFn { body = c_expr e; params = [] }
+                      IIFn { body = c_expr body.expr; params }
+                  | Const (_ty, e) -> IIFn { body = c_expr e.expr; params = [] }
                   | Type { ty; parent_bounds } ->
                       IIType
                         {
