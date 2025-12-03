@@ -447,9 +447,17 @@ set_option linter.unusedVariables false
                     .parens()
                     .group(),
                 GenericParamKind::Lifetime => unreachable_by_invariant!(Drop_references),
-                GenericParamKind::Const { .. } => {
-                    emit_error!(issue 1711, "Const parameters are not yet supported")
-                }
+                GenericParamKind::Const { ty } => docs![&generic_param.ident, reflow!(" : "), ty]
+                    .parens()
+                    .group(),
+            }
+        }
+
+        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
+            match generic_value {
+                GenericValue::Ty(ty) => docs![ty],
+                GenericValue::Expr(expr) => docs![self.monad_extract(expr)].parens(),
+                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
             }
         }
 
@@ -861,14 +869,6 @@ set_option linter.unusedVariables false
                 FloatKind::F64 => "f64",
                 _ => emit_error!(issue 1787, "The only supported float types are `f32` and `f64`."),
             }]
-        }
-
-        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
-            match generic_value {
-                GenericValue::Ty(ty) => docs![ty],
-                GenericValue::Expr(expr) => docs![expr],
-                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
-            }
         }
 
         fn quote_content(&self, quote_content: &QuoteContent) -> DocBuilder<A> {
