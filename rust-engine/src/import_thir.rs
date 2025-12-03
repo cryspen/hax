@@ -16,6 +16,14 @@ impl<T: Import<Out>, Out> Import<Vec<Out>> for Vec<T> {
     }
 }
 
+impl<T: SpannedImport<Out>, Out> SpannedImport<Vec<Out>> for Vec<T> {
+    fn spanned_import(&self, span: ast::span::Span) -> Vec<Out> {
+        self.into_iter()
+            .map(|value| value.spanned_import(span.clone()))
+            .collect()
+    }
+}
+
 impl Import<ast::GlobalId> for frontend::DefId {
     fn import(&self) -> ast::GlobalId {
         ast::GlobalId::from_frontend(self.clone())
@@ -138,14 +146,6 @@ impl SpannedImport<ast::GenericValue> for frontend::GenericArg {
                 ast::GenericValue::Expr(frontend::Expr::from(decorated.clone()).import())
             }
         }
-    }
-}
-
-impl SpannedImport<Vec<ast::GenericValue>> for Vec<frontend::GenericArg> {
-    fn spanned_import(&self, span: ast::span::Span) -> Vec<ast::GenericValue> {
-        self.iter()
-            .map(|ga| ga.spanned_import(span.clone()))
-            .collect()
     }
 }
 
