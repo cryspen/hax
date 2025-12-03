@@ -560,6 +560,63 @@ impl Import<ast::Expr> for frontend::ThirBody {
     }
 }
 
+impl Import<ast::PatKind> for frontend::PatKind {
+    fn import(&self) -> ast::PatKind {
+        todo!()
+    }
+}
+impl Import<ast::Pat> for frontend::Pat {
+    fn import(&self) -> ast::Pat {
+        let Self {
+            ty,
+            span,
+            contents,
+            hir_id,
+            attributes,
+        } = self;
+        let span = span.import();
+        // TODO
+        ast::Pat {
+            kind: Box::new(ast::PatKind::Wild),
+            ty: ty.spanned_import(span.clone()),
+            meta: ast::Metadata {
+                span,
+                attributes: vec![],
+            },
+        }
+    }
+}
+
+impl SpannedImport<ast::Param> for frontend::Param {
+    fn spanned_import(&self, span: ast::span::Span) -> ast::Param {
+        let frontend::Param {
+            pat,
+            ty,
+            ty_span,
+            attributes,
+            ..
+        } = self;
+        let ty_span = ty_span.as_ref().map(Import::import);
+        let ty = ty.spanned_import(ty_span.clone().unwrap_or(span.clone()));
+        ast::Param {
+            pat: pat
+                .as_ref()
+                .map(Import::import)
+                .unwrap_or_else(|| ast::Pat {
+                    kind: Box::new(ast::PatKind::Wild),
+                    ty: ty.clone(),
+                    meta: ast::Metadata {
+                        span,
+                        attributes: vec![],
+                    },
+                }),
+            ty,
+            ty_span: ty_span,
+            attributes: attributes.import(),
+        }
+    }
+}
+
 impl Import<ast::Variant> for frontend::VariantDef {
     fn import(&self) -> ast::Variant {
         ast::Variant {
@@ -902,27 +959,54 @@ pub fn import_item(
                     (ie, impl_ident)
                 })
                 .collect();
-            let items = items.iter().map(|assoc_item| {
-                let ident = assoc_item.decl_def_id.import();
-                let assoc_item = all_items.get(&assoc_item.decl_def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
-                let span = assoc_item.span.import();
-                let attributes = assoc_item.attributes.import();
-                let (generics, kind) = match assoc_item.kind() {
-                    frontend::FullDefKind::AssocTy { param_env, value, .. } =>
-                      (param_env.import(), ast::ImplItemKind::Type { ty: expect_body(value).spanned_import(span.clone()), parent_bounds: Vec::new() }),// TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
-                    frontend::FullDefKind::AssocFn { param_env, body, .. } =>
-                       (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),// TODO(missing) #1763 Change TyFnSignature to add parameter binders (change the body type in THIR to be a tuple (expr,param))
-                    frontend::FullDefKind::AssocConst { param_env, body, .. } =>
-                      (param_env.import(), ast::ImplItemKind::Fn { body: expect_body(body).import(), params: Vec::new() }),
-                    _ => panic!("All pointers to associated items should correspond to an actual associated item definition.")
-                };
-                ast::ImplItem {
-                    meta: ast::Metadata { span, attributes },
-                    generics,
-                    kind,
-                    ident,
-                }
-            }).collect();
+            let items = items
+                .iter()
+                .map(|assoc_item| {
+                    let ident = assoc_item.decl_def_id.import();
+                    let assoc_item = all_items.get(&assoc_item.decl_def_id).unwrap(); // TODO error: All assoc items should be included in the list of items produced by the frontend.
+                    let span = assoc_item.span.import();
+                    let attributes = assoc_item.attributes.import();
+                    let (generics, kind) = match assoc_item.kind() {
+                        frontend::FullDefKind::AssocTy {
+                            param_env, value, ..
+                        } => (
+                            param_env.import(),
+                            ast::ImplItemKind::Type {
+                                ty: expect_body(value).spanned_import(span.clone()),
+                                parent_bounds: Vec::new(),
+                            },
+                        ), // TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
+                        frontend::FullDefKind::AssocFn {
+                            param_env, body, ..
+                        } => {
+                            let body = expect_body(body);
+                            (
+                                param_env.import(),
+                                ast::ImplItemKind::Fn {
+                                    body: body.import(),
+                                    params: body.params.spanned_import(span.clone()),
+                                },
+                            )
+                        } // TODO(missing) #1763 Change TyFnSignature to add parameter binders (change the body type in THIR to be a tuple (expr,param))
+                        frontend::FullDefKind::AssocConst {
+                            param_env, body, ..
+                        } => (
+                            param_env.import(),
+                            ast::ImplItemKind::Fn {
+                                body: expect_body(body).import(),
+                                params: Vec::new(),
+                            },
+                        ),
+                        _ => todo!("error"), // panic!("All pointers to associated items should correspond to an actual associated item definition.")
+                    };
+                    ast::ImplItem {
+                        meta: ast::Metadata { span, attributes },
+                        generics,
+                        kind,
+                        ident,
+                    }
+                })
+                .collect();
             ast::ItemKind::Impl {
                 generics,
                 self_ty: self_ty.clone(),
@@ -982,11 +1066,12 @@ pub fn import_item(
             body,
             ..
         } => {
+            let body = expect_body(body);
             ast::ItemKind::Fn {
                 name: ident,
                 generics: param_env.import(),
-                body: expect_body(body).import(),
-                params: Vec::new(), // TODO(missing) #1763 Change TyFnSignature to add parameter binders
+                body: body.import(),
+                params: body.params.spanned_import(span.clone()),
                 safety: sig.value.safety.import(),
             }
         }
