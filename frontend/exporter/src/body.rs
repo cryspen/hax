@@ -197,8 +197,9 @@ mod module {
                 let did = did.as_local()?;
                 let (thir, expr) = get_thir(did, s);
                 assert!(instantiate.is_none(), "monomorphized thir isn't supported");
-                let s = &s.with_owner_id(did.to_def_id());
-                Some(if *CORE_EXTRACTION_MODE {
+                let s = &s.with_owner_id(did.to_def_id()).with_thir(thir.clone());
+                let params = thir.params.raw.sinto(s);
+                let expr = if *CORE_EXTRACTION_MODE {
                     let expr = &thir.exprs[expr];
                     Decorated {
                         contents: Box::new(ExprKind::Tuple { fields: vec![] }),
@@ -209,7 +210,8 @@ mod module {
                     }
                 } else {
                     expr.sinto(&s.with_thir(thir))
-                })
+                };
+                Some(Self { expr, params })
             }
         }
 
