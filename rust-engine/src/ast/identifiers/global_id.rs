@@ -199,12 +199,11 @@ enum GlobalIdInner {
 }
 
 impl GlobalId {
-    // TODO remove
     pub fn unit_constructor() -> Self {
-        GlobalId(GlobalIdInner::Tuple(TupleId::Constructor { length: 0 }).intern())
+        TupleId::Constructor { length: 0 }.into()
     }
     pub fn unit_ty() -> Self {
-        GlobalId(GlobalIdInner::Tuple(TupleId::Type { length: 0 }).intern())
+        TupleId::Type { length: 0 }.into()
     }
 }
 
@@ -312,8 +311,8 @@ impl From<TupleId> for ConcreteId {
 pub struct GlobalId(Interned<GlobalIdInner>);
 
 impl GlobalId {
+    /// Import a def_id from the frontend
     pub fn from_frontend(id: hax_frontend_exporter::DefId) -> Self {
-        //let contents = &*id;
         let def_id: DefIdInner = id.into();
         let inner = GlobalIdInner::Concrete(ConcreteId {
             def_id: ExplicitDefId {
@@ -391,6 +390,20 @@ impl GlobalId {
     pub fn mod_only_closest_parent(self) -> Self {
         let concrete_id = ConcreteId::from_global_id(self).mod_only_closest_parent();
         Self(GlobalIdInner::Concrete(concrete_id).intern())
+    }
+
+    /// Add a suffix to a GlobalId
+    pub fn with_suffix(self, suffix: ReservedSuffix) -> Self {
+        match self.0.get() {
+            GlobalIdInner::Concrete(concrete_id) => Self(
+                GlobalIdInner::Concrete(ConcreteId {
+                    suffix: Some(suffix),
+                    ..concrete_id.clone()
+                })
+                .intern(),
+            ),
+            GlobalIdInner::Tuple(_) => self,
+        }
     }
 }
 
