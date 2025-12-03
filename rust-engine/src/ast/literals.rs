@@ -20,9 +20,9 @@ pub enum IntSize {
     SSize,
 }
 
-use hax_frontend_exporter::{IntTy, UintTy};
-impl From<IntTy> for IntSize {
-    fn from(value: IntTy) -> Self {
+use hax_frontend_exporter::{FloatTy, IntTy, UintTy};
+impl From<&IntTy> for IntSize {
+    fn from(value: &IntTy) -> Self {
         match value {
             IntTy::I128 => Self::S128,
             IntTy::I64 => Self::S64,
@@ -33,8 +33,8 @@ impl From<IntTy> for IntSize {
         }
     }
 }
-impl From<UintTy> for IntSize {
-    fn from(value: UintTy) -> Self {
+impl From<&UintTy> for IntSize {
+    fn from(value: &UintTy) -> Self {
         match value {
             UintTy::U128 => Self::S128,
             UintTy::U64 => Self::S64,
@@ -42,6 +42,32 @@ impl From<UintTy> for IntSize {
             UintTy::U16 => Self::S16,
             UintTy::U8 => Self::S8,
             UintTy::Usize => Self::SSize,
+        }
+    }
+}
+impl From<&IntTy> for IntKind {
+    fn from(value: &IntTy) -> Self {
+        IntKind {
+            size: value.into(),
+            signedness: Signedness::Signed,
+        }
+    }
+}
+impl From<&UintTy> for IntKind {
+    fn from(value: &UintTy) -> Self {
+        IntKind {
+            size: value.into(),
+            signedness: Signedness::Unsigned,
+        }
+    }
+}
+impl From<&FloatTy> for FloatKind {
+    fn from(value: &FloatTy) -> Self {
+        match value {
+            FloatTy::F128 => Self::F128,
+            FloatTy::F64 => Self::F64,
+            FloatTy::F32 => Self::F32,
+            FloatTy::F16 => Self::F16,
         }
     }
 }
