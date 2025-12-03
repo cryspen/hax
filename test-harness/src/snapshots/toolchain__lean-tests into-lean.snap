@@ -91,6 +91,68 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
+class Lean_tests.Traits.Trait_level_args.T1
+  (Self : Type) (A : Type) (B : Type)
+  where
+  f1 (C : Type) (D : Type) : (Self -> RustM Rust_primitives.Hax.Tuple0)
+  f2 (C : Type) (D : Type) : (Self -> A -> RustM Rust_primitives.Hax.Tuple0)
+  f3 (C : Type) (D : Type) :
+    (Self -> A -> B -> RustM Rust_primitives.Hax.Tuple0)
+
+instance Lean_tests.Traits.Trait_level_args.Impl :
+  Lean_tests.Traits.Trait_level_args.T1 usize u32 u64
+  where
+  f1 (C : Type) (D : Type) (self : usize) := do
+    (pure Rust_primitives.Hax.Tuple0.mk)
+  f2 (C : Type) (D : Type) (self : usize) (x : u32) := do
+    (pure Rust_primitives.Hax.Tuple0.mk)
+  f3 (C : Type) (D : Type) (self : usize) (x : u32) (y : u64) := do
+    (pure Rust_primitives.Hax.Tuple0.mk)
+
+
+/--
+error: Application type mismatch: The argument
+  x
+has type
+  U
+of sort `Type` but is expected to have type
+  Type
+of sort `Type 1` in the application
+  T1.f1 C D x
+---
+error: Application type mismatch: The argument
+  x
+has type
+  U
+of sort `Type` but is expected to have type
+  Type
+of sort `Type 1` in the application
+  T1.f2 C D x
+---
+error: failed to synthesize
+  T1 A ?m.19 C
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+
+def Lean_tests.Traits.Trait_level_args.test
+  (A : Type)
+  (B : Type)
+  (C : Type)
+  (D : Type)
+  (U : Type)
+  [(Lean_tests.Traits.Trait_level_args.T1 U A B)]
+  (x : U)
+  (a : A)
+  (b : B)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ← (Lean_tests.Traits.Trait_level_args.T1.f1 C D x);
+  let _ ← (Lean_tests.Traits.Trait_level_args.T1.f2 C D x a);
+  let _ ← (Lean_tests.Traits.Trait_level_args.T1.f3 C D x a b);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
 class Lean_tests.Traits.Overlapping_methods.T1 (Self : Type) where
   f : (Self -> RustM usize)
 
