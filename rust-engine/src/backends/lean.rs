@@ -463,15 +463,14 @@ set_option linter.unusedVariables false
                         }
                         _ => {
                             // Fallback for any application
-                            let generic_args = (!generic_args.is_empty()).then_some(
-                                docs![line!(), intersperse!(generic_args, line!())].group(),
-                            );
-                            let args = (!args.is_empty())
-                                .then_some(docs![line!(), intersperse!(args, line!())].group());
-                            docs![head, generic_args, args]
-                                .parens()
-                                .nest(INDENT)
-                                .group()
+                            docs![
+                                head,
+                                zip_left!(line!(), generic_args).group(),
+                                zip_left!(line!(), args).group(),
+                            ]
+                            .parens()
+                            .nest(INDENT)
+                            .group()
                         }
                     }
                 }
