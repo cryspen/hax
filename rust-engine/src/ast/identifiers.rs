@@ -10,6 +10,7 @@ use std::fmt;
 
 pub mod global_id;
 /// Local identifier
+// TODO: local identifiers should have unique indexes
 #[derive_group_for_ast]
 pub struct LocalId(pub Symbol);
 

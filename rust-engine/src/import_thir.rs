@@ -1,6 +1,7 @@
 //! This modules allows to import the THIR AST produced by the frontend, and convert it to the engine's internal AST
 
 use crate::ast;
+use crate::ast::identifiers::global_id::TupleId;
 use crate::symbol::Symbol;
 use hax_frontend_exporter as frontend;
 
@@ -447,8 +448,11 @@ impl SpannedImport<ast::literals::Literal> for frontend::ConstantLiteral {
                 panic!("constant literal: PtrNoProvenance")
             } // TODO proper error
             frontend::ConstantLiteral::Str(s) => ast::literals::Literal::String(Symbol::new(s)),
-            frontend::ConstantLiteral::ByteStr(items) => todo!(), // TODO deal with this by returning an "extendedliteral", or return an expr_kind here
-                                                                  // which can be an array of literals (deal with it by making an array expr)
+            frontend::ConstantLiteral::ByteStr(items) => {
+                let s = String::from_utf8_lossy(items).to_string();
+                ast::literals::Literal::String(Symbol::new(&s))
+            } // TODO deal with this by returning an "extendedliteral", or return an expr_kind here
+              // which can be an array of literals (deal with it by making an array expr)
         }
     }
 }
@@ -463,24 +467,71 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
             ..
         } = self;
         let span = span.import();
-        let attributes = attributes.import();
+        let raw_attributes: Vec<Option<ast::Attribute>> = attributes.import();
+        let attributes: Vec<ast::Attribute> = raw_attributes.into_iter().flatten().collect();
         let kind = match contents.as_ref() {
-            frontend::ConstantExprKind::Literal(constant_literal) => todo!(),
-            frontend::ConstantExprKind::Adt { info, fields } => todo!(),
-            frontend::ConstantExprKind::Array { fields } => todo!(),
-            frontend::ConstantExprKind::Tuple { fields } => todo!(),
-            frontend::ConstantExprKind::GlobalName(item_ref) => todo!(),
-            frontend::ConstantExprKind::TraitConst { impl_expr, name } => todo!(),
-            frontend::ConstantExprKind::Borrow(decorated) => todo!(),
-            frontend::ConstantExprKind::RawBorrow { mutability, arg } => todo!(),
-            frontend::ConstantExprKind::Cast { source } => todo!(),
-            frontend::ConstantExprKind::ConstRef { id } => todo!(),
-            frontend::ConstantExprKind::FnPtr(item_ref) => todo!(),
-            frontend::ConstantExprKind::Memory(items) => todo!(),
-            frontend::ConstantExprKind::Todo(_) => todo!(),
+            frontend::ConstantExprKind::Literal(constant_literal) => {
+                ast::ExprKind::Literal(constant_literal.spanned_import(span.clone()))
+            }
+            frontend::ConstantExprKind::Adt { info, fields } => {
+                let (is_struct, is_record) = match info.kind {
+                    frontend::VariantKind::Struct { named } => (true, named),
+                    frontend::VariantKind::Enum { named, .. } => (false, named),
+                    frontend::VariantKind::Union => (false, false),
+                };
+                let constructor = info.variant.import();
+                let fields = fields
+                    .iter()
+                    .map(|f| (f.field.import(), f.value.import()))
+                    .collect();
+                ast::ExprKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct,
+                    fields,
+                    base: None,
+                }
+            }
+            frontend::ConstantExprKind::Array { fields } => ast::ExprKind::Array(fields.import()),
+            frontend::ConstantExprKind::Tuple { fields } => {
+                let length = fields.len();
+                let constructor: ast::GlobalId = TupleId::Constructor { length }.into();
+                let fields = fields
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, value)| {
+                        let field: ast::GlobalId = TupleId::Field { length, field: idx }.into();
+                        (field, value.import())
+                    })
+                    .collect();
+                ast::ExprKind::Construct {
+                    constructor,
+                    is_record: false,
+                    is_struct: true,
+                    fields,
+                    base: None,
+                }
+            }
+            frontend::ConstantExprKind::GlobalName(item_ref) => {
+                ast::ExprKind::GlobalId(item_ref.contents().def_id.import())
+            }
+            frontend::ConstantExprKind::TraitConst { .. }
+            | frontend::ConstantExprKind::Borrow(_)
+            | frontend::ConstantExprKind::RawBorrow { .. }
+            | frontend::ConstantExprKind::Cast { .. }
+            | frontend::ConstantExprKind::ConstRef { .. }
+            | frontend::ConstantExprKind::FnPtr(_)
+            | frontend::ConstantExprKind::Memory(_)
+            | frontend::ConstantExprKind::Todo(_) => ast::ExprKind::Construct {
+                constructor: ast::GlobalId::unit_constructor(),
+                is_record: false,
+                is_struct: true,
+                fields: Vec::new(),
+                base: None,
+            },
         };
         ast::Expr {
-            kind,
+            kind: Box::new(kind),
             ty: ty.spanned_import(span.clone()),
             meta: ast::Metadata { span, attributes },
         }
@@ -497,6 +548,8 @@ impl Import<ast::Expr> for frontend::Expr {
             ..
         } = self;
         let span = span.import();
+        let raw_attributes: Vec<Option<ast::Attribute>> = attributes.import();
+        let attributes: Vec<ast::Attribute> = raw_attributes.into_iter().flatten().collect();
         macro_rules! todo {
             () => {
                 ast::ExprKind::Construct {
@@ -508,89 +561,703 @@ impl Import<ast::Expr> for frontend::Expr {
                 }
             };
         }
+        let binop_id = |op: &frontend::BinOp| match op {
+            frontend::BinOp::Add
+            | frontend::BinOp::AddWithOverflow
+            | frontend::BinOp::AddUnchecked => crate::names::rust_primitives::hax::machine_int::add,
+            frontend::BinOp::Sub
+            | frontend::BinOp::SubWithOverflow
+            | frontend::BinOp::SubUnchecked => crate::names::rust_primitives::hax::machine_int::sub,
+            frontend::BinOp::Mul
+            | frontend::BinOp::MulWithOverflow
+            | frontend::BinOp::MulUnchecked => crate::names::rust_primitives::hax::machine_int::mul,
+            frontend::BinOp::Div => crate::names::rust_primitives::hax::machine_int::div,
+            frontend::BinOp::Rem => crate::names::rust_primitives::hax::machine_int::rem,
+            frontend::BinOp::BitXor => crate::names::rust_primitives::hax::machine_int::bitxor,
+            frontend::BinOp::BitAnd => crate::names::rust_primitives::hax::machine_int::bitand,
+            frontend::BinOp::BitOr => crate::names::rust_primitives::hax::machine_int::bitor,
+            frontend::BinOp::Shl | frontend::BinOp::ShlUnchecked => {
+                crate::names::rust_primitives::hax::machine_int::shl
+            }
+            frontend::BinOp::Shr | frontend::BinOp::ShrUnchecked => {
+                crate::names::rust_primitives::hax::machine_int::shr
+            }
+            frontend::BinOp::Lt => crate::names::rust_primitives::hax::machine_int::lt,
+            frontend::BinOp::Le => crate::names::rust_primitives::hax::machine_int::le,
+            frontend::BinOp::Ne => crate::names::rust_primitives::hax::machine_int::ne,
+            frontend::BinOp::Ge => crate::names::rust_primitives::hax::machine_int::ge,
+            frontend::BinOp::Gt => crate::names::rust_primitives::hax::machine_int::gt,
+            frontend::BinOp::Eq => crate::names::rust_primitives::hax::machine_int::eq,
+            frontend::BinOp::Offset => crate::names::rust_primitives::hax::machine_int::add,
+            frontend::BinOp::Cmp => crate::names::rust_primitives::hax::machine_int::eq,
+        };
+        let assign_binop = |op: &frontend::AssignOp| match op {
+            frontend::AssignOp::AddAssign => frontend::BinOp::Add,
+            frontend::AssignOp::SubAssign => frontend::BinOp::Sub,
+            frontend::AssignOp::MulAssign => frontend::BinOp::Mul,
+            frontend::AssignOp::DivAssign => frontend::BinOp::Div,
+            frontend::AssignOp::RemAssign => frontend::BinOp::Rem,
+            frontend::AssignOp::BitXorAssign => frontend::BinOp::BitXor,
+            frontend::AssignOp::BitAndAssign => frontend::BinOp::BitAnd,
+            frontend::AssignOp::BitOrAssign => frontend::BinOp::BitOr,
+            frontend::AssignOp::ShlAssign => frontend::BinOp::Shl,
+            frontend::AssignOp::ShrAssign => frontend::BinOp::Shr,
+        };
+        let unit_ty = || {
+            ast::Ty(Box::new(ast::TyKind::App {
+                head: TupleId::Type { length: 0 }.into(),
+                args: Vec::new(),
+            }))
+        };
+        let unit_expr = |span: ast::span::Span| ast::Expr {
+            kind: Box::new(ast::ExprKind::Construct {
+                constructor: ast::GlobalId::unit_constructor(),
+                is_record: false,
+                is_struct: true,
+                fields: Vec::new(),
+                base: None,
+            }),
+            ty: unit_ty(),
+            meta: ast::Metadata {
+                span,
+                attributes: Vec::new(),
+            },
+        };
+        let mk_app = |id: ast::GlobalId,
+                      inputs: Vec<ast::Ty>,
+                      output: ast::Ty,
+                      args: Vec<ast::Expr>,
+                      span: ast::span::Span| {
+            let head = ast::Expr {
+                kind: Box::new(ast::ExprKind::GlobalId(id)),
+                ty: ast::Ty(Box::new(ast::TyKind::Arrow {
+                    inputs,
+                    output: output.clone(),
+                })),
+                meta: ast::Metadata {
+                    span: span.clone(),
+                    attributes: Vec::new(),
+                },
+            };
+            ast::ExprKind::App {
+                head,
+                args,
+                generic_args: Vec::new(),
+                bounds_impls: Vec::new(),
+                trait_: None,
+            }
+        };
         let kind = match contents.as_ref() {
-            frontend::ExprKind::Box { value } => todo!(),
+            frontend::ExprKind::Box { value } => {
+                let value = value.import();
+                let ty = ty.spanned_import(span.clone());
+                let id = crate::names::rust_primitives::hax::box_new;
+                mk_app(id, vec![value.ty.clone()], ty, vec![value], span.clone())
+            }
             frontend::ExprKind::If {
                 if_then_scope,
                 cond,
                 then,
                 else_opt,
-            } => todo!(),
+            } => {
+                if let frontend::ExprKind::Let { expr, pat } = cond.contents.as_ref() {
+                    let scrutinee = expr.import();
+                    let pat = pat.import();
+                    let then_expr = then.import();
+                    let else_expr = else_opt
+                        .as_ref()
+                        .map(Import::import)
+                        .unwrap_or_else(|| unit_expr(span.clone()));
+                    let arm_then = ast::Arm {
+                        pat,
+                        body: then_expr,
+                        guard: None,
+                        meta: ast::Metadata {
+                            span: span.clone(),
+                            attributes: Vec::new(),
+                        },
+                    };
+                    let wildcard_pat = ast::Pat {
+                        kind: Box::new(ast::PatKind::Wild),
+                        ty: arm_then.pat.ty.clone(),
+                        meta: arm_then.pat.meta.clone(),
+                    };
+                    let arm_else = ast::Arm {
+                        pat: wildcard_pat,
+                        body: else_expr,
+                        guard: None,
+                        meta: ast::Metadata {
+                            span: span.clone(),
+                            attributes: Vec::new(),
+                        },
+                    };
+                    ast::ExprKind::Match {
+                        scrutinee,
+                        arms: vec![arm_then, arm_else],
+                    }
+                } else {
+                    ast::ExprKind::If {
+                        condition: cond.import(),
+                        then: then.import(),
+                        else_: else_opt.as_ref().map(Import::import),
+                    }
+                }
+            }
             frontend::ExprKind::Call {
                 ty,
                 fun,
                 args,
                 from_hir_call,
                 fn_span,
-            } => todo!(),
-            frontend::ExprKind::Deref { arg } => todo!(),
-            frontend::ExprKind::Binary { op, lhs, rhs } => todo!(),
-            frontend::ExprKind::LogicalOp { op, lhs, rhs } => todo!(),
-            frontend::ExprKind::Unary { op, arg } => todo!(),
-            frontend::ExprKind::Cast { source } => todo!(),
-            frontend::ExprKind::Use { source } => todo!(),
-            frontend::ExprKind::NeverToAny { source } => todo!(),
-            frontend::ExprKind::PointerCoercion { cast, source } => todo!(),
-            frontend::ExprKind::Loop { body } => todo!(),
-            frontend::ExprKind::Match { scrutinee, arms } => todo!(),
-            frontend::ExprKind::Let { expr, pat } => todo!(),
-            frontend::ExprKind::Block { block } => {
-                return block.expr.as_ref().unwrap().import();
+            } => {
+                // agent instruction: when fun.contents is GlobalName, lookup generic args and bounds impls
+                let mut args = args.import();
+                if args.is_empty() {
+                    args.push(unit_expr(span.clone()));
+                }
+                let head = fun.import();
+                ast::ExprKind::App {
+                    head,
+                    args,
+                    generic_args: Vec::new(),
+                    bounds_impls: Vec::new(),
+                    trait_: None,
+                }
             }
-            frontend::ExprKind::Assign { lhs, rhs } => todo!(),
-            frontend::ExprKind::AssignOp { op, lhs, rhs } => todo!(),
-            frontend::ExprKind::Field { field, lhs } => todo!(),
-            frontend::ExprKind::TupleField { field, lhs } => todo!(),
-            frontend::ExprKind::Index { lhs, index } => todo!(),
-            frontend::ExprKind::VarRef { id } => todo!(),
-            frontend::ExprKind::ConstRef { id } => todo!(),
-            frontend::ExprKind::GlobalName { item, constructor } => todo!(),
-            frontend::ExprKind::UpvarRef {
-                closure_def_id,
-                var_hir_id,
-            } => todo!(),
-            frontend::ExprKind::Borrow { borrow_kind, arg } => todo!(),
-            frontend::ExprKind::RawBorrow { mutability, arg } => todo!(),
-            frontend::ExprKind::Break { label, value } => todo!(),
-            frontend::ExprKind::Continue { label } => todo!(),
-            frontend::ExprKind::Return { value } => todo!(),
-            frontend::ExprKind::ConstBlock(item_ref) => todo!(),
-            frontend::ExprKind::Repeat { value, count } => todo!(),
-            frontend::ExprKind::Array { fields } => todo!(),
-            frontend::ExprKind::Tuple { fields } => ast::ExprKind::Construct {
-                constructor: ast::GlobalId::unit_constructor(),
-                is_record: false,
-                is_struct: true,
-                fields: Vec::new(),
-                base: None,
+            frontend::ExprKind::Deref { arg } => {
+                let arg_ty = arg.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                mk_app(
+                    crate::names::rust_primitives::hax::deref_op,
+                    vec![arg_ty],
+                    result_ty,
+                    vec![arg.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::Binary { op, lhs, rhs } => {
+                let lhs_ty = lhs.ty.spanned_import(span.clone());
+                let rhs_ty = rhs.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                let id = binop_id(op);
+                mk_app(
+                    id,
+                    vec![lhs_ty.clone(), rhs_ty.clone()],
+                    result_ty,
+                    vec![lhs.import(), rhs.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::LogicalOp { op, lhs, rhs } => {
+                let lhs_ty = lhs.ty.spanned_import(span.clone());
+                let rhs_ty = rhs.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                let id = match op {
+                    frontend::LogicalOp::And => crate::names::rust_primitives::hax::logical_op_and,
+                    frontend::LogicalOp::Or => crate::names::rust_primitives::hax::logical_op_or,
+                };
+                mk_app(
+                    id,
+                    vec![lhs_ty.clone(), rhs_ty.clone()],
+                    result_ty,
+                    vec![lhs.import(), rhs.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::Unary { op, arg } => {
+                let arg_ty = arg.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                let id = match op {
+                    frontend::UnOp::Not => crate::names::core::ops::bit::Not::not,
+                    frontend::UnOp::Neg => crate::names::core::ops::arith::Neg::neg,
+                    frontend::UnOp::PtrMetadata => crate::names::rust_primitives::hax::cast_op,
+                };
+                mk_app(
+                    id,
+                    vec![arg_ty.clone()],
+                    result_ty,
+                    vec![arg.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::Cast { source } => {
+                // agent instruction: when concrete types, use the cast operator for the type
+                mk_app(
+                    id,
+                    vec![arg_ty.clone()],
+                    result_ty,
+                    vec![arg.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::Cast { source } => mk_app(
+                crate::names::rust_primitives::hax::cast_op,
+                vec![source.ty.spanned_import(span.clone())],
+                ty.spanned_import(span.clone()),
+                vec![source.import()],
+                span.clone(),
+            ),
+            frontend::ExprKind::Use { source } => return source.import(),
+            frontend::ExprKind::NeverToAny { source } => mk_app(
+                crate::names::rust_primitives::hax::never_to_any,
+                vec![source.ty.spanned_import(span.clone())],
+                ty.spanned_import(span.clone()),
+                vec![source.import()],
+                span.clone(),
+            ),
+            frontend::ExprKind::PointerCoercion { cast: _, source } => {
+                // TODO: this is not suppoed to be a cast, this is supposed to be either a noop or a unsize, see ocaml c_pointer
+                mk_app(
+                    crate::names::rust_primitives::hax::cast_op,
+                    vec![source.ty.spanned_import(span.clone())],
+                    ty.spanned_import(span.clone()),
+                    vec![source.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::Loop { body } => ast::ExprKind::Loop {
+                body: body.import(),
+                kind: Box::new(ast::LoopKind::UnconditionalLoop),
+                state: None,
+                control_flow: None,
+                label: None,
             },
-            frontend::ExprKind::Adt(adt_expr) => todo!(),
-            frontend::ExprKind::PlaceTypeAscription { source, user_ty } => todo!(),
-            frontend::ExprKind::ValueTypeAscription { source, user_ty } => todo!(),
+            frontend::ExprKind::Match { scrutinee, arms } => ast::ExprKind::Match {
+                scrutinee: scrutinee.import(),
+                arms: arms
+                    .iter()
+                    .map(|arm| ast::Arm {
+                        pat: arm.pattern.import(),
+                        body: arm.body.import(),
+                        guard: arm.guard.as_ref().map(|g| ast::Guard {
+                            kind: match g.contents.as_ref() {
+                                frontend::ExprKind::Let { expr, pat } => ast::GuardKind::IfLet {
+                                    lhs: pat.import(),
+                                    rhs: expr.import(),
+                                },
+                                _ => ast::GuardKind::IfLet {
+                                    lhs: ast::Pat {
+                                        kind: Box::new(ast::PatKind::Constant {
+                                            lit: ast::literals::Literal::Bool(true),
+                                        }),
+                                        ty: ast::Ty(Box::new(ast::TyKind::Primitive(
+                                            ast::PrimitiveTy::Bool,
+                                        ))),
+                                        meta: ast::Metadata {
+                                            span: span.clone(),
+                                            attributes: Vec::new(),
+                                        },
+                                    },
+                                    rhs: g.import(),
+                                },
+                            },
+                            meta: ast::Metadata {
+                                span: g.span.import(),
+                                attributes: g.attributes.import(),
+                            },
+                        }),
+                        meta: ast::Metadata {
+                            span: arm.span.import(),
+                            attributes: Vec::new(),
+                        },
+                    })
+                    .collect(),
+            },
+            frontend::ExprKind::Let { expr, pat } => {
+                panic!("Let nodes are preprocessed (those are the ones contained in `if let ...`)")
+            }
+            frontend::ExprKind::Block { block } => {
+                // agent instruction: this is incorrect, replicate Ocaml's c_block logic (put that in an helper)
+                if let Some(expr) = block.expr.as_ref() {
+                    return expr.import();
+                }
+                let kind = ast::ExprKind::Construct {
+                    constructor: ast::GlobalId::unit_constructor(),
+                    is_record: false,
+                    is_struct: true,
+                    fields: Vec::new(),
+                    base: None,
+                };
+                return ast::Expr {
+                    kind: Box::new(kind),
+                    ty: ty.spanned_import(span.clone()),
+                    meta: ast::Metadata {
+                        span: block.span.import(),
+                        attributes: attributes.clone(),
+                    },
+                };
+            }
+            frontend::ExprKind::Assign { lhs, rhs } => ast::ExprKind::Assign {
+                lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import())),
+                value: rhs.import(),
+            },
+            frontend::ExprKind::AssignOp { op, lhs, rhs } => {
+                let bin_op = assign_binop(op);
+                let bin = mk_app(
+                    binop_id(&bin_op),
+                    vec![
+                        lhs.ty.spanned_import(span.clone()),
+                        rhs.ty.spanned_import(span.clone()),
+                    ],
+                    ty.spanned_import(span.clone()),
+                    vec![lhs.import(), rhs.import()],
+                    span.clone(),
+                );
+                let op_expr = ast::Expr {
+                    kind: Box::new(bin),
+                    ty: ty.spanned_import(span.clone()),
+                    meta: ast::Metadata {
+                        span: span.clone(),
+                        attributes: Vec::new(),
+                    },
+                };
+                ast::ExprKind::Assign {
+                    lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import())),
+                    value: op_expr,
+                }
+            }
+            frontend::ExprKind::Field { field, lhs } => {
+                let lhs_ty = lhs.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                let projector = ast::Expr {
+                    kind: Box::new(ast::ExprKind::GlobalId(field.import())),
+                    ty: ast::Ty(Box::new(ast::TyKind::Arrow {
+                        inputs: vec![lhs_ty.clone()],
+                        output: result_ty.clone(),
+                    })),
+                    meta: ast::Metadata {
+                        span: span.clone(),
+                        attributes: Vec::new(),
+                    },
+                };
+                ast::ExprKind::App {
+                    head: projector,
+                    args: vec![lhs.import()],
+                    generic_args: Vec::new(),
+                    bounds_impls: Vec::new(),
+                    trait_: None,
+                }
+            }
+            frontend::ExprKind::TupleField { field, lhs } => {
+                let lhs_ty = lhs.ty.spanned_import(span.clone());
+                let length = match lhs.ty.kind() {
+                    frontend::TyKind::Tuple(item_ref) => item_ref.generic_args.len(),
+                    _ => panic!("TupleField on non-tuple type"),
+                };
+                let projector: ast::GlobalId = TupleId::Field {
+                    length,
+                    field: *field,
+                }
+                .into();
+                let result_ty = ty.spanned_import(span.clone());
+                let head = ast::Expr {
+                    kind: Box::new(ast::ExprKind::GlobalId(projector)),
+                    ty: ast::Ty(Box::new(ast::TyKind::Arrow {
+                        inputs: vec![lhs_ty.clone()],
+                        output: result_ty.clone(),
+                    })),
+                    meta: ast::Metadata {
+                        span: span.clone(),
+                        attributes: Vec::new(),
+                    },
+                };
+                ast::ExprKind::App {
+                    head,
+                    args: vec![lhs.import()],
+                    generic_args: Vec::new(),
+                    bounds_impls: Vec::new(),
+                    trait_: None,
+                }
+            }
+            frontend::ExprKind::Index { lhs, index } => {
+                let lhs_ty = lhs.ty.spanned_import(span.clone());
+                let index_ty = index.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                let id = crate::names::core::ops::index::Index::index;
+                mk_app(
+                    id,
+                    vec![lhs_ty, index_ty],
+                    result_ty,
+                    vec![lhs.import(), index.import()],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::VarRef { id } => ast::ExprKind::LocalId(ast::LocalId::from(id)),
+            frontend::ExprKind::ConstRef { id } => {
+                ast::ExprKind::LocalId(ast::LocalId(Symbol::new(id.name.clone())))
+            }
+            frontend::ExprKind::GlobalName {
+                item,
+                constructor: _,
+            } => {
+                let ident = item.contents().def_id.import();
+                ast::ExprKind::GlobalId(ident)
+            }
+            frontend::ExprKind::UpvarRef {
+                closure_def_id: _,
+                var_hir_id,
+            } => ast::ExprKind::LocalId(ast::LocalId::from(var_hir_id)),
+            frontend::ExprKind::Borrow { borrow_kind, arg } => {
+                let inner = arg.import();
+                let mutable = matches!(borrow_kind, frontend::BorrowKind::Mut { .. });
+                ast::ExprKind::Borrow { mutable, inner }
+            }
+            frontend::ExprKind::RawBorrow { mutability, arg } => ast::ExprKind::AddressOf {
+                mutable: *mutability,
+                inner: arg.import(),
+            },
+            frontend::ExprKind::Break { label: _, value } => {
+                let value = value
+                    .as_ref()
+                    .map(Import::import)
+                    .unwrap_or_else(|| unit_expr(span.clone()));
+                ast::ExprKind::Break {
+                    value,
+                    label: None, // TODO: honour the label (issue #1800)
+                    state: None,
+                }
+            }
+            frontend::ExprKind::Continue { label: _ } => ast::ExprKind::Continue {
+                label: None, // TODO: honour the label (issue #1800)
+                state: None,
+            },
+            frontend::ExprKind::Return { value } => {
+                let value = value
+                    .as_ref()
+                    .map(Import::import)
+                    .unwrap_or_else(|| unit_expr(span.clone()));
+                ast::ExprKind::Return { value }
+            }
+            frontend::ExprKind::ConstBlock(item_ref) => {
+                panic!("proper error 923")
+            }
+            frontend::ExprKind::Repeat { value, count } => {
+                let value_expr: ast::Expr = value.import();
+                let count_expr = count.import();
+                let repeated = mk_app(
+                    crate::names::rust_primitives::hax::repeat,
+                    vec![value_expr.ty.clone(), count_expr.ty.clone()],
+                    ty.spanned_import(span.clone()),
+                    vec![value_expr, count_expr],
+                    span.clone(),
+                );
+                let inner = ast::Expr {
+                    kind: Box::new(repeated),
+                    ty: ty.spanned_import(span.clone()),
+                    meta: ast::Metadata {
+                        span: span.clone(),
+                        attributes: Vec::new(),
+                    },
+                };
+                mk_app(
+                    crate::names::alloc::boxed::Impl::new,
+                    vec![inner.ty.clone()],
+                    ty.spanned_import(span.clone()),
+                    vec![inner],
+                    span.clone(),
+                )
+            }
+            frontend::ExprKind::Array { fields } => ast::ExprKind::Array(fields.import()),
+            frontend::ExprKind::Tuple { fields } => {
+                let length = fields.len();
+                let constructor: ast::GlobalId = TupleId::Constructor { length }.into();
+                let fields = fields
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, value)| {
+                        let field: ast::GlobalId = TupleId::Field { length, field: idx }.into();
+                        (field, value.import())
+                    })
+                    .collect();
+                ast::ExprKind::Construct {
+                    constructor,
+                    is_record: false,
+                    is_struct: true,
+                    fields,
+                    base: None,
+                }
+            }
+            frontend::ExprKind::Adt(adt_expr) => {
+                let (is_struct, is_record) = match adt_expr.info.kind {
+                    frontend::VariantKind::Struct { named } => (true, named),
+                    frontend::VariantKind::Enum { named, .. } => (false, named),
+                    frontend::VariantKind::Union => (false, false),
+                };
+                let constructor = adt_expr.info.variant.import();
+                let base = match &adt_expr.base {
+                    frontend::AdtExprBase::None => None,
+                    frontend::AdtExprBase::Base(info) => Some(info.base.import()),
+                    frontend::AdtExprBase::DefaultFields(_) => {
+                        panic!("proper error, issue 1386, see OCaml")
+                    }
+                };
+                let fields = adt_expr
+                    .fields
+                    .iter()
+                    .map(|f| (f.field.import(), f.value.import()))
+                    .collect();
+                ast::ExprKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct,
+                    fields,
+                    base,
+                }
+            }
+            frontend::ExprKind::PlaceTypeAscription { source, .. } => {
+                // agent instruction: use error message from OCaml, add proper error (asserion_failure)
+                panic!("Unexpected PlaceTypeAscription")
+            }
+            frontend::ExprKind::ValueTypeAscription { source, .. } => {
+                return source.import();
+            }
             frontend::ExprKind::Closure {
                 params,
                 body,
                 upvars,
-                movability,
-            } => todo!(),
-            frontend::ExprKind::Literal { lit, neg } => todo!(),
-            frontend::ExprKind::ZstLiteral { user_ty } => todo!(),
-            frontend::ExprKind::NamedConst { item, user_ty } => todo!(),
-            frontend::ExprKind::ConstParam { param, def_id } => todo!(),
-            frontend::ExprKind::StaticRef {
-                alloc_id,
-                ty,
-                def_id,
-            } => todo!(),
-            frontend::ExprKind::Yield { value } => todo!(),
-            frontend::ExprKind::Todo(_) => todo!(),
+                ..
+            } => {
+                let mut params: Vec<ast::Pat> = params
+                    .iter()
+                    .filter_map(|p| p.pat.as_ref().map(Import::import))
+                    .collect();
+                if params.is_empty() {
+                    // agent instruction: refactor, use promote (`ast::PatKind::Wild.promote(<unit ty>, span)`), define promote if necessary
+                    params.push(ast::Pat {
+                        kind: Box::new(ast::PatKind::Wild),
+                        ty: unit_ty(),
+                        meta: ast::Metadata {
+                            span: span.clone(),
+                            attributes: Vec::new(),
+                        },
+                    });
+                }
+                ast::ExprKind::Closure {
+                    params,
+                    body: body.import(),
+                    captures: upvars.import(),
+                }
+            }
+            frontend::ExprKind::Literal { lit, neg } => {
+                let mut literal = match &lit.node {
+                    frontend::LitKind::Bool(b) => ast::literals::Literal::Bool(*b),
+                    frontend::LitKind::Char(c) => ast::literals::Literal::Char(*c),
+                    frontend::LitKind::Byte(b) => ast::literals::Literal::Int {
+                        value: Symbol::new(b.to_string()),
+                        negative: false,
+                        kind: (&frontend::UintTy::U8).into(),
+                    },
+                    frontend::LitKind::Str(s, _) => ast::literals::Literal::String(Symbol::new(s)),
+                    frontend::LitKind::Int(value, kind) => {
+                        use frontend::LitIntType::*;
+                        let kind = match (kind, ty.kind()) {
+                            (Signed(int_ty), _) => ast::literals::IntKind::from(int_ty),
+                            (Unsigned(uint_ty), _) => ast::literals::IntKind::from(uint_ty),
+                            (Unsuffixed, frontend::TyKind::Int(int_ty)) => {
+                                ast::literals::IntKind::from(int_ty)
+                            }
+                            (Unsuffixed, frontend::TyKind::Uint(uint_ty)) => {
+                                ast::literals::IntKind::from(uint_ty)
+                            }
+                            _ => panic!("Unsuffixed int literal without int/uint type"),
+                        };
+                        ast::literals::Literal::Int {
+                            value: Symbol::new(value.to_string()),
+                            negative: false,
+                            kind,
+                        }
+                    }
+                    frontend::LitKind::Float(value, float_ty) => ast::literals::Literal::Float {
+                        value: Symbol::new(value),
+                        negative: false,
+                        kind: match (float_ty, ty.kind()) {
+                            (frontend::LitFloatType::Suffixed(k), _) => {
+                                ast::literals::FloatKind::from(k)
+                            }
+                            (frontend::LitFloatType::Unsuffixed, frontend::TyKind::Float(k)) => {
+                                ast::literals::FloatKind::from(k)
+                            }
+                            _ => panic!("Unsuffixed float literal without float type"),
+                        },
+                    },
+                    frontend::LitKind::CStr(bytes, _) | frontend::LitKind::ByteStr(bytes, _) => {
+                        let elems: Vec<ast::Expr> = bytes
+                            .iter()
+                            .map(|b| ast::Expr {
+                                kind: Box::new(ast::ExprKind::Literal(
+                                    ast::literals::Literal::Int {
+                                        value: Symbol::new(b.to_string()),
+                                        negative: false,
+                                        kind: (&frontend::UintTy::U8).into(),
+                                    },
+                                )),
+                                ty: ast::Ty(Box::new(ast::TyKind::Primitive(
+                                    ast::PrimitiveTy::Int((&frontend::UintTy::U8).into()),
+                                ))),
+                                meta: ast::Metadata {
+                                    span: span.clone(),
+                                    attributes: Vec::new(),
+                                },
+                            })
+                            .collect();
+                        return ast::Expr {
+                            kind: Box::new(ast::ExprKind::Array(elems)),
+                            ty: ty.spanned_import(span.clone()),
+                            meta: ast::Metadata {
+                                span,
+                                attributes: attributes.clone(),
+                            },
+                        };
+                    }
+                    frontend::LitKind::Err(_) => panic!("Error literal"), // agent instruction: proper error
+                };
+                if *neg {
+                    match &mut literal {
+                        ast::literals::Literal::Int { negative, .. }
+                        | ast::literals::Literal::Float { negative, .. } => {
+                            *negative = true;
+                        }
+                        _ => panic!("Unexpected negation on non-numeric literal"), // agent instruction: proper error
+                    }
+                }
+                ast::ExprKind::Literal(literal)
+            }
+            frontend::ExprKind::ZstLiteral { .. } => {
+                // agent instruction: backport OCaml error:
+                //     assertion_failure [ e.span ]
+                // "`ZstLiteral` are expected to be handled before-hand"
+                panic!()
+            }
+            frontend::ExprKind::NamedConst { item, user_ty: _ } => {
+                // agent instruction: when #![feature(generic_const_items)] is on, a constant can have const generics, copy the semantiocs from OCaml import_thir.ml
+                ast::ExprKind::GlobalId(item.contents().def_id.import())
+            }
+            frontend::ExprKind::ConstParam { param, def_id: _ } => {
+                ast::ExprKind::LocalId(ast::LocalId(Symbol::new(param.name.clone())))
+            }
+            frontend::ExprKind::StaticRef { def_id, .. } => {
+                ast::ExprKind::GlobalId(def_id.import())
+            }
+            frontend::ExprKind::Yield { value } => {
+                // agent instruction: this is not supposed to be accepted
+                // just report the error as OCaml did:
+                // unimplemented ~issue_id:924 [ e.span ]
+                //     "Got expression `Yield`: coroutines are not supported by hax"
+                panic!()
+            }
+            frontend::ExprKind::Todo(_) => {
+                // agent instruction: this is not supposed to be accepted
+                // just report the error as OCaml did:
+                // assertion_failure [ e.span ] ("expression Todo\n" ^ payload)
+                panic!()
+            }
         };
         ast::Expr {
             kind: Box::new(kind),
             ty: ty.spanned_import(span.clone()),
             meta: ast::Metadata {
                 span,
-                attributes: attributes.import(),
+                attributes: attributes.clone(),
             },
         }
     }
@@ -615,7 +1282,113 @@ impl Import<ast::Expr> for frontend::ThirBody {
 
 impl Import<ast::PatKind> for frontend::PatKind {
     fn import(&self) -> ast::PatKind {
-        todo!()
+        match self {
+            frontend::PatKind::Wild | frontend::PatKind::Missing => ast::PatKind::Wild,
+            frontend::PatKind::AscribeUserType { subpattern, .. } => ast::PatKind::Ascription {
+                pat: subpattern.import(),
+                ty: ast::SpannedTy {
+                    span: ast::span::Span::dummy(),
+                    ty: subpattern.ty.spanned_import(ast::span::Span::dummy()),
+                },
+            },
+            frontend::PatKind::Binding {
+                mode,
+                var,
+                subpattern,
+                ..
+            } => {
+                let mutable = mode.mutability;
+                let mode = match mode.by_ref {
+                    frontend::ByRef::Yes(_, mutability) => ast::BindingMode::ByRef(if mutability {
+                        ast::BorrowKind::Mut
+                    } else {
+                        ast::BorrowKind::Shared
+                    }),
+                    frontend::ByRef::No => ast::BindingMode::ByValue,
+                };
+                ast::PatKind::Binding {
+                    mutable,
+                    var: ast::LocalId::from(var),
+                    mode,
+                    sub_pat: subpattern.as_ref().map(Import::import),
+                }
+            }
+            frontend::PatKind::Variant {
+                info, subpatterns, ..
+            } => {
+                let (is_struct, is_record) = match info.kind {
+                    frontend::VariantKind::Struct { named } => (true, named),
+                    frontend::VariantKind::Enum { named, .. } => (false, named),
+                    frontend::VariantKind::Union => (false, false),
+                };
+                let constructor = info.variant.import();
+                let fields = subpatterns
+                    .iter()
+                    .map(|f| (f.field.import(), f.pattern.import()))
+                    .collect();
+                ast::PatKind::Construct {
+                    constructor,
+                    is_record,
+                    is_struct,
+                    fields,
+                }
+            }
+            frontend::PatKind::Tuple { subpatterns } => {
+                let length = subpatterns.len();
+                let constructor: ast::GlobalId = TupleId::Constructor { length }.into();
+                let fields = subpatterns
+                    .iter()
+                    .enumerate()
+                    .map(|(idx, pat)| {
+                        let field: ast::GlobalId = TupleId::Field { length, field: idx }.into();
+                        (field, pat.import())
+                    })
+                    .collect();
+                ast::PatKind::Construct {
+                    constructor,
+                    is_record: false,
+                    is_struct: true,
+                    fields,
+                }
+            }
+            frontend::PatKind::Deref { subpattern }
+            | frontend::PatKind::DerefPattern { subpattern } => ast::PatKind::Deref {
+                sub_pat: subpattern.import(),
+            },
+            frontend::PatKind::Constant { value } => {
+                let expr = value.import();
+                match *expr.kind {
+                    ast::ExprKind::Literal(lit) => ast::PatKind::Constant { lit },
+                    _ => ast::PatKind::Wild,
+                }
+            }
+            frontend::PatKind::ExpandedConstant { subpattern, .. } => *subpattern.import().kind,
+            frontend::PatKind::Range(_) => ast::PatKind::Wild,
+            frontend::PatKind::Slice {
+                prefix,
+                slice,
+                suffix,
+            }
+            | frontend::PatKind::Array {
+                prefix,
+                slice,
+                suffix,
+            } => {
+                let mut pats: Vec<frontend::Pat> = Vec::new();
+                pats.extend(prefix.iter().cloned());
+                if let Some(s) = slice {
+                    pats.push(s.clone());
+                }
+                pats.extend(suffix.iter().cloned());
+                ast::PatKind::Array {
+                    args: pats.import(),
+                }
+            }
+            frontend::PatKind::Or { pats } => ast::PatKind::Or {
+                sub_pats: pats.import(),
+            },
+            frontend::PatKind::Never | frontend::PatKind::Error(_) => ast::PatKind::Wild,
+        }
     }
 }
 impl Import<ast::Pat> for frontend::Pat {
@@ -628,13 +1401,25 @@ impl Import<ast::Pat> for frontend::Pat {
             attributes,
         } = self;
         let span = span.import();
-        // TODO
+        let kind = match contents.as_ref() {
+            frontend::PatKind::AscribeUserType {
+                ascription: _,
+                subpattern,
+            } => ast::PatKind::Ascription {
+                pat: subpattern.import(),
+                ty: ast::SpannedTy {
+                    span: span.clone(),
+                    ty: ty.spanned_import(span.clone()),
+                },
+            },
+            other => other.import(),
+        };
         ast::Pat {
-            kind: Box::new(ast::PatKind::Wild),
+            kind: Box::new(kind),
             ty: ty.spanned_import(span.clone()),
             meta: ast::Metadata {
                 span,
-                attributes: vec![],
+                attributes: attributes.import(),
             },
         }
     }
