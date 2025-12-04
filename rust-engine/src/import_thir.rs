@@ -23,7 +23,7 @@ fn unsupported(msg: &str, issue_id: u32, span: &ast::span::Span) -> ast::ErrorNo
         diagnostics: vec![diagnostic],
     }
 }
-fn failure(msg: &str, span: &ast::span::Span) -> ast::ErrorNode {
+fn assertion_failure(msg: &str, span: &ast::span::Span) -> ast::ErrorNode {
     let fragment = ast::fragment::Fragment::Unknown(msg.to_owned());
     let diagnostic = ast::diagnostics::Diagnostic::new(
         fragment.clone(),
@@ -330,7 +330,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                         length: Box::new(length.import()),
                     }
                 } else {
-                    ast::TyKind::Error(failure(
+                    ast::TyKind::Error(assertion_failure(
                         "Wrong generics for array: expected a type and a constant. See synthetic_items in hax frontend.",
                         &span,
                     ))
@@ -340,7 +340,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 if let [frontend::GenericArg::Type(ty)] = &ty.generic_args[..] {
                     ast::TyKind::Slice(ty.spanned_import(span.clone()))
                 } else {
-                    ast::TyKind::Error(failure(
+                    ast::TyKind::Error(assertion_failure(
                         "Wrong generics for slice: expected a type. See synthetic_items in hax frontend.",
                         &span,
                     ))
@@ -364,7 +364,10 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                             non_self_args: trait_ref.generic_args.spanned_import(span.clone())[1..]
                                 .to_vec(),
                         }),
-                        _ => Err(failure("type Dyn with non trait predicate", &span)),
+                        _ => Err(assertion_failure(
+                            "type Dyn with non trait predicate",
+                            &span,
+                        )),
                     })
                     .collect::<Result<Vec<_>, _>>();
                 match goals {
@@ -399,31 +402,34 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Inherent,
                 ..
-            }) => ast::TyKind::Error(failure("Ty::Alias with AliasTyKind::Inherent", &span)),
+            }) => ast::TyKind::Error(assertion_failure(
+                "Ty::Alias with AliasTyKind::Inherent",
+                &span,
+            )),
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Free,
                 ..
-            }) => ast::TyKind::Error(failure("Ty::Alias with AliasTyKind::Free", &span)),
+            }) => ast::TyKind::Error(assertion_failure("Ty::Alias with AliasTyKind::Free", &span)),
             frontend::TyKind::Param(frontend::ParamTy { name, .. }) => {
                 ast::TyKind::Param(ast::LocalId(Symbol::new(name.clone())))
             }
-            frontend::TyKind::Bound(..) => ast::TyKind::Error(failure(
+            frontend::TyKind::Bound(..) => ast::TyKind::Error(assertion_failure(
                 "type Bound: should be gone after typechecking",
                 &span,
             )),
-            frontend::TyKind::Placeholder(..) => ast::TyKind::Error(failure(
+            frontend::TyKind::Placeholder(..) => ast::TyKind::Error(assertion_failure(
                 "type Placeholder: should be gone after typechecking",
                 &span,
             )),
-            frontend::TyKind::Infer(..) => ast::TyKind::Error(failure(
+            frontend::TyKind::Infer(..) => ast::TyKind::Error(assertion_failure(
                 "type Infer: should be gone after typechecking",
                 &span,
             )),
-            frontend::TyKind::Error => ast::TyKind::Error(failure(
+            frontend::TyKind::Error => ast::TyKind::Error(assertion_failure(
                 "got type `Error`: Rust compilation probably failed.",
                 &span,
             )),
-            frontend::TyKind::Todo(_) => ast::TyKind::Error(failure("type Todo", &span)),
+            frontend::TyKind::Todo(_) => ast::TyKind::Error(assertion_failure("type Todo", &span)),
         };
         ast::Ty(Box::new(kind))
     }
@@ -538,13 +544,10 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
             | frontend::ConstantExprKind::ConstRef { .. }
             | frontend::ConstantExprKind::FnPtr(_)
             | frontend::ConstantExprKind::Memory(_)
-            | frontend::ConstantExprKind::Todo(_) => ast::ExprKind::Construct {
-                constructor: ast::GlobalId::unit_constructor(),
-                is_record: false,
-                is_struct: true,
-                fields: Vec::new(),
-                base: None,
-            },
+            | frontend::ConstantExprKind::Todo(_) => ast::ExprKind::Error(assertion_failure(
+                "constant_lit_to_lit: TraitConst | FnPtr | RawBorrow | Cast | Memory",
+                &span,
+            )),
         };
         ast::Expr {
             kind: Box::new(kind),
@@ -1044,8 +1047,8 @@ impl Import<ast::Expr> for frontend::Expr {
                     .unwrap_or_else(|| unit_expr(span.clone()));
                 ast::ExprKind::Return { value }
             }
-            frontend::ExprKind::ConstBlock(item_ref) => {
-                panic!("proper error 923")
+            frontend::ExprKind::ConstBlock(_item_ref) => {
+                ast::ExprKind::Error(unsupported("ConstBlock", 923, &span))
             }
             frontend::ExprKind::Repeat { value, count } => {
                 let value_expr: ast::Expr = value.import();
@@ -1104,7 +1107,18 @@ impl Import<ast::Expr> for frontend::Expr {
                     frontend::AdtExprBase::None => None,
                     frontend::AdtExprBase::Base(info) => Some(info.base.import()),
                     frontend::AdtExprBase::DefaultFields(_) => {
-                        panic!("proper error, issue 1386, see OCaml")
+                        return ast::Expr {
+                            kind: Box::new(ast::ExprKind::Error(unsupported(
+                                "Default field values: not supported",
+                                1386,
+                                &span,
+                            ))),
+                            ty: ty.spanned_import(span.clone()),
+                            meta: ast::Metadata {
+                                span,
+                                attributes: attributes.clone(),
+                            },
+                        };
                     }
                 };
                 let fields = adt_expr
@@ -1120,9 +1134,11 @@ impl Import<ast::Expr> for frontend::Expr {
                     base,
                 }
             }
-            frontend::ExprKind::PlaceTypeAscription { source, .. } => {
-                // agent instruction: use error message from OCaml, add proper error (asserion_failure)
-                panic!("Unexpected PlaceTypeAscription")
+            frontend::ExprKind::PlaceTypeAscription { source: _, .. } => {
+                ast::ExprKind::Error(assertion_failure(
+                    "Got a unexpected node `PlaceTypeAscription`. Please report, we were not able to figure out an expression yielding that node: a bug report would be very valuable here!",
+                    &span,
+                ))
             }
             frontend::ExprKind::ValueTypeAscription { source, .. } => {
                 return source.import();
@@ -1225,7 +1241,19 @@ impl Import<ast::Expr> for frontend::Expr {
                             },
                         };
                     }
-                    frontend::LitKind::Err(_) => panic!("Error literal"), // agent instruction: proper error
+                    frontend::LitKind::Err(_) => {
+                        return ast::Expr {
+                            kind: Box::new(ast::ExprKind::Error(assertion_failure(
+                                "[import_thir:literal] got an error literal: this means the Rust compiler or Hax's frontend probably reported errors above.",
+                                &span,
+                            ))),
+                            ty: ty.spanned_import(span.clone()),
+                            meta: ast::Metadata {
+                                span,
+                                attributes: attributes.clone(),
+                            },
+                        };
+                    }
                 };
                 if *neg {
                     match &mut literal {
@@ -1233,17 +1261,27 @@ impl Import<ast::Expr> for frontend::Expr {
                         | ast::literals::Literal::Float { negative, .. } => {
                             *negative = true;
                         }
-                        _ => panic!("Unexpected negation on non-numeric literal"), // agent instruction: proper error
+                        _ => {
+                            return ast::Expr {
+                                kind: Box::new(ast::ExprKind::Error(assertion_failure(
+                                    "Unexpected negation on non-numeric literal",
+                                    &span,
+                                ))),
+                                ty: ty.spanned_import(span.clone()),
+                                meta: ast::Metadata {
+                                    span,
+                                    attributes: attributes.clone(),
+                                },
+                            };
+                        }
                     }
                 }
                 ast::ExprKind::Literal(literal)
             }
-            frontend::ExprKind::ZstLiteral { .. } => {
-                // agent instruction: backport OCaml error:
-                //     assertion_failure [ e.span ]
-                // "`ZstLiteral` are expected to be handled before-hand"
-                panic!()
-            }
+            frontend::ExprKind::ZstLiteral { .. } => ast::ExprKind::Error(assertion_failure(
+                "`ZstLiteral` are expected to be handled before-hand",
+                &span,
+            )),
             frontend::ExprKind::NamedConst { item, user_ty: _ } => {
                 // agent instruction: when #![feature(generic_const_items)] is on, a constant can have const generics, copy the semantiocs from OCaml import_thir.ml
                 ast::ExprKind::GlobalId(item.contents().def_id.import())
@@ -1254,19 +1292,15 @@ impl Import<ast::Expr> for frontend::Expr {
             frontend::ExprKind::StaticRef { def_id, .. } => {
                 ast::ExprKind::GlobalId(def_id.import())
             }
-            frontend::ExprKind::Yield { value } => {
-                // agent instruction: this is not supposed to be accepted
-                // just report the error as OCaml did:
-                // unimplemented ~issue_id:924 [ e.span ]
-                //     "Got expression `Yield`: coroutines are not supported by hax"
-                panic!()
-            }
-            frontend::ExprKind::Todo(_) => {
-                // agent instruction: this is not supposed to be accepted
-                // just report the error as OCaml did:
-                // assertion_failure [ e.span ] ("expression Todo\n" ^ payload)
-                panic!()
-            }
+            frontend::ExprKind::Yield { value: _ } => ast::ExprKind::Error(unsupported(
+                "Got expression `Yield`: coroutines are not supported by hax",
+                924,
+                &span,
+            )),
+            frontend::ExprKind::Todo(payload) => ast::ExprKind::Error(assertion_failure(
+                &format!("expression Todo\n{}", payload),
+                &span,
+            )),
         };
         ast::Expr {
             kind: Box::new(kind),
@@ -1374,35 +1408,33 @@ impl Import<ast::PatKind> for frontend::PatKind {
                 let expr = value.import();
                 match *expr.kind {
                     ast::ExprKind::Literal(lit) => ast::PatKind::Constant { lit },
-                    _ => ast::PatKind::Wild,
+                    _ => ast::PatKind::Error(assertion_failure(
+                        &format!("expected a pattern, got {:?}", expr.kind),
+                        &expr.meta.span,
+                    )),
                 }
             }
             frontend::PatKind::ExpandedConstant { subpattern, .. } => *subpattern.import().kind,
-            frontend::PatKind::Range(_) => ast::PatKind::Wild,
-            frontend::PatKind::Slice {
-                prefix,
-                slice,
-                suffix,
+            frontend::PatKind::Range(_) => {
+                ast::PatKind::Error(unsupported("pat Range", 925, &ast::span::Span::dummy()))
             }
-            | frontend::PatKind::Array {
-                prefix,
-                slice,
-                suffix,
-            } => {
-                let mut pats: Vec<frontend::Pat> = Vec::new();
-                pats.extend(prefix.iter().cloned());
-                if let Some(s) = slice {
-                    pats.push(s.clone());
-                }
-                pats.extend(suffix.iter().cloned());
-                ast::PatKind::Array {
-                    args: pats.import(),
-                }
+            frontend::PatKind::Slice { .. } | frontend::PatKind::Array { .. } => {
+                ast::PatKind::Error(unsupported(
+                    "Pat:Array or Pat:Slice",
+                    804,
+                    &ast::span::Span::dummy(),
+                ))
             }
             frontend::PatKind::Or { pats } => ast::PatKind::Or {
                 sub_pats: pats.import(),
             },
-            frontend::PatKind::Never | frontend::PatKind::Error(_) => ast::PatKind::Wild,
+            frontend::PatKind::Never => {
+                ast::PatKind::Error(unsupported("pat Never", 927, &ast::span::Span::dummy()))
+            }
+            frontend::PatKind::Error(_) => ast::PatKind::Error(assertion_failure(
+                "`Error` node: Rust compilation failed. If Rust compilation was fine, please file an issue.",
+                &ast::span::Span::dummy(),
+            )),
         }
     }
 }
@@ -1524,7 +1556,7 @@ fn import_trait_item(item: &frontend::FullDef<frontend::ThirBody>) -> ast::Trait
         }
         frontend::FullDefKind::AssocTy {
             value: Some(..), ..
-        } => ast::TraitItemKind::Error(failure(
+        } => ast::TraitItemKind::Error(assertion_failure(
             "Associate types defaults are not supported by hax yet (it is a nightly feature)",
             &span,
         )),
@@ -1540,7 +1572,10 @@ fn import_trait_item(item: &frontend::FullDef<frontend::ThirBody>) -> ast::Trait
                 })
                 .collect(),
         ),
-        _ => ast::TraitItemKind::Error(failure("Found associated item of an unknown kind.", &span)),
+        _ => ast::TraitItemKind::Error(assertion_failure(
+            "Found associated item of an unknown kind.",
+            &span,
+        )),
     };
     let (frontend::FullDefKind::AssocConst { param_env, .. }
     | frontend::FullDefKind::AssocFn { param_env, .. }
@@ -1649,7 +1684,9 @@ fn import_impl_expr_atom(
         }
         frontend::ImplExprAtom::Dyn => ast::ImplExprKind::Dyn,
         frontend::ImplExprAtom::Builtin { .. } => ast::ImplExprKind::Builtin(goal),
-        frontend::ImplExprAtom::Error(msg) => ast::ImplExprKind::Error(failure(msg, &span)),
+        frontend::ImplExprAtom::Error(msg) => {
+            ast::ImplExprKind::Error(assertion_failure(msg, &span))
+        }
     }
 }
 
@@ -1707,7 +1744,7 @@ fn cast_of_enum(
     .promote();
     let name = ast::GlobalId::with_suffix(type_id, ast::global_id::ReservedSuffix::Cast);
     let ast::TyKind::Primitive(ast::PrimitiveTy::Int(int_kind)) = &*ty.0 else {
-        return ast::ItemKind::Error(failure(
+        return ast::ItemKind::Error(assertion_failure(
             &format!("cast_of_enum: expected int type, got {:?}", ty),
             &span,
         ))
@@ -1820,9 +1857,15 @@ pub fn import_item(
                         _ => unreachable!(),
                     },
                 },
-                frontend::AdtKind::Array => ast::ItemKind::Error(failure("Array ADT type", &span)),
-                frontend::AdtKind::Slice => ast::ItemKind::Error(failure("Slice ADT type", &span)),
-                frontend::AdtKind::Tuple => ast::ItemKind::Error(failure("Tuple ADT type", &span)),
+                frontend::AdtKind::Array => {
+                    ast::ItemKind::Error(assertion_failure("Array ADT type", &span))
+                }
+                frontend::AdtKind::Slice => {
+                    ast::ItemKind::Error(assertion_failure("Slice ADT type", &span))
+                }
+                frontend::AdtKind::Tuple => {
+                    ast::ItemKind::Error(assertion_failure("Tuple ADT type", &span))
+                }
             };
             if let frontend::AdtKind::Enum = adt_kind {
                 // TODO discs
@@ -1849,7 +1892,7 @@ pub fn import_item(
         frontend::FullDefKind::ForeignTy => {
             ast::ItemKind::Error(unsupported("Foreign type", 928, &span))
         }
-        frontend::FullDefKind::OpaqueTy => ast::ItemKind::Error(failure(
+        frontend::FullDefKind::OpaqueTy => ast::ItemKind::Error(assertion_failure(
             "OpaqueTy should be replaced by Alias in the frontend",
             &span,
         )),
@@ -1880,7 +1923,7 @@ pub fn import_item(
         }
 
         frontend::FullDefKind::TraitAlias { .. } => {
-            ast::ItemKind::Error(failure("Trait Alias", &span))
+            ast::ItemKind::Error(assertion_failure("Trait Alias", &span))
         }
         frontend::FullDefKind::TraitImpl {
             param_env,
@@ -1937,7 +1980,7 @@ pub fn import_item(
                     parent_bounds,
                 }
             } else {
-                ast::ItemKind::Error(failure(
+                ast::ItemKind::Error(assertion_failure(
                     "Self should always be the first generic argument of a trait application.",
                     &span,
                 ))
@@ -1990,7 +2033,7 @@ pub fn import_item(
                                 },
                                 Err(err) => ast::ItemKind::Error(err)
                                 }}
-                            _ => ast::ItemKind::Error(failure("All pointers to associated items should correspond to an actual associated item definition.", &span))
+                            _ => ast::ItemKind::Error(assertion_failure("All pointers to associated items should correspond to an actual associated item definition.", &span))
                         };
                         ast::Item { ident, kind, meta: ast::Metadata { span, attributes } }
                     })
@@ -2012,7 +2055,7 @@ pub fn import_item(
             Err(err) => ast::ItemKind::Error(err),
         },
         frontend::FullDefKind::Closure { .. } => {
-            ast::ItemKind::Error(failure("Closure item", &span))
+            ast::ItemKind::Error(assertion_failure("Closure item", &span))
         }
         frontend::FullDefKind::Const {
             param_env, body, ..
