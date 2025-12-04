@@ -434,7 +434,7 @@ pub enum FullDefKind<Body> {
 
     // Crates and modules
     ExternCrate,
-    Use,
+    Use(Option<(UsePath, UseKind)>),
     Mod {
         items: Vec<(Option<Ident>, DefId)>,
     },
@@ -872,7 +872,16 @@ where
             body: get_body(s, args),
         },
         RDefKind::ExternCrate => FullDefKind::ExternCrate,
-        RDefKind::Use => FullDefKind::Use,
+        RDefKind::Use => FullDefKind::Use(
+            if let Some(ldid) = def_id.as_local()
+                && let rustc_hir::Node::Item(item) = tcx.hir_node_by_def_id(ldid)
+                && let rustc_hir::ItemKind::Use(use_path, use_kind) = item.kind
+            {
+                Some((use_path.sinto(s), use_kind.sinto(s)))
+            } else {
+                None
+            },
+        ),
         RDefKind::Mod { .. } => FullDefKind::Mod {
             items: get_mod_children(tcx, def_id).sinto(s),
         },
