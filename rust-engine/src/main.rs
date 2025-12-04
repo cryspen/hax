@@ -18,11 +18,11 @@ fn main() {
     let items = match value.input {
         hax_types::driver_api::Items::Legacy(input) => {
             let query = hax_rust_engine::ocaml_engine::QueryKind::ImportThir {
-                input: value.input,
+                input,
                 translation_options: value.backend.translation_options,
             };
 
-            let Some(Response::ImportThir { output }) = query.execute(table) else {
+            let Some(Response::ImportThir { output }) = query.execute(Some(table)) else {
                 panic!()
             };
             output

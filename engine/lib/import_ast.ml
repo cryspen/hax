@@ -167,6 +167,7 @@ and dimpl_expr_kind (i : A.impl_expr_kind) : B.impl_expr_kind =
       B.ImplApp { impl = dimpl_expr impl_; args = List.map ~f:dimpl_expr args }
   | A.Dyn -> B.Dyn
   | A.Builtin tr -> B.Builtin (dtrait_goal tr)
+  | A.Error _ -> failwith "Error node in ImplExprKind"
 
 and dgeneric_value (generic_value : A.generic_value) : B.generic_value =
   match generic_value with
@@ -517,6 +518,7 @@ let dtrait_item' (ti : A.trait_item_kind) : B.trait_item' =
           witness = F.trait_item_default;
         }
   | Resugared _ -> refute_resugared "trait_item"
+  | Error _ -> failwith "TraitItem error node"
 
 let dtrait_item (ti : A.trait_item) : B.trait_item =
   {
@@ -538,6 +540,7 @@ let dimpl_item' (ii : A.impl_item_kind) : B.impl_item' =
   | Fn { body; params } ->
       IIFn { body = dexpr body; params = List.map ~f:dparam params }
   | Resugared _ -> refute_resugared "impl_item"
+  | Error _ -> failwith "Impl item error node"
 
 let dimpl_item (ii : A.impl_item) : B.impl_item =
   {
@@ -589,7 +592,6 @@ let ditem' (item : A.item_kind) : B.item' =
         of_trait = trait_id, trait_generics;
         items;
         parent_bounds;
-        safety;
       } ->
       B.Impl
         {
@@ -602,7 +604,7 @@ let ditem' (item : A.item_kind) : B.item' =
             List.map
               ~f:(fun (impl, ident) -> (dimpl_expr impl, dimpl_ident ident))
               parent_bounds;
-          safety = dsafety_kind safety;
+          safety = Safe;
         }
   | A.Alias { name; item } ->
       B.Alias { name = dconcrete_ident name; item = dconcrete_ident item }
