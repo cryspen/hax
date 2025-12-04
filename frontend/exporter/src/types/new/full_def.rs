@@ -93,6 +93,7 @@ where
         lang_item = Default::default();
         diagnostic_item = Default::default();
     } else if let Some(promoted_id) = def_id.promoted_id() {
+        panic!();
         let parent_def = def_id
             .parent
             .as_ref()

@@ -1,6 +1,7 @@
 //! This module helps communicating with `cargo-hax`.
 
 use hax_types::engine_api::protocol::FromEngine;
+use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use std::io::{BufRead, BufReader, Stdin, stdin, stdout};
 use std::sync::{LazyLock, Mutex};
@@ -37,8 +38,7 @@ pub fn read_to_engine_message() -> ToEngine {
 pub fn read_engine_input_message() -> WithTable<EngineOptions> {
     read()
 }
-pub fn read_query()
--> hax_frontend_exporter::id_table::WithTable<hax_types::engine_api::EngineOptions> {
+pub fn read_query() -> WithTable<EngineOptions> {
     let mut stdin = STDIN.lock().unwrap();
     let mut slice = Vec::new();
     stdin
@@ -46,10 +46,8 @@ pub fn read_query()
         .expect("No message left! Did the engine crash?");
     let mut de = serde_json::Deserializer::from_slice(&slice);
     de.disable_recursion_limit();
-    hax_frontend_exporter::id_table::WithTable::deserialize(serde_stacker::Deserializer::new(
-        &mut de,
-    ))
-    .expect("Could not parse as a `ExtendedToEngine` message!")
+    WithTable::deserialize(serde_stacker::Deserializer::new(&mut de))
+        .expect("Could not parse as a `ExtendedToEngine` message!")
 }
 
 /// Writes a `ExtendedFromEngine` message

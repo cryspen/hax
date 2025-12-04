@@ -133,3 +133,17 @@ _pager:
 @book:
   echo "We moved out from mdbook: please run 'just docs'"
   exit 1
+
+test-ast:
+  #!/usr/bin/env bash
+  just b
+  rm -rf test-ast-results
+  cd tests/literals
+  cargo hax --experimental-full-def into rust
+  mv proofs/rust/extraction/ast.json new-ast.json
+  cargo hax into rust
+  mv proofs/rust/extraction/ast.json old-ast.json
+  mkdir ../../test-ast-results
+  mv *ast.json ../../test-ast-results
+  cd ../../test-ast-results
+  diff *.json > diff.json

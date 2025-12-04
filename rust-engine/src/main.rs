@@ -22,7 +22,7 @@ fn main() {
                 translation_options: value.backend.translation_options,
             };
 
-            let Some(Response::ImportThir { output }) = query.execute(table) else {
+            let Some(Response::ImportThir { output }) = query.execute(Some(table)) else {
                 panic!()
             };
             output
@@ -60,7 +60,14 @@ fn main() {
             value.backend.backend
         ),
         Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
-        Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
+        // Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
+        Backend::Rust => {
+            vec![File {
+                path: "ast.json".into(),
+                contents: serde_json::to_string_pretty(&items).unwrap(),
+                sourcemap: None,
+            }]
+        }
         Backend::GenerateRustEngineNames => vec![File {
             path: "generated.rs".into(),
             contents: hax_rust_engine::names::codegen::export_def_ids_to_mod(items),

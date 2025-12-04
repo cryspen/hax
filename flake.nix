@@ -113,6 +113,11 @@
               | sed 's#.*"https://github.com/rust-lang/rust/commit/\([^"]*\)".*#\1#' \
               > $out
           '';
+
+          dev-env = pkgs.buildEnv {
+            name = "my-dev-env";
+            paths = devShells.default.passthru.defaultPackages;
+          };
         };
         checks = {
           toolchain = packages.hax.tests;
@@ -242,6 +247,7 @@
           default = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             packages = defaultPackages;
+            passthru = { inherit defaultPackages; };
           };
         };
       });

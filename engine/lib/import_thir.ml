@@ -657,8 +657,8 @@ end) : EXPR = struct
             {
               f = { e = projector; typ = TArrow ([ lhs.typ ], typ); span };
               args = [ lhs ];
-              generic_args = [] (* TODO: see issue #328 *);
-              trait = None (* TODO: see issue #328 *);
+              generic_args = [];
+              trait = None;
               bounds_impls = [];
             }
       | TupleField { lhs; field } ->
@@ -680,8 +680,8 @@ end) : EXPR = struct
             {
               f = { e = projector; typ = TArrow ([ lhs.typ ], typ); span };
               args = [ lhs ];
-              generic_args = [] (* TODO: see issue #328 *);
-              trait = None (* TODO: see issue #328 *);
+              generic_args = [];
+              trait = None;
               bounds_impls = [];
             }
       | GlobalName { item = { value = { def_id = id; _ }; _ }; constructor = _ }

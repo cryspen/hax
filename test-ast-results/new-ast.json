@@ -1,0 +1,1742 @@
+[
+  {
+    "ident": {
+      "Concrete": {
+        "def_id": {
+          "is_constructor": false,
+          "def_id": {
+            "krate": "literals",
+            "path": [
+              {
+                "data": {
+                  "ValueNs": "g"
+                },
+                "disambiguator": 0
+              }
+            ],
+            "parent": {
+              "krate": "literals",
+              "path": [],
+              "parent": null,
+              "kind": "Mod"
+            },
+            "kind": "Fn"
+          }
+        },
+        "moved": null,
+        "suffix": null
+      }
+    },
+    "kind": {
+      "Fn": {
+        "name": {
+          "Concrete": {
+            "def_id": {
+              "is_constructor": false,
+              "def_id": {
+                "krate": "literals",
+                "path": [
+                  {
+                    "data": {
+                      "ValueNs": "g"
+                    },
+                    "disambiguator": 0
+                  }
+                ],
+                "parent": {
+                  "krate": "literals",
+                  "path": [],
+                  "parent": null,
+                  "kind": "Mod"
+                },
+                "kind": "Fn"
+              }
+            },
+            "moved": null,
+            "suffix": null
+          }
+        },
+        "generics": {
+          "params": [],
+          "constraints": []
+        },
+        "body": {
+          "kind": {
+            "Construct": {
+              "constructor": {
+                "Tuple": {
+                  "Constructor": {
+                    "length": 0
+                  }
+                }
+              },
+              "is_record": false,
+              "is_struct": true,
+              "fields": [],
+              "base": null
+            }
+          },
+          "ty": {
+            "App": {
+              "head": {
+                "Tuple": {
+                  "Type": {
+                    "length": 0
+                  }
+                }
+              },
+              "args": []
+            }
+          },
+          "meta": {
+            "span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 1,
+                    "col": 19
+                  },
+                  "hi": {
+                    "line": 1,
+                    "col": 21
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 2,
+              "owner_hint": null
+            },
+            "attributes": []
+          }
+        },
+        "params": [
+          {
+            "pat": {
+              "kind": {
+                "Binding": {
+                  "mutable": false,
+                  "var": "x",
+                  "mode": "ByValue",
+                  "sub_pat": null
+                }
+              },
+              "ty": {
+                "Primitive": {
+                  "Int": {
+                    "size": "S8",
+                    "signedness": "Unsigned"
+                  }
+                }
+              },
+              "meta": {
+                "span": {
+                  "data": [
+                    {
+                      "lo": {
+                        "line": 1,
+                        "col": 5
+                      },
+                      "hi": {
+                        "line": 1,
+                        "col": 6
+                      },
+                      "filename": {
+                        "Real": {
+                          "LocalPath": "literals/src/lib.rs"
+                        }
+                      }
+                    }
+                  ],
+                  "id": 4,
+                  "owner_hint": null
+                },
+                "attributes": []
+              }
+            },
+            "ty": {
+              "Primitive": {
+                "Int": {
+                  "size": "S8",
+                  "signedness": "Unsigned"
+                }
+              }
+            },
+            "ty_span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 1,
+                    "col": 8
+                  },
+                  "hi": {
+                    "line": 1,
+                    "col": 10
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 3,
+              "owner_hint": null
+            },
+            "attributes": []
+          },
+          {
+            "pat": {
+              "kind": {
+                "Binding": {
+                  "mutable": false,
+                  "var": "y",
+                  "mode": "ByValue",
+                  "sub_pat": null
+                }
+              },
+              "ty": {
+                "Primitive": {
+                  "Int": {
+                    "size": "S8",
+                    "signedness": "Unsigned"
+                  }
+                }
+              },
+              "meta": {
+                "span": {
+                  "data": [
+                    {
+                      "lo": {
+                        "line": 1,
+                        "col": 12
+                      },
+                      "hi": {
+                        "line": 1,
+                        "col": 13
+                      },
+                      "filename": {
+                        "Real": {
+                          "LocalPath": "literals/src/lib.rs"
+                        }
+                      }
+                    }
+                  ],
+                  "id": 6,
+                  "owner_hint": null
+                },
+                "attributes": []
+              }
+            },
+            "ty": {
+              "Primitive": {
+                "Int": {
+                  "size": "S8",
+                  "signedness": "Unsigned"
+                }
+              }
+            },
+            "ty_span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 1,
+                    "col": 15
+                  },
+                  "hi": {
+                    "line": 1,
+                    "col": 17
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 5,
+              "owner_hint": null
+            },
+            "attributes": []
+          }
+        ],
+        "safety": "Safe"
+      }
+    },
+    "meta": {
+      "span": {
+        "data": [
+          {
+            "lo": {
+              "line": 1,
+              "col": 0
+            },
+            "hi": {
+              "line": 1,
+              "col": 18
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        ],
+        "id": 0,
+        "owner_hint": null
+      },
+      "attributes": []
+    }
+  },
+  {
+    "ident": {
+      "Concrete": {
+        "def_id": {
+          "is_constructor": false,
+          "def_id": {
+            "krate": "literals",
+            "path": [
+              {
+                "data": {
+                  "TypeNs": "Foo"
+                },
+                "disambiguator": 0
+              }
+            ],
+            "parent": {
+              "krate": "literals",
+              "path": [],
+              "parent": null,
+              "kind": "Mod"
+            },
+            "kind": "Struct"
+          }
+        },
+        "moved": null,
+        "suffix": null
+      }
+    },
+    "kind": {
+      "Type": {
+        "name": {
+          "Concrete": {
+            "def_id": {
+              "is_constructor": false,
+              "def_id": {
+                "krate": "literals",
+                "path": [
+                  {
+                    "data": {
+                      "TypeNs": "Foo"
+                    },
+                    "disambiguator": 0
+                  }
+                ],
+                "parent": {
+                  "krate": "literals",
+                  "path": [],
+                  "parent": null,
+                  "kind": "Mod"
+                },
+                "kind": "Struct"
+              }
+            },
+            "moved": null,
+            "suffix": null
+          }
+        },
+        "generics": {
+          "params": [],
+          "constraints": []
+        },
+        "variants": [
+          {
+            "name": {
+              "Concrete": {
+                "def_id": {
+                  "is_constructor": false,
+                  "def_id": {
+                    "krate": "literals",
+                    "path": [
+                      {
+                        "data": {
+                          "TypeNs": "Foo"
+                        },
+                        "disambiguator": 0
+                      }
+                    ],
+                    "parent": {
+                      "krate": "literals",
+                      "path": [],
+                      "parent": null,
+                      "kind": "Mod"
+                    },
+                    "kind": "Struct"
+                  }
+                },
+                "moved": null,
+                "suffix": null
+              }
+            },
+            "arguments": [],
+            "is_record": false,
+            "attributes": []
+          }
+        ],
+        "is_struct": true
+      }
+    },
+    "meta": {
+      "span": {
+        "data": [
+          {
+            "lo": {
+              "line": 3,
+              "col": 0
+            },
+            "hi": {
+              "line": 3,
+              "col": 10
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        ],
+        "id": 7,
+        "owner_hint": null
+      },
+      "attributes": []
+    }
+  },
+  {
+    "ident": {
+      "Concrete": {
+        "def_id": {
+          "is_constructor": false,
+          "def_id": {
+            "krate": "literals",
+            "path": [
+              {
+                "data": {
+                  "ValueNs": "f"
+                },
+                "disambiguator": 0
+              }
+            ],
+            "parent": {
+              "krate": "literals",
+              "path": [],
+              "parent": null,
+              "kind": "Mod"
+            },
+            "kind": "Fn"
+          }
+        },
+        "moved": null,
+        "suffix": null
+      }
+    },
+    "kind": {
+      "Fn": {
+        "name": {
+          "Concrete": {
+            "def_id": {
+              "is_constructor": false,
+              "def_id": {
+                "krate": "literals",
+                "path": [
+                  {
+                    "data": {
+                      "ValueNs": "f"
+                    },
+                    "disambiguator": 0
+                  }
+                ],
+                "parent": {
+                  "krate": "literals",
+                  "path": [],
+                  "parent": null,
+                  "kind": "Mod"
+                },
+                "kind": "Fn"
+              }
+            },
+            "moved": null,
+            "suffix": null
+          }
+        },
+        "generics": {
+          "params": [
+            {
+              "ident": "T",
+              "meta": {
+                "span": {
+                  "data": [
+                    {
+                      "lo": {
+                        "line": 0,
+                        "col": 0
+                      },
+                      "hi": {
+                        "line": 0,
+                        "col": 0
+                      },
+                      "filename": {
+                        "Custom": "dumny"
+                      }
+                    }
+                  ],
+                  "id": 0,
+                  "owner_hint": null
+                },
+                "attributes": []
+              },
+              "kind": "Type"
+            }
+          ],
+          "constraints": []
+        },
+        "body": {
+          "kind": {
+            "If": {
+              "condition": {
+                "kind": {
+                  "Literal": {
+                    "Bool": true
+                  }
+                },
+                "ty": {
+                  "Primitive": "Bool"
+                },
+                "meta": {
+                  "span": {
+                    "data": [
+                      {
+                        "lo": {
+                          "line": 7,
+                          "col": 7
+                        },
+                        "hi": {
+                          "line": 7,
+                          "col": 11
+                        },
+                        "filename": {
+                          "Real": {
+                            "LocalPath": "literals/src/lib.rs"
+                          }
+                        }
+                      }
+                    ],
+                    "id": 11,
+                    "owner_hint": null
+                  },
+                  "attributes": []
+                }
+              },
+              "then": {
+                "kind": {
+                  "Literal": {
+                    "Int": {
+                      "value": "1",
+                      "negative": false,
+                      "kind": {
+                        "size": "S8",
+                        "signedness": "Unsigned"
+                      }
+                    }
+                  }
+                },
+                "ty": {
+                  "Primitive": {
+                    "Int": {
+                      "size": "S8",
+                      "signedness": "Unsigned"
+                    }
+                  }
+                },
+                "meta": {
+                  "span": {
+                    "data": [
+                      {
+                        "lo": {
+                          "line": 10,
+                          "col": 8
+                        },
+                        "hi": {
+                          "line": 10,
+                          "col": 9
+                        },
+                        "filename": {
+                          "Real": {
+                            "LocalPath": "literals/src/lib.rs"
+                          }
+                        }
+                      }
+                    ],
+                    "id": 13,
+                    "owner_hint": null
+                  },
+                  "attributes": []
+                }
+              },
+              "else_": {
+                "kind": {
+                  "Match": {
+                    "scrutinee": {
+                      "kind": {
+                        "Literal": {
+                          "Int": {
+                            "value": "0",
+                            "negative": false,
+                            "kind": {
+                              "size": "S32",
+                              "signedness": "Signed"
+                            }
+                          }
+                        }
+                      },
+                      "ty": {
+                        "Primitive": {
+                          "Int": {
+                            "size": "S32",
+                            "signedness": "Signed"
+                          }
+                        }
+                      },
+                      "meta": {
+                        "span": {
+                          "data": [
+                            {
+                              "lo": {
+                                "line": 26,
+                                "col": 14
+                              },
+                              "hi": {
+                                "line": 26,
+                                "col": 15
+                              },
+                              "filename": {
+                                "Real": {
+                                  "LocalPath": "literals/src/lib.rs"
+                                }
+                              }
+                            }
+                          ],
+                          "id": 16,
+                          "owner_hint": null
+                        },
+                        "attributes": []
+                      }
+                    },
+                    "arms": [
+                      {
+                        "pat": {
+                          "kind": {
+                            "Constant": {
+                              "lit": {
+                                "Int": {
+                                  "value": "1",
+                                  "negative": false,
+                                  "kind": {
+                                    "size": "S32",
+                                    "signedness": "Signed"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S32",
+                                "signedness": "Signed"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 27,
+                                    "col": 12
+                                  },
+                                  "hi": {
+                                    "line": 27,
+                                    "col": 13
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 17,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "body": {
+                          "kind": {
+                            "Literal": {
+                              "Int": {
+                                "value": "0",
+                                "negative": false,
+                                "kind": {
+                                  "size": "S8",
+                                  "signedness": "Unsigned"
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S8",
+                                "signedness": "Unsigned"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 27,
+                                    "col": 17
+                                  },
+                                  "hi": {
+                                    "line": 27,
+                                    "col": 18
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 19,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "guard": null,
+                        "meta": {
+                          "span": {
+                            "data": [
+                              {
+                                "lo": {
+                                  "line": 27,
+                                  "col": 12
+                                },
+                                "hi": {
+                                  "line": 27,
+                                  "col": 18
+                                },
+                                "filename": {
+                                  "Real": {
+                                    "LocalPath": "literals/src/lib.rs"
+                                  }
+                                }
+                              }
+                            ],
+                            "id": 20,
+                            "owner_hint": null
+                          },
+                          "attributes": []
+                        }
+                      },
+                      {
+                        "pat": {
+                          "kind": {
+                            "Constant": {
+                              "lit": {
+                                "Int": {
+                                  "value": "2",
+                                  "negative": false,
+                                  "kind": {
+                                    "size": "S32",
+                                    "signedness": "Signed"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S32",
+                                "signedness": "Signed"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 28,
+                                    "col": 12
+                                  },
+                                  "hi": {
+                                    "line": 28,
+                                    "col": 13
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 21,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "body": {
+                          "kind": {
+                            "Literal": {
+                              "Int": {
+                                "value": "1",
+                                "negative": false,
+                                "kind": {
+                                  "size": "S8",
+                                  "signedness": "Unsigned"
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S8",
+                                "signedness": "Unsigned"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 28,
+                                    "col": 17
+                                  },
+                                  "hi": {
+                                    "line": 28,
+                                    "col": 18
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 23,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "guard": null,
+                        "meta": {
+                          "span": {
+                            "data": [
+                              {
+                                "lo": {
+                                  "line": 28,
+                                  "col": 12
+                                },
+                                "hi": {
+                                  "line": 28,
+                                  "col": 18
+                                },
+                                "filename": {
+                                  "Real": {
+                                    "LocalPath": "literals/src/lib.rs"
+                                  }
+                                }
+                              }
+                            ],
+                            "id": 24,
+                            "owner_hint": null
+                          },
+                          "attributes": []
+                        }
+                      },
+                      {
+                        "pat": {
+                          "kind": {
+                            "Constant": {
+                              "lit": {
+                                "Int": {
+                                  "value": "3",
+                                  "negative": false,
+                                  "kind": {
+                                    "size": "S32",
+                                    "signedness": "Signed"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S32",
+                                "signedness": "Signed"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 29,
+                                    "col": 12
+                                  },
+                                  "hi": {
+                                    "line": 29,
+                                    "col": 13
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 25,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "body": {
+                          "kind": {
+                            "App": {
+                              "head": {
+                                "kind": {
+                                  "GlobalId": {
+                                    "Concrete": {
+                                      "def_id": {
+                                        "is_constructor": false,
+                                        "def_id": {
+                                          "krate": "rust_primitives",
+                                          "path": [
+                                            {
+                                              "data": {
+                                                "TypeNs": "hax"
+                                              },
+                                              "disambiguator": 0
+                                            },
+                                            {
+                                              "data": {
+                                                "ValueNs": "never_to_any"
+                                              },
+                                              "disambiguator": 0
+                                            }
+                                          ],
+                                          "parent": {
+                                            "krate": "rust_primitives",
+                                            "path": [
+                                              {
+                                                "data": {
+                                                  "TypeNs": "hax"
+                                                },
+                                                "disambiguator": 0
+                                              }
+                                            ],
+                                            "parent": {
+                                              "krate": "rust_primitives",
+                                              "path": [],
+                                              "parent": null,
+                                              "kind": "Mod"
+                                            },
+                                            "kind": "Mod"
+                                          },
+                                          "kind": "Fn"
+                                        }
+                                      },
+                                      "moved": null,
+                                      "suffix": null
+                                    }
+                                  }
+                                },
+                                "ty": {
+                                  "Arrow": {
+                                    "inputs": [
+                                      {
+                                        "App": {
+                                          "head": {
+                                            "Concrete": {
+                                              "def_id": {
+                                                "is_constructor": false,
+                                                "def_id": {
+                                                  "krate": "rust_primitives",
+                                                  "path": [
+                                                    {
+                                                      "data": {
+                                                        "TypeNs": "hax"
+                                                      },
+                                                      "disambiguator": 0
+                                                    },
+                                                    {
+                                                      "data": {
+                                                        "TypeNs": "Never"
+                                                      },
+                                                      "disambiguator": 0
+                                                    }
+                                                  ],
+                                                  "parent": {
+                                                    "krate": "rust_primitives",
+                                                    "path": [
+                                                      {
+                                                        "data": {
+                                                          "TypeNs": "hax"
+                                                        },
+                                                        "disambiguator": 0
+                                                      }
+                                                    ],
+                                                    "parent": {
+                                                      "krate": "rust_primitives",
+                                                      "path": [],
+                                                      "parent": null,
+                                                      "kind": "Mod"
+                                                    },
+                                                    "kind": "Mod"
+                                                  },
+                                                  "kind": "Enum"
+                                                }
+                                              },
+                                              "moved": null,
+                                              "suffix": null
+                                            }
+                                          },
+                                          "args": []
+                                        }
+                                      }
+                                    ],
+                                    "output": {
+                                      "Primitive": {
+                                        "Int": {
+                                          "size": "S8",
+                                          "signedness": "Unsigned"
+                                        }
+                                      }
+                                    }
+                                  }
+                                },
+                                "meta": {
+                                  "span": {
+                                    "data": [
+                                      {
+                                        "lo": {
+                                          "line": 29,
+                                          "col": 17
+                                        },
+                                        "hi": {
+                                          "line": 29,
+                                          "col": 25
+                                        },
+                                        "filename": {
+                                          "Real": {
+                                            "LocalPath": "literals/src/lib.rs"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "id": 27,
+                                    "owner_hint": null
+                                  },
+                                  "attributes": []
+                                }
+                              },
+                              "args": [
+                                {
+                                  "kind": {
+                                    "Return": {
+                                      "value": {
+                                        "kind": {
+                                          "Literal": {
+                                            "Int": {
+                                              "value": "3",
+                                              "negative": false,
+                                              "kind": {
+                                                "size": "S8",
+                                                "signedness": "Unsigned"
+                                              }
+                                            }
+                                          }
+                                        },
+                                        "ty": {
+                                          "Primitive": {
+                                            "Int": {
+                                              "size": "S8",
+                                              "signedness": "Unsigned"
+                                            }
+                                          }
+                                        },
+                                        "meta": {
+                                          "span": {
+                                            "data": [
+                                              {
+                                                "lo": {
+                                                  "line": 29,
+                                                  "col": 24
+                                                },
+                                                "hi": {
+                                                  "line": 29,
+                                                  "col": 25
+                                                },
+                                                "filename": {
+                                                  "Real": {
+                                                    "LocalPath": "literals/src/lib.rs"
+                                                  }
+                                                }
+                                              }
+                                            ],
+                                            "id": 29,
+                                            "owner_hint": null
+                                          },
+                                          "attributes": []
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "ty": {
+                                    "App": {
+                                      "head": {
+                                        "Concrete": {
+                                          "def_id": {
+                                            "is_constructor": false,
+                                            "def_id": {
+                                              "krate": "rust_primitives",
+                                              "path": [
+                                                {
+                                                  "data": {
+                                                    "TypeNs": "hax"
+                                                  },
+                                                  "disambiguator": 0
+                                                },
+                                                {
+                                                  "data": {
+                                                    "TypeNs": "Never"
+                                                  },
+                                                  "disambiguator": 0
+                                                }
+                                              ],
+                                              "parent": {
+                                                "krate": "rust_primitives",
+                                                "path": [
+                                                  {
+                                                    "data": {
+                                                      "TypeNs": "hax"
+                                                    },
+                                                    "disambiguator": 0
+                                                  }
+                                                ],
+                                                "parent": {
+                                                  "krate": "rust_primitives",
+                                                  "path": [],
+                                                  "parent": null,
+                                                  "kind": "Mod"
+                                                },
+                                                "kind": "Mod"
+                                              },
+                                              "kind": "Enum"
+                                            }
+                                          },
+                                          "moved": null,
+                                          "suffix": null
+                                        }
+                                      },
+                                      "args": []
+                                    }
+                                  },
+                                  "meta": {
+                                    "span": {
+                                      "data": [
+                                        {
+                                          "lo": {
+                                            "line": 29,
+                                            "col": 17
+                                          },
+                                          "hi": {
+                                            "line": 29,
+                                            "col": 25
+                                          },
+                                          "filename": {
+                                            "Real": {
+                                              "LocalPath": "literals/src/lib.rs"
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "id": 28,
+                                      "owner_hint": null
+                                    },
+                                    "attributes": []
+                                  }
+                                }
+                              ],
+                              "generic_args": [],
+                              "bounds_impls": [],
+                              "trait_": null
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S8",
+                                "signedness": "Unsigned"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 29,
+                                    "col": 17
+                                  },
+                                  "hi": {
+                                    "line": 29,
+                                    "col": 25
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 27,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "guard": null,
+                        "meta": {
+                          "span": {
+                            "data": [
+                              {
+                                "lo": {
+                                  "line": 29,
+                                  "col": 12
+                                },
+                                "hi": {
+                                  "line": 29,
+                                  "col": 25
+                                },
+                                "filename": {
+                                  "Real": {
+                                    "LocalPath": "literals/src/lib.rs"
+                                  }
+                                }
+                              }
+                            ],
+                            "id": 30,
+                            "owner_hint": null
+                          },
+                          "attributes": []
+                        }
+                      },
+                      {
+                        "pat": {
+                          "kind": "Wild",
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S32",
+                                "signedness": "Signed"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 30,
+                                    "col": 12
+                                  },
+                                  "hi": {
+                                    "line": 30,
+                                    "col": 13
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 31,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "body": {
+                          "kind": {
+                            "Literal": {
+                              "Int": {
+                                "value": "32",
+                                "negative": false,
+                                "kind": {
+                                  "size": "S8",
+                                  "signedness": "Unsigned"
+                                }
+                              }
+                            }
+                          },
+                          "ty": {
+                            "Primitive": {
+                              "Int": {
+                                "size": "S8",
+                                "signedness": "Unsigned"
+                              }
+                            }
+                          },
+                          "meta": {
+                            "span": {
+                              "data": [
+                                {
+                                  "lo": {
+                                    "line": 30,
+                                    "col": 17
+                                  },
+                                  "hi": {
+                                    "line": 30,
+                                    "col": 19
+                                  },
+                                  "filename": {
+                                    "Real": {
+                                      "LocalPath": "literals/src/lib.rs"
+                                    }
+                                  }
+                                }
+                              ],
+                              "id": 32,
+                              "owner_hint": null
+                            },
+                            "attributes": []
+                          }
+                        },
+                        "guard": null,
+                        "meta": {
+                          "span": {
+                            "data": [
+                              {
+                                "lo": {
+                                  "line": 30,
+                                  "col": 12
+                                },
+                                "hi": {
+                                  "line": 30,
+                                  "col": 19
+                                },
+                                "filename": {
+                                  "Real": {
+                                    "LocalPath": "literals/src/lib.rs"
+                                  }
+                                }
+                              }
+                            ],
+                            "id": 33,
+                            "owner_hint": null
+                          },
+                          "attributes": []
+                        }
+                      }
+                    ]
+                  }
+                },
+                "ty": {
+                  "Primitive": {
+                    "Int": {
+                      "size": "S8",
+                      "signedness": "Unsigned"
+                    }
+                  }
+                },
+                "meta": {
+                  "span": {
+                    "data": [
+                      {
+                        "lo": {
+                          "line": 26,
+                          "col": 8
+                        },
+                        "hi": {
+                          "line": 31,
+                          "col": 9
+                        },
+                        "filename": {
+                          "Real": {
+                            "LocalPath": "literals/src/lib.rs"
+                          }
+                        }
+                      }
+                    ],
+                    "id": 15,
+                    "owner_hint": null
+                  },
+                  "attributes": []
+                }
+              }
+            }
+          },
+          "ty": {
+            "Primitive": {
+              "Int": {
+                "size": "S8",
+                "signedness": "Unsigned"
+              }
+            }
+          },
+          "meta": {
+            "span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 7,
+                    "col": 4
+                  },
+                  "hi": {
+                    "line": 32,
+                    "col": 5
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 10,
+              "owner_hint": null
+            },
+            "attributes": []
+          }
+        },
+        "params": [
+          {
+            "pat": {
+              "kind": {
+                "Binding": {
+                  "mutable": false,
+                  "var": "x",
+                  "mode": "ByValue",
+                  "sub_pat": null
+                }
+              },
+              "ty": {
+                "App": {
+                  "head": {
+                    "Concrete": {
+                      "def_id": {
+                        "is_constructor": false,
+                        "def_id": {
+                          "krate": "literals",
+                          "path": [
+                            {
+                              "data": {
+                                "TypeNs": "Foo"
+                              },
+                              "disambiguator": 0
+                            }
+                          ],
+                          "parent": {
+                            "krate": "literals",
+                            "path": [],
+                            "parent": null,
+                            "kind": "Mod"
+                          },
+                          "kind": "Struct"
+                        }
+                      },
+                      "moved": null,
+                      "suffix": null
+                    }
+                  },
+                  "args": []
+                }
+              },
+              "meta": {
+                "span": {
+                  "data": [
+                    {
+                      "lo": {
+                        "line": 5,
+                        "col": 8
+                      },
+                      "hi": {
+                        "line": 5,
+                        "col": 9
+                      },
+                      "filename": {
+                        "Real": {
+                          "LocalPath": "literals/src/lib.rs"
+                        }
+                      }
+                    }
+                  ],
+                  "id": 35,
+                  "owner_hint": null
+                },
+                "attributes": []
+              }
+            },
+            "ty": {
+              "App": {
+                "head": {
+                  "Concrete": {
+                    "def_id": {
+                      "is_constructor": false,
+                      "def_id": {
+                        "krate": "literals",
+                        "path": [
+                          {
+                            "data": {
+                              "TypeNs": "Foo"
+                            },
+                            "disambiguator": 0
+                          }
+                        ],
+                        "parent": {
+                          "krate": "literals",
+                          "path": [],
+                          "parent": null,
+                          "kind": "Mod"
+                        },
+                        "kind": "Struct"
+                      }
+                    },
+                    "moved": null,
+                    "suffix": null
+                  }
+                },
+                "args": []
+              }
+            },
+            "ty_span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 5,
+                    "col": 11
+                  },
+                  "hi": {
+                    "line": 5,
+                    "col": 14
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 34,
+              "owner_hint": null
+            },
+            "attributes": []
+          },
+          {
+            "pat": {
+              "kind": {
+                "Binding": {
+                  "mutable": false,
+                  "var": "y",
+                  "mode": "ByValue",
+                  "sub_pat": null
+                }
+              },
+              "ty": {
+                "Ref": {
+                  "inner": {
+                    "Primitive": {
+                      "Int": {
+                        "size": "S8",
+                        "signedness": "Unsigned"
+                      }
+                    }
+                  },
+                  "mutable": true,
+                  "region": null
+                }
+              },
+              "meta": {
+                "span": {
+                  "data": [
+                    {
+                      "lo": {
+                        "line": 5,
+                        "col": 16
+                      },
+                      "hi": {
+                        "line": 5,
+                        "col": 17
+                      },
+                      "filename": {
+                        "Real": {
+                          "LocalPath": "literals/src/lib.rs"
+                        }
+                      }
+                    }
+                  ],
+                  "id": 37,
+                  "owner_hint": null
+                },
+                "attributes": []
+              }
+            },
+            "ty": {
+              "Ref": {
+                "inner": {
+                  "Primitive": {
+                    "Int": {
+                      "size": "S8",
+                      "signedness": "Unsigned"
+                    }
+                  }
+                },
+                "mutable": true,
+                "region": null
+              }
+            },
+            "ty_span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 5,
+                    "col": 19
+                  },
+                  "hi": {
+                    "line": 5,
+                    "col": 26
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 36,
+              "owner_hint": null
+            },
+            "attributes": []
+          },
+          {
+            "pat": {
+              "kind": {
+                "Binding": {
+                  "mutable": false,
+                  "var": "z",
+                  "mode": "ByValue",
+                  "sub_pat": null
+                }
+              },
+              "ty": {
+                "Param": "T"
+              },
+              "meta": {
+                "span": {
+                  "data": [
+                    {
+                      "lo": {
+                        "line": 5,
+                        "col": 28
+                      },
+                      "hi": {
+                        "line": 5,
+                        "col": 29
+                      },
+                      "filename": {
+                        "Real": {
+                          "LocalPath": "literals/src/lib.rs"
+                        }
+                      }
+                    }
+                  ],
+                  "id": 39,
+                  "owner_hint": null
+                },
+                "attributes": []
+              }
+            },
+            "ty": {
+              "Param": "T"
+            },
+            "ty_span": {
+              "data": [
+                {
+                  "lo": {
+                    "line": 5,
+                    "col": 31
+                  },
+                  "hi": {
+                    "line": 5,
+                    "col": 32
+                  },
+                  "filename": {
+                    "Real": {
+                      "LocalPath": "literals/src/lib.rs"
+                    }
+                  }
+                }
+              ],
+              "id": 38,
+              "owner_hint": null
+            },
+            "attributes": []
+          }
+        ],
+        "safety": "Safe"
+      }
+    },
+    "meta": {
+      "span": {
+        "data": [
+          {
+            "lo": {
+              "line": 5,
+              "col": 0
+            },
+            "hi": {
+              "line": 5,
+              "col": 39
+            },
+            "filename": {
+              "Real": {
+                "LocalPath": "literals/src/lib.rs"
+              }
+            }
+          }
+        ],
+        "id": 8,
+        "owner_hint": null
+      },
+      "attributes": []
+    }
+  }
+]
