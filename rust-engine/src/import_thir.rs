@@ -1,6 +1,7 @@
 //! This modules allows to import the THIR AST produced by the frontend, and convert it to the engine's internal AST
 
 use crate::ast;
+use crate::ast::identifiers::global_id::ReservedSuffix;
 use crate::ast::identifiers::global_id::TupleId;
 use crate::symbol::Symbol;
 use hax_frontend_exporter as frontend;
@@ -492,9 +493,26 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
         let raw_attributes: Vec<Option<ast::Attribute>> = attributes.import();
         let attributes: Vec<ast::Attribute> = raw_attributes.into_iter().flatten().collect();
         let kind = match contents.as_ref() {
-            frontend::ConstantExprKind::Literal(constant_literal) => {
-                ast::ExprKind::Literal(constant_literal.spanned_import(span.clone()))
-            }
+            frontend::ConstantExprKind::Literal(constant_literal) => match constant_literal {
+                frontend::ConstantLiteral::ByteStr(items) => {
+                    let elems: Vec<ast::Expr> = items
+                        .iter()
+                        .map(|b| {
+                            let ty = ast::TyKind::Primitive(ast::PrimitiveTy::Int(
+                                (&frontend::UintTy::U8).into(),
+                            ));
+                            ast::ExprKind::Literal(ast::literals::Literal::Int {
+                                value: Symbol::new(b.to_string()),
+                                negative: false,
+                                kind: (&frontend::UintTy::U8).into(),
+                            })
+                            .promote(ty.promote(), span.clone())
+                        })
+                        .collect();
+                    ast::ExprKind::Array(elems)
+                }
+                _ => ast::ExprKind::Literal(constant_literal.spanned_import(span.clone())),
+            },
             frontend::ConstantExprKind::Adt { info, fields } => {
                 let (is_struct, is_record) = match info.kind {
                     frontend::VariantKind::Struct { named } => (true, named),
@@ -537,11 +555,16 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
             frontend::ConstantExprKind::GlobalName(item_ref) => {
                 ast::ExprKind::GlobalId(item_ref.contents().def_id.import())
             }
+            frontend::ConstantExprKind::Borrow(inner) => ast::ExprKind::Borrow {
+                mutable: false,
+                inner: inner.import(),
+            },
+            frontend::ConstantExprKind::ConstRef { id } => {
+                ast::ExprKind::LocalId(ast::LocalId(Symbol::new(id.name.clone())))
+            }
             frontend::ConstantExprKind::TraitConst { .. }
-            | frontend::ConstantExprKind::Borrow(_)
             | frontend::ConstantExprKind::RawBorrow { .. }
             | frontend::ConstantExprKind::Cast { .. }
-            | frontend::ConstantExprKind::ConstRef { .. }
             | frontend::ConstantExprKind::FnPtr(_)
             | frontend::ConstantExprKind::Memory(_)
             | frontend::ConstantExprKind::Todo(_) => ast::ExprKind::Error(assertion_failure(
@@ -549,11 +572,120 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
                 &span,
             )),
         };
-        ast::Expr {
-            kind: Box::new(kind),
-            ty: ty.spanned_import(span.clone()),
-            meta: ast::Metadata { span, attributes },
+        kind.promote(ty.spanned_import(span.clone()), span)
+    }
+}
+
+fn import_block_expr(
+    block: &frontend::Block,
+    ty: &frontend::Ty,
+    full_span: ast::span::Span,
+    attributes: Vec<ast::Attribute>,
+) -> ast::Expr {
+    let typ = ty.spanned_import(full_span.clone());
+    let safety_mode = match block.safety_mode {
+        frontend::BlockSafety::Safe => ast::SafetyKind::Safe,
+        frontend::BlockSafety::BuiltinUnsafe | frontend::BlockSafety::ExplicitUnsafe => {
+            ast::SafetyKind::Unsafe
         }
+    };
+    let mut stmts = block.stmts.clone();
+    let mut tail_expr: Option<frontend::Expr> = block.expr.clone();
+
+    if tail_expr.is_none() && matches!(ty.kind(), frontend::TyKind::Never) {
+        if let Some(frontend::Stmt {
+            kind: frontend::StmtKind::Expr { expr, .. },
+        }) = stmts.pop()
+        {
+            tail_expr = Some(expr);
+        }
+    }
+
+    let mut acc = if let Some(expr) = tail_expr {
+        let body = expr.import();
+        ast::ExprKind::Block { body, safety_mode }.promote(typ.clone(), full_span.clone())
+    } else {
+        ast::Expr::tuple(vec![], full_span.clone())
+    };
+
+    for stmt in stmts.into_iter().rev() {
+        match stmt.kind {
+            frontend::StmtKind::Expr { expr, .. } => {
+                let rhs = expr.import();
+                let lhs = ast::PatKind::Wild.promote(rhs.ty.clone(), rhs.meta.span.clone());
+                acc = ast::ExprKind::Let {
+                    lhs,
+                    rhs,
+                    body: acc,
+                }
+                .promote(typ.clone(), full_span.clone());
+            }
+            frontend::StmtKind::Let {
+                pattern,
+                initializer,
+                else_block,
+                ..
+            } => {
+                let Some(init) = initializer else {
+                    return ast::Expr {
+                        kind: Box::new(ast::ExprKind::Error(unsupported(
+                            "Sorry, Hax does not support declare-first let bindings (see https://doc.rust-lang.org/rust-by-example/variable_bindings/declare.html) for now.",
+                            156,
+                            &full_span,
+                        ))),
+                        ty: typ,
+                        meta: ast::Metadata {
+                            span: full_span,
+                            attributes,
+                        },
+                    };
+                };
+                let lhs = pattern.import();
+                let rhs = init.import();
+                let body = acc;
+                if let Some(else_block) = else_block {
+                    let else_span = else_block.span.import();
+                    let mut else_expr =
+                        import_block_expr(&else_block, ty, else_span.clone(), Vec::new());
+                    else_expr.ty = body.ty.clone();
+                    let arm_then = ast::Arm {
+                        pat: lhs,
+                        body,
+                        guard: None,
+                        meta: ast::Metadata {
+                            span: full_span.clone(),
+                            attributes: Vec::new(),
+                        },
+                    };
+                    let arm_else = ast::Arm {
+                        pat: ast::PatKind::Wild.promote(arm_then.pat.ty.clone(), else_span),
+                        body: else_expr,
+                        guard: None,
+                        meta: ast::Metadata {
+                            span: full_span.clone(),
+                            attributes: Vec::new(),
+                        },
+                    };
+                    acc = ast::ExprKind::Match {
+                        scrutinee: rhs,
+                        arms: vec![arm_then, arm_else],
+                    }
+                    .promote(typ.clone(), full_span.clone())
+                } else {
+                    acc = ast::ExprKind::Let { lhs, rhs, body }
+                        .promote(typ.clone(), full_span.clone())
+                }
+            }
+        }
+    }
+
+    ast::Expr {
+        ty: typ,
+        meta: ast::Metadata {
+            span: full_span,
+            attributes,
+        },
+        ..acc
     }
 }
 
@@ -610,50 +742,6 @@ impl Import<ast::Expr> for frontend::Expr {
             frontend::AssignOp::BitOrAssign => frontend::BinOp::BitOr,
             frontend::AssignOp::ShlAssign => frontend::BinOp::Shl,
             frontend::AssignOp::ShrAssign => frontend::BinOp::Shr,
-        };
-        let unit_ty = || {
-            ast::Ty(Box::new(ast::TyKind::App {
-                head: TupleId::Type { length: 0 }.into(),
-                args: Vec::new(),
-            }))
-        };
-        let unit_expr = |span: ast::span::Span| ast::Expr {
-            kind: Box::new(ast::ExprKind::Construct {
-                constructor: ast::GlobalId::unit_constructor(),
-                is_record: false,
-                is_struct: true,
-                fields: Vec::new(),
-                base: None,
-            }),
-            ty: unit_ty(),
-            meta: ast::Metadata {
-                span,
-                attributes: Vec::new(),
-            },
-        };
-        let mk_app = |id: ast::GlobalId,
-                      inputs: Vec<ast::Ty>,
-                      output: ast::Ty,
-                      args: Vec<ast::Expr>,
-                      span: ast::span::Span| {
-            let head = ast::Expr {
-                kind: Box::new(ast::ExprKind::GlobalId(id)),
-                ty: ast::Ty(Box::new(ast::TyKind::Arrow {
-                    inputs,
-                    output: output.clone(),
-                })),
-                meta: ast::Metadata {
-                    span: span.clone(),
-                    attributes: Vec::new(),
-                },
-            };
-            ast::ExprKind::App {
-                head,
-                args,
-                generic_args: Vec::new(),
-                bounds_impls: Vec::new(),
-                trait_: None,
-            }
         };
         let kind = match contents.as_ref() {
             frontend::ExprKind::Box { value } => {
@@ -721,13 +809,37 @@ impl Import<ast::Expr> for frontend::Expr {
                 if args.is_empty() {
                     args.push(ast::Expr::tuple(vec![], span.clone()));
                 }
-                let head = fun.import();
-                ast::ExprKind::App {
-                    head,
-                    args,
-                    generic_args: Vec::new(),
-                    bounds_impls: Vec::new(),
-                    trait_: None,
+                if let frontend::ExprKind::GlobalName { item, .. } = fun.contents.as_ref() {
+                    let mut head = fun.import();
+                    head.kind = Box::new(ast::ExprKind::GlobalId(item.contents().def_id.import()));
+                    let generic_args = item.contents().generic_args.spanned_import(span.clone());
+                    let bounds_impls = item
+                        .contents()
+                        .impl_exprs
+                        .iter()
+                        .map(|ie| ie.spanned_import(span.clone()))
+                        .collect();
+                    let trait_ = item.contents().in_trait.as_ref().map(|ie| {
+                        let impl_expr = ie.spanned_import(span.clone());
+                        let args = impl_expr.goal.args.clone();
+                        (impl_expr, args)
+                    });
+                    ast::ExprKind::App {
+                        head,
+                        args,
+                        generic_args,
+                        bounds_impls,
+                        trait_,
+                    }
+                } else {
+                    let head = fun.import();
+                    ast::ExprKind::App {
+                        head,
+                        args,
+                        generic_args: Vec::new(),
+                        bounds_impls: Vec::new(),
+                        trait_: None,
+                    }
                 }
             }
             frontend::ExprKind::Deref { arg } => {
@@ -781,28 +893,32 @@ impl Import<ast::Expr> for frontend::Expr {
                 )
             }
             frontend::ExprKind::Cast { source } => {
-                // agent instruction: when concrete types, use the cast operator for the type
-                mk_app(
+                let source_ty = source.ty.spanned_import(span.clone());
+                let result_ty = ty.spanned_import(span.clone());
+                let cast_id = if let ast::TyKind::App { head, .. } = source_ty.0.as_ref() {
+                    if head.expect_tuple().is_none() {
+                        Some(head.with_suffix(ReservedSuffix::Cast))
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+                let id = cast_id.unwrap_or(crate::names::rust_primitives::hax::cast_op);
+                ast::ExprKind::standalone_fn_app(
                     id,
-                    vec![arg_ty.clone()],
+                    vec![],
+                    vec![source.import()],
                     result_ty,
-                    vec![arg.import()],
                     span.clone(),
                 )
             }
-            frontend::ExprKind::Cast { source } => mk_app(
-                crate::names::rust_primitives::hax::cast_op,
-                vec![source.ty.spanned_import(span.clone())],
-                ty.spanned_import(span.clone()),
-                vec![source.import()],
-                span.clone(),
-            ),
             frontend::ExprKind::Use { source } => return source.import(),
-            frontend::ExprKind::NeverToAny { source } => mk_app(
+            frontend::ExprKind::NeverToAny { source } => ast::ExprKind::standalone_fn_app(
                 crate::names::rust_primitives::hax::never_to_any,
-                vec![source.ty.spanned_import(span.clone())],
-                ty.spanned_import(span.clone()),
+                vec![],
                 vec![source.import()],
+                ty.spanned_import(span.clone()),
                 span.clone(),
             ),
             frontend::ExprKind::PointerCoercion { cast, source } => {
@@ -870,29 +986,11 @@ impl Import<ast::Expr> for frontend::Expr {
                     })
                     .collect(),
             },
-            frontend::ExprKind::Let { expr, pat } => {
+            frontend::ExprKind::Let { expr: _, pat: _ } => {
                 panic!("Let nodes are preprocessed (those are the ones contained in `if let ...`)")
             }
             frontend::ExprKind::Block { block } => {
-                // agent instruction: this is incorrect, replicate Ocaml's c_block logic (put that in an helper)
-                if let Some(expr) = block.expr.as_ref() {
-                    return expr.import();
-                }
-                let kind = ast::ExprKind::Construct {
-                    constructor: ast::GlobalId::unit_constructor(),
-                    is_record: false,
-                    is_struct: true,
-                    fields: Vec::new(),
-                    base: None,
-                };
-                return ast::Expr {
-                    kind: Box::new(kind),
-                    ty: ty.spanned_import(span.clone()),
-                    meta: ast::Metadata {
-                        span: block.span.import(),
-                        attributes: attributes.clone(),
-                    },
-                };
+                return import_block_expr(block, ty, span.clone(), attributes.clone());
             }
             frontend::ExprKind::Assign { lhs, rhs } => ast::ExprKind::Assign {
                 lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import())),
@@ -960,6 +1058,17 @@ impl Import<ast::Expr> for frontend::Expr {
                 constructor: _,
             } => {
                 let ident = item.contents().def_id.import();
+                if let Some(TupleId::Constructor { length: 0 }) = ident.expect_tuple() {
+                    return ast::ExprKind::Construct {
+                        constructor: ident,
+                        is_record: false,
+                        is_struct: true,
+                        fields: Vec::new(),
+                        base: None,
+                    }
+                    .promote(ty.spanned_import(span.clone()), span);
+                }
+
                 ast::ExprKind::GlobalId(ident)
             }
             frontend::ExprKind::UpvarRef {
@@ -1729,7 +1838,13 @@ fn expect_body<'a, Body>(
     optional: &'a Option<Body>,
     span: &ast::span::Span,
 ) -> Result<&'a Body, ast::ErrorNode> {
-    optional.as_ref().ok_or(failure("Expected body", span))
+    optional
+        .as_ref()
+        .ok_or_else(|| assertion_failure("Expected body", span))
+}
+
+fn missing_associated_item() -> core::convert::Infallible {
+    panic!("All assoc items should be included in the list of items produced by the frontend.")
 }
 
 use std::collections::HashMap;
@@ -1864,34 +1979,68 @@ pub fn import_item(
                     .map(|ga| ga.spanned_import(span.clone()))
                     .collect(),
             );
+
             let parent_bounds = implied_impl_exprs.spanned_import(span.clone());
-            let items = items.iter().map(|assoc_item| {
-                let ident = assoc_item.decl_def_id.import();
-                let assoc_item_def = all_items.get(&assoc_item.decl_def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
-                let span = assoc_item_def.span.import();
-                let attributes = assoc_item_def.attributes.import();
-                let (generics, kind) = match assoc_item_def.kind() {
-                    frontend::FullDefKind::AssocTy { param_env, value, .. } =>
-                    (param_env.import(),match expect_body(value, &span) {
-                      Ok(body) =>  ast::ImplItemKind::Type { ty: body.spanned_import(span.clone()), parent_bounds: assoc_item.required_impl_exprs.spanned_import(span.clone()) },
-                      Err(error) => ast::ImplItemKind::Error(error),
-                    }),
-                    frontend::FullDefKind::AssocFn { param_env, body, .. } =>
-                       (param_env.import(), match expect_body(body, &span) { Ok(body) =>
-                        ast::ImplItemKind::Fn { body: body.import(), params: body.params.spanned_import(span.clone()) }, Err(error) => ast::ImplItemKind::Error(error)}),
-                    frontend::FullDefKind::AssocConst { param_env, body, .. } =>
-                      (param_env.import(), match expect_body(body, &span) { Ok(body) =>ast::ImplItemKind::Fn { body: body.import(), params: Vec::new() },
-                    Err(error) => ast::ImplItemKind::Error(error)}
-                    ),
-                    _ => unreachable!("All pointers to associated items should correspond to an actual associated item definition.")
-                };
-                ast::ImplItem {
-                    meta: ast::Metadata { span, attributes },
-                    generics,
-                    kind,
-                    ident,
-                }
-            }).collect();
+            let items = items
+                .iter()
+                .map(|assoc_item| {
+                    let ident = assoc_item.decl_def_id.import();
+                    let assoc_item_def = all_items.get(&assoc_item.decl_def_id).unwrap_or_else(
+                        #[allow(unreachable_code)]
+                        || match missing_associated_item() {},
+                    );
+                    let span = assoc_item_def.span.import();
+                    let attributes = assoc_item_def.attributes.import();
+                    let (generics, kind) = match assoc_item_def.kind() {
+                        frontend::FullDefKind::AssocTy {
+                            param_env, value, ..
+                        } => (
+                            param_env.import(),
+                            match expect_body(value, &span) {
+                                Ok(body) => ast::ImplItemKind::Type {
+                                    ty: body.spanned_import(span.clone()),
+                                    parent_bounds: assoc_item
+                                        .required_impl_exprs
+                                        .spanned_import(span.clone()),
+                                },
+                                Err(error) => ast::ImplItemKind::Error(error),
+                            },
+                        ),
+                        frontend::FullDefKind::AssocFn {
+                            param_env, body, ..
+                        } => (
+                            param_env.import(),
+                            match expect_body(body, &span) {
+                                Ok(body) => ast::ImplItemKind::Fn {
+                                    body: body.import(),
+                                    params: body.params.spanned_import(span.clone()),
+                                },
+                                Err(error) => ast::ImplItemKind::Error(error),
+                            },
+                        ),
+                        frontend::FullDefKind::AssocConst {
+                            param_env, body, ..
+                        } => (
+                            param_env.import(),
+                            match expect_body(body, &span) {
+                                Ok(body) => ast::ImplItemKind::Fn {
+                                    body: body.import(),
+                                    params: Vec::new(),
+                                },
+                                Err(error) => ast::ImplItemKind::Error(error),
+                            },
+                        ),
+                        #[allow(unreachable_code)]
+                        _ => match missing_associated_item() {},
+                    };
+                    ast::ImplItem {
+                        meta: ast::Metadata { span, attributes },
+                        generics,
+                        kind,
+                        ident,
+                    }
+                })
+                .collect();
 
             if let [ast::GenericValue::Ty(self_ty), ..] = &of_trait.1[..] {
                 ast::ItemKind::Impl {
