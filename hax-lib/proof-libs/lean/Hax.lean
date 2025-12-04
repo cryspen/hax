@@ -26,3 +26,6 @@ import Hax.Tactics
 
 /- Core -/
 import Hax.Core
+
+/- Additions to the Lean library -/
+import Hax.MissingLean
