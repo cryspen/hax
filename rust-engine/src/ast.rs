@@ -48,14 +48,6 @@ pub enum GenericValue {
     Lifetime,
 }
 
-impl GenericValue {
-    /// Tries to extract a [`Ty`] out of a [`GenericValue`].
-    pub fn expect_ty(&self) -> Option<&Ty> {
-        let Self::Ty(ty) = self else { return None };
-        Some(ty)
-    }
-}
-
 /// Built-in primitive types.
 #[derive_group_for_ast]
 pub enum PrimitiveTy {
@@ -200,22 +192,6 @@ pub enum TyKind {
     Error(ErrorNode),
 }
 
-impl TyKind {
-    /// Tuple type
-    pub fn tuple(args: Vec<GenericValue>) -> Self {
-        let head = global_id::TupleId::Type { length: args.len() }.into();
-        Self::App { head, args }
-    }
-    /// Unit type
-    pub fn unit() -> Self {
-        Self::tuple(Vec::new())
-    }
-    /// Promote to a Ty
-    pub fn promote(self) -> Ty {
-        Ty(Box::new(self))
-    }
-}
-
 #[derive_group_for_ast]
 /// Represent a node of the AST where an error occurred.
 pub struct ErrorNode {
@@ -308,21 +284,6 @@ pub struct Arm {
     pub guard: Option<Guard>,
     /// Source span and attributes.
     pub meta: Metadata,
-}
-
-impl Arm {
-    /// Create a non-guarded arm
-    pub fn non_guarded(pat: Pat, body: Expr, span: Span) -> Self {
-        Self {
-            pat,
-            body,
-            guard: None,
-            meta: Metadata {
-                span,
-                attributes: Vec::new(),
-            },
-        }
-    }
 }
 
 /// A pattern matching arm guard with metadata.
@@ -465,29 +426,6 @@ pub enum PatKind {
 
     /// Fallback constructor to carry errors.
     Error(ErrorNode),
-}
-
-impl PatKind {
-    /// Pattern for binding to a single variable
-    pub fn var_pat(var: LocalId) -> Self {
-        Self::Binding {
-            mutable: false,
-            var,
-            mode: BindingMode::ByValue,
-            sub_pat: None,
-        }
-    }
-    /// Promote to a `Pat`
-    pub fn promote(self, ty: Ty, span: Span) -> Pat {
-        Pat {
-            kind: Box::new(self),
-            ty,
-            meta: Metadata {
-                span,
-                attributes: Vec::new(),
-            },
-        }
-    }
 }
 
 /// Represents the various kinds of pattern guards.
@@ -1162,20 +1100,6 @@ pub enum ExprKind {
     Error(ErrorNode),
 }
 
-impl ExprKind {
-    /// Promote to an `Expr`
-    pub fn promote(self, ty: Ty, span: Span) -> Expr {
-        Expr {
-            kind: Box::new(self),
-            ty,
-            meta: Metadata {
-                span,
-                attributes: Vec::new(),
-            },
-        }
-    }
-}
-
 /// Represents the kinds of generic parameters
 #[derive_group_for_ast]
 pub enum GenericParamKind {
@@ -1255,22 +1179,6 @@ pub struct Generics {
     pub params: Vec<GenericParam>,
     /// A vector of generic constraints.
     pub constraints: Vec<GenericConstraint>,
-}
-
-impl Generics {
-    /// Concatenate two generics
-    pub fn concat(mut self, other: Self) -> Self {
-        self.constraints.extend(other.constraints);
-        self.params.extend(other.params);
-        use std::cmp::Ordering;
-        self.params.sort_by(|a, b| match (a.kind(), b.kind()) {
-            (GenericParamKind::Lifetime, GenericParamKind::Lifetime) => Ordering::Equal,
-            (GenericParamKind::Lifetime, _) => Ordering::Less,
-            (_, GenericParamKind::Lifetime) => Ordering::Greater,
-            _ => Ordering::Equal,
-        });
-        self
-    }
 }
 
 /// Safety level of a function.
@@ -1567,20 +1475,6 @@ pub enum ItemKind {
 
     /// Item that is not implemented yet
     NotImplementedYet,
-}
-
-impl ItemKind {
-    /// Promote to an item
-    pub fn promote(self, ident: GlobalId, span: Span) -> Item {
-        Item {
-            ident,
-            kind: self,
-            meta: Metadata {
-                span,
-                attributes: Vec::new(),
-            },
-        }
-    }
 }
 
 /// A top-level item with metadata.
