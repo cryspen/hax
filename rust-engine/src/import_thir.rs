@@ -1075,6 +1075,7 @@ pub fn import_item(
                         import_trait_item(item)
                     })
                     .collect(),
+                safety: ast::SafetyKind::Safe, // TODO(missing) add safety to traits in the frontend
             }
         }
 
@@ -1211,18 +1212,16 @@ pub fn import_item(
             sig,
             body,
             ..
-        } => {
-            match expect_body(body, &span) {
-                Ok(body) => ast::ItemKind::Fn {
-                    name: ident,
-                    generics: param_env.import(),
-                    body: body.import(),
-                    params: body.params.spanned_import(span.clone()),
-                    safety: sig.value.safety.import(),
-                },
-                Err(err) => ast::ItemKind::Error(err),
-            }
-        }
+        } => match expect_body(body, &span) {
+            Ok(body) => ast::ItemKind::Fn {
+                name: ident,
+                generics: param_env.import(),
+                body: body.import(),
+                params: body.params.spanned_import(span.clone()),
+                safety: sig.value.safety.import(),
+            },
+            Err(err) => ast::ItemKind::Error(err),
+        },
         frontend::FullDefKind::Closure { .. } => {
             ast::ItemKind::Error(failure("Closure item", &span))
         }
