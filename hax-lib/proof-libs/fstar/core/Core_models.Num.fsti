@@ -161,7 +161,7 @@ val impl_u64__from_be_bytes: t_Array u8 (sz 8) -> u64
 val impl_u64__to_le_bytes: u64 -> t_Array u8 (sz 8)
 val impl_u64__to_be_bytes: (x: u64) -> Pure (t_Array u8 (sz 8))
   (requires True) (ensures (fun res -> impl_u64__from_be_bytes res =. x))
-val impl_u64__rotate_right: u64 -> u64 -> u64
+val impl_u64__rotate_right: u64 -> u32 -> u64
 let impl_u64__overflowing_sub (x y: u64): u64 * bool
   = let sub = v x - v y in
     let borrow = sub < 0 in
