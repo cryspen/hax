@@ -1075,7 +1075,7 @@ pub fn import_item(
                         import_trait_item(item)
                     })
                     .collect(),
-                safety: ast::SafetyKind::Safe, // TODO(missing) add safety to traits in the frontend
+                safety: ast::SafetyKind::Safe, // TODO(missing) #1763 add safety to traits in the frontend
             }
         }
 
@@ -1124,7 +1124,7 @@ pub fn import_item(
                     }),// TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
                     frontend::FullDefKind::AssocFn { param_env, body, .. } =>
                        (param_env.import(), match expect_body(body, &span) { Ok(body) =>
-                        ast::ImplItemKind::Fn { body: body.import(), params: Vec::new() }, Err(error) => ast::ImplItemKind::Error(error)}),// TODO(missing) #1763 Change TyFnSignature to add parameter binders (change the body type in THIR to be a tuple (expr,param))
+                        ast::ImplItemKind::Fn { body: body.import(), params: body.params.spanned_import(span.clone()) }, Err(error) => ast::ImplItemKind::Error(error)}),
                     frontend::FullDefKind::AssocConst { param_env, body, .. } =>
                       (param_env.import(), match expect_body(body, &span) { Ok(body) =>ast::ImplItemKind::Fn { body: body.import(), params: Vec::new() },
                     Err(error) => ast::ImplItemKind::Error(error)}
@@ -1184,7 +1184,7 @@ pub fn import_item(
                                     name: ident,
                                     generics,
                                     body: body.import(),
-                                    params: Vec::new(), // TODO(missing) #1763 Change TyFnSignature to add parameter binders
+                                    params: body.params.spanned_import(span.clone()),
                                     safety: sig.value.safety.import(),
                                 },
                                 Err(err) => ast::ItemKind::Error(err)
