@@ -263,6 +263,7 @@ pub struct FieldDef {
     pub vis: Visibility<DefId>,
     pub ty: Ty,
     pub span: Span,
+    pub attributes: Vec<Attribute>,
 }
 
 #[cfg(feature = "rustc")]
@@ -291,6 +292,7 @@ impl FieldDef {
             vis: fdef.vis.sinto(s),
             ty,
             span: tcx.def_span(fdef.did).sinto(s),
+            attributes: get_def_attrs(tcx, fdef.did, get_def_kind(tcx, fdef.did)).sinto(s),
         }
     }
 }
@@ -310,6 +312,7 @@ pub struct VariantDef {
     pub fields: IndexVec<FieldIdx, FieldDef>,
     /// Span of the definition of the variant
     pub span: Span,
+    pub attributes: Vec<Attribute>,
 }
 
 #[cfg(feature = "rustc")]
@@ -335,6 +338,7 @@ impl VariantDef {
                 .map(|f| FieldDef::sfrom(s, f, instantiate))
                 .collect(),
             span: s.base().tcx.def_span(def.def_id).sinto(s),
+            attributes: get_def_attrs(tcx, def.def_id, get_def_kind(tcx, def.def_id)).sinto(s),
         }
     }
 }
@@ -868,6 +872,13 @@ pub struct GenericParamDef {
         }
     })]
     pub variance: Option<Variance>,
+    #[value(s.base().tcx.def_span(self.def_id).sinto(s))]
+    pub span: Span,
+    #[value({
+        let tcx = s.base().tcx;
+        get_def_attrs(tcx, self.def_id, get_def_kind(tcx, self.def_id)).sinto(s)
+    })]
+    pub attributes: Vec<Attribute>,
 }
 
 /// Reflects [`ty::GenericParamDefKind`]
