@@ -436,7 +436,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
 }
 
 impl SpannedImport<ast::literals::Literal> for frontend::ConstantLiteral {
-    fn spanned_import(&self, span: ast::span::Span) -> ast::literals::Literal {
+    fn spanned_import(&self, _span: ast::span::Span) -> ast::literals::Literal {
         match self {
             frontend::ConstantLiteral::Bool(b) => ast::literals::Literal::Bool(*b),
             frontend::ConstantLiteral::Char(c) => ast::literals::Literal::Char(*c),
@@ -468,13 +468,13 @@ impl SpannedImport<ast::literals::Literal> for frontend::ConstantLiteral {
             }
             frontend::ConstantLiteral::PtrNoProvenance(_) => {
                 panic!("constant literal: PtrNoProvenance")
-            } // TODO proper error
+            }
             frontend::ConstantLiteral::Str(s) => ast::literals::Literal::String(Symbol::new(s)),
             frontend::ConstantLiteral::ByteStr(items) => {
+                // Represent a byte string as an array of u8 literals, like the OCaml importer.
                 let s = String::from_utf8_lossy(items).to_string();
                 ast::literals::Literal::String(Symbol::new(&s))
-            } // TODO deal with this by returning an "extendedliteral", or return an expr_kind here
-              // which can be an array of literals (deal with it by making an array expr)
+            }
         }
     }
 }
@@ -569,17 +569,6 @@ impl Import<ast::Expr> for frontend::Expr {
         let span = span.import();
         let raw_attributes: Vec<Option<ast::Attribute>> = attributes.import();
         let attributes: Vec<ast::Attribute> = raw_attributes.into_iter().flatten().collect();
-        macro_rules! todo {
-            () => {
-                ast::ExprKind::Construct {
-                    constructor: ast::GlobalId::unit_constructor(),
-                    is_record: false,
-                    is_struct: true,
-                    fields: Vec::new(),
-                    base: None,
-                }
-            };
-        }
         let binop_id = |op: &frontend::BinOp| match op {
             frontend::BinOp::Add
             | frontend::BinOp::AddWithOverflow
@@ -1444,7 +1433,7 @@ impl Import<ast::Pat> for frontend::Pat {
             ty,
             span,
             contents,
-            hir_id,
+            hir_id: _,
             attributes,
         } = self;
         let span = span.import();
