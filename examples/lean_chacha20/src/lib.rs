@@ -242,8 +242,7 @@ theorem Lean_chacha20.chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ :=
 by
   intros
-  open Spec.BV in
-    mvcgen [Lean_chacha20.chacha20_update,
+  mvcgen [Lean_chacha20.chacha20_update,
       Alloc.Slice.Impl.to_vec,
       Core.Result.Impl.unwrap.spec,
       Alloc.Vec.Impl.new,

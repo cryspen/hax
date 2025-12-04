@@ -25,4 +25,7 @@ import Hax.Rust_primitives
 import Hax.Tactics
 
 /- Core -/
+import Hax.Grind
+
+/- Core -/
 import Hax.Core

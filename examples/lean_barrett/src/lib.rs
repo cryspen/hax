@@ -37,7 +37,7 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
       result == valid_result + FIELD_MODULUS ||
       result == valid_result - FIELD_MODULUS)
 })]
-#[hax_lib::lean::before("@[simp, spec]")]
+#[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
     "
 set_option maxHeartbeats 1000000 in
@@ -49,7 +49,7 @@ theorem barrett_spec (value: i32) :
     Lean_barrett.__5.ensures value result)
   ⦃ ⇓ post => ⌜post = true⌝ ⦄
 := by
-  open Spec.BV in mvcgen [Lean_barrett.__5.ensures]
+  mvcgen [Lean_barrett.__5.ensures]
   <;> simp_all! [Lean_barrett.__4.requires]
   hax_bv_decide
   simp [Int32.eq_iff_toBitVec_eq,
