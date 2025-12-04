@@ -155,8 +155,7 @@ impl Import<ast::Attributes> for Vec<frontend::Attribute> {
 
 impl Import<ast::GenericParam> for frontend::GenericParamDef {
     fn import(&self) -> ast::GenericParam {
-        // TODO #1763 missing span and attributes
-        let span = ast::span::Span::dummy();
+        let span = self.span.import();
         let frontend::GenericParamDef { name, kind, .. } = self;
         let kind = match kind {
             frontend::GenericParamDefKind::Lifetime => ast::GenericParamKind::Lifetime,
@@ -169,7 +168,7 @@ impl Import<ast::GenericParam> for frontend::GenericParamDef {
             ident: ast::LocalId(Symbol::new(name.clone())),
             meta: ast::Metadata {
                 span,
-                attributes: Vec::new(),
+                attributes: self.attributes.import(),
             },
             kind,
         }
@@ -1282,11 +1281,10 @@ impl Import<ast::Expr> for frontend::Expr {
 
 impl Import<(ast::GlobalId, ast::Ty, Vec<ast::Attribute>)> for frontend::FieldDef {
     fn import(&self) -> (ast::GlobalId, ast::Ty, Vec<ast::Attribute>) {
-        // TODO #1763 missing attributes on FieldDef
         (
             self.did.import(),
             self.ty.spanned_import(self.span.import()),
-            Vec::new(),
+            self.attributes.import(),
         )
     }
 }
@@ -1478,8 +1476,7 @@ impl Import<ast::Variant> for frontend::VariantDef {
             name: self.def_id.import(),
             arguments: self.fields.import(),
             is_record: self.fields.raw.first().is_some_and(|fd| fd.name.is_some()),
-            // TODO #1763 missing attributes on VariantDef
-            attributes: Vec::new(),
+            attributes: self.attributes.import(),
         }
     }
 }
@@ -1860,6 +1857,7 @@ pub fn import_item(
             param_env,
             implied_predicates,
             items,
+            safety,
             ..
         } => {
             let mut generics = param_env.import();
@@ -1877,7 +1875,7 @@ pub fn import_item(
                         import_trait_item(item)
                     })
                     .collect(),
-                safety: ast::SafetyKind::Safe, // TODO(missing) #1763 add safety to traits in the frontend
+                safety: safety.import(),
             }
         }
 

@@ -323,6 +323,8 @@ pub enum FullDefKind<Body> {
         /// `dyn Trait<Args.., Ty = <Self as Trait>::Ty..>` for this trait. This is `Some` iff this
         /// trait is dyn-compatible.
         dyn_self: Option<Ty>,
+        /// Whether it's a `unsafe trait`, or just a `trait`.
+        safety: Safety,
     },
     /// Trait alias: `trait IntIterator = Iterator<Item = i32>;`
     TraitAlias {
@@ -643,6 +645,7 @@ where
                     AssocItem::sfrom_instantiated(s, assoc, item_args)
                 })
                 .collect::<Vec<_>>(),
+            safety: tcx.trait_def(def_id).safety.sinto(s),
         },
         RDefKind::TraitAlias { .. } => FullDefKind::TraitAlias {
             param_env: get_param_env(s, args),
