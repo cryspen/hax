@@ -233,4 +233,10 @@ impl AstVisitorMut for ExplicitMonadicVisitor {
             self.visit_expr_coerce(MonadicStatus::Value, length);
         };
     }
+
+    fn visit_generic_value(&mut self, x: &mut GenericValue) {
+        if let GenericValue::Expr(expr) = x {
+            self.visit_expr_coerce(MonadicStatus::Value, expr);
+        };
+    }
 }

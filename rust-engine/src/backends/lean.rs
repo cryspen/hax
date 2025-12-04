@@ -335,6 +335,30 @@ const _: () = {
         ) -> String {
             format!("_constr_{}_{}", associated_type_name, constraint.name)
         }
+
+        /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
+        /// reflexivity as a proof witness.
+        fn monad_extract<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+            match *expr.kind() {
+                ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) => {
+                    // Pure values are displayed directly. Note that constructors, while pure, may
+                    // contain sub-expressions that are not, so they must be wrapped in a do-block
+                    docs![expr]
+                }
+                _ => {
+                    // All other expressions are wrapped in a do-block, and extracted out of the monad
+                    docs![
+                        "RustM.of_isOk",
+                        line!(),
+                        self.do_block(expr).parens(),
+                        line!(),
+                        "(by rfl)"
+                    ]
+                    .group()
+                    .nest(INDENT)
+                }
+            }
+        }
     }
 
     impl<A: 'static + Clone> PrettyAst<A> for LeanPrinter {
@@ -423,9 +447,17 @@ set_option linter.unusedVariables false
                     .parens()
                     .group(),
                 GenericParamKind::Lifetime => unreachable_by_invariant!(Drop_references),
-                GenericParamKind::Const { .. } => {
-                    emit_error!(issue 1711, "Const parameters are not yet supported")
-                }
+                GenericParamKind::Const { ty } => docs![&generic_param.ident, reflow!(" : "), ty]
+                    .parens()
+                    .group(),
+            }
+        }
+
+        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
+            match generic_value {
+                GenericValue::Ty(ty) => docs![ty],
+                GenericValue::Expr(expr) => docs![self.monad_extract(expr)].parens(),
+                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
             }
         }
 
@@ -463,15 +495,14 @@ set_option linter.unusedVariables false
                         }
                         _ => {
                             // Fallback for any application
-                            let generic_args = (!generic_args.is_empty()).then_some(
-                                docs![line!(), intersperse!(generic_args, line!())].group(),
-                            );
-                            let args = (!args.is_empty())
-                                .then_some(docs![line!(), intersperse!(args, line!())].group());
-                            docs![head, generic_args, args]
-                                .parens()
-                                .nest(INDENT)
-                                .group()
+                            docs![
+                                head,
+                                zip_left!(line!(), generic_args).group(),
+                                zip_left!(line!(), args).group(),
+                            ]
+                            .parens()
+                            .nest(INDENT)
+                            .group()
                         }
                     }
                 }
@@ -840,14 +871,6 @@ set_option linter.unusedVariables false
             }]
         }
 
-        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
-            match generic_value {
-                GenericValue::Ty(ty) => docs![ty],
-                GenericValue::Expr(expr) => docs![expr],
-                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
-            }
-        }
-
         fn quote_content(&self, quote_content: &QuoteContent) -> DocBuilder<A> {
             match quote_content {
                 QuoteContent::Verbatim(s) => {
@@ -1071,15 +1094,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         line!(),
-                        docs![
-                            "RustM.of_isOk",
-                            line!(),
-                            self.do_block(body).parens(),
-                            line!(),
-                            "(by rfl)"
-                        ]
-                        .group()
-                        .nest(INDENT)
+                        self.monad_extract(body),
                     ]
                     .group()
                     .nest(INDENT),

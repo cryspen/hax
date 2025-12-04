@@ -36,6 +36,7 @@ Changes to the Lean backend:
  - Add support for pattern matching on constant literals (#1789)
  - Add support for binding subpatterns in match constructs (#1790)
  - Add error when using patterns in function parameters (#1792)
+ - Add support for constant parameters to functions and traits (#1797)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
