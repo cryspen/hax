@@ -2160,8 +2160,27 @@ pub fn import_item(
             },
             Err(err) => ast::ItemKind::Error(err),
         },
+        frontend::FullDefKind::Use(Some((
+            frontend::UsePath {
+                res,
+                segments,
+                rename,
+                ..
+            },
+            _,
+        ))) => ast::ItemKind::Use {
+            path: segments
+                .iter()
+                .map(|segment| &segment.ident.0)
+                .cloned()
+                .collect(),
+            is_external: res
+                .iter()
+                .any(|x| matches!(x, None | Some(frontend::Res::Err))),
+            rename: rename.clone(),
+        },
         frontend::FullDefKind::ExternCrate
-        | frontend::FullDefKind::Use
+        | frontend::FullDefKind::Use { .. }
         | frontend::FullDefKind::TyParam
         | frontend::FullDefKind::ConstParam
         | frontend::FullDefKind::LifetimeParam
