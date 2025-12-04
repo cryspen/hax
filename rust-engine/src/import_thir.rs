@@ -197,6 +197,23 @@ impl Import<Vec<ast::GenericParam>> for frontend::TyGenerics {
     }
 }
 
+impl SpannedImport<Vec<(ast::ImplExpr, ast::ImplIdent)>> for Vec<frontend::ImplExpr> {
+    fn spanned_import(&self, span: ast::span::Span) -> Vec<(ast::ImplExpr, ast::ImplIdent)> {
+        let impl_exprs: Vec<ast::ImplExpr> = self.spanned_import(span);
+        impl_exprs
+            .into_iter()
+            .enumerate()
+            .map(|(i, ie)| {
+                let impl_ident = ast::ImplIdent {
+                    goal: ie.goal.clone(),
+                    name: impl_expr_name(i as u64),
+                };
+                (ie, impl_ident)
+            })
+            .collect()
+    }
+}
+
 impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
     fn spanned_import(&self, span: ast::span::Span) -> Option<ast::GenericConstraint> {
         match &self.kind.value {
@@ -1884,29 +1901,18 @@ pub fn import_item(
                     .map(|ga| ga.spanned_import(span.clone()))
                     .collect(),
             );
-            let parent_bounds = implied_impl_exprs
-                .iter()
-                .enumerate()
-                .map(|(i, impl_expr)| {
-                    let ie = impl_expr.spanned_import(span.clone());
-                    let impl_ident = ast::ImplIdent {
-                        goal: ie.goal.clone(),
-                        name: impl_expr_name(i as u64),
-                    };
-                    (ie, impl_ident)
-                })
-                .collect();
+            let parent_bounds = implied_impl_exprs.spanned_import(span.clone());
             let items = items.iter().map(|assoc_item| {
                 let ident = assoc_item.decl_def_id.import();
-                let assoc_item = all_items.get(&assoc_item.decl_def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
-                let span = assoc_item.span.import();
-                let attributes = assoc_item.attributes.import();
-                let (generics, kind) = match assoc_item.kind() {
+                let assoc_item_def = all_items.get(&assoc_item.decl_def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
+                let span = assoc_item_def.span.import();
+                let attributes = assoc_item_def.attributes.import();
+                let (generics, kind) = match assoc_item_def.kind() {
                     frontend::FullDefKind::AssocTy { param_env, value, .. } =>
                     (param_env.import(),match expect_body(value, &span) {
-                      Ok(body) =>  ast::ImplItemKind::Type { ty: body.spanned_import(span.clone()), parent_bounds: Vec::new() },
+                      Ok(body) =>  ast::ImplItemKind::Type { ty: body.spanned_import(span.clone()), parent_bounds: assoc_item.required_impl_exprs.spanned_import(span.clone()) },
                       Err(error) => ast::ImplItemKind::Error(error),
-                    }),// TODO(missing) #1763 ImplExpr for associated types in trait impls (check in the item?)
+                    }),
                     frontend::FullDefKind::AssocFn { param_env, body, .. } =>
                        (param_env.import(), match expect_body(body, &span) { Ok(body) =>
                         ast::ImplItemKind::Fn { body: body.import(), params: body.params.spanned_import(span.clone()) }, Err(error) => ast::ImplItemKind::Error(error)}),
