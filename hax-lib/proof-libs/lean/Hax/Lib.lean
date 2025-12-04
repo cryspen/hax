@@ -190,19 +190,21 @@ abbrev isize := ISize
 class ToNat (α: Type) where
   toNat : α -> Nat
 
-@[simp]
+attribute [grind] ToNat.toNat
+
+@[simp, grind]
 instance : ToNat usize where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat u64 where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat u32 where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat u16 where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat Nat where
   toNat x := x
 

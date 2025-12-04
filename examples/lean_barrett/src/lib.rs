@@ -37,7 +37,7 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
       result == valid_result + FIELD_MODULUS ||
       result == valid_result - FIELD_MODULUS)
 })]
-#[hax_lib::lean::before("@[simp, spec]")]
+#[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
     "
 set_option maxHeartbeats 1000000 in
