@@ -898,11 +898,17 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-                ItemKind::TyAlias {
+                ItemKind::TyAlias { name, generics, ty } => docs![
+                    "abbrev ",
                     name,
-                    generics: _,
-                    ty,
-                } => docs!["abbrev ", name, reflow!(" := "), ty].group(),
+                    line!(),
+                    generics,
+                    reflow!(": Type :="),
+                    line!(),
+                    ty
+                ]
+                .nest(INDENT)
+                .group(),
                 ItemKind::Use {
                     path: _,
                     is_external: _,

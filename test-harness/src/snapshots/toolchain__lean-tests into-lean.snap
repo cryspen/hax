@@ -800,6 +800,26 @@ def Lean_tests.binop_resugarings (x : u32) : RustM u32 := do
   let lshift : u32 ← (div <<<? x);
   (pure x)
 
+abbrev Lean_tests.Types.UsizeAlias : Type := usize
+
+abbrev Lean_tests.Types.MyOption (A : Type) : Type := (Core.Option.Option A)
+
+abbrev Lean_tests.Types.MyResult
+  (A : Type) (B : Type) : Type :=
+  (Core.Result.Result (Core.Option.Option A) B)
+
+abbrev Lean_tests.Types.ErrorMonad
+  (A : Type) (E : Type) : Type :=
+  (Core.Result.Result A E)
+
+abbrev Lean_tests.Types.StateMonad
+  (A : Type) (S : Type) : Type :=
+  (Rust_primitives.Hax.Tuple2 A S)
+
+abbrev Lean_tests.Types.ESMonad
+  (A : Type) (S : Type) (E : Type) : Type :=
+  (Rust_primitives.Hax.Tuple2 (Core.Result.Result A E) S)
+
 def Lean_tests.Reject_do_dsl.rejected
   (_ : Rust_primitives.Hax.Tuple0)
   : RustM Rust_primitives.Hax.Tuple0

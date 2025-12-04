@@ -12,6 +12,7 @@ pub mod monadic;
 pub mod reject_do_dsl;
 pub mod structs;
 pub mod traits;
+pub mod types;
 
 const FORTYTWO: usize = 42;
 const MINUS_FORTYTWO: isize = -42;
