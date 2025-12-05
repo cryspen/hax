@@ -243,7 +243,7 @@ const _: () = {
         };
     }
 
-    // Methods for handling arguments of variants (or struct constructor)
+    // Extra methods, specific to the LeanPrinter
     impl LeanPrinter {
         /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
         /// on the `is_record` flag. Used for both expressions and patterns
@@ -326,14 +326,11 @@ const _: () = {
             docs!["do", line!(), body].group()
         }
 
-        /// Produces a fresh name for a constraint on an associated type. It needs a fresh name to
-        /// be added as an extra field
-        fn fresh_constraint_name(
-            &self,
-            associated_type_name: &String,
-            constraint: &ImplIdent,
-        ) -> String {
-            format!("_constr_{}_{}", associated_type_name, constraint.name)
+        /// Produces a name for a constraint on an trait-level constraint, or an associated
+        /// type. The name is obtained by combining the type it applies to and the name of the
+        /// constraint (and should be unique)
+        fn constraint_name(&self, type_name: &String, constraint: &ImplIdent) -> String {
+            format!("_constr_{}_{}", type_name, constraint.name)
         }
 
         /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
@@ -1018,7 +1015,7 @@ set_option linter.unusedVariables false
                                 .map(|constraint: &GenericConstraint| {
                                     match constraint {
                                         GenericConstraint::Type(tc_constraint) => docs![
-                                            self.fresh_constraint_name(&self.render_last(name), tc_constraint),
+                                            self.constraint_name(&self.render_last(name), tc_constraint),
                                             " :",
                                             line!(),
                                             constraint
@@ -1126,7 +1123,7 @@ set_option linter.unusedVariables false
                         concat!(constraints.iter().map(|c| docs![
                             hardline!(),
                             docs![
-                                self.fresh_constraint_name(&name, c),
+                                self.constraint_name(&name, c),
                                 reflow!(" :"),
                                 line!(),
                                 &c.goal
