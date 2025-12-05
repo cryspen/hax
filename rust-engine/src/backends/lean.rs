@@ -400,6 +400,77 @@ const _: () = {
                 }
             }
         }
+
+        /// Print trait items, adding trait-level params as extra arguments
+        fn trait_item_with_trait_params<A: 'static + Clone>(
+            &self,
+            trait_generics: &[GenericParam],
+            TraitItem {
+                meta: _,
+                kind,
+                generics: item_generics,
+                ident,
+            }: &TraitItem,
+        ) -> DocBuilder<A> {
+            {
+                let name = self.render_last(ident);
+                let trait_generics = intersperse!(
+                    trait_generics
+                        .iter()
+                        .map(|GenericParam { ident, .. }| ident),
+                    softline!()
+                )
+                .parens()
+                .group()
+                .append(line!());
+                docs![match kind {
+                    TraitItemKind::Fn(ty) => {
+                        docs![
+                            name,
+                            softline!(),
+                            trait_generics,
+                            item_generics,
+                            ":",
+                            line!(),
+                            ty
+                        ]
+                        .group()
+                        .nest(INDENT)
+                    }
+                    TraitItemKind::Type(constraints) => {
+                        docs![name.clone(), softline!(), ":", line!(), "Type"]
+                            .group()
+                            .nest(INDENT)
+                    }
+                    TraitItemKind::Default { params, body } => docs![
+                        docs![
+                            name,
+                            softline!(),
+                            trait_generics,
+                            item_generics,
+                            zip_right!(params, line!()).group(),
+                            docs![": RustM ", body.ty].group(),
+                            line!(),
+                            ":= do",
+                        ]
+                        .group(),
+                        line!(),
+                        body,
+                    ]
+                    .group()
+                    .nest(INDENT),
+                    TraitItemKind::Resugared(_) => {
+                        unreachable!("This backend has no resugaring for trait items")
+                    }
+                }]
+            }
+        }
+    }
+
+    impl<A: 'static + Clone> ToDocument<LeanPrinter, A> for (Vec<GenericParam>, &TraitItem) {
+        fn to_document(&self, printer: &LeanPrinter) -> DocBuilder<A> {
+            printer.trait_item_with_trait_params(&self.0, self.1)
+        }
     }
 
     impl<A: 'static + Clone> PrettyAst<A> for LeanPrinter {
@@ -550,7 +621,7 @@ set_option linter.unusedVariables false
                     args,
                     generic_args,
                     bounds_impls: _,
-                    trait_: _,
+                    trait_,
                 } => {
                     match (&args[..], &generic_args[..], head.kind()) {
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
@@ -561,6 +632,9 @@ set_option linter.unusedVariables false
                             // Fallback for any application
                             docs![
                                 head,
+                                trait_
+                                    .as_ref()
+                                    .map(|(impl_expr, _)| zip_left!(line!(), &impl_expr.goal.args)),
                                 zip_left!(line!(), generic_args).group(),
                                 zip_left!(line!(), args).group(),
                             ]
@@ -1213,7 +1287,7 @@ set_option linter.unusedVariables false
                                     item.ident.is_precondition() || item.ident.is_postcondition() ||
                                     // Associated types are encoded in a separate type class.
                                     matches!(item.kind, TraitItemKind::Type(_))
-                                )})
+                                )}).map(|item| docs![(generics.params.clone(), item)] )
                             ),
                         ]
                         .nest(INDENT),
@@ -1327,49 +1401,6 @@ set_option linter.unusedVariables false
                 ItemKind::Error(e) => docs![e],
             };
             docs![meta, body]
-        }
-
-        fn trait_item(
-            &self,
-            TraitItem {
-                meta: _,
-                kind,
-                generics,
-                ident,
-            }: &TraitItem,
-        ) -> DocBuilder<A> {
-            let name = self.render_last(ident);
-            docs![match kind {
-                TraitItemKind::Fn(ty) => {
-                    docs![name, softline!(), generics, ":", line!(), ty]
-                        .group()
-                        .nest(INDENT)
-                }
-                TraitItemKind::Type(_) => {
-                    docs![&self.render_last(ident), softline!(), ":", line!(), "Type"]
-                        .group()
-                        .nest(INDENT)
-                }
-                TraitItemKind::Default { params, body } => docs![
-                    docs![
-                        name,
-                        softline!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        docs![": RustM ", body.ty].group(),
-                        line!(),
-                        ":= do",
-                    ]
-                    .group(),
-                    line!(),
-                    body,
-                ]
-                .group()
-                .nest(INDENT),
-                TraitItemKind::Resugared(_) => {
-                    unreachable!("This backend has no resugaring for trait items")
-                }
-            }]
         }
 
         fn impl_item(

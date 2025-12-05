@@ -16,7 +16,7 @@ class FnOnce (Self Args : Type) {Output: Type} where
 
 class Fn (Self Args : Type) {Output: Type} where
   [_constr_10219838627318688691 : (FnOnce Self Args (Output := Output))]
-  call : Self -> Args -> RustM Output
+  call (Self Args) : Self -> Args -> RustM Output
 
 instance {α β} : FnOnce (α → RustM β) α (Output := β) where
   Output := β

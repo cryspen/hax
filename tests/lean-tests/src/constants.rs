@@ -46,38 +46,7 @@ mod const_parameters {
         }
     }
 
-    #[hax_lib::lean::before(
-        "
-/--
-error: Application type mismatch: The argument
-  s
-has type
-  S 10
-but is expected to have type
-  usize
-in the application
-  T.f 1 s
----
-error: Application type mismatch: The argument
-  x
-has type
-  A
-but is expected to have type
-  usize
-in the application
-  T.f 11 x
----
-error: Application type mismatch: The argument
-  x
-has type
-  A
-but is expected to have type
-  usize
-in the application
-  T.f 4 x
--/
-#guard_msgs in"
-    )]
+    #[hax_lib::lean::before("")]
     fn test2<const N2: usize, A: T<N2>>(x: A) -> usize {
         let s = S::<N1>(9);
         let _ = s.f::<1>() + x.f::<{ 1 + N1 }>();
