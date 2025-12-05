@@ -9,7 +9,7 @@ open Core.Ops
 namespace Core.Panicking.Internal
 
 def panic (T : Type) (_ : Rust_primitives.Hax.Tuple0)
-  : Result T
+  : RustM T
   := do .fail .panic
 
 end Core.Panicking.Internal

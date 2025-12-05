@@ -17,61 +17,70 @@ set_option linter.unusedVariables false
 # Arithmetic operations
 
 The Rust arithmetic operations have their own notations, using a `?`. They
-return a `Result`, that is `.fail` when arithmetic overflows occur.
+return a `RustM`, that is `.fail` when arithmetic overflows occur.
 
 -/
 
-/-- The notation typeclass for homogeneous addition that returns a Result.  This
+/-- The notation typeclass for homogeneous addition that returns a RustM.  This
 enables the notation `a +? b : α` where `a : α`, `b : α`. For now, there is no
 heterogeneous version -/
 class HaxAdd α where
   /-- `a +? b` computes the panicking sum of `a` and `b`.  The meaning of this
   notation is type-dependent. -/
-  add : α → α → Result α
+  add : α → α → RustM α
 
-/-- The notation typeclass for homogeneous subtraction that returns a Result.
+/-- The notation typeclass for homogeneous subtraction that returns a RustM.
 This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
 no heterogeneous version -/
 class HaxSub α where
   /-- `a -? b` computes the panicking subtraction of `a` and `b`.
   The meaning of this notation is type-dependent. -/
-  sub : α → α → Result α
+  sub : α → α → RustM α
 
-/-- The notation typeclass for homogeneous multiplication that returns a Result.
-This enables the notation `a *? b : Result α` where `a b : α`. For now, there is
+/-- The notation typeclass for homogeneous multiplication that returns a RustM.
+This enables the notation `a *? b : RustM α` where `a b : α`. For now, there is
 no heterogeneous version -/
 class HaxMul α where
   /-- `a *? b` computes the panicking multiplication of `a` and `b`.  The
   meaning of this notation is type-dependent. -/
-  mul : α → α → Result α
+  mul : α → α → RustM α
 
-/-- The notation typeclass for homogeneous division that returns a Result.  This
-enables the notation `a /? b : Result α` where `a b : α`. For now, there is no
+/-- The notation typeclass for homogeneous division that returns a RustM.  This
+enables the notation `a /? b : RustM α` where `a b : α`. For now, there is no
 heterogeneous version -/
 class HaxDiv α where
   /-- `a /? b` computes the panicking division of `a` and `b`.  The
   meaning of this notation is type-dependent. -/
-  div : α → α → Result α
+  div : α → α → RustM α
 
-/--The notation typeclass for right shift that returns a Result. It enables the
- notation `a >>>? b : Result α` where `a : α` and `b : β`. -/
+/--The notation typeclass for right shift that returns a RustM. It enables the
+ notation `a >>>? b : RustM α` where `a : α` and `b : β`. -/
 class HaxShiftRight α β where
   /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
   of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
   -/
-  shiftRight : α → β → Result α
+  shiftRight : α → β → RustM α
+
+/--The notation typeclass for left shift that returns a RustM. It enables the
+ notation `a <<<? b : RustM α` where `a : α` and `b : β`. -/
+class HaxShiftLeft α β where
+  /-- `a <<<? b` computes the panicking left-shift of `a` by `b`.  The meaning
+  of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
+  -/
+  shiftLeft : α → β → RustM α
 
 /-- The notation typeclass for remainder.  This enables the notation `a %? b :
-Result α` where `a b : α`.  -/
+RustM α` where `a b : α`.  -/
 class HaxRem α where
   /-- `a %? b` computes the panicking remainder upon dividing `a` by `b`.  The
   meaning of this notation is type-dependent. It panics if b is zero -/
-  rem : α → α → Result α
+  rem : α → α → RustM α
 
 @[inherit_doc] infixl:65 " +? "   => HaxAdd.add
 @[inherit_doc] infixl:65 " -? "   => HaxSub.sub
 @[inherit_doc] infixl:70 " *? "   => HaxMul.mul
 @[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
+@[inherit_doc] infixl:75 " <<<? " => HaxShiftLeft.shiftLeft
 @[inherit_doc] infixl:70 " %? "   => HaxRem.rem
 @[inherit_doc] infixl:70 " /? "   => HaxDiv.div
 
@@ -85,7 +94,8 @@ class UnSigned (α: Type)
           (Mul α),
           (Div α),
           (Mod α),
-          (ShiftRight α)
+          (ShiftRight α),
+          (ShiftLeft α)
   where
   [deq : DecidableEq α]
   width    : Nat
@@ -174,6 +184,12 @@ instance {α : Type} [UnSigned α]: HaxShiftRight α α where
     if (UnSigned.width α) ≤ (UnSigned.toNat y) then .fail .integerOverflow
     else pure (x >>> y)
 
+/- Left shift on unsigned rust integers. Panics when shifting by more than the size -/
+instance {α : Type} [UnSigned α]: HaxShiftLeft α α where
+  shiftLeft x y :=
+    if (UnSigned.width α) ≤ (UnSigned.toNat y) then .fail .integerOverflow
+    else pure (x <<< y)
+
 /- Signed operations -/
 class Signed (α: Type)
   extends (LE α),
@@ -183,7 +199,8 @@ class Signed (α: Type)
           (Mul α),
           (Div α),
           (Mod α),
-          (ShiftRight α) where
+          (ShiftRight α),
+          (ShiftLeft α) where
   [dec: DecidableEq α]
   width    : Nat
   toBitVec : α → BitVec width
@@ -274,6 +291,15 @@ instance {α : Type} [Signed α] : HaxShiftRight α α where
     else
       .fail .integerOverflow
 
+/- Left shifting on signed integers. Panics when shifting by a negative number,
+   or when shifting by more than the size. -/
+instance {α : Type} [Signed α] : HaxShiftLeft α α where
+  shiftLeft x y :=
+    if 0 ≤ (Signed.toInt y) && (Signed.toInt y) < Int.ofNat (Signed.width α) then
+      pure (x <<< y)
+    else
+      .fail .integerOverflow
+
 /- Check that all operations are implemented -/
 
 class Operations α where
@@ -283,6 +309,7 @@ class Operations α where
   [instHaxDiv: HaxDiv α]
   [instHaxRem: HaxRem α]
   [instHaxShiftRight: HaxShiftRight α α]
+  [instHaxShiftLeft: HaxShiftLeft α α]
 
 instance : Operations u8 where
 instance : Operations u16 where

@@ -198,3 +198,63 @@ mod inheritance {
         s.f3() + 1
     }
 }
+
+mod default {
+
+    trait Easy {
+        fn dft(&self) -> usize {
+            32
+        }
+    }
+
+    impl Easy for usize {
+        fn dft(&self) -> usize {
+            self + 1
+        }
+    }
+
+    impl Easy for u32 {}
+
+    trait T1 {
+        fn f1(&self) -> usize;
+        fn f2(&self) -> usize {
+            1
+        }
+        fn f3<A>(&self, x: &A) -> usize {
+            1
+        }
+        fn f4<A: Easy>(&self, x: &A) -> usize {
+            x.dft() + 1
+        }
+    }
+
+    struct S<A>(usize, A);
+
+    // Override
+    impl T1 for S<usize> {
+        fn f1(&self) -> usize {
+            self.0 + self.1
+        }
+
+        fn f2(&self) -> usize {
+            self.1
+        }
+    }
+
+    impl T1 for S<bool> {
+        fn f1(&self) -> usize {
+            if self.1 { self.0 } else { 9 }
+        }
+
+        fn f2(&self) -> usize {
+            self.0 + 1
+        }
+    }
+
+    // No override
+    impl T1 for S<String> {
+        fn f1(&self) -> usize {
+            0
+        }
+    }
+}

@@ -5,16 +5,19 @@ tests:
     - fstar
     - fstar-lax
     - lean
+    - lean-tc
   attr::module:
     - json
     - coq
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
   attr::off_on_sandwich:
     - json
     - coq
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
   attr::trait_impl_inherit:
@@ -24,6 +27,7 @@ tests:
     - json
     - coq
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
   auxiliary::used_crate:
@@ -57,6 +61,7 @@ tests:
     - fstar
     - fstar-lax
     - lean
+    - lean-tc
   mcdc::nested_if:
     - json
     - coq
@@ -129,6 +134,7 @@ tests:
     - json
     - coq
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
   generics:
@@ -155,12 +161,14 @@ tests:
     - json
     - coq
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
   ignore_run:
     - json
     - coq
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
   inline_dead:
@@ -191,6 +199,7 @@ tests:
   long_and_wide:
     - json
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
     - coq
@@ -280,6 +289,7 @@ tests:
   test_harness:
     - json
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
     - coq
@@ -291,6 +301,7 @@ tests:
   trivial:
     - json
     - lean
+    - lean-tc
     - fstar
     - fstar-lax
     - coq

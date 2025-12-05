@@ -39,14 +39,14 @@ inductive Error where
    | panic: Error
    | undef: Error
 
-inductive Result.{u} (α : Type u) where
-  | ok (v: α): Result α
-  | fail (e: Error): Result α
+inductive RustM.{u} (α : Type u) where
+  | ok (v: α): RustM α
+  | fail (e: Error): RustM α
   | div
 ```
 
 This monadic encoding shows for simple expressions: the result of the lean
-extracted function is not `u32` but `Result u32`.
+extracted function is not `u32` but `RustM u32`.
 
 /// html | div[style='float: left; width: 48%;']
 ```rust
@@ -58,7 +58,7 @@ fn f (x: u32) -> u32 {
 
 /// html | div[style='float: right;width: 48%;']
 ```lean
-def f (x : u32) : Result u32
+def f (x : u32) : RustM u32
   := do (← x +? (1 : u32))
 ```
 ///
@@ -73,9 +73,9 @@ actually be understood as bindings in the monad, propagating potential
 errors to the top.
 
 The `do` keywords enables the lifting `←` and the `pure` operators. Intuitively,
-lifting turns a value of type `Result T` into a value of type `T` by turning the
+lifting turns a value of type `RustM T` into a value of type `T` by turning the
 rest of the program into a use of `bind`. Conversely, `pure` turns a value of
-type `T` into a value of type `Result T`. This shows also for let-bindings :
+type `T` into a value of type `RustM T`. This shows also for let-bindings :
 
 
 /// html | div[style='float: left; width: 48%;']
@@ -90,7 +90,7 @@ fn f (x: u32) -> u32 {
 
 /// html | div[style='float: right;width: 48%;']
 ```lean
-def f (x : u32) : Result u32 := do
+def f (x : u32) : RustM u32 := do
   let y : u32 ← (pure
     (← x +? (1 : u32)));
   let z : u32 ← (pure
@@ -327,7 +327,7 @@ match e_v1 {
 /// html | div[style='float: right;width: 48%;']
 ```lean
 def enums (_ : Tuple0)
-  : Result Tuple0
+  : RustM Tuple0
   := do
   let e_v1 : E ← (pure E.V1);
   let e_v2 : E ← (pure E.V2);
@@ -413,8 +413,8 @@ fn f<T: T1>(x: T) -> usize {
 /// html | div[style='float: right;width: 48%;']
 ```lean
 class T1 (Self : Type) where
-  f1 : Self -> Result usize
-  f2 : Self -> Self -> Result usize
+  f1 : Self -> RustM usize
+  f2 : Self -> Self -> RustM usize
 
 structure S where
 
@@ -425,7 +425,7 @@ instance Impl : T1 S where
     := do (43 : usize)
 
 def f (T : Type) [(T1 T)] (x : T)
-  : Result usize
+  : RustM usize
   := do
   (← (← T1.f1 x) +? (← T1.f2 x x))
 ```
@@ -459,7 +459,7 @@ class Test
   [_constr_7570495343596639253 :
     (T1 T)]
   f_test :
-    Self -> T -> Result usize
+    Self -> T -> RustM usize
 ```
 ///
 
@@ -507,7 +507,7 @@ class Bar (Self : Type) where
 
 class T1 (Self : Type) where
   T : Type
-  f : Self -> T -> Result T
+  f : Self -> T -> RustM T
 
 class T3 (Self : Type) where
   T : Type
@@ -516,12 +516,12 @@ class T3 (Self : Type) where
   Tp : Type
   [_constr_15450263461214744089 : (Foo Tp T)]
   f (A : Type) [(Bar A)] :
-    Self -> T -> Tp -> Result usize
+    Self -> T -> Tp -> RustM usize
 
 class T2 (Self : Type) where
   T : Type
   [_constr_18277713886489441014 : (T1 T)]
-  f : Self -> T -> Result usize
+  f : Self -> T -> RustM usize
 
 ```
 ///

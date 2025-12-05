@@ -54,4 +54,10 @@ val impl__copy_within
 val impl__binary_search #t (s: t_Slice t) (v: t): Core_models.Result.t_Result usize usize
 
 val impl__get #t #index {|i1: t_Index (t_Slice t) index|} 
-  (s: t_Slice t) (i: index): Core_models.Option.t_Option i1.f_Output
+  (s: t_Slice t) (i: index): Pure (Core_models.Option.t_Option i1.f_Output)
+  (requires True)
+  (ensures (fun res -> 
+  (f_index_pre s i ==> res == Core_models.Option.Option_Some (f_index s i)) /\
+  (~(f_index_pre s i) ==> res == Core_models.Option.Option_None)))
+
+val impl__split_at_checked #t (s: t_Slice t) (mid: usize): Core_models.Option.t_Option (t_Slice t & t_Slice t)

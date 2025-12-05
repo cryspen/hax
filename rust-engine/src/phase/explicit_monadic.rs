@@ -6,8 +6,8 @@
 //! # Details
 //!
 //! In backends with a monadic encoding (Lean for instance), rust computations that can *crash* are
-//! wrapped in an error Monad (say `Result`): a function `fn f(x:u32) -> u32` will be extracted to
-//! something like `def f (x:u32) : Result u32`. There are two challenges in this encoding :
+//! wrapped in an error Monad (say `RustM`): a function `fn f(x:u32) -> u32` will be extracted to
+//! something like `def f (x:u32) : RustM u32`. There are two challenges in this encoding :
 //!
 //! 1. Some expressions cannot panic (literals, consts, constructors for enums, etc) and should be
 //!    wrapped in the monad[^coe]. This phase inserts explicit calls to `pure` to that aim.

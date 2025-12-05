@@ -22,14 +22,23 @@ Change to cargo-hax:
 
 Changes to hax-lib:
  - Add Lean core models for options, results, default (#1747)
+ - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
  - Add support for base-expressions of structs (#1736)
  - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
    not introduce extra `do` block (#1746)
+ - Rename `Result` monad to `RustM` to avoid confusion with Rust `Result` type (#1768)
+ - Add support for shift-left (#1785)
+ - Add support for default methods of traits (#1777)
+ - Add support for floats (#1784)
+ - Add support for pattern matching on constant literals (#1789)
+ - Add support for binding subpatterns in match constructs (#1790)
+ - Add error when using patterns in function parameters (#1792)
 
 Miscellaneous:
+- Reserve extraction folder for auto-generated files in Lean examples (#1754)
 
 ## 0.3.5
 

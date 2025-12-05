@@ -15,9 +15,6 @@ open Core.Ops
 open Std.Do
 set_option mvcgen.warning false
 
--- To avoid confusion with Hax Results
-abbrev Hax_Result := Result
-
 namespace Core.Result
 
 inductive Result (α β : Type 0)
@@ -32,7 +29,7 @@ def Impl.map
   [(Core.Ops.Function.FnOnce F T (Output := U))]
   (self : (Result T E))
   (op : F)
-  : Hax_Result (Result U E)
+  : RustM (Result U E)
   := do
   match self with
     | (Result.Ok t) =>
@@ -49,7 +46,7 @@ def Impl.map_or
   (self : (Result T E))
   (default : U)
   (f : F)
-  : Hax_Result U
+  : RustM U
   := do
   match self with
     | (Result.Ok t)
@@ -67,7 +64,7 @@ def Impl.map_or_else
   (self : (Result T E))
   (default : D)
   (f : F)
-  : Hax_Result U
+  : RustM U
   := do
   match self with
     | (Result.Ok t)
@@ -83,7 +80,7 @@ def Impl.map_err
   [(Core.Ops.Function.FnOnce O E (Output := F))]
   (self : (Result T E))
   (op : O)
-  : Hax_Result (Result T F)
+  : RustM (Result T F)
   := do
   match self with
     | (Result.Ok t) => (pure (Result.Ok t))
@@ -93,7 +90,7 @@ def Impl.map_err
 
 def Impl.is_ok
   (T : Type) (E : Type) (self : (Result T E))
-  : Hax_Result Bool
+  : RustM Bool
   := do
   match self with
     | (Result.Ok _) => (pure true)
@@ -101,7 +98,7 @@ def Impl.is_ok
 
 def Impl.is_err
   (T : Type) (E : Type) (self : (Result T E))
-  : Hax_Result Bool
+  : RustM Bool
   := do
   match self with
     | (Result.Ok _) => (pure false)
@@ -115,7 +112,7 @@ def Impl.and_then
   [(Core.Ops.Function.FnOnce F T (Output := Result U E))]
   (self : (Result T E))
   (op : F)
-  : Hax_Result (Result U E)
+  : RustM (Result U E)
   := do
   match self with
     | (Result.Ok t)
@@ -125,7 +122,7 @@ def Impl.and_then
 
 def Impl.unwrap
   (T : Type) (E : Type) (self : (Result T E))
-  : Hax_Result T
+  : RustM T
   := do
   match self with
     | (Result.Ok t) => (pure t)
@@ -145,7 +142,7 @@ theorem Impl.unwrap.spec {α β} (x: Result α β) v :
 def Impl.expect
   (T : Type) (E : Type) (self : (Result T E))
   (_msg : String)
-  : Hax_Result T
+  : RustM T
   := do
   match self with
     | (Result.Ok t) => (pure t)

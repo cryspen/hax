@@ -14,6 +14,8 @@ include
       include On.Quote
       include On.Dyn
       include On.Unsafe
+      include On.Trait_item_default
+      include On.As_pattern
     end)
     (struct
       let backend = Diagnostics.Backend.FStar
@@ -32,7 +34,7 @@ module SubtypeToInputLanguage
          and type raw_pointer = Features.Off.raw_pointer
          and type early_exit = Features.Off.early_exit
          and type question_mark = Features.Off.question_mark
-         and type as_pattern = Features.Off.as_pattern
+         and type as_pattern = Features.On.as_pattern
          and type lifetime = Features.Off.lifetime
          and type monadic_action = Features.Off.monadic_action
          and type arbitrary_lhs = Features.Off.arbitrary_lhs
@@ -45,7 +47,7 @@ module SubtypeToInputLanguage
          and type state_passing_loop = Features.Off.state_passing_loop
          and type fold_like_loop = Features.Off.fold_like_loop
          and type match_guard = Features.Off.match_guard
-         and type trait_item_default = Features.Off.trait_item_default) =
+         and type trait_item_default = Features.On.trait_item_default) =
 struct
   module FB = InputLanguage
 
@@ -116,11 +118,9 @@ module TransformToInputLanguage =
   |> Phases.Drop_return_break_continue
   |> Phases.Functionalize_loops
   |> Phases.Reject.Question_mark
-  |> Phases.Reject.As_pattern
   |> Phases.Traits_specs
   |> Phases.Simplify_hoisting
   |> Phases.Newtype_as_refinement
-  |> Phases.Reject.Trait_item_default
   |> Phases.Bundle_cycles
   |> Phases.Reorder_fields
   |> Phases.Sort_items

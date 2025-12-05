@@ -115,6 +115,7 @@ impl Printer for LeanPrinter {
                 binops::rem,
                 binops::div,
                 binops::shr,
+                binops::shl,
                 binops::bitand,
                 binops::bitxor,
                 binops::logical_op_and,
@@ -306,13 +307,13 @@ const _: () = {
             zip_right!(params, line!())
         }
 
-        /// Renders expressions with an explicit ascription `(e : Result ty)`. Used for the body of closure, for
+        /// Renders expressions with an explicit ascription `(e : RustM ty)`. Used for the body of closure, for
         /// numeric literals, etc.
         fn expr_typed_result<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
             docs![
                 expr,
                 reflow!(" : "),
-                docs!["Result", line!(), &expr.ty].group()
+                docs!["RustM", line!(), &expr.ty].group()
             ]
             .group()
         }
@@ -323,6 +324,16 @@ const _: () = {
 
         fn do_block<A: 'static + Clone, D: ToDocument<Self, A>>(&self, body: D) -> DocBuilder<A> {
             docs!["do", line!(), body].group()
+        }
+
+        /// Produces a fresh name for a constraint on an associated type. It needs a fresh name to
+        /// be added as an extra field
+        fn fresh_constraint_name(
+            &self,
+            associated_type_name: &String,
+            constraint: &ImplIdent,
+        ) -> String {
+            format!("_constr_{}_{}", associated_type_name, constraint.name)
         }
     }
 
@@ -420,9 +431,6 @@ set_option linter.unusedVariables false
 
         fn expr(&self, Expr { kind, ty, meta: _ }: &Expr) -> DocBuilder<A> {
             match &**kind {
-                ExprKind::Literal(int_lit @ Literal::Int { .. }) => {
-                    docs![int_lit, reflow!(" : "), ty].parens().group()
-                }
                 ExprKind::If {
                     condition,
                     then,
@@ -466,6 +474,9 @@ set_option linter.unusedVariables false
                                 .group()
                         }
                     }
+                }
+                ExprKind::Literal(numeric_lit @ (Literal::Float { .. } | Literal::Int { .. })) => {
+                    docs![numeric_lit, reflow!(" : "), ty].parens().group()
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
@@ -572,6 +583,7 @@ set_option linter.unusedVariables false
                         binops::div => "/?",
                         binops::rem => "%?",
                         binops::shr => ">>>?",
+                        binops::shl => "<<<?",
                         binops::bitand => "&&&?",
                         binops::bitxor => "^^^?",
                         binops::logical_op_and => "&&?",
@@ -643,8 +655,8 @@ set_option linter.unusedVariables false
                     (true, _, _) => unreachable_by_invariant!(Local_mutation),
                     (false, BindingMode::ByRef(_), _) => unreachable_by_invariant!(Drop_references),
                     (false, BindingMode::ByValue, None) => docs![var],
-                    (false, BindingMode::ByValue, Some(_)) => {
-                        emit_error!(issue 1712, "Unsupported as-pattern")
+                    (false, BindingMode::ByValue, Some(pat)) => {
+                        docs![var, "@", softline_!(), pat].group()
                     }
                 },
                 PatKind::Or { sub_pats } => docs![intersperse!(sub_pats, reflow!(" | "))].group(),
@@ -652,9 +664,12 @@ set_option linter.unusedVariables false
                     emit_error!(issue 1712, "Unsupported pattern-matching on arrays")
                 }
                 PatKind::Deref { .. } => unreachable_by_invariant!(Drop_references),
-                PatKind::Constant { .. } => {
-                    emit_error!(issue 1712, "Unsupported pattern-matching on constants")
+                PatKind::Constant {
+                    lit: Literal::Float { .. },
+                } => {
+                    emit_error!(issue 1788, "Unsupported pattern-matching on floats")
                 }
+                PatKind::Constant { lit } => docs![lit],
                 PatKind::Construct {
                     constructor,
                     is_record,
@@ -725,7 +740,7 @@ set_option linter.unusedVariables false
                 }
                 TyKind::Arrow { inputs, output } => docs![
                     zip_right!(inputs, docs![line!(), reflow!("-> ")]),
-                    "Result ",
+                    "RustM ",
                     output
                 ]
                 .parens()
@@ -773,7 +788,11 @@ set_option linter.unusedVariables false
                     negative,
                     kind: _,
                 } => format!("{}{value}", if *negative { "-" } else { "" }),
-                Literal::Float { .. } => emit_error!(issue 1715, "Unsupported Float literal"),
+                Literal::Float {
+                    value,
+                    negative,
+                    kind: _,
+                } => format!("{}{value}", if *negative { "-" } else { "" }),
             }]
         }
 
@@ -790,7 +809,7 @@ set_option linter.unusedVariables false
             match primitive_ty {
                 PrimitiveTy::Bool => docs!["Bool"],
                 PrimitiveTy::Int(int_kind) => docs![int_kind],
-                PrimitiveTy::Float(_) => emit_error!(issue 1715, "Unsupported Float type"),
+                PrimitiveTy::Float(float_kind) => docs![float_kind],
                 PrimitiveTy::Char => docs!["Char"],
                 PrimitiveTy::Str => docs!["String"],
             }
@@ -810,6 +829,14 @@ set_option linter.unusedVariables false
                 (Signedness::Unsigned, IntSize::S64) => "u64",
                 (Signedness::Unsigned, IntSize::S128) => "u128",
                 (Signedness::Unsigned, IntSize::SSize) => "usize",
+            }]
+        }
+
+        fn float_kind(&self, float_kind: &FloatKind) -> DocBuilder<A> {
+            docs![match float_kind {
+                FloatKind::F32 => "f32",
+                FloatKind::F64 => "f64",
+                _ => emit_error!(issue 1787, "The only supported float types are `f32` and `f64`."),
             }]
         }
 
@@ -837,7 +864,14 @@ set_option linter.unusedVariables false
         }
 
         fn param(&self, param: &Param) -> DocBuilder<A> {
-            self.pat_typed(&param.pat)
+            if matches!(
+                *param.pat.kind,
+                PatKind::Wild | PatKind::Ascription { .. } | PatKind::Binding { sub_pat: None, .. }
+            ) {
+                self.pat_typed(&param.pat)
+            } else {
+                emit_error!(issue 1791, "Function parameters must not contain patterns")
+            }
         }
 
         fn item(&self, Item { ident, kind, meta }: &Item) -> DocBuilder<A> {
@@ -854,7 +888,7 @@ set_option linter.unusedVariables false
                         line!(),
                         generics,
                         params,
-                        docs![": Result", line!(), &body.ty].group(),
+                        docs![": RustM", line!(), &body.ty].group(),
                         line!(),
                         ":= do"
                     ]
@@ -864,11 +898,17 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-                ItemKind::TyAlias {
+                ItemKind::TyAlias { name, generics, ty } => docs![
+                    "abbrev ",
                     name,
-                    generics: _,
-                    ty,
-                } => docs!["abbrev ", name, reflow!(" := "), ty].group(),
+                    line!(),
+                    generics,
+                    reflow!(": Type :="),
+                    line!(),
+                    ty
+                ]
+                .nest(INDENT)
+                .group(),
                 ItemKind::Use {
                     path: _,
                     is_external: _,
@@ -961,7 +1001,7 @@ set_option linter.unusedVariables false
                                 .map(|constraint: &GenericConstraint| {
                                     match constraint {
                                         GenericConstraint::Type(tc_constraint) => docs![
-                                            format!("_constr_{}", tc_constraint.name),
+                                            self.fresh_constraint_name(&self.render_last(name), tc_constraint),
                                             " :",
                                             line!(),
                                             constraint
@@ -1032,7 +1072,7 @@ set_option linter.unusedVariables false
                         .group(),
                         line!(),
                         docs![
-                            "Result.of_isOk",
+                            "RustM.of_isOk",
                             line!(),
                             self.do_block(body).parens(),
                             line!(),
@@ -1077,7 +1117,7 @@ set_option linter.unusedVariables false
                         concat!(constraints.iter().map(|c| docs![
                             hardline!(),
                             docs![
-                                format!("_constr_{}", c.name),
+                                self.fresh_constraint_name(&name, c),
                                 reflow!(" :"),
                                 line!(),
                                 &c.goal
@@ -1088,8 +1128,22 @@ set_option linter.unusedVariables false
                         ]))
                     ]
                 }
-                TraitItemKind::Default { .. } =>
-                    emit_error!(issue 1707, "Unsupported default implementation for trait items"),
+                TraitItemKind::Default { params, body } => docs![
+                    docs![
+                        name,
+                        softline!(),
+                        generics,
+                        zip_right!(params, line!()).group(),
+                        docs![": RustM ", body.ty].group(),
+                        line!(),
+                        ":= do",
+                    ]
+                    .group(),
+                    line!(),
+                    body,
+                ]
+                .group()
+                .nest(INDENT),
                 TraitItemKind::Resugared(_) => {
                     unreachable!("This backend has no resugaring for trait items")
                 }
@@ -1217,10 +1271,6 @@ set_option linter.unusedVariables false
 
         fn region(&self, _region: &Region) -> DocBuilder<A> {
             unreachable_by_invariant!(Drop_references)
-        }
-
-        fn float_kind(&self, _float_kind: &FloatKind) -> DocBuilder<A> {
-            emit_error!(issue 1715, "floats are unsupported")
         }
 
         fn dyn_trait_goal(&self, _dyn_trait_goal: &DynTraitGoal) -> DocBuilder<A> {

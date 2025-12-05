@@ -7,10 +7,11 @@ val impl_5__push_back #t #a (v: t_VecDeque t a) (x: t): t_VecDeque t a
 
 let impl_5__len #t #a (v: t_VecDeque t a): usize = sz (Seq.length v)
 
-let impl_5__pop_front #t #a (v: t_VecDeque t a): t_VecDeque t a & Core.Option.t_Option t = 
+let impl_5__pop_front #t #a (v: t_VecDeque t a): (res: t_VecDeque t a 
+  {Seq.length res == (if (Seq.length v) > 0 then (Seq.length v - 1) else Seq.length v)}) & Core_models.Option.t_Option t = 
   match Seq.seq_to_list v with 
-  | h::tail -> Seq.seq_of_list tail,  Core.Option.Option_Some h 
-  | [] -> v, Core.Option.Option_None
+  | h::tail -> Seq.seq_of_list tail,  Core_models.Option.Option_Some h 
+  | [] -> v, Core_models.Option.Option_None
 
 
 [@FStar.Tactics.Typeclasses.tcinstance]

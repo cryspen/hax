@@ -12,6 +12,6 @@ open Rust_primitives.Hax
 namespace Core.Default
 
 class Default (Self : Type) where
-  default : Tuple0 -> Result Self
+  default : Tuple0 -> RustM Self
 
 end Core.Default

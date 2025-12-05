@@ -4,6 +4,7 @@ pub enum Result<T, E> {
 }
 
 use super::ops::function::*;
+use super::option::Option;
 use Result::*;
 
 #[hax_lib::attributes]
@@ -50,7 +51,7 @@ impl<T, E> Result<T, E> {
             Err(e) => default.call_once(e),
         }
     }
-    pub fn map_err<O, F>(self, op: O) -> Result<T, F>
+    pub fn map_err<F, O>(self, op: O) -> Result<T, F>
     where
         O: FnOnce<E, Output = F>,
     {
@@ -70,6 +71,12 @@ impl<T, E> Result<T, E> {
         match self {
             Ok(t) => op.call_once(t),
             Err(e) => Err(e),
+        }
+    }
+    pub fn ok(self) -> Option<T> {
+        match self {
+            Ok(x) => Option::Some(x),
+            Err(_) => Option::None,
         }
     }
 }
