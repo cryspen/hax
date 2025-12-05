@@ -250,7 +250,7 @@ const _: () = {
         };
     }
 
-    // Methods for handling arguments of variants (or struct constructor)
+    // Extra methods, specific to the LeanPrinter
     impl LeanPrinter {
         /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
         /// on the `is_record` flag. Used for both expressions and patterns
@@ -333,14 +333,11 @@ const _: () = {
             docs!["do", line!(), body].group()
         }
 
-        /// Produces a fresh name for a constraint on an associated type. It needs a fresh name to
-        /// be added as an extra field
-        fn fresh_constraint_name(
-            &self,
-            associated_type_name: &String,
-            constraint: &ImplIdent,
-        ) -> String {
-            format!("trait_constr_{}_{}", associated_type_name, constraint.name)
+        /// Produces a name for a constraint on an trait-level constraint, or an associated
+        /// type. The name is obtained by combining the type it applies to and the name of the
+        /// constraint (and should be unique)
+        fn constraint_name(&self, type_name: &String, constraint: &ImplIdent) -> String {
+            format!("trait_constr_{}_{}", type_name, constraint.name)
         }
 
         /// Renders a named argument for associated types with equality constraints
@@ -1100,7 +1097,7 @@ set_option linter.unusedVariables false
                             zip_left!(
                                 hardline!(),
                                 generic_types.iter().map(|impl_ident| docs![
-                                    self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                                    self.constraint_name(&self.render_last(name), impl_ident),
                                     " :",
                                     line!(),
                                     &impl_ident.goal.trait_,
@@ -1128,7 +1125,7 @@ set_option linter.unusedVariables false
                                 line!(),
                                 name,
                                 ".AssociatedTypes.",
-                                self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                                self.constraint_name(&self.render_last(name), impl_ident),
                             ]
                             .group()
                             .nest(INDENT))
@@ -1197,7 +1194,7 @@ set_option linter.unusedVariables false
                             zip_left!(
                                 hardline!(),
                                 generic_types.iter().map(|impl_ident| docs![
-                                    self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                                    self.constraint_name(&self.render_last(name), impl_ident),
                                     " :",
                                     line!(),
                                     impl_ident.goal.trait_,
@@ -1229,7 +1226,7 @@ set_option linter.unusedVariables false
                                 line!(),
                                 name,
                                 ".",
-                                self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                                self.constraint_name(&self.render_last(name), impl_ident),
                             ]
                             .group()
                             .nest(INDENT))
