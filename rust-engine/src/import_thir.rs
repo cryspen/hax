@@ -1638,6 +1638,13 @@ fn import_trait_item(
         span: span.clone(),
         attributes,
     };
+    let (frontend::FullDefKind::AssocConst { param_env, .. }
+    | frontend::FullDefKind::AssocFn { param_env, .. }
+    | frontend::FullDefKind::AssocTy { param_env, .. }) = &item.kind
+    else {
+        unreachable!("Found associated item of an unknown kind.")
+    };
+    let mut generics = param_env.import(context);
     let kind = match &item.kind {
         frontend::FullDefKind::AssocConst {
             body: Some(default),
@@ -1657,6 +1664,7 @@ fn import_trait_item(
             body: default.import(context),
         },
         frontend::FullDefKind::AssocFn { sig, .. } => {
+            generics = import_generics(context, &sig.bound_vars, param_env);
             let inputs = sig
                 .value
                 .inputs
@@ -1839,8 +1847,41 @@ fn generic_param_to_value(p: &ast::GenericParam) -> ast::GenericValue {
     }
 }
 
-fn cast_of_enum(
+fn import_generics(
     context: &Context,
+    bound_var_kinds: &Vec<frontend::BoundVariableKind>,
+    param_env: &frontend::ParamEnv,
+) -> ast::Generics {
+    let mut generics: ast::Generics = param_env.import(context);
+    bound_var_kinds
+        .iter()
+        .flat_map(|var| match var {
+            frontend::BoundVariableKind::Region(bound_region_kind) => match bound_region_kind {
+                frontend::BoundRegionKind::Named {
+                    def_id: _,
+                    name,
+                    span,
+                    attributes,
+                } => {
+                    let name = name.strip_prefix("'").unwrap_or(name);
+                    Some(ast::GenericParam {
+                        ident: ast::identifiers::LocalId(Symbol::new(name)),
+                        meta: ast::Metadata {
+                            span: span.import(context),
+                            attributes: import_attributes(context, attributes),
+                        },
+                        kind: ast::GenericParamKind::Lifetime,
+                    })
+                }
+                _ => None,
+            },
+            _ => None,
+        })
+        .for_each(|var| generics.params.push(var));
+    generics
+}
+
+fn cast_of_enum(
     type_id: ast::GlobalId,
     generics: &ast::Generics,
     ty: ast::Ty,
@@ -2207,7 +2248,8 @@ pub fn import_item(
                             body,
                             ..
                         } => {
-                            let generics = impl_generics.clone().concat(param_env.import(context));
+                            let generics = import_generics(context, &sig.bound_vars, param_env);
+                            let generics = generics.concat(param_env.import(context));
                             match expect_body(body, &span) {
                                 Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
@@ -2256,7 +2298,7 @@ pub fn import_item(
         } => match expect_body(body, &span) {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
-                generics: param_env.import(context),
+                generics: import_generics(context, &sig.bound_vars, param_env),
                 body: body.import(context),
                 params: import_params(context, &body.params, span.clone()),
                 safety: sig.value.safety.import(context),
