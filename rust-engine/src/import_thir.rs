@@ -1958,10 +1958,11 @@ fn cast_of_enum(
 fn expect_body<'a, Body>(
     optional: &'a Option<Body>,
     span: &ast::span::Span,
+    label: &str,
 ) -> Result<&'a Body, ast::ErrorNode> {
     optional
         .as_ref()
-        .ok_or_else(|| assertion_failure("Expected body", span))
+        .ok_or_else(|| assertion_failure(&format!("Expected body at {label}"), span))
 }
 
 fn missing_associated_item() -> core::convert::Infallible {
@@ -2153,7 +2154,7 @@ pub fn import_item(
                             param_env, value, ..
                         } => (
                             param_env.import(context),
-                            match expect_body(value, &span) {
+                            match expect_body(value, &span, "import_item/TraitImpl/AssocTy") {
                                 Ok(body) => ast::ImplItemKind::Type {
                                     ty: body.spanned_import(context, span.clone()),
                                     parent_bounds: assoc_item
@@ -2167,7 +2168,7 @@ pub fn import_item(
                             param_env, body, ..
                         } => (
                             param_env.import(context),
-                            match expect_body(body, &span) {
+                            match expect_body(body, &span, "import_item/TraitImpl/AssocFn") {
                                 Ok(body) => ast::ImplItemKind::Fn {
                                     body: body.import(context),
                                     params: import_params(context, &body.params, span.clone()),
@@ -2179,7 +2180,7 @@ pub fn import_item(
                             param_env, body, ..
                         } => (
                             param_env.import(context),
-                            match expect_body(body, &span) {
+                            match expect_body(body, &span, "import_item/TraitImpl/AssocConst") {
                                 Ok(body) => ast::ImplItemKind::Fn {
                                     body: body.import(context),
                                     params: Vec::new(),
@@ -2233,7 +2234,7 @@ pub fn import_item(
                             param_env, value, ..
                         } => {
                             let generics = impl_generics.clone().concat(param_env.import(context));
-                            match expect_body(value, &span) {
+                            match expect_body(value, &span, "import_item/InherentImpl/AssocTy") {
                                 Ok(body) => ast::ItemKind::TyAlias {
                                     name: ident,
                                     generics,
@@ -2250,7 +2251,7 @@ pub fn import_item(
                         } => {
                             let generics = import_generics(context, &sig.bound_vars, param_env);
                             let generics = generics.concat(param_env.import(context));
-                            match expect_body(body, &span) {
+                            match expect_body(body, &span, "import_item/InherentImpl/AssocFn") {
                                 Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
@@ -2265,7 +2266,7 @@ pub fn import_item(
                             param_env, body, ..
                         } => {
                             let generics = impl_generics.clone().concat(param_env.import(context));
-                            match expect_body(body, &span) {
+                            match expect_body(body, &span, "import_item/InherentImpl/AssocConst") {
                                 Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
@@ -2295,7 +2296,7 @@ pub fn import_item(
             sig,
             body,
             ..
-        } => match expect_body(body, &span) {
+        } => match expect_body(body, &span, "import_item/Fn") {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: import_generics(context, &sig.bound_vars, param_env),
@@ -2310,7 +2311,7 @@ pub fn import_item(
         }
         frontend::FullDefKind::Const {
             param_env, body, ..
-        } => match expect_body(body, &span) {
+        } => match expect_body(body, &span, "import_item/Const") {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: param_env.import(context),
@@ -2327,7 +2328,7 @@ pub fn import_item(
             mutability: false,
             body,
             ..
-        } => match expect_body(body, &span) {
+        } => match expect_body(body, &span, "import_item/Static") {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: ast::Generics {
