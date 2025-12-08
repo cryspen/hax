@@ -23,7 +23,7 @@ pub struct Span {
     /// A reference to the item in which this span lives. This information is
     /// used for debugging and profiling purposes, e.g. for `cargo hax into
     /// --stats backend`.
-    owner_hint: Option<hax_frontend_exporter::DefId>,
+    owner_hint: Option<Interned<hax_frontend_exporter::DefId>>,
 }
 
 impl Span {
@@ -44,18 +44,26 @@ impl Span {
     }
 }
 
-impl From<hax_frontend_exporter::Span> for Span {
-    fn from(span: hax_frontend_exporter::Span) -> Self {
-        Self {
-            data: vec![span],
-            id: fresh_id(),
-            owner_hint: None, // TODO: this will be defined properly while addressing issue #1524
-        }
+use crate::interning::{Internable, Interned, InterningTable};
+impl Internable for hax_frontend_exporter::DefId {
+    fn interning_table() -> &'static std::sync::Mutex<InterningTable<Self>> {
+        use std::sync::{LazyLock, Mutex};
+        static TABLE: LazyLock<Mutex<InterningTable<hax_frontend_exporter::DefId>>> =
+            LazyLock::new(|| Mutex::new(InterningTable::default()));
+        &TABLE
     }
 }
 
-impl From<&hax_frontend_exporter::Span> for Span {
-    fn from(span: &hax_frontend_exporter::Span) -> Self {
-        span.clone().into()
+impl Span {
+    /// Creates a [`Span`] given information from the hax exporter.
+    pub fn from_exporter(
+        span: hax_frontend_exporter::Span,
+        owner_hint: Option<&hax_frontend_exporter::DefId>,
+    ) -> Self {
+        Self {
+            data: vec![span],
+            id: fresh_id(),
+            owner_hint: owner_hint.map(Interned::intern),
+        }
     }
 }
