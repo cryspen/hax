@@ -1958,7 +1958,34 @@ pub fn import_item(
                 }
             };
             if let frontend::AdtKind::Enum = adt_kind {
-                // TODO discs
+                // Each variant might introduce a anonymous constant defining its discriminant integer
+                let discriminant_constants = variants_with_def.iter().filter_map(|(_, v)| {
+                    if let frontend::DiscriminantDefinition::Explicit(def_id) = &v.discr_def {
+                        let name = def_id.import();
+                        let kind = match v.discr_val.ty.kind() {
+                            frontend::TyKind::Int(int_ty) => int_ty.into(),
+                            frontend::TyKind::Uint(int_ty) => int_ty.into(),
+                            _ => return None,
+                        };
+                        Some(
+                            ast::ItemKind::Fn {
+                                name: name.clone(),
+                                generics: ast::Generics::empty(),
+                                body: ast::ExprKind::Literal(ast::literals::Literal::Int {
+                                    value: Symbol::new(v.discr_val.val.to_string()),
+                                    negative: false,
+                                    kind,
+                                })
+                                .promote(v.discr_val.ty.spanned_import(span.clone()), span.clone()),
+                                params: Vec::new(),
+                                safety: ast::SafetyKind::Safe,
+                            }
+                            .promote(name, span.clone()),
+                        )
+                    } else {
+                        None
+                    }
+                });
                 let cast_item = cast_of_enum(
                     context,
                     ident,
@@ -1967,7 +1994,10 @@ pub fn import_item(
                     span.clone(),
                     &variants_with_def,
                 );
-                return vec![res_kind.promote(ident, span), cast_item];
+                return discriminant_constants
+                    .chain(std::iter::once(res_kind.promote(ident, span.clone())))
+                    .chain(std::iter::once(cast_item))
+                    .collect();
             } else {
                 res_kind
             }
