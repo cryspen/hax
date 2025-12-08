@@ -193,7 +193,10 @@ impl LeanPrinter {
                 generics: _,
             }) if name.is_anonymous_const() => false,
             // Other unprintable items
-            ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
+            ItemKind::Error(_)
+            | ItemKind::NotImplementedYet
+            | ItemKind::Use { .. }
+            | ItemKind::RustModule => false,
             // Printable items
             ItemKind::Fn { .. }
             | ItemKind::TyAlias { .. }
@@ -939,11 +942,7 @@ set_option linter.unusedVariables false
                     generics: _,
                     ty,
                 } => docs!["abbrev ", name, reflow!(" := "), ty].group(),
-                ItemKind::Use {
-                    path: _,
-                    is_external: _,
-                    rename: _,
-                } => nil!(),
+                ItemKind::RustModule | ItemKind::Use { .. } => nil!(),
                 ItemKind::Quote { quote, origin: _ } => docs![quote],
                 ItemKind::NotImplementedYet => {
                     emit_error!(issue 1706, "Item unsupported by the Hax engine (unimplemented yet)")

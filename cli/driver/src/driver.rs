@@ -17,6 +17,7 @@ extern crate rustc_feature;
 extern crate rustc_hashes;
 extern crate rustc_hir;
 extern crate rustc_hir_analysis;
+extern crate rustc_hir_id;
 extern crate rustc_index;
 extern crate rustc_interface;
 extern crate rustc_middle;

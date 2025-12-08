@@ -37,24 +37,19 @@ fn export_crate<'tcx, Body: hax_frontend_exporter::IsBody>(
     let state = hax_frontend_exporter::state::State::new(tcx, options.clone());
 
     let result = if experimental_full_def {
-        let items: Vec<_> = tcx
-            .hir_free_items()
-            .map(|id| {
-                id.owner_id
-                    .to_def_id()
-                    .sinto(&state)
-                    .full_def(&state)
-                    .as_ref()
-                    .clone()
-            })
-            .collect();
-        let associated_items: Vec<_> = items
-            .iter()
-            .flat_map(hax_frontend_exporter::FullDef::associated_def_ids)
-            .filter_map(|did| did.as_rust_def_id())
-            .map(|id| id.sinto(&state).full_def(&state).as_ref().clone())
-            .collect();
-        Items::FullDef(items.into_iter().chain(associated_items).collect())
+        let owners = tcx.hir_crate_items(()).owners();
+        Items::FullDef(
+            owners
+                .map(|owner_id| {
+                    owner_id
+                        .to_def_id()
+                        .sinto(&state)
+                        .full_def(&state)
+                        .as_ref()
+                        .clone()
+                })
+                .collect(),
+        )
     } else {
         Items::Legacy(
             tcx.hir_free_items()

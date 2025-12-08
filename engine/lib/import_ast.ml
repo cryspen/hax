@@ -551,7 +551,7 @@ let dimpl_item (ii : A.impl_item) : B.impl_item =
     ii_attrs = dattributes ii.meta.attributes;
   }
 
-let ditem' (item : A.item_kind) : B.item' =
+let ditem' (item : A.item_kind) : B.item' option =
   match item with
   | A.Fn { name; generics; body; params; safety } ->
       B.Fn
@@ -562,6 +562,7 @@ let ditem' (item : A.item_kind) : B.item' =
           params = List.map ~f:dparam params;
           safety = dsafety_kind safety;
         }
+      |> Option.some
   | A.Type { name; generics; variants; is_struct } ->
       B.Type
         {
@@ -570,6 +571,7 @@ let ditem' (item : A.item_kind) : B.item' =
           variants = List.map ~f:dvariant variants;
           is_struct;
         }
+      |> Option.some
   | A.TyAlias { name; generics; ty } ->
       B.TyAlias
         {
@@ -577,6 +579,7 @@ let ditem' (item : A.item_kind) : B.item' =
           generics = dgenerics generics;
           ty = dty ty;
         }
+      |> Option.some
   | A.Trait { name; generics; items; safety } ->
       B.Trait
         {
@@ -585,6 +588,7 @@ let ditem' (item : A.item_kind) : B.item' =
           items = List.map ~f:dtrait_item items;
           safety = dsafety_kind safety;
         }
+      |> Option.some
   | A.Impl
       {
         generics;
@@ -606,21 +610,29 @@ let ditem' (item : A.item_kind) : B.item' =
               parent_bounds;
           safety = Safe;
         }
+      |> Option.some
   | A.Alias { name; item } ->
       B.Alias { name = dconcrete_ident name; item = dconcrete_ident item }
-  | A.Use { path; is_external; rename } -> B.Use { path; is_external; rename }
+      |> Option.some
+  | A.Use { path; is_external; rename } ->
+      B.Use { path; is_external; rename } |> Option.some
   | A.Quote { quote; origin } ->
       B.Quote { quote = dquote quote; origin = ditem_quote_origin origin }
-  | A.Error diag -> HaxError (from_error_node diag)
-  | A.NotImplementedYet -> B.NotImplementedYet
-  | Resugared _ -> refute_resugared "item_kind"
+      |> Option.some
+  | A.Error diag -> B.HaxError (from_error_node diag) |> Option.some
+  | A.NotImplementedYet -> B.NotImplementedYet |> Option.some
+  | Resugared _ -> refute_resugared "item_kind" |> Option.some
+  | A.RustModule -> None
 
 let ditem (i : A.item) : B.item list =
-  [
-    {
-      ident = dconcrete_ident i.ident;
-      v = ditem' i.kind;
-      span = dspan i.meta.span;
-      attrs = dattributes i.meta.attributes;
-    };
-  ]
+  match ditem' i.kind with
+  | Some v ->
+      [
+        {
+          ident = dconcrete_ident i.ident;
+          v;
+          span = dspan i.meta.span;
+          attrs = dattributes i.meta.attributes;
+        };
+      ]
+  | _ -> []
