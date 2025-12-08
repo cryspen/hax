@@ -30,10 +30,8 @@ mod spec {
     }
 }
 
-#[hax_lib::requires(spec::bounded_i32(value, 65536*3328))]
-#[hax_lib::ensures(|result| spec::bounded_i16(result, 3328+1665) &&
-                   if spec::bounded_i32(value, 3328*32768) {spec::bounded_i16(result, 3328)}
-                   else {true})]
+#[hax_lib::requires(spec::bounded_i32(value, 32768*3328))]
+#[hax_lib::ensures(|result| spec::bounded_i16(result, 3328))]
 fn montgomery_reduce_element(value: i32) -> i16 {
     let k = ((value as i16) as i32) * (INVERSE_OF_MODULUS_MOD_MONTGOMERY_R as i32);
     let k_times_modulus = (k as i16 as i32) * (FIELD_MODULUS as i32);
@@ -43,6 +41,7 @@ fn montgomery_reduce_element(value: i32) -> i16 {
     result
 }
 
+#[hax_lib::fstar::options("--z3rlimit 100")]
 #[hax_lib::requires(i < 8 && out.len() >= 16 && spec::bounded_i16(zeta, 1664) &&
                     spec::bounded_i16_array(a,3328) && spec::bounded_i16_array(b,3328))]
 pub fn accumulating_ntt_multiply_binomials(
