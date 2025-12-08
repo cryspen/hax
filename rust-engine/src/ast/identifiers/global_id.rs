@@ -198,18 +198,6 @@ enum GlobalIdInner {
     Tuple(TupleId),
 }
 
-impl GlobalId {
-    pub fn tuple_constructor(length: usize) -> Self {
-        TupleId::Constructor { length: 0 }.into()
-    }
-    pub fn unit_constructor() -> Self {
-        Self::tuple_constructor(0)
-    }
-    pub fn unit_ty() -> Self {
-        TupleId::Type { length: 0 }.into()
-    }
-}
-
 #[derive_group_for_ast]
 #[derive(Copy)]
 /// Represents tuple-related identifier in Rust.
