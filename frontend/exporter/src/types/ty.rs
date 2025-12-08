@@ -104,8 +104,21 @@ sinto_as_usize!(rustc_middle::ty, BoundVar);
 pub enum BoundRegionKind {
     Anon,
     NamedAnon(Symbol),
-    #[custom_arm(&FROM_TYPE::Named(def_id) => TO_TYPE::Named(def_id.sinto(s), s.base().tcx.item_name(def_id).sinto(s)),)]
-    Named(DefId, Symbol),
+    #[custom_arm(&FROM_TYPE::Named(def_id) => {
+        let tcx = s.base().tcx;
+        TO_TYPE::Named {
+            def_id: def_id.sinto(s),
+            name: tcx.item_name(def_id).sinto(s),
+            span: tcx.def_span(def_id).sinto(s),
+            attributes: get_def_attrs(tcx, def_id, get_def_kind(tcx, def_id)).sinto(s),
+        }
+    })]
+    Named {
+        def_id: DefId,
+        name: Symbol,
+        span: Span,
+        attributes: Vec<Attribute>,
+    },
     ClosureEnv,
 }
 
