@@ -1961,7 +1961,7 @@ pub fn import_item(
                 // Each variant might introduce a anonymous constant defining its discriminant integer
                 let discriminant_constants = variants_with_def.iter().filter_map(|(_, v)| {
                     if let frontend::DiscriminantDefinition::Explicit(def_id) = &v.discr_def {
-                        let name = def_id.import();
+                        let name = def_id.import(context);
                         let kind = match v.discr_val.ty.kind() {
                             frontend::TyKind::Int(int_ty) => int_ty.into(),
                             frontend::TyKind::Uint(int_ty) => int_ty.into(),
@@ -1976,7 +1976,10 @@ pub fn import_item(
                                     negative: false,
                                     kind,
                                 })
-                                .promote(v.discr_val.ty.spanned_import(span.clone()), span.clone()),
+                                .promote(
+                                    v.discr_val.ty.spanned_import(context, span.clone()),
+                                    span.clone(),
+                                ),
                                 params: Vec::new(),
                                 safety: ast::SafetyKind::Safe,
                             }

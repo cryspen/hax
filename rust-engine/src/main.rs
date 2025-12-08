@@ -33,7 +33,7 @@ fn main() {
                 .filter(|item| {
                     !matches!(
                         item.kind,
-                        hax_frontend_exporter::FullDefKind::Use
+                        hax_frontend_exporter::FullDefKind::Use(_)
                             | hax_frontend_exporter::FullDefKind::ExternCrate
                     )
                 })
