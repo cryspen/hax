@@ -12,7 +12,7 @@
 
 use hax_adt_into::derive_group;
 
-#[cfg(not(feature = "extract_names_mode"))]
+#[cfg(feature = "rustc")]
 use crate::prelude::*;
 #[cfg(not(feature = "extract_names_mode"))]
 use crate::{AdtInto, JsonSchema};
@@ -49,6 +49,7 @@ pub enum Safety {
 }
 
 pub type Mutability = bool;
+#[cfg(not(feature = "extract_names_mode"))]
 pub type Pinnedness = bool;
 
 /// Reflects [`hir::def::CtorKind`]
@@ -338,6 +339,7 @@ pub(crate) fn get_def_kind<'tcx>(tcx: ty::TyCtxt<'tcx>, def_id: RDefId) -> hir::
 }
 
 /// The crate name under which synthetic items are exported under.
+#[cfg(any(feature = "extract_names_mode", feature = "rustc"))]
 pub(super) const SYNTHETIC_CRATE_NAME: &str = "<synthetic>";
 
 #[cfg(feature = "rustc")]
