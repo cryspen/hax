@@ -761,7 +761,7 @@ const _: () = {
                 ItemKind::Alias { name, item } => {
                     docs!["type", self.id_name(*name), reflow!(" = "), item, ";"]
                 }
-                ItemKind::Use { .. } => nil!(),
+                ItemKind::RustModule | ItemKind::Use { .. } => nil!(),
                 ItemKind::Quote { quote, .. } => docs![quote],
                 ItemKind::Error { .. } => todo!("resugaring"),
                 ItemKind::Resugared(resugared_item_kind) => docs![resugared_item_kind],

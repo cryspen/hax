@@ -1465,6 +1465,10 @@ pub enum ItemKind {
         origin: ItemQuoteOrigin,
     },
 
+    /// A Rust module (`mod`, inline or not).
+    /// This exists solely because modules can have attributes relevant to the hax engine.
+    RustModule,
+
     /// Fallback constructor to carry errors.
     Error(ErrorNode),
 
