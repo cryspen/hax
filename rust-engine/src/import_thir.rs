@@ -2141,9 +2141,21 @@ pub fn import_item(
             let parent_bounds = implied_impl_exprs.spanned_import(context, span.clone());
             let items = items
                 .iter()
-                .map(|assoc_item| {
-                    let ident = assoc_item.decl_def_id.import(context);
-                    let assoc_item_def = all_items.get(&assoc_item.decl_def_id).unwrap_or_else(
+                .flat_map(|assoc_item| {
+                    // The DefId of the original associated item on the trait
+                    let method_def_id_trait = &assoc_item.decl_def_id;
+                    // The DefId for this very specific impl associated item
+                    let method_def_id_impl = match &assoc_item.value {
+                        hax_frontend_exporter::ImplAssocItemValue::Provided { def_id, .. } => {
+                            def_id
+                        }
+                        _ => {
+                            // TODO: Here, we skip defaulted associated items.
+                            return None;
+                        }
+                    };
+                    let ident = method_def_id_trait.import_as_nonvalue();
+                    let assoc_item_def = all_items.get(&method_def_id_impl).unwrap_or_else(
                         #[allow(unreachable_code)]
                         || match missing_associated_item() {},
                     );
@@ -2191,12 +2203,12 @@ pub fn import_item(
                         #[allow(unreachable_code)]
                         _ => match missing_associated_item() {},
                     };
-                    ast::ImplItem {
+                    Some(ast::ImplItem {
                         meta: ast::Metadata { span, attributes },
                         generics,
                         kind,
                         ident,
-                    }
+                    })
                 })
                 .collect();
 
