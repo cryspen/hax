@@ -2279,6 +2279,7 @@ pub fn import_item(
                 .any(|x| matches!(x, None | Some(frontend::Res::Err))),
             rename: rename.clone(),
         },
+        frontend::FullDefKind::Mod { .. } => ast::ItemKind::RustModule,
         frontend::FullDefKind::ExternCrate
         | frontend::FullDefKind::Use { .. }
         | frontend::FullDefKind::TyParam
@@ -2288,7 +2289,6 @@ pub fn import_item(
         | frontend::FullDefKind::Ctor { .. }
         | frontend::FullDefKind::Field
         | frontend::FullDefKind::Macro(_)
-        | frontend::FullDefKind::Mod { .. }
         | frontend::FullDefKind::ForeignMod { .. }
         | frontend::FullDefKind::SyntheticCoroutineBody => return Vec::new(),
         frontend::FullDefKind::GlobalAsm => {
