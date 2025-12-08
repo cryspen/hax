@@ -82,6 +82,10 @@ impl Import<ast::span::Span> for frontend::Span {
     }
 }
 
+fn import_attributes(context: &Context, attrs: &Vec<frontend::Attribute>) -> ast::Attributes {
+    attrs.iter().flat_map(|attr| attr.import(context)).collect()
+}
+
 impl Import<Option<ast::Attribute>> for frontend::Attribute {
     fn import(&self, context: &Context) -> Option<ast::Attribute> {
         match self {
@@ -515,8 +519,6 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
             ..
         } = self;
         let span = span.import(context);
-        let raw_attributes: Vec<Option<ast::Attribute>> = attributes.import(context);
-        let attributes: Vec<ast::Attribute> = raw_attributes.into_iter().flatten().collect();
         let kind = match contents.as_ref() {
             frontend::ConstantExprKind::Literal(constant_literal) => match constant_literal {
                 frontend::ConstantLiteral::ByteStr(items) => {
@@ -599,7 +601,14 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
                 &span,
             )),
         };
-        kind.promote(ty.spanned_import(context, span.clone()), span)
+        ast::Expr {
+            kind: Box::new(kind),
+            ty: ty.spanned_import(context, span.clone()),
+            meta: ast::Metadata {
+                span,
+                attributes: import_attributes(context, attributes),
+            },
+        }
     }
 }
 
@@ -1381,7 +1390,11 @@ impl Import<ast::Expr> for frontend::Expr {
                 &span,
             )),
         };
-        kind.promote(ty.spanned_import(context, span.clone()), span)
+        ast::Expr {
+            kind: Box::new(kind),
+            ty: ty.spanned_import(context, span.clone()),
+            meta: ast::Metadata { span, attributes },
+        }
     }
 }
 
