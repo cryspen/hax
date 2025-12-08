@@ -70,9 +70,18 @@ impl<T: SpannedImport<Out>, Out> SpannedImport<Vec<Out>> for Vec<T> {
     }
 }
 
-impl Import<ast::GlobalId> for frontend::DefId {
-    fn import(&self, _context: &Context) -> ast::GlobalId {
-        ast::GlobalId::from_frontend(self.clone())
+trait DefIdImportHelpers {
+    fn import_as_value(&self) -> ast::GlobalId;
+    fn import_as_nonvalue(&self) -> ast::GlobalId;
+}
+
+impl DefIdImportHelpers for frontend::DefId {
+    fn import_as_value(&self) -> ast::GlobalId {
+        ast::GlobalId::from_frontend(self.clone(), true)
+    }
+
+    fn import_as_nonvalue(&self) -> ast::GlobalId {
+        ast::GlobalId::from_frontend(self.clone(), false)
     }
 }
 
@@ -242,7 +251,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                     .trait_ref
                     .generic_args
                     .spanned_import(context, span);
-                let trait_ = trait_predicate.trait_ref.def_id.import(context);
+                let trait_ = trait_predicate.trait_ref.def_id.import_as_nonvalue();
                 let goal = ast::TraitGoal { trait_, args };
 
                 Some(ast::GenericConstraint::Type(ast::ImplIdent {
@@ -256,7 +265,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 ty,
             }) => {
                 let impl_ = impl_expr.spanned_import(context, span.clone());
-                let assoc_item = assoc_item.def_id.import(context);
+                let assoc_item = assoc_item.def_id.import_as_nonvalue();
                 let ty = ty.spanned_import(context, span);
                 Some(ast::GenericConstraint::Projection(
                     ast::ProjectionPredicate {
@@ -290,7 +299,7 @@ impl Import<ast::Generics> for frontend::ParamEnv {
 }
 
 impl Import<ast::SafetyKind> for frontend::Safety {
-    fn import(&self, context: &Context) -> ast::SafetyKind {
+    fn import(&self, _context: &Context) -> ast::SafetyKind {
         match self {
             frontend::Safety::Unsafe => ast::SafetyKind::Unsafe,
             frontend::Safety::Safe => ast::SafetyKind::Safe,
@@ -339,7 +348,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 import_fn_sig(context, &fn_sig.value, span.clone())
             }
             frontend::TyKind::Adt(item_ref) => {
-                let head = item_ref.def_id.import(context);
+                let head = item_ref.def_id.import_as_nonvalue();
                 let args = item_ref.generic_args.spanned_import(context, span.clone());
                 ast::TyKind::App { head, args }
             }
@@ -388,7 +397,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                         frontend::ClauseKind::Trait(frontend::TraitPredicate {
                             trait_ref, ..
                         }) => Ok(ast::DynTraitGoal {
-                            trait_: trait_ref.def_id.import(context),
+                            trait_: trait_ref.def_id.import_as_nonvalue(),
                             non_self_args: trait_ref
                                 .generic_args
                                 .spanned_import(context, span.clone())[1..]
@@ -422,13 +431,13 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 ..
             }) => ast::TyKind::AssociatedType {
                 impl_: impl_expr.spanned_import(context, span.clone()),
-                item: def_id.import(context),
+                item: def_id.import_as_nonvalue(),
             },
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Opaque { .. },
                 def_id,
                 ..
-            }) => ast::TyKind::Opaque(def_id.import(context)),
+            }) => ast::TyKind::Opaque(def_id.import_as_nonvalue()),
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Inherent,
                 ..
@@ -466,7 +475,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
 }
 
 impl SpannedImport<ast::literals::Literal> for frontend::ConstantLiteral {
-    fn spanned_import(&self, context: &Context, _span: ast::span::Span) -> ast::literals::Literal {
+    fn spanned_import(&self, _context: &Context, _span: ast::span::Span) -> ast::literals::Literal {
         match self {
             frontend::ConstantLiteral::Bool(b) => ast::literals::Literal::Bool(*b),
             frontend::ConstantLiteral::Char(c) => ast::literals::Literal::Char(*c),
@@ -546,10 +555,10 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
                     frontend::VariantKind::Enum { named, .. } => (false, named),
                     frontend::VariantKind::Union => (false, false),
                 };
-                let constructor = info.variant.import(context);
+                let constructor = info.variant.import_as_value();
                 let fields = fields
                     .iter()
-                    .map(|f| (f.field.import(context), f.value.import(context)))
+                    .map(|f| (f.field.import_as_value(), f.value.import(context)))
                     .collect();
                 ast::ExprKind::Construct {
                     constructor,
@@ -582,7 +591,7 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
                 }
             }
             frontend::ConstantExprKind::GlobalName(item_ref) => {
-                ast::ExprKind::GlobalId(item_ref.contents().def_id.import(context))
+                ast::ExprKind::GlobalId(item_ref.contents().def_id.import_as_value())
             }
             frontend::ConstantExprKind::Borrow(inner) => ast::ExprKind::Borrow {
                 mutable: false,
@@ -849,7 +858,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 if let frontend::ExprKind::GlobalName { item, .. } = fun.contents.as_ref() {
                     let mut head = fun.import(context);
                     head.kind = Box::new(ast::ExprKind::GlobalId(
-                        item.contents().def_id.import(context),
+                        item.contents().def_id.import_as_value(),
                     ));
                     let generic_args = item
                         .contents()
@@ -1055,7 +1064,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 }
             }
             frontend::ExprKind::Field { field, lhs } => ast::ExprKind::standalone_fn_app(
-                field.import(context),
+                field.import_as_value(),
                 vec![],
                 vec![lhs.import(context)],
                 ty.spanned_import(context, span.clone()),
@@ -1099,7 +1108,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 item,
                 constructor: _,
             } => {
-                let ident = item.contents().def_id.import(context);
+                let ident = item.contents().def_id.import_as_value();
                 if let Some(TupleId::Constructor { length: 0 }) = ident.expect_tuple() {
                     return ast::ExprKind::Construct {
                         constructor: ident,
@@ -1195,7 +1204,7 @@ impl Import<ast::Expr> for frontend::Expr {
                     frontend::VariantKind::Enum { named, .. } => (false, named),
                     frontend::VariantKind::Union => (false, false),
                 };
-                let constructor = adt_expr.info.variant.import(context);
+                let constructor = adt_expr.info.variant.import_as_value();
                 let base = match &adt_expr.base {
                     frontend::AdtExprBase::None => None,
                     frontend::AdtExprBase::Base(info) => Some(info.base.import(context)),
@@ -1211,7 +1220,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 let fields = adt_expr
                     .fields
                     .iter()
-                    .map(|f| (f.field.import(context), f.value.import(context)))
+                    .map(|f| (f.field.import_as_value(), f.value.import(context)))
                     .collect();
                 ast::ExprKind::Construct {
                     constructor,
@@ -1349,7 +1358,7 @@ impl Import<ast::Expr> for frontend::Expr {
                         _ => None,
                     })
                     .collect();
-                let def_id = item.contents().def_id.import(context);
+                let def_id = item.contents().def_id.import_as_value();
                 if const_args.is_empty() && item.contents().in_trait.is_none() {
                     ast::ExprKind::GlobalId(def_id)
                 } else {
@@ -1373,7 +1382,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 ast::ExprKind::LocalId(ast::LocalId(Symbol::new(param.name.clone())))
             }
             frontend::ExprKind::StaticRef { def_id, .. } => {
-                ast::ExprKind::GlobalId(def_id.import(context))
+                ast::ExprKind::GlobalId(def_id.import_as_value())
             }
             frontend::ExprKind::Yield { value: _ } => ast::ExprKind::Error(unsupported(
                 "Got expression `Yield`: coroutines are not supported by hax",
@@ -1396,7 +1405,7 @@ impl Import<ast::Expr> for frontend::Expr {
 impl Import<(ast::GlobalId, ast::Ty, Vec<ast::Attribute>)> for frontend::FieldDef {
     fn import(&self, context: &Context) -> (ast::GlobalId, ast::Ty, Vec<ast::Attribute>) {
         (
-            self.did.import(context),
+            self.did.import_as_value(),
             self.ty.spanned_import(context, self.span.import(context)),
             self.attributes.import(context),
         )
@@ -1452,10 +1461,10 @@ impl Import<ast::PatKind> for frontend::PatKind {
                     frontend::VariantKind::Enum { named, .. } => (false, named),
                     frontend::VariantKind::Union => (false, false),
                 };
-                let constructor = info.variant.import(context);
+                let constructor = info.variant.import_as_value();
                 let fields = subpatterns
                     .iter()
-                    .map(|f| (f.field.import(context), f.pattern.import(context)))
+                    .map(|f| (f.field.import_as_value(), f.pattern.import(context)))
                     .collect();
                 ast::PatKind::Construct {
                     constructor,
@@ -1605,7 +1614,7 @@ impl SpannedImport<ast::Param> for frontend::Param {
 impl Import<ast::Variant> for frontend::VariantDef {
     fn import(&self, context: &Context) -> ast::Variant {
         ast::Variant {
-            name: self.def_id.import(context),
+            name: self.def_id.import_as_value(),
             arguments: self.fields.import(context),
             is_record: self.fields.raw.first().is_some_and(|fd| fd.name.is_some()),
             attributes: self.attributes.import(context),
@@ -1680,23 +1689,17 @@ fn import_trait_item(
             &span,
         )),
     };
-    let (frontend::FullDefKind::AssocConst { param_env, .. }
-    | frontend::FullDefKind::AssocFn { param_env, .. }
-    | frontend::FullDefKind::AssocTy { param_env, .. }) = &item.kind
-    else {
-        unreachable!("Found associated item of an unknown kind.")
-    };
     ast::TraitItem {
         meta,
         kind,
-        generics: param_env.import(context),
-        ident: item.def_id().import(context),
+        generics,
+        ident: item.def_id().import_as_nonvalue(),
     }
 }
 
 impl SpannedImport<ast::TraitGoal> for frontend::TraitRef {
     fn spanned_import(&self, context: &Context, span: ast::span::Span) -> ast::TraitGoal {
-        let trait_ = self.def_id.import(context);
+        let trait_ = self.def_id.import_as_nonvalue();
         let args = self.generic_args.spanned_import(context, span);
         ast::TraitGoal { trait_, args }
     }
@@ -1727,7 +1730,7 @@ fn browse_path(
                 goal: trait_ref.spanned_import(context, span.clone()),
                 name: impl_expr_name(*index as u64),
             };
-            let item = item.contents().def_id.import(context);
+            let item = item.contents().def_id.import_as_nonvalue();
             ast::ImplExprKind::Projection {
                 impl_: ast::ImplExpr {
                     kind: Box::new(item_kind),
@@ -1872,8 +1875,8 @@ fn cast_of_enum(
                 .promote(ty.clone(), span.clone())
             }
             frontend::DiscriminantDefinition::Explicit(did) => {
-                let e =
-                    ast::ExprKind::GlobalId(did.import(context)).promote(ty.clone(), span.clone());
+                let e = ast::ExprKind::GlobalId(did.import_as_value())
+                    .promote(ty.clone(), span.clone());
                 previous_explicit_determinator = Some(e.clone());
                 e
             }
@@ -1942,7 +1945,7 @@ pub fn import_item(
     let context = &Context {
         owner_hint: Some(this.contents().def_id.clone()),
     };
-    let ident = this.contents().def_id.clone().import(context);
+    let ident = this.contents().def_id.clone().import_as_nonvalue();
     let span = span.import(context);
     let mut items = Vec::new();
     let kind = match kind {
@@ -1988,7 +1991,7 @@ pub fn import_item(
                 // Each variant might introduce a anonymous constant defining its discriminant integer
                 let discriminant_constants = variants_with_def.iter().filter_map(|(_, v)| {
                     if let frontend::DiscriminantDefinition::Explicit(def_id) = &v.discr_def {
-                        let name = def_id.import(context);
+                        let name = def_id.import_as_value();
                         let kind = match v.discr_val.ty.kind() {
                             frontend::TyKind::Int(int_ty) => int_ty.into(),
                             frontend::TyKind::Uint(int_ty) => int_ty.into(),
@@ -2017,7 +2020,6 @@ pub fn import_item(
                     }
                 });
                 let cast_item = cast_of_enum(
-                    context,
                     ident,
                     &generics,
                     repr.typ.spanned_import(context, span.clone()),
@@ -2086,7 +2088,7 @@ pub fn import_item(
             let generics = param_env.import(context);
             let trait_ref = trait_pred.trait_ref.contents();
             let of_trait: (ast::GlobalId, Vec<ast::GenericValue>) = (
-                trait_ref.def_id.import(context),
+                trait_ref.def_id.import_as_nonvalue(),
                 trait_ref
                     .generic_args
                     .iter()
@@ -2177,7 +2179,7 @@ pub fn import_item(
             return items
                 .iter()
                 .map(|assoc_item| {
-                    let ident = assoc_item.def_id.import(context);
+                    let ident = assoc_item.def_id.import_as_nonvalue();
                     let assoc_item = all_items.get(&assoc_item.def_id).unwrap_or_else(
                         #[allow(unused)]
                         || match missing_associated_item() {},
