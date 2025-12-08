@@ -38,6 +38,8 @@ Changes to the Lean backend:
  - Add error when using patterns in function parameters (#1792)
  - Add support for constant parameters to functions and traits (#1797)
  - Add support for associated types with equality constraints (#1806)
+ - Make trait-level arguments explicit for all trait functions, adding them as
+   extra parameters (#1803)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
