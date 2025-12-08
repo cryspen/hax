@@ -195,6 +195,7 @@ mod module {
                 instantiate: Option<ty::GenericArgsRef<'tcx>>,
             ) -> Option<Self> {
                 let did = did.as_local()?;
+                s.base().tcx.hir_maybe_body_owned_by(did)?;
                 let (thir, expr) = get_thir(did, s);
                 assert!(instantiate.is_none(), "monomorphized thir isn't supported");
                 let s = &s.with_owner_id(did.to_def_id()).with_thir(thir.clone());
