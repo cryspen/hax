@@ -133,7 +133,7 @@ impl ExprKind {
     pub fn tuple(components: Vec<Expr>) -> Self {
         let length = components.len();
         ExprKind::Construct {
-            constructor: GlobalId::tuple_constructor(length),
+            constructor: global_id::TupleId::Constructor { length }.into(),
             is_record: false,
             is_struct: true,
             fields: components
