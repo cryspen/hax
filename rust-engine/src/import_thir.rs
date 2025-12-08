@@ -1236,15 +1236,10 @@ impl Import<ast::Expr> for frontend::Expr {
                 upvars,
                 ..
             } => {
-                let mut params: Vec<ast::Pat> = params
-                    .iter()
-                    .filter_map(|p| p.pat.as_ref().map(|value| value.import(context)))
+                let params = import_params(context, params, span.clone())
+                    .into_iter()
+                    .map(|param| param.pat)
                     .collect();
-                if params.is_empty() {
-                    params.push(
-                        ast::PatKind::Wild.promote(ast::TyKind::unit().promote(), span.clone()),
-                    );
-                }
                 ast::ExprKind::Closure {
                     params,
                     body: body.import(context),
@@ -1565,6 +1560,25 @@ impl Import<ast::Pat> for frontend::Pat {
     }
 }
 
+fn import_params(
+    context: &Context,
+    params: &Vec<frontend::Param>,
+    span: ast::span::Span,
+) -> Vec<ast::Param> {
+    let params: Vec<ast::Param> = params.spanned_import(context, span.clone());
+    if params.is_empty() {
+        let ty = ast::TyKind::unit().promote();
+        vec![ast::Param {
+            pat: ast::PatKind::Wild.promote(ty.clone(), span.clone()),
+            ty: ty,
+            ty_span: None,
+            attributes: vec![],
+        }]
+    } else {
+        params
+    }
+}
+
 impl SpannedImport<ast::Param> for frontend::Param {
     fn spanned_import(&self, context: &Context, span: ast::span::Span) -> ast::Param {
         let frontend::Param {
@@ -1630,7 +1644,7 @@ fn import_trait_item(
             body: Some(default),
             ..
         } => ast::TraitItemKind::Default {
-            params: Vec::new(),
+            params: import_params(context, &default.params, span),
             body: default.import(context),
         },
         frontend::FullDefKind::AssocFn { sig, .. } => {
@@ -2113,7 +2127,7 @@ pub fn import_item(
                             match expect_body(body, &span) {
                                 Ok(body) => ast::ImplItemKind::Fn {
                                     body: body.import(context),
-                                    params: body.params.spanned_import(context, span.clone()),
+                                    params: import_params(context, &body.params, span.clone()),
                                 },
                                 Err(error) => ast::ImplItemKind::Error(error),
                             },
@@ -2161,54 +2175,76 @@ pub fn import_item(
             param_env, items, ..
         } => {
             return items
-                    .iter()
-                    .map(|assoc_item| {
-                        let ident = assoc_item.def_id.import(context);
-                        let assoc_item = all_items.get(&assoc_item.def_id).expect("All assoc items should be included in the list of items produced by the frontend.");
-                        let span = assoc_item.span.import(context);
-                        let attributes = assoc_item.attributes.import(context);
-                        let impl_generics = param_env.import(context);
-                        let kind = match assoc_item.kind() {
-                            frontend::FullDefKind::AssocTy { param_env, value, .. } => {
-                                let generics = impl_generics.clone().concat(param_env.import(context));
-                                match expect_body(value, &span) {
-                                    Ok(body) => ast::ItemKind::TyAlias {
+                .iter()
+                .map(|assoc_item| {
+                    let ident = assoc_item.def_id.import(context);
+                    let assoc_item = all_items.get(&assoc_item.def_id).unwrap_or_else(
+                        #[allow(unused)]
+                        || match missing_associated_item() {},
+                    );
+                    let span = assoc_item.span.import(context);
+                    let attributes = assoc_item.attributes.import(context);
+                    let impl_generics = param_env.import(context);
+                    let kind = match assoc_item.kind() {
+                        frontend::FullDefKind::AssocTy {
+                            param_env, value, ..
+                        } => {
+                            let generics = impl_generics.clone().concat(param_env.import(context));
+                            match expect_body(value, &span) {
+                                Ok(body) => ast::ItemKind::TyAlias {
                                     name: ident,
                                     generics,
                                     ty: body.spanned_import(context, span.clone()),
                                 },
-                                Err(err) => ast::ItemKind::Error(err)
-                                }
-                            },
-                            frontend::FullDefKind::AssocFn { param_env, sig, body , ..} => {
-                                let generics = impl_generics.clone().concat(param_env.import(context));
-                                match expect_body(body, &span) {
-                                    Ok(body) =>ast::ItemKind::Fn {
+                                Err(err) => ast::ItemKind::Error(err),
+                            }
+                        }
+                        frontend::FullDefKind::AssocFn {
+                            param_env,
+                            sig,
+                            body,
+                            ..
+                        } => {
+                            let generics = impl_generics.clone().concat(param_env.import(context));
+                            match expect_body(body, &span) {
+                                Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
                                     body: body.import(context),
-                                    params: body.params.spanned_import(context, span.clone()),
+                                    params: import_params(context, &body.params, span.clone()),
                                     safety: sig.value.safety.import(context),
                                 },
-                                Err(err) => ast::ItemKind::Error(err)
-                                }}
-                            frontend::FullDefKind::AssocConst { param_env, body, .. } => {
-                                let generics = impl_generics.clone().concat(param_env.import(context));
-                                match expect_body(body, &span) {
-                                    Ok(body) => ast::ItemKind::Fn {
+                                Err(err) => ast::ItemKind::Error(err),
+                            }
+                        }
+                        frontend::FullDefKind::AssocConst {
+                            param_env, body, ..
+                        } => {
+                            let generics = impl_generics.clone().concat(param_env.import(context));
+                            match expect_body(body, &span) {
+                                Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
                                     body: body.import(context),
                                     params: Vec::new(),
                                     safety: ast::SafetyKind::Safe,
                                 },
-                                Err(err) => ast::ItemKind::Error(err)
-                                }}
-                            _ => ast::ItemKind::Error(assertion_failure("All pointers to associated items should correspond to an actual associated item definition.", &span))
-                        };
-                        ast::Item { ident, kind, meta: ast::Metadata { span, attributes } }
-                    })
-                    .collect();
+                                Err(err) => ast::ItemKind::Error(err),
+                            }
+                        }
+                        _ =>
+                        {
+                            #[allow(unused)]
+                            match missing_associated_item() {}
+                        }
+                    };
+                    ast::Item {
+                        ident,
+                        kind,
+                        meta: ast::Metadata { span, attributes },
+                    }
+                })
+                .collect();
         }
         frontend::FullDefKind::Fn {
             param_env,
@@ -2220,7 +2256,7 @@ pub fn import_item(
                 name: ident,
                 generics: param_env.import(context),
                 body: body.import(context),
-                params: body.params.spanned_import(context, span.clone()),
+                params: import_params(context, &body.params, span.clone()),
                 safety: sig.value.safety.import(context),
             },
             Err(err) => ast::ItemKind::Error(err),
