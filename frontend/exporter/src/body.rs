@@ -195,6 +195,7 @@ mod module {
                 instantiate: Option<ty::GenericArgsRef<'tcx>>,
             ) -> Option<Self> {
                 let did = did.as_local()?;
+                // The following returns `None` if did refers to something that has no body (avoids a crash in the call to `thir_body`)
                 s.base().tcx.hir_maybe_body_owned_by(did)?;
                 let (thir, expr) = get_thir(did, s);
                 assert!(instantiate.is_none(), "monomorphized thir isn't supported");
