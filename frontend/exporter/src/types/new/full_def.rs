@@ -188,12 +188,15 @@ impl DefId {
         if let ForeignMod = &self.kind {
             // These kind causes `def_span` to panic.
             rustc_span::DUMMY_SP
-        } else if let Some(ldid) = def_id.as_local()
-            && let hir_id = tcx.local_def_id_to_hir_id(ldid)
-            && matches!(tcx.hir_node(hir_id), rustc_hir::Node::Synthetic)
-        {
-            // Synthetic items (those we create ourselves) make `def_span` panic.
-            rustc_span::DUMMY_SP
+        } else if let Some(ldid) = def_id.as_local() {
+            let hir_id = tcx.local_def_id_to_hir_id(ldid);
+            if matches!(tcx.hir_node(hir_id), rustc_hir::Node::Synthetic) {
+                // Synthetic items (those we create ourselves) make `def_span` panic.
+                rustc_span::DUMMY_SP
+            } else {
+                // Unlike `tcx.def_span`, `tcx.hir_span_with_body` returns the full span of the item, not only of its header
+                tcx.hir_span_with_body(hir_id)
+            }
         } else {
             tcx.def_span(def_id)
         }
