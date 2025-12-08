@@ -167,6 +167,13 @@ impl Generics {
         });
         self
     }
+    /// Empty generics
+    pub fn empty() -> Self {
+        Self {
+            params: Vec::new(),
+            constraints: Vec::new(),
+        }
+    }
 }
 
 impl ItemKind {
