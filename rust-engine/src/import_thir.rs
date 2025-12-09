@@ -1888,67 +1888,71 @@ fn cast_of_enum(
     span: ast::span::Span,
     variants: &Vec<(ast::Variant, frontend::VariantDef)>,
 ) -> ast::Item {
+    let name = ast::GlobalId::with_suffix(type_id, ReservedSuffix::Cast);
+    let arms = {
+        let ast::TyKind::Primitive(ast::PrimitiveTy::Int(int_kind)) = &*ty.0 else {
+            return ast::ItemKind::Error(assertion_failure(
+                &format!("cast_of_enum: expected int type, got {:?}", ty),
+                &span,
+            ))
+            .promote(name, span);
+        };
+        let mut previous_explicit_determinator = None;
+        variants
+            .iter()
+            .map(|(variant, variant_def)| {
+                // Each variant comes with a `rustc_middle::ty::VariantDiscr`. Some variant have `Explicit` discr (i.e. an expression)
+                // while other have `Relative` discr (the distance to the previous last explicit discr).
+                let body = match &variant_def.discr_def {
+                    frontend::DiscriminantDefinition::Relative(m) => {
+                        ast::ExprKind::Literal(ast::literals::Literal::Int {
+                            value: Symbol::new(m.to_string()),
+                            negative: false,
+                            kind: int_kind.clone(),
+                        })
+                        .promote(ty.clone(), span.clone())
+                    }
+                    frontend::DiscriminantDefinition::Explicit(did) => {
+                        let e = ast::ExprKind::GlobalId(did.import_as_value())
+                            .promote(ty.clone(), span.clone());
+                        previous_explicit_determinator = Some(e.clone());
+                        e
+                    }
+                };
+                let pat = ast::PatKind::Construct {
+                    constructor: variant.name,
+                    is_record: variant.is_record,
+                    is_struct: false,
+                    fields: variant
+                        .arguments
+                        .iter()
+                        .map(|(cid, ty, _)| {
+                            (*cid, ast::PatKind::Wild.promote(ty.clone(), span.clone()))
+                        })
+                        .collect(),
+                }
+                .promote(ty.clone(), span.clone());
+                ast::Arm::non_guarded(pat, body, span.clone())
+            })
+            .collect()
+    };
     let type_ref = ast::TyKind::App {
         head: type_id,
         args: generics.params.iter().map(generic_param_to_value).collect(),
     }
     .promote();
-    let name = ast::GlobalId::with_suffix(type_id, ReservedSuffix::Cast);
-    let ast::TyKind::Primitive(ast::PrimitiveTy::Int(int_kind)) = &*ty.0 else {
-        return ast::ItemKind::Error(assertion_failure(
-            &format!("cast_of_enum: expected int type, got {:?}", ty),
-            &span,
-        ))
-        .promote(name, span);
-    };
-    let mut arms = Vec::new();
-    let mut previous_explicit_determinator = None;
-    for (variant, variant_def) in variants {
-        // Each variant comes with a `rustc_middle::ty::VariantDiscr`. Some variant have `Explicit` discr (i.e. an expression)
-        // while other have `Relative` discr (the distance to the previous last explicit discr).
-        let body = match &variant_def.discr_def {
-            frontend::DiscriminantDefinition::Relative(m) => {
-                ast::ExprKind::Literal(ast::literals::Literal::Int {
-                    value: Symbol::new(m.to_string()),
-                    negative: false,
-                    kind: int_kind.clone(),
-                })
-                .promote(ty.clone(), span.clone())
-            }
-            frontend::DiscriminantDefinition::Explicit(did) => {
-                let e = ast::ExprKind::GlobalId(did.import_as_value())
-                    .promote(ty.clone(), span.clone());
-                previous_explicit_determinator = Some(e.clone());
-                e
-            }
-        };
-        let pat = ast::PatKind::Construct {
-            constructor: variant.name,
-            is_record: variant.is_record,
-            is_struct: false,
-            fields: variant
-                .arguments
-                .iter()
-                .map(|(cid, ty, _)| (*cid, ast::PatKind::Wild.promote(ty.clone(), span.clone())))
-                .collect(),
-        }
-        .promote(ty.clone(), span.clone());
-        arms.push(ast::Arm::non_guarded(pat, body, span.clone()));
-    }
     let scrutinee_var = ast::LocalId(Symbol::new("x"));
-    let scrutinee =
-        ast::ExprKind::LocalId(scrutinee_var.clone()).promote(type_ref.clone(), span.clone());
     let params = vec![ast::Param {
-        pat: ast::PatKind::var_pat(scrutinee_var).promote(type_ref.clone(), span.clone()),
+        pat: ast::PatKind::var_pat(scrutinee_var.clone()).promote(type_ref.clone(), span.clone()),
         ty: type_ref.clone(),
         ty_span: None,
         attributes: Vec::new(),
     }];
-    let body = ast::ExprKind::Match { scrutinee, arms }.promote(ty, span.clone());
+    let scrutinee = ast::ExprKind::LocalId(scrutinee_var).promote(type_ref.clone(), span.clone());
     ast::ItemKind::Fn {
         name: name.clone(),
         generics: generics.clone(),
-        body,
+        body: ast::ExprKind::Match { scrutinee, arms }.promote(ty, span.clone()),
         params,
         safety: ast::SafetyKind::Safe,
     }
