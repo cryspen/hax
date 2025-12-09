@@ -290,3 +290,11 @@ impl PatKind {
         }
     }
 }
+
+impl Variant {
+    /// Whether a variant has fields or not.
+    /// See https://doc.rust-lang.org/reference/items/enumerations.html#field-less-enum.
+    pub fn is_fieldless(&self) -> bool {
+        self.arguments.is_empty()
+    }
+}
