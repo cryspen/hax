@@ -75,7 +75,7 @@ pub mod control_flow {
 }
 
 pub mod index {
-    trait Index<Idx> {
+    pub trait Index<Idx> {
         type Output;
         fn index(&self, i: Idx) -> &Self::Output;
     }
@@ -123,5 +123,20 @@ mod try_trait {
         type Residual;
         fn from_output(x: Self::Output) -> Self;
         fn branch(&self) -> super::control_flow::ControlFlow<Self::Residual, Self::Output>;
+    }
+}
+
+mod deref {
+    pub trait Deref {
+        type Target: ?Sized;
+
+        fn deref(&self) -> &Self::Target;
+    }
+
+    impl<T> Deref for &T {
+        type Target = T;
+        fn deref(&self) -> &T {
+            &self
+        }
     }
 }

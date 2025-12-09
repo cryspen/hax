@@ -1,5 +1,87 @@
 #![allow(unused_variables)]
 
+pub mod slice {
+    pub fn slice_length<T>(s: &[T]) -> usize {
+        panic!()
+    }
+    #[hax_lib::requires(mid <= slice_length(s))]
+    pub fn slice_split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
+        panic!()
+    }
+    pub fn slice_contains<T>(s: &[T], v: T) -> bool {
+        panic!()
+    }
+    #[hax_lib::requires(i < slice_length(s))]
+    pub fn slice_index<T>(s: &[T], i: usize) -> &T {
+        panic!()
+    }
+    // In the following two functions, F is actually a function type.
+    // Not constraining that here allows to call it with closures,
+    // or to pass parameters that implement the `Fn` trait for core_models.
+    // Each backend can type `f` as needed.
+    pub fn array_from_fn<T, const N: usize, F>(f: F) -> [T; N] {
+        panic!()
+    }
+    pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
+        panic!()
+    }
+    pub fn array_as_slice<T, const N: usize>(s: [T; N]) -> &'static [T] {
+        panic!()
+    }
+}
+
+pub mod sequence {
+    pub struct Seq<T>(Option<T>);
+    pub fn seq_empty<T>() -> Seq<T> {
+        panic!()
+    }
+    pub fn seq_from_slice<T>(_s: &[T]) -> Seq<T> {
+        panic!()
+    }
+    pub fn seq_to_slice<T>(_s: &Seq<T>) -> &[T] {
+        panic!()
+    }
+    pub fn seq_concat<T>(s1: &mut Seq<T>, s2: &Seq<T>) {
+        panic!()
+    }
+    pub fn seq_one<T>(x: T) -> Seq<T> {
+        panic!()
+    }
+    pub fn seq_len<T>(s: &Seq<T>) -> usize {
+        panic!()
+    }
+    pub fn seq_slice<T>(s: &Seq<T>, b: usize, e: usize) -> Seq<T> {
+        panic!()
+    }
+    pub fn seq_last<T>(s: &Seq<T>) -> T {
+        panic!()
+    }
+    pub fn seq_index<T>(s: &Seq<T>, i: usize) -> &T {
+        panic!()
+    }
+}
+
+pub mod string {
+    pub fn str_concat(s1: &'static str, s2: &'static str) -> &'static str {
+        panic!()
+    }
+    pub fn str_of_char(c: char) -> &'static str {
+        panic!()
+    }
+    pub fn str_sub(s: &'static str, b: usize, e: usize) -> &'static str {
+        panic!()
+    }
+    pub fn str_index(s: &'static str, i: usize) -> char {
+        panic!()
+    }
+}
+
+pub mod mem {
+    pub fn replace<T: ?Sized>(src: &mut T, dst: &T) {
+        panic!()
+    }
+}
+
 pub mod arithmetic {
     use pastey::paste;
 
