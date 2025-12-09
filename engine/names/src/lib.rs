@@ -286,6 +286,11 @@ mod hax {
         fn lt() {}
         fn ge() {}
         fn gt() {}
+
+        fn add_with_overflow() {}
+        fn sub_with_overflow() {}
+        fn mul_with_overflow() {}
+        fn cmp() {}
     }
 
     mod control_flow_monad {
