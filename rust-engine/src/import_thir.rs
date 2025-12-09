@@ -2156,9 +2156,11 @@ pub fn import_item(
             let items = items
                 .iter()
                 .flat_map(|assoc_item| {
-                    // The DefId of the original associated item on the trait
-                    let method_def_id_trait = &assoc_item.decl_def_id;
-                    // The DefId for this very specific impl associated item
+                    // The DefId for this very specific impl associated item.
+                    // The DefId of the original associated item on the trait is
+                    // `assoc_item.decl_def_id`, here we discard it, but it may
+                    // be useful in the future (for e.g. for
+                    // https://github.com/cryspen/hax-evit/issues/24).
                     let method_def_id_impl = match &assoc_item.value {
                         hax_frontend_exporter::ImplAssocItemValue::Provided { def_id, .. } => {
                             def_id
@@ -2168,7 +2170,7 @@ pub fn import_item(
                             return None;
                         }
                     };
-                    let ident = method_def_id_trait.import_as_nonvalue();
+                    let ident = method_def_id_impl.import_as_nonvalue();
                     let assoc_item_def = all_items.get(&method_def_id_impl).unwrap_or_else(
                         #[allow(unreachable_code)]
                         || match missing_associated_item() {},
@@ -2191,9 +2193,12 @@ pub fn import_item(
                             },
                         ),
                         frontend::FullDefKind::AssocFn {
-                            param_env, body, ..
+                            param_env,
+                            body,
+                            sig,
+                            ..
                         } => (
-                            param_env.import(context),
+                            import_generics(context, &sig.bound_vars, param_env),
                             match expect_body(body, &span, "import_item/TraitImpl/AssocFn") {
                                 Ok(body) => ast::ImplItemKind::Fn {
                                     body: body.import(context),
