@@ -66,7 +66,7 @@ impl ExplicitMonadicVisitor {
                     output: expr.ty.clone(),
                 })),
                 meta: Metadata {
-                    span: expr.meta.span.clone(),
+                    span: expr.meta.span,
                     attributes: vec![],
                 },
             },

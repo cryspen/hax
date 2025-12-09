@@ -45,7 +45,7 @@ fn main() {
             );
             items
                 .iter()
-                .flat_map(|item| hax_rust_engine::import_thir::import_item(&item, &items_by_def_id))
+                .flat_map(|item| hax_rust_engine::import_thir::import_item(item, &items_by_def_id))
                 .collect()
         }
     };

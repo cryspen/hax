@@ -6,13 +6,13 @@ use crate::ast::identifiers::global_id::TupleId;
 use crate::symbol::Symbol;
 use hax_frontend_exporter as frontend;
 
-fn unsupported(msg: &str, issue_id: u32, span: &ast::span::Span) -> ast::ErrorNode {
+fn unsupported(msg: &str, issue_id: u32, span: ast::span::Span) -> ast::ErrorNode {
     let fragment = ast::fragment::Fragment::Unknown(msg.to_owned());
     let diagnostic = ast::diagnostics::Diagnostic::new(
         fragment.clone(),
         ast::diagnostics::DiagnosticInfo {
             context: ast::diagnostics::Context::Import,
-            span: span.clone(),
+            span,
             kind: hax_types::diagnostics::Kind::Unimplemented {
                 issue_id: Some(issue_id),
                 details: Some(msg.to_owned()),
@@ -24,13 +24,13 @@ fn unsupported(msg: &str, issue_id: u32, span: &ast::span::Span) -> ast::ErrorNo
         diagnostics: vec![diagnostic],
     }
 }
-fn assertion_failure(msg: &str, span: &ast::span::Span) -> ast::ErrorNode {
+fn assertion_failure(msg: &str, span: ast::span::Span) -> ast::ErrorNode {
     let fragment = ast::fragment::Fragment::Unknown(msg.to_owned());
     let diagnostic = ast::diagnostics::Diagnostic::new(
         fragment.clone(),
         ast::diagnostics::DiagnosticInfo {
             context: ast::diagnostics::Context::Import,
-            span: span.clone(),
+            span,
             kind: hax_types::diagnostics::Kind::AssertionFailure {
                 details: msg.to_owned(),
             },
@@ -65,7 +65,7 @@ impl<T: Import<Out>, Out> Import<Vec<Out>> for Vec<T> {
 impl<T: SpannedImport<Out>, Out> SpannedImport<Vec<Out>> for Vec<T> {
     fn spanned_import(&self, context: &Context, span: ast::span::Span) -> Vec<Out> {
         self.into_iter()
-            .map(|value| value.spanned_import(context, span.clone()))
+            .map(|value| value.spanned_import(context, span))
             .collect()
     }
 }
@@ -181,7 +181,7 @@ impl Import<ast::GenericParam> for frontend::GenericParamDef {
             frontend::GenericParamDefKind::Lifetime => ast::GenericParamKind::Lifetime,
             frontend::GenericParamDefKind::Type { .. } => ast::GenericParamKind::Type,
             frontend::GenericParamDefKind::Const { ty, .. } => ast::GenericParamKind::Const {
-                ty: ty.spanned_import(context, span.clone()),
+                ty: ty.spanned_import(context, span),
             },
         };
         ast::GenericParam {
@@ -264,7 +264,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
                 assoc_item,
                 ty,
             }) => {
-                let impl_ = impl_expr.spanned_import(context, span.clone());
+                let impl_ = impl_expr.spanned_import(context, span);
                 let assoc_item = assoc_item.def_id.import_as_nonvalue();
                 let ty = ty.spanned_import(context, span);
                 Some(ast::GenericConstraint::Projection(
@@ -318,7 +318,7 @@ fn import_fn_sig(
         fn_sig
             .inputs
             .iter()
-            .map(|t| t.spanned_import(context, span.clone()))
+            .map(|t| t.spanned_import(context, span))
             .collect()
     };
     ast::TyKind::Arrow {
@@ -342,18 +342,18 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 ast::TyKind::Primitive(ast::PrimitiveTy::Float(float_ty.into()))
             }
             frontend::TyKind::FnDef { fn_sig, .. } | frontend::TyKind::Arrow(fn_sig) => {
-                import_fn_sig(context, &fn_sig.as_ref().value, span.clone())
+                import_fn_sig(context, &fn_sig.as_ref().value, span)
             }
             frontend::TyKind::Closure(frontend::ClosureArgs { fn_sig, .. }) => {
-                import_fn_sig(context, &fn_sig.value, span.clone())
+                import_fn_sig(context, &fn_sig.value, span)
             }
             frontend::TyKind::Adt(item_ref) => {
                 let head = item_ref.def_id.import_as_nonvalue();
-                let args = item_ref.generic_args.spanned_import(context, span.clone());
+                let args = item_ref.generic_args.spanned_import(context, span);
                 ast::TyKind::App { head, args }
             }
             frontend::TyKind::Foreign(..) => {
-                ast::TyKind::Error(unsupported("Foreign type", 928, &span))
+                ast::TyKind::Error(unsupported("Foreign type", 928, span))
             }
             frontend::TyKind::Str => ast::TyKind::Primitive(ast::PrimitiveTy::Str),
             frontend::TyKind::Array(item_ref) => {
@@ -363,29 +363,29 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 ] = &item_ref.generic_args[..]
                 {
                     ast::TyKind::Array {
-                        ty: ty.spanned_import(context, span.clone()),
+                        ty: ty.spanned_import(context, span),
                         length: Box::new(length.import(context)),
                     }
                 } else {
                     ast::TyKind::Error(assertion_failure(
                         "Wrong generics for array: expected a type and a constant. See synthetic_items in hax frontend.",
-                        &span,
+                        span,
                     ))
                 }
             }
             frontend::TyKind::Slice(ty) => {
                 if let [frontend::GenericArg::Type(ty)] = &ty.generic_args[..] {
-                    ast::TyKind::Slice(ty.spanned_import(context, span.clone()))
+                    ast::TyKind::Slice(ty.spanned_import(context, span))
                 } else {
                     ast::TyKind::Error(assertion_failure(
                         "Wrong generics for slice: expected a type. See synthetic_items in hax frontend.",
-                        &span,
+                        span,
                     ))
                 }
             }
             frontend::TyKind::RawPtr(..) => ast::TyKind::RawPointer,
             frontend::TyKind::Ref(_region, ty, mutable) => ast::TyKind::Ref {
-                inner: ty.as_ref().spanned_import(context, span.clone()),
+                inner: ty.as_ref().spanned_import(context, span),
                 mutable: *mutable,
                 region: ast::Region,
             },
@@ -398,15 +398,11 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                             trait_ref, ..
                         }) => Ok(ast::DynTraitGoal {
                             trait_: trait_ref.def_id.import_as_nonvalue(),
-                            non_self_args: trait_ref
-                                .generic_args
-                                .spanned_import(context, span.clone())[1..]
+                            non_self_args: trait_ref.generic_args.spanned_import(context, span)
+                                [1..]
                                 .to_vec(),
                         }),
-                        _ => Err(assertion_failure(
-                            "type Dyn with non trait predicate",
-                            &span,
-                        )),
+                        _ => Err(assertion_failure("type Dyn with non trait predicate", span)),
                     })
                     .collect::<Result<Vec<_>, _>>();
                 match goals {
@@ -415,14 +411,14 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 }
             }
             frontend::TyKind::Coroutine(_) => {
-                ast::TyKind::Error(unsupported("Coroutine type", 924, &span))
+                ast::TyKind::Error(unsupported("Coroutine type", 924, span))
             }
             frontend::TyKind::Never => ast::TyKind::App {
                 head: crate::names::rust_primitives::hax::Never,
                 args: Vec::new(),
             },
             frontend::TyKind::Tuple(items) => {
-                let args = items.generic_args.spanned_import(context, span.clone());
+                let args = items.generic_args.spanned_import(context, span);
                 ast::TyKind::tuple(args)
             }
             frontend::TyKind::Alias(frontend::Alias {
@@ -430,7 +426,7 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 def_id,
                 ..
             }) => ast::TyKind::AssociatedType {
-                impl_: impl_expr.spanned_import(context, span.clone()),
+                impl_: impl_expr.spanned_import(context, span),
                 item: def_id.import_as_nonvalue(),
             },
             frontend::TyKind::Alias(frontend::Alias {
@@ -443,32 +439,32 @@ impl SpannedImport<ast::Ty> for frontend::Ty {
                 ..
             }) => ast::TyKind::Error(assertion_failure(
                 "Ty::Alias with AliasTyKind::Inherent",
-                &span,
+                span,
             )),
             frontend::TyKind::Alias(frontend::Alias {
                 kind: frontend::AliasKind::Free,
                 ..
-            }) => ast::TyKind::Error(assertion_failure("Ty::Alias with AliasTyKind::Free", &span)),
+            }) => ast::TyKind::Error(assertion_failure("Ty::Alias with AliasTyKind::Free", span)),
             frontend::TyKind::Param(frontend::ParamTy { name, .. }) => {
                 ast::TyKind::Param(ast::LocalId(Symbol::new(name.clone())))
             }
             frontend::TyKind::Bound(..) => ast::TyKind::Error(assertion_failure(
                 "type Bound: should be gone after typechecking",
-                &span,
+                span,
             )),
             frontend::TyKind::Placeholder(..) => ast::TyKind::Error(assertion_failure(
                 "type Placeholder: should be gone after typechecking",
-                &span,
+                span,
             )),
             frontend::TyKind::Infer(..) => ast::TyKind::Error(assertion_failure(
                 "type Infer: should be gone after typechecking",
-                &span,
+                span,
             )),
             frontend::TyKind::Error => ast::TyKind::Error(assertion_failure(
                 "got type `Error`: Rust compilation probably failed.",
-                &span,
+                span,
             )),
-            frontend::TyKind::Todo(_) => ast::TyKind::Error(assertion_failure("type Todo", &span)),
+            frontend::TyKind::Todo(_) => ast::TyKind::Error(assertion_failure("type Todo", span)),
         };
         kind.promote()
     }
@@ -542,12 +538,12 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
                                 negative: false,
                                 kind: (&frontend::UintTy::U8).into(),
                             })
-                            .promote(ty.promote(), span.clone())
+                            .promote(ty.promote(), span)
                         })
                         .collect();
                     ast::ExprKind::Array(elems)
                 }
-                _ => ast::ExprKind::Literal(constant_literal.spanned_import(context, span.clone())),
+                _ => ast::ExprKind::Literal(constant_literal.spanned_import(context, span)),
             },
             frontend::ConstantExprKind::Adt { info, fields } => {
                 let (is_struct, is_record) = match info.kind {
@@ -607,12 +603,12 @@ impl Import<ast::Expr> for frontend::ConstantExpr {
             | frontend::ConstantExprKind::Memory(_)
             | frontend::ConstantExprKind::Todo(_) => ast::ExprKind::Error(assertion_failure(
                 "constant_lit_to_lit: TraitConst | FnPtr | RawBorrow | Cast | Memory",
-                &span,
+                span,
             )),
         };
         ast::Expr {
             kind: Box::new(kind),
-            ty: ty.spanned_import(context, span.clone()),
+            ty: ty.spanned_import(context, span),
             meta: ast::Metadata {
                 span,
                 attributes: import_attributes(context, attributes),
@@ -628,7 +624,7 @@ fn import_block_expr(
     full_span: ast::span::Span,
     attributes: Vec<ast::Attribute>,
 ) -> ast::Expr {
-    let typ = ty.spanned_import(context, full_span.clone());
+    let typ = ty.spanned_import(context, full_span);
     let safety_mode = match block.safety_mode {
         frontend::BlockSafety::Safe => ast::SafetyKind::Safe,
         frontend::BlockSafety::BuiltinUnsafe | frontend::BlockSafety::ExplicitUnsafe => {
@@ -649,22 +645,22 @@ fn import_block_expr(
 
     let mut acc = if let Some(expr) = tail_expr {
         let body = expr.import(context);
-        ast::ExprKind::Block { body, safety_mode }.promote(typ.clone(), full_span.clone())
+        ast::ExprKind::Block { body, safety_mode }.promote(typ.clone(), full_span)
     } else {
-        ast::Expr::tuple(vec![], full_span.clone())
+        ast::Expr::tuple(vec![], full_span)
     };
 
     for stmt in stmts.into_iter().rev() {
         match stmt.kind {
             frontend::StmtKind::Expr { expr, .. } => {
                 let rhs = expr.import(context);
-                let lhs = ast::PatKind::Wild.promote(rhs.ty.clone(), rhs.meta.span.clone());
+                let lhs = ast::PatKind::Wild.promote(rhs.ty.clone(), rhs.meta.span);
                 acc = ast::ExprKind::Let {
                     lhs,
                     rhs,
                     body: acc,
                 }
-                .promote(typ.clone(), full_span.clone());
+                .promote(typ.clone(), full_span);
             }
             frontend::StmtKind::Let {
                 pattern,
@@ -677,7 +673,7 @@ fn import_block_expr(
                         kind: Box::new(ast::ExprKind::Error(unsupported(
                             "Sorry, Hax does not support declare-first let bindings (see https://doc.rust-lang.org/rust-by-example/variable_bindings/declare.html) for now.",
                             156,
-                            &full_span,
+                            full_span,
                         ))),
                         ty: typ,
                         meta: ast::Metadata {
@@ -692,14 +688,14 @@ fn import_block_expr(
                 if let Some(else_block) = else_block {
                     let else_span = else_block.span.import(context);
                     let mut else_expr =
-                        import_block_expr(context, &else_block, ty, else_span.clone(), Vec::new());
+                        import_block_expr(context, &else_block, ty, else_span, Vec::new());
                     else_expr.ty = body.ty.clone();
                     let arm_then = ast::Arm {
                         pat: lhs,
                         body,
                         guard: None,
                         meta: ast::Metadata {
-                            span: full_span.clone(),
+                            span: full_span,
                             attributes: Vec::new(),
                         },
                     };
@@ -708,7 +704,7 @@ fn import_block_expr(
                         body: else_expr,
                         guard: None,
                         meta: ast::Metadata {
-                            span: full_span.clone(),
+                            span: full_span,
                             attributes: Vec::new(),
                         },
                     };
@@ -716,10 +712,9 @@ fn import_block_expr(
                         scrutinee: rhs,
                         arms: vec![arm_then, arm_else],
                     }
-                    .promote(typ.clone(), full_span.clone())
+                    .promote(typ.clone(), full_span)
                 } else {
-                    acc = ast::ExprKind::Let { lhs, rhs, body }
-                        .promote(typ.clone(), full_span.clone())
+                    acc = ast::ExprKind::Let { lhs, rhs, body }.promote(typ.clone(), full_span)
                 }
             }
         }
@@ -792,9 +787,9 @@ impl Import<ast::Expr> for frontend::Expr {
         let kind = match contents.as_ref() {
             frontend::ExprKind::Box { value } => {
                 let value = value.import(context);
-                let ty = ty.spanned_import(context, span.clone());
+                let ty = ty.spanned_import(context, span);
                 let id = crate::names::rust_primitives::hax::box_new;
-                ast::ExprKind::standalone_fn_app(id, vec![], vec![value], ty, span.clone())
+                ast::ExprKind::standalone_fn_app(id, vec![], vec![value], ty, span)
             }
             frontend::ExprKind::If {
                 if_then_scope: _,
@@ -809,13 +804,13 @@ impl Import<ast::Expr> for frontend::Expr {
                     let else_expr = else_opt
                         .as_ref()
                         .map(|value| value.import(context))
-                        .unwrap_or_else(|| ast::Expr::tuple(vec![], span.clone()));
+                        .unwrap_or_else(|| ast::Expr::tuple(vec![], span));
                     let arm_then = ast::Arm {
                         pat,
                         body: then_expr,
                         guard: None,
                         meta: ast::Metadata {
-                            span: span.clone(),
+                            span: span,
                             attributes: Vec::new(),
                         },
                     };
@@ -828,7 +823,7 @@ impl Import<ast::Expr> for frontend::Expr {
                         body: else_expr,
                         guard: None,
                         meta: ast::Metadata {
-                            span: span.clone(),
+                            span: span,
                             attributes: Vec::new(),
                         },
                     };
@@ -853,25 +848,22 @@ impl Import<ast::Expr> for frontend::Expr {
             } => {
                 let mut args = args.import(context);
                 if args.is_empty() {
-                    args.push(ast::Expr::tuple(vec![], span.clone()));
+                    args.push(ast::Expr::tuple(vec![], span));
                 }
                 if let frontend::ExprKind::GlobalName { item, .. } = fun.contents.as_ref() {
                     let mut head = fun.import(context);
                     head.kind = Box::new(ast::ExprKind::GlobalId(
                         item.contents().def_id.import_as_value(),
                     ));
-                    let generic_args = item
-                        .contents()
-                        .generic_args
-                        .spanned_import(context, span.clone());
+                    let generic_args = item.contents().generic_args.spanned_import(context, span);
                     let bounds_impls = item
                         .contents()
                         .impl_exprs
                         .iter()
-                        .map(|ie| ie.spanned_import(context, span.clone()))
+                        .map(|ie| ie.spanned_import(context, span))
                         .collect();
                     let trait_ = item.contents().in_trait.as_ref().map(|ie| {
-                        let impl_expr = ie.spanned_import(context, span.clone());
+                        let impl_expr = ie.spanned_import(context, span);
                         let args = impl_expr.goal.args.clone();
                         (impl_expr, args)
                     });
@@ -894,28 +886,28 @@ impl Import<ast::Expr> for frontend::Expr {
                 }
             }
             frontend::ExprKind::Deref { arg } => {
-                let result_ty = ty.spanned_import(context, span.clone());
+                let result_ty = ty.spanned_import(context, span);
                 ast::ExprKind::standalone_fn_app(
                     crate::names::rust_primitives::hax::deref_op,
                     vec![],
                     vec![arg.import(context)],
                     result_ty,
-                    span.clone(),
+                    span,
                 )
             }
             frontend::ExprKind::Binary { op, lhs, rhs } => {
-                let result_ty = ty.spanned_import(context, span.clone());
+                let result_ty = ty.spanned_import(context, span);
                 let id = binop_id(op);
                 ast::ExprKind::standalone_fn_app(
                     id,
                     vec![],
                     vec![lhs.import(context), rhs.import(context)],
                     result_ty,
-                    span.clone(),
+                    span,
                 )
             }
             frontend::ExprKind::LogicalOp { op, lhs, rhs } => {
-                let result_ty = ty.spanned_import(context, span.clone());
+                let result_ty = ty.spanned_import(context, span);
                 let id = match op {
                     frontend::LogicalOp::And => crate::names::rust_primitives::hax::logical_op_and,
                     frontend::LogicalOp::Or => crate::names::rust_primitives::hax::logical_op_or,
@@ -925,11 +917,11 @@ impl Import<ast::Expr> for frontend::Expr {
                     vec![],
                     vec![lhs.import(context), rhs.import(context)],
                     result_ty,
-                    span.clone(),
+                    span,
                 )
             }
             frontend::ExprKind::Unary { op, arg } => {
-                let result_ty = ty.spanned_import(context, span.clone());
+                let result_ty = ty.spanned_import(context, span);
                 let id = match op {
                     frontend::UnOp::Not => crate::names::core::ops::bit::Not::not,
                     frontend::UnOp::Neg => crate::names::core::ops::arith::Neg::neg,
@@ -940,12 +932,12 @@ impl Import<ast::Expr> for frontend::Expr {
                     vec![],
                     vec![arg.import(context)],
                     result_ty,
-                    span.clone(),
+                    span,
                 )
             }
             frontend::ExprKind::Cast { source } => {
-                let source_ty = source.ty.spanned_import(context, span.clone());
-                let result_ty = ty.spanned_import(context, span.clone());
+                let source_ty = source.ty.spanned_import(context, span);
+                let result_ty = ty.spanned_import(context, span);
                 let cast_id = if let ast::TyKind::App { head, .. } = source_ty.0.as_ref() {
                     if head.expect_tuple().is_none() {
                         Some(head.with_suffix(ReservedSuffix::Cast))
@@ -961,7 +953,7 @@ impl Import<ast::Expr> for frontend::Expr {
                     vec![],
                     vec![source.import(context)],
                     result_ty,
-                    span.clone(),
+                    span,
                 )
             }
             frontend::ExprKind::Use { source } => return source.import(context),
@@ -969,11 +961,11 @@ impl Import<ast::Expr> for frontend::Expr {
                 crate::names::rust_primitives::hax::never_to_any,
                 vec![],
                 vec![source.import(context)],
-                ty.spanned_import(context, span.clone()),
-                span.clone(),
+                ty.spanned_import(context, span),
+                span,
             ),
             frontend::ExprKind::PointerCoercion { cast, source } => {
-                let result_ty = ty.spanned_import(context, span.clone());
+                let result_ty = ty.spanned_import(context, span);
                 match cast {
                     frontend::PointerCoercion::ClosureFnPointer(frontend::Safety::Safe)
                     | frontend::PointerCoercion::ReifyFnPointer => return source.import(context),
@@ -982,11 +974,11 @@ impl Import<ast::Expr> for frontend::Expr {
                         vec![],
                         vec![source.import(context)],
                         result_ty,
-                        span.clone(),
+                        span,
                     ),
                     _ => ast::ExprKind::Error(assertion_failure(
                         &format!("Pointer, with [cast] being {:?}", cast),
-                        &span,
+                        span,
                     )),
                 }
             }
@@ -1018,7 +1010,7 @@ impl Import<ast::Expr> for frontend::Expr {
                                         ty: ast::TyKind::Primitive(ast::PrimitiveTy::Bool)
                                             .promote(),
                                         meta: ast::Metadata {
-                                            span: span.clone(),
+                                            span: span,
                                             attributes: Vec::new(),
                                         },
                                     },
@@ -1041,7 +1033,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 panic!("Let nodes are preprocessed (those are the ones contained in `if let ...`)")
             }
             frontend::ExprKind::Block { block } => {
-                return import_block_expr(context, block, ty, span.clone(), attributes.clone());
+                return import_block_expr(context, block, ty, span, attributes.clone());
             }
             frontend::ExprKind::Assign { lhs, rhs } => ast::ExprKind::Assign {
                 lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import(context))),
@@ -1049,15 +1041,15 @@ impl Import<ast::Expr> for frontend::Expr {
             },
             frontend::ExprKind::AssignOp { op, lhs, rhs } => {
                 let bin_op = assign_binop(op);
-                let ty = ty.spanned_import(context, span.clone());
+                let ty = ty.spanned_import(context, span);
                 let bin = ast::ExprKind::standalone_fn_app(
                     binop_id(&bin_op),
                     vec![],
                     vec![lhs.import(context), rhs.import(context)],
                     ty.clone(),
-                    span.clone(),
+                    span,
                 );
-                let op_expr = bin.promote(ty, span.clone());
+                let op_expr = bin.promote(ty, span);
                 ast::ExprKind::Assign {
                     lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import(context))),
                     value: op_expr,
@@ -1067,8 +1059,8 @@ impl Import<ast::Expr> for frontend::Expr {
                 field.import_as_value(),
                 vec![],
                 vec![lhs.import(context)],
-                ty.spanned_import(context, span.clone()),
-                span.clone(),
+                ty.spanned_import(context, span),
+                span,
             ),
             frontend::ExprKind::TupleField { field, lhs } => {
                 let length = match lhs.ty.kind() {
@@ -1085,19 +1077,19 @@ impl Import<ast::Expr> for frontend::Expr {
                     projector,
                     vec![],
                     vec![lhs.import(context)],
-                    ty.spanned_import(context, span.clone()),
-                    span.clone(),
+                    ty.spanned_import(context, span),
+                    span,
                 )
             }
             frontend::ExprKind::Index { lhs, index } => {
-                let result_ty = ty.spanned_import(context, span.clone());
+                let result_ty = ty.spanned_import(context, span);
                 let id = crate::names::core::ops::index::Index::index;
                 ast::ExprKind::standalone_fn_app(
                     id,
                     vec![],
                     vec![lhs.import(context), index.import(context)],
                     result_ty,
-                    span.clone(),
+                    span,
                 )
             }
             frontend::ExprKind::VarRef { id } => ast::ExprKind::LocalId(ast::LocalId::from(id)),
@@ -1117,7 +1109,7 @@ impl Import<ast::Expr> for frontend::Expr {
                         fields: Vec::new(),
                         base: None,
                     }
-                    .promote(ty.spanned_import(context, span.clone()), span);
+                    .promote(ty.spanned_import(context, span), span);
                 }
 
                 ast::ExprKind::GlobalId(ident)
@@ -1139,7 +1131,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 let value = value
                     .as_ref()
                     .map(|value| value.import(context))
-                    .unwrap_or_else(|| ast::Expr::tuple(vec![], span.clone()));
+                    .unwrap_or_else(|| ast::Expr::tuple(vec![], span));
                 ast::ExprKind::Break {
                     value,
                     label: None, // TODO: honour the label (issue #1800)
@@ -1154,11 +1146,11 @@ impl Import<ast::Expr> for frontend::Expr {
                 let value = value
                     .as_ref()
                     .map(|value| value.import(context))
-                    .unwrap_or_else(|| ast::Expr::tuple(vec![], span.clone()));
+                    .unwrap_or_else(|| ast::Expr::tuple(vec![], span));
                 ast::ExprKind::Return { value }
             }
             frontend::ExprKind::ConstBlock(_item_ref) => {
-                ast::ExprKind::Error(unsupported("ConstBlock", 923, &span))
+                ast::ExprKind::Error(unsupported("ConstBlock", 923, span))
             }
             frontend::ExprKind::Repeat { value, count } => {
                 let value_expr: ast::Expr = value.import(context);
@@ -1167,15 +1159,15 @@ impl Import<ast::Expr> for frontend::Expr {
                     crate::names::rust_primitives::hax::repeat,
                     vec![],
                     vec![value_expr, count_expr],
-                    ty.spanned_import(context, span.clone()),
-                    span.clone(),
+                    ty.spanned_import(context, span),
+                    span,
                 );
                 ast::ExprKind::standalone_fn_app(
                     crate::names::alloc::boxed::Impl::new,
                     vec![],
                     vec![repeated],
-                    ty.spanned_import(context, span.clone()),
-                    span.clone(),
+                    ty.spanned_import(context, span),
+                    span,
                 )
             }
             frontend::ExprKind::Array { fields } => ast::ExprKind::Array(fields.import(context)),
@@ -1212,9 +1204,9 @@ impl Import<ast::Expr> for frontend::Expr {
                         return ast::ExprKind::Error(unsupported(
                             "Default field values: not supported",
                             1386,
-                            &span,
+                            span,
                         ))
-                        .promote(ty.spanned_import(context, span.clone()), span.clone());
+                        .promote(ty.spanned_import(context, span), span);
                     }
                 };
                 let fields = adt_expr
@@ -1233,7 +1225,7 @@ impl Import<ast::Expr> for frontend::Expr {
             frontend::ExprKind::PlaceTypeAscription { source: _, .. } => {
                 ast::ExprKind::Error(assertion_failure(
                     "Got a unexpected node `PlaceTypeAscription`. Please report, we were not able to figure out an expression yielding that node: a bug report would be very valuable here!",
-                    &span,
+                    span,
                 ))
             }
             frontend::ExprKind::ValueTypeAscription { source, .. } => {
@@ -1245,7 +1237,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 upvars,
                 ..
             } => {
-                let params = import_params(context, params, span.clone())
+                let params = import_params(context, params, span)
                     .into_iter()
                     .map(|param| param.pat)
                     .collect();
@@ -1311,18 +1303,18 @@ impl Import<ast::Expr> for frontend::Expr {
                                         (&frontend::UintTy::U8).into(),
                                     ))
                                     .promote(),
-                                    span.clone(),
+                                    span,
                                 )
                             })
                             .collect();
                         return ast::ExprKind::Array(elems)
-                            .promote(ty.spanned_import(context, span.clone()), span);
+                            .promote(ty.spanned_import(context, span), span);
                     }
                     frontend::LitKind::Err(_) => {
                         return ast::ExprKind::Error(assertion_failure(
                                 "[import_thir:literal] got an error literal: this means the Rust compiler or Hax's frontend probably reported errors above.",
-                                &span,
-                            )).promote(ty.spanned_import(context, span.clone()), span);
+                                span,
+                            )).promote(ty.spanned_import(context, span), span);
                     }
                 };
                 if *neg {
@@ -1334,9 +1326,9 @@ impl Import<ast::Expr> for frontend::Expr {
                         _ => {
                             return ast::ExprKind::Error(assertion_failure(
                                 "Unexpected negation on non-numeric literal",
-                                &span,
+                                span,
                             ))
-                            .promote(ty.spanned_import(context, span.clone()), span);
+                            .promote(ty.spanned_import(context, span), span);
                         }
                     }
                 }
@@ -1344,13 +1336,11 @@ impl Import<ast::Expr> for frontend::Expr {
             }
             frontend::ExprKind::ZstLiteral { .. } => ast::ExprKind::Error(assertion_failure(
                 "`ZstLiteral` are expected to be handled before-hand",
-                &span,
+                span,
             )),
             frontend::ExprKind::NamedConst { item, user_ty: _ } => {
-                let args: Vec<ast::GenericValue> = item
-                    .contents()
-                    .generic_args
-                    .spanned_import(context, span.clone());
+                let args: Vec<ast::GenericValue> =
+                    item.contents().generic_args.spanned_import(context, span);
                 let const_args: Vec<ast::Expr> = args
                     .iter()
                     .filter_map(|gv| match gv {
@@ -1366,15 +1356,12 @@ impl Import<ast::Expr> for frontend::Expr {
                         def_id,
                         vec![],
                         vec![],
-                        ty.spanned_import(context, span.clone()),
+                        ty.spanned_import(context, span),
                         vec![],
                         item.contents().in_trait.as_ref().map(|impl_expr| {
-                            (
-                                impl_expr.spanned_import(context, span.clone()),
-                                args.clone(),
-                            )
+                            (impl_expr.spanned_import(context, span), args.clone())
                         }),
-                        span.clone(),
+                        span,
                     )
                 }
             }
@@ -1387,16 +1374,16 @@ impl Import<ast::Expr> for frontend::Expr {
             frontend::ExprKind::Yield { value: _ } => ast::ExprKind::Error(unsupported(
                 "Got expression `Yield`: coroutines are not supported by hax",
                 924,
-                &span,
+                span,
             )),
             frontend::ExprKind::Todo(payload) => ast::ExprKind::Error(assertion_failure(
                 &format!("expression Todo\n{}", payload),
-                &span,
+                span,
             )),
         };
         ast::Expr {
             kind: Box::new(kind),
-            ty: ty.spanned_import(context, span.clone()),
+            ty: ty.spanned_import(context, span),
             meta: ast::Metadata { span, attributes },
         }
     }
@@ -1497,7 +1484,7 @@ impl Import<ast::PatKind> for frontend::PatKind {
             frontend::PatKind::DerefPattern { .. } => ast::PatKind::Error(unsupported(
                 "pat DerefPattern",
                 926,
-                &ast::span::Span::dummy(),
+                ast::span::Span::dummy(),
             )),
             frontend::PatKind::Constant { value } => {
                 use ast::*;
@@ -1515,7 +1502,7 @@ impl Import<ast::PatKind> for frontend::PatKind {
                             &format!(
                                 "expr_to_pat: the given expression could not be interpreted as a pattern. kind={kind:#?}"
                             ),
-                            &meta.span,
+                            meta.span,
                         )),
                     };
                     let kind = Box::new(kind);
@@ -1527,24 +1514,24 @@ impl Import<ast::PatKind> for frontend::PatKind {
                 *subpattern.import(context).kind
             }
             frontend::PatKind::Range(_) => {
-                ast::PatKind::Error(unsupported("pat Range", 925, &ast::span::Span::dummy()))
+                ast::PatKind::Error(unsupported("pat Range", 925, ast::span::Span::dummy()))
             }
             frontend::PatKind::Slice { .. } | frontend::PatKind::Array { .. } => {
                 ast::PatKind::Error(unsupported(
                     "Pat:Array or Pat:Slice",
                     804,
-                    &ast::span::Span::dummy(),
+                    ast::span::Span::dummy(),
                 ))
             }
             frontend::PatKind::Or { pats } => ast::PatKind::Or {
                 sub_pats: pats.import(context),
             },
             frontend::PatKind::Never => {
-                ast::PatKind::Error(unsupported("pat Never", 927, &ast::span::Span::dummy()))
+                ast::PatKind::Error(unsupported("pat Never", 927, ast::span::Span::dummy()))
             }
             frontend::PatKind::Error(_) => ast::PatKind::Error(assertion_failure(
                 "`Error` node: Rust compilation failed. If Rust compilation was fine, please file an issue.",
-                &ast::span::Span::dummy(),
+                ast::span::Span::dummy(),
             )),
         }
     }
@@ -1566,15 +1553,15 @@ impl Import<ast::Pat> for frontend::Pat {
             } => ast::PatKind::Ascription {
                 pat: subpattern.import(context),
                 ty: ast::SpannedTy {
-                    span: span.clone(),
-                    ty: ty.spanned_import(context, span.clone()),
+                    span: span,
+                    ty: ty.spanned_import(context, span),
                 },
             },
             other => other.import(context),
         };
         ast::Pat {
             kind: Box::new(kind),
-            ty: ty.spanned_import(context, span.clone()),
+            ty: ty.spanned_import(context, span),
             meta: ast::Metadata {
                 span,
                 attributes: attributes.import(context),
@@ -1588,11 +1575,11 @@ fn import_params(
     params: &Vec<frontend::Param>,
     span: ast::span::Span,
 ) -> Vec<ast::Param> {
-    let params: Vec<ast::Param> = params.spanned_import(context, span.clone());
+    let params: Vec<ast::Param> = params.spanned_import(context, span);
     if params.is_empty() {
         let ty = ast::TyKind::unit().promote();
         vec![ast::Param {
-            pat: ast::PatKind::Wild.promote(ty.clone(), span.clone()),
+            pat: ast::PatKind::Wild.promote(ty.clone(), span),
             ty: ty,
             ty_span: None,
             attributes: vec![],
@@ -1612,7 +1599,7 @@ impl SpannedImport<ast::Param> for frontend::Param {
             ..
         } = self;
         let ty_span = ty_span.as_ref().map(|value| value.import(context));
-        let ty = ty.spanned_import(context, ty_span.clone().unwrap_or(span.clone()));
+        let ty = ty.spanned_import(context, ty_span.unwrap_or(span));
         ast::Param {
             pat: pat
                 .as_ref()
@@ -1649,7 +1636,7 @@ fn import_trait_item(
     let span = item.span.import(context);
     let attributes = item.attributes.import(context);
     let meta = ast::Metadata {
-        span: span.clone(),
+        span: span,
         attributes,
     };
     let (frontend::FullDefKind::AssocConst { param_env, .. }
@@ -1668,7 +1655,7 @@ fn import_trait_item(
             body: default.import(context),
         },
         frontend::FullDefKind::AssocConst { ty, .. } => {
-            ast::TraitItemKind::Fn(ty.spanned_import(context, span.clone()))
+            ast::TraitItemKind::Fn(ty.spanned_import(context, span))
         }
         frontend::FullDefKind::AssocFn {
             body: Some(default),
@@ -1683,7 +1670,7 @@ fn import_trait_item(
                 .value
                 .inputs
                 .iter()
-                .map(|ty| ty.spanned_import(context, span.clone()))
+                .map(|ty| ty.spanned_import(context, span))
                 .collect();
             let output = sig.value.output.spanned_import(context, span);
             ast::TraitItemKind::Fn(ast::TyKind::Arrow { inputs, output }.promote())
@@ -1692,7 +1679,7 @@ fn import_trait_item(
             value: Some(..), ..
         } => ast::TraitItemKind::Error(assertion_failure(
             "Associate types defaults are not supported by hax yet (it is a nightly feature)",
-            &span,
+            span,
         )),
         frontend::FullDefKind::AssocTy {
             implied_predicates, ..
@@ -1708,7 +1695,7 @@ fn import_trait_item(
         ),
         _ => ast::TraitItemKind::Error(assertion_failure(
             "Found associated item of an unknown kind.",
-            &span,
+            span,
         )),
     };
     ast::TraitItem {
@@ -1749,7 +1736,7 @@ fn browse_path(
             ..
         } => {
             let ident = ast::ImplIdent {
-                goal: trait_ref.spanned_import(context, span.clone()),
+                goal: trait_ref.spanned_import(context, span),
                 name: impl_expr_name(*index as u64),
             };
             let item = item.contents().def_id.import_as_nonvalue();
@@ -1772,7 +1759,7 @@ fn browse_path(
             ..
         } => {
             let ident = ast::ImplIdent {
-                goal: trait_ref.spanned_import(context, span.clone()),
+                goal: trait_ref.spanned_import(context, span),
                 name: impl_expr_name(*index as u64),
             };
             ast::ImplExprKind::Parent {
@@ -1801,33 +1788,33 @@ fn import_impl_expr_atom(
                 id: impl_expr_name(*index as u64),
             };
             for chunk in path {
-                kind = browse_path(context, kind, chunk, span.clone())
+                kind = browse_path(context, kind, chunk, span)
             }
             kind
         }
         frontend::ImplExprAtom::SelfImpl { path, .. } => {
             let mut kind = ast::ImplExprKind::Self_;
             for chunk in path {
-                kind = browse_path(context, kind, chunk, span.clone())
+                kind = browse_path(context, kind, chunk, span)
             }
             kind
         }
         frontend::ImplExprAtom::Dyn => ast::ImplExprKind::Dyn,
         frontend::ImplExprAtom::Builtin { .. } => ast::ImplExprKind::Builtin(goal),
         frontend::ImplExprAtom::Error(msg) => {
-            ast::ImplExprKind::Error(assertion_failure(msg, &span))
+            ast::ImplExprKind::Error(assertion_failure(msg, span))
         }
     }
 }
 
 impl SpannedImport<ast::ImplExpr> for frontend::ImplExpr {
     fn spanned_import(&self, context: &Context, span: ast::span::Span) -> ast::ImplExpr {
-        let goal = self.r#trait.value.spanned_import(context, span.clone());
+        let goal = self.r#trait.value.spanned_import(context, span);
         let impl_ = ast::ImplExpr {
             kind: Box::new(import_impl_expr_atom(
                 context,
                 &self.r#impl,
-                span.clone(),
+                span,
                 goal.clone(),
             )),
             goal: goal.clone(),
@@ -1837,7 +1824,7 @@ impl SpannedImport<ast::ImplExpr> for frontend::ImplExpr {
                 let args = item_ref
                     .impl_exprs
                     .iter()
-                    .map(|ie| ie.spanned_import(context, span.clone()))
+                    .map(|ie| ie.spanned_import(context, span))
                     .collect();
                 ast::ImplExpr {
                     kind: Box::new(ast::ImplExprKind::ImplApp { impl_, args }),
@@ -1856,7 +1843,7 @@ fn generic_param_to_value(p: &ast::GenericParam) -> ast::GenericValue {
             ast::GenericValue::Ty(ast::TyKind::Param(p.ident.clone()).promote())
         }
         ast::GenericParamKind::Const { ty } => ast::GenericValue::Expr(
-            ast::ExprKind::LocalId(p.ident.clone()).promote(ty.clone(), p.meta.span.clone()),
+            ast::ExprKind::LocalId(p.ident.clone()).promote(ty.clone(), p.meta.span),
         ),
     }
 }
@@ -1908,7 +1895,7 @@ fn cast_of_enum(
         let ast::TyKind::Primitive(ast::PrimitiveTy::Int(int_kind)) = &*ty.0 else {
             return ast::ItemKind::Error(assertion_failure(
                 &format!("cast_of_enum: expected int type, got {:?}", ty),
-                &span,
+                span,
             ))
             .promote(name, span);
         };
@@ -1924,7 +1911,7 @@ fn cast_of_enum(
                             negative: false,
                             kind: int_kind.clone(),
                         })
-                        .promote(ty.clone(), span.clone())
+                        .promote(ty.clone(), span)
                     }
                     frontend::DiscriminantDefinition::Explicit { def_id, span } => {
                         let e = ast::ExprKind::GlobalId(def_id.import_as_value())
@@ -1940,13 +1927,11 @@ fn cast_of_enum(
                     fields: variant
                         .arguments
                         .iter()
-                        .map(|(cid, ty, _)| {
-                            (*cid, ast::PatKind::Wild.promote(ty.clone(), span.clone()))
-                        })
+                        .map(|(cid, ty, _)| (*cid, ast::PatKind::Wild.promote(ty.clone(), span)))
                         .collect(),
                 }
-                .promote(ty.clone(), span.clone());
-                ast::Arm::non_guarded(pat, body, span.clone())
+                .promote(ty.clone(), span);
+                ast::Arm::non_guarded(pat, body, span)
             })
             .collect()
     };
@@ -1957,16 +1942,16 @@ fn cast_of_enum(
     .promote();
     let scrutinee_var = ast::LocalId(Symbol::new("x"));
     let params = vec![ast::Param {
-        pat: ast::PatKind::var_pat(scrutinee_var.clone()).promote(type_ref.clone(), span.clone()),
+        pat: ast::PatKind::var_pat(scrutinee_var.clone()).promote(type_ref.clone(), span),
         ty: type_ref.clone(),
         ty_span: None,
         attributes: Vec::new(),
     }];
-    let scrutinee = ast::ExprKind::LocalId(scrutinee_var).promote(type_ref.clone(), span.clone());
+    let scrutinee = ast::ExprKind::LocalId(scrutinee_var).promote(type_ref.clone(), span);
     ast::ItemKind::Fn {
-        name: name.clone(),
+        name: name,
         generics: generics.clone(),
-        body: ast::ExprKind::Match { scrutinee, arms }.promote(ty, span.clone()),
+        body: ast::ExprKind::Match { scrutinee, arms }.promote(ty, span),
         params,
         safety: ast::SafetyKind::Safe,
     }
@@ -1975,7 +1960,7 @@ fn cast_of_enum(
 
 fn expect_body<'a, Body>(
     optional: &'a Option<Body>,
-    span: &ast::span::Span,
+    span: ast::span::Span,
     label: &str,
 ) -> Result<&'a Body, ast::ErrorNode> {
     optional
@@ -2031,13 +2016,13 @@ pub fn import_item(
                 match adt_kind {
                     AdtKind::Enum => make_type(false),
                     AdtKind::Struct => make_type(true),
-                    AdtKind::Union => ast::ItemKind::Error(unsupported("Union type", 998, &span)),
+                    AdtKind::Union => ast::ItemKind::Error(unsupported("Union type", 998, span)),
                     AdtKind::Array | AdtKind::Slice | AdtKind::Tuple => {
                         ast::ItemKind::Error(assertion_failure(
                             &format!(
                                 "While translating a item, we got an ADT of kind {adt_kind:#?}. This is not supposed to be ever produced."
                             ),
-                            &span,
+                            span,
                         ))
                     }
                 }
@@ -2063,28 +2048,25 @@ pub fn import_item(
                         }
                         _ => {
                             return Some(
-                                ast::ItemKind::Error(assertion_failure("", &span))
+                                ast::ItemKind::Error(assertion_failure("", span))
                                     .promote(name, span),
                             );
                         }
                     };
                     Some(
                         ast::ItemKind::Fn {
-                            name: name.clone(),
+                            name: name,
                             generics: ast::Generics::empty(),
                             body: ast::ExprKind::Literal(ast::literals::Literal::Int {
                                 value: Symbol::new(value),
                                 negative: false,
                                 kind,
                             })
-                            .promote(
-                                v.discr_val.ty.spanned_import(context, span.clone()),
-                                span.clone(),
-                            ),
+                            .promote(v.discr_val.ty.spanned_import(context, span), span),
                             params: Vec::new(),
                             safety: ast::SafetyKind::Safe,
                         }
-                        .promote(name, span.clone()),
+                        .promote(name, span),
                     )
                 });
 
@@ -2092,32 +2074,29 @@ pub fn import_item(
                     context,
                     ident,
                     &generics,
-                    repr.typ.spanned_import(context, span.clone()),
-                    span.clone(),
+                    repr.typ.spanned_import(context, span),
+                    span,
                     variants.into_iter().zip(frontend_variants()),
                 );
                 return discriminant_const_items
-                    .chain(std::iter::once(adt_item_kind.promote(ident, span.clone())))
+                    .chain(std::iter::once(adt_item_kind.promote(ident, span)))
                     .chain(std::iter::once(cast_item))
                     .collect();
             } else {
                 adt_item_kind
             }
         }
-        frontend::FullDefKind::TyAlias { param_env, ty } => {
-            let span: &ast::span::Span = &span;
-            ast::ItemKind::TyAlias {
-                name: ident,
-                generics: param_env.import(context),
-                ty: ty.spanned_import(context, span.clone()),
-            }
-        }
+        frontend::FullDefKind::TyAlias { param_env, ty } => ast::ItemKind::TyAlias {
+            name: ident,
+            generics: param_env.import(context),
+            ty: ty.spanned_import(context, span),
+        },
         frontend::FullDefKind::ForeignTy => {
-            ast::ItemKind::Error(unsupported("Foreign type", 928, &span))
+            ast::ItemKind::Error(unsupported("Foreign type", 928, span))
         }
         frontend::FullDefKind::OpaqueTy => ast::ItemKind::Error(assertion_failure(
             "OpaqueTy should be replaced by Alias in the frontend",
-            &span,
+            span,
         )),
         frontend::FullDefKind::Trait {
             param_env,
@@ -2146,7 +2125,7 @@ pub fn import_item(
         }
 
         frontend::FullDefKind::TraitAlias { .. } => {
-            ast::ItemKind::Error(assertion_failure("Trait Alias", &span))
+            ast::ItemKind::Error(assertion_failure("Trait Alias", span))
         }
         frontend::FullDefKind::TraitImpl {
             param_env,
@@ -2162,11 +2141,11 @@ pub fn import_item(
                 trait_ref
                     .generic_args
                     .iter()
-                    .map(|ga| ga.spanned_import(context, span.clone()))
+                    .map(|ga| ga.spanned_import(context, span))
                     .collect(),
             );
 
-            let parent_bounds = implied_impl_exprs.spanned_import(context, span.clone());
+            let parent_bounds = implied_impl_exprs.spanned_import(context, span);
             let items = items
                 .iter()
                 .flat_map(|assoc_item| {
@@ -2185,7 +2164,7 @@ pub fn import_item(
                         }
                     };
                     let ident = method_def_id_impl.import_as_nonvalue();
-                    let assoc_item_def = all_items.get(&method_def_id_impl).unwrap_or_else(
+                    let assoc_item_def = all_items.get(method_def_id_impl).unwrap_or_else(
                         #[allow(unreachable_code)]
                         || match missing_associated_item() {},
                     );
@@ -2196,12 +2175,12 @@ pub fn import_item(
                             param_env, value, ..
                         } => (
                             param_env.import(context),
-                            match expect_body(value, &span, "import_item/TraitImpl/AssocTy") {
+                            match expect_body(value, span, "import_item/TraitImpl/AssocTy") {
                                 Ok(body) => ast::ImplItemKind::Type {
-                                    ty: body.spanned_import(context, span.clone()),
+                                    ty: body.spanned_import(context, span),
                                     parent_bounds: assoc_item
                                         .required_impl_exprs
-                                        .spanned_import(context, span.clone()),
+                                        .spanned_import(context, span),
                                 },
                                 Err(error) => ast::ImplItemKind::Error(error),
                             },
@@ -2213,10 +2192,10 @@ pub fn import_item(
                             ..
                         } => (
                             import_generics(context, &sig.bound_vars, param_env),
-                            match expect_body(body, &span, "import_item/TraitImpl/AssocFn") {
+                            match expect_body(body, span, "import_item/TraitImpl/AssocFn") {
                                 Ok(body) => ast::ImplItemKind::Fn {
                                     body: body.import(context),
-                                    params: import_params(context, &body.params, span.clone()),
+                                    params: import_params(context, &body.params, span),
                                 },
                                 Err(error) => ast::ImplItemKind::Error(error),
                             },
@@ -2225,7 +2204,7 @@ pub fn import_item(
                             param_env, body, ..
                         } => (
                             param_env.import(context),
-                            match expect_body(body, &span, "import_item/TraitImpl/AssocConst") {
+                            match expect_body(body, span, "import_item/TraitImpl/AssocConst") {
                                 Ok(body) => ast::ImplItemKind::Fn {
                                     body: body.import(context),
                                     params: Vec::new(),
@@ -2256,7 +2235,7 @@ pub fn import_item(
             } else {
                 ast::ItemKind::Error(assertion_failure(
                     "Self should always be the first generic argument of a trait application.",
-                    &span,
+                    span,
                 ))
             }
         }
@@ -2279,11 +2258,11 @@ pub fn import_item(
                             param_env, value, ..
                         } => {
                             let generics = impl_generics.clone().concat(param_env.import(context));
-                            match expect_body(value, &span, "import_item/InherentImpl/AssocTy") {
+                            match expect_body(value, span, "import_item/InherentImpl/AssocTy") {
                                 Ok(body) => ast::ItemKind::TyAlias {
                                     name: ident,
                                     generics,
-                                    ty: body.spanned_import(context, span.clone()),
+                                    ty: body.spanned_import(context, span),
                                 },
                                 Err(err) => ast::ItemKind::Error(err),
                             }
@@ -2296,12 +2275,12 @@ pub fn import_item(
                         } => {
                             let generics = import_generics(context, &sig.bound_vars, param_env);
                             let generics = generics.concat(param_env.import(context));
-                            match expect_body(body, &span, "import_item/InherentImpl/AssocFn") {
+                            match expect_body(body, span, "import_item/InherentImpl/AssocFn") {
                                 Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
                                     body: body.import(context),
-                                    params: import_params(context, &body.params, span.clone()),
+                                    params: import_params(context, &body.params, span),
                                     safety: sig.value.safety.import(context),
                                 },
                                 Err(err) => ast::ItemKind::Error(err),
@@ -2311,7 +2290,7 @@ pub fn import_item(
                             param_env, body, ..
                         } => {
                             let generics = impl_generics.clone().concat(param_env.import(context));
-                            match expect_body(body, &span, "import_item/InherentImpl/AssocConst") {
+                            match expect_body(body, span, "import_item/InherentImpl/AssocConst") {
                                 Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
                                     generics,
@@ -2341,22 +2320,22 @@ pub fn import_item(
             sig,
             body,
             ..
-        } => match expect_body(body, &span, "import_item/Fn") {
+        } => match expect_body(body, span, "import_item/Fn") {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: import_generics(context, &sig.bound_vars, param_env),
                 body: body.import(context),
-                params: import_params(context, &body.params, span.clone()),
+                params: import_params(context, &body.params, span),
                 safety: sig.value.safety.import(context),
             },
             Err(err) => ast::ItemKind::Error(err),
         },
         frontend::FullDefKind::Closure { .. } => {
-            ast::ItemKind::Error(assertion_failure("Closure item", &span))
+            ast::ItemKind::Error(assertion_failure("Closure item", span))
         }
         frontend::FullDefKind::Const {
             param_env, body, ..
-        } => match expect_body(body, &span, "import_item/Const") {
+        } => match expect_body(body, span, "import_item/Const") {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: param_env.import(context),
@@ -2368,12 +2347,12 @@ pub fn import_item(
         },
         frontend::FullDefKind::Static {
             mutability: true, ..
-        } => ast::ItemKind::Error(unsupported("Mutable static item", 1343, &span)),
+        } => ast::ItemKind::Error(unsupported("Mutable static item", 1343, span)),
         frontend::FullDefKind::Static {
             mutability: false,
             body,
             ..
-        } => match expect_body(body, &span, "import_item/Static") {
+        } => match expect_body(body, span, "import_item/Static") {
             Ok(body) => ast::ItemKind::Fn {
                 name: ident,
                 generics: ast::Generics {
@@ -2418,7 +2397,7 @@ pub fn import_item(
         | frontend::FullDefKind::ForeignMod { .. }
         | frontend::FullDefKind::SyntheticCoroutineBody => return Vec::new(),
         frontend::FullDefKind::GlobalAsm => {
-            ast::ItemKind::Error(unsupported("Inline assembly item", 1344, &span))
+            ast::ItemKind::Error(unsupported("Inline assembly item", 1344, span))
         }
         frontend::FullDefKind::AssocConst { .. }
         | frontend::FullDefKind::AssocFn { .. }
