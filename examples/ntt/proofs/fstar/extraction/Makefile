@@ -108,7 +108,7 @@ define FINDLIBS
 endef
 export FINDLIBS
 
-FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(shell bash -c "$$FINDLIBS")
+FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(shell bash -c "$$FINDLIBS") ../../../../../proof-libs/fstar/core ../../../../../proof-libs/fstar/rust_primitives ../../../../../hax-lib/proofs/fstar/extraction
 
 FSTAR_FLAGS = --cmi \
   --warn_error -331 \

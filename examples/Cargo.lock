@@ -24,7 +24,7 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 name = "barrett"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
@@ -131,7 +131,7 @@ name = "chacha20"
 version = "0.1.0"
 dependencies = [
  "hax-bounded-integers",
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
@@ -148,7 +148,7 @@ dependencies = [
 name = "coq-example"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
@@ -255,7 +255,7 @@ name = "hax-bounded-integers"
 version = "0.3.5"
 dependencies = [
  "duplicate",
- "hax-lib 0.3.5",
+ "hax-lib",
  "paste",
 ]
 
@@ -263,18 +263,7 @@ dependencies = [
 name = "hax-lib"
 version = "0.3.5"
 dependencies = [
- "hax-lib-macros 0.3.5",
- "num-bigint",
- "num-traits",
-]
-
-[[package]]
-name = "hax-lib"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "74d9ba66d1739c68e0219b2b2238b5c4145f491ebf181b9c6ab561a19352ae86"
-dependencies = [
- "hax-lib-macros 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hax-lib-macros",
  "num-bigint",
  "num-traits",
 ]
@@ -283,20 +272,7 @@ dependencies = [
 name = "hax-lib-macros"
 version = "0.3.5"
 dependencies = [
- "hax-lib-macros-types 0.3.5",
- "proc-macro-error2",
- "proc-macro2",
- "quote",
- "syn 2.0.39",
-]
-
-[[package]]
-name = "hax-lib-macros"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24ba777a231a58d1bce1d68313fa6b6afcc7966adef23d60f45b8a2b9b688bf1"
-dependencies = [
- "hax-lib-macros-types 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hax-lib-macros-types",
  "proc-macro-error2",
  "proc-macro2",
  "quote",
@@ -306,19 +282,6 @@ dependencies = [
 [[package]]
 name = "hax-lib-macros-types"
 version = "0.3.5"
-dependencies = [
- "proc-macro2",
- "quote",
- "serde",
- "serde_json",
- "uuid",
-]
-
-[[package]]
-name = "hax-lib-macros-types"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "867e19177d7425140b417cd27c2e05320e727ee682e98368f88b7194e80ad515"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -424,7 +387,7 @@ dependencies = [
 name = "kyber_compress"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
@@ -437,7 +400,7 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 name = "lean_barrett"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
@@ -445,7 +408,7 @@ name = "lean_chacha20"
 version = "0.1.0"
 dependencies = [
  "hax-bounded-integers",
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
@@ -507,7 +470,7 @@ name = "lob_backend"
 version = "0.1.0"
 dependencies = [
  "candid",
- "hax-lib 0.3.5",
+ "hax-lib",
  "ic-cdk",
  "ic-cdk-macros 0.8.1",
  "serde",
@@ -529,7 +492,7 @@ checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
 name = "ntt"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "hax-lib",
 ]
 
 [[package]]
@@ -685,7 +648,7 @@ dependencies = [
 name = "proverif-psk"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5",
+ "hax-lib",
  "libcrux",
  "rand",
 ]
@@ -816,7 +779,7 @@ dependencies = [
 name = "sha256"
 version = "0.1.0"
 dependencies = [
- "hax-lib 0.3.5",
+ "hax-lib",
 ]
 
 [[package]]
