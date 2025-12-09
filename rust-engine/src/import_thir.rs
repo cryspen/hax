@@ -2028,7 +2028,11 @@ pub fn import_item(
                     }
                 }
             };
-            if matches!(adt_kind, AdtKind::Enum) {
+
+            // For enums that are fieldless (see https://doc.rust-lang.org/reference/items/enumerations.html#casting),
+            // we produce a cast function.
+            if matches!(adt_kind, AdtKind::Enum) && variants.iter().all(ast::Variant::is_fieldless)
+            {
                 // Each variant might introduce a anonymous constant defining its discriminant integer
                 let discriminant_const_items = frontend_variants().filter_map(|v| {
                     let DiscriminantDefinition::Explicit { def_id, span } = &v.discr_def else {
