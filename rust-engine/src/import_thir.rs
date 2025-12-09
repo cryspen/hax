@@ -1939,8 +1939,8 @@ fn cast_of_enum(
     let scrutinee =
         ast::ExprKind::LocalId(scrutinee_var.clone()).promote(type_ref.clone(), span.clone());
     let params = vec![ast::Param {
-        pat: ast::PatKind::var_pat(scrutinee_var).promote(type_ref, span.clone()),
-        ty: ty.clone(),
+        pat: ast::PatKind::var_pat(scrutinee_var).promote(type_ref.clone(), span.clone()),
+        ty: type_ref.clone(),
         ty_span: None,
         attributes: Vec::new(),
     }];
