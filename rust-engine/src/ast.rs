@@ -1556,7 +1556,7 @@ pub mod traits {
     }
     impl<T: HasMetadata> HasSpan for T {
         fn span(&self) -> Span {
-            self.metadata().span.clone()
+            self.metadata().span
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.metadata_mut().span
@@ -1616,7 +1616,7 @@ pub mod traits {
 
     impl HasSpan for Attribute {
         fn span(&self) -> Span {
-            self.span.clone()
+            self.span
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.span
@@ -1641,7 +1641,7 @@ pub mod traits {
 
     impl HasSpan for SpannedTy {
         fn span(&self) -> Span {
-            self.span.clone()
+            self.span
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.span

@@ -57,7 +57,7 @@ impl Expr {
         output_type: Ty,
         span: Span,
     ) -> Self {
-        ExprKind::standalone_fn_app(head, generic_args, args, output_type.clone(), span.clone())
+        ExprKind::standalone_fn_app(head, generic_args, args, output_type.clone(), span)
             .promote(output_type, span)
     }
 
@@ -78,7 +78,7 @@ impl Expr {
             output_type.clone(),
             bounds_impls,
             trait_,
-            span.clone(),
+            span,
         )
         .promote(output_type, span)
     }
