@@ -1508,7 +1508,7 @@ let cast_of_enum typ_name generics typ thir_span
         in
         match (previous_explicit_discriminator, discr) with
         | None, Relative m -> (None, (pat, expr_of_int m))
-        | _, Explicit did ->
+        | _, Explicit { def_id = did; _ } ->
             let e = M.expr_GlobalVar ~typ (def_id ~value:true did) in
             (Some e, (pat, e))
         | Some e, Relative n ->

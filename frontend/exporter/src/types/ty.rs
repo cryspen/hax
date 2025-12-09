@@ -230,9 +230,13 @@ pub enum UserType {
 /// Reflects [`ty::VariantDiscr`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::VariantDiscr, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::VariantDiscr, state: S as s)]
 pub enum DiscriminantDefinition {
-    Explicit(DefId),
+    #[custom_arm(FROM_TYPE::Explicit(did) => TO_TYPE::Explicit { def_id: did.sinto(s), span: s.base().tcx.def_span(did).sinto(s) },)]
+    Explicit {
+        def_id: DefId,
+        span: Span,
+    },
     Relative(u32),
 }
 

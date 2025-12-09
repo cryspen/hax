@@ -1882,6 +1882,7 @@ fn import_generics(
 }
 
 fn cast_of_enum(
+    context: &Context,
     type_id: ast::GlobalId,
     generics: &ast::Generics,
     ty: ast::Ty,
@@ -1912,9 +1913,9 @@ fn cast_of_enum(
                         })
                         .promote(ty.clone(), span.clone())
                     }
-                    frontend::DiscriminantDefinition::Explicit(did) => {
-                        let e = ast::ExprKind::GlobalId(did.import_as_value())
-                            .promote(ty.clone(), span.clone());
+                    frontend::DiscriminantDefinition::Explicit { def_id, span } => {
+                        let e = ast::ExprKind::GlobalId(def_id.import_as_value())
+                            .promote(ty.clone(), span.import(context));
                         previous_explicit_determinator = Some(e.clone());
                         e
                     }
@@ -2009,75 +2010,84 @@ pub fn import_item(
                 .map(|v| (v.import(context), v))
                 .collect();
             let variants = variants_with_def.iter().map(|(v, _)| v.clone()).collect();
-            let res_kind = match adt_kind {
-                frontend::AdtKind::Union => {
-                    ast::ItemKind::Error(unsupported("Union type", 998, &span))
-                }
-                frontend::AdtKind::Enum | frontend::AdtKind::Struct => ast::ItemKind::Type {
+            use frontend::{AdtKind, DiscriminantDefinition};
+            let adt_item_kind = match adt_kind {
+                AdtKind::Enum | AdtKind::Struct => ast::ItemKind::Type {
                     name: ident,
                     generics: generics.clone(),
                     variants,
                     is_struct: match adt_kind {
-                        frontend::AdtKind::Enum => false,
-                        frontend::AdtKind::Struct => true,
+                        AdtKind::Enum => false,
+                        AdtKind::Struct => true,
                         _ => unreachable!(),
                     },
                 },
-                frontend::AdtKind::Array => {
-                    ast::ItemKind::Error(assertion_failure("Array ADT type", &span))
-                }
-                frontend::AdtKind::Slice => {
-                    ast::ItemKind::Error(assertion_failure("Slice ADT type", &span))
-                }
-                frontend::AdtKind::Tuple => {
-                    ast::ItemKind::Error(assertion_failure("Tuple ADT type", &span))
+                AdtKind::Union => ast::ItemKind::Error(unsupported("Union type", 998, &span)),
+                AdtKind::Array | AdtKind::Slice | AdtKind::Tuple => {
+                    ast::ItemKind::Error(assertion_failure(
+                        &format!(
+                            "While translating a item, we got an ADT of kind {adt_kind:#?}. This is not supposed to be ever produced."
+                        ),
+                        &span,
+                    ))
                 }
             };
-            if let frontend::AdtKind::Enum = adt_kind {
+            if let AdtKind::Enum = adt_kind {
                 // Each variant might introduce a anonymous constant defining its discriminant integer
-                let discriminant_constants = variants_with_def.iter().filter_map(|(_, v)| {
-                    if let frontend::DiscriminantDefinition::Explicit(def_id) = &v.discr_def {
-                        let name = def_id.import_as_value();
-                        let kind = match v.discr_val.ty.kind() {
-                            frontend::TyKind::Int(int_ty) => int_ty.into(),
-                            frontend::TyKind::Uint(int_ty) => int_ty.into(),
-                            _ => return None,
-                        };
-                        Some(
-                            ast::ItemKind::Fn {
-                                name: name.clone(),
-                                generics: ast::Generics::empty(),
-                                body: ast::ExprKind::Literal(ast::literals::Literal::Int {
-                                    value: Symbol::new(v.discr_val.val.to_string()),
-                                    negative: false,
-                                    kind,
-                                })
-                                .promote(
-                                    v.discr_val.ty.spanned_import(context, span.clone()),
-                                    span.clone(),
-                                ),
-                                params: Vec::new(),
-                                safety: ast::SafetyKind::Safe,
-                            }
-                            .promote(name, span.clone()),
-                        )
-                    } else {
-                        None
-                    }
+                let discriminant_const_items = variants_with_def.iter().filter_map(|(_, v)| {
+                    let DiscriminantDefinition::Explicit { def_id, span } = &v.discr_def else {
+                        return None;
+                    };
+
+                    let span = span.import(context);
+                    let name = def_id.import_as_value();
+                    let value = v.discr_val.val;
+                    let (value, kind) = match v.discr_val.ty.kind() {
+                        frontend::TyKind::Int(int_ty) => (value.to_string(), int_ty.into()),
+                        frontend::TyKind::Uint(int_ty) => {
+                            ((value as i128).to_string(), int_ty.into())
+                        }
+                        _ => {
+                            return Some(
+                                ast::ItemKind::Error(assertion_failure("", &span))
+                                    .promote(name, span),
+                            );
+                        }
+                    };
+                    Some(
+                        ast::ItemKind::Fn {
+                            name: name.clone(),
+                            generics: ast::Generics::empty(),
+                            body: ast::ExprKind::Literal(ast::literals::Literal::Int {
+                                value: Symbol::new(value),
+                                negative: false,
+                                kind,
+                            })
+                            .promote(
+                                v.discr_val.ty.spanned_import(context, span.clone()),
+                                span.clone(),
+                            ),
+                            params: Vec::new(),
+                            safety: ast::SafetyKind::Safe,
+                        }
+                        .promote(name, span.clone()),
+                    )
                 });
+
                 let cast_item = cast_of_enum(
+                    context,
                     ident,
                     &generics,
                     repr.typ.spanned_import(context, span.clone()),
                     span.clone(),
                     &variants_with_def,
                 );
-                return discriminant_constants
-                    .chain(std::iter::once(res_kind.promote(ident, span.clone())))
+                return discriminant_const_items
+                    .chain(std::iter::once(adt_item_kind.promote(ident, span.clone())))
                     .chain(std::iter::once(cast_item))
                     .collect();
             } else {
-                res_kind
+                adt_item_kind
             }
         }
         frontend::FullDefKind::TyAlias { param_env, ty } => {
