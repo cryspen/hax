@@ -2007,25 +2007,25 @@ pub fn import_item(
             let variants: Vec<ast::Variant> =
                 frontend_variants().map(|v| v.import(context)).collect();
             use frontend::{AdtKind, DiscriminantDefinition};
-            let adt_item_kind = match adt_kind {
-                AdtKind::Enum | AdtKind::Struct => ast::ItemKind::Type {
+            let adt_item_kind = {
+                let make_type = |is_struct| ast::ItemKind::Type {
                     name: ident,
                     generics: generics.clone(),
                     variants: variants.clone(),
-                    is_struct: match adt_kind {
-                        AdtKind::Enum => false,
-                        AdtKind::Struct => true,
-                        _ => unreachable!(),
-                    },
-                },
-                AdtKind::Union => ast::ItemKind::Error(unsupported("Union type", 998, &span)),
-                AdtKind::Array | AdtKind::Slice | AdtKind::Tuple => {
-                    ast::ItemKind::Error(assertion_failure(
-                        &format!(
-                            "While translating a item, we got an ADT of kind {adt_kind:#?}. This is not supposed to be ever produced."
-                        ),
-                        &span,
-                    ))
+                    is_struct,
+                };
+                match adt_kind {
+                    AdtKind::Enum => make_type(false),
+                    AdtKind::Struct => make_type(true),
+                    AdtKind::Union => ast::ItemKind::Error(unsupported("Union type", 998, &span)),
+                    AdtKind::Array | AdtKind::Slice | AdtKind::Tuple => {
+                        ast::ItemKind::Error(assertion_failure(
+                            &format!(
+                                "While translating a item, we got an ADT of kind {adt_kind:#?}. This is not supposed to be ever produced."
+                            ),
+                            &span,
+                        ))
+                    }
                 }
             };
             if matches!(adt_kind, AdtKind::Enum) {
