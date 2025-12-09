@@ -742,37 +742,81 @@ impl Import<ast::Expr> for frontend::Expr {
         let span = span.import(context);
         let raw_attributes: Vec<Option<ast::Attribute>> = attributes.import(context);
         let attributes: Vec<ast::Attribute> = raw_attributes.into_iter().flatten().collect();
-        let binop_id = |op: &frontend::BinOp| match op {
-            frontend::BinOp::Add
-            | frontend::BinOp::AddWithOverflow
-            | frontend::BinOp::AddUnchecked => crate::names::rust_primitives::hax::machine_int::add,
-            frontend::BinOp::Sub
-            | frontend::BinOp::SubWithOverflow
-            | frontend::BinOp::SubUnchecked => crate::names::rust_primitives::hax::machine_int::sub,
-            frontend::BinOp::Mul
-            | frontend::BinOp::MulWithOverflow
-            | frontend::BinOp::MulUnchecked => crate::names::rust_primitives::hax::machine_int::mul,
-            frontend::BinOp::Div => crate::names::rust_primitives::hax::machine_int::div,
-            frontend::BinOp::Rem => crate::names::rust_primitives::hax::machine_int::rem,
-            frontend::BinOp::BitXor => crate::names::rust_primitives::hax::machine_int::bitxor,
-            frontend::BinOp::BitAnd => crate::names::rust_primitives::hax::machine_int::bitand,
-            frontend::BinOp::BitOr => crate::names::rust_primitives::hax::machine_int::bitor,
-            frontend::BinOp::Shl | frontend::BinOp::ShlUnchecked => {
-                crate::names::rust_primitives::hax::machine_int::shl
+        let binop_id = |op| {
+            use crate::names::core::cmp::*;
+            use crate::names::core::ops::{arith::*, bit::*};
+            use crate::names::rust_primitives::hax::machine_int as hax_machine_int;
+            use frontend::BinOp as Op;
+            match op {
+                Op::Add | Op::AddUnchecked => Add::add,
+                Op::Sub | Op::SubUnchecked => Sub::sub,
+                Op::Mul | Op::MulUnchecked => Mul::mul,
+                Op::Div => Div::div,
+                Op::Rem => Rem::rem,
+                Op::BitXor => BitXor::bitxor,
+                Op::BitAnd => BitAnd::bitand,
+                Op::BitOr => BitOr::bitor,
+                Op::Shl | Op::ShlUnchecked => Shl::shl,
+                Op::Shr | Op::ShrUnchecked => Shr::shr,
+                Op::Lt => PartialOrd::lt,
+                Op::Le => PartialOrd::le,
+                Op::Ne => PartialEq::ne,
+                Op::Ge => PartialOrd::ge,
+                Op::Gt => PartialOrd::gt,
+                Op::Eq => PartialEq::eq,
+                Op::Offset => crate::names::core::ptr::const_ptr::Impl::offset,
+                Op::Cmp => hax_machine_int::cmp,
+                Op::AddWithOverflow => hax_machine_int::add_with_overflow,
+                Op::SubWithOverflow => hax_machine_int::sub_with_overflow,
+                Op::MulWithOverflow => hax_machine_int::mul_with_overflow,
             }
-            frontend::BinOp::Shr | frontend::BinOp::ShrUnchecked => {
-                crate::names::rust_primitives::hax::machine_int::shr
-            }
-            frontend::BinOp::Lt => crate::names::rust_primitives::hax::machine_int::lt,
-            frontend::BinOp::Le => crate::names::rust_primitives::hax::machine_int::le,
-            frontend::BinOp::Ne => crate::names::rust_primitives::hax::machine_int::ne,
-            frontend::BinOp::Ge => crate::names::rust_primitives::hax::machine_int::ge,
-            frontend::BinOp::Gt => crate::names::rust_primitives::hax::machine_int::gt,
-            frontend::BinOp::Eq => crate::names::rust_primitives::hax::machine_int::eq,
-            frontend::BinOp::Offset => crate::names::rust_primitives::hax::machine_int::add,
-            frontend::BinOp::Cmp => crate::names::rust_primitives::hax::machine_int::eq,
         };
-        let assign_binop = |op: &frontend::AssignOp| match op {
+        let binop_call = |op, x, y, out_type| -> _ {
+            use frontend::BinOp as Op;
+            let needs_borrow = matches!(op, Op::Lt | Op::Le | Op::Ne | Op::Ge | Op::Gt | Op::Eq);
+            let borrow_if_needed = if needs_borrow {
+                |e: ast::Expr| {
+                    use crate::ast::traits::HasKind;
+                    if matches!(e.ty.kind(), ast::TyKind::Ref { .. }) {
+                        e
+                    } else {
+                        let meta = e.meta.clone();
+                        let ty = ast::TyKind::Ref {
+                            inner: e.ty.clone(),
+                            mutable: false,
+                            region: ast::Region,
+                        };
+                        let kind = ast::ExprKind::Borrow {
+                            mutable: false,
+                            inner: e,
+                        };
+                        ast::Expr {
+                            kind: Box::new(kind),
+                            ty: ty.promote(),
+                            meta,
+                        }
+                    }
+                }
+            } else {
+                |e: ast::Expr| e
+            };
+            let (bounds_impls, trait_, generic_args) = {
+                // TODO: we pretend the call is a standalone funtion call.
+                // This is not true, here we're calling methods.
+                // This should be fixed.
+                (vec![], None, vec![])
+            };
+            ast::ExprKind::fn_app(
+                binop_id(op),
+                generic_args,
+                vec![borrow_if_needed(x), borrow_if_needed(y)],
+                out_type,
+                bounds_impls,
+                trait_,
+                span,
+            )
+        };
+        let assign_binop = |op: frontend::AssignOp| match op {
             frontend::AssignOp::AddAssign => frontend::BinOp::Add,
             frontend::AssignOp::SubAssign => frontend::BinOp::Sub,
             frontend::AssignOp::MulAssign => frontend::BinOp::Mul,
@@ -897,14 +941,7 @@ impl Import<ast::Expr> for frontend::Expr {
             }
             frontend::ExprKind::Binary { op, lhs, rhs } => {
                 let result_ty = ty.spanned_import(context, span);
-                let id = binop_id(op);
-                ast::ExprKind::standalone_fn_app(
-                    id,
-                    vec![],
-                    vec![lhs.import(context), rhs.import(context)],
-                    result_ty,
-                    span,
-                )
+                binop_call(*op, lhs.import(context), rhs.import(context), result_ty)
             }
             frontend::ExprKind::LogicalOp { op, lhs, rhs } => {
                 let result_ty = ty.spanned_import(context, span);
@@ -1040,16 +1077,11 @@ impl Import<ast::Expr> for frontend::Expr {
                 value: rhs.import(context),
             },
             frontend::ExprKind::AssignOp { op, lhs, rhs } => {
-                let bin_op = assign_binop(op);
+                let bin_op = assign_binop(*op);
                 let ty = ty.spanned_import(context, span);
-                let bin = ast::ExprKind::standalone_fn_app(
-                    binop_id(&bin_op),
-                    vec![],
-                    vec![lhs.import(context), rhs.import(context)],
-                    ty.clone(),
-                    span,
-                );
-                let op_expr = bin.promote(ty, span);
+                let op_expr =
+                    binop_call(bin_op, lhs.import(context), rhs.import(context), ty.clone())
+                        .promote(ty, span);
                 ast::ExprKind::Assign {
                     lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import(context))),
                     value: op_expr,
