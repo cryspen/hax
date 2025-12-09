@@ -1904,8 +1904,8 @@ fn cast_of_enum(
     let mut arms = Vec::new();
     let mut previous_explicit_determinator = None;
     for (variant, variant_def) in variants {
-        // Each variant comes with a [rustc_middle::ty::VariantDiscr]. Some variant have [Explicit] discr (i.e. an expression)
-        // while other have [Relative] discr (the distance to the previous last explicit discr).
+        // Each variant comes with a `rustc_middle::ty::VariantDiscr`. Some variant have `Explicit` discr (i.e. an expression)
+        // while other have `Relative` discr (the distance to the previous last explicit discr).
         let body = match &variant_def.discr_def {
             frontend::DiscriminantDefinition::Relative(m) => {
                 ast::ExprKind::Literal(ast::literals::Literal::Int {
