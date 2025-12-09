@@ -1887,7 +1887,7 @@ fn cast_of_enum(
     generics: &ast::Generics,
     ty: ast::Ty,
     span: ast::span::Span,
-    variants: &Vec<(ast::Variant, frontend::VariantDef)>,
+    variants: impl Iterator<Item = (ast::Variant, frontend::VariantDef)>,
 ) -> ast::Item {
     let name = ast::GlobalId::with_suffix(type_id, ReservedSuffix::Cast);
     let arms = {
@@ -1900,7 +1900,6 @@ fn cast_of_enum(
         };
         let mut previous_explicit_determinator = None;
         variants
-            .iter()
             .map(|(variant, variant_def)| {
                 // Each variant comes with a `rustc_middle::ty::VariantDiscr`. Some variant have `Explicit` discr (i.e. an expression)
                 // while other have `Relative` discr (the distance to the previous last explicit discr).
@@ -1999,23 +1998,20 @@ pub fn import_item(
         frontend::FullDefKind::Adt {
             param_env,
             adt_kind,
-            variants,
+            variants: frontend_variants,
             repr,
             ..
         } => {
             let generics = param_env.import(context);
-            let variants_with_def: Vec<(ast::Variant, frontend::VariantDef)> = variants
-                .clone()
-                .into_iter()
-                .map(|v| (v.import(context), v))
-                .collect();
-            let variants = variants_with_def.iter().map(|(v, _)| v.clone()).collect();
+            let frontend_variants = || frontend_variants.clone().into_iter();
+            let variants: Vec<ast::Variant> =
+                frontend_variants().map(|v| v.import(context)).collect();
             use frontend::{AdtKind, DiscriminantDefinition};
             let adt_item_kind = match adt_kind {
                 AdtKind::Enum | AdtKind::Struct => ast::ItemKind::Type {
                     name: ident,
                     generics: generics.clone(),
-                    variants,
+                    variants: variants.clone(),
                     is_struct: match adt_kind {
                         AdtKind::Enum => false,
                         AdtKind::Struct => true,
@@ -2032,9 +2028,9 @@ pub fn import_item(
                     ))
                 }
             };
-            if let AdtKind::Enum = adt_kind {
+            if matches!(adt_kind, AdtKind::Enum) {
                 // Each variant might introduce a anonymous constant defining its discriminant integer
-                let discriminant_const_items = variants_with_def.iter().filter_map(|(_, v)| {
+                let discriminant_const_items = frontend_variants().filter_map(|v| {
                     let DiscriminantDefinition::Explicit { def_id, span } = &v.discr_def else {
                         return None;
                     };
@@ -2080,7 +2076,7 @@ pub fn import_item(
                     &generics,
                     repr.typ.spanned_import(context, span.clone()),
                     span.clone(),
-                    &variants_with_def,
+                    variants.into_iter().zip(frontend_variants()),
                 );
                 return discriminant_const_items
                     .chain(std::iter::once(adt_item_kind.promote(ident, span.clone())))
