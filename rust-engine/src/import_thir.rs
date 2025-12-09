@@ -1500,14 +1500,28 @@ impl Import<ast::PatKind> for frontend::PatKind {
                 &ast::span::Span::dummy(),
             )),
             frontend::PatKind::Constant { value } => {
-                let expr = value.import(context);
-                match *expr.kind {
-                    ast::ExprKind::Literal(lit) => ast::PatKind::Constant { lit },
-                    _ => ast::PatKind::Error(assertion_failure(
-                        &format!("expected a pattern, got {:?}", expr.kind),
-                        &expr.meta.span,
-                    )),
+                use ast::*;
+                fn expr_to_pat(expr: Expr) -> Pat {
+                    let Expr { kind, ty, meta } = expr;
+                    let kind = match *kind {
+                        ExprKind::Literal(lit) => PatKind::Constant { lit },
+                        ExprKind::Array(args) => PatKind::Array {
+                            args: args.into_iter().map(expr_to_pat).collect(),
+                        },
+                        ExprKind::Borrow { mutable: _, inner } => PatKind::Deref {
+                            sub_pat: expr_to_pat(inner),
+                        },
+                        kind => PatKind::Error(assertion_failure(
+                            &format!(
+                                "expr_to_pat: the given expression could not be interpreted as a pattern. kind={kind:#?}"
+                            ),
+                            &meta.span,
+                        )),
+                    };
+                    let kind = Box::new(kind);
+                    Pat { kind, ty, meta }
                 }
+                *expr_to_pat(value.import(context)).kind
             }
             frontend::PatKind::ExpandedConstant { subpattern, .. } => {
                 *subpattern.import(context).kind
