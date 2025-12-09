@@ -163,7 +163,7 @@ let to_rust_ast_span span : Rust_engine_types.span =
   in
   {
     data = List.map ~f:Imported.span_to_thir span.data;
-    id = Int.to_string span.id;
+    id = Int.to_int64 span.id;
     owner_hint;
   }
 
@@ -174,6 +174,6 @@ let from_rust_ast_span (span : Rust_engine_types.span) : t =
   in
   {
     data = List.map ~f:Imported.span_of_thir span.data;
-    id = Int.of_string span.id;
+    id = Int.of_int64_exn span.id;
     owner_hint = Option.map ~f:fresh_owner_id owner_hint;
   }

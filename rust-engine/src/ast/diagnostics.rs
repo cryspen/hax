@@ -33,7 +33,7 @@ impl DiagnosticInfo {
         crate::hax_io::write(&hax_types::engine_api::protocol::FromEngine::Diagnostic(
             hax_types::diagnostics::Diagnostics {
                 kind: self.kind.clone(),
-                span: self.span.data.clone(),
+                span: self.span.as_frontend_spans().to_vec(),
                 context: format!("{}", self.context),
                 owner_id: None,
             },
