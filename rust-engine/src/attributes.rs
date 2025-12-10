@@ -210,7 +210,7 @@ fn extract_expr<'a>(
 /// Note that `result` is an extra binder that represent the result of `f`, whose type is `u8` in this case: the return type of `f`.
 ///
 /// ```rust
-/// #[requires(|result| result != x)]
+/// #[hax_lib::requires(|result| result != x)]
 /// fn f(x: u8) -> u8 { x.wrapping_add(1) }
 /// ```
 pub struct Postcondition {
