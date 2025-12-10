@@ -54,7 +54,7 @@ fn emit_assertion_failure(context: Context, span: span::Span, message: impl Into
 }
 
 impl<'a> LinkedItemGraph<'a> {
-    /// Create a graph of associated items given a bunch of items and a diagnostic context.
+    /// Create a graph of linked items given a bunch of items and a diagnostic context.
     pub fn new(items: impl IntoIterator<Item = &'a Item>, context: Context) -> Self {
         Self {
             items: HashMap::from_iter(
@@ -82,8 +82,8 @@ impl<'a> LinkedItemGraph<'a> {
         .emit();
     }
 
-    /// Given a graph and an item `item`, returns an iterator of the various items that are associated with `item`.
-    pub fn associated_items_iter(
+    /// Given a graph and an item `item`, returns an iterator of the various items that are linked with `item`.
+    pub fn linked_items_iter(
         &self,
         item: &impl HasMetadata,
     ) -> impl Iterator<Item = (AssociationRole, &'a Item)> {
@@ -91,7 +91,7 @@ impl<'a> LinkedItemGraph<'a> {
         hax_attributes(item_attributes).flat_map(|attr| match attr {
             AttrPayload::AssociatedItem { role, item: target } => {
                 let Some(target) = self.items.get(target) else {
-                    self.emit_assertion_failure(item.span(), format!("An item associated via hax attributes could not be found. The UUID is {target:?}."));
+                    self.emit_assertion_failure(item.span(), format!("An item linked via hax attributes could not be found. The UUID is {target:?}."));
                     return None;
                 };
                 Some((*role, *target))
@@ -100,26 +100,23 @@ impl<'a> LinkedItemGraph<'a> {
         })
     }
 
-    /// Returns the items associated to a given item.
-    pub fn associated_items(
-        &self,
-        item: &impl HasMetadata,
-    ) -> HashMap<AssociationRole, Vec<&'a Item>> {
+    /// Returns the items linked to a given item.
+    pub fn linked_items(&self, item: &impl HasMetadata) -> HashMap<AssociationRole, Vec<&'a Item>> {
         let mut map: HashMap<AssociationRole, Vec<&'a Item>> = HashMap::new();
-        for (role, item) in self.associated_items_iter(item) {
+        for (role, item) in self.linked_items_iter(item) {
             map.entry(role).or_default().push(item);
         }
         map
     }
 
     /// Returns the precondition, postcondition and decreases clause, if any, for a given item.
-    /// When operating on a associated function, `self_id` is the local identifier of `self`.
-    pub fn fn_like_associated_expressions(
+    /// When operating on a linked function, `self_id` is the local identifier of `self`.
+    pub fn fn_like_linked_expressions(
         &self,
         item: &impl HasMetadata,
         self_id: Option<&identifiers::LocalId>,
     ) -> FnLikeAssocatedExpressions {
-        let assoc_items = self.associated_items(item);
+        let assoc_items = self.linked_items(item);
         let get = |role| {
             assoc_items
                 .get(&role)
@@ -220,7 +217,7 @@ pub struct Postcondition {
     pub body: Expr,
 }
 
-/// The various associated expressions one can usually find on a (associated or not) function.
+/// The various linked expressions one can usually find on a (linked or not) function.
 pub struct FnLikeAssocatedExpressions {
     /// A decreases clause, see [`hax_lib::decreases`]
     pub decreases: Option<Expr>,
