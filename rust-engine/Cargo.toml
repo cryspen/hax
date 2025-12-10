@@ -12,6 +12,7 @@ description = "The engine of the hax toolchain."
 [dependencies]
 hax-frontend-exporter.workspace = true
 hax-rust-engine-macros.workspace = true
+hax-lib-macros-types = { workspace = true, features = ["schemars"] }
 serde_json = { workspace = true, features = ["unbounded_depth"] }
 serde = { workspace = true, features = ["derive"] }
 hax-types.workspace = true

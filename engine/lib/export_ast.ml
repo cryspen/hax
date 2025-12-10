@@ -159,11 +159,16 @@ module Make (FA : Features.T) = struct
 
   and dattr (a : attr) : B.attribute =
     let kind : B.attribute_kind =
-      match a.kind with
-      | Tool { path; tokens } -> B.Tool { path; tokens }
-      | DocComment { kind; body } ->
-          let kind = match kind with DCKLine -> B.Line | DCKBlock -> Block in
-          B.DocComment { kind; body }
+      match Attr_payloads.payload a with
+      | Some (payload, _) -> B.Hax payload
+      | None -> (
+          match a.kind with
+          | Tool { path; tokens } -> B.Tool { path; tokens }
+          | DocComment { kind; body } ->
+              let kind =
+                match kind with DCKLine -> B.Line | DCKBlock -> Block
+              in
+              B.DocComment { kind; body })
     in
     { kind; span = dspan a.span }
 

@@ -1505,7 +1505,7 @@ set_option linter.unusedVariables false
 
         fn attribute(&self, Attribute { kind, span: _ }: &Attribute) -> DocBuilder<A> {
             match kind {
-                AttributeKind::Tool { .. } => {
+                AttributeKind::Tool { .. } | AttributeKind::Hax { .. } => {
                     nil!()
                 }
                 AttributeKind::DocComment {

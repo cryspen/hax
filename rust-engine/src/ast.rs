@@ -1172,6 +1172,8 @@ pub enum AttributeKind {
         /// The contents of the comment
         body: String,
     },
+    /// Hax attribute
+    Hax(hax_lib_macros_types::AttrPayload),
 }
 
 /// Represents the kind of a doc comment.

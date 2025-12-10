@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 /// Morally, we expand `struct Foo { #[refine(x > 3)] x: u32 }` to:
 ///  1. `#[uuid(A_UNIQUE_ID_123)] fn refinement(x: u32) -> hax_lib::Prop {x > 3}`;
 ///  2. `struct Foo { #[refined_by(A_UNIQUE_ID_123)] x: u32 }`.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaUid")]
 pub struct ItemUid {
@@ -31,7 +31,7 @@ impl ItemUid {
 }
 
 /// What shall Hax do with an item?
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaItemStatus")]
 pub enum ItemStatus {
@@ -47,7 +47,7 @@ pub enum ItemStatus {
 /// An item can be associated to another one for multiple reasons:
 /// `AssociationRole` capture the nature of the (directed) relation
 /// between two items
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaAssocRole")]
 pub enum AssociationRole {
@@ -66,7 +66,7 @@ pub enum AssociationRole {
 }
 
 /// Where should a item quote appear?
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaItemQuotePosition")]
 pub enum ItemQuotePosition {
@@ -77,7 +77,7 @@ pub enum ItemQuotePosition {
 }
 
 /// F*-specific options for item quotes
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaItemQuoteFStarOpts")]
 pub struct ItemQuoteFStarOpts {
@@ -90,7 +90,7 @@ pub struct ItemQuoteFStarOpts {
 /// An item quote is a verbatim piece of backend code included in
 /// Rust. [`ItemQuote`] encodes the various options a item quote can
 /// have.
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaItemQuote")]
 pub struct ItemQuote {
@@ -101,7 +101,7 @@ pub struct ItemQuote {
 /// Hax only understands one attribute: `#[hax::json(PAYLOAD)]` where
 /// `PAYLOAD` is a JSON serialization of an inhabitant of
 /// `AttrPayload`.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(rename = "HaPayload")]
 pub enum AttrPayload {
