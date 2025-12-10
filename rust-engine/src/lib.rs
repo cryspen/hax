@@ -10,6 +10,7 @@
 )]
 
 pub mod ast;
+pub mod attributes;
 pub mod backends;
 pub mod hax_io;
 pub mod interning;
