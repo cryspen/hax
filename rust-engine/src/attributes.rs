@@ -15,14 +15,14 @@ pub struct AssociatedItemsGraph<'a> {
     context: Context,
 }
 
-fn hax_attributes<'a>(attrs: &'a Attributes) -> impl Iterator<Item = &'a AttrPayload> {
+fn hax_attributes(attrs: &Attributes) -> impl Iterator<Item = &AttrPayload> {
     attrs.iter().flat_map(|attr| match &attr.kind {
         AttributeKind::Hax(attr_payload) => Some(attr_payload),
         _ => None,
     })
 }
 
-fn uuid<'a>(context: Context, item: &'a Item) -> Option<&'a ItemUid> {
+fn uuid(context: Context, item: &Item) -> Option<&ItemUid> {
     let mut uuids = hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
         AttrPayload::Uid(item_uid) => Some(item_uid),
         _ => None,

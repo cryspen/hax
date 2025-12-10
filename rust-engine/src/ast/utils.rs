@@ -25,7 +25,7 @@ pub mod mappers {
 
     impl AstVisitorMut for SubstLocalIds {
         fn visit_local_id(&mut self, local_id: &mut LocalId) {
-            if let Some(replacement) = self.0.get(&local_id) {
+            if let Some(replacement) = self.0.get(local_id) {
                 *local_id = replacement.clone();
             }
         }
