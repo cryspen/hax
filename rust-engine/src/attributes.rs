@@ -10,7 +10,7 @@ use super::ast::*;
 use visitors::AstVisitorMut;
 
 /// A graph of items connected via the hax attribute [`AttrPayload::AssociatedItem`] and UUIDs.
-pub struct AssociatedItemsGraph<'a> {
+pub struct LinkedItemGraph<'a> {
     items: HashMap<&'a ItemUid, &'a Item>,
     context: Context,
 }
@@ -53,7 +53,7 @@ fn emit_assertion_failure(context: Context, span: span::Span, message: impl Into
     .emit();
 }
 
-impl<'a> AssociatedItemsGraph<'a> {
+impl<'a> LinkedItemGraph<'a> {
     /// Create a graph of associated items given a bunch of items and a diagnostic context.
     pub fn new(items: impl IntoIterator<Item = &'a Item>, context: Context) -> Self {
         Self {
