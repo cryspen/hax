@@ -22,6 +22,12 @@ pub struct ItemUid {
     pub uid: String,
 }
 
+impl std::fmt::Display for ItemUid {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        std::fmt::Display::fmt(&self.uid, f)
+    }
+}
+
 impl ItemUid {
     pub fn fresh() -> Self {
         use uuid::Uuid;
