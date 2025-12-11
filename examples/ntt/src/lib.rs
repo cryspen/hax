@@ -31,6 +31,25 @@ mod spec {
             && bounded_i16(x[15], b)
     }
 
+    pub(crate) fn bounded_i32x16(x: &[i32; 16], b: i32) -> bool {
+        bounded_i32(x[0], b)
+            && bounded_i32(x[1], b)
+            && bounded_i32(x[2], b)
+            && bounded_i32(x[3], b)
+            && bounded_i32(x[4], b)
+            && bounded_i32(x[5], b)
+            && bounded_i32(x[6], b)
+            && bounded_i32(x[7], b)
+            && bounded_i32(x[8], b)
+            && bounded_i32(x[9], b)
+            && bounded_i32(x[10], b)
+            && bounded_i32(x[11], b)
+            && bounded_i32(x[12], b)
+            && bounded_i32(x[13], b)
+            && bounded_i32(x[14], b)
+            && bounded_i32(x[15], b)
+    }
+
     // Can be replaced by an invocation to forall, but that turns it into a Prop
     pub(crate) fn bounded_i16x8(x: &[i16; 8], b: i16) -> bool {
         bounded_i16(x[0], b)
@@ -108,19 +127,31 @@ fn ntt_multiply_binomials_1(a0: i16, a1: i16, b0: i16, b1: i16) -> i32 {
 
 /// We may want to turn the fixed-length arrays into slices,
 /// but this will require additional preconditions and loop invariants
-#[hax_lib::requires(spec::bounded_i16x8(zetas, 1664) &&
+#[hax_lib::requires(_i <= 4 &&
+                    spec::bounded_i32x16(out, 3328*3328*2*(_i as i32)) &&
+                    spec::bounded_i16x8(zetas, 1664) &&
                     spec::bounded_i16x16(a,3328) &&
                     spec::bounded_i16x16(b,3328))]
+#[hax_lib::ensures(|_| spec::bounded_i32x16(future(out), 
+                                            3328*3328*2*((_i as i32)+1)))]
 pub fn accumulating_ntt_multiply_binomials(
+    _i: usize,
     a: &[i16; 16],
     b: &[i16; 16],
     zetas: &[i16; 8],
     out: &mut [i32; 16],
 ) {
+    #[cfg(hax)]
+    let _out_original = *out;
     for i in 0..8 {
+        hax_lib::loop_invariant!(|i:usize| 
+            hax_lib::forall(|j:usize| hax_lib::implies(j < 2*i, 
+                        spec::bounded_i32(out[j], 3328 * 3328 * 2 * ((i as i32)+1)))).and(
+            hax_lib::forall(|j:usize| hax_lib::implies(j >= 2*i && j < 16, 
+                        out[j] == _out_original[j]))));
         let o0 = ntt_multiply_binomials_0(a[2 * i], a[2 * i + 1], b[2 * i], b[2 * i + 1], zetas[i]);
         let o1 = ntt_multiply_binomials_1(a[2 * i], a[2 * i + 1], b[2 * i], b[2 * i + 1]);
-        out[2 * i] = out[2 * i].wrapping_add(o0);
-        out[2 * i + 1] = out[2 * i + 1].wrapping_add(o1);
+        out[2 * i] = out[2 * i] + o0;
+        out[2 * i + 1] = out[2 * i + 1] + o1;
     }
 }
