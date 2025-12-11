@@ -2,7 +2,7 @@
 authors:
   - alex
 title: "Verifying a real world Rust crate"
-date: 2025-11-19
+date: 2025-12-08
 ---
 
 # Verifying a real world Rust crate
