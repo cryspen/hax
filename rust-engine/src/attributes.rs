@@ -16,6 +16,15 @@ pub struct LinkedItemGraph {
     context: Context,
 }
 
+impl Default for LinkedItemGraph {
+    fn default() -> Self {
+        Self {
+            items: Default::default(),
+            context: Context::Unknown,
+        }
+    }
+}
+
 fn hax_attributes(attrs: &Attributes) -> impl Iterator<Item = &AttrPayload> {
     attrs.iter().flat_map(|attr| match &attr.kind {
         AttributeKind::Hax(attr_payload) => Some(attr_payload),
