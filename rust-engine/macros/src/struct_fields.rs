@@ -110,10 +110,15 @@ pub(crate) fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream)
 pub(crate) fn setup_printer_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut item: syn::ItemStruct = parse_macro_input!(item);
     let krate = rust_engine_krate_name();
-    let extra_field_ident_ts = add_field_to_item_struct(
+    let extra_contextual_span_field_ident_ts = add_field_to_item_struct(
         &mut item,
         "contextual_span",
         parse_quote! {Option<#krate::ast::span::Span>},
+    );
+    let extra_linked_item_graph_field_ident_ts = add_field_to_item_struct(
+        &mut item,
+        "linked_item_graph",
+        parse_quote! {#krate::attributes::LinkedItemGraph},
     );
 
     let struct_name = &item.ident;
@@ -122,12 +127,21 @@ pub(crate) fn setup_printer_struct(_attr: TokenStream, item: TokenStream) -> Tok
         #item
         impl #generics #krate::printer::pretty_ast::HasContextualSpan for #struct_name #generics {
             fn span(&self) -> Option<#krate::ast::span::Span> {
-                self.#extra_field_ident_ts.clone()
+                self.#extra_contextual_span_field_ident_ts.clone()
             }
             fn with_span(&self, span: #krate::ast::span::Span) -> Self {
                 let mut printer = self.clone();
-                printer.#extra_field_ident_ts = Some(span);
+                printer.#extra_contextual_span_field_ident_ts = Some(span);
                 printer
+            }
+        }
+        impl #generics #krate::printer::HasLinkedItemGraph for #struct_name #generics {
+            fn linked_item_graph(&self) -> &#krate::attributes::LinkedItemGraph {
+                &self.#extra_linked_item_graph_field_ident_ts
+            }
+            fn with_linked_item_graph(mut self, graph: #krate::attributes::LinkedItemGraph) -> Self {
+                self.#extra_linked_item_graph_field_ident_ts = graph;
+                self
             }
         }
     }

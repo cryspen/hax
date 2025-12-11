@@ -21,7 +21,8 @@ use std::collections::HashMap;
 
 use crate::{
     ast::{Item, Metadata, Module, span::Span},
-    printer::{Print, Printer},
+    attributes::LinkedItemGraph,
+    printer::{HasLinkedItemGraph, Print, Printer},
 };
 use camino::Utf8PathBuf;
 use hax_types::engine_api::File;
@@ -42,8 +43,8 @@ pub trait Backend {
     /// Construct a new printer instance.
     ///
     /// By default this calls `Default::default` on the printer type.
-    fn printer(&self) -> Self::Printer {
-        Self::Printer::default()
+    fn printer(&self, linked_item_graph: LinkedItemGraph) -> Self::Printer {
+        Self::Printer::default().with_linked_item_graph(linked_item_graph)
     }
 
     /// A short name identifying the backend.
@@ -96,9 +97,13 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
     let modules = backend.items_to_module(items);
     modules
         .into_iter()
-        .map(|module: Module| {
+        .map(|mut module: Module| {
+            let linked_items_graph = LinkedItemGraph::new(
+                &mut module.items,
+                prelude::diagnostics::Context::Printer(B::NAME.into()),
+            );
             let path = backend.module_path(&module).into_string();
-            let (contents, _) = backend.printer().print(module);
+            let (contents, _) = backend.printer(linked_items_graph).print(module);
             File {
                 path,
                 contents,
