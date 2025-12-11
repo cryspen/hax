@@ -127,7 +127,5 @@ mod prelude {
     };
     pub use crate::resugarings::*;
     pub use crate::symbol::Symbol;
-    pub use hax_rust_engine_macros::{
-        prepend_associated_functions_with, setup_span_handling_struct,
-    };
+    pub use hax_rust_engine_macros::{prepend_associated_functions_with, setup_printer_struct};
 }

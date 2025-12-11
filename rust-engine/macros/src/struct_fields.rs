@@ -106,8 +106,8 @@ pub(crate) fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream)
     .into()
 }
 
-/// This function is documented in [`crate::setup_span_handling_struct`].
-pub(crate) fn setup_span_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
+/// This function is documented in [`crate::setup_printer_struct`].
+pub(crate) fn setup_printer_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let mut item: syn::ItemStruct = parse_macro_input!(item);
     let krate = rust_engine_krate_name();
     let extra_field_ident_ts = add_field_to_item_struct(

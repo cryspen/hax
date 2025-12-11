@@ -338,7 +338,7 @@ make_cases_macro!(span_handling,
 /// with precise location information.
 ///
 /// This should not be implemented by hand, instead, use
-/// [`hax_rust_engine_macros::setup_span_handling_struct`].
+/// [`hax_rust_engine_macros::setup_printer_struct`].
 pub trait HasContextualSpan: Clone {
     /// Clone the printer, adding a span hint. Useful for errors.
     fn with_span(&self, _span: Span) -> Self;

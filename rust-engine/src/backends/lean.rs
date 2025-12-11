@@ -27,7 +27,7 @@ const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
 
 /// The Lean printer
-#[setup_span_handling_struct]
+#[setup_printer_struct]
 #[derive(Default, Clone)]
 pub struct LeanPrinter;
 
