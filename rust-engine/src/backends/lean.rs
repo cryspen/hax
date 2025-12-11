@@ -473,14 +473,17 @@ set_option linter.unusedVariables false
                             GenericConstraint::Type(impl_ident) => {
                                 let projections = constraints
                                     .iter()
-                                    .filter_map(|c| match c {
-                                        // Only projections that belong to our `impl_ident`:
-                                        GenericConstraint::Projection(p) => Some(match &*p.impl_.kind {
-                                            ImplExprKind::LocalBound { id } if *id == impl_ident.name => docs![p],
-                                            _ => (|| emit_error!(issue 1710, "Unsupported variant of associated type projection"))()
-                                        }),
-                                        _ => None,
-                                    })
+                                    .filter_map(|c| 
+                                        if let GenericConstraint::Projection(p) = c {
+                                            if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                                                Some(docs![p])
+                                            } else {
+                                                Some((|| emit_error!(issue 1710, "Unsupported variant of associated type projection"))())
+                                            }
+                                        } else {
+                                            None
+                                        }
+                                    )
                                     .collect::<Vec<_>>();
                                 docs![
                                 docs![
