@@ -96,7 +96,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_lt_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -104,7 +104,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_lt_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -113,7 +113,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_lt
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -127,7 +127,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_le_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -135,7 +135,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_le_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -144,7 +144,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_le
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -159,7 +159,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_gt_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -167,7 +167,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_gt_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -176,7 +176,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_gt
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -190,7 +190,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_ge_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -198,7 +198,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_ge_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -206,7 +206,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
         true);
     f_ge
     =
-    fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T) (self: v_T) (y: v_T) ->
+    fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T) (self: v_T) (y: v_T) ->
       match
         f_partial_cmp #v_T #v_T #FStar.Tactics.Typeclasses.solve self y
         <:

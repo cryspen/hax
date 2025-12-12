@@ -8,6 +8,8 @@ let seq_empty #t () : t_Seq t = FStar.Seq.empty
 
 let seq_from_slice #t (s: Rust_primitives.Arrays.t_Slice t) : t_Seq t = s 
 
+let seq_from_array #t n (s: Rust_primitives.Arrays.t_Array t n) : t_Seq t = s 
+
 let seq_to_slice #t (s: t_Seq t) : Rust_primitives.Arrays.t_Slice t = s 
 
 let seq_len #t (s: t_Seq t): usize = mk_usize (Seq.length s)
@@ -17,6 +19,8 @@ let seq_slice #t (s: t_Seq t) (b: usize) (e: usize{e >=. b && e <=. seq_len s}):
 let seq_index #t (s: t_Seq t) (i: usize{i <. seq_len s}): t = Rust_primitives.Slice.slice_index s i 
 
 let seq_last #t (s: t_Seq t{seq_len s >. mk_usize 0}): t = Seq.index s ((Seq.length s) - 1)
+
+let seq_first #t (s: t_Seq t{seq_len s >. mk_usize 0}): t = Seq.index s 0
 
 let seq_concat #t (s1: t_Seq t) (s2: t_Seq t {(Seq.length s1) + (Seq.length s2) <= max_usize}): t_Seq t = Seq.append s1 s2
 

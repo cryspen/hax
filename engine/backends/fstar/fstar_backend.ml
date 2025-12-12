@@ -847,7 +847,13 @@ struct
 
     let of_generics span generics : t list =
       List.map ~f:(of_generic_param span) generics.params
-      @ List.filter_mapi ~f:(of_generic_constraint span) generics.constraints
+      @ (generics.constraints
+        |> List.sort ~compare:(fun c1 c2 ->
+               match (c1, c2) with
+               | GCType _, GCProjection _ -> -1
+               | GCProjection _, GCType _ -> 1
+               | _ -> 0)
+        |> List.filter_mapi ~f:(of_generic_constraint span))
 
     let of_typ span (nth : int) typ : t =
       let ident = F.id ("x" ^ Int.to_string nth) in

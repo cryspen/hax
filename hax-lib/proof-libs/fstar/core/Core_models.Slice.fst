@@ -11,7 +11,10 @@ val impl__chunks': #v_T: Type0 -> s: t_Slice v_T -> cs: usize -> Core_models.Sli
 unfold
 let impl__chunks (#v_T: Type0) = impl__chunks' #v_T
 
-let impl__iter (#v_T: Type0) (s: t_Slice v_T) : Core_models.Slice.Iter.t_Iter v_T = s
+let impl__iter (#v_T: Type0) (s: t_Slice v_T) : Core_models.Slice.Iter.t_Iter v_T =
+  Core_models.Slice.Iter.Iter (Rust_primitives.Sequence.seq_from_slice #v_T s)
+  <:
+  Core_models.Slice.Iter.t_Iter v_T
 
 assume
 val impl__chunks_exact': #v_T: Type0 -> s: t_Slice v_T -> cs: usize

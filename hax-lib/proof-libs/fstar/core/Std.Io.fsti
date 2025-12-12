@@ -1,7 +1,7 @@
 module Std.Io
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 class t_Read (v_Self: Type0) = {
   f_read_pre:v_Self -> t_Slice u8 -> Type0;

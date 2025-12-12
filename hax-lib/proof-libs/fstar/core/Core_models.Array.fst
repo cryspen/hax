@@ -13,3 +13,20 @@ let impl_23__as_slice (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Slice 
 
 let from_fn (#v_T: Type0) (v_N: usize) (f: (usize -> v_T)) : t_Array v_T v_N =
   Rust_primitives.Slice.array_from_fn #v_T v_N f
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_24 (#v_T: Type0) (v_N: usize)
+    : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Array v_T v_N) =
+  {
+    f_IntoIter = Core_models.Array.Iter.t_IntoIter v_T v_N;
+    f_into_iter_pre = (fun (self: t_Array v_T v_N) -> true);
+    f_into_iter_post
+    =
+    (fun (self: t_Array v_T v_N) (out: Core_models.Array.Iter.t_IntoIter v_T v_N) -> true);
+    f_into_iter
+    =
+    fun (self: t_Array v_T v_N) ->
+      Core_models.Array.Iter.IntoIter (Rust_primitives.Sequence.seq_from_array #v_T v_N self)
+      <:
+      Core_models.Array.Iter.t_IntoIter v_T v_N
+  }

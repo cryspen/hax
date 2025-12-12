@@ -47,6 +47,8 @@ pub mod fmt;
 pub mod hash;
 #[path = "core/hint.rs"]
 pub mod hint;
+#[path = "core/iter.rs"]
+pub mod iter;
 #[path = "core/marker.rs"]
 pub mod marker;
 #[path = "core/mem.rs"]

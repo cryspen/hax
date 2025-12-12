@@ -1,7 +1,7 @@
 module Alloc.Vec
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 type t_Vec (v_T: Type0) (v_A: Type0) =
   | Vec : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A
@@ -21,7 +21,7 @@ let impl_1__len (#v_T #v_A: Type0) (self: t_Vec v_T v_A) : usize =
 
 let impl_1__pop (#v_T #v_A: Type0) (self: t_Vec v_T v_A)
     : (t_Vec v_T v_A & Core_models.Option.t_Option v_T) =
-  let self, hax_temp_output:(t_Vec v_T v_A & Core_models.Option.t_Option v_T) =
+  let (self: t_Vec v_T v_A), (hax_temp_output: Core_models.Option.t_Option v_T) =
     if (Rust_primitives.Sequence.seq_len #v_T self._0 <: usize) >. mk_usize 0
     then
       let last:v_T = Rust_primitives.Sequence.seq_last #v_T self._0 in
@@ -80,6 +80,13 @@ val impl_1__clear': #v_T: Type0 -> #v_A: Type0 -> self: t_Vec v_T v_A -> t_Vec v
 
 unfold
 let impl_1__clear (#v_T #v_A: Type0) = impl_1__clear' #v_T #v_A
+
+assume
+val impl_1__drain': #v_T: Type0 -> #v_A: Type0 -> #v_R: Type0 -> self: t_Vec v_T v_A -> e_range: v_R
+  -> (t_Vec v_T v_A & Alloc.Vec.Drain.t_Drain v_T v_A)
+
+unfold
+let impl_1__drain (#v_T #v_A #v_R: Type0) = impl_1__drain' #v_T #v_A #v_R
 
 let impl_1__push (#v_T #v_A: Type0) (self: t_Vec v_T v_A) (x: v_T)
     : Prims.Pure (t_Vec v_T v_A)

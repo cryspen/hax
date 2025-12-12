@@ -1,7 +1,7 @@
 module Rand_core.Os
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)

@@ -1,7 +1,7 @@
 module Alloc.Collections.Binary_heap
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 open Rust_primitives.Notations
 
@@ -49,7 +49,7 @@ let impl_10__pop
       Prims.l_True
       (ensures
         fun temp_0_ ->
-          let self_e_future, res:(t_BinaryHeap v_T v_A & Core_models.Option.t_Option v_T) =
+          let (self_e_future: t_BinaryHeap v_T v_A), (res: Core_models.Option.t_Option v_T) =
             temp_0_
           in
           ((impl_11__len #v_T #v_A self <: usize) >. mk_usize 0 <: bool) =.
@@ -58,16 +58,16 @@ let impl_10__pop
     Core_models.Option.Option_None <: Core_models.Option.t_Option v_T
   in
   let index:usize = mk_usize 0 in
-  let index, max:(usize & Core_models.Option.t_Option v_T) =
+  let (index: usize), (max: Core_models.Option.t_Option v_T) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
       (impl_11__len #v_T #v_A self <: usize)
       (fun temp_0_ i ->
-          let index, max:(usize & Core_models.Option.t_Option v_T) = temp_0_ in
+          let (index: usize), (max: Core_models.Option.t_Option v_T) = temp_0_ in
           let i:usize = i in
           (i >. mk_usize 0 <: bool) =. (Core_models.Option.impl__is_some #v_T max <: bool) <: bool)
       (index, max <: (usize & Core_models.Option.t_Option v_T))
       (fun temp_0_ i ->
-          let index, max:(usize & Core_models.Option.t_Option v_T) = temp_0_ in
+          let (index: usize), (max: Core_models.Option.t_Option v_T) = temp_0_ in
           let i:usize = i in
           if
             Core_models.Option.impl__is_none_or #v_T
@@ -91,10 +91,10 @@ let impl_10__pop
             index, max <: (usize & Core_models.Option.t_Option v_T)
           else index, max <: (usize & Core_models.Option.t_Option v_T))
   in
-  let self, hax_temp_output:(t_BinaryHeap v_T v_A & Core_models.Option.t_Option v_T) =
+  let (self: t_BinaryHeap v_T v_A), (hax_temp_output: Core_models.Option.t_Option v_T) =
     if Core_models.Option.impl__is_some #v_T max
     then
-      let tmp0, out:(Alloc.Vec.t_Vec v_T v_A & v_T) =
+      let (tmp0: Alloc.Vec.t_Vec v_T v_A), (out: v_T) =
         Alloc.Vec.impl_1__remove #v_T #v_A self._0 index
       in
       let self:t_BinaryHeap v_T v_A = { self with _0 = tmp0 } <: t_BinaryHeap v_T v_A in

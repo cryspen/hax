@@ -2,11 +2,26 @@
 #[hax_lib::exclude]
 struct Slice<T>(T);
 
-#[hax_lib::exclude]
 pub mod iter {
-    pub struct Chunks<T>(pub Vec<T>);
-    pub struct ChunksExact<T>(pub Vec<T>);
-    pub struct Iter<T>(pub Vec<T>);
+    use crate::option::Option;
+    use rust_primitives::sequence::*;
+
+    pub struct Chunks<T>(pub Seq<T>);
+    pub struct ChunksExact<T>(pub Seq<T>);
+    pub struct Iter<T>(pub Seq<T>);
+
+    impl<T> crate::iter::traits::iterator::Iterator for Iter<T> {
+        type Item = T;
+        fn next(&mut self) -> Option<Self::Item> {
+            if seq_len(&self.0) == 0 {
+                Option::None
+            } else {
+                let res = seq_first(&self.0);
+                self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                Option::Some(res)
+            }
+        }
+    }
 }
 
 #[hax_lib::attributes]
@@ -16,15 +31,14 @@ impl<T> Slice<T> {
     }
     #[hax_lib::opaque]
     fn chunks(s: &[T], cs: usize) -> iter::Chunks<T> {
-        iter::Chunks(Vec::new())
+        iter::Chunks(rust_primitives::sequence::seq_empty())
     }
-    #[hax_lib::fstar::replace_body("s")]
     fn iter(s: &[T]) -> iter::Iter<T> {
-        iter::Iter(Vec::new())
+        iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
     #[hax_lib::opaque]
     fn chunks_exact(s: &[T], cs: usize) -> iter::ChunksExact<T> {
-        iter::ChunksExact(Vec::new())
+        iter::ChunksExact(rust_primitives::sequence::seq_empty())
     }
     #[hax_lib::requires(s.len() == src.len())]
     fn copy_from_slice(s: &mut [T], src: &[T])

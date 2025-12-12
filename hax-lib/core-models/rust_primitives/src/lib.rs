@@ -38,6 +38,9 @@ pub mod sequence {
     pub fn seq_from_slice<T>(_s: &[T]) -> Seq<T> {
         panic!()
     }
+    pub fn seq_from_array<T, const N: usize>(_s: [T; N]) -> Seq<T> {
+        panic!()
+    }
     pub fn seq_to_slice<T>(_s: &Seq<T>) -> &[T] {
         panic!()
     }
@@ -54,6 +57,9 @@ pub mod sequence {
         panic!()
     }
     pub fn seq_last<T>(s: &Seq<T>) -> T {
+        panic!()
+    }
+    pub fn seq_first<T>(s: &Seq<T>) -> T {
         panic!()
     }
     pub fn seq_index<T>(s: &Seq<T>, i: usize) -> &T {

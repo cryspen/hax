@@ -140,3 +140,17 @@ mod deref {
         }
     }
 }
+
+/* mod range {
+    struct RangeTo<T>{
+        end: T
+    }
+    struct RangeFrom<T>{
+        start: T
+    }
+    struct Range<T>{
+        start: T,
+        end: T
+    }
+    struct RangeFull;
+} */

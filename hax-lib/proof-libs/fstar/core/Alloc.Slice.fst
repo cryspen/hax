@@ -1,7 +1,7 @@
 module Alloc.Slice
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 let impl__to_vec (#v_T: Type0) (s: t_Slice v_T) : Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global =
   Alloc.Vec.Vec (Rust_primitives.Sequence.seq_from_slice #v_T s)

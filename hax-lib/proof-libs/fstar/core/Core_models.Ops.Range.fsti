@@ -8,22 +8,13 @@ type t_RangeFull           = | RangeFull
 
 open Core_models.Iter.Traits.Iterator
 
-let rec fold_range' #a #t
+(* let rec fold_range' #a #t
   (min: Rust_primitives.int_t t) (max: Rust_primitives.int_t t {v min <= v max})
   (init: a) (f: (a -> i:Rust_primitives.int_t t{v i < v max /\ v i >= v min} -> a))
   : Tot a (decreases (v max - v min))
   = if min = max
     then init
-    else fold_range' (add min (Rust_primitives.mk_int 1)) max (f init min) f
-
-val iterator_range_enumerate t: t_enumerate (t_Range (Rust_primitives.int_t t))
-val iterator_range_step_by t: t_step_by (t_Range (Rust_primitives.int_t t))
-val iterator_range_all t: t_all (t_Range (Rust_primitives.int_t t)) (Rust_primitives.int_t t)
-val iterator_range_rev t: t_rev (t_Range (Rust_primitives.int_t t))
-val iterator_range_zip t: t_zip (t_Range (Rust_primitives.int_t t))
-val iterator_range_take t: t_take (t_Range (Rust_primitives.int_t t))
-val iterator_range_map t: t_map (t_Range (Rust_primitives.int_t t)) (Rust_primitives.int_t t)
-val iterator_range_flat_map t: t_flat_map (t_Range (Rust_primitives.int_t t)) (Rust_primitives.int_t t)
+    else fold_range' (add min (Rust_primitives.mk_int 1)) max (f init min) f *)
 
 instance iterator_range t: t_Iterator (t_Range (Rust_primitives.int_t t)) = 
   { f_Item = Rust_primitives.int_t t;
@@ -31,17 +22,13 @@ instance iterator_range t: t_Iterator (t_Range (Rust_primitives.int_t t)) =
        if f_start >=. f_end then ({f_start; f_end}, Core_models.Option.Option_None)
        else ({f_start = f_start +. Rust_primitives.mk_int 0; f_end}, Core_models.Option.Option_Some f_start)
     );
-    f_contains = (fun x i -> v i < v x.f_end /\ v i >= v x.f_start);
+    f_next_pre = (fun (self: t_Range (Rust_primitives.int_t t)) -> true);
+    f_next_post
+    =
+    (fun (self: t_Range (Rust_primitives.int_t t)) (out: (t_Range (Rust_primitives.int_t t) & Core_models.Option.t_Option (Rust_primitives.int_t t))) -> true);
+    (* f_contains = (fun x i -> v i < v x.f_end /\ v i >= v x.f_start);
     f_fold = (fun #b r init f ->  if r.f_start >=. r.f_end then init
-                             else fold_range' r.f_start r.f_end init (fun x i -> f x i));
-    f_enumerate = iterator_range_enumerate t;
-    f_step_by = iterator_range_step_by t;
-    f_all = iterator_range_all t;
-    f_rev = iterator_range_rev t;
-    f_zip = iterator_range_zip t;
-    f_take = iterator_range_take t;
-    f_map = iterator_range_map t;
-    f_flat_map = iterator_range_flat_map t;
+                             else fold_range' r.f_start r.f_end init (fun x i -> f x i)); *)
   }
 
 open Core_models.Ops.Index

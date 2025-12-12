@@ -1,7 +1,7 @@
 module Std.Collections.Hash.Map
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 val t_HashMap (v_K v_V v_S: Type0) : eqtype
 
