@@ -698,10 +698,10 @@ let cclosure_iimpl_expr_fngen
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i0:
           Core_models.Iter.Traits.Iterator.t_Iterator v_I)
-      (#_: unit{i0.Core_models.Iter.Traits.Iterator.f_Item == Prims.unit})
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i1:
           Core_models.Ops.Function.t_FnMut v_F Prims.unit)
+      (#_: unit{i0.Core_models.Iter.Traits.Iterator.f_Item == Prims.unit})
       (it: v_I)
       (f: v_F)
     : Alloc.Vec.t_Vec Prims.unit Alloc.Alloc.t_Global =
