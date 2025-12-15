@@ -25,7 +25,8 @@ impl Default for LinkedItemGraph {
     }
 }
 
-fn hax_attributes(attrs: &Attributes) -> impl Iterator<Item = &AttrPayload> {
+/// Get an iterator over hax attributes contained in the given attributes.
+pub fn hax_attributes(attrs: &Attributes) -> impl Iterator<Item = &AttrPayload> {
     attrs.iter().flat_map(|attr| match &attr.kind {
         AttributeKind::Hax(attr_payload) => Some(attr_payload),
         _ => None,

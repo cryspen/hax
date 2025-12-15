@@ -31,3 +31,10 @@ pub mod mappers {
         }
     }
 }
+
+impl Metadata {
+    /// Get an iterator over hax attributes for this AST fragment.
+    pub fn hax_attributes(&self) -> impl Iterator<Item = &hax_lib_macros_types::AttrPayload> {
+        crate::attributes::hax_attributes(&self.attributes)
+    }
+}
