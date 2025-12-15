@@ -1131,9 +1131,9 @@ pub struct GenericParam {
 /// Generic parameters and constraints (contained between `<>` in function declarations)
 #[derive_group_for_ast]
 pub struct Generics {
-    /// A vector of genreric parameters.
+    /// A vector of generic parameters.
     pub params: Vec<GenericParam>,
-    /// A vector of genreric constraints.
+    /// A vector of generic constraints.
     pub constraints: Vec<GenericConstraint>,
 }
 

@@ -272,35 +272,6 @@ mod trait_level_args {
         fn f3<C, D>(&self, x: &u32, y: &u64) {}
     }
 
-    #[hax_lib::lean::before(
-        "
-/--
-error: Application type mismatch: The argument
-  x
-has type
-  U
-of sort `Type` but is expected to have type
-  Type
-of sort `Type 1` in the application
-  T1.f1 C D x
----
-error: Application type mismatch: The argument
-  x
-has type
-  U
-of sort `Type` but is expected to have type
-  Type
-of sort `Type 1` in the application
-  T1.f2 C D x
----
-error: failed to synthesize
-  T1 A ?m.19 C
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
-#guard_msgs in"
-    )]
-
     fn test<A, B, C, D, U: T1<A, B>>(x: U, a: &A, b: &B) -> () {
         x.f1::<C, D>();
         x.f2::<C, D>(a);
