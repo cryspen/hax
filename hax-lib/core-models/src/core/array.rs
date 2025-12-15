@@ -35,7 +35,7 @@ impl<T, const N: usize> Dummy<T, N> {
     pub fn map<U>(s: [T; N], f: fn(T) -> U) -> [U; N] {
         array_map(s, f)
     }
-    pub fn as_slice(s: [T; N]) -> &'static [T] {
+    pub fn as_slice(s: &[T; N]) -> &[T] {
         array_as_slice(s)
     }
 }
@@ -48,6 +48,15 @@ impl<T, const N: usize> crate::iter::traits::collect::IntoIterator for [T; N] {
     type IntoIter = iter::IntoIter<T, N>;
     fn into_iter(self) -> iter::IntoIter<T, N> {
         iter::IntoIter(seq_from_array(self))
+    }
+}
+
+#[hax_lib::attributes]
+impl<T, const N: usize> crate::ops::index::Index<usize> for [T; N] {
+    type Output = T;
+    #[hax_lib::requires(i < self.len())]
+    fn index(&self, i: usize) -> &T {
+        rust_primitives::slice::array_index(self, i)
     }
 }
 

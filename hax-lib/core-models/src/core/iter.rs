@@ -106,9 +106,9 @@ pub mod adapters {
                 match self.iter.next() {
                     Option::Some(a) => {
                         let i = self.count;
-                        // TODO check what to do here. It would be bad to have an iterator with 
+                        // TODO check what to do here. It would be bad to have an iterator with
                         // more than usize::MAX elements, this could be a requirement (but hard to formulate).
-                        hax_lib::assume!(self.count < usize::MAX); 
+                        hax_lib::assume!(self.count < usize::MAX);
                         self.count += 1;
                         Option::Some((i, a))
                     }
@@ -234,7 +234,7 @@ pub mod adapters {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
         #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
-        pub struct Flatten<I: Iterator> 
+        pub struct Flatten<I: Iterator>
         where
             I::Item: Iterator,
         {

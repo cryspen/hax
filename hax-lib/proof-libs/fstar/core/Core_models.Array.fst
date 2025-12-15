@@ -30,3 +30,17 @@ let impl_24 (#v_T: Type0) (v_N: usize)
       <:
       Core_models.Array.Iter.t_IntoIter v_T v_N
   }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) usize =
+  {
+    f_Output = v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Array v_T v_N) (i: usize) ->
+        i <. (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
+    f_index_post = (fun (self: t_Array v_T v_N) (i: usize) (out: v_T) -> true);
+    f_index
+    =
+    fun (self: t_Array v_T v_N) (i: usize) -> Rust_primitives.Slice.array_index #v_T v_N self i
+  }

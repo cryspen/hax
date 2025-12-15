@@ -287,7 +287,10 @@ pub mod vec {
         }
         #[hax_lib::opaque]
         pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
-            drain::Drain(seq_slice(&self.0, 0, self.len()), std::marker::PhantomData::<A>) // TODO use range bounds
+            drain::Drain(
+                seq_slice(&self.0, 0, self.len()),
+                std::marker::PhantomData::<A>,
+            ) // TODO use range bounds
         }
     }
     pub mod drain {
@@ -296,14 +299,14 @@ pub mod vec {
         impl<T, A> Iterator for Drain<T, A> {
             type Item = T;
             fn next(&mut self) -> Option<Self::Item> {
-            if seq_len(&self.0) == 0 {
-                Option::None
-            } else {
-                let res = seq_first(&self.0);
-                self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
-                Option::Some(res)
+                if seq_len(&self.0) == 0 {
+                    Option::None
+                } else {
+                    let res = seq_first(&self.0);
+                    self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                    Option::Some(res)
+                }
             }
-        }
         }
     }
 

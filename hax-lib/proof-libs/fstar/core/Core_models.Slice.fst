@@ -54,23 +54,6 @@ val impl__binary_search': #v_T: Type0 -> s: t_Slice v_T -> x: v_T
 unfold
 let impl__binary_search (#v_T: Type0) = impl__binary_search' #v_T
 
-assume
-val impl__get':
-    #v_T: Type0 ->
-    #v_I: Type0 ->
-    {| i0: Core_models.Ops.Index.t_Index (t_Slice v_T) v_I |} ->
-    s: t_Slice v_T ->
-    i: v_I
-  -> Core_models.Option.t_Option i0.f_Output
-
-unfold
-let impl__get
-      (#v_T #v_I: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()]
-          i0:
-          Core_models.Ops.Index.t_Index (t_Slice v_T) v_I)
-     = impl__get' #v_T #v_I #i0
-
 let impl__copy_from_slice
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)

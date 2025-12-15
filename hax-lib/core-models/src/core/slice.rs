@@ -76,16 +76,6 @@ impl<T> Slice<T> {
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize> /* where T: super::ops::Ord */ {
         todo!()
     }
-    #[hax_lib::opaque]
-    fn get<I>(
-        s: &[T],
-        i: I,
-    ) -> crate::option::Option<<Slice<T> as crate::ops::index::Index<I>>::Output>
-    where
-        Self: crate::ops::index::Index<I>,
-    {
-        todo!()
-    }
 }
 
 #[hax_lib::attributes]

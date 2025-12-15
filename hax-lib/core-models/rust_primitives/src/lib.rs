@@ -15,6 +15,9 @@ pub mod slice {
     pub fn slice_index<T>(s: &[T], i: usize) -> &T {
         panic!()
     }
+    pub fn slice_slice<T>(s: &[T], b: usize, e: usize) -> &[T] {
+        panic!()
+    }
     // In the following two functions, F is actually a function type.
     // Not constraining that here allows to call it with closures,
     // or to pass parameters that implement the `Fn` trait for core_models.
@@ -25,7 +28,13 @@ pub mod slice {
     pub fn array_map<T, U, const N: usize, F>(s: [T; N], f: F) -> [U; N] {
         panic!()
     }
-    pub fn array_as_slice<T, const N: usize>(s: [T; N]) -> &'static [T] {
+    pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
+        panic!()
+    }
+    pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
+        panic!()
+    }
+    pub fn array_index<T, const N: usize>(a: &[T; N], i: usize) -> &T {
         panic!()
     }
 }
