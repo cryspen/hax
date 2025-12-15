@@ -41,6 +41,8 @@ pub mod convert;
 pub mod default;
 #[path = "core/error.rs"]
 pub mod error;
+#[path = "core/f32.rs"]
+pub mod f32;
 #[path = "core/fmt.rs"]
 pub mod fmt;
 #[path = "core/hash.rs"]
@@ -65,3 +67,5 @@ pub mod panicking;
 pub mod result;
 #[path = "core/slice.rs"]
 pub mod slice;
+#[path = "core/str.rs"]
+pub mod str;

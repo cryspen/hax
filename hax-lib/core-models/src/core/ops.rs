@@ -141,6 +141,12 @@ mod deref {
     }
 }
 
+mod drop {
+    trait Drop {
+        fn drop(&mut self);
+    }
+}
+
 mod range {
     struct RangeTo<T> {
         end: T,
