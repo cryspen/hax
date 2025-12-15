@@ -142,7 +142,7 @@ of sort `Type 1` in the application
   T1.f2 C D x
 ---
 error: failed to synthesize
-  T1 A ?m.21 C
+  T1 A ?m.19 C
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
@@ -1269,7 +1269,6 @@ def Lean_tests.Associated_types.Multiple_associated_types.get_first_as_i32
         P
       by infer_instance
       with First := i32})]
-  
   (pair : P)
   : RustM i32
   := do
@@ -1307,7 +1306,6 @@ def Lean_tests.Associated_types.Basic.first_plus_1
       show Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes I
       by infer_instance
       with Item := i32})]
-  
   (iter : I)
   : RustM i32
   := do
