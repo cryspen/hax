@@ -97,9 +97,9 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
     let modules = backend.items_to_module(items);
     modules
         .into_iter()
-        .map(|mut module: Module| {
+        .map(|module: Module| {
             let linked_items_graph = LinkedItemGraph::new(
-                &mut module.items,
+                &module.items,
                 prelude::diagnostics::Context::Printer(B::NAME.into()),
             );
             let path = backend.module_path(&module).into_string();

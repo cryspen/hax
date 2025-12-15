@@ -67,7 +67,7 @@ fn emit_assertion_failure(context: Context, span: span::Span, message: impl Into
 impl LinkedItemGraph {
     /// Clone items marked with UUIDs attributes to build a graph of linked items.
     /// This graph clones the items that represent linked items: e.g. pre and post conditions.
-    pub fn new(items: &Vec<Item>, context: Context) -> Self {
+    pub fn new(items: &[Item], context: Context) -> Self {
         Self {
             items: HashMap::from_iter(
                 items

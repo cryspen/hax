@@ -140,7 +140,7 @@ impl Backend for LeanBackend {
             .with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+    fn phases(&self) -> Vec<Box<dyn Phase>> {
         vec![
             Box::new(RejectNotDoLeanDSL),
             Box::new(ExplicitMonadic),
