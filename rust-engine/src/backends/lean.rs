@@ -456,65 +456,46 @@ set_option linter.unusedVariables false
         }
 
         /// Render generics, adding a space after each parameter
-        fn generics(
-            &self,
-            Generics {
-                params,
-                constraints,
-            }: &Generics,
-        ) -> DocBuilder<A> {
+        fn generics(&self, generics: &Generics) -> DocBuilder<A> {
             docs![
-                zip_right!(params, line!()),
+                zip_right!(&generics.params, line!()),
                 zip_right!(
-                    constraints
-                        .iter()
-                        .map(|generic_constraint|
-                            match generic_constraint {
-                            GenericConstraint::Type(impl_ident) => {
-                                let projections = constraints
-                                    .iter()
-                                    .filter_map(|c| 
-                                        if let GenericConstraint::Projection(p) = c {
-                                            if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
-                                                Some(docs![p])
-                                            } else {
-                                                Some((|| emit_error!(issue 1710, "Unsupported variant of associated type projection"))())
-                                            }
-                                        } else {
-                                            None
-                                        }
-                                    )
-                                    .collect::<Vec<_>>();
-                                docs![
-                                docs![
-                                    impl_ident.goal.trait_,
-                                    ".AssociatedTypes",
-                                    concat!(
-                                        impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
-                                    )
-                                ]
-                                .brackets()
-                                .group()
-                                .nest(INDENT),
-                                line!(),
-                                docs![
-                                    impl_ident.goal.trait_,
-                                    concat!(
-                                        impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
-                                    ),
-                                    line!(),
-                                    self.associated_type_projections(impl_ident, projections)
-                                ]
-                                .brackets()
-                                .nest(INDENT)
-                                .group()
+                    generics.type_constraints().map(|impl_ident| {
+                        let projections = generics.projection_constraints()
+                            .map(|p|
+                                if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                                    docs![p]
+                                } else {
+                                    emit_error!(issue 1710, "Unsupported variant of associated type projection")
+                                }
+                            )
+                            .collect::<Vec<_>>();
+                        docs![
+                            docs![
+                                impl_ident.goal.trait_,
+                                ".AssociatedTypes",
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                )
                             ]
-                            .group()}
-                            // Projections are rendered via `self.associated_type_projections` above.
-                            GenericConstraint::Projection(_) => docs![None],
-                            GenericConstraint::Lifetime(_) =>
-                                unreachable_by_invariant!(Drop_references),
-                        }),
+                            .brackets()
+                            .group()
+                            .nest(INDENT),
+                            line!(),
+                            docs![
+                                impl_ident.goal.trait_,
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                ),
+                                line!(),
+                                self.associated_type_projections(impl_ident, projections)
+                            ]
+                            .brackets()
+                            .nest(INDENT)
+                            .group()
+                        ]
+                        .group()
+                    }),
                     line!()
                 ),
             ]
@@ -1097,17 +1078,10 @@ set_option linter.unusedVariables false
                     generics,
                     items,
                 } => {
-                    let generic_types = generics
-                        .constraints
-                        .iter()
-                        .map(|constraint| match constraint {
-                            GenericConstraint::Type(tc_constraint) => Some(tc_constraint),
-                            GenericConstraint::Lifetime(_) => {
-                                unreachable_by_invariant!(Drop_references)
-                            }
-                            GenericConstraint::Projection(_) => None,
-                        })
-                        .collect::<Vec<_>>();
+                    let generic_types = generics.type_constraints().collect::<Vec<_>>();
+                    if generic_types.len() < generics.constraints.len() {
+                        emit_error!(issue 1710, "Unsupported equality constraints on associated types")
+                    }
                     docs![
                         // A trait is encoded as two Lean type classes: one holding the associated types,
                         // and one holding all other fields.
@@ -1121,31 +1095,27 @@ set_option linter.unusedVariables false
                                 ]),
                                 softline!(),
                                 "where"
-                            ].group(),
+                            ]
+                            .group(),
                             zip_left!(
                                 hardline!(),
-                                generic_types.iter().map(|maybe_impl_ident|
-                                    maybe_impl_ident.map_or_else(
-                                        || emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                        |impl_ident| docs![
-                                            self.fresh_constraint_name(&self.render_last(name), impl_ident),
-                                            " :",
-                                            line!(),
-                                            &impl_ident.goal.trait_,
-                                            ".AssociatedTypes",
-                                            line!(),
-                                            intersperse!(&impl_ident.goal.args, line!())
-                                        ]
-                                        .group()
-                                        .brackets()
-                                    )
-                                )
+                                generic_types.iter().map(|impl_ident| docs![
+                                    self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                                    " :",
+                                    line!(),
+                                    &impl_ident.goal.trait_,
+                                    ".AssociatedTypes",
+                                    line!(),
+                                    intersperse!(&impl_ident.goal.args, line!())
+                                ]
+                                .group()
+                                .brackets())
                             ),
                             zip_left!(
                                 hardline!(),
-                                items.iter().filter(|item| {
-                                    matches!(item.kind, TraitItemKind::Type(_))
-                                })
+                                items
+                                    .iter()
+                                    .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
                             ),
                         ]
                         .nest(INDENT),
@@ -1153,43 +1123,38 @@ set_option linter.unusedVariables false
                         // them available for type inference:
                         zip_left!(
                             docs![hardline!(), hardline!()],
-                            generic_types.iter().map(|maybe_impl_ident|
-                                maybe_impl_ident.map_or_else(
-                                    || emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                    |impl_ident| docs![
-                                        "attribute [instance]",
-                                        line!(),
-                                        name,
-                                        ".AssociatedTypes.",
-                                        self.fresh_constraint_name(&self.render_last(name), impl_ident),
-                                    ]
-                                    .group()
-                                    .nest(INDENT)
-                                )
-                            )
+                            generic_types.iter().map(|impl_ident| docs![
+                                "attribute [instance]",
+                                line!(),
+                                name,
+                                ".AssociatedTypes.",
+                                self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                            ]
+                            .group()
+                            .nest(INDENT))
                         ),
                         // When referencing associated types, we would like to refer to them as
                         // `TraitName.TypeName` instead of `TraitName.AssociatedTypes.TypeName`:
                         zip_left!(
                             docs![hardline!(), hardline!()],
-                            items.iter()
-                            .filter(|item| {
-                                matches!(item.kind, TraitItemKind::Type(_))
-                            })
-                            .map(|item| {
-                                docs![
-                                    "abbrev ",
-                                    name,
-                                    ".",
-                                    self.render_last(&item.ident),
-                                    " :=",
-                                    line!(),
-                                    name, ".AssociatedTypes",
-                                    ".",
-                                    self.render_last(&item.ident),
-                                ]
-                                .nest(INDENT)
-                            })
+                            items
+                                .iter()
+                                .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                .map(|item| {
+                                    docs![
+                                        "abbrev ",
+                                        name,
+                                        ".",
+                                        self.render_last(&item.ident),
+                                        " :=",
+                                        line!(),
+                                        name,
+                                        ".AssociatedTypes",
+                                        ".",
+                                        self.render_last(&item.ident),
+                                    ]
+                                    .nest(INDENT)
+                                })
                         ),
                         hardline!(),
                         hardline!(),
@@ -1210,7 +1175,8 @@ set_option linter.unusedVariables false
                                         "outParam",
                                         softline!(),
                                         docs![
-                                            name, ".AssociatedTypes",
+                                            name,
+                                            ".AssociatedTypes",
                                             softline!(),
                                             intersperse!(&generics.params, softline!()),
                                         ]
@@ -1225,25 +1191,22 @@ set_option linter.unusedVariables false
                                 "where"
                             ]
                             .group(),
-                            // Lean's `extends` does not work for us because one cannot implement 
+                            // Lean's `extends` does not work for us because one cannot implement
                             // different functions of the same name on the super- and on the
                             // subclass. So we treat supertraits like any other constraint:
                             zip_left!(
                                 hardline!(),
-                                generic_types.iter().map(|maybe_impl_ident|
-                                    maybe_impl_ident.map_or_else(
-                                        || emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                        |impl_ident| docs![
-                                            self.fresh_constraint_name(&self.render_last(name), impl_ident),
-                                            " :",
-                                            line!(),
-                                            impl_ident.goal.trait_,
-                                            concat!(impl_ident.goal.args.iter().map(|arg| docs![line!(), arg]))
-                                        ]
-                                        .group()
-                                        .brackets()
+                                generic_types.iter().map(|impl_ident| docs![
+                                    self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                                    " :",
+                                    line!(),
+                                    impl_ident.goal.trait_,
+                                    concat!(
+                                        impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
                                     )
-                                )
+                                ]
+                                .group()
+                                .brackets())
                             ),
                             zip_left!(
                                 hardline!(),
@@ -1261,21 +1224,15 @@ set_option linter.unusedVariables false
                         // them available for type inference:
                         zip_left!(
                             docs![hardline!(), hardline!()],
-                            generic_types.iter().map(|maybe_impl_ident|
-                                maybe_impl_ident.map_or_else(
-                                        || emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                        |impl_ident|
-                                    docs![
-                                        "attribute [instance]",
-                                        line!(),
-                                        name,
-                                        ".",
-                                        self.fresh_constraint_name(&self.render_last(name), impl_ident),
-                                    ]
-                                    .group()
-                                    .nest(INDENT)
-                                )
-                            )
+                            generic_types.iter().map(|impl_ident| docs![
+                                "attribute [instance]",
+                                line!(),
+                                name,
+                                ".",
+                                self.fresh_constraint_name(&self.render_last(name), impl_ident),
+                            ]
+                            .group()
+                            .nest(INDENT))
                         ),
                     ]
                 }
