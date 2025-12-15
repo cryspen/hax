@@ -1452,6 +1452,23 @@ pub struct Module {
     pub meta: Metadata,
 }
 
+impl Generics {
+    /// Returns Iterator over all type constraints (`GenericConstraint::Type`)
+    pub fn type_constraints(&self) -> impl Iterator<Item = &ImplIdent> {
+        self.constraints.iter().filter_map(|c| match c {
+            GenericConstraint::Type(impl_id) => Some(impl_id),
+            _ => None,
+        })
+    }
+    /// Returns Iterator over all projection constraints (`GenericConstraint::Projection`)
+    pub fn projection_constraints(&self) -> impl Iterator<Item = &ProjectionPredicate> {
+        self.constraints.iter().filter_map(|c| match c {
+            GenericConstraint::Projection(pp) => Some(pp),
+            _ => None,
+        })
+    }
+}
+
 /// Traits for utilities on AST data types
 pub mod traits {
     use super::*;

@@ -46,10 +46,13 @@ inductive Lean_core_models.Result.E1 : Type
 | C2 : u32 -> Lean_core_models.Result.E1
 
 
+instance Lean_core_models.Result.Impl.AssociatedTypes :
+  Core.Clone.Clone.AssociatedTypes Lean_core_models.Result.E1
+  where
+
 instance Lean_core_models.Result.Impl :
   Core.Clone.Clone Lean_core_models.Result.E1
   where
-
 
 inductive Lean_core_models.Result.E2 : Type
 | C1 : Lean_core_models.Result.E2
@@ -141,6 +144,10 @@ structure Lean_core_models.Option.S where
 inductive Lean_core_models.Option.E : Type
 | C : u32 -> Lean_core_models.Option.E
 
+
+instance Lean_core_models.Option.Impl.AssociatedTypes :
+  Core.Default.Default.AssociatedTypes Lean_core_models.Option.S
+  where
 
 instance Lean_core_models.Option.Impl :
   Core.Default.Default Lean_core_models.Option.S
@@ -235,6 +242,10 @@ def Lean_core_models.Option.test
 structure Lean_core_models.Default.Structs.S where
   f1 : usize
 
+instance Lean_core_models.Default.Structs.Impl.AssociatedTypes :
+  Core.Default.Default.AssociatedTypes Lean_core_models.Default.Structs.S
+  where
+
 instance Lean_core_models.Default.Structs.Impl :
   Core.Default.Default Lean_core_models.Default.Structs.S
   where
@@ -252,8 +263,17 @@ inductive Lean_core_models.Default.Enums.E (T : Type) : Type
 | C2 : T -> Lean_core_models.Default.Enums.E (T : Type) 
 
 
+instance Lean_core_models.Default.Enums.Impl.AssociatedTypes
+  (T : Type)
+  [Core.Default.Default.AssociatedTypes T] [Core.Default.Default T ]
+  :
+  Core.Default.Default.AssociatedTypes (Lean_core_models.Default.Enums.E T)
+  where
+
 instance Lean_core_models.Default.Enums.Impl
-  (T : Type) [(Core.Default.Default T)] :
+  (T : Type)
+  [Core.Default.Default.AssociatedTypes T] [Core.Default.Default T ]
+  :
   Core.Default.Default (Lean_core_models.Default.Enums.E T)
   where
   default (_ : Rust_primitives.Hax.Tuple0) := do
