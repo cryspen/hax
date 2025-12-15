@@ -20,8 +20,10 @@ pub trait Phase {
     fn apply(&self, items: &mut Vec<Item>);
 }
 
+mod drop_skip_late;
 mod explicit_monadic;
 mod reject_not_do_lean_dsl;
 
+pub use drop_skip_late::DropSkipLate;
 pub use explicit_monadic::ExplicitMonadic;
 pub use reject_not_do_lean_dsl::RejectNotDoLeanDSL;
