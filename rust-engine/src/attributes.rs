@@ -64,30 +64,14 @@ fn emit_assertion_failure(context: Context, span: span::Span, message: impl Into
 }
 
 impl LinkedItemGraph {
-    /// Drains items marked with UUIDs attributes to build a graph of linked items.
-    /// This graph owns the items that represent linked items: e.g. pre and post conditions.
-    pub fn new(items: &mut Vec<Item>, context: Context) -> Self {
-        pub fn extract_where<T, U>(
-            v: &mut Vec<T>,
-            mut f: impl FnMut(&T) -> Option<U>,
-        ) -> Vec<(U, T)> {
-            let mut extracted: Vec<(U, T)> = Vec::new();
-            let mut kept: Vec<T> = Vec::with_capacity(v.len());
-
-            for item in v.drain(..) {
-                if let Some(u) = f(&item) {
-                    extracted.push((u, item));
-                } else {
-                    kept.push(item);
-                }
-            }
-
-            *v = kept;
-            extracted
-        }
+    /// Clone items marked with UUIDs attributes to build a graph of linked items.
+    /// This graph clones the items that represent linked items: e.g. pre and post conditions.
+    pub fn new(items: &Vec<Item>, context: Context) -> Self {
         Self {
             items: HashMap::from_iter(
-                extract_where(items, |item| uuid(context.clone(), item)).into_iter(),
+                items
+                    .iter()
+                    .filter_map(|item| Some((uuid(context.clone(), item)?, item.clone()))),
             ),
             context,
         }
