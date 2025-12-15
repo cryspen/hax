@@ -437,7 +437,7 @@ const _: () = {
                         .group()
                         .nest(INDENT)
                     }
-                    TraitItemKind::Type(constraints) => {
+                    TraitItemKind::Type(_) => {
                         docs![name.clone(), softline!(), ":", line!(), "Type"]
                             .group()
                             .nest(INDENT)
