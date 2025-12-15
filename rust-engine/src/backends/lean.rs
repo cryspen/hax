@@ -10,10 +10,7 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    phase::{
-        explicit_monadic::ExplicitMonadic, reject_not_do_lean_dsl::RejectNotDoLeanDSL,
-        unreachable_by_invariant,
-    },
+    phase::*,
 };
 
 mod binops {

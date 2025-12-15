@@ -20,5 +20,8 @@ pub trait Phase {
     fn apply(&self, items: &mut Vec<Item>);
 }
 
-pub mod explicit_monadic;
-pub mod reject_not_do_lean_dsl;
+mod explicit_monadic;
+mod reject_not_do_lean_dsl;
+
+pub use explicit_monadic::ExplicitMonadic;
+pub use reject_not_do_lean_dsl::RejectNotDoLeanDSL;
