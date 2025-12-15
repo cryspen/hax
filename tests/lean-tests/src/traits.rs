@@ -272,7 +272,6 @@ mod trait_level_args {
         fn f3<C, D>(&self, x: &u32, y: &u64) {}
     }
 
-    #[hax_lib::lean::before("")]
     fn test<A, B, C, D, U: T1<A, B>>(x: U, a: &A, b: &B) -> () {
         x.f1::<C, D>();
         x.f2::<C, D>(a);

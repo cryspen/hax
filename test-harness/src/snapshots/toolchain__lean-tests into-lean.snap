@@ -259,8 +259,6 @@ instance Lean_tests.Traits.Trait_level_args.Impl :
   f3 (C : Type) (D : Type) (self : usize) (x : u32) (y : u64) := do
     (pure Rust_primitives.Hax.Tuple0.mk)
 
-
-
 def Lean_tests.Traits.Trait_level_args.test
   (A : Type)
   (B : Type)
@@ -1241,8 +1239,6 @@ instance Lean_tests.Constants.Const_parameters.Impl (N_TRAIT : usize) :
     (Lean_tests.Constants.Const_parameters.S (N_TRAIT)))
     := do
     (N_TRAIT -? N_FIELD)
-
-
 
 def Lean_tests.Constants.Const_parameters.test2
   (N2 : usize)

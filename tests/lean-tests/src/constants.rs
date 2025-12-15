@@ -46,7 +46,6 @@ mod const_parameters {
         }
     }
 
-    #[hax_lib::lean::before("")]
     fn test2<const N2: usize, A: T<N2>>(x: A) -> usize {
         let s = S::<N1>(9);
         let _ = s.f::<1>() + x.f::<{ 1 + N1 }>();
