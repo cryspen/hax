@@ -293,20 +293,6 @@ impl GlobalId {
         &ConcreteId::from_global_id(self).def_id.def_id.krate
     }
 
-    /// Returns true if this global identifier refers to a anonymous constant item.
-    /// TODO: drop this function. No logic should be derived from this.
-    pub fn is_anonymous_const(self) -> bool {
-        let def_id = self.0.get().def_id();
-        let Some(DisambiguatedDefPathItem {
-            data: DefPathItem::ValueNs(s),
-            ..
-        }) = def_id.path.last()
-        else {
-            return false;
-        };
-        matches!(self.0.get().def_id().kind, DefKind::Const) && s == "_"
-    }
-
     /// Debug printing of identifiers, for testing purposes only.
     /// Prints path in a Rust-like way, as a `::` separated dismabiguated path.
     pub fn to_debug_string(self) -> String {

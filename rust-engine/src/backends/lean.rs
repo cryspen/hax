@@ -155,12 +155,6 @@ impl LeanPrinter {
     /// unsupported items
     pub fn printable_item(item: &Item) -> bool {
         match &item.kind {
-            // Anonymous consts
-            ItemKind::Resugared(ResugaredItemKind::Constant {
-                name,
-                body: _,
-                generics: _,
-            }) if name.is_anonymous_const() => false,
             // Other unprintable items
             ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
             // Printable items
