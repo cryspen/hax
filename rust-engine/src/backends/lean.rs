@@ -1033,7 +1033,7 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn item(&self, Item { ident, kind, meta }: &Item) -> DocBuilder<A> {
+        fn item(&self, item @ Item { ident, kind, meta }: &Item) -> DocBuilder<A> {
             let body = match kind {
                 ItemKind::Fn {
                     name,
@@ -1041,22 +1041,114 @@ set_option linter.unusedVariables false
                     body,
                     params,
                     safety: _,
-                } => docs![
+                } => {
                     docs![
-                        docs!["def", line!(), name].group(),
-                        line!(),
-                        generics,
-                        params,
-                        docs![": RustM", line!(), &body.ty].group(),
-                        line!(),
-                        ":= do"
+                        docs![
+                            docs![
+                                docs!["def", line!(), name].group(),
+                                line!(),
+                                generics,
+                                params,
+                                docs![": RustM", line!(), &body.ty].group(),
+                                line!(),
+                                ":= do"
+                            ]
+                            .group(),
+                            line!(),
+                            body
+                        ]
+                        .group()
+                        .nest(INDENT),
+                        {
+                            let spec = HasLinkedItemGraph::linked_item_graph(self)
+                                .fn_like_linked_expressions(item, None);
+                            if spec.precondition.is_none() && spec.postcondition.is_none() {
+                                nil!()
+                            } else {
+                                docs![
+                                    hardline!(),
+                                    hardline!(),
+                                    "@[spec]",
+                                    hardline!(),
+                                    docs![
+                                        docs![
+                                            "def",
+                                            line!(),
+                                            name,
+                                            ".spec",
+                                            line!(),
+                                            generics,
+                                            params,
+                                            softline!(),
+                                            ":"
+                                        ]
+                                        .group()
+                                        .nest(INDENT),
+                                        line!(),
+                                        docs![
+                                            "Spec",
+                                            line!(),
+                                            docs![
+                                                "requires",
+                                                softline!(),
+                                                ":=",
+                                                line!(),
+                                                spec.precondition
+                                                    .map_or(reflow!("pure True"), |p| docs![p])
+                                            ]
+                                            .parens()
+                                            .group()
+                                            .nest(INDENT),
+                                            line!(),
+                                            docs![
+                                                "ensures := ",
+                                                spec.postcondition.map_or(
+                                                    reflow!("fun _ => pure True"),
+                                                    |p| docs![
+                                                        "fun",
+                                                        line!(),
+                                                        p.result_binder,
+                                                        softline!(),
+                                                        "=>",
+                                                        line!(),
+                                                        p.body,
+                                                    ]
+                                                    .group()
+                                                    .nest(INDENT)
+                                                ),
+                                            ]
+                                            .parens()
+                                            .group()
+                                            .nest(INDENT),
+                                            line!(),
+                                            docs![name, line!(), generics, params]
+                                                .parens()
+                                                .group()
+                                                .nest(INDENT)
+                                        ]
+                                        .group()
+                                        .nest(INDENT),
+                                        softline!(),
+                                        ":=",
+                                    ]
+                                    .group()
+                                    .nest(2 * INDENT),
+                                    softline!(),
+                                    docs![
+                                        hardline!(),
+                                        "pureRequires := by constructor; mvcgen <;> try grind",
+                                        hardline!(),
+                                        "pureEnsures := by constructor; intros; mvcgen <;> try grind",
+                                        hardline!(),
+                                        docs!["contract := by mvcgen[", name, "] <;> try grind"]
+                                            .group().nest(INDENT),
+                                        hardline!(),
+                                    ].nest(INDENT).braces(),
+                                ]
+                            }
+                        }
                     ]
-                    .group(),
-                    line!(),
-                    body
-                ]
-                .group()
-                .nest(INDENT),
+                }
                 ItemKind::TyAlias { name, generics, ty } => docs![
                     "abbrev ",
                     name,
