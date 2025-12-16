@@ -47,14 +47,14 @@ fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> boo
 set_option maxHeartbeats 1000000 in
 -- quite computation intensive
 theorem barrett_spec (value: i32) :
-  ⦃ ⌜ $barrett_reduce_precondition (value) = pure true ⌝ ⦄
+  ⦃ ⌜ Lean_barrett.barrett_reduce_precondition (value) = pure true ⌝ ⦄
   (do
     let result ← Lean_barrett.barrett_reduce value;
-    $barret_reduce_postcondition value result)
+    Lean_barrett.barret_reduce_postcondition value result)
   ⦃ ⇓ post => ⌜post = true⌝ ⦄
 := by
-  open Spec.BV in mvcgen [ $barret_reduce_postcondition ]
-  <;> simp_all! [ $barrett_reduce_precondition ]
+  open Spec.BV in mvcgen [ Lean_barrett.barret_reduce_postcondition ]
+  <;> simp_all! [ Lean_barrett.barrett_reduce_precondition ]
   hax_bv_decide
   simp [Int32.eq_iff_toBitVec_eq,
         Int32.lt_iff_toBitVec_slt,
