@@ -141,11 +141,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![
-            Box::new(RejectNotDoLeanDSL),
-            Box::new(ExplicitMonadic),
-            Box::new(DropSkipLate),
-        ]
+        vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
     }
 }
 
