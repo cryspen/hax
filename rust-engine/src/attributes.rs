@@ -10,7 +10,7 @@ use super::ast::*;
 use visitors::AstVisitorMut;
 
 /// A graph of items connected via the hax attribute [`AttrPayload::AssociatedItem`] and UUIDs.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct LinkedItemGraph {
     items: HashMap<ItemUid, Item>,
     context: Context,
@@ -62,6 +62,22 @@ fn emit_assertion_failure(context: Context, span: span::Span, message: impl Into
         },
     }
     .emit();
+}
+
+impl std::fmt::Debug for LinkedItemGraph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("LinkedItemGraph")
+            .field(
+                "items",
+                &self
+                    .items
+                    .iter()
+                    .map(|(id, item)| (id.to_string(), item.ident.to_debug_string()))
+                    .collect::<Vec<_>>(),
+            )
+            .field("context", &self.context)
+            .finish()
+    }
 }
 
 impl LinkedItemGraph {
