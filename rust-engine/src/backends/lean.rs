@@ -10,10 +10,7 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    phase::{
-        explicit_monadic::ExplicitMonadic, reject_not_do_lean_dsl::RejectNotDoLeanDSL,
-        unreachable_by_invariant,
-    },
+    phase::*,
 };
 
 mod binops {
@@ -27,7 +24,7 @@ const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
 
 /// The Lean printer
-#[setup_span_handling_struct]
+#[setup_printer_struct]
 #[derive(Default, Clone)]
 pub struct LeanPrinter;
 
@@ -36,6 +33,7 @@ const INDENT: isize = 2;
 static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     HashSet::from_iter(
         [
+            // reserved for Lean:
             "end",
             "def",
             "abbrev",
@@ -44,6 +42,9 @@ static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
             "inductive",
             "structure",
             "from",
+            // reserved for hax encoding:
+            "associatedTypes",
+            "AssociatedTypes",
         ]
         .iter()
         .map(|s| s.to_string()),
@@ -135,11 +136,11 @@ impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from_iter(self.printer().render_strings(&module.ident.view()))
+        camino::Utf8PathBuf::from_iter(LeanPrinter::default().render_strings(&module.ident.view()))
             .with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+    fn phases(&self) -> Vec<Box<dyn Phase>> {
         vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
     }
 }
@@ -150,12 +151,6 @@ impl LeanPrinter {
     /// unsupported items
     pub fn printable_item(item: &Item) -> bool {
         match &item.kind {
-            // Anonymous consts
-            ItemKind::Resugared(ResugaredItemKind::Constant {
-                name,
-                body: _,
-                generics: _,
-            }) if name.is_anonymous_const() => false,
             // Other unprintable items
             ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
             // Printable items
@@ -183,7 +178,10 @@ impl LeanPrinter {
         let id = id.replace([' ', '<', '>'], "_");
         if id.is_empty() {
             "_ERROR_EMPTY_ID_".to_string()
-        } else if RESERVED_KEYWORDS.contains(&id) || id.starts_with(|c: char| c.is_ascii_digit()) {
+        } else if RESERVED_KEYWORDS.contains(&id)
+            || id.starts_with("trait_constr_")
+            || id.starts_with(|c: char| c.is_ascii_digit())
+        {
             format!("_{id}")
         } else {
             id
@@ -243,7 +241,7 @@ const _: () = {
         };
     }
 
-    // Methods for handling arguments of variants (or struct constructor)
+    // Extra methods, specific to the LeanPrinter
     impl LeanPrinter {
         /// Prints arguments a variant or constructor of struct, using named or unamed arguments based
         /// on the `is_record` flag. Used for both expressions and patterns
@@ -326,14 +324,143 @@ const _: () = {
             docs!["do", line!(), body].group()
         }
 
-        /// Produces a fresh name for a constraint on an associated type. It needs a fresh name to
-        /// be added as an extra field
-        fn fresh_constraint_name(
+        /// Produces a name for a constraint on an trait-level constraint, or an associated
+        /// type. The name is obtained by combining the type it applies to and the name of the
+        /// constraint (and should be unique)
+        fn constraint_name(&self, type_name: &String, constraint: &ImplIdent) -> String {
+            format!("trait_constr_{}_{}", type_name, constraint.name)
+        }
+
+        /// Renders a named argument for associated types with equality constraints
+        /// (aka projections). If there are no equality constraints, returns None.
+        fn associated_type_projections<A: 'static + Clone>(
             &self,
-            associated_type_name: &String,
-            constraint: &ImplIdent,
-        ) -> String {
-            format!("_constr_{}_{}", associated_type_name, constraint.name)
+            impl_ident: &ImplIdent,
+            projections: Vec<DocBuilder<A>>,
+        ) -> Option<DocBuilder<A>> {
+            (!projections.is_empty()).then_some(
+                docs![
+                    "(associatedTypes := {",
+                    line!(),
+                    docs![
+                        "show",
+                        line!(),
+                        impl_ident.goal.trait_,
+                        ".AssociatedTypes",
+                        concat!(impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])),
+                    ]
+                    .group()
+                    .nest(INDENT),
+                    line!(),
+                    reflow!("by infer_instance"),
+                    line!(),
+                    docs![
+                        "with",
+                        line!(),
+                        intersperse!(projections, docs![",", line!()]),
+                    ]
+                    .group()
+                    .nest(INDENT),
+                    "})"
+                ]
+                .group()
+                .nest(INDENT),
+            )
+        }
+
+        /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
+        /// reflexivity as a proof witness.
+        fn monad_extract<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+            match *expr.kind() {
+                ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) => {
+                    // Pure values are displayed directly. Note that constructors, while pure, may
+                    // contain sub-expressions that are not, so they must be wrapped in a do-block
+                    docs![expr]
+                }
+                _ => {
+                    // All other expressions are wrapped in a do-block, and extracted out of the monad
+                    docs![
+                        "RustM.of_isOk",
+                        line!(),
+                        self.do_block(expr).parens(),
+                        line!(),
+                        "(by rfl)"
+                    ]
+                    .group()
+                    .nest(INDENT)
+                }
+            }
+        }
+
+        /// Print trait items, adding trait-level params as extra arguments
+        fn trait_item_with_trait_params<A: 'static + Clone>(
+            &self,
+            trait_generics: &[GenericParam],
+            TraitItem {
+                meta: _,
+                kind,
+                generics: item_generics,
+                ident,
+            }: &TraitItem,
+        ) -> DocBuilder<A> {
+            {
+                let name = self.render_last(ident);
+                let trait_generics = intersperse!(
+                    trait_generics
+                        .iter()
+                        .map(|GenericParam { ident, .. }| ident),
+                    softline!()
+                )
+                .parens()
+                .group()
+                .append(line!());
+                docs![match kind {
+                    TraitItemKind::Fn(ty) => {
+                        docs![
+                            name,
+                            softline!(),
+                            trait_generics,
+                            item_generics,
+                            ":",
+                            line!(),
+                            ty
+                        ]
+                        .group()
+                        .nest(INDENT)
+                    }
+                    TraitItemKind::Type(_) => {
+                        docs![name.clone(), softline!(), ":", line!(), "Type"]
+                            .group()
+                            .nest(INDENT)
+                    }
+                    TraitItemKind::Default { params, body } => docs![
+                        docs![
+                            name,
+                            softline!(),
+                            trait_generics,
+                            item_generics,
+                            zip_right!(params, line!()).group(),
+                            docs![": RustM ", body.ty].group(),
+                            line!(),
+                            ":= do",
+                        ]
+                        .group(),
+                        line!(),
+                        body,
+                    ]
+                    .group()
+                    .nest(INDENT),
+                    TraitItemKind::Resugared(_) => {
+                        unreachable!("This backend has no resugaring for trait items")
+                    }
+                }]
+            }
+        }
+    }
+
+    impl<A: 'static + Clone> ToDocument<LeanPrinter, A> for (Vec<GenericParam>, &TraitItem) {
+        fn to_document(&self, printer: &LeanPrinter) -> DocBuilder<A> {
+            printer.trait_item_with_trait_params(&self.0, self.1)
         }
     }
 
@@ -388,33 +515,56 @@ set_option linter.unusedVariables false
         }
 
         /// Render generics, adding a space after each parameter
-        fn generics(
-            &self,
-            Generics {
-                params,
-                constraints,
-            }: &Generics,
-        ) -> DocBuilder<A> {
+        fn generics(&self, generics: &Generics) -> DocBuilder<A> {
             docs![
-                zip_right!(params, line!()),
+                zip_right!(&generics.params, line!()),
                 zip_right!(
-                    constraints
-                        .iter()
-                        .map(|constraint| docs![constraint].brackets()),
+                    generics.type_constraints().map(|impl_ident| {
+                        let projections = generics.projection_constraints()
+                            .map(|p|
+                                if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                                    docs![p]
+                                } else {
+                                    emit_error!(issue 1710, "Unsupported variant of associated type projection")
+                                }
+                            )
+                            .collect::<Vec<_>>();
+                        docs![
+                            docs![
+                                impl_ident.goal.trait_,
+                                ".AssociatedTypes",
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                )
+                            ]
+                            .brackets()
+                            .group()
+                            .nest(INDENT),
+                            line!(),
+                            docs![
+                                impl_ident.goal.trait_,
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                ),
+                                line!(),
+                                self.associated_type_projections(impl_ident, projections)
+                            ]
+                            .brackets()
+                            .nest(INDENT)
+                            .group()
+                        ]
+                        .group()
+                    }),
                     line!()
                 ),
             ]
             .group()
         }
 
-        fn generic_constraint(&self, generic_constraint: &GenericConstraint) -> DocBuilder<A> {
-            match generic_constraint {
-                GenericConstraint::Type(impl_ident) => docs![impl_ident],
-                GenericConstraint::Projection(_) => {
-                    emit_error!(issue 1710, "Unsupported equality constraints on associated types")
-                }
-                GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
-            }
+        fn generic_constraint(&self, _: &GenericConstraint) -> DocBuilder<A> {
+            unreachable!(
+                "Generic constraints are rendered inline because they must contain associated type projections."
+            )
         }
 
         fn generic_param(&self, generic_param: &GenericParam) -> DocBuilder<A> {
@@ -423,9 +573,17 @@ set_option linter.unusedVariables false
                     .parens()
                     .group(),
                 GenericParamKind::Lifetime => unreachable_by_invariant!(Drop_references),
-                GenericParamKind::Const { .. } => {
-                    emit_error!(issue 1711, "Const parameters are not yet supported")
-                }
+                GenericParamKind::Const { ty } => docs![&generic_param.ident, reflow!(" : "), ty]
+                    .parens()
+                    .group(),
+            }
+        }
+
+        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
+            match generic_value {
+                GenericValue::Ty(ty) => docs![ty],
+                GenericValue::Expr(expr) => docs![self.monad_extract(expr)].parens(),
+                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
             }
         }
 
@@ -454,7 +612,7 @@ set_option linter.unusedVariables false
                     args,
                     generic_args,
                     bounds_impls: _,
-                    trait_: _,
+                    trait_,
                 } => {
                     match (&args[..], &generic_args[..], head.kind()) {
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
@@ -463,15 +621,17 @@ set_option linter.unusedVariables false
                         }
                         _ => {
                             // Fallback for any application
-                            let generic_args = (!generic_args.is_empty()).then_some(
-                                docs![line!(), intersperse!(generic_args, line!())].group(),
-                            );
-                            let args = (!args.is_empty())
-                                .then_some(docs![line!(), intersperse!(args, line!())].group());
-                            docs![head, generic_args, args]
-                                .parens()
-                                .nest(INDENT)
-                                .group()
+                            docs![
+                                head,
+                                trait_
+                                    .as_ref()
+                                    .map(|(impl_expr, _)| zip_left!(line!(), &impl_expr.goal.args)),
+                                zip_left!(line!(), generic_args).group(),
+                                zip_left!(line!(), args).group(),
+                            ]
+                            .parens()
+                            .nest(INDENT)
+                            .group()
                         }
                     }
                 }
@@ -759,9 +919,16 @@ set_option linter.unusedVariables false
                 TyKind::AssociatedType { impl_, item } => {
                     let kind = impl_.kind();
                     match &kind {
-                        ImplExprKind::Self_ => docs![self.render_last(item)],
+                        ImplExprKind::Self_ => docs!["associatedTypes.", self.render_last(item)],
+                        ImplExprKind::LocalBound { .. } => docs![
+                            item,
+                            concat!(impl_.goal.args.iter().map(|arg| docs![line!(), arg])),
+                        ]
+                        .parens()
+                        .group()
+                        .nest(INDENT),
                         _ => {
-                            emit_error!(issue 1710, "Unsupported non trait-local associated types")
+                            emit_error!(issue 1710, "Unsupported variant of associated type")
                         }
                     }
                 }
@@ -838,14 +1005,6 @@ set_option linter.unusedVariables false
                 FloatKind::F64 => "f64",
                 _ => emit_error!(issue 1787, "The only supported float types are `f32` and `f64`."),
             }]
-        }
-
-        fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
-            match generic_value {
-                GenericValue::Ty(ty) => docs![ty],
-                GenericValue::Expr(expr) => docs![expr],
-                GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
-            }
         }
 
         fn quote_content(&self, quote_content: &QuoteContent) -> DocBuilder<A> {
@@ -981,49 +1140,164 @@ set_option linter.unusedVariables false
                     generics,
                     items,
                 } => {
-                    // Type parameters are also parameters of the class, but constraints are fields of the class
+                    let generic_types = generics.type_constraints().collect::<Vec<_>>();
+                    if generic_types.len() < generics.constraints.len() {
+                        emit_error!(issue 1710, "Unsupported equality constraints on associated types")
+                    }
                     docs![
+                        // A trait is encoded as two Lean type classes: one holding the associated types,
+                        // and one holding all other fields.
+                        // This is the type class holding the associated types:
                         docs![
-                            docs![reflow!("class "), name],
-                            (!generics.params.is_empty()).then_some(docs![
-                                line!(),
-                                intersperse!(&generics.params, line!()).group()
-                            ]),
-                            line!(),
-                            "where"
+                            docs![
+                                docs![reflow!("class "), name, ".AssociatedTypes"],
+                                (!generics.params.is_empty()).then_some(docs![
+                                    softline!(),
+                                    intersperse!(&generics.params, softline!()).group()
+                                ]),
+                                softline!(),
+                                "where"
+                            ]
+                            .group(),
+                            zip_left!(
+                                hardline!(),
+                                generic_types.iter().map(|impl_ident| docs![
+                                    self.constraint_name(&self.render_last(name), impl_ident),
+                                    " :",
+                                    line!(),
+                                    &impl_ident.goal.trait_,
+                                    ".AssociatedTypes",
+                                    line!(),
+                                    intersperse!(&impl_ident.goal.args, line!())
+                                ]
+                                .group()
+                                .brackets())
+                            ),
+                            zip_left!(
+                                hardline!(),
+                                items
+                                    .iter()
+                                    .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                    .map(|item| docs![(generics.params.clone(), item)])
+                            ),
                         ]
-                        .group(),
-                        hardline!(),
-                        (!generics.constraints.is_empty()).then_some(docs![zip_right!(
-                            generics
-                                .constraints
+                        .nest(INDENT),
+                        // We add the `[instance]` attribute to the contained constraints to make
+                        // them available for type inference:
+                        zip_left!(
+                            docs![hardline!(), hardline!()],
+                            generic_types.iter().map(|impl_ident| docs![
+                                "attribute [instance]",
+                                line!(),
+                                name,
+                                ".AssociatedTypes.",
+                                self.constraint_name(&self.render_last(name), impl_ident),
+                            ]
+                            .group()
+                            .nest(INDENT))
+                        ),
+                        // When referencing associated types, we would like to refer to them as
+                        // `TraitName.TypeName` instead of `TraitName.AssociatedTypes.TypeName`:
+                        zip_left!(
+                            docs![hardline!(), hardline!()],
+                            items
                                 .iter()
-                                .map(|constraint: &GenericConstraint| {
-                                    match constraint {
-                                        GenericConstraint::Type(tc_constraint) => docs![
-                                            self.fresh_constraint_name(&self.render_last(name), tc_constraint),
-                                            " :",
-                                            line!(),
-                                            constraint
+                                .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                .map(|item| {
+                                    docs![
+                                        "abbrev ",
+                                        name,
+                                        ".",
+                                        self.render_last(&item.ident),
+                                        " :=",
+                                        line!(),
+                                        name,
+                                        ".AssociatedTypes",
+                                        ".",
+                                        self.render_last(&item.ident),
+                                    ]
+                                    .nest(INDENT)
+                                })
+                        ),
+                        hardline!(),
+                        hardline!(),
+                        // This is the type class holding all other fields:
+                        docs![
+                            docs![
+                                docs![reflow!("class "), name],
+                                line!(),
+                                docs![
+                                    // Type parameters are also parameters of the class, but constraints are fields of the class
+                                    intersperse!(&generics.params, line!()),
+                                    line!(),
+                                    // The collection of associated types is an extra parameter so that we can encode
+                                    // equality constraints on associated types.
+                                    docs![
+                                        reflow!("associatedTypes :"),
+                                        softline!(),
+                                        "outParam",
+                                        softline!(),
+                                        docs![
+                                            name,
+                                            ".AssociatedTypes",
+                                            softline!(),
+                                            intersperse!(&generics.params, softline!()),
                                         ]
-                                        .group()
-                                            .brackets(),
-                                        GenericConstraint::Lifetime(_) => unreachable_by_invariant!(Drop_references),
-                                        GenericConstraint::Projection(_) => emit_error!(issue 1710, "Unsupported equality constraints on associated types"),
-                                    }
-                                }),
-                            hardline!()
-                        )]),
-                        intersperse!(
-                            items.iter().filter(|item| {
-                                // TODO: should be treated directly by name rendering, see :
-                                // https://github.com/cryspen/hax/issues/1646
-                                !(item.ident.is_precondition() || item.ident.is_postcondition())
-                            }),
-                            hardline!()
-                        )
+                                        .parens()
+                                        .nest(INDENT)
+                                    ]
+                                    .brackets()
+                                    .nest(INDENT)
+                                ]
+                                .group(),
+                                line!(),
+                                "where"
+                            ]
+                            .group(),
+                            // Lean's `extends` does not work for us because one cannot implement
+                            // different functions of the same name on the super- and on the
+                            // subclass. So we treat supertraits like any other constraint:
+                            zip_left!(
+                                hardline!(),
+                                generic_types.iter().map(|impl_ident| docs![
+                                    self.constraint_name(&self.render_last(name), impl_ident),
+                                    " :",
+                                    line!(),
+                                    impl_ident.goal.trait_,
+                                    concat!(
+                                        impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                    )
+                                ]
+                                .group()
+                                .brackets())
+                            ),
+                            zip_left!(
+                                hardline!(),
+                                items.iter().filter(|item| {!(
+                                    // TODO: should be treated directly by name rendering, see :
+                                    // https://github.com/cryspen/hax/issues/1646
+                                    item.ident.is_precondition() || item.ident.is_postcondition() ||
+                                    // Associated types are encoded in a separate type class.
+                                    matches!(item.kind, TraitItemKind::Type(_))
+                                )}).map(|item| docs![(generics.params.clone(), item)] )
+                            ),
+                        ]
+                        .nest(INDENT),
+                        // We add the `[instance]` attribute to the contained constraints to make
+                        // them available for type inference:
+                        zip_left!(
+                            docs![hardline!(), hardline!()],
+                            generic_types.iter().map(|impl_ident| docs![
+                                "attribute [instance]",
+                                line!(),
+                                name,
+                                ".",
+                                self.constraint_name(&self.render_last(name), impl_ident),
+                            ]
+                            .group()
+                            .nest(INDENT))
+                        ),
                     ]
-                    .nest(INDENT)
                 }
                 ItemKind::Impl {
                     generics,
@@ -1033,6 +1307,40 @@ set_option linter.unusedVariables false
                     parent_bounds: _,
                     safety: _,
                 } => docs![
+                    // An impl is encoded as two Lean instances:
+                    // One for the associated types...
+                    docs![
+                        docs![
+                            reflow!("instance "),
+                            ident,
+                            ".AssociatedTypes",
+                            line!(),
+                            generics,
+                            ":"
+                        ]
+                        .group(),
+                        line!(),
+                        docs![
+                            trait_,
+                            ".AssociatedTypes",
+                            concat!(args.iter().map(|gv| docs![line!(), gv]))
+                        ]
+                        .group(),
+                        line!(),
+                        "where",
+                    ]
+                    .group()
+                    .nest(INDENT),
+                    docs![zip_left!(
+                        hardline!(),
+                        items
+                            .iter()
+                            .filter(|item| { matches!(item.kind, ImplItemKind::Type { .. }) })
+                    )]
+                    .nest(INDENT),
+                    hardline!(),
+                    hardline!(),
+                    // ...and one for all other fields:
                     docs![
                         docs![reflow!("instance "), ident, line!(), generics, ":"].group(),
                         line!(),
@@ -1042,17 +1350,18 @@ set_option linter.unusedVariables false
                     ]
                     .group()
                     .nest(INDENT),
-                    docs![
+                    docs![zip_left!(
                         hardline!(),
-                        intersperse!(
-                            items.iter().filter(|item| {
+                        items.iter().filter(|item| {
+                            !(
                                 // TODO: should be treated directly by name rendering, see :
                                 // https://github.com/cryspen/hax/issues/1646
-                                !(item.ident.is_precondition() || item.ident.is_postcondition())
-                            }),
-                            hardline!()
-                        )
-                    ]
+                                item.ident.is_precondition() || item.ident.is_postcondition() ||
+                                // Associated types are encoded into a separate type class
+                                matches!(item.kind, ImplItemKind::Type { .. })
+                            )
+                        })
+                    )]
                     .nest(INDENT),
                 ],
                 ItemKind::Resugared(resugared_item_kind) => match resugared_item_kind {
@@ -1071,15 +1380,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         line!(),
-                        docs![
-                            "RustM.of_isOk",
-                            line!(),
-                            self.do_block(body).parens(),
-                            line!(),
-                            "(by rfl)"
-                        ]
-                        .group()
-                        .nest(INDENT)
+                        self.monad_extract(body),
                     ]
                     .group()
                     .nest(INDENT),
@@ -1092,62 +1393,6 @@ set_option linter.unusedVariables false
                 ItemKind::Error(e) => docs![e],
             };
             docs![meta, body]
-        }
-
-        fn trait_item(
-            &self,
-            TraitItem {
-                meta: _,
-                kind,
-                generics,
-                ident,
-            }: &TraitItem,
-        ) -> DocBuilder<A> {
-            let name = self.render_last(ident);
-            docs![match kind {
-                TraitItemKind::Fn(ty) => {
-                    docs![name, softline!(), generics, ":", line!(), ty]
-                        .group()
-                        .nest(INDENT)
-                }
-                TraitItemKind::Type(constraints) => {
-                    docs![
-                        name.clone(),
-                        reflow!(" : Type"),
-                        concat!(constraints.iter().map(|c| docs![
-                            hardline!(),
-                            docs![
-                                self.fresh_constraint_name(&name, c),
-                                reflow!(" :"),
-                                line!(),
-                                &c.goal
-                            ]
-                            .group()
-                            .nest(INDENT)
-                            .brackets()
-                        ]))
-                    ]
-                }
-                TraitItemKind::Default { params, body } => docs![
-                    docs![
-                        name,
-                        softline!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        docs![": RustM ", body.ty].group(),
-                        line!(),
-                        ":= do",
-                    ]
-                    .group(),
-                    line!(),
-                    body,
-                ]
-                .group()
-                .nest(INDENT),
-                TraitItemKind::Resugared(_) => {
-                    unreachable!("This backend has no resugaring for trait items")
-                }
-            }]
         }
 
         fn impl_item(
@@ -1185,15 +1430,16 @@ set_option linter.unusedVariables false
             }
         }
 
-        fn impl_ident(&self, ImplIdent { goal, name: _ }: &ImplIdent) -> DocBuilder<A> {
-            docs![goal]
+        fn impl_ident(&self, ImplIdent { .. }: &ImplIdent) -> DocBuilder<A> {
+            unreachable!(
+                "`ImplIdent`s are rendered inline because we have multiple variants of how they must be rendered."
+            )
         }
 
-        fn trait_goal(&self, TraitGoal { trait_, args }: &TraitGoal) -> DocBuilder<A> {
-            docs![trait_, concat!(args.iter().map(|arg| docs![line!(), arg]))]
-                .parens()
-                .nest(INDENT)
-                .group()
+        fn trait_goal(&self, TraitGoal { .. }: &TraitGoal) -> DocBuilder<A> {
+            unreachable!(
+                "`TraitGoal`s are rendered inline because we have multiple variants of how they must be rendered."
+            )
         }
 
         fn variant(
@@ -1279,7 +1525,7 @@ set_option linter.unusedVariables false
 
         fn attribute(&self, Attribute { kind, span: _ }: &Attribute) -> DocBuilder<A> {
             match kind {
-                AttributeKind::Tool { .. } => {
+                AttributeKind::Tool { .. } | AttributeKind::Hax { .. } => {
                     nil!()
                 }
                 AttributeKind::DocComment {
@@ -1312,9 +1558,17 @@ set_option linter.unusedVariables false
 
         fn projection_predicate(
             &self,
-            _projection_predicate: &ProjectionPredicate,
+            projection_predicate: &ProjectionPredicate,
         ) -> DocBuilder<A> {
-            emit_error!(issue 1710, "Projection predicate (type equalities on associated types) are unsupported")
+            docs![
+                self.render_last(&projection_predicate.assoc_item),
+                softline!(),
+                ":=",
+                line!(),
+                projection_predicate.ty,
+            ]
+            .group()
+            .nest(INDENT)
         }
 
         fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {

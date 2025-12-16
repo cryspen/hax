@@ -13,6 +13,7 @@ use std::ops::Deref;
 
 use crate::{
     ast::{self, span::Span},
+    attributes::LinkedItemGraph,
     printer::pretty_ast::ToDocument,
 };
 use ast::visitors::dyn_compatible;
@@ -40,11 +41,19 @@ pub trait Resugaring: for<'a> dyn_compatible::AstVisitorMut<'a> {
 }
 
 /// A printer defines a list of resugaring phases.
-pub trait Printer: Sized + PrettyAst<Span> + Default {
+pub trait Printer: Sized + PrettyAst<Span> + Default + HasLinkedItemGraph {
     /// A list of resugaring phases.
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>>;
     /// The name of the printer
     const NAME: &'static str = <Self as PrettyAst<Span>>::NAME;
+}
+
+/// Getter and setter for `LinkedItemGraph`, useful for printers.
+pub trait HasLinkedItemGraph {
+    /// Get a reference of the `LinkedItemGraph`.
+    fn linked_item_graph(&self) -> &LinkedItemGraph;
+    /// Set a `LinkedItemGraph`.
+    fn with_linked_item_graph(self, graph: std::rc::Rc<LinkedItemGraph>) -> Self;
 }
 
 /// Placeholder type for sourcemaps.

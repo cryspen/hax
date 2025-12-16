@@ -423,7 +423,7 @@ section Cast
 
 /-- Hax-introduced explicit cast. It is partial (returns a `RustM`) -/
 @[simp, spec]
-def Core.Convert.From.from {α β} [Coe α (RustM β)] (x:α) : (RustM β) := x
+def Core.Convert.From.from (β α) [Coe α (RustM β)] (x:α) : (RustM β) := x
 
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
@@ -885,7 +885,7 @@ end RustVectors
 
 
 -- Miscellaneous
-def Core.Ops.Deref.Deref.deref {α Allocator} (v: Alloc.Vec.Vec α Allocator)
+def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
   : RustM (Array α)
   := pure v
 

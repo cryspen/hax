@@ -670,6 +670,8 @@ dependencies = [
  "camino",
  "derive_generic_visitor",
  "hax-frontend-exporter",
+ "hax-lib",
+ "hax-lib-macros-types",
  "hax-rust-engine-macros",
  "hax-types",
  "itertools 0.11.0",

@@ -1,27 +1,3 @@
-//! Monadic Phase
-//!
-//! This module defines a phase that makes the monadic encoding explicit by introducing calls to hax
-//! primitives (`pure` and `lift`) when necessary.
-//!
-//! # Details
-//!
-//! In backends with a monadic encoding (Lean for instance), rust computations that can *crash* are
-//! wrapped in an error Monad (say `RustM`): a function `fn f(x:u32) -> u32` will be extracted to
-//! something like `def f (x:u32) : RustM u32`. There are two challenges in this encoding :
-//!
-//! 1. Some expressions cannot panic (literals, consts, constructors for enums, etc) and should be
-//!    wrapped in the monad[^coe]. This phase inserts explicit calls to `pure` to that aim.
-//!
-//! 2. Language constructs (if-then-else, `match`, etc.) and rust functions still expect rust values
-//!    as input, not monadic ones. This phase inserts explicit calls to `lift` to materialize the
-//!    sub-expressions that return a monadic result where a value is expected. The Lean backend turns
-//!    them into explicit lifts `(← ..)`, which implicitly introduces a monadic bind
-//!
-//! This phase expects all function and closure bodies to be monadic computations by default.
-//!
-//! [^coe]: While implicit coercions can sometime be enough, they can also badly interact with
-//! inference, typically when dealing with branches (like if-then-else) where some branches are
-//! pure and some are not.
 use std::fmt::Debug;
 
 use crate::ast::identifiers::GlobalId;
@@ -31,14 +7,37 @@ use crate::phase::Phase;
 
 use crate::names::rust_primitives::hax::explicit_monadic::*;
 
-/// Placeholder struct for the Monadic phase
+/// Monadic Phase
+///
+/// This module defines a phase that makes the monadic encoding explicit by introducing calls to hax
+/// primitives (`pure` and `lift`) when necessary.
+///
+/// # Details
+///
+/// In backends with a monadic encoding (Lean for instance), rust computations that can *crash* are
+/// wrapped in an error Monad (say `RustM`): a function `fn f(x:u32) -> u32` will be extracted to
+/// something like `def f (x:u32) : RustM u32`. There are two challenges in this encoding :
+///
+/// 1. Some expressions cannot panic (literals, consts, constructors for enums, etc) and should be
+///    wrapped in the monad[^coe]. This phase inserts explicit calls to `pure` to that aim.
+///
+/// 2. Language constructs (if-then-else, `match`, etc.) and rust functions still expect rust values
+///    as input, not monadic ones. This phase inserts explicit calls to `lift` to materialize the
+///    sub-expressions that return a monadic result where a value is expected. The Lean backend turns
+///    them into explicit lifts `(← ..)`, which implicitly introduces a monadic bind
+///
+/// This phase expects all function and closure bodies to be monadic computations by default.
+///
+/// [^coe]: While implicit coercions can sometime be enough, they can also badly interact with
+/// inference, typically when dealing with branches (like if-then-else) where some branches are
+/// pure and some are not.
 #[derive(Default, Debug)]
 pub struct ExplicitMonadic;
 
 /// Stateless visitor
 #[setup_error_handling_struct]
 #[derive(Default)]
-pub struct ExplicitMonadicVisitor;
+struct ExplicitMonadicVisitor;
 
 /// Status of a rust expression. Computations are possibly panicking, while values are pure
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Ord, PartialOrd)]
@@ -231,6 +230,12 @@ impl AstVisitorMut for ExplicitMonadicVisitor {
     fn visit_ty(&mut self, x: &mut Ty) {
         if let TyKind::Array { length, .. } = x.kind_mut() {
             self.visit_expr_coerce(MonadicStatus::Value, length);
+        };
+    }
+
+    fn visit_generic_value(&mut self, x: &mut GenericValue) {
+        if let GenericValue::Expr(expr) = x {
+            self.visit_expr_coerce(MonadicStatus::Value, expr);
         };
     }
 }

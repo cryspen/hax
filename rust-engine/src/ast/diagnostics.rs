@@ -72,6 +72,8 @@ pub enum Context {
     Printer(String),
     /// Error in an engine phase
     Phase(String),
+    /// Unknown
+    Unknown,
 }
 
 impl std::fmt::Display for Context {
@@ -81,6 +83,7 @@ impl std::fmt::Display for Context {
             Context::NameView => write!(f, "Name rendering"),
             Context::Printer(p) => write!(f, "{p} Printer"),
             Context::Phase(p) => write!(f, "Engine phase ({p})"),
+            Context::Unknown => write!(f, "Unknown"),
         }
     }
 }

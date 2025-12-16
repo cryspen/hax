@@ -91,24 +91,110 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-class Lean_tests.Traits.Overlapping_methods.T1 (Self : Type) where
-  f : (Self -> RustM usize)
+class Lean_tests.Traits.Trait_level_args.T1.AssociatedTypes (Self : Type) (A :
+  Type) (B : Type) where
 
-class Lean_tests.Traits.Overlapping_methods.T2 (Self : Type) where
-  f : (Self -> RustM usize)
+class Lean_tests.Traits.Trait_level_args.T1
+  (Self : Type)
+  (A : Type)
+  (B : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Trait_level_args.T1.AssociatedTypes (Self : Type) (A :
+      Type) (B : Type))]
+  where
+  f1 (Self A B)
+    (C : Type) (D : Type) :
+    (Self -> RustM Rust_primitives.Hax.Tuple0)
+  f2 (Self A B)
+    (C : Type) (D : Type) :
+    (Self -> A -> RustM Rust_primitives.Hax.Tuple0)
+  f3 (Self A B)
+    (C : Type) (D : Type) :
+    (Self -> A -> B -> RustM Rust_primitives.Hax.Tuple0)
 
-class Lean_tests.Traits.Overlapping_methods.T3 (Self : Type) where
-  f : (Self -> RustM usize)
+instance Lean_tests.Traits.Trait_level_args.Impl.AssociatedTypes :
+  Lean_tests.Traits.Trait_level_args.T1.AssociatedTypes usize u32 u64
+  where
+
+instance Lean_tests.Traits.Trait_level_args.Impl :
+  Lean_tests.Traits.Trait_level_args.T1 usize u32 u64
+  where
+  f1 (C : Type) (D : Type) (self : usize) := do
+    (pure Rust_primitives.Hax.Tuple0.mk)
+  f2 (C : Type) (D : Type) (self : usize) (x : u32) := do
+    (pure Rust_primitives.Hax.Tuple0.mk)
+  f3 (C : Type) (D : Type) (self : usize) (x : u32) (y : u64) := do
+    (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Lean_tests.Traits.Trait_level_args.test
+  (A : Type)
+  (B : Type)
+  (C : Type)
+  (D : Type)
+  (U : Type)
+  [Lean_tests.Traits.Trait_level_args.T1.AssociatedTypes U A B]
+  [Lean_tests.Traits.Trait_level_args.T1 U A B ]
+  (x : U)
+  (a : A)
+  (b : B)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ← (Lean_tests.Traits.Trait_level_args.T1.f1 U A B C D x);
+  let _ ← (Lean_tests.Traits.Trait_level_args.T1.f2 U A B C D x a);
+  let _ ← (Lean_tests.Traits.Trait_level_args.T1.f3 U A B C D x a b);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+class Lean_tests.Traits.Overlapping_methods.T1.AssociatedTypes (Self : Type)
+  where
+
+class Lean_tests.Traits.Overlapping_methods.T1
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Overlapping_methods.T1.AssociatedTypes (Self : Type))]
+  where
+  f (Self) : (Self -> RustM usize)
+
+class Lean_tests.Traits.Overlapping_methods.T2.AssociatedTypes (Self : Type)
+  where
+
+class Lean_tests.Traits.Overlapping_methods.T2
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Overlapping_methods.T2.AssociatedTypes (Self : Type))]
+  where
+  f (Self) : (Self -> RustM usize)
+
+class Lean_tests.Traits.Overlapping_methods.T3.AssociatedTypes (Self : Type)
+  where
+
+class Lean_tests.Traits.Overlapping_methods.T3
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Overlapping_methods.T3.AssociatedTypes (Self : Type))]
+  where
+  f (Self) : (Self -> RustM usize)
+
+instance Lean_tests.Traits.Overlapping_methods.Impl.AssociatedTypes :
+  Lean_tests.Traits.Overlapping_methods.T1.AssociatedTypes u32
+  where
 
 instance Lean_tests.Traits.Overlapping_methods.Impl :
   Lean_tests.Traits.Overlapping_methods.T1 u32
   where
   f (self : u32) := do (pure (0 : usize))
 
+instance Lean_tests.Traits.Overlapping_methods.Impl_1.AssociatedTypes :
+  Lean_tests.Traits.Overlapping_methods.T2.AssociatedTypes u32
+  where
+
 instance Lean_tests.Traits.Overlapping_methods.Impl_1 :
   Lean_tests.Traits.Overlapping_methods.T2 u32
   where
   f (self : u32) := do (pure (1 : usize))
+
+instance Lean_tests.Traits.Overlapping_methods.Impl_2.AssociatedTypes :
+  Lean_tests.Traits.Overlapping_methods.T3.AssociatedTypes u32
+  where
 
 instance Lean_tests.Traits.Overlapping_methods.Impl_2 :
   Lean_tests.Traits.Overlapping_methods.T3 u32
@@ -120,94 +206,205 @@ def Lean_tests.Traits.Overlapping_methods.test
   : RustM usize
   := do
   let x : u32 := (9 : u32);
-  ((← ((← (Lean_tests.Traits.Overlapping_methods.T1.f x))
-      +? (← (Lean_tests.Traits.Overlapping_methods.T2.f x))))
-    +? (← (Lean_tests.Traits.Overlapping_methods.T3.f x)))
+  ((← ((← (Lean_tests.Traits.Overlapping_methods.T1.f u32 x))
+      +? (← (Lean_tests.Traits.Overlapping_methods.T2.f u32 x))))
+    +? (← (Lean_tests.Traits.Overlapping_methods.T3.f u32 x)))
 
-class Lean_tests.Traits.Inheritance.T1 (Self : Type) where
-  f1 : (Self -> RustM usize)
+class Lean_tests.Traits.Inheritance.T1.AssociatedTypes (Self : Type) where
 
-class Lean_tests.Traits.Inheritance.T2 (Self : Type) where
-  f2 : (Self -> RustM usize)
+class Lean_tests.Traits.Inheritance.T1
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Inheritance.T1.AssociatedTypes
+      (Self : Type))]
+  where
+  f1 (Self) : (Self -> RustM usize)
 
-class Lean_tests.Traits.Inheritance.T3 (Self : Type) where
-  [_constr_T3_i0 : (Lean_tests.Traits.Inheritance.T2 Self)]
-  [_constr_T3_i1 : (Lean_tests.Traits.Inheritance.T1 Self)]
-  f3 : (Self -> RustM usize)
+class Lean_tests.Traits.Inheritance.T2.AssociatedTypes (Self : Type) where
 
-class Lean_tests.Traits.Inheritance.Tp1 (Self : Type) where
-  f1 : (Self -> RustM usize)
+class Lean_tests.Traits.Inheritance.T2
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Inheritance.T2.AssociatedTypes
+      (Self : Type))]
+  where
+  f2 (Self) : (Self -> RustM usize)
 
-class Lean_tests.Traits.Inheritance.Tp2 (Self : Type) where
-  [_constr_Tp2_i0 : (Lean_tests.Traits.Inheritance.Tp1 Self)]
-  [_constr_Tp2_i1 : (Lean_tests.Traits.Inheritance.T3 Self)]
-  fp2 : (Self -> RustM usize)
+class Lean_tests.Traits.Inheritance.T3.AssociatedTypes (Self : Type) where
+  [trait_constr_T3_i0 : Lean_tests.Traits.Inheritance.T2.AssociatedTypes Self]
+  [trait_constr_T3_i1 : Lean_tests.Traits.Inheritance.T1.AssociatedTypes Self]
+
+attribute [instance]
+  Lean_tests.Traits.Inheritance.T3.AssociatedTypes.trait_constr_T3_i0
+
+attribute [instance]
+  Lean_tests.Traits.Inheritance.T3.AssociatedTypes.trait_constr_T3_i1
+
+class Lean_tests.Traits.Inheritance.T3
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Inheritance.T3.AssociatedTypes
+      (Self : Type))]
+  where
+  [trait_constr_T3_i0 : Lean_tests.Traits.Inheritance.T2 Self]
+  [trait_constr_T3_i1 : Lean_tests.Traits.Inheritance.T1 Self]
+  f3 (Self) : (Self -> RustM usize)
+
+attribute [instance] Lean_tests.Traits.Inheritance.T3.trait_constr_T3_i0
+
+attribute [instance] Lean_tests.Traits.Inheritance.T3.trait_constr_T3_i1
+
+class Lean_tests.Traits.Inheritance.Tp1.AssociatedTypes (Self : Type) where
+
+class Lean_tests.Traits.Inheritance.Tp1
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Inheritance.Tp1.AssociatedTypes
+      (Self : Type))]
+  where
+  f1 (Self) : (Self -> RustM usize)
+
+class Lean_tests.Traits.Inheritance.Tp2.AssociatedTypes (Self : Type) where
+  [trait_constr_Tp2_i0 : Lean_tests.Traits.Inheritance.Tp1.AssociatedTypes Self]
+  [trait_constr_Tp2_i1 : Lean_tests.Traits.Inheritance.T3.AssociatedTypes Self]
+
+attribute [instance]
+  Lean_tests.Traits.Inheritance.Tp2.AssociatedTypes.trait_constr_Tp2_i0
+
+attribute [instance]
+  Lean_tests.Traits.Inheritance.Tp2.AssociatedTypes.trait_constr_Tp2_i1
+
+class Lean_tests.Traits.Inheritance.Tp2
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Inheritance.Tp2.AssociatedTypes
+      (Self : Type))]
+  where
+  [trait_constr_Tp2_i0 : Lean_tests.Traits.Inheritance.Tp1 Self]
+  [trait_constr_Tp2_i1 : Lean_tests.Traits.Inheritance.T3 Self]
+  fp2 (Self) : (Self -> RustM usize)
+
+attribute [instance] Lean_tests.Traits.Inheritance.Tp2.trait_constr_Tp2_i0
+
+attribute [instance] Lean_tests.Traits.Inheritance.Tp2.trait_constr_Tp2_i1
 
 structure Lean_tests.Traits.Inheritance.S where
 
+
+instance Lean_tests.Traits.Inheritance.Impl.AssociatedTypes :
+  Lean_tests.Traits.Inheritance.T1.AssociatedTypes
+  Lean_tests.Traits.Inheritance.S
+  where
 
 instance Lean_tests.Traits.Inheritance.Impl :
   Lean_tests.Traits.Inheritance.T1 Lean_tests.Traits.Inheritance.S
   where
   f1 (self : Lean_tests.Traits.Inheritance.S) := do (pure (1 : usize))
 
+instance Lean_tests.Traits.Inheritance.Impl_1.AssociatedTypes :
+  Lean_tests.Traits.Inheritance.T2.AssociatedTypes
+  Lean_tests.Traits.Inheritance.S
+  where
+
 instance Lean_tests.Traits.Inheritance.Impl_1 :
   Lean_tests.Traits.Inheritance.T2 Lean_tests.Traits.Inheritance.S
   where
   f2 (self : Lean_tests.Traits.Inheritance.S) := do (pure (2 : usize))
+
+instance Lean_tests.Traits.Inheritance.Impl_2.AssociatedTypes :
+  Lean_tests.Traits.Inheritance.T3.AssociatedTypes
+  Lean_tests.Traits.Inheritance.S
+  where
 
 instance Lean_tests.Traits.Inheritance.Impl_2 :
   Lean_tests.Traits.Inheritance.T3 Lean_tests.Traits.Inheritance.S
   where
   f3 (self : Lean_tests.Traits.Inheritance.S) := do (pure (3 : usize))
 
+instance Lean_tests.Traits.Inheritance.Impl_3.AssociatedTypes :
+  Lean_tests.Traits.Inheritance.Tp1.AssociatedTypes
+  Lean_tests.Traits.Inheritance.S
+  where
+
 instance Lean_tests.Traits.Inheritance.Impl_3 :
   Lean_tests.Traits.Inheritance.Tp1 Lean_tests.Traits.Inheritance.S
   where
   f1 (self : Lean_tests.Traits.Inheritance.S) := do (pure (10 : usize))
 
+instance Lean_tests.Traits.Inheritance.Impl_4.AssociatedTypes :
+  Lean_tests.Traits.Inheritance.Tp2.AssociatedTypes
+  Lean_tests.Traits.Inheritance.S
+  where
+
 instance Lean_tests.Traits.Inheritance.Impl_4 :
   Lean_tests.Traits.Inheritance.Tp2 Lean_tests.Traits.Inheritance.S
   where
   fp2 (self : Lean_tests.Traits.Inheritance.S) := do
-    ((← ((← ((← (Lean_tests.Traits.Inheritance.Tp1.f1 self))
-          +? (← (Lean_tests.Traits.Inheritance.T1.f1 self))))
-        +? (← (Lean_tests.Traits.Inheritance.T2.f2 self))))
-      +? (← (Lean_tests.Traits.Inheritance.T3.f3 self)))
+    ((← ((← ((← (Lean_tests.Traits.Inheritance.Tp1.f1
+            Lean_tests.Traits.Inheritance.S self))
+          +? (← (Lean_tests.Traits.Inheritance.T1.f1
+            Lean_tests.Traits.Inheritance.S self))))
+        +? (← (Lean_tests.Traits.Inheritance.T2.f2
+          Lean_tests.Traits.Inheritance.S self))))
+      +? (← (Lean_tests.Traits.Inheritance.T3.f3
+        Lean_tests.Traits.Inheritance.S self)))
 
 def Lean_tests.Traits.Inheritance.test
   (_ : Rust_primitives.Hax.Tuple0)
   : RustM usize
   := do
   let s : Lean_tests.Traits.Inheritance.S := Lean_tests.Traits.Inheritance.S.mk;
-  ((← (Lean_tests.Traits.Inheritance.T3.f3 s)) +? (1 : usize))
+  ((← (Lean_tests.Traits.Inheritance.T3.f3 Lean_tests.Traits.Inheritance.S s))
+    +? (1 : usize))
 
-class Lean_tests.Traits.Default.Easy (Self : Type) where
-  dft (self : Self) : RustM usize := do (pure (32 : usize))
+class Lean_tests.Traits.Default.Easy.AssociatedTypes (Self : Type) where
+
+class Lean_tests.Traits.Default.Easy
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Default.Easy.AssociatedTypes
+      (Self : Type))]
+  where
+  dft (Self) (self : Self) : RustM usize := do (pure (32 : usize))
+
+instance Lean_tests.Traits.Default.Impl.AssociatedTypes :
+  Lean_tests.Traits.Default.Easy.AssociatedTypes usize
+  where
 
 instance Lean_tests.Traits.Default.Impl :
   Lean_tests.Traits.Default.Easy usize
   where
   dft (self : usize) := do (self +? (1 : usize))
 
+instance Lean_tests.Traits.Default.Impl_1.AssociatedTypes :
+  Lean_tests.Traits.Default.Easy.AssociatedTypes u32
+  where
+
 instance Lean_tests.Traits.Default.Impl_1 :
   Lean_tests.Traits.Default.Easy u32
   where
 
+class Lean_tests.Traits.Default.T1.AssociatedTypes (Self : Type) where
 
-class Lean_tests.Traits.Default.T1 (Self : Type) where
-  f1 : (Self -> RustM usize)
-  f2 (self : Self) : RustM usize := do (pure (1 : usize))
-  f3 (A : Type) (self : Self) (x : A) : RustM usize := do (pure (1 : usize))
-  f4 (A : Type) [(Lean_tests.Traits.Default.Easy A)] (self : Self)
-    (x : A)
-    : RustM usize
+class Lean_tests.Traits.Default.T1
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Default.T1.AssociatedTypes
+      (Self : Type))]
+  where
+  f1 (Self) : (Self -> RustM usize)
+  f2 (Self) (self : Self) : RustM usize := do (pure (1 : usize))
+  f3 (Self) (A : Type) (self : Self) (x : A) : RustM usize := do
+    (pure (1 : usize))
+  f4 (Self)
+    (A : Type)
+    [Lean_tests.Traits.Default.Easy.AssociatedTypes A]
+    [Lean_tests.Traits.Default.Easy A ]
+    (self : Self) (x : A) : RustM usize
     := do
-    ((← (Lean_tests.Traits.Default.Easy.dft x)) +? (1 : usize))
+    ((← (Lean_tests.Traits.Default.Easy.dft A x)) +? (1 : usize))
 
 structure Lean_tests.Traits.Default.S (A : Type) where
   _0 : usize
   _1 : A
+
+instance Lean_tests.Traits.Default.Impl_2.AssociatedTypes :
+  Lean_tests.Traits.Default.T1.AssociatedTypes
+  (Lean_tests.Traits.Default.S usize)
+  where
 
 instance Lean_tests.Traits.Default.Impl_2 :
   Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S usize)
@@ -217,6 +414,11 @@ instance Lean_tests.Traits.Default.Impl_2 :
       +? (Lean_tests.Traits.Default.S._1 self))
   f2 (self : (Lean_tests.Traits.Default.S usize)) := do
     (pure (Lean_tests.Traits.Default.S._1 self))
+
+instance Lean_tests.Traits.Default.Impl_3.AssociatedTypes :
+  Lean_tests.Traits.Default.T1.AssociatedTypes
+  (Lean_tests.Traits.Default.S Bool)
+  where
 
 instance Lean_tests.Traits.Default.Impl_3 :
   Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S Bool)
@@ -229,25 +431,66 @@ instance Lean_tests.Traits.Default.Impl_3 :
   f2 (self : (Lean_tests.Traits.Default.S Bool)) := do
     ((Lean_tests.Traits.Default.S._0 self) +? (1 : usize))
 
+instance Lean_tests.Traits.Default.Impl_4.AssociatedTypes :
+  Lean_tests.Traits.Default.T1.AssociatedTypes
+  (Lean_tests.Traits.Default.S Alloc.String.String)
+  where
+
 instance Lean_tests.Traits.Default.Impl_4 :
   Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S Alloc.String.String)
   where
   f1 (self : (Lean_tests.Traits.Default.S Alloc.String.String)) := do
     (pure (0 : usize))
 
-class Lean_tests.Traits.Bounds.T1 (Self : Type) where
-  f1 : (Self -> RustM usize)
+class Lean_tests.Traits.Bounds.T1.AssociatedTypes (Self : Type) where
 
-class Lean_tests.Traits.Bounds.T2 (Self : Type) where
-  f2 : (Self -> RustM usize)
+class Lean_tests.Traits.Bounds.T1
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Bounds.T1.AssociatedTypes (Self
+      : Type))]
+  where
+  f1 (Self) : (Self -> RustM usize)
 
-class Lean_tests.Traits.Bounds.Test (Self : Type) (T : Type) where
-  [_constr_Test_i0 : (Lean_tests.Traits.Bounds.T2 Self)]
-  [_constr_Test_i1 : (Lean_tests.Traits.Bounds.T1 T)]
-  f_test : (Self -> T -> RustM usize)
+class Lean_tests.Traits.Bounds.T2.AssociatedTypes (Self : Type) where
+
+class Lean_tests.Traits.Bounds.T2
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Bounds.T2.AssociatedTypes (Self
+      : Type))]
+  where
+  f2 (Self) : (Self -> RustM usize)
+
+class Lean_tests.Traits.Bounds.Test.AssociatedTypes (Self : Type) (T : Type)
+  where
+  [trait_constr_Test_i0 : Lean_tests.Traits.Bounds.T2.AssociatedTypes Self]
+  [trait_constr_Test_i1 : Lean_tests.Traits.Bounds.T1.AssociatedTypes T]
+
+attribute [instance]
+  Lean_tests.Traits.Bounds.Test.AssociatedTypes.trait_constr_Test_i0
+
+attribute [instance]
+  Lean_tests.Traits.Bounds.Test.AssociatedTypes.trait_constr_Test_i1
+
+class Lean_tests.Traits.Bounds.Test
+  (Self : Type)
+  (T : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Bounds.Test.AssociatedTypes
+      (Self : Type) (T : Type))]
+  where
+  [trait_constr_Test_i0 : Lean_tests.Traits.Bounds.T2 Self]
+  [trait_constr_Test_i1 : Lean_tests.Traits.Bounds.T1 T]
+  f_test (Self T) : (Self -> T -> RustM usize)
+
+attribute [instance] Lean_tests.Traits.Bounds.Test.trait_constr_Test_i0
+
+attribute [instance] Lean_tests.Traits.Bounds.Test.trait_constr_Test_i1
 
 structure Lean_tests.Traits.Bounds.S1 where
 
+
+instance Lean_tests.Traits.Bounds.Impl.AssociatedTypes :
+  Lean_tests.Traits.Bounds.T1.AssociatedTypes Lean_tests.Traits.Bounds.S1
+  where
 
 instance Lean_tests.Traits.Bounds.Impl :
   Lean_tests.Traits.Bounds.T1 Lean_tests.Traits.Bounds.S1
@@ -257,10 +500,20 @@ instance Lean_tests.Traits.Bounds.Impl :
 structure Lean_tests.Traits.Bounds.S2 where
 
 
+instance Lean_tests.Traits.Bounds.Impl_1.AssociatedTypes :
+  Lean_tests.Traits.Bounds.T2.AssociatedTypes Lean_tests.Traits.Bounds.S2
+  where
+
 instance Lean_tests.Traits.Bounds.Impl_1 :
   Lean_tests.Traits.Bounds.T2 Lean_tests.Traits.Bounds.S2
   where
   f2 (self : Lean_tests.Traits.Bounds.S2) := do (pure (1 : usize))
+
+instance Lean_tests.Traits.Bounds.Impl_2.AssociatedTypes :
+  Lean_tests.Traits.Bounds.Test.AssociatedTypes
+  Lean_tests.Traits.Bounds.S2
+  Lean_tests.Traits.Bounds.S1
+  where
 
 instance Lean_tests.Traits.Bounds.Impl_2 :
   Lean_tests.Traits.Bounds.Test
@@ -270,8 +523,9 @@ instance Lean_tests.Traits.Bounds.Impl_2 :
   f_test (self : Lean_tests.Traits.Bounds.S2)
     (x : Lean_tests.Traits.Bounds.S1)
     := do
-    ((← ((← (Lean_tests.Traits.Bounds.T1.f1 x))
-        +? (← (Lean_tests.Traits.Bounds.T2.f2 self))))
+    ((← ((← (Lean_tests.Traits.Bounds.T1.f1 Lean_tests.Traits.Bounds.S1 x))
+        +? (← (Lean_tests.Traits.Bounds.T2.f2
+          Lean_tests.Traits.Bounds.S2 self))))
       +? (1 : usize))
 
 def Lean_tests.Traits.Bounds.test
@@ -279,15 +533,27 @@ def Lean_tests.Traits.Bounds.test
   (x2 : Lean_tests.Traits.Bounds.S2)
   : RustM usize
   := do
-  ((← (Lean_tests.Traits.Bounds.Test.f_test x2 x1))
-    +? (← (Lean_tests.Traits.Bounds.T1.f1 x1)))
+  ((← (Lean_tests.Traits.Bounds.Test.f_test
+      Lean_tests.Traits.Bounds.S2
+      Lean_tests.Traits.Bounds.S1 x2 x1))
+    +? (← (Lean_tests.Traits.Bounds.T1.f1 Lean_tests.Traits.Bounds.S1 x1)))
 
-class Lean_tests.Traits.Basic.T1 (Self : Type) where
-  f1 : (Self -> RustM usize)
-  f2 : (Self -> Self -> RustM usize)
+class Lean_tests.Traits.Basic.T1.AssociatedTypes (Self : Type) where
+
+class Lean_tests.Traits.Basic.T1
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Traits.Basic.T1.AssociatedTypes (Self
+      : Type))]
+  where
+  f1 (Self) : (Self -> RustM usize)
+  f2 (Self) : (Self -> Self -> RustM usize)
 
 structure Lean_tests.Traits.Basic.S where
 
+
+instance Lean_tests.Traits.Basic.Impl.AssociatedTypes :
+  Lean_tests.Traits.Basic.T1.AssociatedTypes Lean_tests.Traits.Basic.S
+  where
 
 instance Lean_tests.Traits.Basic.Impl :
   Lean_tests.Traits.Basic.T1 Lean_tests.Traits.Basic.S
@@ -299,59 +565,123 @@ instance Lean_tests.Traits.Basic.Impl :
     (pure (43 : usize))
 
 def Lean_tests.Traits.Basic.f
-  (T : Type) [(Lean_tests.Traits.Basic.T1 T)] (x : T)
+  (T : Type)
+  [Lean_tests.Traits.Basic.T1.AssociatedTypes T] [Lean_tests.Traits.Basic.T1 T ]
+  (x : T)
   : RustM usize
   := do
-  ((← (Lean_tests.Traits.Basic.T1.f1 x))
-    +? (← (Lean_tests.Traits.Basic.T1.f2 x x)))
+  ((← (Lean_tests.Traits.Basic.T1.f1 T x))
+    +? (← (Lean_tests.Traits.Basic.T1.f2 T x x)))
 
-class Lean_tests.Traits.Associated_types.Foo (Self : Type) (T : Type) where
+class Lean_tests.Traits.Associated_types.Foo.AssociatedTypes (Self : Type) (T :
+  Type) where
 
+class Lean_tests.Traits.Associated_types.Foo
+  (Self : Type)
+  (T : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Associated_types.Foo.AssociatedTypes (Self : Type) (T :
+      Type))]
+  where
 
-class Lean_tests.Traits.Associated_types.Bar (Self : Type) where
+class Lean_tests.Traits.Associated_types.Bar.AssociatedTypes (Self : Type) where
 
+class Lean_tests.Traits.Associated_types.Bar
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Associated_types.Bar.AssociatedTypes (Self : Type))]
+  where
 
 structure Lean_tests.Traits.Associated_types.S where
 
+
+instance Lean_tests.Traits.Associated_types.Impl_2.AssociatedTypes :
+  Lean_tests.Traits.Associated_types.Bar.AssociatedTypes i16
+  where
 
 instance Lean_tests.Traits.Associated_types.Impl_2 :
   Lean_tests.Traits.Associated_types.Bar i16
   where
 
+instance Lean_tests.Traits.Associated_types.Impl_3.AssociatedTypes (A : Type) :
+  Lean_tests.Traits.Associated_types.Foo.AssociatedTypes
+  (Rust_primitives.Hax.Tuple2 u32 A)
+  i16
+  where
 
 instance Lean_tests.Traits.Associated_types.Impl_3 (A : Type) :
   Lean_tests.Traits.Associated_types.Foo (Rust_primitives.Hax.Tuple2 u32 A) i16
   where
 
-
-class Lean_tests.Traits.Associated_types.T1 (Self : Type) where
+class Lean_tests.Traits.Associated_types.T1.AssociatedTypes (Self : Type) where
   T : Type
-  f : (Self -> T -> RustM T)
 
-class Lean_tests.Traits.Associated_types.T3 (Self : Type) where
+abbrev Lean_tests.Traits.Associated_types.T1.T :=
+  Lean_tests.Traits.Associated_types.T1.AssociatedTypes.T
+
+class Lean_tests.Traits.Associated_types.T1
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Associated_types.T1.AssociatedTypes (Self : Type))]
+  where
+  f (Self) : (Self -> associatedTypes.T -> RustM associatedTypes.T)
+
+class Lean_tests.Traits.Associated_types.T3.AssociatedTypes (Self : Type) where
   T : Type
-  [_constr_T_i0 : (Lean_tests.Traits.Associated_types.Bar T)]
   Tp : Type
-  [_constr_Tp_i0 : (Lean_tests.Traits.Associated_types.Foo Tp T)]
-  f (A : Type) [(Lean_tests.Traits.Associated_types.Bar A)] :
-    (Self -> T -> Tp -> RustM usize)
+
+abbrev Lean_tests.Traits.Associated_types.T3.T :=
+  Lean_tests.Traits.Associated_types.T3.AssociatedTypes.T
+
+abbrev Lean_tests.Traits.Associated_types.T3.Tp :=
+  Lean_tests.Traits.Associated_types.T3.AssociatedTypes.Tp
+
+class Lean_tests.Traits.Associated_types.T3
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Associated_types.T3.AssociatedTypes (Self : Type))]
+  where
+  f (Self)
+    (A : Type)
+    [Lean_tests.Traits.Associated_types.Bar.AssociatedTypes A]
+    [Lean_tests.Traits.Associated_types.Bar A ]
+    :
+    (Self -> associatedTypes.T -> associatedTypes.Tp -> RustM usize)
+
+instance Lean_tests.Traits.Associated_types.Impl.AssociatedTypes :
+  Lean_tests.Traits.Associated_types.T1.AssociatedTypes
+  Lean_tests.Traits.Associated_types.S
+  where
+  T := i32
 
 instance Lean_tests.Traits.Associated_types.Impl :
   Lean_tests.Traits.Associated_types.T1 Lean_tests.Traits.Associated_types.S
   where
-  T := i32
   f (self : Lean_tests.Traits.Associated_types.S) (x : i32) := do
     (pure (2121 : i32))
 
-class Lean_tests.Traits.Associated_types.T2 (Self : Type) where
+class Lean_tests.Traits.Associated_types.T2.AssociatedTypes (Self : Type) where
   T : Type
-  [_constr_T_i0 : (Lean_tests.Traits.Associated_types.T1 T)]
-  f : (Self -> T -> RustM usize)
+
+abbrev Lean_tests.Traits.Associated_types.T2.T :=
+  Lean_tests.Traits.Associated_types.T2.AssociatedTypes.T
+
+class Lean_tests.Traits.Associated_types.T2
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Traits.Associated_types.T2.AssociatedTypes (Self : Type))]
+  where
+  f (Self) : (Self -> associatedTypes.T -> RustM usize)
+
+instance Lean_tests.Traits.Associated_types.Impl_1.AssociatedTypes :
+  Lean_tests.Traits.Associated_types.T2.AssociatedTypes
+  Lean_tests.Traits.Associated_types.S
+  where
+  T := Lean_tests.Traits.Associated_types.S
 
 instance Lean_tests.Traits.Associated_types.Impl_1 :
   Lean_tests.Traits.Associated_types.T2 Lean_tests.Traits.Associated_types.S
   where
-  T := Lean_tests.Traits.Associated_types.S
   f (self : Lean_tests.Traits.Associated_types.S)
     (x : Lean_tests.Traits.Associated_types.S)
     := do
@@ -630,6 +960,8 @@ def Lean_tests.Loops.Errors.loop4
     (← (Rust_primitives.Hax.Folds.fold_range_return
       (0 : u32)
       (← (Core.Ops.Function.Fn.call
+        (Rust_primitives.Hax.Tuple0 -> RustM u32)
+        (Rust_primitives.Hax.Tuple1 Rust_primitives.Hax.Tuple0)
         f
         (Rust_primitives.Hax.Tuple1.mk Rust_primitives.Hax.Tuple0.mk)))
       (fun e _ => (do (pure true) : RustM Bool))
@@ -717,6 +1049,85 @@ def Lean_tests.Enums.enums
     | (Lean_tests.Enums.E.V6 (f1 := f1) (f2 := other_name_for_f2))
       => (pure Rust_primitives.Hax.Tuple0.mk)
 
+--  Function with const parameter
+def Lean_tests.Constants.Const_parameters.f
+  (N : usize) (_ : Rust_primitives.Hax.Tuple0)
+  : RustM usize
+  := do
+  (pure N)
+
+def Lean_tests.Constants.Const_parameters.N0 : usize :=
+  RustM.of_isOk (do (pure (1 : usize))) (by rfl)
+
+def Lean_tests.Constants.Const_parameters.N1 : usize :=
+  RustM.of_isOk (do (pure (10 : usize))) (by rfl)
+
+def Lean_tests.Constants.Const_parameters.test
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ←
+    ((← (Lean_tests.Constants.Const_parameters.f ((9 : usize))
+        Rust_primitives.Hax.Tuple0.mk))
+      +? (← (Lean_tests.Constants.Const_parameters.f ((10 : usize))
+        Rust_primitives.Hax.Tuple0.mk)));
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+--  Trait definition
+class Lean_tests.Constants.Const_parameters.T.AssociatedTypes (Self : Type)
+  (N_TRAIT : usize) where
+
+class Lean_tests.Constants.Const_parameters.T
+  (Self : Type)
+  (N_TRAIT : usize)
+  [associatedTypes : outParam
+    (Lean_tests.Constants.Const_parameters.T.AssociatedTypes (Self : Type)
+      (N_TRAIT : usize))]
+  where
+  f (Self N_TRAIT) (N_FIELD : usize) : (Self -> RustM usize)
+
+--  Struct definition
+structure Lean_tests.Constants.Const_parameters.S (N : usize) where
+  _0 : u32
+
+instance Lean_tests.Constants.Const_parameters.Impl.AssociatedTypes
+  (N_TRAIT : usize) :
+  Lean_tests.Constants.Const_parameters.T.AssociatedTypes
+  (Lean_tests.Constants.Const_parameters.S (N_TRAIT))
+  (N_TRAIT)
+  where
+
+instance Lean_tests.Constants.Const_parameters.Impl (N_TRAIT : usize) :
+  Lean_tests.Constants.Const_parameters.T
+  (Lean_tests.Constants.Const_parameters.S (N_TRAIT))
+  (N_TRAIT)
+  where
+  f (N_FIELD : usize) (self :
+    (Lean_tests.Constants.Const_parameters.S (N_TRAIT)))
+    := do
+    (N_TRAIT -? N_FIELD)
+
+def Lean_tests.Constants.Const_parameters.test2
+  (N2 : usize)
+  (A : Type)
+  [Lean_tests.Constants.Const_parameters.T.AssociatedTypes A (N2)]
+  [Lean_tests.Constants.Const_parameters.T A (N2) ]
+  (x : A)
+  : RustM usize
+  := do
+  let s : (Lean_tests.Constants.Const_parameters.S ((10 : usize))) :=
+    (Lean_tests.Constants.Const_parameters.S.mk (9 : u32));
+  let _ ←
+    ((← (Lean_tests.Constants.Const_parameters.T.f
+        (Lean_tests.Constants.Const_parameters.S ((10 : usize)))
+        ((10 : usize)) ((1 : usize)) s))
+      +? (← (Lean_tests.Constants.Const_parameters.T.f
+        A
+        (N2) ((11 : usize)) x)));
+  let s : (Lean_tests.Constants.Const_parameters.S ((3 : usize))) :=
+    (Lean_tests.Constants.Const_parameters.S.mk (9 : u32));
+  (Lean_tests.Constants.Const_parameters.T.f A (N2) ((4 : usize)) x)
+
 def Lean_tests.Constants.C1 : u32 :=
   RustM.of_isOk (do (pure (5678 : u32))) (by rfl)
 
@@ -747,6 +1158,141 @@ def Lean_tests.Constants.test
   let z : u32 ← (Lean_tests.Constants.C4 -? Lean_tests.Constants.C3);
   (pure Rust_primitives.Hax.Tuple0.mk)
 
+class Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
+  (Self : Type) where
+  First : Type
+  Second : Type
+
+abbrev Lean_tests.Associated_types.Multiple_associated_types.Pair.First :=
+  Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes.First
+
+abbrev Lean_tests.Associated_types.Multiple_associated_types.Pair.Second :=
+  Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes.Second
+
+class Lean_tests.Associated_types.Multiple_associated_types.Pair
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
+      (Self : Type))]
+  where
+  first (Self) : (Self -> RustM associatedTypes.First)
+  second (Self) : (Self -> RustM associatedTypes.Second)
+
+def Lean_tests.Associated_types.Multiple_associated_types.get_both
+  (P : Type)
+  [Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes P]
+  [Lean_tests.Associated_types.Multiple_associated_types.Pair P ]
+  (pair : P)
+  : RustM
+  (Rust_primitives.Hax.Tuple2
+    (Lean_tests.Associated_types.Multiple_associated_types.Pair.First P)
+    (Lean_tests.Associated_types.Multiple_associated_types.Pair.Second P))
+  := do
+  (pure (Rust_primitives.Hax.Tuple2.mk
+    (← (Lean_tests.Associated_types.Multiple_associated_types.Pair.first
+      P pair))
+    (← (Lean_tests.Associated_types.Multiple_associated_types.Pair.second
+      P pair))))
+
+instance
+  Lean_tests.Associated_types.Multiple_associated_types.Impl.AssociatedTypes
+  :
+  Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
+  (Rust_primitives.Hax.Tuple2 i32 Bool)
+  where
+  First := i32
+  Second := Bool
+
+instance Lean_tests.Associated_types.Multiple_associated_types.Impl :
+  Lean_tests.Associated_types.Multiple_associated_types.Pair
+  (Rust_primitives.Hax.Tuple2 i32 Bool)
+  where
+  first (self : (Rust_primitives.Hax.Tuple2 i32 Bool)) := do
+    (pure (Rust_primitives.Hax.Tuple2._0 self))
+  second (self : (Rust_primitives.Hax.Tuple2 i32 Bool)) := do
+    (pure (Rust_primitives.Hax.Tuple2._1 self))
+
+def Lean_tests.Associated_types.Multiple_associated_types.b
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let pair : (Rust_primitives.Hax.Tuple2 i32 Bool) :=
+    (Rust_primitives.Hax.Tuple2.mk (42 : i32) true);
+  let both : (Rust_primitives.Hax.Tuple2 i32 Bool) ←
+    (Lean_tests.Associated_types.Multiple_associated_types.get_both
+      (Rust_primitives.Hax.Tuple2 i32 Bool) pair);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Lean_tests.Associated_types.Multiple_associated_types.get_first_as_i32
+  (P : Type)
+  [Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes P]
+  [Lean_tests.Associated_types.Multiple_associated_types.Pair
+    P
+    (associatedTypes := {
+      show
+        Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
+        P
+      by infer_instance
+      with First := i32})]
+  (pair : P)
+  : RustM i32
+  := do
+  (Lean_tests.Associated_types.Multiple_associated_types.Pair.first P pair)
+
+class Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes (Self : Type)
+  where
+  Item : Type
+
+abbrev Lean_tests.Associated_types.Basic.Iterable.Item :=
+  Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes.Item
+
+class Lean_tests.Associated_types.Basic.Iterable
+  (Self : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes (Self : Type))]
+  where
+  first (Self) : (Self -> RustM associatedTypes.Item)
+
+def Lean_tests.Associated_types.Basic.just_the_first
+  (I : Type)
+  [Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes I]
+  [Lean_tests.Associated_types.Basic.Iterable I ]
+  (iter : I)
+  : RustM (Lean_tests.Associated_types.Basic.Iterable.Item I)
+  := do
+  (Lean_tests.Associated_types.Basic.Iterable.first I iter)
+
+def Lean_tests.Associated_types.Basic.first_plus_1
+  (I : Type)
+  [Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes I]
+  [Lean_tests.Associated_types.Basic.Iterable
+    I
+    (associatedTypes := {
+      show Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes I
+      by infer_instance
+      with Item := i32})]
+  (iter : I)
+  : RustM i32
+  := do
+  ((← (Lean_tests.Associated_types.Basic.Iterable.first I iter)) +? (1 : i32))
+
+instance Lean_tests.Associated_types.Basic.Impl.AssociatedTypes :
+  Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes Bool
+  where
+  Item := i32
+
+instance Lean_tests.Associated_types.Basic.Impl :
+  Lean_tests.Associated_types.Basic.Iterable Bool
+  where
+  first (self : Bool) := do (pure (3 : i32))
+
+def Lean_tests.Associated_types.Basic.a
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ← (Lean_tests.Associated_types.Basic.first_plus_1 Bool true);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
 def Lean_tests.FORTYTWO : usize :=
   RustM.of_isOk (do (pure (42 : usize))) (by rfl)
 
@@ -771,9 +1317,15 @@ def Lean_tests.closure (_ : Rust_primitives.Hax.Tuple0) : RustM i32 := do
   let f2 : (i32 -> i32 -> RustM i32) :=
     (fun y z => (do ((← (y +? x)) +? z) : RustM i32));
   let res1 : i32 ←
-    (Core.Ops.Function.Fn.call f1 (Rust_primitives.Hax.Tuple1.mk (1 : i32)));
+    (Core.Ops.Function.Fn.call
+      (i32 -> RustM i32)
+      (Rust_primitives.Hax.Tuple1 i32)
+      f1
+      (Rust_primitives.Hax.Tuple1.mk (1 : i32)));
   let res2 : i32 ←
     (Core.Ops.Function.Fn.call
+      (i32 -> i32 -> RustM i32)
+      (Rust_primitives.Hax.Tuple2 i32 i32)
       f2
       (Rust_primitives.Hax.Tuple2.mk (2 : i32) (3 : i32)));
   (res1 +? res2)

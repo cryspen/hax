@@ -13,6 +13,7 @@ Changes to the Rust Engine:
  - Add a phase to handle the monadic encoding: it explicitly introduces two new
    Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
    lift monadic computations into values) (#1746)
+ - Add a mechanism to lookup pre- and post-conditions (#1805)
 
 Changes to the frontend:
  - Update the pin of rustc (#1765)
@@ -37,6 +38,10 @@ Changes to the Lean backend:
  - Add support for binding subpatterns in match constructs (#1790)
  - Add error when using patterns in function parameters (#1792)
  - Add grind annotations for various lemmas in the Lean library (#1802)
+ - Add support for constant parameters to functions and traits (#1797)
+ - Add support for associated types with equality constraints (#1806)
+ - Make trait-level arguments explicit for all trait functions, adding them as
+   extra parameters (#1803)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
