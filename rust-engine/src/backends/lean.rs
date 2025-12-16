@@ -1187,6 +1187,7 @@ set_option linter.unusedVariables false
                                 items
                                     .iter()
                                     .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                    .map(|item| docs![(generics.params.clone(), item)])
                             ),
                         ]
                         .nest(INDENT),
