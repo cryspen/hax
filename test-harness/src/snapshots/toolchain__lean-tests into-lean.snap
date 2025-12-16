@@ -51,77 +51,7 @@ Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
 \u001B[1m\u001B[94m 9 |\u001B[0m \u001B[1m\u001B[91m|\u001B[0m             _ => 0,
 \u001B[1m\u001B[94m10 |\u001B[0m \u001B[1m\u001B[91m|\u001B[0m         });
    \u001B[1m\u001B[94m|\u001B[0m \u001B[1m\u001B[91m|__________^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 0`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/traits.rs:71:9
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m71 |\u001B[0m         type T;
-   \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 1`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/traits.rs:84:9
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m84 |\u001B[0m         type T: Bar;
-   \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^^^^^^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 2`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/traits.rs:85:9
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m85 |\u001B[0m         type Tp<A: Bar>: Foo<Self::T>;
-   \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 3`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/traits.rs:76:9
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m76 |\u001B[0m         type T: T1;
-   \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^^^^^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 4`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/associated_types.rs:29:9
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m29 |\u001B[0m         type First;
-   \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^^^^^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 5`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/associated_types.rs:30:9
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m30 |\u001B[0m         type Second;
-   \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^^^^^^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0001] something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 6`.
-
-Note: the error was labeled with context `Lean Printer`.
-\u001B[0m
- \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/associated_types.rs:3:9
-  \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m3 |\u001B[0m         type Item;
-  \u001B[1m\u001B[94m|\u001B[0m         \u001B[1m\u001B[91m^^^^^^^^^^\u001B[0m
-  \u001B[1m\u001B[94m|\u001B[0m"""
+   \u001B[1m\u001B[94m|\u001B[0m"""
 [[stdout.diagnostics]]
 message = """
 Explicit rejection by a phase in the Hax engine:
@@ -145,69 +75,6 @@ Please upvote or comment this issue if you see this error message.
 \u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
 \u001B[0m"""
 spans = ['Span { lo: Loc { line: 8, col: 10 }, hi: Loc { line: 10, col: 10 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 0`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 71, col: 8 }, hi: Loc { line: 71, col: 15 }, filename: Real(LocalPath("lean-tests/src/traits.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 1`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 84, col: 8 }, hi: Loc { line: 84, col: 20 }, filename: Real(LocalPath("lean-tests/src/traits.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 2`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 85, col: 8 }, hi: Loc { line: 85, col: 38 }, filename: Real(LocalPath("lean-tests/src/traits.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 3`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 76, col: 8 }, hi: Loc { line: 76, col: 19 }, filename: Real(LocalPath("lean-tests/src/traits.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 4`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 29, col: 8 }, hi: Loc { line: 29, col: 19 }, filename: Real(LocalPath("lean-tests/src/associated_types.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 5`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 30, col: 8 }, hi: Loc { line: 30, col: 20 }, filename: Real(LocalPath("lean-tests/src/associated_types.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-something is not implemented yet.
-The method `trait_item` is not implemented in the backend Lean. To show the AST fragment that could not be printed, run `just debug-json 6`.
-
-\u001B[90mNote: the error was labeled with context `Lean Printer`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 3, col: 8 }, hi: Loc { line: 3, col: 18 }, filename: Real(LocalPath("lean-tests/src/associated_types.rs")), rust_span_data: None }']
 
 [stdout.files]
 "Lean_tests.lean" = '''
@@ -747,7 +614,7 @@ instance Lean_tests.Traits.Associated_types.Impl_3 (A : Type) :
   where
 
 class Lean_tests.Traits.Associated_types.T1.AssociatedTypes (Self : Type) where
-  (`trait_item` unimpl, `just debug-json 0`)
+  T : Type
 
 abbrev Lean_tests.Traits.Associated_types.T1.T :=
   Lean_tests.Traits.Associated_types.T1.AssociatedTypes.T
@@ -760,8 +627,8 @@ class Lean_tests.Traits.Associated_types.T1
   f (Self) : (Self -> associatedTypes.T -> RustM associatedTypes.T)
 
 class Lean_tests.Traits.Associated_types.T3.AssociatedTypes (Self : Type) where
-  (`trait_item` unimpl, `just debug-json 1`)
-  (`trait_item` unimpl, `just debug-json 2`)
+  T : Type
+  Tp : Type
 
 abbrev Lean_tests.Traits.Associated_types.T3.T :=
   Lean_tests.Traits.Associated_types.T3.AssociatedTypes.T
@@ -794,7 +661,7 @@ instance Lean_tests.Traits.Associated_types.Impl :
     (pure (2121 : i32))
 
 class Lean_tests.Traits.Associated_types.T2.AssociatedTypes (Self : Type) where
-  (`trait_item` unimpl, `just debug-json 3`)
+  T : Type
 
 abbrev Lean_tests.Traits.Associated_types.T2.T :=
   Lean_tests.Traits.Associated_types.T2.AssociatedTypes.T
@@ -1293,8 +1160,8 @@ def Lean_tests.Constants.test
 
 class Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
   (Self : Type) where
-  (`trait_item` unimpl, `just debug-json 4`)
-  (`trait_item` unimpl, `just debug-json 5`)
+  First : Type
+  Second : Type
 
 abbrev Lean_tests.Associated_types.Multiple_associated_types.Pair.First :=
   Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes.First
@@ -1374,7 +1241,7 @@ def Lean_tests.Associated_types.Multiple_associated_types.get_first_as_i32
 
 class Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes (Self : Type)
   where
-  (`trait_item` unimpl, `just debug-json 6`)
+  Item : Type
 
 abbrev Lean_tests.Associated_types.Basic.Iterable.Item :=
   Lean_tests.Associated_types.Basic.Iterable.AssociatedTypes.Item
