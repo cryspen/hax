@@ -121,7 +121,6 @@ module TransformToInputLanguage =
   |> Phases.Traits_specs
   |> Phases.Simplify_hoisting
   |> Phases.Newtype_as_refinement
-  |> Phases.Bundle_cycles
   |> Phases.Reorder_fields
   |> Phases.Sort_items
   |> SubtypeToInputLanguage
