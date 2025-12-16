@@ -37,6 +37,7 @@ Changes to the Lean backend:
  - Add support for pattern matching on constant literals (#1789)
  - Add support for binding subpatterns in match constructs (#1790)
  - Add error when using patterns in function parameters (#1792)
+ - Add grind annotations for various lemmas in the Lean library (#1802)
  - Add support for constant parameters to functions and traits (#1797)
  - Add support for associated types with equality constraints (#1806)
  - Make trait-level arguments explicit for all trait functions, adding them as
