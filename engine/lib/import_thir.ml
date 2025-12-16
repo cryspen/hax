@@ -1435,7 +1435,7 @@ let make ~krate : (module EXPR) =
 
 let c_trait_item (item : Thir.trait_item) : trait_item =
   let open (val make ~krate:item.owner_id.contents.value.krate : EXPR) in
-  let { params; constraints } = c_generics item.generics in
+  let { params; constraints } = c_generics ~offset:1 item.generics in
   (* TODO: see TODO in impl items *)
   let ti_ident = Concrete_ident.of_def_id ~value:false item.owner_id in
   {

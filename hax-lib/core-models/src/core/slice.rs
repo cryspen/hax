@@ -4,10 +4,26 @@ struct Slice<T>(T);
 
 pub mod iter {
     use crate::option::Option;
-    use rust_primitives::sequence::*;
+    use rust_primitives::{sequence::*, slice::*};
 
-    pub struct Chunks<T>(pub Seq<T>);
-    pub struct ChunksExact<T>(pub Seq<T>);
+    pub struct Chunks<'a, T> {
+        cs: usize,
+        elements: &'a [T],
+    }
+    impl<'a, T> Chunks<'a, T> {
+        pub fn new(cs: usize, elements: &'a [T]) -> Chunks<'a, T> {
+            Chunks { cs, elements }
+        }
+    }
+    pub struct ChunksExact<'a, T> {
+        cs: usize,
+        elements: &'a [T],
+    }
+    impl<'a, T> ChunksExact<'a, T> {
+        pub fn new(cs: usize, elements: &'a [T]) -> ChunksExact<'a, T> {
+            ChunksExact { cs, elements }
+        }
+    }
     pub struct Iter<T>(pub Seq<T>);
 
     impl<T> crate::iter::traits::iterator::Iterator for Iter<T> {
@@ -22,6 +38,36 @@ pub mod iter {
             }
         }
     }
+
+    impl<'a, T> crate::iter::traits::iterator::Iterator for Chunks<'a, T> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            if slice_length(self.elements) == 0 {
+                Option::None
+            } else if slice_length(self.elements) < self.cs {
+                let res = self.elements;
+                self.elements = slice_slice(self.elements, 0, 0);
+                Option::Some(res)
+            } else {
+                let (res, new_elements) = slice_split_at(self.elements, self.cs);
+                self.elements = new_elements;
+                Option::Some(res)
+            }
+        }
+    }
+
+    impl<'a, T> crate::iter::traits::iterator::Iterator for ChunksExact<'a, T> {
+        type Item = &'a [T];
+        fn next(&mut self) -> Option<Self::Item> {
+            if slice_length(self.elements) < self.cs {
+                Option::None
+            } else {
+                let (res, new_elements) = slice_split_at(self.elements, self.cs);
+                self.elements = new_elements;
+                Option::Some(res)
+            }
+        }
+    }
 }
 
 #[hax_lib::attributes]
@@ -29,16 +75,14 @@ impl<T> Slice<T> {
     fn len(s: &[T]) -> usize {
         rust_primitives::slice::slice_length(s)
     }
-    #[hax_lib::opaque]
-    fn chunks(s: &[T], cs: usize) -> iter::Chunks<T> {
-        iter::Chunks(rust_primitives::sequence::seq_empty())
+    fn chunks<'a>(s: &'a [T], cs: usize) -> iter::Chunks<'a, T> {
+        iter::Chunks::new(cs, s)
     }
     fn iter(s: &[T]) -> iter::Iter<T> {
         iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
-    #[hax_lib::opaque]
-    fn chunks_exact(s: &[T], cs: usize) -> iter::ChunksExact<T> {
-        iter::ChunksExact(rust_primitives::sequence::seq_empty())
+    fn chunks_exact<'a>(s: &'a [T], cs: usize) -> iter::ChunksExact<'a, T> {
+        iter::ChunksExact::new(cs, s)
     }
     #[hax_lib::requires(s.len() == src.len())]
     fn copy_from_slice(s: &mut [T], src: &[T])

@@ -14,8 +14,4 @@ class t_FromStr (v_Self: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-assume
-val impl': t_FromStr u64
-
-unfold
-let impl = impl'
+val impl:t_FromStr u64

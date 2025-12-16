@@ -347,6 +347,7 @@ let impl_2
         Core_models.Result.Result_Ok
         (Rust_primitives.Slice.array_from_fn #v_T
             v_N
+            #(usize -> v_T)
             (fun i ->
                 let i:usize = i in
                 Rust_primitives.Slice.slice_index #v_T x i <: v_T))

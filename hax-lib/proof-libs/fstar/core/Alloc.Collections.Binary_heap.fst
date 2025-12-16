@@ -71,6 +71,7 @@ let impl_10__pop
           let i:usize = i in
           if
             Core_models.Option.impl__is_none_or #v_T
+              #(v_T -> bool)
               max
               (fun max ->
                   let max:v_T = max in
@@ -135,6 +136,7 @@ let impl_11__peek
           let i:usize = i in
           if
             Core_models.Option.impl__is_none_or #v_T
+              #(v_T -> bool)
               max
               (fun max ->
                   let max:v_T = max in

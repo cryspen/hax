@@ -7,4 +7,3 @@ impl f32 {
         panic!()
     }
 }
-

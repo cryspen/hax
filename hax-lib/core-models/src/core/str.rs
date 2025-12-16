@@ -1,4 +1,3 @@
-
 mod converts {
     #[hax_lib::opaque]
     fn from_utf8(s: &[u8]) -> crate::result::Result<&str, super::error::Utf8Error> {
@@ -15,7 +14,7 @@ mod iter {
 }
 
 mod traits {
-    trait FromStr : Sized {
+    trait FromStr: Sized {
         type Err;
         fn from_str(s: &str) -> crate::result::Result<Self, Self::Err>;
     }

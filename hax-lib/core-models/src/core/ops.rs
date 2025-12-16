@@ -105,10 +105,22 @@ pub mod function {
     f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
   }"
     )]
-    impl<Args, Out> FnOnce<Args> for fn(Args) -> Out {
+    impl<Arg, Out> FnOnce<Arg> for fn(Arg) -> Out {
         type Output = Out;
-        fn call_once(&self, args: Args) -> Out {
-            self(args)
+        fn call_once(&self, arg: Arg) -> Out {
+            self(arg)
+        }
+    }
+    impl<Arg1, Arg2, Out> FnOnce<(Arg1, Arg2)> for fn(Arg1, Arg2) -> Out {
+        type Output = Out;
+        fn call_once(&self, arg: (Arg1, Arg2)) -> Out {
+            self(arg.0, arg.1)
+        }
+    }
+    impl<Arg1, Arg2, Arg3, Out> FnOnce<(Arg1, Arg2, Arg3)> for fn(Arg1, Arg2, Arg3) -> Out {
+        type Output = Out;
+        fn call_once(&self, arg: (Arg1, Arg2, Arg3)) -> Out {
+            self(arg.0, arg.1, arg.2)
         }
     }
 }

@@ -514,11 +514,12 @@ struct
   and fun_application ~span f args ~trait_generic_args ~generic_args =
     let pgeneric_args ?qualifier =
       let qualifier_or default = Option.value ~default qualifier in
-      List.filter ~f:(function GType (TArrow _) -> false | _ -> true)
-      >> List.map ~f:(function
-           | GConst const -> (pexpr const, qualifier_or F.AST.Nothing)
-           | GLifetime _ -> .
-           | GType ty -> (pty span ty, qualifier_or F.AST.Hash))
+      (* List.filter ~f:(function GType (TArrow _) -> false | _ -> true)
+      >> *)
+      List.map ~f:(function
+        | GConst const -> (pexpr const, qualifier_or F.AST.Nothing)
+        | GLifetime _ -> .
+        | GType ty -> (pty span ty, qualifier_or F.AST.Hash))
     in
     let args = List.map ~f:(pexpr &&& Fn.const F.AST.Nothing) args in
     let trait_generic_args =

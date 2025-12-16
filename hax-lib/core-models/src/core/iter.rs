@@ -17,61 +17,89 @@ pub mod traits {
             #[hax_lib::requires(true)]
             fn next(&mut self) -> Option<Self::Item>;
         }
-        #[hax_lib::opaque]
-        fn fold<I: Iterator, B, F: FnOnce<(B, I::Item), Output = B>>(
-            mut it: I,
-            init: B,
-            f: F,
-        ) -> B {
-            let mut accum = init;
-            while let Option::Some(x) = it.next() {
-                accum = f.call_once((accum, x));
+
+        // This trait is an addition to deal with the default methods that the F* backend doesn't handle
+        trait IteratorMethods: Iterator {
+            fn fold<B, F: FnOnce<(B, Self::Item), Output = B>>(self, init: B, f: F) -> B;
+            fn enumerate(self) -> Enumerate<Self>
+            where
+                Self: Sized;
+            fn step_by(self, step: usize) -> StepBy<Self>
+            where
+                Self: Sized;
+            fn map<O, F: FnOnce<Self::Item, Output = O>>(self, f: F) -> Map<Self, F>
+            where
+                Self: Sized;
+            fn all<F: FnOnce<Self::Item, Output = bool>>(self, f: F) -> bool;
+            fn take(self, n: usize) -> Take<Self>
+            where
+                Self: Sized;
+            fn flat_map<U: Iterator, F: FnOnce<Self::Item, Output = U>>(
+                self,
+                f: F,
+            ) -> FlatMap<Self, U, F>
+            where
+                Self: Sized;
+            fn flatten(self) -> Flatten<Self>
+            where
+                Self::Item: Iterator,
+                Self: Sized;
+            fn zip<I2: Iterator>(self, it2: I2) -> Zip<Self, I2>
+            where
+                Self: Sized;
+        }
+
+        impl<I: Iterator> IteratorMethods for I {
+            fn fold<B, F: FnOnce<(B, I::Item), Output = B>>(mut self, init: B, f: F) -> B {
+                let mut accum = init;
+                /* while let Option::Some(x) = self.next() {
+                    accum = f.call_once((accum, x));
+                } */
+                accum
             }
-            accum
-        }
 
-        fn enumerate<I: Iterator>(it: I) -> Enumerate<I> {
-            Enumerate::new(it)
-        }
-
-        fn step_by<I: Iterator>(it: I, step: usize) -> StepBy<I> {
-            StepBy::new(it, step)
-        }
-
-        fn map<I: Iterator, O, F: FnOnce<I::Item, Output = O>>(it: I, f: F) -> Map<I, F> {
-            Map::new(it, f)
-        }
-
-        #[hax_lib::opaque]
-        fn all<I: Iterator, F: FnOnce<I::Item, Output = bool>>(mut it: I, f: F) -> bool {
-            while let Option::Some(x) = it.next() {
-                if !f.call_once(x) {
-                    return false;
-                }
+            fn enumerate(self) -> Enumerate<I> {
+                Enumerate::new(self)
             }
-            true
-        }
 
-        fn take<I: Iterator>(it: I, n: usize) -> Take<I> {
-            Take::new(it, n)
-        }
+            fn step_by(self, step: usize) -> StepBy<I> {
+                StepBy::new(self, step)
+            }
 
-        fn flat_map<I: Iterator, U: Iterator, F: FnOnce<I::Item, Output = U>>(
-            it: I,
-            f: F,
-        ) -> FlatMap<I, U, F> {
-            FlatMap::new(it, f)
-        }
+            fn map<O, F: FnOnce<I::Item, Output = O>>(self, f: F) -> Map<I, F> {
+                Map::new(self, f)
+            }
 
-        fn flatten<I: Iterator>(it: I) -> Flatten<I>
-        where
-            I::Item: Iterator,
-        {
-            Flatten::new(it)
-        }
+            fn all<F: FnOnce<I::Item, Output = bool>>(mut self, f: F) -> bool {
+                /* while let Option::Some(x) = self.next() {
+                    if !f.call_once(x) {
+                        return false;
+                    }
+                } */
+                true
+            }
 
-        fn zip<I1: Iterator, I2: Iterator>(it1: I1, it2: I2) -> Zip<I1, I2> {
-            Zip::new(it1, it2)
+            fn take(self, n: usize) -> Take<I> {
+                Take::new(self, n)
+            }
+
+            fn flat_map<U: Iterator, F: FnOnce<I::Item, Output = U>>(
+                self,
+                f: F,
+            ) -> FlatMap<I, U, F> {
+                FlatMap::new(self, f)
+            }
+
+            fn flatten(self) -> Flatten<I>
+            where
+                I::Item: Iterator,
+            {
+                Flatten::new(self)
+            }
+
+            fn zip<I2: Iterator>(self, it2: I2) -> Zip<Self, I2> {
+                Zip::new(self, it2)
+            }
         }
 
         // TODO rev: DoubleEndedIterator?

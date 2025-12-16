@@ -5,23 +5,16 @@ open Rust_primitives
 
 let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.slice_length #v_T s
 
-assume
-val impl__chunks': #v_T: Type0 -> s: t_Slice v_T -> cs: usize -> Core_models.Slice.Iter.t_Chunks v_T
-
-unfold
-let impl__chunks (#v_T: Type0) = impl__chunks' #v_T
+let impl__chunks (#v_T: Type0) (s: t_Slice v_T) (cs: usize) : Core_models.Slice.Iter.t_Chunks v_T =
+  Core_models.Slice.Iter.impl__new #v_T cs s
 
 let impl__iter (#v_T: Type0) (s: t_Slice v_T) : Core_models.Slice.Iter.t_Iter v_T =
   Core_models.Slice.Iter.Iter (Rust_primitives.Sequence.seq_from_slice #v_T s)
   <:
   Core_models.Slice.Iter.t_Iter v_T
 
-assume
-val impl__chunks_exact': #v_T: Type0 -> s: t_Slice v_T -> cs: usize
-  -> Core_models.Slice.Iter.t_ChunksExact v_T
-
-unfold
-let impl__chunks_exact (#v_T: Type0) = impl__chunks_exact' #v_T
+let impl__chunks_exact (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
+    : Core_models.Slice.Iter.t_ChunksExact v_T = Core_models.Slice.Iter.impl_1__new #v_T cs s
 
 let impl__is_empty (#v_T: Type0) (s: t_Slice v_T) : bool = (impl__len #v_T s <: usize) =. mk_usize 0
 

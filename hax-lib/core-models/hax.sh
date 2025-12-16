@@ -3,9 +3,9 @@ set -e
 
 function extract_and_copy() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into fstar --interfaces '+!**::num::error +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::ops::bit +!core_models::ops::arith +!core_models::ops::function +!core_models::fmt +!core_models::fmt::rt +!core_models::mem +!core_models::mem::*'
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into fstar --interfaces '+!core_models::str::* +!**::num::error +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::ops::bit +!core_models::ops::arith +!core_models::fmt +!core_models::fmt::rt +!core_models::mem +!core_models::mem::*'
     cp proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p std \; into fstar --interfaces '+!**' 
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p std \; into -i '-core_models::**' fstar --interfaces '+!**' 
     cp std/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p alloc \; into fstar --interfaces '+!**::collections::btree::** +!**::collections::vec_deque::**' 
     cp alloc/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
