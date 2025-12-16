@@ -118,7 +118,7 @@ pub(crate) fn setup_printer_struct(_attr: TokenStream, item: TokenStream) -> Tok
     let extra_linked_item_graph_field_ident_ts = add_field_to_item_struct(
         &mut item,
         "linked_item_graph",
-        parse_quote! {#krate::attributes::LinkedItemGraph},
+        parse_quote! {::std::rc::Rc<#krate::attributes::LinkedItemGraph>},
     );
 
     let struct_name = &item.ident;
@@ -139,7 +139,7 @@ pub(crate) fn setup_printer_struct(_attr: TokenStream, item: TokenStream) -> Tok
             fn linked_item_graph(&self) -> &#krate::attributes::LinkedItemGraph {
                 &self.#extra_linked_item_graph_field_ident_ts
             }
-            fn with_linked_item_graph(mut self, graph: #krate::attributes::LinkedItemGraph) -> Self {
+            fn with_linked_item_graph(mut self, graph: ::std::rc::Rc<#krate::attributes::LinkedItemGraph>) -> Self {
                 self.#extra_linked_item_graph_field_ident_ts = graph;
                 self
             }

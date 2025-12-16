@@ -17,7 +17,7 @@
 pub mod lean;
 pub mod rust;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, rc::Rc};
 
 use crate::{
     ast::{Item, Metadata, Module, span::Span},
@@ -43,7 +43,7 @@ pub trait Backend {
     /// Construct a new printer instance.
     ///
     /// By default this calls `Default::default` on the printer type.
-    fn printer(&self, linked_item_graph: LinkedItemGraph) -> Self::Printer {
+    fn printer(&self, linked_item_graph: Rc<LinkedItemGraph>) -> Self::Printer {
         Self::Printer::default().with_linked_item_graph(linked_item_graph)
     }
 
@@ -94,16 +94,17 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
         phase.apply(&mut items);
     }
 
+    let linked_items_graph = Rc::new(LinkedItemGraph::new(
+        &items,
+        prelude::diagnostics::Context::Printer(B::NAME.into()),
+    ));
+
     let modules = backend.items_to_module(items);
     modules
         .into_iter()
         .map(|module: Module| {
-            let linked_items_graph = LinkedItemGraph::new(
-                &module.items,
-                prelude::diagnostics::Context::Printer(B::NAME.into()),
-            );
             let path = backend.module_path(&module).into_string();
-            let (contents, _) = backend.printer(linked_items_graph).print(module);
+            let (contents, _) = backend.printer(linked_items_graph.clone()).print(module);
             File {
                 path,
                 contents,

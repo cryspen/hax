@@ -53,7 +53,7 @@ pub trait HasLinkedItemGraph {
     /// Get a reference of the `LinkedItemGraph`.
     fn linked_item_graph(&self) -> &LinkedItemGraph;
     /// Set a `LinkedItemGraph`.
-    fn with_linked_item_graph(self, graph: LinkedItemGraph) -> Self;
+    fn with_linked_item_graph(self, graph: std::rc::Rc<LinkedItemGraph>) -> Self;
 }
 
 /// Placeholder type for sourcemaps.
