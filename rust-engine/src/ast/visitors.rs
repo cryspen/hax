@@ -17,6 +17,7 @@
 
 use super::*;
 use derive_generic_visitor::*;
+use hax_lib_macros_types::AttrPayload;
 
 pub mod wrappers {
     //! This module provides a visitor wrappers, or transformer of visitors.
@@ -266,7 +267,7 @@ mod replaced {
             ),
             override(AstNodes),
             override_skip(
-                Span, Fragment, GlobalId, Diagnostic,
+                Span, Fragment, GlobalId, Diagnostic, AttrPayload,
             ),
         )]
         /// Helper trait to drive visitor.
@@ -297,7 +298,7 @@ mod replaced {
             ),
             override(AstNodes),
             override_skip(
-                Span, Fragment, GlobalId, Diagnostic,
+                Span, Fragment, GlobalId, Diagnostic, AttrPayload,
             ),
         )]
         /// Helper trait to drive visitor.

@@ -13,6 +13,7 @@ Changes to the Rust Engine:
  - Add a phase to handle the monadic encoding: it explicitly introduces two new
    Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
    lift monadic computations into values) (#1746)
+ - Add a mechanism to lookup pre- and post-conditions (#1805)
 
 Changes to the frontend:
  - Update the pin of rustc (#1765)

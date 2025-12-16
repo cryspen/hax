@@ -32,8 +32,8 @@ pub fn setup_error_handling_struct(_attr: TokenStream, item: TokenStream) -> Tok
 /// printer. This macro will also derive implementations of
 /// `hax_rust_engine::printer::pretty_ast::HasContextualSpan` for the struct.
 #[proc_macro_attribute]
-pub fn setup_span_handling_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
-    struct_fields::setup_span_handling_struct(_attr, item)
+pub fn setup_printer_struct(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    struct_fields::setup_printer_struct(_attr, item)
 }
 
 mod utils {

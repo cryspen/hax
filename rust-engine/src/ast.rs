@@ -16,9 +16,10 @@ pub mod identifiers;
 pub mod literals;
 pub mod resugared;
 pub mod span;
+pub mod utils;
 pub mod visitors;
 
-use crate::symbol::Symbol;
+use crate::{ast::diagnostics::Context, symbol::Symbol};
 use diagnostics::Diagnostic;
 use fragment::Fragment;
 use hax_rust_engine_macros::*;
@@ -77,6 +78,20 @@ pub struct Region;
 /// A indirection for the representation of types.
 #[derive_group_for_ast]
 pub struct Ty(pub(crate) Box<TyKind>);
+
+impl Ty {
+    /// The type `bool`
+    pub fn bool() -> Self {
+        Self(Box::new(TyKind::Primitive(PrimitiveTy::Bool)))
+    }
+    /// The (hax) type `Prop`
+    pub fn prop() -> Self {
+        Self(Box::new(TyKind::App {
+            head: crate::names::hax_lib::prop::Prop,
+            args: vec![],
+        }))
+    }
+}
 
 /// Describes any Rust type (e.g., `i32`, `Vec<T>`, `fn(i32) -> bool`).
 #[derive_group_for_ast]
@@ -192,6 +207,31 @@ pub struct ErrorNode {
     pub fragment: Box<Fragment>,
     /// The error(s) encountered.
     pub diagnostics: Vec<Diagnostic>,
+}
+
+impl ErrorNode {
+    /// Creates an assertion failure out of an AST fragment and a message.
+    pub fn assertion_failure(
+        fragment: impl Into<Fragment> + HasMetadata,
+        context: Context,
+        message: impl Into<String>,
+    ) -> Self {
+        let span = fragment.span();
+        let fragment = fragment.into();
+        ErrorNode {
+            diagnostics: vec![Diagnostic::new(
+                fragment.clone(),
+                diagnostics::DiagnosticInfo {
+                    context,
+                    span,
+                    kind: hax_types::diagnostics::Kind::AssertionFailure {
+                        details: message.into(),
+                    },
+                },
+            )],
+            fragment: Box::new(fragment),
+        }
+    }
 }
 
 /// A `dyn` trait. The generic arguments are known but the actual type
@@ -1172,6 +1212,8 @@ pub enum AttributeKind {
         /// The contents of the comment
         body: String,
     },
+    /// Hax attribute
+    Hax(hax_lib_macros_types::AttrPayload),
 }
 
 /// Represents the kind of a doc comment.

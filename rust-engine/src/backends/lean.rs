@@ -10,10 +10,7 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    phase::{
-        explicit_monadic::ExplicitMonadic, reject_not_do_lean_dsl::RejectNotDoLeanDSL,
-        unreachable_by_invariant,
-    },
+    phase::*,
 };
 
 mod binops {
@@ -27,7 +24,7 @@ const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
 
 /// The Lean printer
-#[setup_span_handling_struct]
+#[setup_printer_struct]
 #[derive(Default, Clone)]
 pub struct LeanPrinter;
 
@@ -139,11 +136,11 @@ impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from_iter(self.printer().render_strings(&module.ident.view()))
+        camino::Utf8PathBuf::from_iter(LeanPrinter::default().render_strings(&module.ident.view()))
             .with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+    fn phases(&self) -> Vec<Box<dyn Phase>> {
         vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
     }
 }
@@ -154,12 +151,6 @@ impl LeanPrinter {
     /// unsupported items
     pub fn printable_item(item: &Item) -> bool {
         match &item.kind {
-            // Anonymous consts
-            ItemKind::Resugared(ResugaredItemKind::Constant {
-                name,
-                body: _,
-                generics: _,
-            }) if name.is_anonymous_const() => false,
             // Other unprintable items
             ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
             // Printable items
@@ -1534,7 +1525,7 @@ set_option linter.unusedVariables false
 
         fn attribute(&self, Attribute { kind, span: _ }: &Attribute) -> DocBuilder<A> {
             match kind {
-                AttributeKind::Tool { .. } => {
+                AttributeKind::Tool { .. } | AttributeKind::Hax { .. } => {
                     nil!()
                 }
                 AttributeKind::DocComment {

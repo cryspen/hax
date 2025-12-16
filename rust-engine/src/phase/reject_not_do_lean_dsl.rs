@@ -1,11 +1,13 @@
-//! Rejection Phase for patterns unsupported by Lean's do-notation DSL
-//!
-//! This module defines the phase that rejects unsupported interleavings of expressions and
-//! statements, built as a visitor.
-
 use crate::ast::*;
 use crate::ast::{diagnostics::*, visitors::*};
 use crate::phase::Phase;
+
+/// Rejection Phase for patterns unsupported by Lean's do-notation DSL
+///
+/// This phase rejects unsupported interleavings of expressions and statements.
+/// It is built as a visitor.
+#[derive(Default)]
+pub struct RejectNotDoLeanDSL;
 
 /// Expressions are either do-statements or do-expressions. The former can be downgraded into the
 /// latter.
@@ -31,10 +33,6 @@ impl Default for DoDSLExprKind {
         Self::Statement
     }
 }
-
-/// Placeholder struct for the rejection phase
-#[derive(Default)]
-pub struct RejectNotDoLeanDSL;
 
 /// Visitor internal state
 #[setup_error_handling_struct]
