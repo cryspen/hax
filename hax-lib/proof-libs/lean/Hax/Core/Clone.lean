@@ -10,7 +10,12 @@ open Rust_primitives.Hax
 
 namespace Core.Clone
 
-class Clone (Self : Type) where
+class Clone.AssociatedTypes (Self : Type) where
+
+class Clone
+  (Self : Type)
+  [associatedTypes : outParam (Clone.AssociatedTypes (Self :
+      Type))]
 
 def Clone.clone {Self: Type} : Self -> RustM Self :=
   fun x => pure x

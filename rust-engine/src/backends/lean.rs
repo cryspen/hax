@@ -1521,7 +1521,7 @@ set_option linter.unusedVariables false
             &self,
             ImplItem {
                 meta: _,
-                generics: _,
+                generics,
                 kind,
                 ident,
             }: &ImplItem,
@@ -1533,7 +1533,20 @@ set_option linter.unusedVariables false
                     parent_bounds: _,
                 } => docs![name, reflow!(" := "), ty],
                 ImplItemKind::Fn { body, params } => docs![
-                    docs![name, line!(), zip_right!(params, line!()).group(), ":= do",].group(),
+                    docs![
+                        name,
+                        line!(),
+                        ":=",
+                        line!(),
+                        "fun",
+                        line!(),
+                        generics,
+                        zip_right!(params, line!()).group(),
+                        "=>",
+                        line!(),
+                        "do",
+                    ]
+                    .group(),
                     line!(),
                     body
                 ]
