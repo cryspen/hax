@@ -1,6 +1,6 @@
 module Hax_lib.Int
 
-open Core_models
+open Rust_primitives
 
 unfold type t_Int = int
 

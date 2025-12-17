@@ -28,6 +28,15 @@ macro_rules! uint_impl {
             fn overflowing_add(x: $Self, y: $Self) -> ($Self, bool) {
                 paste! { [<overflowing_add_ $Name>](x, y) }
             }
+            fn checked_add(x: $Self, y: $Self) -> Option<$Self> {
+                if Self::MIN.to_int() <= x.to_int() + y.to_int()
+                    && x.to_int() + y.to_int() <= Self::MAX.to_int()
+                {
+                    Option::Some(x + y)
+                } else {
+                    Option::None
+                }
+            }
             fn wrapping_sub(x: $Self, y: $Self) -> $Self {
                 paste! { [<wrapping_sub_ $Name>](x, y) }
             }
@@ -37,6 +46,15 @@ macro_rules! uint_impl {
             fn overflowing_sub(x: $Self, y: $Self) -> ($Self, bool) {
                 paste! { [<overflowing_sub_ $Name>](x, y) }
             }
+            fn checked_sub(x: $Self, y: $Self) -> Option<$Self> {
+                if Self::MIN.to_int() <= x.to_int() - y.to_int()
+                    && x.to_int() - y.to_int() <= Self::MAX.to_int()
+                {
+                    Option::Some(x - y)
+                } else {
+                    Option::None
+                }
+            }
             fn wrapping_mul(x: $Self, y: $Self) -> $Self {
                 paste! { [<wrapping_mul_ $Name>](x, y) }
             }
@@ -45,6 +63,15 @@ macro_rules! uint_impl {
             }
             fn overflowing_mul(x: $Self, y: $Self) -> ($Self, bool) {
                 paste! { [<overflowing_mul_ $Name>](x, y) }
+            }
+            fn checked_mul(x: $Self, y: $Self) -> Option<$Self> {
+                if Self::MIN.to_int() <= x.to_int() * y.to_int()
+                    && x.to_int() * y.to_int() <= Self::MAX.to_int()
+                {
+                    Option::Some(x * y)
+                } else {
+                    Option::None
+                }
             }
             #[hax_lib::requires(y != 0)]
             fn rem_euclid(x: $Self, y: $Self) -> $Self {
@@ -99,6 +126,9 @@ macro_rules! uint_impl {
     };
 }
 
+use crate::option::Option;
+use hax_lib::int::ToInt;
+
 macro_rules! iint_impl {
     (
         $Self: ty,
@@ -122,6 +152,15 @@ macro_rules! iint_impl {
             fn overflowing_add(x: $Self, y: $Self) -> ($Self, bool) {
                 paste! { [<overflowing_add_ $Name>](x, y) }
             }
+            fn checked_add(x: $Self, y: $Self) -> Option<$Self> {
+                if Self::MIN.to_int() <= x.to_int() + y.to_int()
+                    && x.to_int() + y.to_int() <= Self::MAX.to_int()
+                {
+                    Option::Some(x + y)
+                } else {
+                    Option::None
+                }
+            }
             fn wrapping_sub(x: $Self, y: $Self) -> $Self {
                 paste! { [<wrapping_sub_ $Name>](x, y) }
             }
@@ -131,6 +170,15 @@ macro_rules! iint_impl {
             fn overflowing_sub(x: $Self, y: $Self) -> ($Self, bool) {
                 paste! { [<overflowing_sub_ $Name>](x, y) }
             }
+            fn checked_sub(x: $Self, y: $Self) -> Option<$Self> {
+                if Self::MIN.to_int() <= x.to_int() - y.to_int()
+                    && x.to_int() - y.to_int() <= Self::MAX.to_int()
+                {
+                    Option::Some(x - y)
+                } else {
+                    Option::None
+                }
+            }
             fn wrapping_mul(x: $Self, y: $Self) -> $Self {
                 paste! { [<wrapping_mul_ $Name>](x, y) }
             }
@@ -139,6 +187,15 @@ macro_rules! iint_impl {
             }
             fn overflowing_mul(x: $Self, y: $Self) -> ($Self, bool) {
                 paste! { [<overflowing_mul_ $Name>](x, y) }
+            }
+            fn checked_mul(x: $Self, y: $Self) -> Option<$Self> {
+                if Self::MIN.to_int() <= x.to_int() * y.to_int()
+                    && x.to_int() * y.to_int() <= Self::MAX.to_int()
+                {
+                    Option::Some(x * y)
+                } else {
+                    Option::None
+                }
             }
             #[hax_lib::requires(y != 0)]
             fn rem_euclid(x: $Self, y: $Self) -> $Self {
