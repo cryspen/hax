@@ -13,19 +13,11 @@ macro_rules! unreachable_by_invariant {
 }
 pub(crate) use unreachable_by_invariant;
 
-/// Placeholder trait for phases.
+/// A Rust phase that operates on the AST.
 pub trait Phase {
     /// Apply the phase on items.
     /// A phase may transform an item into zero, one or more items.
     fn apply(&self, items: &mut Vec<Item>);
-
-    /// This is a compatibility layer for the OCaml engine.
-    /// This will be dropped when the OCaml engine is dropped.
-    /// Returns `Some` when the phase is actually an OCaml phase.
-    /// This is useful for `group_consecutive_ocaml_phases`.
-    fn legacy_ocaml_phase(&self) -> Option<&str> {
-        None
-    }
 }
 
 pub mod legacy;
@@ -33,5 +25,31 @@ pub mod legacy;
 mod explicit_monadic;
 mod reject_not_do_lean_dsl;
 
-pub use explicit_monadic::ExplicitMonadic;
-pub use reject_not_do_lean_dsl::RejectNotDoLeanDSL;
+macro_rules! declare_phase_kind {
+    {$($name:ident = $phase:expr),*$(,)?} => {
+        /// Enumeration of the available phases.
+        #[derive(Clone, Debug, Copy, serde::Serialize, serde::Deserialize)]
+        pub enum PhaseKind {
+            $(
+                #[doc = concat!("The phase [`", stringify!($phase), "].")]
+                $name,
+            )*
+            /// A legacy (OCaml) phase.
+            Legacy(crate::phase::legacy::LegacyOCamlPhase),
+        }
+
+        impl crate::phase::Phase for PhaseKind {
+            fn apply(&self, items: &mut Vec<Item>) {
+                match *self {
+                    $(Self::$name => $phase.apply(items),)*
+                    Self::Legacy(phase) => phase.apply(items),
+                }
+            }
+        }
+    };
+}
+
+declare_phase_kind! {
+    ExplicitMonadic = explicit_monadic::ExplicitMonadic,
+    RejectNotDoLeanDSL = reject_not_do_lean_dsl::RejectNotDoLeanDSL,
+}

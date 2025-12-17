@@ -1,43 +1,30 @@
 //! This module exposes the legacy phases written in OCaml in the OCaml engine.
 
-use crate::{ast::Item, phase::Phase};
-
-struct LegacyOCamlPhases {
-    phases: Vec<String>,
-}
-
-impl Phase for LegacyOCamlPhases {
-    fn apply(&self, items: &mut Vec<Item>) {
-        eprintln!("Applying phases: {:#?}", &self.phases);
-        use crate::ocaml_engine::Response;
-        let query = crate::ocaml_engine::QueryKind::ApplyPhases {
-            input: std::mem::take(items),
-            phases: self.phases.clone(),
-        };
-        let Some(Response::ApplyPhases { output }) = query.execute(None) else {
-            panic!()
-        };
-        *items = output;
-    }
-
-    fn legacy_ocaml_phase(&self) -> Option<&str> {
-        match self.phases.as_slice() {
-            [phase] => Some(phase.as_str()),
-            _ => None,
-        }
-    }
-}
+use crate::{
+    ast::Item,
+    phase::{Phase, PhaseKind},
+};
 
 /// Group consecutive ocaml phases as one monolithic phase, so that we avoid extra roundtrips to the OCaml engine.
-pub fn group_consecutive_ocaml_phases(phases: Vec<Box<dyn Phase>>) -> Vec<Box<dyn Phase>> {
+pub fn group_consecutive_ocaml_phases(phases: Vec<PhaseKind>) -> Vec<Box<dyn Phase>> {
     let mut output: Vec<Box<dyn Phase>> = vec![];
     let mut ocaml_phases = vec![];
     let mut phases = phases.into_iter();
 
+    struct LegacyOCamlPhases {
+        phases: Vec<LegacyOCamlPhase>,
+    }
+
+    impl Phase for LegacyOCamlPhases {
+        fn apply(&self, items: &mut Vec<Item>) {
+            apply_legacy_phases(&self.phases, items);
+        }
+    }
+
     loop {
         let phase = phases.next();
-        if let Some(ocaml_phase) = phase.as_ref().and_then(|phase| phase.legacy_ocaml_phase()) {
-            ocaml_phases.push(ocaml_phase.to_string())
+        if let Some(PhaseKind::Legacy(ocaml_phase)) = phase {
+            ocaml_phases.push(ocaml_phase)
         } else {
             if !ocaml_phases.is_empty() {
                 output.push(Box::new(LegacyOCamlPhases {
@@ -45,7 +32,7 @@ pub fn group_consecutive_ocaml_phases(phases: Vec<Box<dyn Phase>>) -> Vec<Box<dy
                 }));
             }
             if let Some(phase) = phase {
-                output.push(phase);
+                output.push(Box::new(phase));
             } else {
                 break;
             }
@@ -55,17 +42,53 @@ pub fn group_consecutive_ocaml_phases(phases: Vec<Box<dyn Phase>>) -> Vec<Box<dy
     output
 }
 
+fn apply_legacy_phases(phases: &[LegacyOCamlPhase], items: &mut Vec<Item>) {
+    use crate::ocaml_engine::Response;
+    let query = crate::ocaml_engine::QueryKind::ApplyPhases {
+        input: std::mem::take(items),
+        phases: phases.iter().map(ToString::to_string).collect(),
+    };
+    let Some(Response::ApplyPhases { output }) = query.execute(None) else {
+        panic!()
+    };
+    *items = output;
+}
+
 macro_rules! make_ocaml_legacy_phase {
     ($($name:ident),*) => {
-        $(
-            #[doc = concat!("The phase ", stringify!($name), " from the OCaml engine.")]
-            pub fn $name() -> Box<dyn Phase> {
-                Box::new(LegacyOCamlPhases {
-                    phases: vec![stringify!($name).to_string()],
-                })
+
+        pastey::paste!{
+            /// The list of exposed OCaml phases.
+            #[derive(Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
+            pub enum LegacyOCamlPhase {
+                $(
+                    #[doc = concat!("The phase ", stringify!($name), " from the OCaml engine.")]
+                    [< $name:camel >]
+                ),*
             }
-        )*
+
+
+            impl std::fmt::Display for LegacyOCamlPhase {
+                fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                    match self {
+                        $(Self::[< $name:camel >] => stringify!($name).fmt(f)),*
+                    }
+                }
+            }
+
+            impl Phase for LegacyOCamlPhase {
+                fn apply(&self, items: &mut Vec<Item>) {
+                    apply_legacy_phases(&[*self], items);
+                }
+            }
+        }
     };
+}
+
+impl From<LegacyOCamlPhase> for PhaseKind {
+    fn from(legacy_phase: LegacyOCamlPhase) -> Self {
+        Self::Legacy(legacy_phase)
+    }
 }
 
 make_ocaml_legacy_phase!(

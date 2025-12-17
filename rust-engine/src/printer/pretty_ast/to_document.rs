@@ -48,7 +48,7 @@ impl<P, A> ToDocumentOwned<P, A> for Option<&str> {
 /// This is the primary trait invoked throughout the pretty-printing pipeline;
 /// it mirrors [`pretty::Pretty::pretty`] while giving access to printer-specific
 /// context.
-pub trait ToDocument<P, A> {
+pub trait ToDocument<P: ?Sized, A> {
     /// Produce a document using the provided printer reference.
     fn to_document(&self, printer: &P) -> DocBuilder<A>;
 }
