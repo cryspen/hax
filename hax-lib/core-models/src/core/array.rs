@@ -32,7 +32,10 @@ impl<T> Dummy<T, 0> {}
 impl<T> Dummy<T, 0> {}
 
 impl<T, const N: usize> Dummy<T, N> {
-    pub fn map<F: crate::ops::function::FnOnce<T, Output = U>, U>(s: [T; N], f: F) -> [U; N] {
+    pub fn map<F: crate::ops::function::FnOnce<T, Output = U>, U>(
+        s: [T; N],
+        f: fn(T) -> U, // We cannot use type `F` because it is incompatible with `array_map`
+    ) -> [U; N] {
         array_map(s, f)
     }
     pub fn as_slice(s: &[T; N]) -> &[T] {
@@ -41,7 +44,7 @@ impl<T, const N: usize> Dummy<T, N> {
 }
 
 pub fn from_fn<T, const N: usize, F: crate::ops::function::FnOnce<usize, Output = T>>(
-    f: F,
+    f: fn(usize) -> T, // We cannot use type `F` because it is incompatible with `array_from_fn`
 ) -> [T; N] {
     array_from_fn(f)
 }
