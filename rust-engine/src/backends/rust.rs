@@ -17,8 +17,6 @@ impl Printer for RustPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
     }
-
-    const NAME: &str = "Rust";
 }
 
 impl RenderView for RustPrinter {
