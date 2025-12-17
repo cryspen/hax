@@ -27,7 +27,97 @@ use crate::ast::*;
 /// The generated enums also implement the obvious `From<T>` conversions, making
 /// it ergonomic to wrap concrete AST values as fragments.
 macro_rules! mk {
+    (@visit_inner_call, Span, $self:ident, $x:expr) => {::std::ops::ControlFlow::Continue(())};
+    (@visit_inner_call, GloablId, $self:ident, $x:expr) => {::std::ops::ControlFlow::Continue(())};
+    (@visit_inner_call, $ty:ty, $self:ident, $x:expr) => {
+        $self.visit_inner($x)
+    };
     ($($ty:ident),*) => {
+        #[derive_group_for_ast]
+        #[derive(Copy)]
+        /// Type identifiers for fragments
+        pub enum FragmentTypeId {
+            $(
+                #[doc = concat!("An identifier for the type [`", stringify!($ty), "`].")]
+                $ty,
+            )*
+        }
+
+        mod private {
+            pub use super::*;
+            pub trait Sealed {}
+            $(impl Sealed for $ty {})*
+        }
+
+        /// Operations on any fragment of the AST of hax.
+        pub trait AnyFragment: private::Sealed {
+            /// Get a type identifier for this fragment.
+            fn type_id() -> FragmentTypeId;
+            /// Coerce as a fragment reference.
+            fn as_fragment<'a>(&'a self, type_id: FragmentTypeId) -> Option<FragmentRef<'a>>;
+            /// Coerce as an owned fragment.
+            fn as_owned_fragment(&self, type_id: FragmentTypeId) -> Option<Fragment>;
+        }
+
+        $(
+            impl AnyFragment for $ty {
+                fn type_id() -> FragmentTypeId {
+                    FragmentTypeId::$ty
+                }
+                fn as_fragment<'a>(&'a self, type_id: FragmentTypeId) -> Option<FragmentRef<'a>> {
+                    if type_id == Self::type_id() {
+                        Some(self.into())
+                    } else {
+                        None
+                    }
+                }
+                fn as_owned_fragment(&self, type_id: FragmentTypeId) -> Option<Fragment> {
+                    if type_id == Self::type_id() {
+                        #[allow(unreachable_code)]
+                        Some(self.clone().into())
+                    } else {
+                        None
+                    }
+                }
+            }
+        )*
+
+        /// A marker about a sub AST fragment in a bigger AST.
+        pub struct FragmentMarker {
+            addr: usize,
+            type_id: fragment::FragmentTypeId,
+        }
+
+        impl FragmentMarker {
+            /// Creates a marker out of an AST fragment.
+            pub fn new<T: AnyFragment>(value: &T) -> Self {
+                Self {
+                    addr: (value as *const T).addr(),
+                    type_id: T::type_id(),
+                }
+            }
+        }
+
+
+        impl<'a> derive_generic_visitor::Visitor for FragmentMarker {
+            type Break = Fragment;
+        }
+
+        impl visitors::AstEarlyExitVisitor for FragmentMarker {
+            $(
+                pastey::paste!{
+                    fn [<visit_ $ty:snake>](&mut self, x: &$ty) -> ::std::ops::ControlFlow<Self::Break> {
+                        if self.addr == (x as *const $ty).addr()
+                            && let Some(fragment) = x.as_owned_fragment(self.type_id)
+                        {
+                            return ::std::ops::ControlFlow::Break(fragment);
+                        }
+                        mk!(@visit_inner_call, $ty, self, x)
+                    }
+                }
+            )*
+        }
+
         #[derive_group_for_ast]
         #[allow(missing_docs)]
         /// An owned fragment of AST in hax.
