@@ -98,6 +98,7 @@ let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) 
       #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
       (Core_models.Iter.Traits.Iterator.f_filter #(Core_models.Ops.Range.t_Range u8)
           #FStar.Tactics.Typeclasses.solve
+          #(u8 -> bool)
           ({ Core_models.Ops.Range.f_start = mk_u8 0; Core_models.Ops.Range.f_end = mk_u8 5 }
             <:
             Core_models.Ops.Range.t_Range u8)
@@ -106,6 +107,7 @@ let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) 
               let (_: Core_models.Slice.Iter.t_Iter u8), (out: bool) =
                 Core_models.Iter.Traits.Iterator.f_any #(Core_models.Slice.Iter.t_Iter u8)
                   #FStar.Tactics.Typeclasses.solve
+                  #(u8 -> bool)
                   (Core_models.Slice.impl__iter #u8
                       (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
                           #FStar.Tactics.Typeclasses.solve
@@ -132,6 +134,7 @@ let minimized_1_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
     #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
     (Core_models.Iter.Traits.Iterator.f_filter #(Core_models.Ops.Range.t_Range u8)
         #FStar.Tactics.Typeclasses.solve
+        #(u8 -> bool)
         ({ Core_models.Ops.Range.f_start = mk_u8 0; Core_models.Ops.Range.f_end = mk_u8 5 }
           <:
           Core_models.Ops.Range.t_Range u8)
@@ -688,6 +691,7 @@ let cclosure_iimpl_expr
     (Core_models.Iter.Traits.Iterator.f_map #v_I
         #FStar.Tactics.Typeclasses.solve
         #Prims.unit
+        #(Prims.unit -> Prims.unit)
         it
         (fun x -> x)
       <:
@@ -757,13 +761,13 @@ class t_Foo (v_Self: Type0) = {
   f_method_f_post:v_Self -> Prims.unit -> Type0;
   f_method_f:x0: v_Self
     -> Prims.Pure Prims.unit (f_method_f_pre x0) (fun result -> f_method_f_post x0 result);
-  f_assoc_type_pre:{| i0: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Type0;
-  f_assoc_type_post:{| i0: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Prims.unit
+  f_assoc_type_pre:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Type0;
+  f_assoc_type_post:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Prims.unit
     -> Type0;
-  f_assoc_type:{| i0: Core_models.Marker.t_Copy f_AssocType |} -> x0: f_AssocType
+  f_assoc_type:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> x0: f_AssocType
     -> Prims.Pure Prims.unit
-        (f_assoc_type_pre #i0 x0)
-        (fun result -> f_assoc_type_post #i0 x0 result)
+        (f_assoc_type_pre #i1 x0)
+        (fun result -> f_assoc_type_post #i1 x0 result)
 }
 
 class t_Lang (v_Self: Type0) = {

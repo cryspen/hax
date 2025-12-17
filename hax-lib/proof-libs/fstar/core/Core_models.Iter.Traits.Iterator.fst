@@ -70,3 +70,5 @@ include Core_models.Iter.Bundle {f_zip_post as f_zip_post}
 include Core_models.Iter.Bundle {f_zip as f_zip}
 
 include Core_models.Iter.Bundle {impl as impl}
+
+include Core_models.Iter.Bundle {impl_1__from__iterator as impl_1}

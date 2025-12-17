@@ -633,3 +633,15 @@ let impl (#v_I: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator
       ->
       impl__new__from__zip #v_I #v_I2 self it2
   }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1__from__iterator
+      (#v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Iterator v_I)
+    : Core_models.Iter.Traits.Collect.t_IntoIterator v_I =
+  {
+    f_IntoIter = v_I;
+    f_into_iter_pre = (fun (self: v_I) -> true);
+    f_into_iter_post = (fun (self: v_I) (out: v_I) -> true);
+    f_into_iter = fun (self: v_I) -> self
+  }

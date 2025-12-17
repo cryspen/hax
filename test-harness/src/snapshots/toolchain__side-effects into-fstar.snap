@@ -69,6 +69,7 @@ let test (x y: Core_models.Option.t_Option i32) : Core_models.Option.t_Option i3
   match
     Core_models.Option.impl__map #i32
       #(Core_models.Option.t_Option i32)
+      #(i32 -> Core_models.Option.t_Option i32)
       x
       (fun i ->
           let i:i32 = i in
@@ -134,6 +135,7 @@ let v_fun (_: Prims.unit) : Core_models.Result.t_Result Prims.unit u8 =
       (Core_models.Iter.Traits.Iterator.f_map #(Core_models.Slice.Iter.t_Iter u8)
           #FStar.Tactics.Typeclasses.solve
           #(Core_models.Result.t_Result (u8 & t_Array u8 (mk_usize 32)) u8)
+          #(u8 -> Core_models.Result.t_Result (u8 & t_Array u8 (mk_usize 32)) u8)
           (Core_models.Slice.impl__iter #u8
               (Rust_primitives.Hax.repeat (mk_u8 0) (mk_usize 5) <: t_Slice u8)
             <:

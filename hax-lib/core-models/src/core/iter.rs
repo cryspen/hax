@@ -102,6 +102,13 @@ pub mod traits {
             }
         }
 
+        impl<I: Iterator> super::collect::IntoIterator for I {
+            type IntoIter = Self;
+            fn into_iter(self) -> Self {
+                self
+            }
+        }
+
         // TODO rev: DoubleEndedIterator?
     }
     pub mod collect {

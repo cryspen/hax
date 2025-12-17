@@ -437,6 +437,7 @@ let t_NoE =
     { let (_: Core_models.Str.Iter.t_Chars), (out: bool) =
         Core_models.Iter.Traits.Iterator.f_any #Core_models.Str.Iter.t_Chars
           #FStar.Tactics.Typeclasses.solve
+          #(FStar.Char.char -> bool)
           (Core_models.Str.impl_str__chars (Core_models.Ops.Deref.f_deref #Alloc.String.t_String
                   #FStar.Tactics.Typeclasses.solve
                   x
