@@ -10,7 +10,7 @@ use super::ast::*;
 use visitors::AstVisitorMut;
 
 /// A graph of items connected via the hax attribute [`AttrPayload::AssociatedItem`] and UUIDs.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct LinkedItemGraph {
     items: HashMap<ItemUid, Item>,
     context: Context,
@@ -64,6 +64,22 @@ fn emit_assertion_failure(context: Context, span: span::Span, message: impl Into
     .emit();
 }
 
+impl std::fmt::Debug for LinkedItemGraph {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("LinkedItemGraph")
+            .field(
+                "items",
+                &self
+                    .items
+                    .iter()
+                    .map(|(id, item)| (id.to_string(), item.ident.to_debug_string()))
+                    .collect::<Vec<_>>(),
+            )
+            .field("context", &self.context)
+            .finish()
+    }
+}
+
 impl LinkedItemGraph {
     /// Clone items marked with UUIDs attributes to build a graph of linked items.
     /// This graph clones the items that represent linked items: e.g. pre and post conditions.
@@ -98,14 +114,19 @@ impl LinkedItemGraph {
     pub fn linked_items_iter(
         &self,
         item: &impl HasMetadata,
-    ) -> impl Iterator<Item = (AssociationRole, &Item)> {
+    ) -> impl Iterator<Item = (AssociationRole, Result<&Item, DiagnosticInfo>)> {
         let item_attributes = &item.metadata().attributes;
-        hax_attributes(item_attributes).flat_map(|attr| match attr {
+        hax_attributes(item_attributes).flat_map(move |attr| match attr {
             AttrPayload::AssociatedItem { role, item: target } => {
-                let Some(target) = self.items.get(target) else {
-                    self.emit_assertion_failure(item.span(), format!("An item linked via hax attributes could not be found. The UUID is {target:?}."));
-                    return None;
-                };
+                let target = self.items.get(target).map(Ok).unwrap_or_else(|| {
+                    Err(DiagnosticInfo {
+                        context: self.context.clone(),
+                        span: item.span(),
+                        kind: DiagnosticInfoKind::AssertionFailure {
+                            details: format!("An item linked via hax attributes could not be found. The UUID is {target:?}. The graph is {:#?}.", self),
+                        },
+                    })
+                });
                 Some((*role, target))
             }
             _ => None,
@@ -113,7 +134,10 @@ impl LinkedItemGraph {
     }
 
     /// Returns the items linked to a given item.
-    pub fn linked_items(&self, item: &impl HasMetadata) -> HashMap<AssociationRole, Vec<&Item>> {
+    pub fn linked_items(
+        &self,
+        item: &impl HasMetadata,
+    ) -> HashMap<AssociationRole, Vec<Result<&Item, DiagnosticInfo>>> {
         let mut map: HashMap<AssociationRole, Vec<_>> = HashMap::new();
         for (role, item) in self.linked_items_iter(item) {
             map.entry(role).or_default().push(item);
@@ -133,7 +157,14 @@ impl LinkedItemGraph {
             assoc_items
                 .get(&role)
                 .iter()
-                .flat_map(|vec| vec.iter().copied())
+                .flat_map(|vec| vec.iter())
+                .flat_map(|item| match item {
+                    Ok(item) => Some(item),
+                    Err(err) => {
+                        err.emit();
+                        None
+                    }
+                })
                 .map(|item| extract_expr(&self.context, item, self_id))
                 .collect::<Vec<_>>()
         };
