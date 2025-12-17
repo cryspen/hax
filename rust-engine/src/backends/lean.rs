@@ -635,22 +635,22 @@ set_option linter.unusedVariables false
                 zip_right!(&generics.params, line!()),
                 zip_right!(
                     generics.type_constraints().map(|impl_ident| {
-                        let projections = generics.projection_constraints()
-                            .map(|p|
-                                if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                        let projections = generics
+                            .projection_constraints()
+                            .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
+                            .map(|p| {
+                                if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
                                     docs![p]
                                 } else {
                                     emit_error!(issue 1710, "Unsupported variant of associated type projection")
                                 }
-                            )
+                            })
                             .collect::<Vec<_>>();
                         docs![
                             docs![
                                 impl_ident.goal.trait_,
                                 ".AssociatedTypes",
-                                concat!(
-                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
-                                )
+                                concat!(impl_ident.goal.args.iter().map(|arg| docs![line!(), arg]))
                             ]
                             .brackets()
                             .group()
@@ -658,9 +658,7 @@ set_option linter.unusedVariables false
                             line!(),
                             docs![
                                 impl_ident.goal.trait_,
-                                concat!(
-                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
-                                ),
+                                concat!(impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])),
                                 line!(),
                                 self.associated_type_projections(impl_ident, projections)
                             ]
@@ -1523,7 +1521,7 @@ set_option linter.unusedVariables false
             &self,
             ImplItem {
                 meta: _,
-                generics,
+                generics: _,
                 kind,
                 ident,
             }: &ImplItem,
@@ -1535,14 +1533,7 @@ set_option linter.unusedVariables false
                     parent_bounds: _,
                 } => docs![name, reflow!(" := "), ty],
                 ImplItemKind::Fn { body, params } => docs![
-                    docs![
-                        name,
-                        softline!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        ":= do",
-                    ]
-                    .group(),
+                    docs![name, line!(), zip_right!(params, line!()).group(), ":= do",].group(),
                     line!(),
                     body
                 ]
