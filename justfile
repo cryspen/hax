@@ -133,3 +133,30 @@ _pager:
 @book:
   echo "We moved out from mdbook: please run 'just docs'"
   exit 1
+
+# Runs hax twice: once with the Rust import thir, once with the OCaml one.
+# Then it compares both.
+diff-thir-importers DIR:
+  #!/usr/bin/env bash
+  # Ensures hax is built
+  just b
+
+  # Remove previous results (if any)
+  rm -rf diff-thir-importers
+
+  # Utils
+  function readJSON() { cat proofs/rust/extraction/ast.json }
+  BASE="$PWD"
+
+  cd {{DIR}}
+  cargo hax --experimental-full-def json -o thir.json
+  cargo hax --experimental-full-def into debugger
+  readJSON > rust-import-thir-ast.json
+  cargo hax                         into debugger
+  readJSON > ocaml-import-thir-ast.json
+
+  OUT="$BASE/test-ast-results"
+  mkdir "$OUT"
+  mv thir.json *ast.json "$OUT"
+  cd "$OUT"
+  diff ocaml-import-thir-ast.json rust-import-thir-ast.json > diff.json
