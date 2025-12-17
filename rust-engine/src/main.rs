@@ -61,6 +61,33 @@ fn main() {
         ),
         Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
+        Backend::Debugger { interactive } => {
+            use hax_rust_engine::debugger::*;
+
+            if *interactive {
+                http_interactive_debugger(items);
+                vec![]
+            } else {
+                let mut state = State {
+                    initial_items: items,
+                    requests: vec![],
+                };
+
+                let contents = match state.apply(Request::DumpAst(DumpAstOptions::default())) {
+                    Response::TypedDumpedAst(items) => {
+                        serde_json::to_string_pretty(&items).unwrap()
+                    }
+                    Response::DumpedAst(value) => serde_json::to_string_pretty(&value).unwrap(),
+                    _ => todo!(),
+                };
+
+                vec![File {
+                    path: "ast.json".into(),
+                    contents,
+                    sourcemap: None,
+                }]
+            }
+        }
         Backend::GenerateRustEngineNames => vec![File {
             path: "generated.rs".into(),
             contents: hax_rust_engine::names::codegen::export_def_ids_to_mod(items),

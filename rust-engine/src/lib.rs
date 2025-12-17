@@ -11,6 +11,7 @@
 
 pub mod ast;
 pub mod backends;
+pub mod debugger;
 pub mod hax_io;
 pub mod import_thir;
 pub mod interning;
