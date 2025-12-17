@@ -882,7 +882,19 @@ instance {α n} : Coe (Array α) (RustM (Vector α n)) where
 end RustVectors
 
 
+/-
 
+# Specs
+
+-/
+
+structure Spec {α}
+    (requires : RustM Prop)
+    (ensures : α → RustM Prop)
+    (f : RustM α) where
+  pureRequires : {p : Prop // ⦃ ⌜ True ⌝ ⦄ requires ⦃ ⇓r => ⌜ r = p ⌝ ⦄}
+  pureEnsures : {p : α → Prop // pureRequires.val → ∀ a, ⦃ ⌜ True ⌝ ⦄ ensures a ⦃ ⇓r => ⌜ r = p a ⌝ ⦄}
+  contract : ⦃ ⌜ pureRequires.val ⌝ ⦄ f ⦃ ⇓r => ⌜ pureEnsures.val r ⌝ ⦄
 
 -- Miscellaneous
 def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)

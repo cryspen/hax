@@ -42,6 +42,7 @@ Changes to the Lean backend:
  - Add support for associated types with equality constraints (#1806)
  - Make trait-level arguments explicit for all trait functions, adding them as
    extra parameters (#1803)
+ - Add generation of specs from requires/ensures-annotations (#1815)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)

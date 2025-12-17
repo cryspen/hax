@@ -11,6 +11,7 @@ pub mod loops;
 pub mod matching;
 pub mod monadic;
 pub mod reject_do_dsl;
+pub mod specs;
 pub mod structs;
 pub mod traits;
 pub mod types;
