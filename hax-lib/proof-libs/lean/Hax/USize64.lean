@@ -1,3 +1,5 @@
+import Hax.MissingLean.Init.Data.UInt.Lemmas
+
 open Std
 open Nat
 
@@ -95,3 +97,124 @@ instance : Min USize64 := minOfLe
 
 instance {α} : GetElem (Array α) USize64 α fun xs i => i.toNat < xs.size where
   getElem xs i h := xs[i.toNat]
+
+@[grind]
+theorem USize64.umulOverflow_iff (x y : USize64) :
+    BitVec.umulOverflow x.toBitVec y.toBitVec ↔ x.toNat * y.toNat ≥ 2 ^ 64 :=
+  UInt64.umulOverflow_iff _ _
+
+@[grind]
+theorem USize64.uaddOverflow_iff (x y : USize64) :
+    BitVec.uaddOverflow x.toBitVec y.toBitVec ↔ x.toNat + y.toNat ≥ 2 ^ 64 :=
+  UInt64.uaddOverflow_iff _ _
+
+@[grind =]
+theorem USize64.toNat_mul_of_lt {a b : USize64} (h : a.toNat * b.toNat < 2 ^ 64) :
+    (a * b).toNat = a.toNat * b.toNat :=
+  UInt64.toNat_mul_of_lt h
+
+@[grind =]
+theorem USize64.toNat_add_of_lt {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
+    (a + b).toNat = a.toNat + b.toNat :=
+  UInt64.toNat_add_of_lt h
+
+@[grind ←]
+theorem USize64.le_self_add {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
+    a ≤ a + b :=
+  UInt64.le_self_add h
+
+theorem USize64.succ_le_of_lt {a b : USize64} (h : a < b) :
+    a + 1 ≤ b :=
+  UInt64.succ_le_of_lt h
+
+theorem USize64.add_le_of_le {a b c : USize64} (habc : a + b ≤ c) (hab : a.toNat + b.toNat < 2 ^ 64):
+    a ≤ c :=
+  UInt64.add_le_of_le habc hab
+
+@[grind, simp]
+protected theorem USize64.not_le {a b : USize64} : ¬ a ≤ b ↔ b < a :=
+  UInt64.not_le
+
+@[simp, grind]
+theorem USize64.toNat_toBitVec (x : USize64) : x.toBitVec.toNat = x.toNat := (rfl)
+
+@[simp, int_toBitVec, grind]
+theorem USize64.toBitVec_ofNat (n : Nat) :
+  USize64.toBitVec (no_index (OfNat.ofNat n)) = BitVec.ofNat _ n := (rfl)
+
+@[simp, grind]
+protected theorem USize64.toNat_add (a b : USize64) :
+  (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 64 := BitVec.toNat_add ..
+
+@[grind]
+theorem USize64.le_iff_toNat_le {a b : USize64} : a ≤ b ↔ a.toNat ≤ b.toNat := .rfl
+
+@[grind =]
+theorem USize64.lt_iff_toNat_lt {a b : USize64} : a < b ↔ a.toNat < b.toNat := .rfl
+
+@[grind]
+theorem USize64.lt_ofNat_iff {n : USize64} {m : Nat} (h : m < size) :
+  n < ofNat m ↔ n.toNat < m := UInt64.lt_ofNat_iff h
+
+@[grind]
+theorem USize64.ofNat_lt_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m < n ↔ m < n.toNat :=
+  UInt64.ofNat_lt_iff h
+
+@[grind]
+theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m :=
+  UInt64.le_ofNat_iff h
+
+@[grind]
+theorem USize64.ofNat_le_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m ≤ n ↔ m ≤ n.toNat :=
+  UInt64.ofNat_le_iff h
+
+attribute [grind] UInt64.toNat_ofNat_of_lt
+attribute [grind] UInt64.toNat_ofNat_of_lt'
+
+@[grind]
+theorem USize64.toNat_ofNat_of_lt' {n : Nat} (h : n < size) : (ofNat n).toNat = n :=
+  UInt64.toNat_ofNat_of_lt' h
+
+@[grind]
+theorem USize64.toNat_ofNat_of_lt {n : Nat} (h : n < size) : toNat (OfNat.ofNat n) = n :=
+  UInt64.toNat_ofNat_of_lt h
+
+
+namespace Lean.Grind
+
+
+instance : ToInt USize64 (.uint 64) where
+  toInt x := (x.toNat : Int)
+  toInt_inj x y w := sorry -- USize64.toNat_inj.mp (Int.ofNat_inj.mp w)
+  toInt_mem x := sorry -- by simpa using Int.lt_toNat.mp (USize64.toNat_lt x)
+
+@[simp] theorem toInt_usize64 (x : USize64) : ToInt.toInt x = (x.toNat : Int) := rfl
+
+instance : ToInt.Zero USize64 (.uint 64) where
+  toInt_zero := sorry -- by simp
+
+instance : ToInt.OfNat USize64 (.uint 64) where
+  toInt_ofNat x := by simp; rfl
+
+instance : ToInt.Add USize64 (.uint 64) where
+  toInt_add x y := by simp
+
+instance : ToInt.Mul USize64 (.uint 64) where
+  toInt_mul x y := sorry -- by simp
+
+-- The `ToInt.Pow` instance is defined in `Init.GrindInstances.Ring.UInt`,
+-- as it is convenient to use the ring structure.
+
+instance : ToInt.Mod USize64 (.uint 64) where
+  toInt_mod x y := sorry -- by simp
+
+instance : ToInt.Div USize64 (.uint 64) where
+  toInt_div x y := sorry -- by simp
+
+instance : ToInt.LE USize64 (.uint 64) where
+  le_iff x y := sorry -- by simpa using USize64.le_iff_toBitVec_le
+
+instance : ToInt.LT USize64 (.uint 64) where
+  lt_iff x y := sorry -- by simpa using USize64.lt_iff_toBitVec_lt
+
+end Lean.Grind

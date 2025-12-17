@@ -4,3 +4,4 @@ import Hax.MissingLean.Init.Data.Nat.Div.Basic
 import Hax.MissingLean.Init.Data.UInt.Lemmas
 import Hax.MissingLean.Init.Data.Vector.Basic
 import Hax.MissingLean.Init.Prelude
+import Hax.MissingLean.Init.Data.Nat.MinMax

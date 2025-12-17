@@ -139,11 +139,11 @@ instance : UnSigned u64 where
 
 @[simp, reducible]
 instance : UnSigned usize where
-  width    := System.Platform.numBits
-  size     := USize.size
-  toBitVec := USize.toBitVec
-  toNat    := USize.toNat
-  toNat_toBitVec := USize.toNat_toBitVec
+  width    := 64
+  size     := USize64.size
+  toBitVec := USize64.toBitVec
+  toNat    := USize64.toNat
+  toNat_toBitVec := UInt64.toNat_toBitVec
 
 /- Addition on unsigned rust integers. Panics on overflow -/
 instance {α : Type} [UnSigned α]: HaxAdd α where
