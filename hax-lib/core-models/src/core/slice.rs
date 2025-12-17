@@ -120,6 +120,116 @@ impl<T> Slice<T> {
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize> /* where T: super::ops::Ord */ {
         todo!()
     }
+    fn get<I: SliceIndex<[T]>>(s: &[T], index: I) -> Option<&<I as SliceIndex<[T]>>::Output> {
+        index.get(s)
+    }
+}
+
+use crate::option::Option;
+use rust_primitives::slice::*;
+
+#[hax_lib::attributes]
+pub trait SliceIndex<T: ?Sized> {
+    type Output: ?Sized;
+
+    #[hax_lib::requires(true)]
+    fn get(self, slice: &T) -> Option<&Self::Output>;
+    /* fn get_mut(self, slice: &mut T) -> Option<&mut Self::Output>;
+    unsafe fn get_unchecked(self, slice: *const T) -> *const Self::Output;
+    unsafe fn get_unchecked_mut(self, slice: *mut T) -> *mut Self::Output;
+    fn index(self, slice: &T) -> &Self::Output;
+    fn index_mut(self, slice: &mut T) -> &mut Self::Output; */
+}
+
+#[hax_lib::attributes]
+impl<T> SliceIndex<[T]> for usize {
+    type Output = T;
+    fn get(self, slice: &[T]) -> Option<&T> {
+        if self < slice.len() {
+            Option::Some(slice_index(slice, self))
+        } else {
+            Option::None
+        }
+    }
+}
+
+#[hax_lib::attributes]
+impl<T> SliceIndex<[T]> for crate::ops::range::RangeFull {
+    type Output = [T];
+    fn get(self, slice: &[T]) -> Option<&[T]> {
+        Option::Some(slice)
+    }
+}
+
+#[hax_lib::attributes]
+impl<T> SliceIndex<[T]> for crate::ops::range::RangeFrom<usize> {
+    type Output = [T];
+    fn get(self, slice: &[T]) -> Option<&[T]> {
+        if self.start < slice.len() {
+            Option::Some(slice_slice(slice, self.start, slice.len()))
+        } else {
+            Option::None
+        }
+    }
+}
+#[hax_lib::attributes]
+impl<T> SliceIndex<[T]> for crate::ops::range::RangeTo<usize> {
+    type Output = [T];
+    fn get(self, slice: &[T]) -> Option<&[T]> {
+        if self.end <= slice.len() {
+            Option::Some(slice_slice(slice, 0, self.end))
+        } else {
+            Option::None
+        }
+    }
+}
+#[hax_lib::attributes]
+impl<T> SliceIndex<[T]> for crate::ops::range::Range<usize> {
+    type Output = [T];
+    fn get(self, slice: &[T]) -> Option<&[T]> {
+        if self.start < self.end && self.end <= slice.len() {
+            Option::Some(slice_slice(slice, self.start, self.end))
+        } else {
+            Option::None
+        }
+    }
+}
+
+use crate::ops::{
+    index::Index,
+    range::{Range, RangeFrom, RangeFull, RangeTo},
+};
+
+#[hax_lib::attributes]
+impl<T> Index<Range<usize>> for &[T] {
+    type Output = [T];
+    #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
+    fn index(&self, i: Range<usize>) -> &[T] {
+        slice_slice(self, i.start, i.end)
+    }
+}
+#[hax_lib::attributes]
+impl<T> Index<RangeTo<usize>> for &[T] {
+    type Output = [T];
+    #[hax_lib::requires(i.end <= self.len())]
+    fn index(&self, i: RangeTo<usize>) -> &[T] {
+        slice_slice(self, 0, i.end)
+    }
+}
+#[hax_lib::attributes]
+impl<T> Index<RangeFrom<usize>> for &[T] {
+    type Output = [T];
+    #[hax_lib::requires(i.start <= self.len())]
+    fn index(&self, i: RangeFrom<usize>) -> &[T] {
+        slice_slice(self, i.start, slice_length(self))
+    }
+}
+#[hax_lib::attributes]
+impl<T> Index<RangeFull> for &[T] {
+    type Output = [T];
+    fn index(&self, i: RangeFull) -> &[T] {
+        slice_slice(self, 0, slice_length(self))
+    }
 }
 
 #[hax_lib::attributes]

@@ -57,3 +57,83 @@ let impl_25 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array 
     =
     fun (self: t_Array v_T v_N) (i: usize) -> Rust_primitives.Slice.array_index #v_T v_N self i
   }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_26 (#v_T: Type0) (v_N: usize)
+    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (Core_models.Ops.Range.t_Range usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Array v_T v_N) (i: Core_models.Ops.Range.t_Range usize) ->
+        i.Core_models.Ops.Range.f_start <=. i.Core_models.Ops.Range.f_end &&
+        i.Core_models.Ops.Range.f_end <=.
+        (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
+    f_index_post
+    =
+    (fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_Range usize) (out: t_Slice v_T) -> true
+    );
+    f_index
+    =
+    fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_Range usize) ->
+      Rust_primitives.Slice.array_slice #v_T
+        v_N
+        self
+        i.Core_models.Ops.Range.f_start
+        i.Core_models.Ops.Range.f_end
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_27 (#v_T: Type0) (v_N: usize)
+    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (Core_models.Ops.Range.t_RangeTo usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeTo usize) ->
+        i.Core_models.Ops.Range.f_end <=.
+        (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
+    f_index_post
+    =
+    (fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeTo usize) (out: t_Slice v_T) ->
+        true);
+    f_index
+    =
+    fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeTo usize) ->
+      Rust_primitives.Slice.array_slice #v_T v_N self (mk_usize 0) i.Core_models.Ops.Range.f_end
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_28 (#v_T: Type0) (v_N: usize)
+    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (Core_models.Ops.Range.t_RangeFrom usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeFrom usize) ->
+        i.Core_models.Ops.Range.f_start <=.
+        (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
+    f_index_post
+    =
+    (fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeFrom usize) (out: t_Slice v_T) ->
+        true);
+    f_index
+    =
+    fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeFrom usize) ->
+      Rust_primitives.Slice.array_slice #v_T v_N self i.Core_models.Ops.Range.f_start v_N
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_29 (#v_T: Type0) (v_N: usize)
+    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) Core_models.Ops.Range.t_RangeFull =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre = (fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeFull) -> true);
+    f_index_post
+    =
+    (fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeFull) (out: t_Slice v_T) -> true);
+    f_index
+    =
+    fun (self: t_Array v_T v_N) (i: Core_models.Ops.Range.t_RangeFull) ->
+      Rust_primitives.Slice.array_slice #v_T v_N self (mk_usize 0) v_N
+  }

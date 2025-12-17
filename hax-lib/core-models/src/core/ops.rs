@@ -159,85 +159,18 @@ mod drop {
     }
 }
 
-mod range {
-    struct RangeTo<T> {
-        end: T,
+pub mod range {
+    pub struct RangeTo<T> {
+        pub end: T,
     }
-    struct RangeFrom<T> {
-        start: T,
+    pub struct RangeFrom<T> {
+        pub start: T,
     }
-    struct Range<T> {
-        start: T,
-        end: T,
+    pub struct Range<T> {
+        pub start: T,
+        pub end: T,
     }
-    struct RangeFull;
-
-    use super::index::Index;
-    use rust_primitives::slice::*;
-
-    #[hax_lib::attributes]
-    impl<T> Index<Range<usize>> for &[T] {
-        type Output = [T];
-        #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
-        fn index(&self, i: Range<usize>) -> &[T] {
-            slice_slice(self, i.start, i.end)
-        }
-    }
-    #[hax_lib::attributes]
-    impl<T> Index<RangeTo<usize>> for &[T] {
-        type Output = [T];
-        #[hax_lib::requires(i.end <= self.len())]
-        fn index(&self, i: RangeTo<usize>) -> &[T] {
-            slice_slice(self, 0, i.end)
-        }
-    }
-    #[hax_lib::attributes]
-    impl<T> Index<RangeFrom<usize>> for &[T] {
-        type Output = [T];
-        #[hax_lib::requires(i.start <= self.len())]
-        fn index(&self, i: RangeFrom<usize>) -> &[T] {
-            slice_slice(self, i.start, slice_length(self))
-        }
-    }
-    #[hax_lib::attributes]
-    impl<T> Index<RangeFull> for &[T] {
-        type Output = [T];
-        fn index(&self, i: RangeFull) -> &[T] {
-            slice_slice(self, 0, slice_length(self))
-        }
-    }
-
-    #[hax_lib::attributes]
-    impl<T, const N: usize> Index<Range<usize>> for [T; N] {
-        type Output = [T];
-        #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
-        fn index(&self, i: Range<usize>) -> &[T] {
-            array_slice(self, i.start, i.end)
-        }
-    }
-    #[hax_lib::attributes]
-    impl<T, const N: usize> Index<RangeTo<usize>> for [T; N] {
-        type Output = [T];
-        #[hax_lib::requires(i.end <= self.len())]
-        fn index(&self, i: RangeTo<usize>) -> &[T] {
-            array_slice(self, 0, i.end)
-        }
-    }
-    #[hax_lib::attributes]
-    impl<T, const N: usize> Index<RangeFrom<usize>> for [T; N] {
-        type Output = [T];
-        #[hax_lib::requires(i.start <= self.len())]
-        fn index(&self, i: RangeFrom<usize>) -> &[T] {
-            array_slice(self, i.start, N)
-        }
-    }
-    #[hax_lib::attributes]
-    impl<T, const N: usize> Index<RangeFull> for [T; N] {
-        type Output = [T];
-        fn index(&self, i: RangeFull) -> &[T] {
-            array_slice(self, 0, N)
-        }
-    }
+    pub struct RangeFull;
 
     macro_rules! impl_iterator_range_int {
         ($($int_type: ident)*) => {

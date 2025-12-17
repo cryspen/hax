@@ -15,131 +15,7 @@ type t_Range (v_T: Type0) = {
 type t_RangeFull = | RangeFull : t_RangeFull
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) (t_Range usize) =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre
-    =
-    (fun (self_: t_Slice v_T) (i: t_Range usize) ->
-        i.f_start <=. i.f_end && i.f_end <=. (Core_models.Slice.impl__len #v_T self_ <: usize));
-    f_index_post = (fun (self: t_Slice v_T) (i: t_Range usize) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Slice v_T) (i: t_Range usize) ->
-      Rust_primitives.Slice.slice_slice #v_T self i.f_start i.f_end
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) (t_RangeTo usize) =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre
-    =
-    (fun (self_: t_Slice v_T) (i: t_RangeTo usize) ->
-        i.f_end <=. (Core_models.Slice.impl__len #v_T self_ <: usize));
-    f_index_post = (fun (self: t_Slice v_T) (i: t_RangeTo usize) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Slice v_T) (i: t_RangeTo usize) ->
-      Rust_primitives.Slice.slice_slice #v_T self (mk_usize 0) i.f_end
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) (t_RangeFrom usize) =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre
-    =
-    (fun (self_: t_Slice v_T) (i: t_RangeFrom usize) ->
-        i.f_start <=. (Core_models.Slice.impl__len #v_T self_ <: usize));
-    f_index_post = (fun (self: t_Slice v_T) (i: t_RangeFrom usize) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Slice v_T) (i: t_RangeFrom usize) ->
-      Rust_primitives.Slice.slice_slice #v_T
-        self
-        i.f_start
-        (Rust_primitives.Slice.slice_length #v_T self <: usize)
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) t_RangeFull =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre = (fun (self: t_Slice v_T) (i: t_RangeFull) -> true);
-    f_index_post = (fun (self: t_Slice v_T) (i: t_RangeFull) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Slice v_T) (i: t_RangeFull) ->
-      Rust_primitives.Slice.slice_slice #v_T
-        self
-        (mk_usize 0)
-        (Rust_primitives.Slice.slice_length #v_T self <: usize)
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4 (#v_T: Type0) (v_N: usize)
-    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_Range usize) =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre
-    =
-    (fun (self_: t_Array v_T v_N) (i: t_Range usize) ->
-        i.f_start <=. i.f_end &&
-        i.f_end <=. (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
-    f_index_post = (fun (self: t_Array v_T v_N) (i: t_Range usize) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Array v_T v_N) (i: t_Range usize) ->
-      Rust_primitives.Slice.array_slice #v_T v_N self i.f_start i.f_end
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5 (#v_T: Type0) (v_N: usize)
-    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_RangeTo usize) =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre
-    =
-    (fun (self_: t_Array v_T v_N) (i: t_RangeTo usize) ->
-        i.f_end <=. (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
-    f_index_post = (fun (self: t_Array v_T v_N) (i: t_RangeTo usize) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Array v_T v_N) (i: t_RangeTo usize) ->
-      Rust_primitives.Slice.array_slice #v_T v_N self (mk_usize 0) i.f_end
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_6 (#v_T: Type0) (v_N: usize)
-    : Core_models.Ops.Index.t_Index (t_Array v_T v_N) (t_RangeFrom usize) =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre
-    =
-    (fun (self_: t_Array v_T v_N) (i: t_RangeFrom usize) ->
-        i.f_start <=. (Core_models.Slice.impl__len #v_T (self_ <: t_Slice v_T) <: usize));
-    f_index_post = (fun (self: t_Array v_T v_N) (i: t_RangeFrom usize) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Array v_T v_N) (i: t_RangeFrom usize) ->
-      Rust_primitives.Slice.array_slice #v_T v_N self i.f_start v_N
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_7 (#v_T: Type0) (v_N: usize) : Core_models.Ops.Index.t_Index (t_Array v_T v_N) t_RangeFull =
-  {
-    f_Output = t_Slice v_T;
-    f_index_pre = (fun (self: t_Array v_T v_N) (i: t_RangeFull) -> true);
-    f_index_post = (fun (self: t_Array v_T v_N) (i: t_RangeFull) (out: t_Slice v_T) -> true);
-    f_index
-    =
-    fun (self: t_Array v_T v_N) (i: t_RangeFull) ->
-      Rust_primitives.Slice.array_slice #v_T v_N self (mk_usize 0) v_N
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_8: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u8) =
+let impl: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u8) =
   {
     f_Item = u8;
     f_next_pre = (fun (self: t_Range u8) -> true);
@@ -166,7 +42,7 @@ let impl_8: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u8) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_9: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u16) =
+let impl_1: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u16) =
   {
     f_Item = u16;
     f_next_pre = (fun (self: t_Range u16) -> true);
@@ -193,7 +69,7 @@ let impl_9: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u16) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_10: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u32) =
+let impl_2: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u32) =
   {
     f_Item = u32;
     f_next_pre = (fun (self: t_Range u32) -> true);
@@ -220,7 +96,7 @@ let impl_10: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u32) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_11: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u64) =
+let impl_3: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u64) =
   {
     f_Item = u64;
     f_next_pre = (fun (self: t_Range u64) -> true);
@@ -247,7 +123,7 @@ let impl_11: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u64) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_12: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u128) =
+let impl_4: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u128) =
   {
     f_Item = u128;
     f_next_pre = (fun (self: t_Range u128) -> true);
@@ -276,7 +152,7 @@ let impl_12: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range u128) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_13: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range usize) =
+let impl_5: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range usize) =
   {
     f_Item = usize;
     f_next_pre = (fun (self: t_Range usize) -> true);
@@ -305,7 +181,7 @@ let impl_13: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range usize) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_14: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i8) =
+let impl_6: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i8) =
   {
     f_Item = i8;
     f_next_pre = (fun (self: t_Range i8) -> true);
@@ -332,7 +208,7 @@ let impl_14: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i8) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_15: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i16) =
+let impl_7: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i16) =
   {
     f_Item = i16;
     f_next_pre = (fun (self: t_Range i16) -> true);
@@ -359,7 +235,7 @@ let impl_15: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i16) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_16: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i32) =
+let impl_8: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i32) =
   {
     f_Item = i32;
     f_next_pre = (fun (self: t_Range i32) -> true);
@@ -386,7 +262,7 @@ let impl_16: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i32) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_17: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i64) =
+let impl_9: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i64) =
   {
     f_Item = i64;
     f_next_pre = (fun (self: t_Range i64) -> true);
@@ -413,7 +289,7 @@ let impl_17: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i64) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_18: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i128) =
+let impl_10: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i128) =
   {
     f_Item = i128;
     f_next_pre = (fun (self: t_Range i128) -> true);
@@ -442,7 +318,7 @@ let impl_18: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range i128) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_19: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range isize) =
+let impl_11: Core_models.Iter.Traits.Iterator.t_Iterator (t_Range isize) =
   {
     f_Item = isize;
     f_next_pre = (fun (self: t_Range isize) -> true);

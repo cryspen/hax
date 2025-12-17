@@ -13,7 +13,7 @@ let impl__new (#v_T: Type0) (_: Prims.unit) : t_Vec v_T Alloc.Alloc.t_Global =
   <:
   t_Vec v_T Alloc.Alloc.t_Global
 
-let impl__with_capacity (#v_T: Type0) (_: Prims.unit) : t_Vec v_T Alloc.Alloc.t_Global =
+let impl__with_capacity (#v_T: Type0) (e_c: usize) : t_Vec v_T Alloc.Alloc.t_Global =
   impl__new #v_T ()
 
 let impl_1__len (#v_T #v_A: Type0) (self: t_Vec v_T v_A) : usize =

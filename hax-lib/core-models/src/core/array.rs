@@ -56,12 +56,49 @@ impl<T, const N: usize> crate::iter::traits::collect::IntoIterator for [T; N] {
     }
 }
 
+use crate::ops::{
+    index::Index,
+    range::{Range, RangeFrom, RangeFull, RangeTo},
+};
+
 #[hax_lib::attributes]
-impl<T, const N: usize> crate::ops::index::Index<usize> for [T; N] {
+impl<T, const N: usize> Index<usize> for [T; N] {
     type Output = T;
     #[hax_lib::requires(i < self.len())]
     fn index(&self, i: usize) -> &T {
         rust_primitives::slice::array_index(self, i)
+    }
+}
+
+#[hax_lib::attributes]
+impl<T, const N: usize> Index<Range<usize>> for [T; N] {
+    type Output = [T];
+    #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
+    fn index(&self, i: Range<usize>) -> &[T] {
+        array_slice(self, i.start, i.end)
+    }
+}
+#[hax_lib::attributes]
+impl<T, const N: usize> Index<RangeTo<usize>> for [T; N] {
+    type Output = [T];
+    #[hax_lib::requires(i.end <= self.len())]
+    fn index(&self, i: RangeTo<usize>) -> &[T] {
+        array_slice(self, 0, i.end)
+    }
+}
+#[hax_lib::attributes]
+impl<T, const N: usize> Index<RangeFrom<usize>> for [T; N] {
+    type Output = [T];
+    #[hax_lib::requires(i.start <= self.len())]
+    fn index(&self, i: RangeFrom<usize>) -> &[T] {
+        array_slice(self, i.start, N)
+    }
+}
+#[hax_lib::attributes]
+impl<T, const N: usize> Index<RangeFull> for [T; N] {
+    type Output = [T];
+    fn index(&self, i: RangeFull) -> &[T] {
+        array_slice(self, 0, N)
     }
 }
 

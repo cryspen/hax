@@ -228,7 +228,7 @@ pub mod vec {
                 std::marker::PhantomData::<crate::alloc::Global>,
             )
         }
-        pub fn with_capacity() -> Vec<T, crate::alloc::Global> {
+        pub fn with_capacity(_c: usize) -> Vec<T, crate::alloc::Global> {
             Vec::new()
         }
     }

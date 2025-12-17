@@ -73,10 +73,229 @@ let impl__split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
       (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_split_at #v_T s mid
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =
+let impl_6 (#v_T: Type0)
+    : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_Range usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Slice v_T) (i: Core_models.Ops.Range.t_Range usize) ->
+        i.Core_models.Ops.Range.f_start <=. i.Core_models.Ops.Range.f_end &&
+        i.Core_models.Ops.Range.f_end <=. (impl__len #v_T self_ <: usize));
+    f_index_post
+    =
+    (fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_Range usize) (out: t_Slice v_T) -> true);
+    f_index
+    =
+    fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_Range usize) ->
+      Rust_primitives.Slice.slice_slice #v_T
+        self
+        i.Core_models.Ops.Range.f_start
+        i.Core_models.Ops.Range.f_end
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_7 (#v_T: Type0)
+    : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_RangeTo usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeTo usize) ->
+        i.Core_models.Ops.Range.f_end <=. (impl__len #v_T self_ <: usize));
+    f_index_post
+    =
+    (fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeTo usize) (out: t_Slice v_T) -> true);
+    f_index
+    =
+    fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeTo usize) ->
+      Rust_primitives.Slice.slice_slice #v_T self (mk_usize 0) i.Core_models.Ops.Range.f_end
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_8 (#v_T: Type0)
+    : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_RangeFrom usize) =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre
+    =
+    (fun (self_: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeFrom usize) ->
+        i.Core_models.Ops.Range.f_start <=. (impl__len #v_T self_ <: usize));
+    f_index_post
+    =
+    (fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeFrom usize) (out: t_Slice v_T) -> true
+    );
+    f_index
+    =
+    fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeFrom usize) ->
+      Rust_primitives.Slice.slice_slice #v_T
+        self
+        i.Core_models.Ops.Range.f_start
+        (Rust_primitives.Slice.slice_length #v_T self <: usize)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_9 (#v_T: Type0)
+    : Core_models.Ops.Index.t_Index (t_Slice v_T) Core_models.Ops.Range.t_RangeFull =
+  {
+    f_Output = t_Slice v_T;
+    f_index_pre = (fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeFull) -> true);
+    f_index_post
+    =
+    (fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeFull) (out: t_Slice v_T) -> true);
+    f_index
+    =
+    fun (self: t_Slice v_T) (i: Core_models.Ops.Range.t_RangeFull) ->
+      Rust_primitives.Slice.slice_slice #v_T
+        self
+        (mk_usize 0)
+        (Rust_primitives.Slice.slice_length #v_T self <: usize)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_10 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =
   {
     f_Output = v_T;
     f_index_pre = (fun (self_: t_Slice v_T) (i: usize) -> i <. (impl__len #v_T self_ <: usize));
     f_index_post = (fun (self: t_Slice v_T) (i: usize) (out: v_T) -> true);
     f_index = fun (self: t_Slice v_T) (i: usize) -> Rust_primitives.Slice.slice_index #v_T self i
+  }
+
+class t_SliceIndex (v_Self: Type0) (v_T: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
+  f_get_pre:self_: v_Self -> slice: v_T -> pred: Type0{true ==> pred};
+  f_get_post:v_Self -> v_T -> Core_models.Option.t_Option f_Output -> Type0;
+  f_get:x0: v_Self -> x1: v_T
+    -> Prims.Pure (Core_models.Option.t_Option f_Output)
+        (f_get_pre x0 x1)
+        (fun result -> f_get_post x0 x1 result)
+}
+
+let impl__get
+      (#v_T #v_I: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SliceIndex v_I (t_Slice v_T))
+      (s: t_Slice v_T)
+      (index: v_I)
+    : Core_models.Option.t_Option i0.f_Output =
+  f_get #v_I #(t_Slice v_T) #FStar.Tactics.Typeclasses.solve index s
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_1 (#v_T: Type0) : t_SliceIndex usize (t_Slice v_T) =
+  {
+    f_Output = v_T;
+    f_get_pre = (fun (self: usize) (slice: t_Slice v_T) -> true);
+    f_get_post
+    =
+    (fun (self: usize) (slice: t_Slice v_T) (out: Core_models.Option.t_Option v_T) -> true);
+    f_get
+    =
+    fun (self: usize) (slice: t_Slice v_T) ->
+      if self <. (impl__len #v_T slice <: usize)
+      then
+        Core_models.Option.Option_Some (Rust_primitives.Slice.slice_index #v_T slice self)
+        <:
+        Core_models.Option.t_Option v_T
+      else Core_models.Option.Option_None <: Core_models.Option.t_Option v_T
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_2 (#v_T: Type0) : t_SliceIndex Core_models.Ops.Range.t_RangeFull (t_Slice v_T) =
+  {
+    f_Output = t_Slice v_T;
+    f_get_pre = (fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) -> true);
+    f_get_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_RangeFull)
+        (slice: t_Slice v_T)
+        (out: Core_models.Option.t_Option (t_Slice v_T))
+        ->
+        true);
+    f_get
+    =
+    fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) ->
+      Core_models.Option.Option_Some slice <: Core_models.Option.t_Option (t_Slice v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_3 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize) (t_Slice v_T) =
+  {
+    f_Output = t_Slice v_T;
+    f_get_pre = (fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) -> true);
+    f_get_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_RangeFrom usize)
+        (slice: t_Slice v_T)
+        (out: Core_models.Option.t_Option (t_Slice v_T))
+        ->
+        true);
+    f_get
+    =
+    fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
+      if self.Core_models.Ops.Range.f_start <. (impl__len #v_T slice <: usize)
+      then
+        Core_models.Option.Option_Some
+        (Rust_primitives.Slice.slice_slice #v_T
+            slice
+            self.Core_models.Ops.Range.f_start
+            (impl__len #v_T slice <: usize))
+        <:
+        Core_models.Option.t_Option (t_Slice v_T)
+      else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeTo usize) (t_Slice v_T) =
+  {
+    f_Output = t_Slice v_T;
+    f_get_pre = (fun (self: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) -> true);
+    f_get_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_RangeTo usize)
+        (slice: t_Slice v_T)
+        (out: Core_models.Option.t_Option (t_Slice v_T))
+        ->
+        true);
+    f_get
+    =
+    fun (self: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) ->
+      if self.Core_models.Ops.Range.f_end <=. (impl__len #v_T slice <: usize)
+      then
+        Core_models.Option.Option_Some
+        (Rust_primitives.Slice.slice_slice #v_T slice (mk_usize 0) self.Core_models.Ops.Range.f_end)
+        <:
+        Core_models.Option.t_Option (t_Slice v_T)
+      else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T)
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_5 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t_Slice v_T) =
+  {
+    f_Output = t_Slice v_T;
+    f_get_pre = (fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) -> true);
+    f_get_post
+    =
+    (fun
+        (self: Core_models.Ops.Range.t_Range usize)
+        (slice: t_Slice v_T)
+        (out: Core_models.Option.t_Option (t_Slice v_T))
+        ->
+        true);
+    f_get
+    =
+    fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
+      if
+        self.Core_models.Ops.Range.f_start <. self.Core_models.Ops.Range.f_end &&
+        self.Core_models.Ops.Range.f_end <=. (impl__len #v_T slice <: usize)
+      then
+        Core_models.Option.Option_Some
+        (Rust_primitives.Slice.slice_slice #v_T
+            slice
+            self.Core_models.Ops.Range.f_start
+            self.Core_models.Ops.Range.f_end)
+        <:
+        Core_models.Option.t_Option (t_Slice v_T)
+      else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T)
   }
