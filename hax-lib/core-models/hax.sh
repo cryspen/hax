@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-function extract_and_copy() {
+function extract_fstar() {
     go_to "./"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::**' fstar --interfaces '+!**::num::* +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::num +!core_models::ops::bit'
     cp proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+}
+
+function extract_lean() {
+    go_to "./"
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::** -**::function::Fn' lean
+    cp proofs/lean/extraction/*.fst* ../proof-libs/lean/core
 }
 
 function init_vars() {
@@ -37,7 +43,7 @@ function msg() {
 
 
 function help() {
-    echo "Script to extract to F* and place the result in proof-libs"
+    echo "Script to extract to F* or Lean and place the result in proof-libs"
     echo ""
     echo "Usage: $0 [COMMAND]"
     echo ""
@@ -57,9 +63,27 @@ function cli() {
     case "$1" in
         --help) #> Show help message
             help;;
-        extract) #> Extract the F* code and copy it to proof-libs.
-            extract_and_copy
-            msg "$GREEN" "done"
+        extract) #> Extract the F* code and copy it to proof-libs. Use `extract fstar` for F*, `extract lean` for Lean, or `extract` for both
+            case "$2" in
+                "")  # no subcommand -> run both
+                    extract_fstar
+                    extract_lean
+                    msg "$GREEN" "done"
+                    ;;
+                fstar)
+                    extract_fstar
+                    msg "$GREEN" "done"
+                    ;;
+                lean)
+                    extract_lean
+                    msg "$GREEN" "done"
+                    ;;
+                *)
+                    echo "Invalid option for extract: $2"
+                    help
+                    exit 1
+                    ;;
+            esac
             ;;
         *)
             echo "Invalid option: $1"
