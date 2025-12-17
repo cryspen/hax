@@ -975,7 +975,8 @@ module Make (F : Features.T) = struct
   let unbox_expr' (next : expr -> expr) (e : expr) : expr =
     match e.e with
     | App { f = { e = GlobalVar f; _ }; args = [ e ]; _ }
-      when Global_ident.eq_name Alloc__boxed__Impl__new f ->
+      when Global_ident.eq_name Alloc__boxed__Impl__new f
+           || Global_ident.eq_name Rust_primitives__hax__box_new f ->
         next e
     | _ -> e
 
