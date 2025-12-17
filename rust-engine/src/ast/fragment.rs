@@ -67,4 +67,4 @@ macro_rules! mk {
 }
 
 #[hax_rust_engine_macros::replace(AstNodes => include(VisitableAstNodes))]
-mk!(GlobalId, AstNodes);
+mk!(GlobalId, Span, AstNodes);
