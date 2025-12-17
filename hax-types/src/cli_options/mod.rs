@@ -191,6 +191,11 @@ pub enum Backend<E: Extension> {
     /// This is a command that regenerates code for the rust engine.
     #[clap(hide = true)]
     GenerateRustEngineNames,
+    /// A debugger for the Rust engine
+    Debugger {
+        #[arg(long, short)]
+        interactive: bool,
+    },
 }
 
 impl fmt::Display for Backend<()> {
@@ -603,6 +608,7 @@ pub enum BackendName {
     Lean,
     Rust,
     GenerateRustEngineNames,
+    Debugger,
 }
 
 impl fmt::Display for BackendName {
@@ -616,6 +622,7 @@ impl fmt::Display for BackendName {
             BackendName::Lean => "lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
+            BackendName::Debugger => "debugger",
         };
         write!(f, "{name}")
     }
@@ -644,6 +651,7 @@ impl<E: Extension> From<&Backend<E>> for BackendName {
             Backend::Lean { .. } => BackendName::Lean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
+            Backend::Debugger { .. } => BackendName::Debugger,
         }
     }
 }
