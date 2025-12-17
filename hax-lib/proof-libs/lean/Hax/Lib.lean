@@ -13,6 +13,8 @@ import Std.Do.Triple
 import Std.Tactic.Do
 import Std.Tactic.Do.Syntax
 import Hax.Initialize
+import Hax.USize64
+import Hax.MissingLean.Init.Data.UInt.Lemmas
 
 open Std.Do
 open Std.Tactic
@@ -180,7 +182,7 @@ abbrev u8 := UInt8
 abbrev u16 := UInt16
 abbrev u32 := UInt32
 abbrev u64 := UInt64
-abbrev usize := USize
+abbrev usize := USize64
 abbrev i8 := Int8
 abbrev i16 := Int16
 abbrev i32 := Int32
@@ -231,7 +233,7 @@ instance : Coe u32 Nat where
 
 @[simp]
 instance : Coe Nat usize where
-  coe x := USize.ofNat x
+  coe x := USize64.ofNat x
 
 @[simp]
 instance : Coe usize u32 where
@@ -443,7 +445,7 @@ instance : Cast i64 (RustM i32) where
 
 @[spec]
 instance : Cast usize u32 where
-  cast x := pure (USize.toUInt32 x)
+  cast x := pure (USize64.toUInt32 x)
 
 @[spec]
 instance : Cast String String where
@@ -497,11 +499,14 @@ instance : Coe Nat Nat where
 
 @[simp]
 instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
-  fold_range s e inv init body := do
-    let mut acc := init
-    for i in [s:e] do
-      acc := (← body acc i)
-    return acc
+  fold_range {β} s e inv init body := do
+    let rec @[specialize] loop (v : β) (i : Nat) : RustM β := do
+      if i < e then
+        let v ← body v i
+        loop v (i + 1)
+      else
+        pure v
+    loop init s
 
   fold_range_return {α_acc α_ret} s e inv init body := do
     let mut acc := init
@@ -511,6 +516,7 @@ instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
       | .Break (.Continue ⟨ ⟨ ⟩, res⟩) => return (.Continue res)
       | .Continue acc' => acc := acc'
     pure (ControlFlow.Continue acc)
+
 
 /-
 Nat-based specification for hax_folds_fold_range. It requires that the invariant
@@ -531,33 +537,33 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
     s ≤ i →
     i < e →
     inv acc i = pure true →
-    ⦃ ⌜ True ⌝ ⦄
-    (body acc i)
-    ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
+    ⊢ₛ wp⟦body acc i⟧
+      (⇓ res => ⌜ inv res (i+1) = pure true ⌝)) →
   ⦃ ⌜ True ⌝ ⦄
   (Rust_primitives.Hax.Folds.fold_range s e inv init body)
   ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
-  intro h_inv_s h_le h_body
-  mvcgen [Spec.forIn_list, fold_range]
-  case inv1 =>
-    simp [Coe.coe]
-    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + suff.length) = pure true ⌝ )
-  case vc1.step _ x _ h_list _ h =>
-    intros
-    simp [Coe.coe] at h_list h
-    simp [Std.Range.toList] at h_list
-    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
-    let h_suff := Eq.symm h_suff
-    let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
-    mstart ; mspec h_body <;> simp [Coe.coe] at * <;> try grind
-  case vc2.pre | vc4.post.except =>
-    simp [Coe.coe] at * <;> try assumption
-  case vc3.post.success =>
-    simp at *
-    suffices (s + (e - s)) = e by (rw [← this]; assumption)
-    omega
-
+  intro h_inv_s h_init h_body
+  simp only [fold_range]
+  unfold instFoldsOfCoeNat.loop
+  by_cases h_lt : s < e
+  case pos =>
+    unfold Triple Coe.coe instCoeNat_hax
+    simp only [h_lt, if_true]
+    rw [WP.bind]
+    apply SPred.entails.trans (h_body init s (Nat.le_refl _) h_lt h_init)
+    apply (wp _).mono _ _ _
+    apply (PostCond.entails_noThrow _ _).2
+    intro v hv
+    refine Rust_primitives.Hax.Folds.fold_range_spec (s + 1) e inv v body (by omega) hv ?_ True.intro
+    exact fun acc i h => h_body acc i (by omega)
+  case neg =>
+    unfold Triple Coe.coe instCoeNat_hax
+    simp only [h_lt, if_false]
+    apply SPred.pure_intro
+    have : e = s := by omega
+    rw [this]
+    assumption
 
 @[spec]
 theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
@@ -578,39 +584,37 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
   (Rust_primitives.Hax.Folds.fold_range s e inv init body)
   ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
-  intro h_inv_s h_le h_body
-  have : s.toNat < USize.size := by apply USize.toNat_lt_size
-  have : e.toNat < USize.size := by apply USize.toNat_lt_size
-  mvcgen [Spec.forIn_list, fold_range]
-  case inv1 =>
-    simp [Coe.coe]
-    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + (USize.ofNat suff.length)) = pure true ⌝ )
-  case vc2.pre | vc4.post.except =>
-    simp [Coe.coe, USize.ofNat] at * <;> try assumption
-  case vc3.post.success =>
-    simp at *
-    suffices (s + USize.ofNat (USize.toNat e - USize.toNat s)) = e by rwa [← this]
-    rw [USize.ofNat_sub, USize.ofNat_toNat, USize.ofNat_toNat] <;> try assumption
-    rw (occs := [2])[← USize.sub_add_cancel (b := s) (a := e)]
-    rw [USize.add_comm]
-  case vc1.step _ x _ h_list _ h =>
-    intros
-    simp [Coe.coe] at h_list h
-    simp [Std.Range.toList] at h_list
-    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
-    let h_suff := Eq.symm h_suff
-    let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
-    unfold USize.size at *
-    mstart ; mspec h_body <;> simp [Coe.coe] at * <;> (try grind) <;> (try omega)
-    . apply USize.le_iff_toNat_le.mpr
-      rw [← h_x, USize.toNat_ofNat', Nat.mod_eq_of_lt] <;> try omega
-    . apply USize.lt_iff_toNat_lt.mpr
-      rw [← h_x, USize.toNat_ofNat', Nat.mod_eq_of_lt] <;> try omega
-    . rw [← h_x, USize.ofNat_add, USize.ofNat_toNat]
-      rwa [h_pre, List.length_range'] at h
-    . rw [h_pre, List.length_range', ← h_x, USize.ofNat_add, USize.ofNat_toNat, USize.add_assoc]
-      intro; assumption
-
+  intro h_inv_s h_init h_body
+  simp only [fold_range]
+  unfold instFoldsOfCoeNat.loop Triple Coe.coe instCoeUsizeNat
+  by_cases h_lt : s < e
+  case pos =>
+    simp only [if_true, USize64.toNat, ←UInt64.lt_iff_toNat_lt, h_lt]
+    rw [WP.bind]
+    apply SPred.entails.trans (h_body init s (Nat.le_refl _) h_lt h_init)
+    simp only [instCoeNatUsize, USize64.ofNat, UInt64.ofNat_toNat]
+    apply (wp _).mono _ _ _
+    apply (PostCond.entails_noThrow _ _).2
+    intro v hv
+    have s_add_1_lt : s.toNat + 1 < 2 ^ 64 :=
+      Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (UInt64.lt_iff_toNat_lt.mp h_lt)) (UInt64.toNat_lt e)
+    have : UInt64.toNat s + 1 = UInt64.toNat (s + 1 : usize) := by
+      rw [UInt64.toNat_add_of_lt]; rfl; exact s_add_1_lt
+    rw [this]
+    refine Rust_primitives.Hax.Folds.usize.fold_range_spec (s + 1) e inv v body
+      (UInt64.succ_le_of_lt h_lt) hv ?_ True.intro
+    exact fun acc i h => h_body acc i (UInt64.add_le_of_le h s_add_1_lt)
+  case neg =>
+    simp only [h_lt, USize64.toNat, ←UInt64.lt_iff_toNat_lt, if_false]
+    apply SPred.pure_intro
+    rw [UInt64.le_antisymm (UInt64.not_lt.mp h_lt) h_inv_s]
+    exact h_init
+termination_by e.toNat-s.toNat
+decreasing_by
+  simp only [USize64.toNat]
+  rw [UInt64.toNat_add_of_lt]
+  apply Nat.sub_lt_sub_left (UInt64.lt_iff_toNat_lt.mp h_lt) (Nat.lt_succ_self _)
+  exact s_add_1_lt
 
 end Fold
 
@@ -721,7 +725,7 @@ Until the backend introduces notations, a definition for the explicit name
 def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (RustM γ) := a[i]_?
 
 
-instance Range.instGetElemResultArrayUSize {α: Type}:
+instance Range.instGetElemResultArrayUSize64 {α: Type}:
   GetElemResult
     (Array α)
     (Range usize)
@@ -734,7 +738,7 @@ instance Range.instGetElemResultArrayUSize {α: Type}:
     else
       RustM.fail Error.arrayOutOfBounds
 
-instance Range.instGetElemResultVectorUSize {α : Type} {n : Nat} :
+instance Range.instGetElemResultVectorUSize64 {α : Type} {n : Nat} :
   GetElemResult
     (Vector α n)
     (Range usize)
@@ -800,7 +804,7 @@ theorem usize.getElemVectorResult_spec
   by mvcgen [usize.instGetElemResultVector]
 
 @[spec]
-theorem Range.getElemArrayUSize_spec
+theorem Range.getElemArrayUSize64_spec
   (α : Type) (a: Array α) (s e: usize) :
   s ≤ e →
   e ≤ a.size →
@@ -809,10 +813,10 @@ theorem Range.getElemArrayUSize_spec
   ⦃ ⇓ r => ⌜ r = Array.extract a s e ⌝ ⦄
 := by
   intros
-  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize] ; grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize64] ; grind
 
 @[spec]
-theorem Range.getElemVectorUSize_spec
+theorem Range.getElemVectorUSize64_spec
   (α : Type) (n: Nat) (a: Vector α n) (s e: usize) :
   s ≤ e →
   e ≤ a.size →
@@ -821,7 +825,7 @@ theorem Range.getElemVectorUSize_spec
   ⦃ ⇓ r => ⌜ r = (Vector.extract a s e).toArray ⌝ ⦄
 := by
   intros
-  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize] ; grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize64] ; grind
 
 
 end Lookup
