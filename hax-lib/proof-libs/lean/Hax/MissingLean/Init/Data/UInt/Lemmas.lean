@@ -9,6 +9,10 @@ attribute [grind] USize.le_ofNat_iff Nat.min_eq_left
 attribute [grind =] USize.lt_iff_toNat_lt
 attribute [grind] USize.toNat_ofNat_of_lt
 attribute [grind] USize.toNat_ofNat_of_lt'
+attribute [grind =_] UInt8.le_ofNat_iff
+attribute [grind =_] UInt16.le_ofNat_iff
+attribute [grind =_] UInt32.le_ofNat_iff
+attribute [grind =_] UInt64.le_ofNat_iff
 
 @[grind]
 theorem USize.umulOverflow_iff (x y : USize) :

@@ -4,7 +4,7 @@ import Hax.Integers.Ops
 abbrev f32 := Float32
 abbrev f64 := Float
 
-macro "declare_float_ops" typeName:ident : command =>
+macro "declare_Hax_float_ops" typeName:ident : command =>
   `(
     namespace $typeName
 
@@ -23,5 +23,5 @@ macro "declare_float_ops" typeName:ident : command =>
     end $typeName
   )
 
-declare_float_ops f32
-declare_float_ops f64
+declare_Hax_float_ops f32
+declare_Hax_float_ops f64
