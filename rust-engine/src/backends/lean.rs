@@ -456,6 +456,102 @@ const _: () = {
                 }]
             }
         }
+
+        /// Print spec of an item
+        fn spec<A: 'static + Clone>(
+            &self,
+            item: &Item,
+            name: &GlobalId,
+            generics: &Generics,
+            params: &Vec<Param>,
+        ) -> DocBuilder<A> {
+            let spec =
+                HasLinkedItemGraph::linked_item_graph(self).fn_like_linked_expressions(item, None);
+            if spec.precondition.is_none() && spec.postcondition.is_none() {
+                nil!()
+            } else {
+                docs![
+                    hardline!(),
+                    hardline!(),
+                    "@[spec]",
+                    hardline!(),
+                    docs![
+                        docs![
+                            "def",
+                            line!(),
+                            name,
+                            ".spec",
+                            line!(),
+                            generics,
+                            params,
+                            softline!(),
+                            ":"
+                        ]
+                        .group()
+                        .nest(INDENT),
+                        line!(),
+                        docs![
+                            "Spec",
+                            line!(),
+                            docs![
+                                "requires",
+                                softline!(),
+                                ":=",
+                                line!(),
+                                spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
+                            ]
+                            .parens()
+                            .group()
+                            .nest(INDENT),
+                            line!(),
+                            docs![
+                                "ensures := ",
+                                spec.postcondition
+                                    .map_or(reflow!("fun _ => pure True"), |p| docs![
+                                        "fun",
+                                        line!(),
+                                        p.result_binder,
+                                        softline!(),
+                                        "=>",
+                                        line!(),
+                                        p.body,
+                                    ]
+                                    .group()
+                                    .nest(INDENT)),
+                            ]
+                            .parens()
+                            .group()
+                            .nest(INDENT),
+                            line!(),
+                            docs![name, line!(), generics, params]
+                                .parens()
+                                .group()
+                                .nest(INDENT)
+                        ]
+                        .group()
+                        .nest(INDENT),
+                        softline!(),
+                        ":=",
+                    ]
+                    .group()
+                    .nest(2 * INDENT),
+                    softline!(),
+                    docs![
+                        hardline!(),
+                        "pureRequires := by constructor; mvcgen <;> try grind",
+                        hardline!(),
+                        "pureEnsures := by constructor; intros; mvcgen <;> try grind",
+                        hardline!(),
+                        docs!["contract := by mvcgen[", name, "] <;> try grind"]
+                            .group()
+                            .nest(INDENT),
+                        hardline!(),
+                    ]
+                    .nest(INDENT)
+                    .braces(),
+                ]
+            }
+        }
     }
 
     impl<A: 'static + Clone> ToDocument<LeanPrinter, A> for (Vec<GenericParam>, &TraitItem) {
@@ -1059,94 +1155,7 @@ set_option linter.unusedVariables false
                         ]
                         .group()
                         .nest(INDENT),
-                        {
-                            let spec = HasLinkedItemGraph::linked_item_graph(self)
-                                .fn_like_linked_expressions(item, None);
-                            if spec.precondition.is_none() && spec.postcondition.is_none() {
-                                nil!()
-                            } else {
-                                docs![
-                                    hardline!(),
-                                    hardline!(),
-                                    "@[spec]",
-                                    hardline!(),
-                                    docs![
-                                        docs![
-                                            "def",
-                                            line!(),
-                                            name,
-                                            ".spec",
-                                            line!(),
-                                            generics,
-                                            params,
-                                            softline!(),
-                                            ":"
-                                        ]
-                                        .group()
-                                        .nest(INDENT),
-                                        line!(),
-                                        docs![
-                                            "Spec",
-                                            line!(),
-                                            docs![
-                                                "requires",
-                                                softline!(),
-                                                ":=",
-                                                line!(),
-                                                spec.precondition
-                                                    .map_or(reflow!("pure True"), |p| docs![p])
-                                            ]
-                                            .parens()
-                                            .group()
-                                            .nest(INDENT),
-                                            line!(),
-                                            docs![
-                                                "ensures := ",
-                                                spec.postcondition.map_or(
-                                                    reflow!("fun _ => pure True"),
-                                                    |p| docs![
-                                                        "fun",
-                                                        line!(),
-                                                        p.result_binder,
-                                                        softline!(),
-                                                        "=>",
-                                                        line!(),
-                                                        p.body,
-                                                    ]
-                                                    .group()
-                                                    .nest(INDENT)
-                                                ),
-                                            ]
-                                            .parens()
-                                            .group()
-                                            .nest(INDENT),
-                                            line!(),
-                                            docs![name, line!(), generics, params]
-                                                .parens()
-                                                .group()
-                                                .nest(INDENT)
-                                        ]
-                                        .group()
-                                        .nest(INDENT),
-                                        softline!(),
-                                        ":=",
-                                    ]
-                                    .group()
-                                    .nest(2 * INDENT),
-                                    softline!(),
-                                    docs![
-                                        hardline!(),
-                                        "pureRequires := by constructor; mvcgen <;> try grind",
-                                        hardline!(),
-                                        "pureEnsures := by constructor; intros; mvcgen <;> try grind",
-                                        hardline!(),
-                                        docs!["contract := by mvcgen[", name, "] <;> try grind"]
-                                            .group().nest(INDENT),
-                                        hardline!(),
-                                    ].nest(INDENT).braces(),
-                                ]
-                            }
-                        }
+                        &self.spec(item, name, generics, params)
                     ]
                 }
                 ItemKind::TyAlias { name, generics, ty } => docs![
