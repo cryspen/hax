@@ -47,23 +47,50 @@ pub trait Printer: Sized + PrettyAst<Span> + Default {
     const NAME: &'static str = <Self as PrettyAst<Span>>::NAME;
 }
 
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 /// Placeholder type for sourcemaps.
 pub struct SourceMap;
 
 /// Helper trait to print AST fragments.
-pub trait Print<T>: Printer {
+pub trait Print<T>
+where
+    for<'a> dyn Resugaring: dyn_compatible::AstVisitableMut<'a, T>,
+{
     /// Print a single AST fragment using this backend.
-    fn print(&mut self, mut fragment: T) -> (String, SourceMap)
+    fn print_returning_fragment(&mut self, fragment: T) -> (String, SourceMap, T)
+    where
+        T: ToDocument<Self, Span>;
+
+    /// Print a single AST fragment using this backend.
+    fn print(&mut self, fragment: T) -> (String, SourceMap)
+    where
+        T: ToDocument<Self, Span>;
+}
+
+impl<P: Printer, T> Print<T> for P
+where
+    for<'a> dyn Resugaring: dyn_compatible::AstVisitableMut<'a, T>,
+{
+    fn print_returning_fragment(&mut self, mut fragment: T) -> (String, SourceMap, T)
     where
         T: ToDocument<Self, Span>,
-        // The following node is equivalent to "T is an AST node"
-        for<'a> dyn Resugaring: dyn_compatible::AstVisitableMut<'a, T>,
     {
         for mut reguaring_phase in Self::resugaring_phases() {
             reguaring_phase.visit(&mut fragment)
         }
         let doc_builder = fragment.to_document(self).into_doc();
-        (doc_builder.deref().pretty(80).to_string(), SourceMap)
+        (
+            doc_builder.deref().pretty(80).to_string(),
+            SourceMap,
+            fragment,
+        )
+    }
+
+    fn print(&mut self, fragment: T) -> (String, SourceMap)
+    where
+        T: ToDocument<Self, Span>,
+    {
+        let (rendered, sourcemap, _) = <Self as Print<_>>::print_returning_fragment(self, fragment);
+        (rendered, sourcemap)
     }
 }
-impl<P: Printer, T> Print<T> for P {}

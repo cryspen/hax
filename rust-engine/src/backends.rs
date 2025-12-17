@@ -56,7 +56,7 @@ pub trait Backend {
     ///
     /// Backends can override this to add transformations.
     /// The default is an empty list (no transformations).
-    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+    fn phases(&self) -> Vec<crate::phase::PhaseKind> {
         vec![]
     }
 
@@ -84,15 +84,22 @@ pub trait Backend {
     fn module_path(&self, module: &Module) -> Utf8PathBuf;
 }
 
+/// A backend can be interpreted as a phase
+impl<B: Backend> crate::phase::Phase for B {
+    fn apply(&self, items: &mut Vec<Item>) {
+        for phase in group_consecutive_ocaml_phases(self.phases()) {
+            phase.apply(items);
+        }
+    }
+}
+
 /// Apply a backend to a collection of AST items, producing output files.
 ///
 /// This runs all of the backend's [`Backend::phases`], groups the items into
 /// modules via [`Backend::items_to_module`], and then uses the backend's printer
 /// to generate source files with paths determined by [`Backend::module_path`].
 pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
-    for phase in group_consecutive_ocaml_phases(backend.phases()) {
-        phase.apply(&mut items);
-    }
+    crate::phase::Phase::apply(&backend, &mut items);
 
     let modules = backend.items_to_module(items);
     modules
