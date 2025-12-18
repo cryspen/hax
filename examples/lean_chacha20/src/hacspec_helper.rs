@@ -10,7 +10,6 @@ theorem Lean_chacha20.Hacspec_helper.to_le_u32s_3.spec bytes :
   (Lean_chacha20.Hacspec_helper.to_le_u32s_3 bytes)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  open Spec.Nat in
   mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_3] <;> try grind (splits := 16)
 "
 )]
@@ -34,7 +33,6 @@ theorem Lean_chacha20.Hacspec_helper.to_le_u32s_8_spec (bytes : (Array u8)) :
   ( Lean_chacha20.Hacspec_helper.to_le_u32s_8 bytes )
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  open Spec.Nat in
   mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_8] <;> try grind (splits := 16)
 "
 )]
@@ -57,7 +55,6 @@ theorem Lean_chacha20.Hacspec_helper.to_le_u32s_16_spec bytes :
   (Lean_chacha20.Hacspec_helper.to_le_u32s_16 bytes)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intro
-  open Spec.Nat in
   mvcgen [Lean_chacha20.Hacspec_helper.to_le_u32s_16] <;> try grind (splits := 16)
 "
 )]
@@ -80,9 +77,10 @@ theorem Lean_chacha20.Hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 
   (Lean_chacha20.Hacspec_helper.u32s_to_le_bytes state)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  open Spec.Nat in
   mvcgen [Lean_chacha20.Hacspec_helper.u32s_to_le_bytes, Core.Num.Impl_8.to_le_bytes]
     <;> try grind (splits := 14)
+  · rw [USize.umulOverflow_iff]
+    grind
 "
 )]
 pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
@@ -105,7 +103,6 @@ theorem Lean_chacha20.Hacspec_helper.xor_state_spec (state other: (Vector u32 16
   (Lean_chacha20.Hacspec_helper.xor_state state other)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  open Spec.Nat in
   mvcgen [Lean_chacha20.Hacspec_helper.xor_state, Core.Num.Impl_8.to_le_bytes]
     <;> try grind
 "
@@ -148,7 +145,6 @@ theorem Lean_chacha20.Hacspec_helper.update_array_spec (a: (Vector u8 64)) (v: A
   (Lean_chacha20.Hacspec_helper.update_array a v)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  open Spec.Nat in
   mvcgen [Lean_chacha20.Hacspec_helper.update_array, Hax_lib.assert]
     <;> try grind (splits := 14)
 "

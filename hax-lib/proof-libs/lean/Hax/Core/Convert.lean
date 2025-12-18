@@ -26,10 +26,6 @@ instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) (E := C
        .Err Core.Array.TryFromSliceError.array.TryFromSliceError
      )
 
-#check fun  {α : Type} {n: Nat} (a: RustSlice α) => TryInto.try_into (RustSlice α) (RustArray α n) a
-
-#check fun {α n} => (inferInstance : TryInto (RustSlice α) (RustArray α n))
-
 @[spec]
 theorem TryInto.try_into.spec {α : Type} {n: Nat} (a: RustSlice α) :
   (h: a.size = n) →

@@ -41,7 +41,7 @@ fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> boo
 /// `|result| ≤ FIELD_MODULUS / 2 · (|value|/BARRETT_R + 1)
 ///
 /// In particular, if `|value| < BARRETT_R`, then `|result| < FIELD_MODULUS`.
-#[hax_lib::lean::before("@[simp, spec]")]
+#[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
     "
 set_option maxHeartbeats 1000000 in
@@ -53,7 +53,7 @@ theorem barrett_spec (value: i32) :
     Lean_barrett.barret_reduce_postcondition value result)
   ⦃ ⇓ post => ⌜post = true⌝ ⦄
 := by
-  open Spec.BV in mvcgen [ Lean_barrett.barret_reduce_postcondition ]
+  mvcgen [ Lean_barrett.barret_reduce_postcondition ]
   <;> simp_all! [ Lean_barrett.barrett_reduce_precondition ]
   hax_bv_decide
   simp [Int32.eq_iff_toBitVec_eq,
