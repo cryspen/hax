@@ -141,12 +141,12 @@ diff-thir-importers DIR:
   # Ensures hax is built
   just b
 
-  # Remove previous results (if any)
-  rm -rf diff-thir-importers
-
   # Utils
-  function readJSON() { cat proofs/rust/extraction/ast.json }
+  function readJSON() { cat proofs/rust/extraction/ast.json; }
   BASE="$PWD"
+  OUT="$BASE/diff-thir-importers"
+  # Remove previous results (if any)
+  rm -rf "$OUT"
 
   cd {{DIR}}
   cargo hax --experimental-full-def json -o thir.json
@@ -155,7 +155,6 @@ diff-thir-importers DIR:
   cargo hax                         into debugger
   readJSON > ocaml-import-thir-ast.json
 
-  OUT="$BASE/test-ast-results"
   mkdir "$OUT"
   mv thir.json *ast.json "$OUT"
   cd "$OUT"
