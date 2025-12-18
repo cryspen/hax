@@ -59,6 +59,9 @@ pub mod sequence {
     pub fn seq_one<T>(x: T) -> Seq<T> {
         panic!()
     }
+    pub fn seq_create<T>(x: T, n: usize) -> Seq<T> {
+        panic!()
+    }
     pub fn seq_len<T>(s: &Seq<T>) -> usize {
         panic!()
     }

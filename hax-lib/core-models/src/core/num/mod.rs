@@ -123,6 +123,11 @@ macro_rules! uint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
         }
+        impl crate::default::Default for $Self {
+            fn default() -> $Self {
+                0
+            }
+        }
     };
 }
 
@@ -249,6 +254,11 @@ macro_rules! iint_impl {
             #[hax_lib::opaque]
             fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
+            }
+        }
+        impl crate::default::Default for $Self {
+            fn default() -> $Self {
+                0
             }
         }
     };

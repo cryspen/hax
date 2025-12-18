@@ -16,10 +16,11 @@ mod borrow {
 }
 
 mod boxed {
-    pub struct Box<T, A>(pub T, pub Option<A>);
-    impl<T, A> Box<T, A> {
-        fn new(v: T) -> Box<T, A> {
-            Box(v, None)
+    pub struct Box<T>(pub T);
+    impl<T> Box<T> {
+        // Hax removes boxes, so this should be the identity
+        fn new(v: T) -> T {
+            v
         }
     }
 }
@@ -179,8 +180,8 @@ mod slice {
                 std::marker::PhantomData::<crate::alloc::Global>,
             )
         }
-        fn into_vec<A>(s: super::boxed::Box<&[T], A>) -> Vec<T, A> {
-            Vec(seq_from_slice(s.0), std::marker::PhantomData::<A>)
+        fn into_vec<A>(s: Box<&[T]>) -> Vec<T, A> {
+            Vec(seq_from_slice(*s), std::marker::PhantomData::<A>)
         }
         #[hax_lib::opaque]
         fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
@@ -219,6 +220,13 @@ pub mod vec {
     use rust_primitives::sequence::*;
 
     pub struct Vec<T, A>(pub Seq<T>, pub std::marker::PhantomData<A>);
+
+    fn from_elem<T: Clone>(item: T, len: usize) -> Vec<T, crate::alloc::Global> {
+        Vec(
+            seq_create(item, len),
+            std::marker::PhantomData::<crate::alloc::Global>,
+        )
+    }
 
     #[hax_lib::attributes]
     impl<T> Vec<T, crate::alloc::Global> {
@@ -333,6 +341,21 @@ pub mod vec {
 
         fn deref(&self) -> &[T] {
             self.as_slice()
+        }
+    }
+
+    #[hax_lib::attributes]
+    #[hax_lib::opaque]
+    impl<T> std::iter::FromIterator<T> for Vec<T, crate::alloc::Global> {
+        fn from_iter<I>(iter: I) -> Self
+        where
+            I: IntoIterator<Item = T>,
+        {
+            let mut res = Vec::new();
+            for el in iter {
+                res.push(el)
+            }
+            res
         }
     }
 }

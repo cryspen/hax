@@ -118,6 +118,9 @@ pub mod traits {
             type IntoIter; //: Iterator<Item = Self::Item>
             fn into_iter(self) -> Self::IntoIter;
         }
+        pub trait FromIterator<A>: Sized {
+            fn from_iter<T: IntoIterator>(iter: T) -> Self;
+        }
     }
 }
 

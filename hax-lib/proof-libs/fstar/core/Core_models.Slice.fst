@@ -72,6 +72,15 @@ let impl__split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
       (requires mid <=. (impl__len #v_T s <: usize))
       (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_split_at #v_T s mid
 
+let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
+    : Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T) =
+  if mid <=. (impl__len #v_T s <: usize)
+  then
+    Core_models.Option.Option_Some (impl__split_at #v_T s mid)
+    <:
+    Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_6 (#v_T: Type0)
     : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_Range usize) =

@@ -25,3 +25,5 @@ let seq_first #t (s: t_Seq t{seq_len s >. mk_usize 0}): t = Seq.index s 0
 let seq_concat #t (s1: t_Seq t) (s2: t_Seq t {(Seq.length s1) + (Seq.length s2) <= max_usize}): t_Seq t = Seq.append s1 s2
 
 let seq_one #t (x: t): t_Seq t = Seq.create 1 x
+
+let seq_create #t (x: t) (n: usize): t_Seq t = Seq.create (v n) x

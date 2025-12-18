@@ -137,6 +137,14 @@ let impl_u8__to_le_bytes = impl_u8__to_le_bytes'
 let impl_u8__rem_euclid (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u8 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl: Core_models.Default.t_Default u8 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u8) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u8 0
+  }
+
 let impl_u16__MIN: u16 = mk_u16 0
 
 let impl_u16__MAX: u16 = mk_u16 65535
@@ -271,6 +279,14 @@ let impl_u16__to_le_bytes = impl_u16__to_le_bytes'
 let impl_u16__rem_euclid (x y: u16)
     : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u16 x y
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_2: Core_models.Default.t_Default u16 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u16) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u16 0
+  }
 
 let impl_u32__MIN: u32 = mk_u32 0
 
@@ -407,6 +423,14 @@ let impl_u32__rem_euclid (x y: u32)
     : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u32 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4: Core_models.Default.t_Default u32 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u32) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u32 0
+  }
+
 let impl_u64__MIN: u64 = mk_u64 0
 
 let impl_u64__MAX: u64 = mk_u64 18446744073709551615
@@ -541,6 +565,14 @@ let impl_u64__to_le_bytes = impl_u64__to_le_bytes'
 let impl_u64__rem_euclid (x y: u64)
     : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u64 x y
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_6: Core_models.Default.t_Default u64 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u64) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u64 0
+  }
 
 let impl_u128__MIN: u128 = mk_u128 0
 
@@ -679,6 +711,14 @@ let impl_u128__to_le_bytes = impl_u128__to_le_bytes'
 let impl_u128__rem_euclid (x y: u128)
     : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u128 x y
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_8: Core_models.Default.t_Default u128 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u128) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u128 0
+  }
 
 let impl_usize__MIN: usize = mk_usize 0
 
@@ -821,6 +861,14 @@ let impl_usize__rem_euclid (x y: usize)
     : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_usize x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_10: Core_models.Default.t_Default usize =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: usize) -> true);
+    f_default = fun (_: Prims.unit) -> mk_usize 0
+  }
+
 let impl_i8__MIN: i8 = mk_i8 (-128)
 
 let impl_i8__MAX: i8 = mk_i8 127
@@ -957,6 +1005,14 @@ let impl_i8__rem_euclid (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun 
 
 let impl_i8__abs (x: i8) : Prims.Pure i8 (requires x >. impl_i8__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i8 x
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_12: Core_models.Default.t_Default i8 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i8) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i8 0
+  }
 
 let impl_i16__MIN: i16 = mk_i16 (-32768)
 
@@ -1096,6 +1152,14 @@ let impl_i16__rem_euclid (x y: i16)
 let impl_i16__abs (x: i16) : Prims.Pure i16 (requires x >. impl_i16__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i16 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_14: Core_models.Default.t_Default i16 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i16) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i16 0
+  }
+
 let impl_i32__MIN: i32 = mk_i32 (-2147483648)
 
 let impl_i32__MAX: i32 = mk_i32 2147483647
@@ -1234,6 +1298,14 @@ let impl_i32__rem_euclid (x y: i32)
 let impl_i32__abs (x: i32) : Prims.Pure i32 (requires x >. impl_i32__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i32 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_16: Core_models.Default.t_Default i32 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i32) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i32 0
+  }
+
 let impl_i64__MIN: i64 = mk_i64 (-9223372036854775808)
 
 let impl_i64__MAX: i64 = mk_i64 9223372036854775807
@@ -1371,6 +1443,14 @@ let impl_i64__rem_euclid (x y: i64)
 
 let impl_i64__abs (x: i64) : Prims.Pure i64 (requires x >. impl_i64__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i64 x
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_18: Core_models.Default.t_Default i64 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i64) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i64 0
+  }
 
 let impl_i128__MIN: i128 = mk_i128 (-170141183460469231731687303715884105728)
 
@@ -1513,6 +1593,14 @@ let impl_i128__rem_euclid (x y: i128)
 let impl_i128__abs (x: i128)
     : Prims.Pure i128 (requires x >. impl_i128__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i128 x
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_20: Core_models.Default.t_Default i128 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i128) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i128 0
+  }
 
 let impl_isize__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
 
@@ -1658,3 +1746,11 @@ let impl_isize__rem_euclid (x y: isize)
 let impl_isize__abs (x: isize)
     : Prims.Pure isize (requires x >. impl_isize__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_isize x
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_22: Core_models.Default.t_Default isize =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: isize) -> true);
+    f_default = fun (_: Prims.unit) -> mk_isize 0
+  }

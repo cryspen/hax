@@ -156,6 +156,19 @@ mod io {
                 Ok(())
             }
         }
+        impl super::Write for Vec<u8> {
+            fn write(&mut self, buf: &[u8]) -> Result<usize, super::error::Error> {
+                self.extend_from_slice(buf);
+                Ok(buf.len())
+            }
+            fn write_all(&mut self, buf: &[u8]) -> Result<(), super::error::Error> {
+                self.extend_from_slice(buf);
+                Ok(())
+            }
+            fn flush(&mut self) -> Result<(), super::error::Error> {
+                Ok(())
+            }
+        }
     }
     mod stdio {
         fn e_print(args: core::fmt::Arguments) {}

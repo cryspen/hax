@@ -102,6 +102,13 @@ impl<T> Slice<T> {
     fn split_at(s: &[T], mid: usize) -> (&[T], &[T]) {
         rust_primitives::slice::slice_split_at(s, mid)
     }
+    fn split_at_checked(s: &[T], mid: usize) -> Option<(&[T], &[T])> {
+        if mid <= s.len() {
+            Option::Some(Self::split_at(s, mid))
+        } else {
+            Option::None
+        }
+    }
     fn is_empty(s: &[T]) -> bool {
         s.len() == 0
     }

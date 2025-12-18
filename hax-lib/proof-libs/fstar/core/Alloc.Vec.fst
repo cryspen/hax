@@ -7,6 +7,17 @@ type t_Vec (v_T: Type0) (v_A: Type0) =
   | Vec : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A
     -> t_Vec v_T v_A
 
+let from_elem
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
+      (item: v_T)
+      (len: usize)
+    : t_Vec v_T Alloc.Alloc.t_Global =
+  Vec (Rust_primitives.Sequence.seq_create #v_T item len)
+    (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData Alloc.Alloc.t_Global)
+  <:
+  t_Vec v_T Alloc.Alloc.t_Global
+
 let impl__new (#v_T: Type0) (_: Prims.unit) : t_Vec v_T Alloc.Alloc.t_Global =
   Vec (Rust_primitives.Sequence.seq_empty #v_T ())
     (Core_models.Marker.PhantomData <: Core_models.Marker.t_PhantomData Alloc.Alloc.t_Global)
@@ -219,3 +230,11 @@ let impl_4 (#v_T #v_A: Type0) : Core_models.Ops.Deref.t_Deref (t_Vec v_T v_A) =
     f_deref_post = (fun (self: t_Vec v_T v_A) (out: t_Slice v_T) -> true);
     f_deref = fun (self: t_Vec v_T v_A) -> impl_1__as_slice #v_T #v_A self
   }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+assume
+val impl_5': #v_T: Type0
+  -> Core_models.Iter.Traits.Collect.t_FromIterator (t_Vec v_T Alloc.Alloc.t_Global) v_T
+
+unfold
+let impl_5 (#v_T: Type0) = impl_5' #v_T
