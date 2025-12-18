@@ -156,7 +156,7 @@ type t_T2 = | T2_T2 : t_T -> t_T2
 
 type t_T2Rec = | T2Rec_T2 : t_TRec -> t_T2Rec
 
-and t_T1Rec = | T1Rec_T1 : Alloc.Boxed.t_Box t_T2Rec Alloc.Alloc.t_Global -> t_T1Rec
+and t_T1Rec = | T1Rec_T1 : t_T2Rec -> t_T1Rec
 
 and t_TRec =
   | TRec_T : t_T1Rec -> t_TRec

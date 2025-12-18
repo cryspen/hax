@@ -22,7 +22,9 @@ info:
 ---
 exit = 1
 stderr = """
-Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs
+Checking hax-lib v0.3.5 (/home/maxime/cryspen/hax-evit/hax-lib)
+    Checking lean-tests v0.1.0 (WORKSPACE_ROOT/lean-tests)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs
 \u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0008] Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
@@ -665,9 +667,8 @@ inductive Lean_tests.Enums.E : Type
 
 inductive Lean_tests.Enums.MyList (T : Type) : Type
 | Nil : Lean_tests.Enums.MyList (T : Type) 
-| Cons (hd : T)
-       (tl : (Alloc.Boxed.Box (Lean_tests.Enums.MyList T) Alloc.Alloc.Global))
-    : Lean_tests.Enums.MyList (T : Type) 
+| Cons (hd : T) (tl : (Lean_tests.Enums.MyList T)) : Lean_tests.Enums.MyList
+  (T : Type) 
 
 
 def Lean_tests.Enums.enums

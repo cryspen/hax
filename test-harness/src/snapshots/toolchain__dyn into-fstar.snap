@@ -49,11 +49,7 @@ let impl: t_Printable i32 Alloc.String.t_String =
     fun (self: i32) -> Alloc.String.f_to_string #i32 #FStar.Tactics.Typeclasses.solve self
   }
 
-let print
-      (a:
-          Alloc.Boxed.t_Box (dyn 1 (fun z -> t_Printable z Alloc.String.t_String))
-            Alloc.Alloc.t_Global)
-    : Prims.unit =
+let print (a: dyn 1 (fun z -> t_Printable z Alloc.String.t_String)) : Prims.unit =
   let args:Alloc.String.t_String =
     f_stringify #(dyn 1 (fun z -> t_Printable z Alloc.String.t_String))
       #Alloc.String.t_String
