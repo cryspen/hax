@@ -1003,15 +1003,19 @@ set_option linter.unusedVariables false
                 .group(),
                 TyKind::Param(local_id) => docs![local_id],
                 TyKind::Slice(ty) => docs!["RustSlice", line!(), ty].parens().group(),
-                TyKind::Array { ty, length } => {
-                    let v = length.kind().clone();
-                    let ExprKind::Literal(int_lit @ Literal::Int { .. }) = v else {
-                        emit_error!(issue 1713, "Unsupported arrays where the size is not an integer literal")
-                    };
-                    docs!["RustArray", line!(), ty, line!(), &int_lit]
-                        .parens()
-                        .group()
-                }
+                TyKind::Array { ty, length } => docs!["RustArray", line!(), ty, line!(), {
+                    if let ExprKind::Literal(int_lit @ Literal::Int { .. }) = length.kind() {
+                        docs![int_lit]
+                    } else if let ExprKind::LocalId(local_id) = length.kind() {
+                        docs![local_id]
+                    } else {
+                        unreachable!(
+                            "Only arrays with integer literal or const param size are supported"
+                        )
+                    }
+                }]
+                .parens()
+                .group(),
                 TyKind::AssociatedType { impl_, item } => {
                     let kind = impl_.kind();
                     match &kind {
