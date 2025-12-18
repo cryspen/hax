@@ -56,7 +56,7 @@ trait Import<Out> {
 
 impl<T: Import<Out>, Out> Import<Vec<Out>> for Vec<T> {
     fn import(&self, context: &Context) -> Vec<Out> {
-        self.into_iter()
+        self.iter()
             .map(|value| Import::import(value, context))
             .collect()
     }
@@ -64,7 +64,7 @@ impl<T: Import<Out>, Out> Import<Vec<Out>> for Vec<T> {
 
 impl<T: SpannedImport<Out>, Out> SpannedImport<Vec<Out>> for Vec<T> {
     fn spanned_import(&self, context: &Context, span: ast::span::Span) -> Vec<Out> {
-        self.into_iter()
+        self.iter()
             .map(|value| value.spanned_import(context, span))
             .collect()
     }
@@ -91,7 +91,7 @@ impl Import<ast::span::Span> for frontend::Span {
     }
 }
 
-fn import_attributes(context: &Context, attrs: &Vec<frontend::Attribute>) -> ast::Attributes {
+fn import_attributes(context: &Context, attrs: &[frontend::Attribute]) -> ast::Attributes {
     attrs.iter().flat_map(|attr| attr.import(context)).collect()
 }
 
@@ -634,13 +634,13 @@ fn import_block_expr(
     let mut stmts = block.stmts.clone();
     let mut tail_expr: Option<frontend::Expr> = block.expr.clone();
 
-    if tail_expr.is_none() && matches!(ty.kind(), frontend::TyKind::Never) {
-        if let Some(frontend::Stmt {
+    if tail_expr.is_none()
+        && matches!(ty.kind(), frontend::TyKind::Never)
+        && let Some(frontend::Stmt {
             kind: frontend::StmtKind::Expr { expr, .. },
         }) = stmts.pop()
-        {
-            tail_expr = Some(expr);
-        }
+    {
+        tail_expr = Some(expr);
     }
 
     let mut acc = if let Some(expr) = tail_expr {
@@ -854,7 +854,7 @@ impl Import<ast::Expr> for frontend::Expr {
                         body: then_expr,
                         guard: None,
                         meta: ast::Metadata {
-                            span: span,
+                            span,
                             attributes: Vec::new(),
                         },
                     };
@@ -867,7 +867,7 @@ impl Import<ast::Expr> for frontend::Expr {
                         body: else_expr,
                         guard: None,
                         meta: ast::Metadata {
-                            span: span,
+                            span,
                             attributes: Vec::new(),
                         },
                     };
@@ -896,9 +896,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 }
                 if let frontend::ExprKind::GlobalName { item, .. } = fun.contents.as_ref() {
                     let mut head = fun.import(context);
-                    head.kind = Box::new(ast::ExprKind::GlobalId(
-                        item.contents().def_id.import_as_value(),
-                    ));
+                    *head.kind = ast::ExprKind::GlobalId(item.contents().def_id.import_as_value());
                     let generic_args = item.contents().generic_args.spanned_import(context, span);
                     let bounds_impls = item
                         .contents()
@@ -1047,7 +1045,7 @@ impl Import<ast::Expr> for frontend::Expr {
                                         ty: ast::TyKind::Primitive(ast::PrimitiveTy::Bool)
                                             .promote(),
                                         meta: ast::Metadata {
-                                            span: span,
+                                            span,
                                             attributes: Vec::new(),
                                         },
                                     },
@@ -1585,7 +1583,7 @@ impl Import<ast::Pat> for frontend::Pat {
             } => ast::PatKind::Ascription {
                 pat: subpattern.import(context),
                 ty: ast::SpannedTy {
-                    span: span,
+                    span,
                     ty: ty.spanned_import(context, span),
                 },
             },
@@ -1612,7 +1610,7 @@ fn import_params(
         let ty = ast::TyKind::unit().promote();
         vec![ast::Param {
             pat: ast::PatKind::Wild.promote(ty.clone(), span),
-            ty: ty,
+            ty,
             ty_span: None,
             attributes: vec![],
         }]
@@ -1638,7 +1636,7 @@ impl SpannedImport<ast::Param> for frontend::Param {
                 .map(|value| value.import(context))
                 .unwrap_or_else(|| ast::PatKind::Wild.promote(ty.clone(), span)),
             ty,
-            ty_span: ty_span,
+            ty_span,
             attributes: attributes.import(context),
         }
     }
@@ -1667,10 +1665,7 @@ fn import_trait_item(
 ) -> ast::TraitItem {
     let span = item.span.import(context);
     let attributes = item.attributes.import(context);
-    let meta = ast::Metadata {
-        span: span,
-        attributes,
-    };
+    let meta = ast::Metadata { span, attributes };
     let (frontend::FullDefKind::AssocConst { param_env, .. }
     | frontend::FullDefKind::AssocFn { param_env, .. }
     | frontend::FullDefKind::AssocTy { param_env, .. }) = &item.kind
@@ -1747,7 +1742,7 @@ impl SpannedImport<ast::TraitGoal> for frontend::TraitRef {
 }
 
 fn impl_expr_name(index: u64) -> Symbol {
-    Symbol::new(format!("i{}", index).to_owned())
+    Symbol::new(format!("i{}", index))
 }
 
 fn browse_path(
@@ -1882,32 +1877,29 @@ fn generic_param_to_value(p: &ast::GenericParam) -> ast::GenericValue {
 
 fn import_generics(
     context: &Context,
-    bound_var_kinds: &Vec<frontend::BoundVariableKind>,
+    bound_var_kinds: &[frontend::BoundVariableKind],
     param_env: &frontend::ParamEnv,
 ) -> ast::Generics {
     let mut generics: ast::Generics = param_env.import(context);
     bound_var_kinds
         .iter()
         .flat_map(|var| match var {
-            frontend::BoundVariableKind::Region(bound_region_kind) => match bound_region_kind {
-                frontend::BoundRegionKind::Named {
-                    def_id: _,
-                    name,
-                    span,
-                    attributes,
-                } => {
-                    let name = name.strip_prefix("'").unwrap_or(name);
-                    Some(ast::GenericParam {
-                        ident: ast::identifiers::LocalId(Symbol::new(name)),
-                        meta: ast::Metadata {
-                            span: span.import(context),
-                            attributes: import_attributes(context, attributes),
-                        },
-                        kind: ast::GenericParamKind::Lifetime,
-                    })
-                }
-                _ => None,
-            },
+            frontend::BoundVariableKind::Region(frontend::BoundRegionKind::Named {
+                def_id: _,
+                name,
+                span,
+                attributes,
+            }) => {
+                let name = name.strip_prefix("'").unwrap_or(name);
+                Some(ast::GenericParam {
+                    ident: ast::identifiers::LocalId(Symbol::new(name)),
+                    meta: ast::Metadata {
+                        span: span.import(context),
+                        attributes: import_attributes(context, attributes),
+                    },
+                    kind: ast::GenericParamKind::Lifetime,
+                })
+            }
             _ => None,
         })
         .for_each(|var| generics.params.push(var));
@@ -1981,7 +1973,7 @@ fn cast_of_enum(
     }];
     let scrutinee = ast::ExprKind::LocalId(scrutinee_var).promote(type_ref.clone(), span);
     ast::ItemKind::Fn {
-        name: name,
+        name,
         generics: generics.clone(),
         body: ast::ExprKind::Match { scrutinee, arms }.promote(ty, span),
         params,
@@ -2087,7 +2079,7 @@ pub fn import_item(
                     };
                     Some(
                         ast::ItemKind::Fn {
-                            name: name,
+                            name,
                             generics: ast::Generics::empty(),
                             body: ast::ExprKind::Literal(ast::literals::Literal::Int {
                                 value: Symbol::new(value),
