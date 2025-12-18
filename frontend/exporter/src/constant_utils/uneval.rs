@@ -228,13 +228,36 @@ pub(crate) fn valtree_to_constant_expr<'tcx, S: UnderOwnerState<'tcx>>(
                 .collect();
             ConstantExprKind::Literal(ConstantLiteral::byte_str(bytes))
         }
-        (ty::ValTreeKind::Branch(_), ty::Array(..) | ty::Tuple(..) | ty::Adt(..)) => {
-            let contents: rustc_middle::ty::DestructuredConst = s
-                .base()
-                .tcx
-                .destructure_const(ty::Const::new_value(s.base().tcx, valtree, ty));
+        (
+            ty::ValTreeKind::Branch(_),
+            ty::Array(..) | ty::Slice(..) | ty::Tuple(..) | ty::Adt(..),
+        ) => {
+            let tcx = s.base().tcx;
+            let contents: rustc_middle::ty::DestructuredConst =
+                tcx.destructure_const(ty::Const::new_value(s.base().tcx, valtree, ty));
             let fields = contents.fields.iter().copied();
             match ty.kind() {
+                ty::Slice(inner_ty) => {
+                    let array_ty = {
+                        let size = rustc_middle::ty::ScalarInt::try_from_target_usize(
+                            fields.len() as u128,
+                            tcx,
+                        )
+                        .s_unwrap(s);
+                        let valtree = rustc_middle::ty::ValTree::from_scalar_int(tcx, size);
+                        let value = rustc_middle::ty::Value {
+                            ty: *inner_ty,
+                            valtree,
+                        };
+                        let len = tcx.mk_ct_from_kind(rustc_middle::ty::ConstKind::Value(value));
+                        tcx.mk_ty_from_kind(rustc_middle::ty::TyKind::Array(*inner_ty, len))
+                    };
+                    let array = ConstantExprKind::Array {
+                        fields: fields.map(|field| field.sinto(s)).collect(),
+                    }
+                    .decorate(array_ty.sinto(s), span.sinto(s));
+                    ConstantExprKind::Borrow(array)
+                }
                 ty::Array(_, _) => ConstantExprKind::Array {
                     fields: fields.map(|field| field.sinto(s)).collect(),
                 },
