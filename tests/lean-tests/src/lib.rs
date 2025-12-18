@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+pub mod array;
 pub mod associated_types;
 pub mod comments;
 pub mod constants;

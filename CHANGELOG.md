@@ -43,6 +43,7 @@ Changes to the Lean backend:
  - Make trait-level arguments explicit for all trait functions, adding them as
    extra parameters (#1803)
  - Add generation of specs from requires/ensures-annotations (#1815)
+ - Add support for nonliteral array sizes (#1826)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)

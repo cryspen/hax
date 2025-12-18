@@ -1306,6 +1306,22 @@ def Lean_tests.Associated_types.Basic.a
   let _ ← (Lean_tests.Associated_types.Basic.first_plus_1 Bool true);
   (pure Rust_primitives.Hax.Tuple0.mk)
 
+def Lean_tests.Array.f
+  (N : usize) (x : (RustArray u8 N))
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Lean_tests.Array.g
+  (N : usize) (x : (RustArray u8 N))
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ← (Lean_tests.Array.f (N) x);
+  let _ ←
+    (Lean_tests.Array.f ((10 : usize))
+      (← (Rust_primitives.Hax.repeat (0 : u8) (10 : usize))));
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
 def Lean_tests.FORTYTWO : usize :=
   RustM.of_isOk (do (pure (42 : usize))) (by rfl)
 
