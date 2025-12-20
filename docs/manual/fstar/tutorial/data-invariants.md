@@ -5,29 +5,35 @@ weight: 2
 # Data invariants
 
 In the two previous chapters we saw how to write specifications on
-functions, be it with pre and post-condition or with lemmas. In this
+functions, be it with pre-conditions, post-conditions, or with lemmas. In this
 chapter, we will see how to maintain invariants with precise types.
 
 ## Making illegal states unpresentable
-With the Barrett example, we were working on a certain field, whose
+With the Barrett example, we were working with a certain field, whose
 elements were represented as `i32` integers. To simplify, let's
-consider `F₃`, the [finite field](https://en.wikipedia.org/wiki/Finite_field) with 3 elements (say `0`, `1` and
-`2`). On a pedantic note, a finite field is a field that is a finite 
-set; this means that it has a finite number of elements on which 
-multiplication, addition, subtraction and division (excluding division 
-by zero) are defined and satisfy the [field axioms](https://en.wikipedia.org/wiki/Field_axioms).
+consider `F₃`, the finite field[^field-def] with 3 elements (say `0`, `1` and `2`).
 
-Every element of `F3` can be easily represented as a `i32` integer,
-but it is easy to see that the converse doesn't hold: the vast 
-majority of `i32` integers are not in of `F₃`.
+[^field-def]: 
+    A **finite field** (or **Galois field**) is a field with finitely many elements 
+    satisfying the field axioms: closure under addition, multiplication, subtraction, 
+    and division (except by zero). The simplest examples are `Fₚ = {0, 1, ..., p-1}`
+    for prime `p`, where arithmetic is performed modulo `p`. For instance, in `F₃ = {0, 1, 2}`, 
+    we have `2 + 2 = 1` (since `4 mod 3 = 1`) and `2 × 2 = 1`. Computing with elements of `Fₚ` 
+    means ordinary arithmetic of integers with reduction modulo `p`."
+    
+    Reference: Lidl, Rudolf; Niederreiter, Harald (2008). *Finite Fields* (2nd ed.). 
+    Cambridge University Press. p. 15, Definition 1.41. ISBN 978-0-521-06567-2.
 
-If were representing `F₃` elements as `i32`s, everytime we define 
-a function "consuming" `F₃` elements, we face the risk to "consume" 
-*illegal* elements. We are thus back to [chapter 4.1](panic-freedom.md): 
-we should panic on *illegal* elements, and add hax pre-conditions on 
-every single function, just like before. That's not optimal: 
-ideally, we would want the property of being either `0`, `1`, 
-or `2` should be encoded directly in the type representing `F₃` elements.
+Representing `F₃` elements as `i32`s creates a problem[^i32-representation]: every 
+function consuming `F₃` elements risks accepting *illegal* values. We're back to 
+[chapter 4.1](panic-freedom.md): requiring panics and hax pre-conditions on every 
+function. That's not optimal: the property of being `0`, `1`, or `2` should be 
+**encoded directly in the type** representing `F₃` elements.
+
+[^i32-representation]:
+    While every `F₃` element `{0, 1, 2}` fits in an `i32` (range: −2³¹ to 2³¹ − 1), 
+    the vast majority of `i32` values are not valid `F₃` elements. This asymmetry 
+    forces runtime validation.
 
 ### `enum`s to the rescue!
 Rust alone already can solve our representation issues with
@@ -49,32 +55,36 @@ enum F3 {
 ```
 
 With `F3`, there doesn't exist illegal values at all: we can now
-define [*total*
-functions](https://en.wikipedia.org/wiki/Partial_function) on `F₃`
-elements. The Rust compiler **guarantees at compile-time** that any 
-value of type `F3` can only be one of these three constructors. 
-We dropped altogether a source of panic!
+define *total functions*[^total-fn] on `F₃` elements. The Rust compiler 
+**guarantees at compile-time** that any value of type `F3` can only be 
+one of these three constructors. We dropped altogether a source of panic!
 
-There is literally no way in safe Rust to construct an "invalid" `F3` 
-value, since the type system prevents this possibility entirely.
+[^total-fn]: 
+    A **total function** is one that is defined for all possible inputs in its domain, 
+    as opposed to a partial function which may be undefined for some inputs. 
+    
+    For a mathematical treatment of total and partial functions, see: 
+    Christopher Hollings (2014). [*Mathematics across the Iron Curtain: A History 
+    of the Algebraic Theory of Semigroups*](https://books.google.com/books?id=O9wJBAAAQBAJ&pg=PA233). American Mathematical Society. p. 233. 
+    ISBN 978-1-4704-1493-1.
 
-**Contrast this with using `i32`:**
-- Any `i32` value can be created (−2³¹ to 2³¹ − 1)
-- Only 3 of those values are "valid" F₃ elements (say `0`, `1`, `2`)
-- You need runtime checks: `if value > 2 { panic!(...) }`
-- Functions must constantly validate their inputs
+Rust's type system is helpful here in that it allows us to fundamentally 
+rule out the existence of "invalid" `F3` values in safe Rust, since 
+the type system prevents this possibility entirely.
 
-**With the `enum`:**
-- Only 3 values can exist
-- No runtime checks needed
-- No panics possible from invalid values
-- Functions are **total** (i.e. defined for all possible inputs of that type)
+With the `enum`, only 3 values can exist, i.e. illegal states are unrepresentable.[^enum-vs-i32] 
+No runtime checks needed, no panics possible, and all functions are total.
 
-Soon you would want to work with a bigger finite field: say
-`F₂₃₄₇`. While our first approach works beautifully for small sets (`F₃`), 
-it breaks down for larger fields (`F₂₃₄₇` would need 2347 `enum` variants!). 
-Clearly, representing this many `q` different elements with an Rust
-enum would be very painful... The `enum` approach completely falls apart!
+Soon you'd want to work with a bigger finite field like `F₂₃₄₇`. While this works 
+beautifully for `F₃`, it breaks down for larger fields, since 2347 enum variants would be 
+impractical!
+
+[^enum-vs-i32]:
+    **Contrast this with `i32`**: any value from −2³¹ to 2³¹ − 1 can be created, but only 
+    3 are valid F₃ elements. 
+    
+    Every function must then validate inputs with runtime 
+    checks, like `if value > 2 { panic!(...) }`.
 
 ### Newtype and Refinement Types
 Since we wouldnt want to with a 2347-element `enum`, we have to revert to
@@ -99,9 +109,10 @@ pub struct F {
 ```
 
 > **Why `#[hax_lib::attributes]`?** 
+>
 > This marker tells hax to process refinement attributes (`#[refine(...)]`) 
-> on the fields inside this struct. Without it, hax would ignore the 
-> refinement and treat `v` as a plain `u16`.
+> on the fields inside this struct. 
+> Without it, hax would ignore the refinement and treat `v` as a plain `u16`.
 
 In Rust, we can now define functions that operate on type `F`,
 assuming they are in bounds with respect to `F₂₃₄₇`: every such
@@ -111,7 +122,6 @@ As an example, below is an implementation of the addition operation for `F` type
 
 ``` {.rust .playable}
 # pub const Q: u16 = 2347;
-# 
 # #[hax_lib::attributes]
 # pub struct F {
 #     #[hax_lib::refine(v < Q)]
@@ -132,6 +142,22 @@ impl Add for F {
 
 We can do more concrete things involving these constructors:
 ``` {.rust .playable}
+# use core::ops::Add;
+# pub const Q: u16 = 2347;
+# #[hax_lib::attributes]
+# pub struct F {
+#   #[hax_lib::refine(v < Q)]
+#    pub v: u16,
+# }
+# impl Add for F {
+#     type Output = Self;
+#     fn add(self, rhs: Self) -> Self {
+#        Self {
+#            v: (self.v + rhs.v) % Q,
+#        }
+#    }
+# }
+
 impl F {
     pub fn new(value: u16) -> Self {
         /// Create a new field element, & panicking if out of bounds
@@ -143,9 +169,8 @@ impl F {
         /// Try to create a field element, & returning None if invalid
         if value < Q {
             Some(Self{v: value})
-        else {
+        } else {
             None
-        }
         }
     }
 }
@@ -156,14 +181,15 @@ to automatically prove that:
 
 1. The addition operation doesn't overflow, 
 i.e. `(self.v + rhs.v)` doesn't exceed `u16::MAX` (2¹⁶ − 1)
-   - F\* knows: `self.v < 2347` and `rhs.v < 2347`
-   - Therefore: `self.v + rhs.v < 4694 < 65536`
-   - Verified! ✓
+    - F\* knows: `self.v < 2347` and `rhs.v < 2347`
+    - *Therefore*: `self.v + rhs.v < 4694 < 65536`
+    - **Verified! ✓**
+
 
 2. The invariant of `F` is preserved, 
 i.e. `(self.v + rhs.v) % Q < Q` holds
-   - F\* proves the modulo operation always returns values `[0, Q)` 
-   - Verified! ✓
+    - F\* proves the modulo operation always returns values `[0, Q)` 
+    - **Verified! ✓**
 
 Notice that the definition of the `F` type in F\* (named `t_F`) 
 very explicitly requires the invariant as a refinement on `v`.

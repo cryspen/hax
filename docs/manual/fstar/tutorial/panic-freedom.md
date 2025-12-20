@@ -47,8 +47,9 @@ even further:  it proves that logical errors leading to `panic`s
 cannot occur either.
 
 In other words:
-- Rust's type system → No memory unsafety (no undefined behavior)
-- Formal verification → No panics (and thus stronger 
+
+- *Rust's type system* → No memory unsafety (no undefined behavior)
+- *Formal verification* → No panics (and thus stronger 
 correctness guarantees)
 
 From this observation emerges the urge of proving Rust programs 
@@ -60,10 +61,16 @@ assumption that we make about the multiplication operator in Rust:
 the inputs should be small enough for the multiplication 
 operation to not overflow.
 
-Note that Rust also provides `wrapping_mul()` (as part of 
-`std::intrinsics`), a non-panicking variant of the multiplication 
-on `u8` that wraps around when the result is bigger than `255`. 
+Note that Rust also provides `wrapping_mul()`[^wrapping-mul], 
+a non-panicking variant of the multiplication on `u8` that 
+wraps around when the result is bigger than `255`. 
 For values `x: u8` and `y:u8`, this is equivalent to `(x * y) mod 256`. 
+
+[^wrapping-mul]:
+    `wrapping_mul()` is a stable method available directly on all integer types 
+    (`u8`, `u16`, `u32`, etc.) without any imports or feature flags. While wrapping 
+    arithmetic operations were [originally part of the unstable `std::intrinsics` module](https://doc.rust-lang.org/std/intrinsics/fn.wrapping_mul.html), they were stabilized and moved to be inherent methods on integer types, making them 
+    part of Rust's stable API.
 
 Replacing the usual multiplication operator with `wrapping_mul()` 
 in `square` would fix the panic:
@@ -77,13 +84,11 @@ However, observe that `square(16)` (with `wrapping_mul()`) returns zero!
 The function is mathematically incorrect for inputs > 15, 
 even though it doesn't panic.
 
-Wrapping arithmetic is useful for many things: 
-1. Hash functions (where overflow is expected)
-2. Checksums (CRC, etc.)
-3. Cryptography (where modular arithmetic is intentional)
-4. Performance-critical code (avoiding overflow checks)
+Wrapping arithmetic is useful in many instances where high assurance code would be relevant, 
+such as hash functions (where overflows are expected), cryptography (where modular arithmetic 
+is intentional), and performance-critical code that aims to avoid overflow checks.
 
-But for `square`, it's semantically wrong: this is not what one 
+But specifically for `square`, it's semantically wrong: this is not what one 
 would mathematically expect from the `square` function.
 
 Thus, our problem is that our function `square` is well-defined only when
@@ -102,7 +107,7 @@ fn square_option(x: u8) -> Option<u8> {
 }
 ```
 
-> **What is Option<T>?**
+> [**What is `Option<T>`?**](https://doc.rust-lang.org/std/option/)
 >
 > The type `Option` represents an optional value: every `Option` is either 
 > `Some` and contains a value, or `None`, and does not.
@@ -154,8 +159,12 @@ Multiplication is not the only "panicking function" provided by the Rust
 library: most of the other integer arithmetic operation have such
 informal assumptions.
 
-Another source of panics is **indexing**. Indexing in an array, a slice or
-a vector is a partial operation: the index might be out of range.
+Another source of panics is **indexing**. Indexing in an [array](https://doc.rust-lang.org/book/ch03-02-data-types.html#the-array-type), a [slice](https://doc.rust-lang.org/book/ch04-03-slices.html) or
+a [vector](https://doc.rust-lang.org/book/ch08-01-vectors.html#storing-lists-of-values-with-vectors) is a **partial operation**: the index might simply be out of range.
+
+In hax's examples directory (`/examples/chacha20/`), you can find [an example 
+implementation of `ChaCha20`](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
+that makes use of pre-conditions to prove panic freedom in your code.
 
 Another solution for safe indexing is to use the [newtype index
 pattern](https://matklad.github.io/2018/06/04/newtype-index-pattern.html),
@@ -164,20 +173,34 @@ hax](https://github.com/cryspen/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4
 
 ## Example: Proving Panic Freedom in ChaCha20
 
-In the `/examples` subdirectory of hax codebase, you can find [an example 
-implementation of `ChaCha20`](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
-that makes use of pre-conditions to prove panic freedom in your code.
+To illustrate how pre-conditions prove panic-freedom in real-world cryptographic code, 
+we'll examine the **ChaCha20[^chacha20] implementation from hax's examples directory** 
+([`/examples/chacha20/`](https://github.com/cryspen/hax/tree/main/examples/chacha20)). 
+This is an actual working example provided by the hax project to demonstrate these techniques.
 
-For reference, [ChaCha20](https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant) is a stream cipher developed by Daniel J. Bernstein, derived from from the closely-related Salsa20 stream cipher.
+The implementation demonstrates both **explicit pre-conditions** (using 
+`#[hax::requires(...)]`) and **implicit pre-conditions** (through refinement types), 
+showing how hax proves panic-freedom in performance-critical cryptographic primitives.
+
+[^chacha20]:
+  **ChaCha20** is a high-speed stream cipher designed by Daniel J. Bernstein as a 
+  variant of the Salsa20 cipher. It's widely used in modern cryptography, notably 
+  in TLS 1.3, WireGuard VPN, and SSH, due to its combination of strong security 
+  properties and efficient software implementation. ChaCha20 processes data in 
+  64-byte blocks using a 256-bit key and operates through a series of quarter-round 
+  functions that mix state through addition, XOR, and rotation operations.
+  Reference: Bernstein, Daniel J. (2008). "ChaCha, a variant of Salsa20." 
+  [https://cr.yp.to/chacha.html](https://cr.yp.to/chacha.html)
 
 ### Potential source of panic
 
-Consider this specific function in `/examples/chacha20/src/lib.rs`:
+First, let us specifically consider the following function in `/examples/chacha20/src/lib.rs`:
 ```rust
+
 #[hax::requires(plain.len() <= 64)]
 pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
     let mut b: Block = [0; 64];
-    b = update_array(b, plain);  // Note: This line would panic if plain.len() > 64
+    b = update_array(b, plain);  // Note: This would panic if plain.len() > 64
     b = chacha20_encrypt_block(st0, ctr, &b);
     b[0..plain.len()].to_vec()
 }
@@ -196,6 +219,7 @@ pub(super) fn update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64] {
 ```
 
 What `update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64]` does is the following: 
+
 - Takes a copy of a 64-byte array (note: `mut array` not `&mut`)
 - Takes a borrowed slice of bytes (`val: &[u8]`) of any length
 - Most importantly, it asserts `val` isn't longer than 64 bytes (**AND panics if it is!**)
@@ -203,7 +227,7 @@ What `update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64]` does is the fol
 - Leaves the rest of `array` unchanged (keeps original values past `val.len()`)
 - Returns the modified `array`
 
-The pre-condition `#[hax::requires(plain.len() <= 64)]` in the `chacha20_encrypt_last(...)` 
+Thus, the pre-condition `#[hax::requires(plain.len() <= 64)]` in the `chacha20_encrypt_last(...)` 
 function statically proves (in F\*) that the `assert!(64 >= val.len())` in the 
 `update_array(...)` helper function will never fail.
 
@@ -211,13 +235,14 @@ function statically proves (in F\*) that the `assert!(64 >= val.len())` in the
 
 ### Implicit Pre-conditions
 
-Note that not all pre-conditions are or need to be explicit! Consider this implicit pre-condition: 
+Note that not all pre-conditions are or need to be explicit! Consider the following "implicit" pre-condition,
+which can be found in `/examples/chacha20/src/lib.rs`, given by: 
 ```rust
 type StateIdx = hax_bounded_integers::BoundedUsize<0, 15>;
 ```
 This is a **refinement type** (from the data invariants chapter!) that guarantees indices are in `[0, 15]`.
 
-Notice that every use of `StateIdx` is associated with an implicit pre-condition: 
+Notice that every use of `StateIdx` (in `/examples/chacha20/src/lib.rs`) is associated with this implicit pre-condition: 
 ```rust
 fn chacha20_line(a: StateIdx, b: StateIdx, d: StateIdx, s: u32, m: State) -> State {
     let mut state = m;
@@ -228,7 +253,7 @@ fn chacha20_line(a: StateIdx, b: StateIdx, d: StateIdx, s: u32, m: State) -> Sta
 }
 ```
 
-Without the `StateIdx` refinement type, we would need a more verbose implementation:
+Without the use of the `StateIdx` refinement type, we would need a more verbose implementation:
 ```rust
 #[hax::requires(a < 16 && b < 16 && d < 16)]
 fn chacha20_line(a: usize, b: usize, d: usize, s: u32, m: State) -> State {
@@ -256,4 +281,5 @@ fn quarter_round(i0: StateIdx, i1: StateIdx, i2: StateIdx, i3: StateIdx, state: 
 >
 > These are NOT pre-conditions! They're **assumptions to help F\* prove the function is panic-free**. 
 > They roughly mean: "*I, the programmer, know this fact is true here, and I'm helping F\* understand the loop invariant.*"
+>
 > They are added purely to simply the task of the proof assistant and should be used with extreme care and due diligence.
