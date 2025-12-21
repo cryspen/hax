@@ -48,16 +48,33 @@ Below, we define the `enum` type `F3` which has only three constructors:
 
 ```{.rust .playable}
 enum F3 {
-    E1,
-    E2,
-    E3,
+    Zero,
+    One,
+    Two,
 }
 ```
 
-With `F3`, there doesn't exist illegal values at all: we can now
-define *total functions*[^total-fn] on `F₃` elements. The Rust compiler 
-**guarantees at compile-time** that any value of type `F3` can only be 
-one of these three constructors. We dropped altogether a source of panic!
+Let's see this in action with a total function that does something more concrete:
+```{.rust .playable}
+# enum F3 {
+#     Zero,
+#     One,
+#     Two,
+# }
+fn f3_add(a: F3, b: F3) -> F3 {
+    match (a, b) {
+        (F3::Zero, x) | (x, F3::Zero) => x,
+        (F3::One, F3::One) => F3::Two,
+        (F3::One, F3::Two) | (F3::Two, F3::One) => F3::Zero,
+        (F3::Two, F3::Two) => F3::One,
+    }
+}
+```
+
+Notice something crucial: **we don't need a default case** (the `_` pattern). 
+Rust's exhaustiveness checker **guarantees at compile-time** that we've handled every possible 
+combination, i.e. that any value of type `F3` can only be one of these three constructors. 
+This function is **total**[^total-fn], and thus can never panic. We completely dropped a source of panic!
 
 [^total-fn]: 
     A **total function** is one that is defined for all possible inputs in its domain, 
@@ -68,16 +85,16 @@ one of these three constructors. We dropped altogether a source of panic!
     of the Algebraic Theory of Semigroups*](https://books.google.com/books?id=O9wJBAAAQBAJ&pg=PA233). American Mathematical Society. p. 233. 
     ISBN 978-1-4704-1493-1.
 
-Rust's type system is helpful here in that it allows us to fundamentally 
-rule out the existence of "invalid" `F3` values in safe Rust, since 
-the type system prevents this possibility entirely.
+Rust's **type system** is helpful here in that it allows us to fundamentally 
+rule out the existence of "invalid" `F3` values in safe Rust: 
 
-With the `enum`, only 3 values can exist, i.e. illegal states are unrepresentable.[^enum-vs-i32] 
-No runtime checks needed, no panics possible, and all functions are total.
+- *Theoretically*, `enum`s are closed algebraic data types (ADTs): all possible values are exhaustively defined by the declared variants.
+- *Practically*, every `F3` value must be constructed through `Zero`, `One`, or `Two`, i.e. there's no mechanism to forge values or manipulate bit patterns outside these constructors.
 
-Soon you'd want to work with a bigger finite field like `F₂₃₄₇`. While this works 
-beautifully for `F₃`, it breaks down for larger fields, since 2347 enum variants would be 
-impractical!
+With the `enum` we defined, only 3 values can exist: illegal states are 
+unrepresentable.[^enum-vs-i32] This has profound implications: no runtime 
+checks are needed, no panics are possible, and all functions operating on 
+`F3` are total.
 
 [^enum-vs-i32]:
     **Contrast this with `i32`**: any value from −2³¹ to 2³¹ − 1 can be created, but only 
@@ -85,6 +102,10 @@ impractical!
     
     Every function must then validate inputs with runtime 
     checks, like `if value > 2 { panic!(...) }`.
+
+However, soon you'd want to work with a bigger finite field, like `F₂₃₄₇`. While this works 
+beautifully for `F₃`, it breaks down for larger fields, since 2347 enum variants would be 
+impractical!
 
 ### Newtype and Refinement Types
 Since we wouldnt want to with a 2347-element `enum`, we have to revert to
@@ -118,7 +139,7 @@ In Rust, we can now define functions that operate on type `F`,
 assuming they are in bounds with respect to `F₂₃₄₇`: every such
 assumption will be checked and enforced by the proof assistant. 
 
-As an example, below is an implementation of the addition operation for `F` type:
+As an example, below is an implementation of the addition operation for the `F` type:
 
 ``` {.rust .playable}
 # pub const Q: u16 = 2347;
@@ -140,7 +161,11 @@ impl Add for F {
 }
 ```
 
-We can do more concrete things involving these constructors:
+### Creating Field Elements
+
+When constructing `F` values from raw `u16` integers, we have two options:
+
+**Option 1: Panic on invalid input** (use when caller should guarantee validity):
 ``` {.rust .playable}
 # use core::ops::Add;
 # pub const Q: u16 = 2347;
@@ -158,23 +183,41 @@ We can do more concrete things involving these constructors:
 #    }
 # }
 
-impl F {
-    pub fn new(value: u16) -> Self {
-        /// Create a new field element, & panicking if out of bounds
-        assert!(value < Q);
-        Self { v: value }
-    } 
+#[hax_lib::requires(value < Q)]
+pub fn new(value: u16) -> Self {
+    assert!(value < Q);
+    Self { v: value }
+}
+```
 
-    pub fn try_new(value: u16) -> Option<Self> {
-        /// Try to create a field element, & returning None if invalid
-        if value < Q {
-            Some(Self{v: value})
-        } else {
-            None
-        }
+**Option 2: Return `Option` for fallible construction** (use when input might be invalid):
+``` {.rust .playable}
+# use core::ops::Add;
+# pub const Q: u16 = 2347;
+# #[hax_lib::attributes]
+# pub struct F {
+#   #[hax_lib::refine(v < Q)]
+#    pub v: u16,
+# }
+# impl Add for F {
+#     type Output = Self;
+#     fn add(self, rhs: Self) -> Self {
+#        Self {
+#            v: (self.v + rhs.v) % Q,
+#        }
+#    }
+# }
+
+pub fn try_new(value: u16) -> Option<Self> {
+    if value < Q {
+        Some(Self { v: value })
+    } else {
+        None
     }
 }
 ```
+
+Notice that even `new` requires the pre-condition `#[hax_lib::requires(value < Q)]`, even though `assert!` provides a runtime check. Formal verification demands explicit contracts that can be proven statically, **not just runtime assertions**.
 
 Here, when hax extracts this code to F\*, the proof assistant is able 
 to automatically prove that:
