@@ -48,21 +48,15 @@ set_option maxHeartbeats 1000000 in
 -- quite computation intensive
 theorem barrett_spec (value: i32) :
   ⦃ ⌜ Lean_barrett.barrett_reduce_precondition (value) = pure true ⌝ ⦄
-  (do
-    let result ← Lean_barrett.barrett_reduce value;
-    Lean_barrett.barret_reduce_postcondition value result)
-  ⦃ ⇓ post => ⌜post = true⌝ ⦄
+  Lean_barrett.barrett_reduce value
+  ⦃ ⇓ r => ⌜ Lean_barrett.barret_reduce_postcondition value r = pure true⌝ ⦄
 := by
-  mvcgen [ Lean_barrett.barret_reduce_postcondition ]
-  <;> simp_all! [ Lean_barrett.barrett_reduce_precondition ]
-  hax_bv_decide
-  simp [Int32.eq_iff_toBitVec_eq,
-        Int32.lt_iff_toBitVec_slt,
-        Int64.le_iff_toBitVec_sle,
-        ] at *
-  expose_names; have ⟨ _ , _ ⟩ := h ; clear h
-  generalize Int32.toBitVec value = bv_value at * ; clear value
-  bv_decide (config := {timeout := 120})
+  unfold
+    Lean_barrett.barrett_reduce Lean_barrett.barrett_reduce_precondition
+    Lean_barrett.barret_reduce_postcondition
+    Lean_barrett.FIELD_MODULUS Lean_barrett.BARRETT_R
+    Lean_barrett.BARRETT_MULTIPLIER Lean_barrett.BARRETT_SHIFT at *
+  hax_bv_decide (timeout := 60)
 "
 )]
 pub fn barrett_reduce(value: FieldElement) -> FieldElement {
