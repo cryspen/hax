@@ -1,6 +1,3 @@
-use hax_lib as hax;
-use hax_lib::lean;
-
 /// Values having this type hold a representative 'x' of the Kyber field.
 /// We use 'fe' as a shorthand for this type.
 pub(crate) type FieldElement = i32;
@@ -41,7 +38,6 @@ fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> boo
 /// `|result| ≤ FIELD_MODULUS / 2 · (|value|/BARRETT_R + 1)
 ///
 /// In particular, if `|value| < BARRETT_R`, then `|result| < FIELD_MODULUS`.
-#[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
   // This specification theorem will be inserted after the function definition
   // in the extracted Lean code:
