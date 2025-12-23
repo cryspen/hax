@@ -561,7 +561,7 @@ module Make (F : Features.T) = struct
                 match lhs with
                 | LhsLocalVar { var; _ } ->
                     Set.singleton (module TypedLocalIdent) (var, e.typ)
-                | LhsFieldAccessor { e; _ } -> visit_lhs e
+                | LhsFieldAccessor { e; _ } | LhsVecRef { e; _ } -> visit_lhs e
                 | LhsArrayAccessor { e; index; _ } ->
                     Set.union (self#visit_expr () index) (visit_lhs e)
                 | LhsArbitraryExpr { witness; e } ->
@@ -993,6 +993,9 @@ module Make (F : Features.T) = struct
         next e
     | _ -> e
 
+  let rec unref_ty (t : ty) : ty =
+    match t with TRef { typ; _ } -> unref_ty typ | t -> t
+
   let rec unbox_expr e = unbox_expr' unbox_expr e
   let underef_expr e = underef_expr' unbox_expr e
 
@@ -1027,6 +1030,7 @@ module Make (F : Features.T) = struct
   let rec expr_of_lhs (span : span) (lhs : lhs) : expr =
     match lhs with
     | LhsLocalVar { var; typ } -> { e = LocalVar var; typ; span }
+    | LhsVecRef { e; _ } -> expr_of_lhs span e
     | LhsFieldAccessor { e; typ; field; _ } ->
         let e = expr_of_lhs span e in
         let f = { e = GlobalVar field; typ = TArrow ([ e.typ ], typ); span } in
@@ -1159,6 +1163,7 @@ module Make (F : Features.T) = struct
     and place' =
       | LocalVar of Local_ident.t
       | Deref of expr
+      | VecRef of t
       | IndexProjection of { place : t; index : expr }
       | FieldProjection of { place : t; projector : global_ident }
     [@@deriving show]
@@ -1227,6 +1232,9 @@ module Make (F : Features.T) = struct
       | LocalVar v ->
           let e : expr' = LocalVar v in
           { e; typ = p.typ; span = p.span }
+      | VecRef inner ->
+          let e = to_expr inner in
+          call Alloc__vec__Impl_1__as_slice [ e ] p.span p.typ
       | Deref e -> call' (`Primitive Deref) [ e ] p.span p.typ
       | FieldProjection { place; projector } ->
           let e = to_expr place in
@@ -1238,9 +1246,19 @@ module Make (F : Features.T) = struct
     let expect_deref_mut (p : t) : t option =
       match p.place with
       | Deref e ->
+          let visible_ty = e.typ in
           let* e = Expect.deref_mut_app e in
           let* e = Expect.mut_borrow e in
-          of_expr e
+          let res = of_expr e in
+          let f : t -> t =
+           fun p ->
+            match (unref_ty visible_ty, unref_ty p.typ) with
+            | (TSlice _ as typ), TApp { ident; _ }
+              when Global_ident.eq_name Alloc__vec__Vec ident ->
+                { p with place = VecRef p; typ }
+            | _ -> p
+          in
+          Option.map res ~f
       | _ -> None
 
     let expect_allowed_deref_mut (p : t) : t option =

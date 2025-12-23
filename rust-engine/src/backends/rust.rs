@@ -599,6 +599,7 @@ const _: () = {
         fn lhs(&self, lhs: &Lhs) -> DocBuilder<A> {
             match lhs {
                 Lhs::LocalVar { var, ty: _ } => docs![var],
+                Lhs::VecRef { e, .. } => docs![e],
                 Lhs::ArbitraryExpr(expr) => docs![std::ops::Deref::deref(expr)],
                 Lhs::FieldAccessor { e, ty: _, field } => {
                     docs![std::ops::Deref::deref(e), ".", field]

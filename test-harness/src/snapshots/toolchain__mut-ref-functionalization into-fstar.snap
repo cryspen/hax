@@ -83,12 +83,24 @@ let index_mutation (x: Core_models.Ops.Range.t_Range usize) (a: t_Slice u8) : Pr
         t_Slice u8)
   in
   let v:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    Rust_primitives.Hax.Monomorphized_update_at.update_at_range v
-      x
-      (Core_models.Slice.impl__copy_from_slice #u8 (v.[ x ] <: t_Slice u8) a <: t_Slice u8)
+    Alloc.Slice.impl__to_vec (Rust_primitives.Hax.Monomorphized_update_at.update_at_range (Alloc.Vec.impl_1__as_slice
+              v
+            <:
+            t_Slice u8)
+          x
+          (Core_models.Slice.impl__copy_from_slice #u8 (v.[ x ] <: t_Slice u8) a <: t_Slice u8)
+        <:
+        t_Slice u8)
   in
   let v:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    Rust_primitives.Hax.Monomorphized_update_at.update_at_usize v (mk_usize 1) (mk_u8 3)
+    Alloc.Slice.impl__to_vec (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize (Alloc.Vec.impl_1__as_slice
+              v
+            <:
+            t_Slice u8)
+          (mk_usize 1)
+          (mk_u8 3)
+        <:
+        t_Slice u8)
   in
   ()
 
@@ -161,10 +173,20 @@ let f (_: Prims.unit) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
     Alloc.Vec.impl_1__push #u8 #Alloc.Alloc.t_Global vec (mk_u8 2)
   in
   let vec:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    Core_models.Slice.impl__swap #u8 vec (mk_usize 0) (mk_usize 1)
+    Alloc.Slice.impl__to_vec (Core_models.Slice.impl__swap #u8
+          (Alloc.Vec.impl_1__as_slice vec <: t_Slice u8)
+          (mk_usize 0)
+          (mk_usize 1)
+        <:
+        t_Slice u8)
   in
   let vec:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    Core_models.Slice.impl__swap #u8 vec (mk_usize 0) (mk_usize 1)
+    Alloc.Slice.impl__to_vec (Core_models.Slice.impl__swap #u8
+          (Alloc.Vec.impl_1__as_slice vec <: t_Slice u8)
+          (mk_usize 0)
+          (mk_usize 1)
+        <:
+        t_Slice u8)
   in
   vec
 
@@ -201,7 +223,17 @@ let g (x: t_Pair (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global))
           t_Pair (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global))
   in
   let x:t_Pair (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) =
-    { x with f_a = Core_models.Slice.impl__swap #u8 x.f_a (mk_usize 0) (mk_usize 1) }
+    {
+      x with
+      f_a
+      =
+      Alloc.Slice.impl__to_vec (Core_models.Slice.impl__swap #u8
+            (Alloc.Vec.impl_1__as_slice x.f_a <: t_Slice u8)
+            (mk_usize 0)
+            (mk_usize 1)
+          <:
+          t_Slice u8)
+    }
     <:
     t_Pair (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
   in
@@ -212,7 +244,14 @@ let g (x: t_Pair (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global))
       =
       {
         x.f_b with
-        f_field = Core_models.Slice.impl__swap #u8 x.f_b.f_field (mk_usize 0) (mk_usize 1)
+        f_field
+        =
+        Alloc.Slice.impl__to_vec (Core_models.Slice.impl__swap #u8
+              (Alloc.Vec.impl_1__as_slice x.f_b.f_field <: t_Slice u8)
+              (mk_usize 0)
+              (mk_usize 1)
+            <:
+            t_Slice u8)
       }
       <:
       t_Foo
@@ -255,11 +294,17 @@ let k
   let arg_1_wild1:u8 = vec.[ mk_usize 3 ] in
   let arg_3_wild1:u8 = vec.[ mk_usize 4 ] in
   let vec:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    Rust_primitives.Hax.Monomorphized_update_at.update_at_usize vec
-      (mk_usize 0)
-      ((((arg_1_wild +! arg_3_wild <: u8) +! arg_1_wild1 <: u8) +! arg_3_wild1 <: u8) +! arg_1_wild
+    Alloc.Slice.impl__to_vec (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize (Alloc.Vec.impl_1__as_slice
+              vec
+            <:
+            t_Slice u8)
+          (mk_usize 0)
+          ((((arg_1_wild +! arg_3_wild <: u8) +! arg_1_wild1 <: u8) +! arg_3_wild1 <: u8) +!
+            arg_1_wild
+            <:
+            u8)
         <:
-        u8)
+        t_Slice u8)
   in
   let hax_temp_output:u64 = mk_u64 12345 in
   vec, arg_1_wild3, arg_3_wild2, hax_temp_output

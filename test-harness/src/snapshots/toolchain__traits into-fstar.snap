@@ -108,12 +108,7 @@ let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) 
                 Core_models.Iter.Traits.Iterator.f_any #(Core_models.Slice.Iter.t_Iter u8)
                   #FStar.Tactics.Typeclasses.solve
                   #(u8 -> bool)
-                  (Core_models.Slice.impl__iter #u8
-                      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
-                          #FStar.Tactics.Typeclasses.solve
-                          list
-                        <:
-                        t_Slice u8)
+                  (Core_models.Slice.impl__iter #u8 (Alloc.Vec.impl_1__as_slice list <: t_Slice u8)
                     <:
                     Core_models.Slice.Iter.t_Iter u8)
                   (fun n ->

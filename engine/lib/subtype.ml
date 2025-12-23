@@ -379,6 +379,13 @@ struct
             witness = S.nontrivial_lhs span witness;
           }
     | LhsLocalVar { var; typ } -> LhsLocalVar { var; typ = dty span typ }
+    | LhsVecRef { e; typ; witness } ->
+        LhsVecRef
+          {
+            e = dlhs span e;
+            typ = dty span typ;
+            witness = S.nontrivial_lhs span witness;
+          }
     | LhsArbitraryExpr { e; witness } ->
         LhsArbitraryExpr { e = dexpr e; witness = S.arbitrary_lhs span witness }
 

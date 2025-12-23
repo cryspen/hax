@@ -263,6 +263,9 @@ struct
       method lhs_LhsLocalVar ~var:_ ~typ:_ =
         default_document_for "lhs_LhsLocalVar"
 
+      method lhs_LhsVecRef ~e:_ ~typ:_ ~witness:_ =
+        default_document_for "lhs_LhsVecRef"
+
       method literal_Bool _x1 = default_document_for "literal_Bool"
       method literal_Char _x1 = default_document_for "literal_Char"
 

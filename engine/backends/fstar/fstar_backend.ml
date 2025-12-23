@@ -2020,6 +2020,7 @@ module TransformToInputLanguage =
   |> Phases.Drop_blocks
   |> Phases.Drop_match_guards
   |> Phases.Drop_references
+  |> Phases.Explicit_conversions
   |> Phases.Trivialize_assign_lhs
   |> Side_effect_utils.Hoist
   |> Phases.Hoist_disjunctive_patterns

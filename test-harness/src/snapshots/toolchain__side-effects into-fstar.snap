@@ -604,37 +604,44 @@ let assign_non_trivial_lhs (foo: t_Foo) : t_Foo =
         foo.f_y with
         _2
         =
-        Rust_primitives.Hax.Monomorphized_update_at.update_at_usize foo.f_y._2
-          (mk_usize 3)
-          ({
-              (foo.f_y._2.[ mk_usize 3 ] <: t_Bar) with
-              f_b
-              =
-              {
-                (foo.f_y._2.[ mk_usize 3 ] <: t_Bar).f_b with
-                _1
-                =
-                Rust_primitives.Hax.Monomorphized_update_at.update_at_usize (foo.f_y._2.[ mk_usize 3
-                    ]
-                    <:
-                    t_Bar)
-                    .f_b
-                    ._1
-                  (mk_usize 5)
-                  ({
-                      ((foo.f_y._2.[ mk_usize 3 ] <: t_Bar).f_b._1.[ mk_usize 5 ] <: (bool & bool)) with
-                      _1 = true
-                    }
-                    <:
-                    (bool & bool))
+        Alloc.Slice.impl__to_vec (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize (Alloc.Vec.impl_1__as_slice
+                  foo.f_y._2
                 <:
-                t_Array (bool & bool) (mk_usize 6)
-              }
-              <:
-              (t_Array (bool & bool) (mk_usize 6) & bool)
-            }
+                t_Slice t_Bar)
+              (mk_usize 3)
+              ({
+                  (foo.f_y._2.[ mk_usize 3 ] <: t_Bar) with
+                  f_b
+                  =
+                  {
+                    (foo.f_y._2.[ mk_usize 3 ] <: t_Bar).f_b with
+                    _1
+                    =
+                    Rust_primitives.Hax.Monomorphized_update_at.update_at_usize (foo.f_y._2.[ mk_usize
+                          3 ]
+                        <:
+                        t_Bar)
+                        .f_b
+                        ._1
+                      (mk_usize 5)
+                      ({
+                          ((foo.f_y._2.[ mk_usize 3 ] <: t_Bar).f_b._1.[ mk_usize 5 ]
+                            <:
+                            (bool & bool)) with
+                          _1 = true
+                        }
+                        <:
+                        (bool & bool))
+                    <:
+                    t_Array (bool & bool) (mk_usize 6)
+                  }
+                  <:
+                  (t_Array (bool & bool) (mk_usize 6) & bool)
+                }
+                <:
+                t_Bar)
             <:
-            t_Bar)
+            t_Slice t_Bar)
       }
       <:
       (bool & Alloc.Vec.t_Vec t_Bar Alloc.Alloc.t_Global)

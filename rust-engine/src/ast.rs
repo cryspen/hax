@@ -425,6 +425,10 @@ pub enum Lhs {
         var: LocalId,
         ty: Ty,
     },
+    VecRef {
+        e: Box<Lhs>,
+        ty: Ty,
+    },
     ArbitraryExpr(Box<Expr>),
     FieldAccessor {
         e: Box<Lhs>,
