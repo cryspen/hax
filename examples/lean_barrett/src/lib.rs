@@ -43,6 +43,8 @@ fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> boo
 /// In particular, if `|value| < BARRETT_R`, then `|result| < FIELD_MODULUS`.
 #[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
+  // This specification theorem will be inserted after the function definition
+  // in the extracted Lean code:
     "
 set_option maxHeartbeats 1000000 in
 -- quite computation intensive
