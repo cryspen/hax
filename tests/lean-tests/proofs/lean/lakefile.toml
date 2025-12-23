@@ -1,0 +1,11 @@
+name = "Lean_tests"
+version = "0.1.0"
+defaultTargets = ["Lean_tests"]
+
+[[lean_lib]]
+name = "Lean_tests"
+roots = ["extraction.Lean_tests"]
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"

@@ -52,6 +52,7 @@ identity_proc_macro_attribute!(
     proverif_after,
     fstar_smt_pat,
     fstar_postprocess_with,
+    lean_proof
 );
 
 #[proc_macro]

@@ -9,15 +9,15 @@ mod prelude {
     pub use crate::hax_paths::*;
     pub use crate::syn_ext::*;
     pub use proc_macro as pm;
-    pub use proc_macro2::*;
     pub use proc_macro_error2::*;
+    pub use proc_macro2::*;
     pub use quote::*;
     pub use std::collections::HashSet;
     pub use syn::spanned::Spanned;
     pub use syn::{visit_mut::VisitMut, *};
 
-    pub use hax_lib_macros_types::*;
     pub use AttrPayload::Language as AttrHaxLang;
+    pub use hax_lib_macros_types::*;
     pub type FnLike = syn::ImplItemFn;
 }
 
@@ -249,7 +249,7 @@ pub fn modeled_by(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStre
 #[proc_macro_attribute]
 pub fn lemma(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let mut item: syn::ItemFn = parse_macro_input!(item as ItemFn);
-    use syn::{spanned::Spanned, GenericArgument, PathArguments, ReturnType};
+    use syn::{GenericArgument, PathArguments, ReturnType, spanned::Spanned};
 
     fn add_allow_unused_variables_to_args(func: &mut syn::ItemFn) {
         let attr: syn::Attribute = parse_quote!(#[allow(unused_variables)]);
@@ -821,6 +821,18 @@ pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     }
     let digits = n.base10_digits();
     quote! {::hax_lib::int::Int::_unsafe_from_str(#digits)}.into()
+}
+
+///
+/// This macro inserts a verbatim Lean proof into the extracted code.
+///
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let payload = parse_macro_input!(payload as LitStr).value();
+    let attr = AttrPayload::Proof(payload);
+    quote! {#attr #item}.into()
 }
 
 macro_rules! make_quoting_item_proc_macro {
