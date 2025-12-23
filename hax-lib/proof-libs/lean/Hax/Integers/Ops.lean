@@ -84,6 +84,9 @@ class HaxRem α where
 @[inherit_doc] infixl:70 " %? "   => HaxRem.rem
 @[inherit_doc] infixl:70 " /? "   => HaxDiv.div
 
+attribute [hax_bv_decide] HaxAdd.add HaxMul.mul HaxShiftRight.shiftRight HaxShiftLeft.shiftLeft
+  HaxSub.sub HaxRem.rem HaxDiv.div
+
 open Lean in
 macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
 

@@ -1,6 +1,3 @@
-use hax_lib as hax;
-use hax_lib::lean;
-
 /// Values having this type hold a representative 'x' of the Kyber field.
 /// We use 'fe' as a shorthand for this type.
 pub(crate) type FieldElement = i32;
@@ -41,28 +38,25 @@ fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> boo
 /// `|result| ≤ FIELD_MODULUS / 2 · (|value|/BARRETT_R + 1)
 ///
 /// In particular, if `|value| < BARRETT_R`, then `|result| < FIELD_MODULUS`.
-#[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
+  // This specification theorem will be inserted after the function definition
+  // in the extracted Lean code:
     "
 set_option maxHeartbeats 1000000 in
 -- quite computation intensive
 theorem barrett_spec (value: i32) :
   ⦃ ⌜ Lean_barrett.barrett_reduce_precondition (value) = pure true ⌝ ⦄
-  (do
-    let result ← Lean_barrett.barrett_reduce value;
-    Lean_barrett.barret_reduce_postcondition value result)
-  ⦃ ⇓ post => ⌜post = true⌝ ⦄
+  Lean_barrett.barrett_reduce value
+  ⦃ ⇓ r => ⌜ Lean_barrett.barret_reduce_postcondition value r = pure true⌝ ⦄
 := by
-  mvcgen [ Lean_barrett.barret_reduce_postcondition ]
-  <;> simp_all! [ Lean_barrett.barrett_reduce_precondition ]
-  hax_bv_decide
-  simp [Int32.eq_iff_toBitVec_eq,
-        Int32.lt_iff_toBitVec_slt,
-        Int64.le_iff_toBitVec_sle,
-        ] at *
-  expose_names; have ⟨ _ , _ ⟩ := h ; clear h
-  generalize Int32.toBitVec value = bv_value at * ; clear value
-  bv_decide (config := {timeout := 120})
+  -- Unfold all auxiliary functions:
+  unfold
+    Lean_barrett.barrett_reduce Lean_barrett.barrett_reduce_precondition
+    Lean_barrett.barret_reduce_postcondition
+    Lean_barrett.FIELD_MODULUS Lean_barrett.BARRETT_R
+    Lean_barrett.BARRETT_MULTIPLIER Lean_barrett.BARRETT_SHIFT at *
+  -- Invoke bit blasting:
+  hax_bv_decide (timeout := 60)
 "
 )]
 pub fn barrett_reduce(value: FieldElement) -> FieldElement {

@@ -25,6 +25,7 @@ Changes to hax-lib:
  - Add Lean core models for options, results, default (#1747)
  - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
  - Lean lib: use macros for int operations (#1795)
+ - Lean lib: add new setup for `bv_decide` (#1828)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
