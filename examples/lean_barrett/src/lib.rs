@@ -49,11 +49,13 @@ theorem barrett_spec (value: i32) :
   Lean_barrett.barrett_reduce value
   ⦃ ⇓ r => ⌜ Lean_barrett.barret_reduce_postcondition value r = pure true⌝ ⦄
 := by
+  -- Unfold all auxiliary functions:
   unfold
     Lean_barrett.barrett_reduce Lean_barrett.barrett_reduce_precondition
     Lean_barrett.barret_reduce_postcondition
     Lean_barrett.FIELD_MODULUS Lean_barrett.BARRETT_R
     Lean_barrett.BARRETT_MULTIPLIER Lean_barrett.BARRETT_SHIFT at *
+  -- Invoke bit blasting:
   hax_bv_decide (timeout := 60)
 "
 )]
