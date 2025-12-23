@@ -3,13 +3,15 @@ members = [
     "chacha20",
     "lean_chacha20",
     "lean_barrett",
+    "lean_tutorial",
     "limited-order-book",
     "sha256",
     "barrett",
     "kyber_compress",
     "proverif-psk",
     "coq-example",
-    "coverage"]
+    "coverage",
+]
 resolver = "2"
 
 [workspace.dependencies]
