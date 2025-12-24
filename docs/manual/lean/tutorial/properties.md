@@ -12,24 +12,14 @@ _return a value_: it will not panic or diverge. We could enrich the
 contract of `square` with a post-condition about the fact it is an
 increasing function:
 ```{.rust .playable .lean-backend}
-#[hax_lib::lean::after("
-theorem square_spec (value: u8) :
-  ⦃ Playground._.requires (value) = pure true ⦄
-  (${square} value)
-  ⦃ ⇓ result => Playground.__1.ensures value result = pure true ⦄
-  := by
-  mvcgen
-  simp [Playground._.requires, Playground.__1.ensures, ${square}] at *
-  intros
-  rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
-  all_goals bv_decide")]
 #[hax_lib::requires(x < 16)]
 #[hax_lib::ensures(|res| res >= x)]
+#[hax_lib::lean::proof("by unfold square; hax_bv_decide")]
 fn square(x: u8) -> u8 {
     x * x
 }
 ```
-This works as well (note that the proof script is slightly modified to apply `bv_decide` to all goals).
+This works as well.
 
 The property that we prove above demonstrates a very simple case of a proof using hax and Lean. For a more complex example, a version of the Barrett example is available in the 
 [`examples`](https://github.com/cryspen/hax/tree/main/examples/lean_barrett) 

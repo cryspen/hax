@@ -12,7 +12,11 @@ const PAGES = JSON.parse(fs.readFileSync('generated.json', 'utf-8')) as CrawlPag
 
 
 async function tryNavigateTo(page: Page, url: string) {
-    const response = await page.request.get(url);
+    const response = await page.request.get(url, {
+        headers: {
+            accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+        }
+    });
     const status = response.status();
     const contentType = response.headers()['content-type'] || '';
 
