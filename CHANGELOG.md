@@ -26,6 +26,7 @@ Changes to hax-lib:
  - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
  - Lean lib: use macros for int operations (#1795)
  - Lean lib: add new setup for `bv_decide` (#1828)
+ - Lean lib: base specs on mathematical integers (#1829)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)

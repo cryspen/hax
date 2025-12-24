@@ -79,8 +79,6 @@ theorem Lean_chacha20.Hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 
   intros
   mvcgen [Lean_chacha20.Hacspec_helper.u32s_to_le_bytes, Core.Num.Impl_8.to_le_bytes]
     <;> try grind (splits := 14)
-  · rw [USize.umulOverflow_iff]
-    grind
 "
 )]
 pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
