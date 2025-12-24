@@ -514,11 +514,10 @@ struct
   and fun_application ~span f args ~trait_generic_args ~generic_args =
     let pgeneric_args ?qualifier =
       let qualifier_or default = Option.value ~default qualifier in
-      List.filter ~f:(function GType (TArrow _) -> false | _ -> true)
-      >> List.map ~f:(function
-           | GConst const -> (pexpr const, qualifier_or F.AST.Nothing)
-           | GLifetime _ -> .
-           | GType ty -> (pty span ty, qualifier_or F.AST.Hash))
+      List.map ~f:(function
+        | GConst const -> (pexpr const, qualifier_or F.AST.Nothing)
+        | GLifetime _ -> .
+        | GType ty -> (pty span ty, qualifier_or F.AST.Hash))
     in
     let args = List.map ~f:(pexpr &&& Fn.const F.AST.Nothing) args in
     let trait_generic_args =
@@ -847,7 +846,13 @@ struct
 
     let of_generics span generics : t list =
       List.map ~f:(of_generic_param span) generics.params
-      @ List.filter_mapi ~f:(of_generic_constraint span) generics.constraints
+      @ (generics.constraints
+        |> List.sort ~compare:(fun c1 c2 ->
+               match (c1, c2) with
+               | GCType _, GCProjection _ -> -1
+               | GCProjection _, GCType _ -> 1
+               | _ -> 0)
+        |> List.filter_mapi ~f:(of_generic_constraint span))
 
     let of_typ span (nth : int) typ : t =
       let ident = F.id ("x" ^ Int.to_string nth) in
@@ -2013,6 +2018,7 @@ module TransformToInputLanguage =
   |> Phases.Drop_blocks
   |> Phases.Drop_match_guards
   |> Phases.Drop_references
+  |> Phases.Explicit_conversions
   |> Phases.Trivialize_assign_lhs
   |> Side_effect_utils.Hoist
   |> Phases.Hoist_disjunctive_patterns

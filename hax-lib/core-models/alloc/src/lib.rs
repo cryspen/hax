@@ -16,10 +16,11 @@ mod borrow {
 }
 
 mod boxed {
-    pub struct Box<T, A>(pub T, pub Option<A>);
-    impl<T, A> Box<T, A> {
-        fn new(v: T) -> Box<T, A> {
-            Box(v, None)
+    pub struct Box<T>(pub T);
+    impl<T> Box<T> {
+        // Hax removes boxes, so this should be the identity
+        fn new(v: T) -> T {
+            v
         }
     }
 }
@@ -179,8 +180,8 @@ mod slice {
                 std::marker::PhantomData::<crate::alloc::Global>,
             )
         }
-        fn into_vec<A>(s: super::boxed::Box<&[T], A>) -> Vec<T, A> {
-            Vec(seq_from_slice(s.0), std::marker::PhantomData::<A>)
+        fn into_vec<A>(s: Box<&[T]>) -> Vec<T, A> {
+            Vec(seq_from_slice(*s), std::marker::PhantomData::<A>)
         }
         #[hax_lib::opaque]
         fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
@@ -220,6 +221,13 @@ pub mod vec {
 
     pub struct Vec<T, A>(pub Seq<T>, pub std::marker::PhantomData<A>);
 
+    fn from_elem<T: Clone>(item: T, len: usize) -> Vec<T, crate::alloc::Global> {
+        Vec(
+            seq_create(item, len),
+            std::marker::PhantomData::<crate::alloc::Global>,
+        )
+    }
+
     #[hax_lib::attributes]
     impl<T> Vec<T, crate::alloc::Global> {
         pub fn new() -> Vec<T, crate::alloc::Global> {
@@ -228,7 +236,7 @@ pub mod vec {
                 std::marker::PhantomData::<crate::alloc::Global>,
             )
         }
-        pub fn with_capacity() -> Vec<T, crate::alloc::Global> {
+        pub fn with_capacity(_c: usize) -> Vec<T, crate::alloc::Global> {
             Vec::new()
         }
     }
@@ -285,6 +293,29 @@ pub mod vec {
             seq_concat(&mut self.0, &other.0);
             other.0 = seq_empty()
         }
+        #[hax_lib::opaque]
+        pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
+            drain::Drain(
+                seq_slice(&self.0, 0, self.len()),
+                std::marker::PhantomData::<A>,
+            ) // TODO use range bounds
+        }
+    }
+    pub mod drain {
+        use rust_primitives::sequence::*;
+        pub struct Drain<T, A>(pub Seq<T>, pub std::marker::PhantomData<A>);
+        impl<T, A> Iterator for Drain<T, A> {
+            type Item = T;
+            fn next(&mut self) -> Option<Self::Item> {
+                if seq_len(&self.0) == 0 {
+                    Option::None
+                } else {
+                    let res = seq_first(&self.0);
+                    self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                    Option::Some(res)
+                }
+            }
+        }
     }
 
     #[hax_lib::attributes]
@@ -310,6 +341,21 @@ pub mod vec {
 
         fn deref(&self) -> &[T] {
             self.as_slice()
+        }
+    }
+
+    #[hax_lib::attributes]
+    #[hax_lib::opaque]
+    impl<T> std::iter::FromIterator<T> for Vec<T, crate::alloc::Global> {
+        fn from_iter<I>(iter: I) -> Self
+        where
+            I: IntoIterator<Item = T>,
+        {
+            let mut res = Vec::new();
+            for el in iter {
+                res.push(el)
+            }
+            res
         }
     }
 }

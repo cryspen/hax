@@ -76,7 +76,7 @@ pub mod control_flow {
 
 pub mod index {
     pub trait Index<Idx> {
-        type Output;
+        type Output: ?Sized;
         fn index(&self, i: Idx) -> &Self::Output;
     }
 }
@@ -105,10 +105,22 @@ pub mod function {
     f_call_once = (fun (x0: (_:t -> u)) (x1: t) -> x0 x1);
   }"
     )]
-    impl<Args, Out> FnOnce<Args> for fn(Args) -> Out {
+    impl<Arg, Out> FnOnce<Arg> for fn(Arg) -> Out {
         type Output = Out;
-        fn call_once(&self, args: Args) -> Out {
-            self(args)
+        fn call_once(&self, arg: Arg) -> Out {
+            self(arg)
+        }
+    }
+    impl<Arg1, Arg2, Out> FnOnce<(Arg1, Arg2)> for fn(Arg1, Arg2) -> Out {
+        type Output = Out;
+        fn call_once(&self, arg: (Arg1, Arg2)) -> Out {
+            self(arg.0, arg.1)
+        }
+    }
+    impl<Arg1, Arg2, Arg3, Out> FnOnce<(Arg1, Arg2, Arg3)> for fn(Arg1, Arg2, Arg3) -> Out {
+        type Output = Out;
+        fn call_once(&self, arg: (Arg1, Arg2, Arg3)) -> Out {
+            self(arg.0, arg.1, arg.2)
         }
     }
 }
@@ -139,4 +151,46 @@ mod deref {
             &self
         }
     }
+}
+
+mod drop {
+    trait Drop {
+        fn drop(&mut self);
+    }
+}
+
+pub mod range {
+    pub struct RangeTo<T> {
+        pub end: T,
+    }
+    pub struct RangeFrom<T> {
+        pub start: T,
+    }
+    pub struct Range<T> {
+        pub start: T,
+        pub end: T,
+    }
+    pub struct RangeFull;
+
+    macro_rules! impl_iterator_range_int {
+        ($($int_type: ident)*) => {
+            use crate::option::Option;
+            $(
+                impl crate::iter::traits::iterator::Iterator for Range<$int_type> {
+                    type Item = $int_type;
+                    fn next(&mut self) -> Option<$int_type> {
+                        if self.start >= self.end {
+                            Option::None
+                        } else {
+                            let res = self.start;
+                            self.start += 1;
+                            Option::Some(res)
+                        }
+                    }
+                }
+            )*
+        }
+    }
+
+    impl_iterator_range_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
 }

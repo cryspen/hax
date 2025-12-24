@@ -67,26 +67,26 @@ let impl (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialE
   }
 
 class t_PartialOrdDefaults (v_Self: Type0) (v_Rhs: Type0) = {
-  f_lt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_lt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_lt_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_lt:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_lt_pre #i0 x0 x1) (fun result -> f_lt_post #i0 x0 x1 result);
-  f_le_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_lt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_lt:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_lt_pre #i1 x0 x1) (fun result -> f_lt_post #i1 x0 x1 result);
+  f_le_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_le_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_le:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_le_pre #i0 x0 x1) (fun result -> f_le_post #i0 x0 x1 result);
-  f_gt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_le_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_le:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_le_pre #i1 x0 x1) (fun result -> f_le_post #i1 x0 x1 result);
+  f_gt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_gt_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_gt:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_gt_pre #i0 x0 x1) (fun result -> f_gt_post #i0 x0 x1 result);
-  f_ge_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_gt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_gt:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_gt_pre #i1 x0 x1) (fun result -> f_gt_post #i1 x0 x1 result);
+  f_ge_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_ge_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_ge:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_ge_pre #i0 x0 x1) (fun result -> f_ge_post #i0 x0 x1 result)
+  f_ge_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_ge:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_ge_pre #i1 x0 x1) (fun result -> f_ge_post #i1 x0 x1 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -96,7 +96,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_lt_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -104,7 +104,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_lt_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -113,7 +113,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_lt
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -127,7 +127,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_le_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -135,7 +135,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_le_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -144,7 +144,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_le
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -159,7 +159,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_gt_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -167,7 +167,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_gt_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -176,7 +176,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_gt
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -190,7 +190,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_ge_pre
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         ->
@@ -198,7 +198,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
     f_ge_post
     =
     (fun
-        (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T)
+        (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T)
         (self: v_T)
         (y: v_T)
         (out: bool)
@@ -206,7 +206,7 @@ let impl_1 (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Partia
         true);
     f_ge
     =
-    fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialOrd v_T v_T) (self: v_T) (y: v_T) ->
+    fun (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: t_PartialOrd v_T v_T) (self: v_T) (y: v_T) ->
       match
         f_partial_cmp #v_T #v_T #FStar.Tactics.Typeclasses.solve self y
         <:
@@ -318,12 +318,21 @@ let impl_30: t_PartialOrd u8 u8 =
     f_partial_cmp
     =
     fun (self: u8) (other: u8) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -374,12 +383,21 @@ let impl_32: t_PartialOrd i8 i8 =
     f_partial_cmp
     =
     fun (self: i8) (other: i8) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -430,12 +448,21 @@ let impl_34: t_PartialOrd u16 u16 =
     f_partial_cmp
     =
     fun (self: u16) (other: u16) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -486,12 +513,21 @@ let impl_36: t_PartialOrd i16 i16 =
     f_partial_cmp
     =
     fun (self: i16) (other: i16) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -542,12 +578,21 @@ let impl_38: t_PartialOrd u32 u32 =
     f_partial_cmp
     =
     fun (self: u32) (other: u32) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -598,12 +643,21 @@ let impl_40: t_PartialOrd i32 i32 =
     f_partial_cmp
     =
     fun (self: i32) (other: i32) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -654,12 +708,21 @@ let impl_42: t_PartialOrd u64 u64 =
     f_partial_cmp
     =
     fun (self: u64) (other: u64) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -710,12 +773,21 @@ let impl_44: t_PartialOrd i64 i64 =
     f_partial_cmp
     =
     fun (self: i64) (other: i64) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -766,12 +838,21 @@ let impl_46: t_PartialOrd u128 u128 =
     f_partial_cmp
     =
     fun (self: u128) (other: u128) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -822,12 +903,21 @@ let impl_48: t_PartialOrd i128 i128 =
     f_partial_cmp
     =
     fun (self: i128) (other: i128) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -878,12 +968,21 @@ let impl_50: t_PartialOrd usize usize =
     f_partial_cmp
     =
     fun (self: usize) (other: usize) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -934,12 +1033,21 @@ let impl_52: t_PartialOrd isize isize =
     f_partial_cmp
     =
     fun (self: isize) (other: isize) ->
-      Core_models.Option.Option_Some
-      (if self <. other
-        then Ordering_Less <: t_Ordering
-        else if self >. other then Ordering_Greater <: t_Ordering else Ordering_Equal <: t_Ordering)
-      <:
-      Core_models.Option.t_Option t_Ordering
+      if self <. other
+      then
+        Core_models.Option.Option_Some (Ordering_Less <: t_Ordering)
+        <:
+        Core_models.Option.t_Option t_Ordering
+      else
+        if self >. other
+        then
+          Core_models.Option.Option_Some (Ordering_Greater <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
+        else
+          Core_models.Option.Option_Some (Ordering_Equal <: t_Ordering)
+          <:
+          Core_models.Option.t_Option t_Ordering
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

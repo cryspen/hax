@@ -376,6 +376,7 @@ module Raw = struct
     | LhsArrayAccessor { e; index; _ } ->
         plhs e span & !"[" & pexpr index & !"]"
     | LhsLocalVar { var; _ } -> plocal_ident span var
+    | LhsVecRef { e; _ } -> plhs e span
     | LhsArbitraryExpr { e; _ } -> pexpr e
 
   and pexpr (e : expr) =

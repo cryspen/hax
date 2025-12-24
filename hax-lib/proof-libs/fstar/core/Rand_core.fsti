@@ -1,7 +1,7 @@
 module Rand_core
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 class t_RngCore (v_Self: Type0) = {
   f_next_u32_pre:v_Self -> Type0;

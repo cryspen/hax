@@ -359,6 +359,7 @@ functor
     (* TODO: LHS should be places or "compositions" of places, see [assignee expression] in https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions (issue #222) *)
     and lhs =
       | LhsLocalVar of { var : Local_ident.t; typ : ty }
+      | LhsVecRef of { e : lhs; typ : ty; witness : F.nontrivial_lhs }
       | LhsArbitraryExpr of { e : expr; witness : F.arbitrary_lhs }
       | LhsFieldAccessor of {
           e : lhs;

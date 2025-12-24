@@ -17,35 +17,78 @@ class update_at_tc self idx = {
 }
 
 open Core_models.Slice
+open Core_models.Array
+open Core_models.Ops.Range
 
-/// We have an instance for `int_t n`, but we often work with refined
-/// `int_t n`, and F* typeclass inference doesn't support subtyping
+/// We have an instance for `usize`, but we often work with refined
+/// `usize`, and F* typeclass inference doesn't support subtyping
 /// well, hence the instance below.
-instance impl__index_refined t l n r: t_Index (t_Array t l) (x: int_t n {r x})
+instance impl__index_refined t l r: t_Index (t_Array t l) (x: usize {r x})
   = { f_Output = t;
-      f_index_pre = (fun (s: t_Array t l) (i: int_t n {r i}) -> v i >= 0 && v i < v l);
+      f_index_pre = (fun (s: t_Array t l) (i: usize {r i}) -> v i >= 0 && v i < v l);
       f_index_post = (fun _ _ _ -> true);
       f_index = (fun s i -> Seq.index s (v i));
     }
 
 /// Similarly to `impl__index_refined`, we need to define a instance
-/// for refined `int_t n`.
-instance update_at_tc_array_refined t l n r: update_at_tc (t_Array t l) (x: int_t n {r x}) = {
-  super_index = impl__index_refined t l n r;
+/// for refined `usize`.
+instance update_at_tc_array_refined t l r: update_at_tc (t_Array t l) (x: usize {r x}) = {
+  super_index = impl__index_refined t l r;
   update_at = (fun arr i x -> FStar.Seq.upd arr (v i) x);
 }
 
-instance impl__index t l n: t_Index (t_Array t l) (int_t n)
+instance impl__index t l: t_Index (t_Array t l) (usize)
   = { f_Output = t;
-      f_index_pre = (fun (s: t_Array t l) (i: int_t n) -> v i >= 0 && v i < v l);
+      f_index_pre = (fun (s: t_Array t l) (i: usize) -> v i >= 0 && v i < v l);
       f_index_post = (fun _ _ _ -> true);
       f_index = (fun s i -> Seq.index s (v i));
     }
 
-instance update_at_tc_array t l n: update_at_tc (t_Array t l) (int_t n) = {
-  super_index = FStar.Tactics.Typeclasses.solve <: t_Index (t_Array t l) (int_t n);
+instance update_at_tc_array t l: update_at_tc (t_Array t l) (usize) = {
+  super_index = FStar.Tactics.Typeclasses.solve <: t_Index (t_Array t l) (usize);
   update_at = (fun arr i x -> FStar.Seq.upd arr (v i) x);
 }
+
+
+let update_at_tc_array_range_super t l: t_Index (t_Array t l) (t_Range (usize))
+  = FStar.Tactics.Typeclasses.solve
+let update_at_tc_array_range_to_super t l: t_Index (t_Array t l) (t_RangeTo (usize))
+  = FStar.Tactics.Typeclasses.solve
+let update_at_tc_array_range_from_super t l: t_Index (t_Array t l) (t_RangeFrom (usize))
+  = FStar.Tactics.Typeclasses.solve
+let update_at_tc_array_range_full_super t l: t_Index (t_Array t l) t_RangeFull
+  = FStar.Tactics.Typeclasses.solve
+
+assume val update_at_array_range t l
+  (s: t_Array t l) (i: t_Range (usize) {(update_at_tc_array_range_super t l).f_index_pre s i})
+  : (update_at_tc_array_range_super t l).f_Output -> t_Array t l
+assume val update_at_array_range_to t l
+  (s: t_Array t l) (i: t_RangeTo (usize) {(update_at_tc_array_range_to_super t l).f_index_pre s i})
+  : (update_at_tc_array_range_to_super t l).f_Output -> t_Array t l
+assume val update_at_array_range_from t l
+  (s: t_Array t l) (i: t_RangeFrom (usize) {(update_at_tc_array_range_from_super t l).f_index_pre s i})
+  : (update_at_tc_array_range_from_super t l).f_Output -> t_Array t l
+assume val update_at_array_range_full t l
+  (s: t_Array t l) (i: t_RangeFull)
+  : (update_at_tc_array_range_full_super t l).f_Output -> t_Array t l
+
+instance update_at_tc_array_range t l: update_at_tc (t_Array t l) (t_Range (usize)) = {
+  super_index = update_at_tc_array_range_super t l;
+  update_at = update_at_array_range t l
+}
+instance update_at_tc_array_range_to t l: update_at_tc (t_Array t l) (t_RangeTo (usize)) = {
+  super_index = update_at_tc_array_range_to_super t l;
+  update_at = update_at_array_range_to t l
+}
+instance update_at_tc_array_range_from t l: update_at_tc (t_Array t l) (t_RangeFrom (usize)) = {
+  super_index = update_at_tc_array_range_from_super t l;
+  update_at = update_at_array_range_from t l
+}
+instance update_at_tc_array_range_full t l: update_at_tc (t_Array t l) t_RangeFull = {
+  super_index = update_at_tc_array_range_full_super t l;
+  update_at = update_at_array_range_full t l
+}
+
 
 let (.[]<-) #self #idx {| update_at_tc self idx |} (s: self) (i: idx {f_index_pre s i})
   = update_at s i

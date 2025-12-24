@@ -1,7 +1,7 @@
 module Alloc.Collections.Vec_deque
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-open Core_models
+open Rust_primitives
 
 type t_VecDeque (v_T: Type0) (v_A: Type0) =
   | VecDeque : Rust_primitives.Sequence.t_Seq v_T -> Core_models.Marker.t_PhantomData v_A

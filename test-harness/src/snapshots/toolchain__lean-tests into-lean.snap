@@ -1037,9 +1037,8 @@ inductive Lean_tests.Enums.E : Type
 
 inductive Lean_tests.Enums.MyList (T : Type) : Type
 | Nil : Lean_tests.Enums.MyList (T : Type) 
-| Cons (hd : T)
-       (tl : (Alloc.Boxed.Box (Lean_tests.Enums.MyList T) Alloc.Alloc.Global))
-    : Lean_tests.Enums.MyList (T : Type) 
+| Cons (hd : T) (tl : (Lean_tests.Enums.MyList T)) : Lean_tests.Enums.MyList
+  (T : Type) 
 
 
 def Lean_tests.Enums.enums

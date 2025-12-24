@@ -392,9 +392,14 @@ let mutation_example
       (mk_u8 0)
   in
   let specialized_as_well:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    Rust_primitives.Hax.Monomorphized_update_at.update_at_usize specialized_as_well
-      (mk_usize 2)
-      (mk_u8 0)
+    Alloc.Slice.impl__to_vec (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize (Alloc.Vec.impl_1__as_slice
+              specialized_as_well
+            <:
+            t_Slice u8)
+          (mk_usize 2)
+          (mk_u8 0)
+        <:
+        t_Slice u8)
   in
   uuse_generic_update_at, uuse_specialized_update_at, specialized_as_well
   <:
@@ -437,6 +442,7 @@ let t_NoE =
     { let (_: Core_models.Str.Iter.t_Chars), (out: bool) =
         Core_models.Iter.Traits.Iterator.f_any #Core_models.Str.Iter.t_Chars
           #FStar.Tactics.Typeclasses.solve
+          #(FStar.Char.char -> bool)
           (Core_models.Str.impl_str__chars (Core_models.Ops.Deref.f_deref #Alloc.String.t_String
                   #FStar.Tactics.Typeclasses.solve
                   x

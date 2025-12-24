@@ -8,6 +8,7 @@ module%inlined_contents Make (F : Features.T) = struct
     include F
     include Features.Off.Nontrivial_lhs
     include Features.On.Construct_base
+    include Features.On.Slice
   end
 
   include
@@ -22,6 +23,7 @@ module%inlined_contents Make (F : Features.T) = struct
     module S = struct
       include Features.SUBTYPE.Id
       include Features.SUBTYPE.On.Construct_base
+      include Features.SUBTYPE.On.Slice
     end
 
     module UA = Ast_utils.Make (F)
@@ -33,6 +35,7 @@ module%inlined_contents Make (F : Features.T) = struct
         (Local_ident.t * B.ty) * B.expr =
       match lhs with
       | LhsLocalVar { var; typ } -> ((var, dty span typ), rhs)
+      | LhsVecRef { e; _ } -> updater_of_lhs e rhs span
       | LhsFieldAccessor { e; field; _ } -> (
           let lhs = UA.expr_of_lhs span e |> dexpr in
           match lhs.typ with
@@ -78,7 +81,28 @@ module%inlined_contents Make (F : Features.T) = struct
               | _ -> Rust_primitives__hax__update_at
             else Rust_primitives__hax__update_at
           in
+          let vec_elem_type =
+            match lhs.typ with
+            | TApp { ident; args = [ GType inner; _ ] }
+              when Global_ident.eq_name Alloc__vec__Vec ident ->
+                Some inner
+            | _ -> None
+          in
+          let vec_typ = lhs.typ in
+          let lhs =
+            match vec_elem_type with
+            | Some ty ->
+                UB.call Alloc__vec__Impl_1__as_slice [ lhs ] span
+                  (TSlice { witness = Features.On.slice; ty })
+            | None -> lhs
+          in
           let rhs = UB.call update_at [ lhs; dexpr index; rhs ] span lhs.typ in
+          let rhs =
+            if Option.is_some vec_elem_type then
+              UB.call Alloc__slice__Impl__to_vec [ rhs ] span vec_typ
+            else rhs
+          in
+
           updater_of_lhs e rhs span
       | LhsArbitraryExpr _ -> Error.raise { kind = ArbitraryLHS; span }
 

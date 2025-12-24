@@ -16,6 +16,21 @@ let impl_u8__saturating_add (x y: u8) : u8 = Rust_primitives.Arithmetic.saturati
 let impl_u8__overflowing_add (x y: u8) : (u8 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_u8 x y
 
+let impl_u8__checked_add (x y: u8) : Core_models.Option.t_Option u8 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u8__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u8__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option u8
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u8
+
 let impl_u8__wrapping_sub (x y: u8) : u8 = Rust_primitives.Arithmetic.wrapping_sub_u8 x y
 
 let impl_u8__saturating_sub (x y: u8) : u8 = Rust_primitives.Arithmetic.saturating_sub_u8 x y
@@ -23,12 +38,42 @@ let impl_u8__saturating_sub (x y: u8) : u8 = Rust_primitives.Arithmetic.saturati
 let impl_u8__overflowing_sub (x y: u8) : (u8 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_u8 x y
 
+let impl_u8__checked_sub (x y: u8) : Core_models.Option.t_Option u8 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u8__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u8__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option u8
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u8
+
 let impl_u8__wrapping_mul (x y: u8) : u8 = Rust_primitives.Arithmetic.wrapping_mul_u8 x y
 
 let impl_u8__saturating_mul (x y: u8) : u8 = Rust_primitives.Arithmetic.saturating_mul_u8 x y
 
 let impl_u8__overflowing_mul (x y: u8) : (u8 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u8 x y
+
+let impl_u8__checked_mul (x y: u8) : Core_models.Option.t_Option u8 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u8__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u8__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option u8
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u8
 
 let impl_u8__pow (x: u8) (exp: u32) : u8 = Rust_primitives.Arithmetic.pow_u8 x exp
 
@@ -92,6 +137,14 @@ let impl_u8__to_le_bytes = impl_u8__to_le_bytes'
 let impl_u8__rem_euclid (x y: u8) : Prims.Pure u8 (requires y <>. mk_u8 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u8 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl: Core_models.Default.t_Default u8 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u8) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u8 0
+  }
+
 let impl_u16__MIN: u16 = mk_u16 0
 
 let impl_u16__MAX: u16 = mk_u16 65535
@@ -105,6 +158,21 @@ let impl_u16__saturating_add (x y: u16) : u16 = Rust_primitives.Arithmetic.satur
 let impl_u16__overflowing_add (x y: u16) : (u16 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_u16 x y
 
+let impl_u16__checked_add (x y: u16) : Core_models.Option.t_Option u16 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u16__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u16__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option u16
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u16
+
 let impl_u16__wrapping_sub (x y: u16) : u16 = Rust_primitives.Arithmetic.wrapping_sub_u16 x y
 
 let impl_u16__saturating_sub (x y: u16) : u16 = Rust_primitives.Arithmetic.saturating_sub_u16 x y
@@ -112,12 +180,42 @@ let impl_u16__saturating_sub (x y: u16) : u16 = Rust_primitives.Arithmetic.satur
 let impl_u16__overflowing_sub (x y: u16) : (u16 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_u16 x y
 
+let impl_u16__checked_sub (x y: u16) : Core_models.Option.t_Option u16 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u16__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u16__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option u16
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u16
+
 let impl_u16__wrapping_mul (x y: u16) : u16 = Rust_primitives.Arithmetic.wrapping_mul_u16 x y
 
 let impl_u16__saturating_mul (x y: u16) : u16 = Rust_primitives.Arithmetic.saturating_mul_u16 x y
 
 let impl_u16__overflowing_mul (x y: u16) : (u16 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u16 x y
+
+let impl_u16__checked_mul (x y: u16) : Core_models.Option.t_Option u16 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u16__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u16__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option u16
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u16
 
 let impl_u16__pow (x: u16) (exp: u32) : u16 = Rust_primitives.Arithmetic.pow_u16 x exp
 
@@ -182,6 +280,14 @@ let impl_u16__rem_euclid (x y: u16)
     : Prims.Pure u16 (requires y <>. mk_u16 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u16 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_2: Core_models.Default.t_Default u16 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u16) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u16 0
+  }
+
 let impl_u32__MIN: u32 = mk_u32 0
 
 let impl_u32__MAX: u32 = mk_u32 4294967295
@@ -195,6 +301,21 @@ let impl_u32__saturating_add (x y: u32) : u32 = Rust_primitives.Arithmetic.satur
 let impl_u32__overflowing_add (x y: u32) : (u32 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_u32 x y
 
+let impl_u32__checked_add (x y: u32) : Core_models.Option.t_Option u32 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u32__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u32__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option u32
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u32
+
 let impl_u32__wrapping_sub (x y: u32) : u32 = Rust_primitives.Arithmetic.wrapping_sub_u32 x y
 
 let impl_u32__saturating_sub (x y: u32) : u32 = Rust_primitives.Arithmetic.saturating_sub_u32 x y
@@ -202,12 +323,42 @@ let impl_u32__saturating_sub (x y: u32) : u32 = Rust_primitives.Arithmetic.satur
 let impl_u32__overflowing_sub (x y: u32) : (u32 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_u32 x y
 
+let impl_u32__checked_sub (x y: u32) : Core_models.Option.t_Option u32 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u32__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u32__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option u32
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u32
+
 let impl_u32__wrapping_mul (x y: u32) : u32 = Rust_primitives.Arithmetic.wrapping_mul_u32 x y
 
 let impl_u32__saturating_mul (x y: u32) : u32 = Rust_primitives.Arithmetic.saturating_mul_u32 x y
 
 let impl_u32__overflowing_mul (x y: u32) : (u32 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u32 x y
+
+let impl_u32__checked_mul (x y: u32) : Core_models.Option.t_Option u32 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u32__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u32__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option u32
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u32
 
 let impl_u32__pow (x exp: u32) : u32 = Rust_primitives.Arithmetic.pow_u32 x exp
 
@@ -272,6 +423,14 @@ let impl_u32__rem_euclid (x y: u32)
     : Prims.Pure u32 (requires y <>. mk_u32 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u32 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_4: Core_models.Default.t_Default u32 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u32) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u32 0
+  }
+
 let impl_u64__MIN: u64 = mk_u64 0
 
 let impl_u64__MAX: u64 = mk_u64 18446744073709551615
@@ -285,6 +444,21 @@ let impl_u64__saturating_add (x y: u64) : u64 = Rust_primitives.Arithmetic.satur
 let impl_u64__overflowing_add (x y: u64) : (u64 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_u64 x y
 
+let impl_u64__checked_add (x y: u64) : Core_models.Option.t_Option u64 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u64__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u64__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option u64
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u64
+
 let impl_u64__wrapping_sub (x y: u64) : u64 = Rust_primitives.Arithmetic.wrapping_sub_u64 x y
 
 let impl_u64__saturating_sub (x y: u64) : u64 = Rust_primitives.Arithmetic.saturating_sub_u64 x y
@@ -292,12 +466,42 @@ let impl_u64__saturating_sub (x y: u64) : u64 = Rust_primitives.Arithmetic.satur
 let impl_u64__overflowing_sub (x y: u64) : (u64 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_u64 x y
 
+let impl_u64__checked_sub (x y: u64) : Core_models.Option.t_Option u64 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u64__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u64__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option u64
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u64
+
 let impl_u64__wrapping_mul (x y: u64) : u64 = Rust_primitives.Arithmetic.wrapping_mul_u64 x y
 
 let impl_u64__saturating_mul (x y: u64) : u64 = Rust_primitives.Arithmetic.saturating_mul_u64 x y
 
 let impl_u64__overflowing_mul (x y: u64) : (u64 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u64 x y
+
+let impl_u64__checked_mul (x y: u64) : Core_models.Option.t_Option u64 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u64__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u64__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option u64
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u64
 
 let impl_u64__pow (x: u64) (exp: u32) : u64 = Rust_primitives.Arithmetic.pow_u64 x exp
 
@@ -362,6 +566,14 @@ let impl_u64__rem_euclid (x y: u64)
     : Prims.Pure u64 (requires y <>. mk_u64 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u64 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_6: Core_models.Default.t_Default u64 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u64) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u64 0
+  }
+
 let impl_u128__MIN: u128 = mk_u128 0
 
 let impl_u128__MAX: u128 = mk_u128 340282366920938463463374607431768211455
@@ -376,6 +588,21 @@ let impl_u128__saturating_add (x y: u128) : u128 =
 let impl_u128__overflowing_add (x y: u128) : (u128 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_u128 x y
 
+let impl_u128__checked_add (x y: u128) : Core_models.Option.t_Option u128 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u128__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u128__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option u128
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u128
+
 let impl_u128__wrapping_sub (x y: u128) : u128 = Rust_primitives.Arithmetic.wrapping_sub_u128 x y
 
 let impl_u128__saturating_sub (x y: u128) : u128 =
@@ -384,6 +611,21 @@ let impl_u128__saturating_sub (x y: u128) : u128 =
 let impl_u128__overflowing_sub (x y: u128) : (u128 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_u128 x y
 
+let impl_u128__checked_sub (x y: u128) : Core_models.Option.t_Option u128 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u128__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u128__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option u128
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u128
+
 let impl_u128__wrapping_mul (x y: u128) : u128 = Rust_primitives.Arithmetic.wrapping_mul_u128 x y
 
 let impl_u128__saturating_mul (x y: u128) : u128 =
@@ -391,6 +633,21 @@ let impl_u128__saturating_mul (x y: u128) : u128 =
 
 let impl_u128__overflowing_mul (x y: u128) : (u128 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_u128 x y
+
+let impl_u128__checked_mul (x y: u128) : Core_models.Option.t_Option u128 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_u128__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_u128__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option u128
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option u128
 
 let impl_u128__pow (x: u128) (exp: u32) : u128 = Rust_primitives.Arithmetic.pow_u128 x exp
 
@@ -455,6 +712,14 @@ let impl_u128__rem_euclid (x y: u128)
     : Prims.Pure u128 (requires y <>. mk_u128 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_u128 x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_8: Core_models.Default.t_Default u128 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: u128) -> true);
+    f_default = fun (_: Prims.unit) -> mk_u128 0
+  }
+
 let impl_usize__MIN: usize = mk_usize 0
 
 let impl_usize__MAX: usize = Rust_primitives.Arithmetic.v_USIZE_MAX
@@ -470,6 +735,21 @@ let impl_usize__saturating_add (x y: usize) : usize =
 let impl_usize__overflowing_add (x y: usize) : (usize & bool) =
   Rust_primitives.Arithmetic.overflowing_add_usize x y
 
+let impl_usize__checked_add (x y: usize) : Core_models.Option.t_Option usize =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_usize__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_usize__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option usize
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option usize
+
 let impl_usize__wrapping_sub (x y: usize) : usize =
   Rust_primitives.Arithmetic.wrapping_sub_usize x y
 
@@ -479,6 +759,21 @@ let impl_usize__saturating_sub (x y: usize) : usize =
 let impl_usize__overflowing_sub (x y: usize) : (usize & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_usize x y
 
+let impl_usize__checked_sub (x y: usize) : Core_models.Option.t_Option usize =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_usize__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_usize__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option usize
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option usize
+
 let impl_usize__wrapping_mul (x y: usize) : usize =
   Rust_primitives.Arithmetic.wrapping_mul_usize x y
 
@@ -487,6 +782,21 @@ let impl_usize__saturating_mul (x y: usize) : usize =
 
 let impl_usize__overflowing_mul (x y: usize) : (usize & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_usize x y
+
+let impl_usize__checked_mul (x y: usize) : Core_models.Option.t_Option usize =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_usize__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_usize__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option usize
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option usize
 
 let impl_usize__pow (x: usize) (exp: u32) : usize = Rust_primitives.Arithmetic.pow_usize x exp
 
@@ -551,6 +861,14 @@ let impl_usize__rem_euclid (x y: usize)
     : Prims.Pure usize (requires y <>. mk_usize 0) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.rem_euclid_usize x y
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_10: Core_models.Default.t_Default usize =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: usize) -> true);
+    f_default = fun (_: Prims.unit) -> mk_usize 0
+  }
+
 let impl_i8__MIN: i8 = mk_i8 (-128)
 
 let impl_i8__MAX: i8 = mk_i8 127
@@ -564,6 +882,21 @@ let impl_i8__saturating_add (x y: i8) : i8 = Rust_primitives.Arithmetic.saturati
 let impl_i8__overflowing_add (x y: i8) : (i8 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_i8 x y
 
+let impl_i8__checked_add (x y: i8) : Core_models.Option.t_Option i8 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i8__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i8__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option i8
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i8
+
 let impl_i8__wrapping_sub (x y: i8) : i8 = Rust_primitives.Arithmetic.wrapping_sub_i8 x y
 
 let impl_i8__saturating_sub (x y: i8) : i8 = Rust_primitives.Arithmetic.saturating_sub_i8 x y
@@ -571,12 +904,42 @@ let impl_i8__saturating_sub (x y: i8) : i8 = Rust_primitives.Arithmetic.saturati
 let impl_i8__overflowing_sub (x y: i8) : (i8 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_i8 x y
 
+let impl_i8__checked_sub (x y: i8) : Core_models.Option.t_Option i8 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i8__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i8__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option i8
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i8
+
 let impl_i8__wrapping_mul (x y: i8) : i8 = Rust_primitives.Arithmetic.wrapping_mul_i8 x y
 
 let impl_i8__saturating_mul (x y: i8) : i8 = Rust_primitives.Arithmetic.saturating_mul_i8 x y
 
 let impl_i8__overflowing_mul (x y: i8) : (i8 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i8 x y
+
+let impl_i8__checked_mul (x y: i8) : Core_models.Option.t_Option i8 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i8__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i8__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option i8
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i8
 
 let impl_i8__pow (x: i8) (exp: u32) : i8 = Rust_primitives.Arithmetic.pow_i8 x exp
 
@@ -643,6 +1006,14 @@ let impl_i8__rem_euclid (x y: i8) : Prims.Pure i8 (requires y <>. mk_i8 0) (fun 
 let impl_i8__abs (x: i8) : Prims.Pure i8 (requires x >. impl_i8__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i8 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_12: Core_models.Default.t_Default i8 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i8) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i8 0
+  }
+
 let impl_i16__MIN: i16 = mk_i16 (-32768)
 
 let impl_i16__MAX: i16 = mk_i16 32767
@@ -656,6 +1027,21 @@ let impl_i16__saturating_add (x y: i16) : i16 = Rust_primitives.Arithmetic.satur
 let impl_i16__overflowing_add (x y: i16) : (i16 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_i16 x y
 
+let impl_i16__checked_add (x y: i16) : Core_models.Option.t_Option i16 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i16__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i16__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option i16
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i16
+
 let impl_i16__wrapping_sub (x y: i16) : i16 = Rust_primitives.Arithmetic.wrapping_sub_i16 x y
 
 let impl_i16__saturating_sub (x y: i16) : i16 = Rust_primitives.Arithmetic.saturating_sub_i16 x y
@@ -663,12 +1049,42 @@ let impl_i16__saturating_sub (x y: i16) : i16 = Rust_primitives.Arithmetic.satur
 let impl_i16__overflowing_sub (x y: i16) : (i16 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_i16 x y
 
+let impl_i16__checked_sub (x y: i16) : Core_models.Option.t_Option i16 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i16__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i16__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option i16
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i16
+
 let impl_i16__wrapping_mul (x y: i16) : i16 = Rust_primitives.Arithmetic.wrapping_mul_i16 x y
 
 let impl_i16__saturating_mul (x y: i16) : i16 = Rust_primitives.Arithmetic.saturating_mul_i16 x y
 
 let impl_i16__overflowing_mul (x y: i16) : (i16 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i16 x y
+
+let impl_i16__checked_mul (x y: i16) : Core_models.Option.t_Option i16 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i16__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i16__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option i16
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i16
 
 let impl_i16__pow (x: i16) (exp: u32) : i16 = Rust_primitives.Arithmetic.pow_i16 x exp
 
@@ -736,6 +1152,14 @@ let impl_i16__rem_euclid (x y: i16)
 let impl_i16__abs (x: i16) : Prims.Pure i16 (requires x >. impl_i16__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i16 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_14: Core_models.Default.t_Default i16 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i16) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i16 0
+  }
+
 let impl_i32__MIN: i32 = mk_i32 (-2147483648)
 
 let impl_i32__MAX: i32 = mk_i32 2147483647
@@ -749,6 +1173,21 @@ let impl_i32__saturating_add (x y: i32) : i32 = Rust_primitives.Arithmetic.satur
 let impl_i32__overflowing_add (x y: i32) : (i32 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_i32 x y
 
+let impl_i32__checked_add (x y: i32) : Core_models.Option.t_Option i32 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i32__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i32__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option i32
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i32
+
 let impl_i32__wrapping_sub (x y: i32) : i32 = Rust_primitives.Arithmetic.wrapping_sub_i32 x y
 
 let impl_i32__saturating_sub (x y: i32) : i32 = Rust_primitives.Arithmetic.saturating_sub_i32 x y
@@ -756,12 +1195,42 @@ let impl_i32__saturating_sub (x y: i32) : i32 = Rust_primitives.Arithmetic.satur
 let impl_i32__overflowing_sub (x y: i32) : (i32 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_i32 x y
 
+let impl_i32__checked_sub (x y: i32) : Core_models.Option.t_Option i32 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i32__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i32__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option i32
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i32
+
 let impl_i32__wrapping_mul (x y: i32) : i32 = Rust_primitives.Arithmetic.wrapping_mul_i32 x y
 
 let impl_i32__saturating_mul (x y: i32) : i32 = Rust_primitives.Arithmetic.saturating_mul_i32 x y
 
 let impl_i32__overflowing_mul (x y: i32) : (i32 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i32 x y
+
+let impl_i32__checked_mul (x y: i32) : Core_models.Option.t_Option i32 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i32__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i32__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option i32
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i32
 
 let impl_i32__pow (x: i32) (exp: u32) : i32 = Rust_primitives.Arithmetic.pow_i32 x exp
 
@@ -829,6 +1298,14 @@ let impl_i32__rem_euclid (x y: i32)
 let impl_i32__abs (x: i32) : Prims.Pure i32 (requires x >. impl_i32__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i32 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_16: Core_models.Default.t_Default i32 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i32) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i32 0
+  }
+
 let impl_i64__MIN: i64 = mk_i64 (-9223372036854775808)
 
 let impl_i64__MAX: i64 = mk_i64 9223372036854775807
@@ -842,6 +1319,21 @@ let impl_i64__saturating_add (x y: i64) : i64 = Rust_primitives.Arithmetic.satur
 let impl_i64__overflowing_add (x y: i64) : (i64 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_i64 x y
 
+let impl_i64__checked_add (x y: i64) : Core_models.Option.t_Option i64 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i64__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i64__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option i64
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i64
+
 let impl_i64__wrapping_sub (x y: i64) : i64 = Rust_primitives.Arithmetic.wrapping_sub_i64 x y
 
 let impl_i64__saturating_sub (x y: i64) : i64 = Rust_primitives.Arithmetic.saturating_sub_i64 x y
@@ -849,12 +1341,42 @@ let impl_i64__saturating_sub (x y: i64) : i64 = Rust_primitives.Arithmetic.satur
 let impl_i64__overflowing_sub (x y: i64) : (i64 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_i64 x y
 
+let impl_i64__checked_sub (x y: i64) : Core_models.Option.t_Option i64 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i64__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i64__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option i64
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i64
+
 let impl_i64__wrapping_mul (x y: i64) : i64 = Rust_primitives.Arithmetic.wrapping_mul_i64 x y
 
 let impl_i64__saturating_mul (x y: i64) : i64 = Rust_primitives.Arithmetic.saturating_mul_i64 x y
 
 let impl_i64__overflowing_mul (x y: i64) : (i64 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i64 x y
+
+let impl_i64__checked_mul (x y: i64) : Core_models.Option.t_Option i64 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i64__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i64__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option i64
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i64
 
 let impl_i64__pow (x: i64) (exp: u32) : i64 = Rust_primitives.Arithmetic.pow_i64 x exp
 
@@ -922,6 +1444,14 @@ let impl_i64__rem_euclid (x y: i64)
 let impl_i64__abs (x: i64) : Prims.Pure i64 (requires x >. impl_i64__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i64 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_18: Core_models.Default.t_Default i64 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i64) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i64 0
+  }
+
 let impl_i128__MIN: i128 = mk_i128 (-170141183460469231731687303715884105728)
 
 let impl_i128__MAX: i128 = mk_i128 170141183460469231731687303715884105727
@@ -936,6 +1466,21 @@ let impl_i128__saturating_add (x y: i128) : i128 =
 let impl_i128__overflowing_add (x y: i128) : (i128 & bool) =
   Rust_primitives.Arithmetic.overflowing_add_i128 x y
 
+let impl_i128__checked_add (x y: i128) : Core_models.Option.t_Option i128 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i128__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i128__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option i128
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i128
+
 let impl_i128__wrapping_sub (x y: i128) : i128 = Rust_primitives.Arithmetic.wrapping_sub_i128 x y
 
 let impl_i128__saturating_sub (x y: i128) : i128 =
@@ -944,6 +1489,21 @@ let impl_i128__saturating_sub (x y: i128) : i128 =
 let impl_i128__overflowing_sub (x y: i128) : (i128 & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_i128 x y
 
+let impl_i128__checked_sub (x y: i128) : Core_models.Option.t_Option i128 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i128__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i128__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option i128
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i128
+
 let impl_i128__wrapping_mul (x y: i128) : i128 = Rust_primitives.Arithmetic.wrapping_mul_i128 x y
 
 let impl_i128__saturating_mul (x y: i128) : i128 =
@@ -951,6 +1511,21 @@ let impl_i128__saturating_mul (x y: i128) : i128 =
 
 let impl_i128__overflowing_mul (x y: i128) : (i128 & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_i128 x y
+
+let impl_i128__checked_mul (x y: i128) : Core_models.Option.t_Option i128 =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_i128__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_i128__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option i128
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option i128
 
 let impl_i128__pow (x: i128) (exp: u32) : i128 = Rust_primitives.Arithmetic.pow_i128 x exp
 
@@ -1019,6 +1594,14 @@ let impl_i128__abs (x: i128)
     : Prims.Pure i128 (requires x >. impl_i128__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_i128 x
 
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_20: Core_models.Default.t_Default i128 =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: i128) -> true);
+    f_default = fun (_: Prims.unit) -> mk_i128 0
+  }
+
 let impl_isize__MIN: isize = Rust_primitives.Arithmetic.v_ISIZE_MIN
 
 let impl_isize__MAX: isize = Rust_primitives.Arithmetic.v_ISIZE_MAX
@@ -1034,6 +1617,21 @@ let impl_isize__saturating_add (x y: isize) : isize =
 let impl_isize__overflowing_add (x y: isize) : (isize & bool) =
   Rust_primitives.Arithmetic.overflowing_add_isize x y
 
+let impl_isize__checked_add (x y: isize) : Core_models.Option.t_Option isize =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_isize__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) +
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_isize__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x +! y) <: Core_models.Option.t_Option isize
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option isize
+
 let impl_isize__wrapping_sub (x y: isize) : isize =
   Rust_primitives.Arithmetic.wrapping_sub_isize x y
 
@@ -1043,6 +1641,21 @@ let impl_isize__saturating_sub (x y: isize) : isize =
 let impl_isize__overflowing_sub (x y: isize) : (isize & bool) =
   Rust_primitives.Arithmetic.overflowing_sub_isize x y
 
+let impl_isize__checked_sub (x y: isize) : Core_models.Option.t_Option isize =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_isize__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) -
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_isize__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x -! y) <: Core_models.Option.t_Option isize
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option isize
+
 let impl_isize__wrapping_mul (x y: isize) : isize =
   Rust_primitives.Arithmetic.wrapping_mul_isize x y
 
@@ -1051,6 +1664,21 @@ let impl_isize__saturating_mul (x y: isize) : isize =
 
 let impl_isize__overflowing_mul (x y: isize) : (isize & bool) =
   Rust_primitives.Arithmetic.overflowing_mul_isize x y
+
+let impl_isize__checked_mul (x y: isize) : Core_models.Option.t_Option isize =
+  if
+    (Rust_primitives.Hax.Int.from_machine impl_isize__MIN <: Hax_lib.Int.t_Int) <=
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) &&
+    ((Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) *
+      (Rust_primitives.Hax.Int.from_machine y <: Hax_lib.Int.t_Int)
+      <:
+      Hax_lib.Int.t_Int) <=
+    (Rust_primitives.Hax.Int.from_machine impl_isize__MAX <: Hax_lib.Int.t_Int)
+  then Core_models.Option.Option_Some (x *! y) <: Core_models.Option.t_Option isize
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option isize
 
 let impl_isize__pow (x: isize) (exp: u32) : isize = Rust_primitives.Arithmetic.pow_isize x exp
 
@@ -1118,3 +1746,11 @@ let impl_isize__rem_euclid (x y: isize)
 let impl_isize__abs (x: isize)
     : Prims.Pure isize (requires x >. impl_isize__MIN) (fun _ -> Prims.l_True) =
   Rust_primitives.Arithmetic.abs_isize x
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_22: Core_models.Default.t_Default isize =
+  {
+    f_default_pre = (fun (_: Prims.unit) -> true);
+    f_default_post = (fun (_: Prims.unit) (out: isize) -> true);
+    f_default = fun (_: Prims.unit) -> mk_isize 0
+  }
