@@ -18,3 +18,4 @@ proof-libs/fstar/rust_primitives/#*#
 !**/proofs/fstar/extraction/*.fst
 !**/proofs/coq/extraction/*.v
 !**/proofs/lean/extraction/lakefile.toml
+!**/proofs/rust/extraction/Cargo.toml

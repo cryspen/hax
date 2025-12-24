@@ -27,6 +27,8 @@
 
 #![allow(dead_code)]
 
+#[path = "core/array.rs"]
+pub mod array;
 #[path = "core/borrow.rs"]
 pub mod borrow;
 #[path = "core/clone.rs"]
@@ -59,3 +61,5 @@ pub mod option;
 pub mod panicking;
 #[path = "core/result.rs"]
 pub mod result;
+#[path = "core/slice.rs"]
+pub mod slice;

@@ -3,8 +3,14 @@ set -e
 
 function extract_and_copy() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::**' fstar --interfaces '+!**::num::* +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::num +!core_models::ops::bit'
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into fstar --interfaces '+!**::num::error +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::ops::bit +!core_models::ops::arith +!core_models::ops::function +!core_models::fmt +!core_models::fmt::rt +!core_models::mem +!core_models::mem::*'
     cp proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p std \; into fstar --interfaces '+!**' 
+    cp std/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p alloc \; into fstar --interfaces '+!**::collections::btree::** +!**::collections::vec_deque::**' 
+    cp alloc/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p rand_core \; into fstar --interfaces '+!**' 
+    cp rand_core/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
 }
 
 function init_vars() {

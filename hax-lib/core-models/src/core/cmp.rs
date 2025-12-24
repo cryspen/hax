@@ -1,7 +1,5 @@
 use crate::option::Option;
 
-// TODO try to remove this
-#[hax_lib::fstar::before("open Rust_primitives.Integers")]
 #[hax_lib::attributes]
 pub trait PartialEq<Rhs>
 where
@@ -151,9 +149,9 @@ macro_rules! int_impls {
                 }
             })]
             fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-                Option::Some(if self < other {Ordering::Less}
-                else if self > other {Ordering::Greater}
-                else {Ordering::Equal})
+                if self < other {Option::Some(Ordering::Less)}
+                else if self > other {Option::Some(Ordering::Greater)}
+                else {Option::Some(Ordering::Equal)}
             }
         }
         #[hax_lib::attributes]

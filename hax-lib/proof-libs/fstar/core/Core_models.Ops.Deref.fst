@@ -1,12 +1,20 @@
 module Core_models.Ops.Deref
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Rust_primitives
 
-class t_Deref (t_Self: Type0) = {
-   f_Target: Type0;
-   f_deref: t_Self -> f_Target;
+class t_Deref (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Target:Type0;
+  f_deref_pre:v_Self -> Type0;
+  f_deref_post:v_Self -> f_Target -> Type0;
+  f_deref:x0: v_Self -> Prims.Pure f_Target (f_deref_pre x0) (fun result -> f_deref_post x0 result)
 }
 
-unfold
-instance identity_Deref t_Self: t_Deref t_Self = {
-  f_Target = t_Self;
-  f_deref = (fun x -> x);
-}
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl (#v_T: Type0) : t_Deref v_T =
+  {
+    f_Target = v_T;
+    f_deref_pre = (fun (self: v_T) -> true);
+    f_deref_post = (fun (self: v_T) (out: v_T) -> true);
+    f_deref = fun (self: v_T) -> self
+  }

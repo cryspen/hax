@@ -10,7 +10,7 @@ on:
 jobs:
   ocamlformat:
     name: ocamlformat
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
@@ -21,7 +21,7 @@ jobs:
       working-directory: engine
   rustfmt:
     name: rustfmt
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
     - uses: actions/checkout@v4
     - name: Run Rust formatter

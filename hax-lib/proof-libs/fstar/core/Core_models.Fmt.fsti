@@ -1,6 +1,7 @@
 module Core_models.Fmt
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 type t_Error = | Error : t_Error
 
@@ -32,33 +33,9 @@ class t_Debug (v_Self: Type0) = {
 type t_Arguments = | Arguments : Prims.unit -> t_Arguments
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl (#v_T: Type0) : t_Debug v_T =
-  {
-    f_dbg_fmt_pre = (fun (self: v_T) (f: t_Formatter) -> true);
-    f_dbg_fmt_post
-    =
-    (fun
-        (self: v_T)
-        (f: t_Formatter)
-        (out: (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error))
-        ->
-        true);
-    f_dbg_fmt
-    =
-    fun (self: v_T) (f: t_Formatter) ->
-      let hax_temp_output:Core_models.Result.t_Result Prims.unit t_Error =
-        Core_models.Result.Result_Ok (() <: Prims.unit)
-        <:
-        Core_models.Result.t_Result Prims.unit t_Error
-      in
-      f, hax_temp_output <: (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
-  }
+val impl (#v_T: Type0) : t_Debug v_T
 
-let impl_11__write_fmt (f: t_Formatter) (args: t_Arguments)
-    : (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error) =
-  let hax_temp_output:Core_models.Result.t_Result Prims.unit t_Error =
-    Core_models.Result.Result_Ok (() <: Prims.unit)
-    <:
-    Core_models.Result.t_Result Prims.unit t_Error
-  in
-  f, hax_temp_output <: (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+val impl_11__write_fmt (f: t_Formatter) (args: t_Arguments)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
