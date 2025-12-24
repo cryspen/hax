@@ -82,7 +82,16 @@ let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
   else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_6 (#v_T: Type0)
+let impl_1 (#v_T: Type0) : Core_models.Iter.Traits.Collect.t_IntoIterator (t_Slice v_T) =
+  {
+    f_IntoIter = Core_models.Slice.Iter.t_Iter v_T;
+    f_into_iter_pre = (fun (self: t_Slice v_T) -> true);
+    f_into_iter_post = (fun (self: t_Slice v_T) (out: Core_models.Slice.Iter.t_Iter v_T) -> true);
+    f_into_iter = fun (self: t_Slice v_T) -> impl__iter #v_T self
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_7 (#v_T: Type0)
     : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_Range usize) =
   {
     f_Output = t_Slice v_T;
@@ -104,7 +113,7 @@ let impl_6 (#v_T: Type0)
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_7 (#v_T: Type0)
+let impl_8 (#v_T: Type0)
     : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_RangeTo usize) =
   {
     f_Output = t_Slice v_T;
@@ -122,7 +131,7 @@ let impl_7 (#v_T: Type0)
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_8 (#v_T: Type0)
+let impl_9 (#v_T: Type0)
     : Core_models.Ops.Index.t_Index (t_Slice v_T) (Core_models.Ops.Range.t_RangeFrom usize) =
   {
     f_Output = t_Slice v_T;
@@ -144,7 +153,7 @@ let impl_8 (#v_T: Type0)
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_9 (#v_T: Type0)
+let impl_10 (#v_T: Type0)
     : Core_models.Ops.Index.t_Index (t_Slice v_T) Core_models.Ops.Range.t_RangeFull =
   {
     f_Output = t_Slice v_T;
@@ -162,7 +171,7 @@ let impl_9 (#v_T: Type0)
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_10 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =
+let impl_11 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =
   {
     f_Output = v_T;
     f_index_pre = (fun (self_: t_Slice v_T) (i: usize) -> i <. (impl__len #v_T self_ <: usize));
@@ -189,7 +198,7 @@ let impl__get
   f_get #v_I #(t_Slice v_T) #FStar.Tactics.Typeclasses.solve index s
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1 (#v_T: Type0) : t_SliceIndex usize (t_Slice v_T) =
+let impl_2 (#v_T: Type0) : t_SliceIndex usize (t_Slice v_T) =
   {
     f_Output = v_T;
     f_get_pre = (fun (self: usize) (slice: t_Slice v_T) -> true);
@@ -208,7 +217,7 @@ let impl_1 (#v_T: Type0) : t_SliceIndex usize (t_Slice v_T) =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2 (#v_T: Type0) : t_SliceIndex Core_models.Ops.Range.t_RangeFull (t_Slice v_T) =
+let impl_3 (#v_T: Type0) : t_SliceIndex Core_models.Ops.Range.t_RangeFull (t_Slice v_T) =
   {
     f_Output = t_Slice v_T;
     f_get_pre = (fun (self: Core_models.Ops.Range.t_RangeFull) (slice: t_Slice v_T) -> true);
@@ -227,7 +236,7 @@ let impl_2 (#v_T: Type0) : t_SliceIndex Core_models.Ops.Range.t_RangeFull (t_Sli
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize) (t_Slice v_T) =
+let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize) (t_Slice v_T) =
   {
     f_Output = t_Slice v_T;
     f_get_pre = (fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) -> true);
@@ -255,7 +264,7 @@ let impl_3 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeTo usize) (t_Slice v_T) =
+let impl_5 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeTo usize) (t_Slice v_T) =
   {
     f_Output = t_Slice v_T;
     f_get_pre = (fun (self: Core_models.Ops.Range.t_RangeTo usize) (slice: t_Slice v_T) -> true);
@@ -280,7 +289,7 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeTo usize) 
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_5 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t_Slice v_T) =
+let impl_6 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t_Slice v_T) =
   {
     f_Output = t_Slice v_T;
     f_get_pre = (fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) -> true);

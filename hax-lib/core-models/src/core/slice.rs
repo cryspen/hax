@@ -132,6 +132,13 @@ impl<T> Slice<T> {
     }
 }
 
+#[hax_lib::attributes]
+impl<T> crate::iter::traits::collect::IntoIterator for &[T] {
+    type IntoIter = iter::Iter<T>;
+    fn into_iter(self) -> Self::IntoIter {
+        Slice::iter(self)
+    }
+}
 use crate::option::Option;
 use rust_primitives::slice::*;
 
