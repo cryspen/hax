@@ -84,6 +84,9 @@ class HaxRem α where
 @[inherit_doc] infixl:70 " %? "   => HaxRem.rem
 @[inherit_doc] infixl:70 " /? "   => HaxDiv.div
 
+attribute [hax_bv_decide] HaxAdd.add HaxMul.mul HaxShiftRight.shiftRight HaxShiftLeft.shiftLeft
+  HaxSub.sub HaxRem.rem HaxDiv.div
+
 open Lean in
 macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
 
@@ -120,7 +123,7 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
         and when dividing by zero. -/
       instance : HaxDiv $typeName where
         div x y :=
-          if BitVec.sdivOverflow x.toBitVec y.toBitVec then .fail .integerOverflow
+          if x = $(mkIdent (typeName.getId ++ `minValue)) && y = -1 then .fail .integerOverflow
           else if y = 0 then .fail .divisionByZero
           else pure (x / y)
 
@@ -128,7 +131,7 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
         and when the modulus is zero. -/
       instance : HaxRem $typeName where
         rem x y :=
-          if BitVec.sdivOverflow x.toBitVec y.toBitVec then .fail .integerOverflow
+          if x = $(mkIdent (typeName.getId ++ `minValue)) && y = -1 then .fail .integerOverflow
           else if y = 0 then .fail .divisionByZero
           else pure (x % y)
     )

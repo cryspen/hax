@@ -13,12 +13,8 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-attribute [spec]
-  BitVec.uaddOverflow
-  BitVec.usubOverflow
-  BitVec.umulOverflow
-
 open Lean in
+set_option hygiene false in
 macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
 
   let signed ← match s.raw[0].getKind with
@@ -26,62 +22,69 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   | `unsigned => pure false
   | _ => throw .unsupportedSyntax
 
+  let toX := if signed then mkIdent `toInt else mkIdent `toNat
+  let minValue := mkIdent (typeName.getId ++ `minValue)
+  let grind : TSyntax `tactic ←
+    if signed then `(tactic| grind)
+    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_lt, toNat_mul_of_lt])
+
   let mut cmds ← Syntax.getArgs <$> `(
     namespace $typeName
+
       /-- Bitvec-based specification for rust addition -/
       @[spec]
-      theorem haxAdd_spec (x y : $typeName):
-        ¬ ($(mkIdent (if signed then `BitVec.saddOverflow else `BitVec.uaddOverflow)) x.toBitVec y.toBitVec) →
-        ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r = x + y ⌝ ⦄
-        := by intros; mvcgen [HaxAdd.add]
+      theorem haxAdd_spec {x y : $typeName}
+          (h : ¬ $(mkIdent (typeName.getId ++ `addOverflow)) x y) :
+          ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX + y.$toX ⌝ ⦄ := by
+        mvcgen [HaxAdd.add]; $grind
 
       /-- Bitvec-based specification for rust subtraction -/
       @[spec]
-      theorem haxSub_spec (x y : $typeName):
-        ¬ ($(mkIdent (if signed then `BitVec.ssubOverflow else `BitVec.usubOverflow)) x.toBitVec y.toBitVec) →
-        ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r = x - y ⌝ ⦄
-        := by intros; mvcgen [HaxSub.sub]
+      theorem haxSub_spec {x y : $typeName}
+          (h : ¬ $(mkIdent (typeName.getId ++ `subOverflow)) x y) :
+          ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX - y.$toX ⌝ ⦄ := by
+        mvcgen [HaxSub.sub]; $grind
 
       /-- Bitvec-based specification for rust multiplication -/
       @[spec]
-      theorem haxMul_spec (x y : $typeName):
-        ¬ ($(mkIdent (if signed then `BitVec.smulOverflow else `BitVec.umulOverflow)) x.toBitVec y.toBitVec) →
-        ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r = x * y ⌝ ⦄
-        := by intros; mvcgen [HaxMul.mul]
+      theorem haxMul_spec {x y : $typeName}
+          (h : ¬ $(mkIdent (typeName.getId ++ `mulOverflow)) x y) :
+          ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX * y.$toX ⌝ ⦄ := by
+        mvcgen [HaxMul.mul]; $grind
   )
   if signed then
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Bitvec-based specification for rust multiplication for signed integers-/
       @[spec]
-      theorem haxDiv_spec (x y : $typeName):
-        ¬ y = 0 →
-        ¬ (BitVec.sdivOverflow x.toBitVec y.toBitVec) →
-        ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r = x / y ⌝ ⦄
-        := by intros; mvcgen [HaxDiv.div]
+      theorem haxDiv_spec {x y : $typeName}
+          (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
+          ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tdiv y.toInt ⌝ ⦄ := by
+        have : ¬ (x = $minValue && y = -1) := by grind
+        mvcgen [HaxDiv.div]
+        cases hx with
+        | inl hx => apply toInt_div_of_ne_left x y hx
+        | inr hx => apply toInt_div_of_ne_right x y hx
 
       /-- Bitvec-based specification for rust remainder for signed integers -/
       @[spec]
-      theorem haxRem_spec (x y : $typeName):
-        ¬ y = 0 →
-        ¬ (BitVec.sdivOverflow x.toBitVec y.toBitVec) →
-        ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r = x % y ⌝ ⦄
-        := by intros; mvcgen [HaxRem.rem]
+      theorem haxRem_spec (x y : $typeName)
+          (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
+          ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tmod y.toInt ⌝ ⦄ :=  by
+        have : ¬ (x = $minValue && y = -1) := by grind
+        mvcgen [HaxRem.rem]
+        apply toInt_mod
     )
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Bitvec-based specification for rust multiplication for unsigned integers -/
       @[spec]
-      theorem haxDiv_spec (x y : $typeName):
-        ¬ y = 0 →
-        ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r = x / y ⌝ ⦄
-        := by intros; mvcgen [HaxDiv.div]
+      theorem haxDiv_spec (x y : $typeName) (h : ¬ y = 0) :
+          ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat / y.toNat ⌝ ⦄ := by mvcgen [HaxDiv.div]
 
       /-- Bitvec-based specification for rust remainder for unsigned integers -/
       @[spec]
-      theorem haxRem_spec (x y : $typeName):
-        ¬ y = 0 →
-        ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r = x % y ⌝ ⦄
-        := by intros; mvcgen [HaxRem.rem]
+      theorem haxRem_spec (x y : $typeName) (h : ¬ y = 0) :
+          ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat % y.toNat ⌝ ⦄ := by mvcgen [HaxRem.rem]
     )
   cmds := cmds.push $ ← `(
     end $typeName

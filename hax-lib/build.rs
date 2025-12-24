@@ -9,6 +9,10 @@ pub use hax_lib_macros::fstar_smt_pat as smt_pat;
 pub use hax_lib_macros::fstar_postprocess_with as postprocess_with;
 ";
 
+const LEAN_EXTRA: &str = r"
+pub use hax_lib_macros::lean_proof as proof;
+";
+
 fn main() {
     let code = |backend: &str, extra: &str| {
         format!(
@@ -43,7 +47,7 @@ pub mod {backend} {{
             code("fstar", FSTAR_EXTRA),
             code("proverif", ""),
             code("coq", ""),
-            code("lean", ""),
+            code("lean", LEAN_EXTRA),
         ]
         .join("\n"),
     )

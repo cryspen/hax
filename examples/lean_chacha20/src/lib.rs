@@ -234,6 +234,7 @@ pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
 theorem System.Platform.numBits_ne_zero : ¬ System.Platform.numBits = 0 :=
 by cases (System.Platform.numBits_eq) <;> grind
 
+set_option maxHeartbeats 1200000 in
 @[spec]
 theorem Lean_chacha20.chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u8)) :
   m.size ≤ USize.size →
@@ -252,12 +253,14 @@ by
   <;> simp [
       USize.size,
       USize.eq_iff_toBitVec_eq,
+      USize.mulOverflow,
+      USize.addOverflow,
+      BitVec.uaddOverflow,
+      BitVec.umulOverflow
       ] at *
-  <;> (try omega)
-  <;> (try (intro h ; injections ; simp_all ; done))
-  <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try rw [h_size])
-  <;> (try bv_decide)
-  <;> try (simp [USize.lt_iff_toNat_lt, h_size ] at * <;> omega )
+  <;> (rcases System.Platform.numBits_eq with h_size | h_size)
+  <;> try rw [h_size]
+  all_goals (simp_all only [USize.le_iff_toNat_le, USize.toNat_ofNat'] <;> grind)
 "
 )]
 pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {

@@ -886,6 +886,19 @@ def Lean_tests.Specs.test.spec (x : u8)  :
   contract := by mvcgen[Lean_tests.Specs.test] <;> try grind
 }
 
+def Lean_tests.Specs.test_proof (x : u8) : RustM u8 := do (pure x)
+
+@[spec]
+def Lean_tests.Specs.test_proof.spec (x : u8)  :
+    Spec
+      (requires := (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
+      (ensures := fun r => (Rust_primitives.Hax.Machine_int.eq r x))
+      (Lean_tests.Specs.test_proof (x : u8) ) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by unfold Lean_tests.Specs.test_proof; hax_bv_decide
+}
+
 structure Lean_tests.Monadic.S where
   f : u32
 

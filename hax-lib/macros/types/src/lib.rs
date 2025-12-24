@@ -133,6 +133,7 @@ pub enum AttrPayload {
     ProcessRead,
     ProcessWrite,
     ProcessInit,
+    Proof(String),
     ProtocolMessages,
     PVConstructor,
     PVHandwritten,

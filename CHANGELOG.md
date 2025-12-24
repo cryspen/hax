@@ -25,6 +25,8 @@ Changes to hax-lib:
  - Add Lean core models for options, results, default (#1747)
  - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
  - Lean lib: use macros for int operations (#1795)
+ - Lean lib: add new setup for `bv_decide` (#1828)
+ - Lean lib: base specs on mathematical integers (#1829)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
@@ -45,6 +47,7 @@ Changes to the Lean backend:
    extra parameters (#1803)
  - Add generation of specs from requires/ensures-annotations (#1815)
  - Add support for nonliteral array sizes (#1826)
+ - Add `hax_lib::lean::proof` attribute (#1831)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
