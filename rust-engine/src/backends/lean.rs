@@ -4,6 +4,7 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
+use hax_lib_macros_types::AttrPayload;
 use std::collections::HashSet;
 use std::sync::LazyLock;
 
@@ -11,6 +12,7 @@ use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
     attributes::hax_attributes,
+    names::rust_primitives::hax::explicit_monadic::{lift, pure},
     phase::*,
 };
 
@@ -20,11 +22,8 @@ mod binops {
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
 
-use crate::names::rust_primitives::hax::explicit_monadic::{lift, pure};
 const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
-
-use hax_lib_macros_types::AttrPayload;
 
 /// The Lean printer
 #[setup_printer_struct]
