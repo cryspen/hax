@@ -121,7 +121,7 @@ val ff_pre_post (x y: bool)
           result =. y)
 
 class t_T (v_Self: Type0) = {
-  f_U:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0;
   f_c:u8;
   f_d_pre:Prims.unit -> Type0;
   f_d_post:Prims.unit -> Prims.unit -> Type0;

@@ -1,0 +1,8 @@
+[package]
+name = "rust_primitives"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+pastey = "0.1.1"
+hax-lib.workspace = true

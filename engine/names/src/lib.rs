@@ -309,3 +309,7 @@ mod hax {
         fn pure() {}
     }
 }
+
+mod arithmetic {
+    fn neg() {}
+}

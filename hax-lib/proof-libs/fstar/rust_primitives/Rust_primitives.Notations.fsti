@@ -1,11 +1,5 @@
-module Core_models.Ops
+module Rust_primitives.Notations
 open Rust_primitives
-
-// class add_tc self rhs = {
-//   output: Type;
-//   in_bounds: self -> rhs -> Type0;
-//   ( +! ): x:self -> y:rhs {in_bounds x y} -> output;
-// }
 
 class negation_tc self = {
   ( ~. ): self -> self;
@@ -24,4 +18,3 @@ open Core_models.Ops.Index
 let ( .[] ) #self #idx {| inst: t_Index self idx |}
   (s:self) (i:idx{f_index_pre s i}): inst.f_Output
   = f_index s i
-
