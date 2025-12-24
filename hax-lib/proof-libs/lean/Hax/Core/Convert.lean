@@ -12,9 +12,13 @@ open Std.Do
 
 set_option mvcgen.warning false
 
-/- Warning : this function has been specialized, it should be turned into a typeclass -/
-def Core.Convert.TryInto.try_into {α n} (a: Array α) :
-   RustM (Core.Result.Result (Vector α n) Core.Array.TryFromSliceError) :=
+namespace Core.Convert
+
+class TryInto (Self: Type) (T: Type) {E: Type} where
+  try_into (Self T) : Self → (RustM (Core.Result.Result T E))
+
+instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) (E := Core.Array.TryFromSliceError) where
+  try_into a :=
    pure (
      if h: a.size = n then
        Core.Result.Result.Ok (a.toVector.cast h)
@@ -23,11 +27,13 @@ def Core.Convert.TryInto.try_into {α n} (a: Array α) :
      )
 
 @[spec]
-theorem Core.Convert.TryInto.try_into.spec {α n} (a: Array α) :
+theorem TryInto.try_into.spec {α : Type} {n: Nat} (a: RustSlice α) :
   (h: a.size = n) →
   ⦃ ⌜ True ⌝ ⦄
-  ( Core.Convert.TryInto.try_into a)
+  (TryInto.try_into (RustSlice α) (RustArray α n) (E := Core.Array.TryFromSliceError) a )
   ⦃ ⇓ r => ⌜ r = .Ok (a.toVector.cast h) ⌝ ⦄ := by
   intro h
-  mvcgen [Core.Result.Impl.unwrap.spec, Core.Convert.TryInto.try_into]
+  mvcgen [TryInto.try_into]
   grind
+
+end Core.Convert

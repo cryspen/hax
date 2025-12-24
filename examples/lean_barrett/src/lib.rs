@@ -17,6 +17,19 @@ const BARRETT_MULTIPLIER: i64 = 20159;
 #[hax_lib::lean::before("@[simp, spec]")]
 pub(crate) const FIELD_MODULUS: i32 = 3329;
 
+fn barrett_reduce_precondition(value: FieldElement) -> bool {
+    i64::from(value) >= -BARRETT_R && i64::from(value) <= BARRETT_R
+}
+
+fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> bool {
+    let valid_result = value % FIELD_MODULUS;
+    result > -FIELD_MODULUS
+        && result < FIELD_MODULUS
+        && (result == valid_result
+            || result == valid_result + FIELD_MODULUS
+            || result == valid_result - FIELD_MODULUS)
+}
+
 /// Signed Barrett Reduction
 ///
 /// Given an input `value`, `barrett_reduce` outputs a representative `result`
@@ -28,29 +41,20 @@ pub(crate) const FIELD_MODULUS: i32 = 3329;
 /// `|result| ≤ FIELD_MODULUS / 2 · (|value|/BARRETT_R + 1)
 ///
 /// In particular, if `|value| < BARRETT_R`, then `|result| < FIELD_MODULUS`.
-#[hax::requires((i64::from(value) >= -BARRETT_R && i64::from(value) <= BARRETT_R))]
-#[hax::ensures(|result| {
-  let valid_result = value % FIELD_MODULUS;
-  result > -FIELD_MODULUS
-  && result < FIELD_MODULUS
-  && (result == valid_result ||
-      result == valid_result + FIELD_MODULUS ||
-      result == valid_result - FIELD_MODULUS)
-})]
-#[hax_lib::lean::before("@[simp, spec]")]
+#[hax_lib::lean::before("@[spec]")]
 #[hax_lib::lean::after(
     "
 set_option maxHeartbeats 1000000 in
 -- quite computation intensive
 theorem barrett_spec (value: i32) :
-  ⦃ ⌜ Lean_barrett.__4.requires (value) = pure true ⌝ ⦄
+  ⦃ ⌜ Lean_barrett.barrett_reduce_precondition (value) = pure true ⌝ ⦄
   (do
     let result ← Lean_barrett.barrett_reduce value;
-    Lean_barrett.__5.ensures value result)
+    Lean_barrett.barret_reduce_postcondition value result)
   ⦃ ⇓ post => ⌜post = true⌝ ⦄
 := by
-  open Spec.BV in mvcgen [Lean_barrett.__5.ensures]
-  <;> simp_all! [Lean_barrett.__4.requires]
+  mvcgen [ Lean_barrett.barret_reduce_postcondition ]
+  <;> simp_all! [ Lean_barrett.barrett_reduce_precondition ]
   hax_bv_decide
   simp [Int32.eq_iff_toBitVec_eq,
         Int32.lt_iff_toBitVec_slt,

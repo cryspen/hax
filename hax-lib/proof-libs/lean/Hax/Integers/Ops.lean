@@ -61,6 +61,14 @@ class HaxShiftRight α β where
   -/
   shiftRight : α → β → RustM α
 
+/--The notation typeclass for left shift that returns a RustM. It enables the
+ notation `a <<<? b : RustM α` where `a : α` and `b : β`. -/
+class HaxShiftLeft α β where
+  /-- `a <<<? b` computes the panicking left-shift of `a` by `b`.  The meaning
+  of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
+  -/
+  shiftLeft : α → β → RustM α
+
 /-- The notation typeclass for remainder.  This enables the notation `a %? b :
 RustM α` where `a b : α`.  -/
 class HaxRem α where
@@ -72,207 +80,132 @@ class HaxRem α where
 @[inherit_doc] infixl:65 " -? "   => HaxSub.sub
 @[inherit_doc] infixl:70 " *? "   => HaxMul.mul
 @[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
+@[inherit_doc] infixl:75 " <<<? " => HaxShiftLeft.shiftLeft
 @[inherit_doc] infixl:70 " %? "   => HaxRem.rem
 @[inherit_doc] infixl:70 " /? "   => HaxDiv.div
 
+open Lean in
+macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
 
-/- UnSigned operations -/
-class UnSigned (α: Type)
-  extends (LE α),
-          (OfNat α 0),
-          (Add α),
-          (Sub α),
-          (Mul α),
-          (Div α),
-          (Mod α),
-          (ShiftRight α)
-  where
-  [deq : DecidableEq α]
-  width    : Nat
-  size     : Nat
-  toBitVec : α → BitVec width
-  toNat    : α → Nat
-  toNat_toBitVec : (x: α) -> (toBitVec x).toNat = (toNat x)
-instance {α : Type} [i: UnSigned α] : DecidableEq α := i.deq
+  let signed ← match s.raw[0].getKind with
+  | `signed => pure true
+  | `unsigned => pure false
+  | _ => throw .unsupportedSyntax
 
-@[simp, reducible]
-instance : UnSigned u8 where
-  width    := 8
-  size     := UInt8.size
-  toBitVec := UInt8.toBitVec
-  toNat    := UInt8.toNat
-  toNat_toBitVec := UInt8.toNat_toBitVec
+  let mut cmds ← Syntax.getArgs <$> `(
+    /-- Addition on Rust integers. Panics on overflow. -/
+    instance : HaxAdd $typeName where
+      add x y :=
+        if ($(mkIdent (if signed then `BitVec.saddOverflow else `BitVec.uaddOverflow)) x.toBitVec y.toBitVec) then
+          .fail .integerOverflow
+        else pure (x + y)
 
-@[simp, reducible]
-instance : UnSigned u16 where
-  width    := 16
-  size     := UInt16.size
-  toBitVec := UInt16.toBitVec
-  toNat    := UInt16.toNat
-  toNat_toBitVec := UInt16.toNat_toBitVec
+    /-- Subtraction on Rust integers. Panics on overflow. -/
+    instance : HaxSub $typeName where
+      sub x y :=
+        if ($(mkIdent (if signed then `BitVec.ssubOverflow else `BitVec.usubOverflow)) x.toBitVec y.toBitVec) then
+          .fail .integerOverflow
+        else pure (x - y)
 
-@[simp, reducible]
-instance : UnSigned u32 where
-  width    := 32
-  size     := UInt32.size
-  toBitVec := UInt32.toBitVec
-  toNat    := UInt32.toNat
-  toNat_toBitVec := UInt32.toNat_toBitVec
+    /-- Multiplication on Rust integers. Panics on overflow. -/
+    instance : HaxMul $typeName where
+      mul x y :=
+        if ($(mkIdent (if signed then `BitVec.smulOverflow else `BitVec.umulOverflow)) x.toBitVec y.toBitVec) then
+          .fail .integerOverflow
+        else pure (x * y)
+  )
+  if signed then
+    cmds := cmds.append $ ← Syntax.getArgs <$> `(
+      /-- Division of signed Rust integers. Panics on overflow (when x is IntMin and `y = -1`)
+        and when dividing by zero. -/
+      instance : HaxDiv $typeName where
+        div x y :=
+          if BitVec.sdivOverflow x.toBitVec y.toBitVec then .fail .integerOverflow
+          else if y = 0 then .fail .divisionByZero
+          else pure (x / y)
 
-@[simp, reducible]
-instance : UnSigned u64 where
-  width    := 64
-  size     := UInt64.size
-  toBitVec := UInt64.toBitVec
-  toNat    := UInt64.toNat
-  toNat_toBitVec := UInt64.toNat_toBitVec
+      /-- Remainder of signed Rust integers. Panics on overflow (when x is IntMin and `y = -1`)
+        and when the modulus is zero. -/
+      instance : HaxRem $typeName where
+        rem x y :=
+          if BitVec.sdivOverflow x.toBitVec y.toBitVec then .fail .integerOverflow
+          else if y = 0 then .fail .divisionByZero
+          else pure (x % y)
+    )
+  else -- unsigned
+    cmds := cmds.append $ ← Syntax.getArgs <$> `(
+      /-- Division on unsigned Rust integers. Panics when dividing by zero.  -/
+      instance : HaxDiv $typeName where
+        div x y :=
+          if y = 0 then .fail .divisionByZero
+          else pure (x / y)
 
-@[simp, reducible]
-instance : UnSigned usize where
-  width    := System.Platform.numBits
-  size     := USize.size
-  toBitVec := USize.toBitVec
-  toNat    := USize.toNat
-  toNat_toBitVec := USize.toNat_toBitVec
+      /-- Division on unsigned Rust integers. Panics when the modulus is zero. -/
+      instance : HaxRem $typeName where
+        rem x y :=
+          if y = 0 then .fail .divisionByZero
+          else pure (x % y)
+    )
+  return ⟨mkNullNode cmds⟩
 
-/- Addition on unsigned rust integers. Panics on overflow -/
-instance {α : Type} [UnSigned α]: HaxAdd α where
-  add x y :=
-    if (BitVec.uaddOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) then
-      .fail .integerOverflow
-    else pure (x + y)
+declare_Hax_int_ops unsigned UInt8 8
+declare_Hax_int_ops unsigned UInt16 16
+declare_Hax_int_ops unsigned UInt32 32
+declare_Hax_int_ops unsigned UInt64 64
+declare_Hax_int_ops unsigned USize System.Platform.numBits
+declare_Hax_int_ops signed Int8 8
+declare_Hax_int_ops signed Int16 16
+declare_Hax_int_ops signed Int32 32
+declare_Hax_int_ops signed Int64 64
+declare_Hax_int_ops signed ISize System.Platform.numBits
 
-/- Subtraction on unsigned rust integers. Panics on overflow -/
-instance {α : Type} [UnSigned α] : HaxSub α where
-  sub x y :=
-    if (BitVec.usubOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) then
-      .fail .integerOverflow
-    else pure (x - y)
+open Lean in
+macro "declare_Hax_shift_ops" : command => do
+  let mut cmds := #[]
+  let tys := [
+    ("UInt8", ← `(term| 8)),
+    ("UInt16", ← `(term| 16)),
+    ("UInt32", ← `(term| 32)),
+    ("UInt64", ← `(term| 64)),
+    ("USize", ← `(term| OfNat.ofNat System.Platform.numBits)),
+    ("Int8", ← `(term| 8)),
+    ("Int16", ← `(term| 16)),
+    ("Int32", ← `(term| 32)),
+    ("Int64", ← `(term| 64)),
+    ("ISize", ← `(term| OfNat.ofNat System.Platform.numBits))
+  ]
+  for (ty1, width1) in tys do
+    for (ty2, width2) in tys do
 
-/- Multiplication on unsigned rust integers. Panics on overflow -/
-instance {α : Type} [UnSigned α] : HaxMul α where
-  mul x y :=
-    if (BitVec.umulOverflow (UnSigned.toBitVec x) (UnSigned.toBitVec y)) then
-      .fail .integerOverflow
-    else pure (x * y)
+      let ty1Ident := mkIdent ty1.toName
+      let ty2Ident := mkIdent ty2.toName
+      let toTy1 := mkIdent ("to" ++ ty1).toName
+      let ty2Signed := ty2.startsWith "I"
+      let ty2ToNat := mkIdent (if ty2Signed then `toNatClampNeg else `toNat)
+      let yConverted ← if ty1 == ty2 then `(y) else `(y.$ty2ToNat.$toTy1)
 
-/- Division on unsigned rust integers. Panics when dividing by zero  -/
-instance {α : Type} [UnSigned α] : HaxDiv α where
-  div x y :=
-    if y = 0 then .fail .divisionByZero
-    else pure (x / y)
+      cmds := cmds.push $ ← `(
+        /-- Shift right for Rust integers. Panics when shifting by a negative number or
+          by the bitsize or more. -/
+        instance : HaxShiftRight $ty1Ident $ty2Ident where
+          shiftRight x y :=
+            if 0 ≤ y && y < $width1
+            then pure (x >>> $yConverted)
+            else .fail .integerOverflow
 
-/- Division on unsigned rust integers. Panics when the modulus is zero  -/
-instance {α : Type} [UnSigned α] : HaxRem α where
-  rem x y :=
-    if y = 0 then .fail .divisionByZero
-    else pure (x % y)
+        /-- Left shifting on signed integers. Panics when shifting by a negative number,
+          or when shifting by more than the size. -/
+        instance : HaxShiftLeft $ty1Ident $ty2Ident where
+          shiftLeft x y :=
+            if 0 ≤ y && y < $width1
+            then pure (x <<< $yConverted)
+            else
+              .fail .integerOverflow
+      )
+  return ⟨mkNullNode cmds⟩
 
-/- Right shift on unsigned rust integers. Panics when shifting by more than the size -/
-instance {α : Type} [UnSigned α]: HaxShiftRight α α where
-  shiftRight x y :=
-    if (UnSigned.width α) ≤ (UnSigned.toNat y) then .fail .integerOverflow
-    else pure (x >>> y)
+declare_Hax_shift_ops
 
-/- Signed operations -/
-class Signed (α: Type)
-  extends (LE α),
-          (OfNat α 0),
-          (Add α),
-          (Sub α),
-          (Mul α),
-          (Div α),
-          (Mod α),
-          (ShiftRight α) where
-  [dec: DecidableEq α]
-  width    : Nat
-  toBitVec : α → BitVec width
-  toInt    : α → Int
-  toInt_toBitVec : (x: α) -> (toBitVec x).toInt = (toInt x)
-instance {α:Type} [i: Signed α] : DecidableEq α := i.dec
-
-
-@[simp, reducible]
-instance : Signed i8 where
-  width    := 8
-  toBitVec := Int8.toBitVec
-  toInt    := Int8.toInt
-  toInt_toBitVec := Int8.toInt_toBitVec
-
-@[simp, reducible]
-instance : Signed i16 where
-  width    := 16
-  toBitVec := Int16.toBitVec
-  toInt    := Int16.toInt
-  toInt_toBitVec := Int16.toInt_toBitVec
-
-@[simp, reducible]
-instance : Signed i32 where
-  width    := 32
-  toBitVec := Int32.toBitVec
-  toInt    := Int32.toInt
-  toInt_toBitVec := Int32.toInt_toBitVec
-
-@[simp, reducible]
-instance : Signed i64 where
-  width    := 64
-  toBitVec := Int64.toBitVec
-  toInt    := Int64.toInt
-  toInt_toBitVec := Int64.toInt_toBitVec
-
-@[simp, reducible]
-instance : Signed isize where
-  width    := System.Platform.numBits
-  toBitVec := ISize.toBitVec
-  toInt    := ISize.toInt
-  toInt_toBitVec := ISize.toInt_toBitVec
-
-
-/- Addition on signed rust integers. Panics on overflow -/
-instance {α : Type} [Signed α] : HaxAdd α where
-  add x y :=
-    if (BitVec.saddOverflow (Signed.toBitVec x) (Signed.toBitVec y)) then
-      .fail .integerOverflow
-    else pure (x + y)
-
-/- Subtraction on signed rust integers. Panics on overflow -/
-instance {α : Type} [Signed α] : HaxSub α where
-  sub x y :=
-    if (BitVec.ssubOverflow (Signed.toBitVec x) (Signed.toBitVec y)) then
-      .fail .integerOverflow
-    else pure (x - y)
-
-/- Multiplication on signed rust integers. Panics on overflow -/
-instance {α : Type} [Signed α] : HaxMul α where
-  mul x y :=
-    if (BitVec.smulOverflow (Signed.toBitVec x) (Signed.toBitVec y)) then
-      .fail .integerOverflow
-    else pure (x * y)
-
-/- Division of signed rust integers. Panics on overflow (when x is IntMin and `y
-   = -1`) and when dividing by zero -/
-instance {α : Type} [Signed α] : HaxDiv α where
-  div x y :=
-    if BitVec.sdivOverflow (Signed.toBitVec x) (Signed.toBitVec y) then .fail .integerOverflow
-    else if y = 0 then .fail .divisionByZero
-    else pure (x / y)
-
-/- Remainder of signed rust integers. Panics on overflow (when x is IntMin and `y
-   = -1`) and when the modulus is zero -/
-instance {α : Type} [Signed α] : HaxRem α where
-  rem x y :=
-    if BitVec.sdivOverflow (Signed.toBitVec x) (Signed.toBitVec y) then .fail .integerOverflow
-    else if y = 0 then .fail .divisionByZero
-    else pure (x % y)
-
-/- Right shifting on signed integers. Panics when shifting by a negative number,
-   or when shifting by more than the size. -/
-instance {α : Type} [Signed α] : HaxShiftRight α α where
-  shiftRight x y :=
-    if 0 ≤ (Signed.toInt y) && (Signed.toInt y) < Int.ofNat (Signed.width α) then
-      pure (x >>> y)
-    else
-      .fail .integerOverflow
 
 /- Check that all operations are implemented -/
 
@@ -283,6 +216,7 @@ class Operations α where
   [instHaxDiv: HaxDiv α]
   [instHaxRem: HaxRem α]
   [instHaxShiftRight: HaxShiftRight α α]
+  [instHaxShiftLeft: HaxShiftLeft α α]
 
 instance : Operations u8 where
 instance : Operations u16 where
@@ -294,19 +228,3 @@ instance : Operations i16 where
 instance : Operations i32 where
 instance : Operations i64 where
 instance : Operations isize where
-
-
-
--- Custom instances
-@[simp, spec]
-instance : HaxShiftRight u64 i32 where
-  shiftRight x y :=
-    if 0 ≤ y && y < 64 then pure (x >>> y.toNatClampNeg.toUInt64)
-    else .fail .integerOverflow
-
--- Custom instances
-@[simp, spec]
-instance : HaxShiftRight i64 i32 where
-  shiftRight x y :=
-    if 0 ≤ y && y < 64 then pure (x >>> y.toInt64)
-    else .fail .integerOverflow

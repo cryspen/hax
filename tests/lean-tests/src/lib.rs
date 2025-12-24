@@ -1,15 +1,21 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
+pub mod array;
+pub mod associated_types;
 pub mod comments;
 pub mod constants;
 pub mod enums;
+pub mod floats;
 pub mod ite;
 pub mod loops;
+pub mod matching;
 pub mod monadic;
 pub mod reject_do_dsl;
+pub mod specs;
 pub mod structs;
 pub mod traits;
+pub mod types;
 
 const FORTYTWO: usize = 42;
 const MINUS_FORTYTWO: isize = -42;
@@ -61,5 +67,6 @@ fn binop_resugarings(x: u32) -> u32 {
     let rem = mul % 4;
     let div = rem / 5;
     let rshift = div >> x;
+    let lshift = div << x;
     x
 }

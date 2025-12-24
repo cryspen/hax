@@ -1,35 +1,35 @@
 open! Prelude
 open Ast
 
-(** Parse [_hax::json] attributes *)
-let payloads : attrs -> (Types.ha_payload * span) list =
-  let parse =
-    (* we have to parse ["JSON"]: first a string, then a ha_payload *)
-    function
-    | `String s -> (
-        match Yojson.Safe.from_string s |> Types.safe_ha_payload_of_yojson with
-        | Error _ ->
-            Stdlib.prerr_endline
-              [%string
-                {|
+let payload (attr : attr) : (Types.ha_payload * span) option =
+  match attr.kind with
+  | Tool { path; tokens } when [%eq: string] path "_hax::json" -> (
+      match Yojson.Safe.from_string tokens with
+      | `String s -> (
+          match
+            Yojson.Safe.from_string s |> Types.safe_ha_payload_of_yojson
+          with
+          | Error _ ->
+              Stdlib.prerr_endline
+                [%string
+                  {|
 The hax engine could not parse a hax attribute.
 This means that the crate being extracted and the version of hax engine are incompatible.
 Please make sure the `hax-lib` dependency of the extracted crate matches hax-engine's version (%{Types.hax_version}).
 |}];
-            Stdlib.exit 1
-        | Ok value -> value)
-    | x ->
-        Stdlib.failwith
-        @@ "Attr_payloads: payloads: expected a string while parsing JSON, got "
-        ^ Yojson.Safe.pretty_to_string x
-        ^ "instead"
-  in
-  List.filter_map ~f:(fun attr ->
-      match attr.kind with
-      | Tool { path; tokens } when [%eq: string] path "_hax::json" ->
-          Some (tokens, attr.span)
-      | _ -> None)
-  >> List.map ~f:(map_fst (Yojson.Safe.from_string >> parse))
+              Stdlib.exit 1
+          | Ok value -> Some (value, attr.span))
+      | x ->
+          Stdlib.failwith
+          @@ "Attr_payloads: payloads: expected a string while parsing JSON, \
+              got "
+          ^ Yojson.Safe.pretty_to_string x
+          ^ "instead")
+  | _ -> None
+
+(** Parse [_hax::json] attributes *)
+let payloads : attrs -> (Types.ha_payload * span) list =
+  List.filter_map ~f:payload
 
 (** Create a attribute out of a [payload] *)
 let to_attr (payload : Types.ha_payload) (span : span) : attr =

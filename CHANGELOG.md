@@ -13,6 +13,7 @@ Changes to the Rust Engine:
  - Add a phase to handle the monadic encoding: it explicitly introduces two new
    Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
    lift monadic computations into values) (#1746)
+ - Add a mechanism to lookup pre- and post-conditions (#1805)
 
 Changes to the frontend:
  - Update the pin of rustc (#1765)
@@ -23,6 +24,7 @@ Change to cargo-hax:
 Changes to hax-lib:
  - Add Lean core models for options, results, default (#1747)
  - F* lib: improved while loops support, additions of some specific arithmetic operations and fixed `TryInto` for integer types (#1742)
+ - Lean lib: use macros for int operations (#1795)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
@@ -30,7 +32,19 @@ Changes to the Lean backend:
  - Use the explicit monadic phase to insert `pure` and `←` only on demand, and
    not introduce extra `do` block (#1746)
  - Rename `Result` monad to `RustM` to avoid confusion with Rust `Result` type (#1768)
+ - Add support for shift-left (#1785)
  - Add support for default methods of traits (#1777)
+ - Add support for floats (#1784)
+ - Add support for pattern matching on constant literals (#1789)
+ - Add support for binding subpatterns in match constructs (#1790)
+ - Add error when using patterns in function parameters (#1792)
+ - Add grind annotations for various lemmas in the Lean library (#1802)
+ - Add support for constant parameters to functions and traits (#1797)
+ - Add support for associated types with equality constraints (#1806)
+ - Make trait-level arguments explicit for all trait functions, adding them as
+   extra parameters (#1803)
+ - Add generation of specs from requires/ensures-annotations (#1815)
+ - Add support for nonliteral array sizes (#1826)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)

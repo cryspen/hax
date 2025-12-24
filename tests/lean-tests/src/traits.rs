@@ -258,3 +258,23 @@ mod default {
         }
     }
 }
+
+mod trait_level_args {
+    trait T1<A, B> {
+        fn f1<C, D>(&self) -> (); // A and B do not appear
+        fn f2<C, D>(&self, x: &A) -> (); // A appears
+        fn f3<C, D>(&self, x: &A, y: &B) -> (); // Both appear
+    }
+
+    impl T1<u32, u64> for usize {
+        fn f1<C, D>(&self) {}
+        fn f2<C, D>(&self, x: &u32) {}
+        fn f3<C, D>(&self, x: &u32, y: &u64) {}
+    }
+
+    fn test<A, B, C, D, U: T1<A, B>>(x: U, a: &A, b: &B) -> () {
+        x.f1::<C, D>();
+        x.f2::<C, D>(a);
+        x.f3::<C, D>(a, b);
+    }
+}

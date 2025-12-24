@@ -190,19 +190,21 @@ abbrev isize := ISize
 class ToNat (α: Type) where
   toNat : α -> Nat
 
-@[simp]
+attribute [grind] ToNat.toNat
+
+@[simp, grind]
 instance : ToNat usize where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat u64 where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat u32 where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat u16 where
   toNat x := x.toNat
-@[simp]
+@[simp, grind]
 instance : ToNat Nat where
   toNat x := x
 
@@ -421,7 +423,7 @@ section Cast
 
 /-- Hax-introduced explicit cast. It is partial (returns a `RustM`) -/
 @[simp, spec]
-def Core.Convert.From.from {α β} [Coe α (RustM β)] (x:α) : (RustM β) := x
+def Core.Convert.From.from (β α) [Coe α (RustM β)] (x:α) : (RustM β) := x
 
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
@@ -880,10 +882,22 @@ instance {α n} : Coe (Array α) (RustM (Vector α n)) where
 end RustVectors
 
 
+/-
 
+# Specs
+
+-/
+
+structure Spec {α}
+    (requires : RustM Prop)
+    (ensures : α → RustM Prop)
+    (f : RustM α) where
+  pureRequires : {p : Prop // ⦃ ⌜ True ⌝ ⦄ requires ⦃ ⇓r => ⌜ r = p ⌝ ⦄}
+  pureEnsures : {p : α → Prop // pureRequires.val → ∀ a, ⦃ ⌜ True ⌝ ⦄ ensures a ⦃ ⇓r => ⌜ r = p a ⌝ ⦄}
+  contract : ⦃ ⌜ pureRequires.val ⌝ ⦄ f ⦃ ⇓r => ⌜ pureEnsures.val r ⌝ ⦄
 
 -- Miscellaneous
-def Core.Ops.Deref.Deref.deref {α Allocator} (v: Alloc.Vec.Vec α Allocator)
+def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
   : RustM (Array α)
   := pure v
 
