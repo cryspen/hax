@@ -6,7 +6,7 @@ use quote::quote;
 use syn::{visit_mut::VisitMut, *};
 
 macro_rules! identity_proc_macro_attribute {
-    ($($name:ident,)*) => {
+    ($($name:ident),*$(,)?) => {
         $(
             #[proc_macro_attribute]
             pub fn $name(_attr: TokenStream, item: TokenStream) -> TokenStream {
@@ -52,6 +52,7 @@ identity_proc_macro_attribute!(
     proverif_after,
     fstar_smt_pat,
     fstar_postprocess_with,
+    lean_proof,
 );
 
 #[proc_macro]

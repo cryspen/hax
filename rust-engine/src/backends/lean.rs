@@ -4,12 +4,15 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
+use hax_lib_macros_types::AttrPayload;
 use std::collections::HashSet;
 use std::sync::LazyLock;
 
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+    attributes::hax_attributes,
+    names::rust_primitives::hax::explicit_monadic::{lift, pure},
     phase::*,
 };
 
@@ -19,7 +22,6 @@ mod binops {
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
 
-use crate::names::rust_primitives::hax::explicit_monadic::{lift, pure};
 const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
 
@@ -470,6 +472,15 @@ const _: () = {
             if spec.precondition.is_none() && spec.postcondition.is_none() {
                 nil!()
             } else {
+                let proofs: Vec<&String> = hax_attributes(&item.meta.attributes)
+                    .flat_map(|attr| match attr {
+                        AttrPayload::Proof(proof) => Some(proof),
+                        _ => None,
+                    })
+                    .collect();
+                if proofs.len() > 1 {
+                    emit_error!("Only one proof attribute per item is allowed.");
+                }
                 docs![
                     hardline!(),
                     hardline!(),
@@ -542,9 +553,17 @@ const _: () = {
                         hardline!(),
                         "pureEnsures := by constructor; intros; mvcgen <;> try grind",
                         hardline!(),
-                        docs!["contract := by mvcgen[", name, "] <;> try grind"]
-                            .group()
-                            .nest(INDENT),
+                        docs![
+                            "contract :=",
+                            line!(),
+                            if proofs.is_empty() {
+                                docs!["by mvcgen[", name, "] <;> try grind"]
+                            } else {
+                                docs![intersperse!(proofs, nil!())]
+                            }
+                        ]
+                        .group()
+                        .nest(INDENT),
                         hardline!(),
                     ]
                     .nest(INDENT)
