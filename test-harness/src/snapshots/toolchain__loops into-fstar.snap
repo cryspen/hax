@@ -21,10 +21,7 @@ info:
     backend_options: ~
 ---
 exit = 0
-stderr = '''
-Checking hax-lib v0.3.5 (/home/maxime/cryspen/hax-evit/hax-lib)
-    Checking loops v0.1.0 (WORKSPACE_ROOT/loops)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'''
+stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
 
 [stdout]
 diagnostics = []
