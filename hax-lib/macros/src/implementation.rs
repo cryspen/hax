@@ -823,9 +823,7 @@ pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     quote! {::hax_lib::int::Int::_unsafe_from_str(#digits)}.into()
 }
 
-///
 /// This macro inserts a verbatim Lean proof into the extracted code.
-///
 #[proc_macro_error]
 #[proc_macro_attribute]
 pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
