@@ -56,7 +56,7 @@ impl Backend for RustBackend {
     type Printer = RustPrinter;
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        let printer = self.printer();
+        let printer = RustPrinter::default();
         let path = <RustPrinter as RenderView>::module(&printer, &module.ident.view());
         camino::Utf8PathBuf::from_iter(path).with_extension("rs")
     }
@@ -161,7 +161,7 @@ const _: () = {
                 attrs
                     .iter()
                     .filter(|attr| match &attr.kind {
-                        AttributeKind::Tool { .. } => false,
+                        AttributeKind::Tool { .. } | AttributeKind::Hax(_) => false,
                         AttributeKind::DocComment { .. } => true,
                     })
                     .map(|attr| docs![attr, hardline!()])
@@ -801,7 +801,7 @@ const _: () = {
         }
         fn attribute(&self, attribute: &Attribute) -> DocBuilder<A> {
             match &attribute.kind {
-                AttributeKind::Tool { .. } => nil!(),
+                AttributeKind::Tool { .. } | AttributeKind::Hax(_) => nil!(),
                 AttributeKind::DocComment { kind, body } => match kind {
                     DocCommentKind::Line => {
                         intersperse!(
