@@ -262,13 +262,13 @@ namespace Rust_primitives.Hax.Machine_int
 def eq {α} (x y: α) [BEq α] : RustM Bool := pure (x == y)
 @[simp, spec, hax_bv_decide]
 def ne {α} (x y: α) [BEq α] : RustM Bool := pure (x != y)
-@[simp, spec, hax_bv_decide]
+@[simp, hax_bv_decide]
 def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : RustM Bool :=
   pure (x < y)
-@[simp, spec, hax_bv_decide]
+@[simp, hax_bv_decide]
 def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : RustM Bool :=
   pure (x ≤ y)
-@[simp, spec, hax_bv_decide]
+@[simp, hax_bv_decide]
 def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : RustM Bool :=
   pure (x > y)
 @[simp, hax_bv_decide]
@@ -276,7 +276,18 @@ def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool :=
   pure (x ≥ y)
 
 @[spec]
-def ge_spec (x y : USize64) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (y.toNat ≤ x.toNat) ⌝ ⦄ := sorry
+def lt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toNat < y.toNat) ⌝ ⦄ := sorry
+
+@[spec]
+def le_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toNat ≤ y.toNat) ⌝ ⦄ := sorry
+
+@[spec]
+def gt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toNat > y.toNat ) ⌝ ⦄ := sorry
+
+@[spec]
+def ge_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := sorry
+
+
 
 end Rust_primitives.Hax.Machine_int
 
@@ -731,7 +742,7 @@ instance Range.instGetElemResultArrayUSize64 {α: Type}:
   getElemResult xs i := match i with
   | ⟨s, e⟩ =>
     let size := xs.size;
-    if s ≤ e && e ≤ size then
+    if s ≤ e && e.toNat ≤ size then
       pure ( xs.extract s e )
     else
       RustM.fail Error.arrayOutOfBounds
@@ -743,7 +754,7 @@ instance Range.instGetElemResultVectorUSize64 {α : Type} {n : Nat} :
     (Array α) where
   getElemResult xs i := match i with
   | ⟨s, e⟩ =>
-    if s ≤ e && e ≤ n then
+    if s ≤ e && e.toNat ≤ n then
       pure (xs.extract s e).toArray
     else
       RustM.fail Error.arrayOutOfBounds
@@ -801,6 +812,9 @@ theorem usize.getElemVectorResult_spec
   ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
   by mvcgen [usize.instGetElemResultVector]
 
+theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m := by
+  rw [le_iff_toNat_le, toNat_ofNat_of_lt' h]
+
 @[spec]
 theorem Range.getElemArrayUSize64_spec
   (α : Type) (a: Array α) (s e: usize) :
@@ -809,9 +823,10 @@ theorem Range.getElemArrayUSize64_spec
   ⦃ ⌜ True ⌝ ⦄
   ( a[(Range.mk s e)]_? )
   ⦃ ⇓ r => ⌜ r = Array.extract a s e ⌝ ⦄
-:= by sorry
-  -- intros
-  -- mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize64] ; grind
+:= by
+  intros
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize64]
+  grind [USize64.le_iff_toNat_le]
 
 @[spec]
 theorem Range.getElemVectorUSize64_spec
@@ -822,9 +837,9 @@ theorem Range.getElemVectorUSize64_spec
   ( a[(Range.mk s e)]_? )
   ⦃ ⇓ r => ⌜ r = (Vector.extract a s e).toArray ⌝ ⦄
 := by
-  sorry
-  -- intros
-  -- mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize64] ; grind
+  intros
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize64]
+  grind [USize64.le_iff_toNat_le]
 
 
 end Lookup
