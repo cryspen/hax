@@ -1,14 +1,15 @@
-attribute [grind] USize.lt_ofNat_iff
-attribute [grind] USize.not_le
-attribute [grind] USize.toNat_toBitVec
-attribute [grind =] USize.toNat_toBitVec
-attribute [grind] USize.toBitVec_ofNat
-attribute [grind] USize.toNat_add
-attribute [grind] USize.le_iff_toNat_le
-attribute [grind] USize.le_ofNat_iff Nat.min_eq_left
-attribute [grind =] USize.lt_iff_toNat_lt
-attribute [grind] USize.toNat_ofNat_of_lt
-attribute [grind] USize.toNat_ofNat_of_lt'
+attribute [grind] UInt64.lt_ofNat_iff
+attribute [grind] UInt64.not_le
+attribute [grind] UInt64.toNat_toBitVec
+attribute [grind =] UInt64.toNat_toBitVec
+attribute [grind] UInt64.toBitVec_ofNat
+attribute [grind] UInt64.toNat_add
+attribute [grind] UInt64.le_iff_toNat_le
+attribute [grind] UInt64.le_ofNat_iff Nat.min_eq_left
+attribute [grind =] UInt64.lt_iff_toNat_lt
+attribute [grind] UInt64.toNat_ofNat_of_lt
+attribute [grind] UInt64.toNat_ofNat_of_lt'
+
 attribute [grind =_] UInt8.le_ofNat_iff
 attribute [grind =_] UInt16.le_ofNat_iff
 attribute [grind =_] UInt32.le_ofNat_iff

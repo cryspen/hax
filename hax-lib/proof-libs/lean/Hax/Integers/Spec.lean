@@ -95,7 +95,7 @@ declare_Hax_int_ops_spec unsigned UInt8 8
 declare_Hax_int_ops_spec unsigned UInt16 16
 declare_Hax_int_ops_spec unsigned UInt32 32
 declare_Hax_int_ops_spec unsigned UInt64 64
-declare_Hax_int_ops_spec unsigned USize System.Platform.numBits
+declare_Hax_int_ops_spec unsigned USize64 64
 declare_Hax_int_ops_spec signed Int8 8
 declare_Hax_int_ops_spec signed Int16 16
 declare_Hax_int_ops_spec signed Int32 32

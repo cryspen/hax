@@ -155,7 +155,7 @@ declare_Hax_int_ops unsigned UInt8 8
 declare_Hax_int_ops unsigned UInt16 16
 declare_Hax_int_ops unsigned UInt32 32
 declare_Hax_int_ops unsigned UInt64 64
-declare_Hax_int_ops unsigned USize System.Platform.numBits
+declare_Hax_int_ops unsigned USize64 64
 declare_Hax_int_ops signed Int8 8
 declare_Hax_int_ops signed Int16 16
 declare_Hax_int_ops signed Int32 32
@@ -170,7 +170,7 @@ macro "declare_Hax_shift_ops" : command => do
     ("UInt16", ← `(term| 16)),
     ("UInt32", ← `(term| 32)),
     ("UInt64", ← `(term| 64)),
-    ("USize", ← `(term| OfNat.ofNat System.Platform.numBits)),
+    ("USize64", ← `(term| 64)),
     ("Int8", ← `(term| 8)),
     ("Int16", ← `(term| 16)),
     ("Int32", ← `(term| 32)),

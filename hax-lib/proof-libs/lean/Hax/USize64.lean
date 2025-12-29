@@ -1,4 +1,4 @@
-import Hax.MissingLean.Init.Data.UInt.Lemmas
+import Hax.MissingLean
 import Lean.Meta.Tactic.Simp.BuiltinSimprocs.UInt
 
 open Std
@@ -16,6 +16,8 @@ def USize64.toFin (n : USize64) : Fin USize64.size := UInt64.toFin n.toUInt64
 def USize64.ofNatLT (n : @& Nat) (h : LT.lt n USize64.size) : USize64 := ⟨UInt64.ofNatLT n h⟩
 
 def USize64.decEq (a b : USize64) : Decidable (Eq a b) := by cases a; cases b; simp; infer_instance
+
+abbrev Nat.toUSize64 := USize64.ofNat
 
 namespace USize64
 
@@ -99,27 +101,17 @@ instance : Min USize64 := minOfLe
 instance {α} : GetElem (Array α) USize64 α fun xs i => i.toNat < xs.size where
   getElem xs i h := xs[i.toNat]
 
-@[grind]
+-- @[grind]
 theorem USize64.umulOverflow_iff (x y : USize64) :
     BitVec.umulOverflow x.toBitVec y.toBitVec ↔ x.toNat * y.toNat ≥ 2 ^ 64 :=
   UInt64.umulOverflow_iff _ _
 
-@[grind]
+-- @[grind]
 theorem USize64.uaddOverflow_iff (x y : USize64) :
     BitVec.uaddOverflow x.toBitVec y.toBitVec ↔ x.toNat + y.toNat ≥ 2 ^ 64 :=
   UInt64.uaddOverflow_iff _ _
 
-@[grind =]
-theorem USize64.toNat_mul_of_lt {a b : USize64} (h : a.toNat * b.toNat < 2 ^ 64) :
-    (a * b).toNat = a.toNat * b.toNat :=
-  UInt64.toNat_mul_of_lt h
-
-@[grind =]
-theorem USize64.toNat_add_of_lt {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
-    (a + b).toNat = a.toNat + b.toNat :=
-  UInt64.toNat_add_of_lt h
-
-@[grind ←]
+-- @[grind ←]
 theorem USize64.le_self_add {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
     a ≤ a + b :=
   UInt64.le_self_add h
@@ -147,30 +139,30 @@ theorem USize64.toBitVec_ofNat (n : Nat) :
 protected theorem USize64.toNat_add (a b : USize64) :
   (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 64 := BitVec.toNat_add ..
 
-@[grind]
+-- @[grind]
 theorem USize64.le_iff_toNat_le {a b : USize64} : a ≤ b ↔ a.toNat ≤ b.toNat := .rfl
 
-@[grind =]
+-- @[grind =]
 theorem USize64.lt_iff_toNat_lt {a b : USize64} : a < b ↔ a.toNat < b.toNat := .rfl
 
-@[grind]
+-- @[grind]
 theorem USize64.lt_ofNat_iff {n : USize64} {m : Nat} (h : m < size) :
   n < ofNat m ↔ n.toNat < m := UInt64.lt_ofNat_iff h
 
-@[grind]
+-- @[grind]
 theorem USize64.ofNat_lt_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m < n ↔ m < n.toNat :=
   UInt64.ofNat_lt_iff h
 
-@[grind]
+-- @[grind]
 theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m :=
   UInt64.le_ofNat_iff h
 
-@[grind]
+-- @[grind]
 theorem USize64.ofNat_le_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m ≤ n ↔ m ≤ n.toNat :=
   UInt64.ofNat_le_iff h
 
-attribute [grind] UInt64.toNat_ofNat_of_lt
-attribute [grind] UInt64.toNat_ofNat_of_lt'
+-- attribute [grind] UInt64.toNat_ofNat_of_lt
+-- attribute [grind] UInt64.toNat_ofNat_of_lt'
 
 @[grind]
 theorem USize64.toNat_ofNat_of_lt' {n : Nat} (h : n < size) : (ofNat n).toNat = n :=
@@ -342,3 +334,23 @@ dsimproc [seval] isValue ((OfNat.ofNat _ : USize64)) := fun e => do
   return .done e
 
 end USize64
+
+
+additional_uint_decls USize64 64
+
+-- attribute [grind]
+--   USize64.toNat_add_of_lt
+--   USize64.toNat_sub_of_lt
+--   USize64.toNat_mul_of_lt
+
+-- attribute [grind] USize64.lt_ofNat_iff
+-- attribute [grind] USize64.not_le
+-- attribute [grind] USize64.toNat_toBitVec
+-- attribute [grind =] USize64.toNat_toBitVec
+-- attribute [grind] USize64.toBitVec_ofNat
+-- attribute [grind] USize64.toNat_add
+-- attribute [grind] USize64.le_iff_toNat_le
+-- attribute [grind] USize64.le_ofNat_iff Nat.min_eq_left
+-- attribute [grind =] USize64.lt_iff_toNat_lt
+-- attribute [grind] USize64.toNat_ofNat_of_lt
+-- attribute [grind] USize64.toNat_ofNat_of_lt'

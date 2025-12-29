@@ -271,9 +271,12 @@ def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : RustM Bool :=
 @[simp, spec, hax_bv_decide]
 def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : RustM Bool :=
   pure (x > y)
-@[simp, spec, hax_bv_decide]
+@[simp, hax_bv_decide]
 def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool :=
   pure (x ≥ y)
+
+@[spec]
+def ge_spec (x y : USize64) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (y.toNat ≤ x.toNat) ⌝ ⦄ := sorry
 
 end Rust_primitives.Hax.Machine_int
 
