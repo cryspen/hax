@@ -291,8 +291,6 @@ def gt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.
 def ge_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := by
   mvcgen [lt]; simp [USize64.le_iff_toNat_le]
 
-
-
 end Rust_primitives.Hax.Machine_int
 
 @[simp, spec, hax_bv_decide]
@@ -531,7 +529,6 @@ instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
       | .Break (.Continue ⟨ ⟨ ⟩, res⟩) => return (.Continue res)
       | .Continue acc' => acc := acc'
     pure (ControlFlow.Continue acc)
-
 
 /-
 Nat-based specification for hax_folds_fold_range. It requires that the invariant
