@@ -216,9 +216,7 @@ theorem Lean_chacha20.chacha20_encrypt_last_spec (st0 : (Vector u32 16)) (ctr : 
           Lean_chacha20.chacha20_init,
           Lean_chacha20.chacha20_core,
           Alloc.Slice.Impl.to_vec,]
-  <;> simp [Vector.size, USize.le_iff_toNat_le] at *
-  <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try simp_all)
-  <;> (try omega)
+  <;> grind
 "
 )]
 pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
