@@ -276,16 +276,20 @@ def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool :=
   pure (x ≥ y)
 
 @[spec]
-def lt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toNat < y.toNat) ⌝ ⦄ := sorry
+def lt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toNat < y.toNat) ⌝ ⦄ := by
+  mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
 
 @[spec]
-def le_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toNat ≤ y.toNat) ⌝ ⦄ := sorry
+def le_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toNat ≤ y.toNat) ⌝ ⦄ := by
+  mvcgen [lt]; simp [USize64.le_iff_toNat_le]
 
 @[spec]
-def gt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toNat > y.toNat ) ⌝ ⦄ := sorry
+def gt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toNat > y.toNat ) ⌝ ⦄ := by
+  mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
 
 @[spec]
-def ge_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := sorry
+def ge_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := by
+  mvcgen [lt]; simp [USize64.le_iff_toNat_le]
 
 
 
