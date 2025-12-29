@@ -10,16 +10,15 @@ Lean's standard library and to state them for `USize64`.
 -/
 
 /-- A copy of `UInt64`, which we use to represent Rust's `usize` type. -/
-structure USize64 where ofUInt64 :: toUInt64 : UInt64
+structure USize64 where ofBitVec :: toBitVec : BitVec 64
 
 @[reducible] def USize64.size : Nat := UInt64.size
-def USize64.ofNat (n : Nat) : USize64 := ⟨UInt64.ofNat n⟩
-def USize64.toNat (n : USize64) : Nat := UInt64.toNat n.toUInt64
-def USize64.ofBitVec (n : BitVec 64) : USize64 := ⟨UInt64.ofBitVec n⟩
-def USize64.toBitVec (n : USize64) : BitVec 64 := UInt64.toBitVec n.toUInt64
-def USize64.toFin (n : USize64) : Fin USize64.size := UInt64.toFin n.toUInt64
+def USize64.ofNat (n : @& Nat) : USize64 := ⟨BitVec.ofNat 64 n⟩
+def USize64.toNat (n : USize64) : Nat := n.toBitVec.toNat
+def USize64.toFin (x : USize64) : Fin UInt64.size := x.toBitVec.toFin
 
-def USize64.ofNatLT (n : @& Nat) (h : LT.lt n USize64.size) : USize64 := ⟨UInt64.ofNatLT n h⟩
+def USize64.ofNatLT (n : @& Nat) (h : LT.lt n USize64.size) : USize64 where
+  toBitVec := BitVec.ofNatLT n h
 
 def USize64.decEq (a b : USize64) : Decidable (Eq a b) :=
   match a, b with
@@ -48,20 +47,20 @@ def USize64.ofInt (x : Int) : USize64 := ofNat (x % 2 ^ 64).toNat
 @[simp] theorem USize64.le_size : 2 ^ 32 ≤ USize64.size := by simp [USize64.size, UInt64.size]
 @[simp] theorem USize64.size_le : USize64.size ≤ 2 ^ 64 := by simp [USize64.size, UInt64.size]
 
-protected def USize64.add (a b : USize64) : USize64 := ⟨a.toUInt64 + b.toUInt64⟩
-protected def USize64.sub (a b : USize64) : USize64 := ⟨a.toUInt64 - b.toUInt64⟩
-protected def USize64.mul (a b : USize64) : USize64 := ⟨a.toUInt64 * b.toUInt64⟩
-protected def USize64.div (a b : USize64) : USize64 := ⟨a.toUInt64 / b.toUInt64⟩
-protected def USize64.pow (x : USize64) (n : Nat) : USize64 := ⟨x.toUInt64 ^ n⟩
-protected def USize64.mod (a b : USize64) : USize64 := ⟨a.toUInt64 % b.toUInt64⟩
+protected def USize64.add (a b : USize64) : USize64 := ⟨a.toBitVec + b.toBitVec⟩
+protected def USize64.sub (a b : USize64) : USize64 := ⟨a.toBitVec - b.toBitVec⟩
+protected def USize64.mul (a b : USize64) : USize64 := ⟨a.toBitVec * b.toBitVec⟩
+protected def USize64.div (a b : USize64) : USize64 := ⟨a.toBitVec / b.toBitVec⟩
+protected def USize64.pow (x : USize64) (n : Nat) : USize64 := ⟨x.toBitVec ^ n⟩
+protected def USize64.mod (a b : USize64) : USize64 := ⟨a.toBitVec % b.toBitVec⟩
 
-protected def USize64.land (a b : USize64) : USize64 := ⟨a.toUInt64 &&& b.toUInt64⟩
-protected def USize64.lor (a b : USize64) : USize64 := ⟨a.toUInt64 ||| b.toUInt64⟩
-protected def USize64.xor (a b : USize64) : USize64 := ⟨a.toUInt64 ^^^ b.toUInt64⟩
-protected def USize64.shiftLeft (a b : USize64) : USize64 := ⟨a.toUInt64 <<< (USize64.mod b 64).toUInt64⟩
-protected def USize64.shiftRight (a b : USize64) : USize64 := ⟨a.toUInt64 >>> (USize64.mod b 64).toUInt64⟩
-protected def USize64.lt (a b : USize64) : Prop := a.toUInt64 < b.toUInt64
-protected def USize64.le (a b : USize64) : Prop := a.toUInt64 ≤ b.toUInt64
+protected def USize64.land (a b : USize64) : USize64 := ⟨a.toBitVec &&& b.toBitVec⟩
+protected def USize64.lor (a b : USize64) : USize64 := ⟨a.toBitVec ||| b.toBitVec⟩
+protected def USize64.xor (a b : USize64) : USize64 := ⟨a.toBitVec ^^^ b.toBitVec⟩
+protected def USize64.shiftLeft (a b : USize64) : USize64 := ⟨a.toBitVec <<< (USize64.mod b 64).toBitVec⟩
+protected def USize64.shiftRight (a b : USize64) : USize64 := ⟨a.toBitVec >>> (USize64.mod b 64).toBitVec⟩
+protected def USize64.lt (a b : USize64) : Prop := a.toBitVec < b.toBitVec
+protected def USize64.le (a b : USize64) : Prop := a.toBitVec ≤ b.toBitVec
 
 instance : Add USize64       := ⟨USize64.add⟩
 instance : Sub USize64       := ⟨USize64.sub⟩
@@ -69,14 +68,14 @@ instance : Mul USize64       := ⟨USize64.mul⟩
 instance : Pow USize64 Nat   := ⟨USize64.pow⟩
 instance : Mod USize64       := ⟨USize64.mod⟩
 
-instance : HMod USize64 Nat USize64 := ⟨fun x n => ⟨x.toUInt64 % n⟩⟩
+instance : HMod USize64 Nat USize64 := ⟨fun x n => ⟨x.toBitVec % n⟩⟩
 
 instance : Div USize64       := ⟨USize64.div⟩
 instance : LT USize64        := ⟨USize64.lt⟩
 instance : LE USize64        := ⟨USize64.le⟩
 
-protected def USize64.complement (a : USize64) : USize64 := ⟨~~~a.toUInt64⟩
-protected def USize64.neg (a : USize64) : USize64 := ⟨-a.toUInt64⟩
+protected def USize64.complement (a : USize64) : USize64 := ⟨~~~a.toBitVec⟩
+protected def USize64.neg (a : USize64) : USize64 := ⟨-a.toBitVec⟩
 
 instance : Complement USize64 := ⟨USize64.complement⟩
 instance : Neg USize64 := ⟨USize64.neg⟩
@@ -90,13 +89,14 @@ def USize64.ofNat32 (n : @& Nat) (h : n < 4294967296) : USize64 :=
   USize64.ofNatLT n (Nat.lt_of_lt_of_le h USize64.le_size)
 def UInt8.toUSize64 (a : UInt8) : USize64 :=
   USize64.ofNat32 a.toBitVec.toNat (Nat.lt_trans a.toBitVec.isLt (by decide))
-def USize64.toUInt8 (a : USize) : UInt8 := a.toNat.toUInt8
+def USize64.toUInt8 (a : USize64) : UInt8 := a.toNat.toUInt8
 def UInt16.toUSize64 (a : UInt16) : USize64 :=
   USize64.ofNat32 a.toBitVec.toNat (Nat.lt_trans a.toBitVec.isLt (by decide))
 def USize64.toUInt16 (a : USize64) : UInt16 := a.toNat.toUInt16
 def UInt32.toUSize64 (a : UInt32) : USize64 := USize64.ofNat32 a.toBitVec.toNat a.toBitVec.isLt
 def USize64.toUInt32 (a : USize64) : UInt32 := a.toNat.toUInt32
-def UInt64.toUSize64 (a : UInt64) : USize64 := ⟨a⟩
+def UInt64.toUSize64 (a : UInt64) : USize64 := a.toNat.toUSize64
+def USize64.toUSize (a : USize64) : USize := a.toNat.toUSize
 def Bool.toUSize64 (b : Bool) : USize64 := if b then 1 else 0
 def USize64.decLt (a b : USize64) : Decidable (a < b) :=
   inferInstanceAs (Decidable (a.toBitVec < b.toBitVec))
@@ -112,94 +112,107 @@ instance : Min USize64 := minOfLe
 instance {α} : GetElem (Array α) USize64 α fun xs i => i.toNat < xs.size where
   getElem xs i h := xs[i.toNat]
 
-theorem USize64.umulOverflow_iff (x y : USize64) :
-    BitVec.umulOverflow x.toBitVec y.toBitVec ↔ x.toNat * y.toNat ≥ 2 ^ 64 :=
-  UInt64.umulOverflow_iff _ _
+open Std Lean in
+set_option autoImplicit true in
+declare_uint_theorems USize64 64
 
 theorem USize64.uaddOverflow_iff (x y : USize64) :
     BitVec.uaddOverflow x.toBitVec y.toBitVec ↔ x.toNat + y.toNat ≥ 2 ^ 64 :=
-  UInt64.uaddOverflow_iff _ _
+  by simp [BitVec.uaddOverflow]
 
-theorem USize64.le_self_add {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
-    a ≤ a + b :=
-  UInt64.le_self_add h
+theorem USize64.umulOverflow_iff (x y : USize64) :
+    BitVec.umulOverflow x.toBitVec y.toBitVec ↔ x.toNat * y.toNat ≥ 2 ^ 64 :=
+  by simp [BitVec.umulOverflow]
 
-theorem USize64.succ_le_of_lt {a b : USize64} (h : a < b) :
-    a + 1 ≤ b :=
-  UInt64.succ_le_of_lt h
 
-theorem USize64.add_le_of_le {a b c : USize64} (habc : a + b ≤ c) (hab : a.toNat + b.toNat < 2 ^ 64):
-    a ≤ c :=
-  UInt64.add_le_of_le habc hab
-
-@[grind, simp]
-protected theorem USize64.not_le {a b : USize64} : ¬ a ≤ b ↔ b < a :=
-  UInt64.not_le
-
-@[simp, grind]
-theorem USize64.toNat_toBitVec (x : USize64) : x.toBitVec.toNat = x.toNat := (rfl)
-
-@[simp, int_toBitVec, grind]
-theorem USize64.toBitVec_ofNat (n : Nat) :
-  USize64.toBitVec (no_index (OfNat.ofNat n)) = BitVec.ofNat _ n := (rfl)
-
-theorem USize64.le_iff_toNat_le {a b : USize64} : a ≤ b ↔ a.toNat ≤ b.toNat := .rfl
-
-theorem USize64.lt_iff_toNat_lt {a b : USize64} : a < b ↔ a.toNat < b.toNat := .rfl
-
-theorem USize64.lt_ofNat_iff {n : USize64} {m : Nat} (h : m < size) :
-  n < ofNat m ↔ n.toNat < m := UInt64.lt_ofNat_iff h
-
-theorem USize64.ofNat_lt_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m < n ↔ m < n.toNat :=
-  UInt64.ofNat_lt_iff h
-
-theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m :=
-  UInt64.le_ofNat_iff h
-
-theorem USize64.ofNat_le_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m ≤ n ↔ m ≤ n.toNat :=
-  UInt64.ofNat_le_iff h
-
-@[grind]
-theorem USize64.toNat_ofNat_of_lt' {n : Nat} (h : n < size) : (ofNat n).toNat = n :=
-  UInt64.toNat_ofNat_of_lt' h
-
-@[grind]
-theorem USize64.toNat_ofNat_of_lt {n : Nat} (h : n < size) : toNat (OfNat.ofNat n) = n :=
-  UInt64.toNat_ofNat_of_lt h
+attribute [grind] USize64.not_le USize64.toNat_toBitVec USize64.toNat_ofNat_of_lt
+  USize64.toNat_ofNat_of_lt' USize64.toBitVec_ofNat USize64.toNat_add
 
 additional_uint_decls USize64 64
 
-namespace USize64
-
-@[int_toBitVec] theorem le_iff_toBitVec_le {a b : USize64} : a ≤ b ↔ a.toBitVec ≤ b.toBitVec := .rfl
-
-@[int_toBitVec] theorem lt_iff_toBitVec_lt {a b : USize64} : a < b ↔ a.toBitVec < b.toBitVec := .rfl
-
-@[simp] protected theorem toNat_zero : (0 : USize64).toNat = 0 := Nat.zero_mod _
-
-@[simp, grind] protected theorem toNat_add (a b : USize64) : (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 64 := BitVec.toNat_add ..
-
-protected theorem toNat_sub (a b : USize64) : (a - b).toNat = (2 ^ 64 - b.toNat + a.toNat) % 2 ^ 64 := BitVec.toNat_sub  ..
-
-@[simp] protected theorem toNat_mul (a b : USize64) : (a * b).toNat = a.toNat * b.toNat % 2 ^ 64 := BitVec.toNat_mul  ..
-
-@[simp] protected theorem toNat_mod (a b : USize64) : (a % b).toNat = a.toNat % b.toNat := BitVec.toNat_umod ..
-
-@[simp] protected theorem toNat_div (a b : USize64) : (a / b).toNat = a.toNat / b.toNat := BitVec.toNat_udiv  ..
-
-@[simp] protected theorem toNat_sub_of_le (a b : USize64) : b ≤ a → (a - b).toNat = a.toNat - b.toNat := BitVec.toNat_sub_of_le
-
-protected theorem toNat_lt_size (a : USize64) : a.toNat < size := a.toBitVec.isLt
-
-protected theorem toNat.inj : ∀ {a b : USize64}, a.toNat = b.toNat → a = b
-  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
-
-protected theorem toNat_inj : ∀ {a b : USize64}, a.toNat = b.toNat ↔ a = b :=
-  Iff.intro toNat.inj (congrArg toNat)
-
-end USize64
-
 @[simp] theorem USize64.toNat_lt (n : USize64) : n.toNat < 2 ^ 64 := n.toFin.isLt
+
+theorem USize64.le_self_add {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
+    a ≤ a + b := by
+  rw [le_iff_toNat_le, USize64.toNat_add_of_lt h]
+  exact Nat.le_add_right a.toNat b.toNat
+
+theorem USize64.add_le_of_le {a b c : USize64} (habc : a + b ≤ c) (hab : a.toNat + b.toNat < 2 ^ 64):
+    a ≤ c := by
+  rw [USize64.le_iff_toNat_le, USize64.toNat_add_of_lt hab] at *
+  omega
+
+/-!
+## Init.Data.UInt.Lemmas
+-/
+
+protected theorem USize64.add_assoc (a b c : USize64) : a + b + c = a + (b + c) :=
+  USize64.toBitVec_inj.1 (BitVec.add_assoc _ _ _)
+
+protected theorem USize64.add_comm (a b : USize64) : a + b = b + a := USize64.toBitVec_inj.1 (BitVec.add_comm _ _)
+
+@[simp] protected theorem USize64.add_zero (a : USize64) : a + 0 = a := USize64.toBitVec_inj.1 (BitVec.add_zero _)
+
+protected theorem USize64.add_left_neg (a : USize64) : -a + a = 0 := USize64.toBitVec_inj.1 (BitVec.add_left_neg _)
+
+protected theorem USize64.mul_assoc (a b c : USize64) : a * b * c = a * (b * c) := USize64.toBitVec_inj.1 (BitVec.mul_assoc _ _ _)
+
+@[simp] theorem USize64.mul_one (a : USize64) : a * 1 = a := USize64.toBitVec_inj.1 (BitVec.mul_one _)
+
+@[simp] theorem USize64.one_mul (a : USize64) : 1 * a = a := USize64.toBitVec_inj.1 (BitVec.one_mul _)
+
+protected theorem USize64.mul_comm (a b : USize64) : a * b = b * a := USize64.toBitVec_inj.1 (BitVec.mul_comm _ _)
+
+@[simp] theorem USize64.mul_zero {a : USize64} : a * 0 = 0 := USize64.toBitVec_inj.1 BitVec.mul_zero
+
+@[simp] theorem USize64.zero_mul {a : USize64} : 0 * a = 0 := USize64.toBitVec_inj.1 BitVec.zero_mul
+
+protected theorem USize64.sub_eq_add_neg (a b : USize64) : a - b = a + (-b) := USize64.toBitVec_inj.1 (BitVec.sub_eq_add_neg _ _)
+
+@[simp] protected theorem USize64.pow_zero (x : USize64) : x ^ 0 = 1 := (rfl)
+
+protected theorem USize64.pow_succ (x : USize64) (n : Nat) : x ^ (n + 1) = x ^ n * x := (rfl)
+
+theorem USize64.ofNat_eq_iff_mod_eq_toNat (a : Nat) (b : USize64) : USize64.ofNat a = b ↔ a % 2 ^ 64 = b.toNat := by
+  simp [← USize64.toNat_inj]
+
+@[simp] theorem USize64.ofNat_add (a b : Nat) : USize64.ofNat (a + b) = USize64.ofNat a + USize64.ofNat b := by
+  simp [USize64.ofNat_eq_iff_mod_eq_toNat]
+
+theorem USize64.ofNat_mod_size (x : Nat) : ofNat (x % 2 ^ 64) = ofNat x := by
+  simp [ofNat, BitVec.ofNat, Fin.ofNat]
+
+@[simp] theorem USize64.ofNat_mul (a b : Nat) : USize64.ofNat (a * b) = USize64.ofNat a * USize64.ofNat b := by
+  simp [USize64.ofNat_eq_iff_mod_eq_toNat]
+
+@[simp] theorem USize64.ofInt_mul (x y : Int) : ofInt (x * y) = ofInt x * ofInt y := by
+  dsimp only [USize64.ofInt]
+  rw [Int.mul_emod]
+  have h₁ : 0 ≤ x % 2 ^ 64 := Int.emod_nonneg _ (by decide)
+  have h₂ : 0 ≤ y % 2 ^ 64 := Int.emod_nonneg _ (by decide)
+  have h₃ : 0 ≤ (x % 2 ^ 64) * (y % 2 ^ 64) := Int.mul_nonneg h₁ h₂
+  rw [Int.toNat_emod h₃ (by decide), Int.toNat_mul h₁ h₂]
+  have : (2 ^ 64 : Int).toNat = 2 ^ 64 := (rfl)
+  rw [this, USize64.ofNat_mod_size, USize64.ofNat_mul]
+
+@[simp] theorem USize64.ofInt_neg_one : ofInt (-1) = -1 := (rfl)
+
+theorem USize64.toBitVec_one : toBitVec 1 = 1#64 := (rfl)
+
+theorem USize64.neg_eq_neg_one_mul (a : USize64) : -a = -1 * a := by
+  apply USize64.toBitVec_inj.1
+  rw [USize64.toBitVec_neg, USize64.toBitVec_mul, USize64.toBitVec_neg, USize64.toBitVec_one, BitVec.neg_eq_neg_one_mul]
+
+@[simp] protected theorem USize64.ofInt_neg (x : Int) : ofInt (-x) = -ofInt x := by
+  rw [Int.neg_eq_neg_one_mul, ofInt_mul, ofInt_neg_one, ← USize64.neg_eq_neg_one_mul]
+
+protected theorem USize64.mul_add {a b c : USize64} : a * (b + c) = a * b + a * c :=
+    USize64.toBitVec_inj.1 BitVec.mul_add
+
+protected theorem USize64.add_mul {a b c : USize64} : (a + b) * c = a * c + b * c := by
+  rw [USize64.mul_comm, USize64.mul_add, USize64.mul_comm a c, USize64.mul_comm c b]
+
+protected theorem USize64.neg_mul (a b : USize64) : -a * b = -(a * b) := USize64.toBitVec_inj.1 (BitVec.neg_mul _ _)
 
 /-!
 ## Grind's ToInt
@@ -229,8 +242,6 @@ instance : ToInt.Add USize64 (.uint 64) where
 instance : ToInt.Mul USize64 (.uint 64) where
   toInt_mul x y := by simp
 
-instance : ToInt.Pow USize64 (.uint 64) := by sorry
-
 instance : ToInt.Mod USize64 (.uint 64) where
   toInt_mod x y := by simp
 
@@ -252,47 +263,56 @@ def USize64.natCast : NatCast USize64 where
 def USize64.intCast : IntCast USize64 where
   intCast x := USize64.ofInt x
 
+attribute [local instance] USize64.natCast USize64.intCast
+
+theorem USize64.intCast_ofNat (x : Nat) : (OfNat.ofNat (α := Int) x : USize64) = OfNat.ofNat x := by
+    simp only [Int.cast, IntCast.intCast]
+    rw [USize64.ofInt]
+    rw [Int.toNat_emod (Int.zero_le_ofNat x) (by decide)]
+    erw [Int.toNat_natCast]
+    rw [Int.toNat_pow_of_nonneg (by decide)]
+    simp only [USize64.ofNat, BitVec.ofNat, Fin.ofNat, Int.reduceToNat, Nat.dvd_refl,
+      Nat.mod_mod_of_dvd]
+    rfl
+
+theorem USize64.intCast_neg (x : Int) : ((-x : Int) : USize64) = - (x : USize64) := by
+  simp only [Int.cast, IntCast.intCast, USize64.ofInt_neg]
+
 attribute [local instance] USize64.natCast USize64.intCast in
 instance : CommRing USize64 where
   nsmul := ⟨(· * ·)⟩
   zsmul := ⟨(· * ·)⟩
-  add_assoc := sorry -- UInt64.add_assoc
-  add_comm := sorry -- UInt64.add_comm
-  add_zero := sorry -- UInt64.add_zero
-  neg_add_cancel := sorry -- UInt64.add_left_neg
-  mul_assoc := sorry -- UInt64.mul_assoc
-  mul_comm := sorry -- UInt64.mul_comm
-  mul_one := sorry -- UInt64.mul_one
-  one_mul := sorry -- UInt64.one_mul
-  left_distrib _ _ _ := sorry -- UInt64.mul_add
-  right_distrib _ _ _ := sorry -- UInt64.add_mul
-  zero_mul _ := sorry -- UInt64.zero_mul
-  mul_zero _ := sorry -- UInt64.mul_zero
-  sub_eq_add_neg := sorry -- UInt64.sub_eq_add_neg
-  pow_zero := sorry -- UInt64.pow_zero
-  pow_succ := sorry -- UInt64.pow_succ
-  ofNat_succ x := sorry -- UInt64.ofNat_add x 1
-  intCast_neg := sorry -- UInt64.ofInt_neg
-  intCast_ofNat := sorry -- UInt64.intCast_ofNat
+  add_assoc := USize64.add_assoc
+  add_comm := USize64.add_comm
+  add_zero := USize64.add_zero
+  neg_add_cancel := USize64.add_left_neg
+  mul_assoc := USize64.mul_assoc
+  mul_comm := USize64.mul_comm
+  mul_one := USize64.mul_one
+  one_mul := USize64.one_mul
+  left_distrib _ _ _ := USize64.mul_add
+  right_distrib _ _ _ := USize64.add_mul
+  zero_mul _ := USize64.zero_mul
+  mul_zero _ := USize64.mul_zero
+  sub_eq_add_neg := USize64.sub_eq_add_neg
+  pow_zero := USize64.pow_zero
+  pow_succ := USize64.pow_succ
+  ofNat_succ x := USize64.ofNat_add x 1
+  intCast_neg := USize64.ofInt_neg
+  intCast_ofNat := USize64.intCast_ofNat
   neg_zsmul i a := by
-    -- change (-i : Int) * a = - (i * a)
-    sorry -- simp [UInt64.intCast_neg, UInt64.neg_mul]
-  zsmul_natCast_eq_nsmul n a := sorry -- congrArg (· * a) (USize64.intCast_ofNat _)
+    change (-i : Int) * a = - (i * a)
+    simp [USize64.intCast_neg, USize64.neg_mul]
+  zsmul_natCast_eq_nsmul n a := congrArg (· * a) (USize64.intCast_ofNat _)
 
 instance : IsCharP USize64 18446744073709551616 := IsCharP.mk' _ _
   (ofNat_eq_zero_iff := fun x => by
     have : OfNat.ofNat x = USize64.ofNat x := rfl
-    sorry -- simp [this, USize64.ofNat_eq_iff_mod_eq_toNat]
+    simp [this, USize64.ofNat_eq_iff_mod_eq_toNat]
     )
 
--- Verify we can derive the instances showing how `toInt` interacts with operations:
-example : ToInt.Add USize64 (.uint 64) := inferInstance
-example : ToInt.Neg USize64 (.uint 64) := {
-  toInt_neg := sorry
-}
-example : ToInt.Sub USize64 (.uint 64) := {
-  toInt_sub := sorry
-}
+instance : ToInt.Pow USize64 (.uint 64) := ToInt.pow_of_semiring (by simp)
+
 
 end Lean.Grind
 
