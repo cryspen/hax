@@ -15,7 +15,12 @@ def USize64.toFin (n : USize64) : Fin USize64.size := UInt64.toFin n.toUInt64
 
 def USize64.ofNatLT (n : @& Nat) (h : LT.lt n USize64.size) : USize64 := ⟨UInt64.ofNatLT n h⟩
 
-def USize64.decEq (a b : USize64) : Decidable (Eq a b) := by cases a; cases b; simp; infer_instance
+def USize64.decEq (a b : USize64) : Decidable (Eq a b) :=
+  match a, b with
+  | ⟨n⟩, ⟨m⟩ =>
+    dite (Eq n m)
+      (fun h => isTrue (h ▸ rfl))
+      (fun h => isFalse (fun h' => USize64.noConfusion h' (fun h' => absurd h' h)))
 
 abbrev Nat.toUSize64 := USize64.ofNat
 
