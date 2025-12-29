@@ -1,9 +1,15 @@
 import Hax.MissingLean
 import Lean.Meta.Tactic.Simp.BuiltinSimprocs.UInt
 
-open Std
-open Nat
+/-!
+# USize64
 
+We define a type `USize64` to represent Rust's `usize` type. It is simply a copy of `UInt64`.
+This file aims to collect all definitions, lemmas, and type class instances about `UInt64` from
+Lean's standard library and to state them for `USize64`.
+-/
+
+/-- A copy of `UInt64`, which we use to represent Rust's `usize` type. -/
 structure USize64 where ofUInt64 :: toUInt64 : UInt64
 
 @[reducible] def USize64.size : Nat := UInt64.size
@@ -106,17 +112,14 @@ instance : Min USize64 := minOfLe
 instance {α} : GetElem (Array α) USize64 α fun xs i => i.toNat < xs.size where
   getElem xs i h := xs[i.toNat]
 
--- @[grind]
 theorem USize64.umulOverflow_iff (x y : USize64) :
     BitVec.umulOverflow x.toBitVec y.toBitVec ↔ x.toNat * y.toNat ≥ 2 ^ 64 :=
   UInt64.umulOverflow_iff _ _
 
--- @[grind]
 theorem USize64.uaddOverflow_iff (x y : USize64) :
     BitVec.uaddOverflow x.toBitVec y.toBitVec ↔ x.toNat + y.toNat ≥ 2 ^ 64 :=
   UInt64.uaddOverflow_iff _ _
 
--- @[grind ←]
 theorem USize64.le_self_add {a b : USize64} (h : a.toNat + b.toNat < 2 ^ 64) :
     a ≤ a + b :=
   UInt64.le_self_add h
@@ -140,34 +143,21 @@ theorem USize64.toNat_toBitVec (x : USize64) : x.toBitVec.toNat = x.toNat := (rf
 theorem USize64.toBitVec_ofNat (n : Nat) :
   USize64.toBitVec (no_index (OfNat.ofNat n)) = BitVec.ofNat _ n := (rfl)
 
-@[simp, grind]
-protected theorem USize64.toNat_add (a b : USize64) :
-  (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 64 := BitVec.toNat_add ..
-
--- @[grind]
 theorem USize64.le_iff_toNat_le {a b : USize64} : a ≤ b ↔ a.toNat ≤ b.toNat := .rfl
 
--- @[grind =]
 theorem USize64.lt_iff_toNat_lt {a b : USize64} : a < b ↔ a.toNat < b.toNat := .rfl
 
--- @[grind]
 theorem USize64.lt_ofNat_iff {n : USize64} {m : Nat} (h : m < size) :
   n < ofNat m ↔ n.toNat < m := UInt64.lt_ofNat_iff h
 
--- @[grind]
 theorem USize64.ofNat_lt_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m < n ↔ m < n.toNat :=
   UInt64.ofNat_lt_iff h
 
--- @[grind]
 theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m :=
   UInt64.le_ofNat_iff h
 
--- @[grind]
 theorem USize64.ofNat_le_iff {n : USize64} {m : Nat} (h : m < size) : ofNat m ≤ n ↔ m ≤ n.toNat :=
   UInt64.ofNat_le_iff h
-
--- attribute [grind] UInt64.toNat_ofNat_of_lt
--- attribute [grind] UInt64.toNat_ofNat_of_lt'
 
 @[grind]
 theorem USize64.toNat_ofNat_of_lt' {n : Nat} (h : n < size) : (ofNat n).toNat = n :=
@@ -177,18 +167,58 @@ theorem USize64.toNat_ofNat_of_lt' {n : Nat} (h : n < size) : (ofNat n).toNat = 
 theorem USize64.toNat_ofNat_of_lt {n : Nat} (h : n < size) : toNat (OfNat.ofNat n) = n :=
   UInt64.toNat_ofNat_of_lt h
 
+additional_uint_decls USize64 64
+
+namespace USize64
+
+@[int_toBitVec] theorem le_iff_toBitVec_le {a b : USize64} : a ≤ b ↔ a.toBitVec ≤ b.toBitVec := .rfl
+
+@[int_toBitVec] theorem lt_iff_toBitVec_lt {a b : USize64} : a < b ↔ a.toBitVec < b.toBitVec := .rfl
+
+@[simp] protected theorem toNat_zero : (0 : USize64).toNat = 0 := Nat.zero_mod _
+
+@[simp, grind] protected theorem toNat_add (a b : USize64) : (a + b).toNat = (a.toNat + b.toNat) % 2 ^ 64 := BitVec.toNat_add ..
+
+protected theorem toNat_sub (a b : USize64) : (a - b).toNat = (2 ^ 64 - b.toNat + a.toNat) % 2 ^ 64 := BitVec.toNat_sub  ..
+
+@[simp] protected theorem toNat_mul (a b : USize64) : (a * b).toNat = a.toNat * b.toNat % 2 ^ 64 := BitVec.toNat_mul  ..
+
+@[simp] protected theorem toNat_mod (a b : USize64) : (a % b).toNat = a.toNat % b.toNat := BitVec.toNat_umod ..
+
+@[simp] protected theorem toNat_div (a b : USize64) : (a / b).toNat = a.toNat / b.toNat := BitVec.toNat_udiv  ..
+
+@[simp] protected theorem toNat_sub_of_le (a b : USize64) : b ≤ a → (a - b).toNat = a.toNat - b.toNat := BitVec.toNat_sub_of_le
+
+protected theorem toNat_lt_size (a : USize64) : a.toNat < size := a.toBitVec.isLt
+
+protected theorem toNat.inj : ∀ {a b : USize64}, a.toNat = b.toNat → a = b
+  | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+
+protected theorem toNat_inj : ∀ {a b : USize64}, a.toNat = b.toNat ↔ a = b :=
+  Iff.intro toNat.inj (congrArg toNat)
+
+end USize64
+
+@[simp] theorem USize64.toNat_lt (n : USize64) : n.toNat < 2 ^ 64 := n.toFin.isLt
+
+/-!
+## Grind's ToInt
+
+For grind to use integer arithmetic on `USize64`, we need the following instances, inspired by
+the modules `Init.GrindInstances.ToInt` and `Init.GrindInstances.Ring.UInt`.
+-/
 
 namespace Lean.Grind
 
 instance : ToInt USize64 (.uint 64) where
   toInt x := (x.toNat : Int)
-  toInt_inj x y w := sorry -- USize64.toNat_inj.mp (Int.ofNat_inj.mp w)
-  toInt_mem x := sorry -- by simpa using Int.lt_toNat.mp (USize64.toNat_lt x)
+  toInt_inj x y w := USize64.toNat_inj.mp (Int.ofNat_inj.mp w)
+  toInt_mem x := by simpa using Int.lt_toNat.mp (USize64.toNat_lt x)
 
 @[simp] theorem toInt_usize64 (x : USize64) : ToInt.toInt x = (x.toNat : Int) := rfl
 
 instance : ToInt.Zero USize64 (.uint 64) where
-  toInt_zero := sorry -- by simp
+  toInt_zero := by simp
 
 instance : ToInt.OfNat USize64 (.uint 64) where
   toInt_ofNat x := by simp; rfl
@@ -197,21 +227,21 @@ instance : ToInt.Add USize64 (.uint 64) where
   toInt_add x y := by simp
 
 instance : ToInt.Mul USize64 (.uint 64) where
-  toInt_mul x y := sorry -- by simp
+  toInt_mul x y := by simp
 
 instance : ToInt.Pow USize64 (.uint 64) := by sorry
 
 instance : ToInt.Mod USize64 (.uint 64) where
-  toInt_mod x y := sorry -- by simp
+  toInt_mod x y := by simp
 
 instance : ToInt.Div USize64 (.uint 64) where
-  toInt_div x y := sorry -- by simp
+  toInt_div x y := by simp
 
 instance : ToInt.LE USize64 (.uint 64) where
-  le_iff x y := sorry -- by simpa using USize64.le_iff_toBitVec_le
+  le_iff x y := by simpa using USize64.le_iff_toBitVec_le
 
 instance : ToInt.LT USize64 (.uint 64) where
-  lt_iff x y := sorry -- by simpa using USize64.lt_iff_toBitVec_lt
+  lt_iff x y := by simpa using USize64.lt_iff_toBitVec_lt
 
 
 @[expose]
@@ -264,9 +294,15 @@ example : ToInt.Sub USize64 (.uint 64) := {
   toInt_sub := sorry
 }
 
-
 end Lean.Grind
 
+
+/-!
+## Simp-Procs
+
+Grind and simp use some simplification procedures for UInts. They are defined in
+`Lean.Meta.Tactic.Simp.BuiltinSimprocs.UInt` and replicated here.
+-/
 
 namespace USize64
 open Lean Meta Simp
@@ -339,23 +375,3 @@ dsimproc [seval] isValue ((OfNat.ofNat _ : USize64)) := fun e => do
   return .done e
 
 end USize64
-
-
-additional_uint_decls USize64 64
-
--- attribute [grind]
---   USize64.toNat_add_of_lt
---   USize64.toNat_sub_of_lt
---   USize64.toNat_mul_of_lt
-
--- attribute [grind] USize64.lt_ofNat_iff
--- attribute [grind] USize64.not_le
--- attribute [grind] USize64.toNat_toBitVec
--- attribute [grind =] USize64.toNat_toBitVec
--- attribute [grind] USize64.toBitVec_ofNat
--- attribute [grind] USize64.toNat_add
--- attribute [grind] USize64.le_iff_toNat_le
--- attribute [grind] USize64.le_ofNat_iff Nat.min_eq_left
--- attribute [grind =] USize64.lt_iff_toNat_lt
--- attribute [grind] USize64.toNat_ofNat_of_lt
--- attribute [grind] USize64.toNat_ofNat_of_lt'
