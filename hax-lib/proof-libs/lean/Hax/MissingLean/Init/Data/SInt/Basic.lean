@@ -28,15 +28,15 @@ macro "additional_int_decls" typeName:ident width:term : command => do `(
       a.toInt * b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt * b.toInt < - 2 ^ ($width - 1) := by
     simp [mulOverflow, BitVec.smulOverflow]
 
-  @[grind]
+  @[grind =]
   theorem toInt_add_of_not_addOverflow {x y : $typeName} (h : ¬ addOverflow x y) :
       (x + y).toInt = x.toInt + y.toInt := BitVec.toInt_add_of_not_saddOverflow h
 
-  @[grind]
+  @[grind =]
   theorem toInt_sub_of_not_subOverflow {x y : $typeName} (h : ¬ subOverflow x y) :
       (x - y).toInt = x.toInt - y.toInt := BitVec.toInt_sub_of_not_ssubOverflow h
 
-  @[grind]
+  @[grind =]
   theorem toInt_mul_of_not_mulOverflow {x y : $typeName} (h : ¬ mulOverflow x y) :
       (x * y).toInt = x.toInt * y.toInt := BitVec.toInt_mul_of_not_smulOverflow h
 

@@ -190,7 +190,7 @@ theorem Lean_chacha20.chacha20_encrypt_block_spec (st0 : (Vector u32 16)) (ctr :
           chacha20_core,
           chacha20_rounds,
           chacha20_double_round]
-  <;> simp [Vector.size_toArray, Vector.size, USize.le_iff_toNat_le] at *
+  <;> simp [Vector.size_toArray, Vector.size] at *
   <;> try omega
 "
 )]
@@ -216,9 +216,7 @@ theorem Lean_chacha20.chacha20_encrypt_last_spec (st0 : (Vector u32 16)) (ctr : 
           Lean_chacha20.chacha20_init,
           Lean_chacha20.chacha20_core,
           Alloc.Slice.Impl.to_vec,]
-  <;> simp [Vector.size, USize.le_iff_toNat_le] at *
-  <;> (rcases System.Platform.numBits_eq with h_size | h_size <;> try simp_all)
-  <;> (try omega)
+  <;> grind
 "
 )]
 pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
@@ -230,14 +228,10 @@ pub fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
 
 #[hax_lib::lean::after(
     "
-@[simp]
-theorem System.Platform.numBits_ne_zero : ¬ System.Platform.numBits = 0 :=
-by cases (System.Platform.numBits_eq) <;> grind
-
 set_option maxHeartbeats 1200000 in
 @[spec]
 theorem Lean_chacha20.chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u8)) :
-  m.size ≤ USize.size →
+  m.size < USize64.size →
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.chacha20_update st0 m)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ :=
@@ -249,18 +243,8 @@ by
       Alloc.Vec.Impl.new,
       Alloc.Vec.Impl_1.len,
       ]
-  <;> subst_vars
-  <;> simp [
-      USize.size,
-      USize.eq_iff_toBitVec_eq,
-      USize.mulOverflow,
-      USize.addOverflow,
-      BitVec.uaddOverflow,
-      BitVec.umulOverflow
-      ] at *
-  <;> (rcases System.Platform.numBits_eq with h_size | h_size)
-  <;> try rw [h_size]
-  all_goals (simp_all only [USize.le_iff_toNat_le, USize.toNat_ofNat'] <;> grind)
+    <;> simp_all [Nat.lt_div_iff_mul_lt]
+    <;> grind
 "
 )]
 pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {
@@ -287,7 +271,7 @@ pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {
     "
 theorem Lean_chacha20.chacha20_spec
   (m : (Array u8)) (key : (Vector u8 32)) (iv : (Vector u8 12)) (ctr : u32) :
-  m.size ≤ USize.size →
+  m.size < USize64.size →
   ⦃⌜True⌝⦄
   (Lean_chacha20.chacha20 m key iv ctr)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
