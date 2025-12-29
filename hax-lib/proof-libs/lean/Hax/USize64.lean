@@ -214,6 +214,14 @@ protected theorem USize64.add_mul {a b c : USize64} : (a + b) * c = a * c + b * 
 
 protected theorem USize64.neg_mul (a b : USize64) : -a * b = -(a * b) := USize64.toBitVec_inj.1 (BitVec.neg_mul _ _)
 
+@[simp] protected theorem USize64.add_sub_cancel (a b : USize64) : a + b - b = a := USize64.toBitVec_inj.1 (BitVec.add_sub_cancel _ _)
+
+theorem USize64.ofNat_sub {a b : Nat} (hab : b ≤ a) : USize64.ofNat (a - b) = USize64.ofNat a - USize64.ofNat b := by
+  rw [(Nat.sub_add_cancel hab ▸ USize64.ofNat_add (a - b) b :), USize64.add_sub_cancel]
+
+@[simp] protected theorem USize64.sub_add_cancel (a b : USize64) : a - b + b = a :=
+  USize64.toBitVec_inj.1 (BitVec.sub_add_cancel _ _)
+
 /-!
 ## Grind's ToInt
 
