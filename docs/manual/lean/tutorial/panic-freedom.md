@@ -24,31 +24,16 @@ functions that panic return an error in this monad. To try to prove panic-freedo
 specify that the result of `square` is expected not to be an error in this result type. A way
 to do that is the following:
 ```{.rust .playable .lean-backend .expect-failure}
-#[hax_lib::lean::after("
-theorem square_spec (value: u8) :
-  ⦃ Playground._.requires (value) = pure true ⦄
-  (${square} value)
-  ⦃ ⇓ result => Playground.__1.ensures value result = pure true ⦄
-  := by
-  mvcgen
-  simp [Playground._.requires, Playground.__1.ensures, ${square}] at *
-  intros
-  rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
-  bv_decide")]
 #[hax_lib::requires(true)]
 #[hax_lib::ensures(|res| true)]
+#[hax_lib::lean::proof("by unfold square; hax_bv_decide")]
 fn square(x: u8) -> u8 {
     x * x
 }
 ```
-The specification is extrinsic to the function, we state a theorem `square_spec` which uses a Hoare
-triple to specify properties on the output, assuming some other properties on the inputs. Here,
-we use the precondition and post-condition defined using the `hax_lib` macro, but we could write
-our specification entirely in the `square_spec` theorem. Here our post-condition is `true` which seems
-trivial, but the condition `Playground.__1.ensures value result = pure true` is false if `result` 
-(and thus `Playground.__1.ensures value result`) 
-is an error in the result monad. So this specification states that `square` should be panic-free. We also 
-have a small proof script applying a few tactics to try to prove our theorem. If we try running `lake build`
+Adding a `hax_lib::requires` and a `hax_lib::ensures` annotation will make Hax generate a specification of the function, asserting panic freedom as well as the postcondition. Here, we used the trivial postcondition `true`, so we only assert panic freedom.
+
+Using the `hax_lib::lean::proof`, we can provide a Lean proof of our specification. If we try running `lake build`
 after extracting this code, we get an error: 
 `The prover found a counterexample, consider the following assignment: value = 255`. Indeed `square(255)` 
 panics because the multiplication overflows.
@@ -88,19 +73,9 @@ its input is within `0` and `15`.
 We already added a pre-condition to specify panic-freedom but we can turn it into a more interesting pre-condition to restrict the inputs and stay in the domain where the multiplication fits in a `u8`. We only need to modify the Rust condition that is passed to the `hax_lib::requires` macro: 
 
 ```{.rust .playable .lean-backend}
-#[hax_lib::lean::after("
-theorem square_spec (value: u8) :
-  ⦃ Playground._.requires (value) = pure true ⦄
-  (${square} value)
-  ⦃ ⇓ result => Playground.__1.ensures value result = pure true ⦄
-  := by
-  mvcgen
-  simp [Playground._.requires, Playground.__1.ensures, ${square}] at *
-  intros
-  rw [UInt8.HaxMul_spec_bv_rw] ; simp ;
-  bv_decide")]
 #[hax_lib::requires(x < 16)]
 #[hax_lib::ensures(|res| true)]
+#[hax_lib::lean::proof("by unfold square; hax_bv_decide")]
 fn square(x: u8) -> u8 {
     x * x
 }
@@ -109,7 +84,7 @@ fn square(x: u8) -> u8 {
 With this precondition, Lean is able to prove panic freedom. From now
 on, it is the responsibility of the clients of `square` to respect the
 contract. The next step is thus be to verify, through hax extraction,
-that `square` is used correctly at every call site.\
+that `square` is used correctly at every call site.
 
 ## Common panicking situations
 Multiplication is not the only panicking function provided by the Rust
