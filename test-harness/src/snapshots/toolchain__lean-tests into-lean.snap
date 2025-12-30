@@ -53,31 +53,31 @@ Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
    \u001B[1m\u001B[94m|\u001B[0m \u001B[1m\u001B[91m|__________^\u001B[0m
    \u001B[1m\u001B[94m|\u001B[0m"""
 [[stdout.diagnostics]]
-message = """
+message = '''
 Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
 
 This is discussed in issue https://github.com/hacspec/hax/issues/1741.
 Please upvote or comment this issue if you see this error message.
-\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m"""
+Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+'''
 spans = ['Span { lo: Loc { line: 6, col: 17 }, hi: Loc { line: 6, col: 43 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [[stdout.diagnostics]]
-message = """
+message = '''
 Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
 
 This is discussed in issue https://github.com/hacspec/hax/issues/1741.
 Please upvote or comment this issue if you see this error message.
-\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m"""
+Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+'''
 spans = ['Span { lo: Loc { line: 8, col: 10 }, hi: Loc { line: 10, col: 10 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [stdout.files]
-"Lean_tests.lean" = '''
+"Lean_tests.lean" = """
 
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
@@ -1494,6 +1494,23 @@ def Lean_tests.binop_resugarings (x : u32) : RustM u32 := do
   let lshift : u32 ← (div <<<? x);
   (pure x)
 
+def Lean_tests.NULL_CHAR : Char := RustM.of_isOk (do (pure '\u0000')) (by rfl)
+
+--  Test string literals with escape sequences
+def Lean_tests.string_escapes
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _plain : String := \"hello world\";
+  let _with_quotes : String := \"she said \\\"hello\\\"\";
+  let _with_single_quote : String := \"it\\'s fine\";
+  let _with_backslash : String := \"path\\\\to\\\\file\";
+  let _with_newline : String := \"line1\\nline2\";
+  let _with_tab : String := \"col1\\tcol2\";
+  let _with_carriage_return : String := \"before\\rafter\";
+  let _mixed : String := \"say \\\"hello\\\"\\nand\\t\\'goodbye\\'\\\\end\";
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
 abbrev Lean_tests.Types.UsizeAlias : Type := usize
 
 abbrev Lean_tests.Types.MyOption (A : Type) : Type := (Core.Option.Option A)
@@ -1605,7 +1622,7 @@ def Lean_tests.Matching.test_const_matching
   let x : u32 ← match x with | 0 => (pure (42 : u32)) | _ => (pure (0 : u32));
   let c : u32 ← match c with | 'a' => (pure (42 : u32)) | _ => (pure (0 : u32));
   let s : u32 ←
-    match s with | "Hello" => (pure (42 : u32)) | _ => (pure (0 : u32));
+    match s with | \"Hello\" => (pure (42 : u32)) | _ => (pure (0 : u32));
   let b : u32 ←
     match b with | true => (pure (42 : u32)) | false => (pure (0 : u32));
   ((← ((← (x +? c)) +? s)) +? b)
@@ -1693,4 +1710,4 @@ def Lean_tests.Comments.heavily_documented
   (_ : Rust_primitives.Hax.Tuple0)
   : RustM u32
   := do
-  (pure (4 : u32))'''
+  (pure (4 : u32))"""

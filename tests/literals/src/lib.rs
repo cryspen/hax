@@ -89,5 +89,3 @@ pub fn empty_array() {
 fn fn_pointer_cast() {
     let f: fn(&u32) -> &u32 = |x| x;
 }
-
-const null: char = '\0';

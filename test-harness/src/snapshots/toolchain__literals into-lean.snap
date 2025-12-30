@@ -1,5 +1,6 @@
 ---
 source: test-harness/src/harness.rs
+assertion_line: 212
 expression: snapshot
 info:
   kind:
@@ -20,54 +21,230 @@ info:
     include_flag: ~
     backend_options: ~
 ---
-exit = 1
-stderr = """
-warning: unused import: `hax_lib::*`
- --> literals/src/lib.rs:2:5
-  |
-2 | use hax_lib::*;
-  |     ^^^^^^^^^^
-  |
-  = note: `#[warn(unused_imports)]` on by default
+exit = 0
+stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
 
-warning: `literals` (lib) generated 1 warning (run `cargo fix --lib -p literals` to apply 1 suggestion)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_RawOrMutPointer: 0.4749ms, memory=168, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: TransformHaxLibInline: 0.3562ms, memory=448, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: Specialize: 0.4749ms, memory=978, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropSizedTrait: 0.2375ms, memory=493, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SimplifyQuestionMarks: 0.3562ms, memory=178, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: AndMutDefsite: 0.67676ms, memory=20510, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReconstructAsserts: 0.3562ms, memory=512, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReconstructForLoops: 0.5936ms, memory=209, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReconstructWhileLoops: 0.3562ms, memory=209, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DirectAndMut: 0.7124ms, memory=1074, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_ArbitraryLhs: 0.1187ms, memory=168, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropBlocks: 0.4749ms, memory=192, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropMatchGuards: 0.3562ms, memory=158, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropReferences: 0.3562ms, memory=161, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: TrivializeAssignLhs: 0.3562ms, memory=158, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: HoistSideEffects: 0.4749ms, memory=184, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: HoistDisjunctivePatterns: 0.2374ms, memory=436, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SimplifyMatchReturn: 0.2375ms, memory=476, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: LocalMutation: 0.3562ms, memory=212, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: RewriteControlFlow: 0.3562ms, memory=476, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: DropReturnBreakContinue: 0.7124ms, memory=1092, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: FunctionalizeLoops: 0.4749ms, memory=536, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_QuestionMark: 0.1188ms, memory=158, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_AsPattern: 0.1187ms, memory=158, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: TraitsSpecs: 0.2375ms, memory=470, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SimplifyHoisting: 0.2375ms, memory=476, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: NewtypeAsRefinement: 0.3562ms, memory=476, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_TraitItemDefault: 0.1188ms, memory=158, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: BundleCycles: 0.125854ms, memory=80308, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: ReorderFields: 0.1187ms, memory=27, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: SortItems: 1.493627ms, memory=85785, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: reject_not_in_FStar: 0.3562ms, memory=158, 4 items\u001B[0m
-\u001B[1m\u001B[94minfo\u001B[0m: \u001B[1mhax[profiling]: Identity: 0.1187ms, memory=15, 4 items\u001B[0m
+[stdout]
+diagnostics = []
 
-thread 'main' panicked at /home/cblaudeau/cryspen/hax/dev/rust-engine/src/lean.rs:415:59:
-not yet implemented
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1mhax: hax-engine exited with non-zero code 101\u001B[0m"""
-stdout = ''
+[stdout.files]
+"Literals.lean" = """
+
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
+
+def Literals.math_integers (x : Hax_lib.Int.Int) : RustM u8 := do
+  let _ : Hax_lib.Int.Int ← (Rust_primitives.Hax.Int.from_machine (3 : usize));
+  let _neg_dec : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"-340282366920938463463374607431768211455000\");
+  let _pos_dec : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"340282366920938463463374607431768211455000\");
+  let _neg_hex : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"-340282366920938463463374607431768211455000\");
+  let _pos_hex : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"340282366920938463463374607431768211455000\");
+  let _neg_octal : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"-340282366920938463463374607431768211455000\");
+  let _pos_octal : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"340282366920938463463374607431768211455000\");
+  let _neg_bin : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"-340282366920938463463374607431768211455000\");
+  let _pos_bin : Hax_lib.Int.Int ←
+    (Hax_lib.Int.Impl_7._unsafe_from_str
+      \"340282366920938463463374607431768211455000\");
+  let _ ←
+    (Rust_primitives.Hax.Int.gt
+      (← (Hax_lib.Int.Impl_7._unsafe_from_str
+        \"-340282366920938463463374607431768211455000\"))
+      (← (Hax_lib.Int.Impl_7._unsafe_from_str
+        \"340282366920938463463374607431768211455000\")));
+  let _ ← (Rust_primitives.Hax.Int.lt x x);
+  let _ ← (Rust_primitives.Hax.Int.ge x x);
+  let _ ← (Rust_primitives.Hax.Int.le x x);
+  let _ ← (Rust_primitives.Hax.Int.ne x x);
+  let _ ← (Rust_primitives.Hax.Int.eq x x);
+  let _ ← (Rust_primitives.Hax.Int.add x x);
+  let _ ← (Rust_primitives.Hax.Int.sub x x);
+  let _ ← (Rust_primitives.Hax.Int.mul x x);
+  let _ ← (Rust_primitives.Hax.Int.div x x);
+  let _ : i16 ← (Hax_lib.Int.Impl_55.to_i16 x);
+  let _ : i32 ← (Hax_lib.Int.Impl_57.to_i32 x);
+  let _ : i64 ← (Hax_lib.Int.Impl_59.to_i64 x);
+  let _ : i128 ← (Hax_lib.Int.Impl_61.to_i128 x);
+  let _ : isize ← (Hax_lib.Int.Impl_63.to_isize x);
+  let _ : u16 ← (Hax_lib.Int.Impl_43.to_u16 x);
+  let _ : u32 ← (Hax_lib.Int.Impl_45.to_u32 x);
+  let _ : u64 ← (Hax_lib.Int.Impl_47.to_u64 x);
+  let _ : u128 ← (Hax_lib.Int.Impl_49.to_u128 x);
+  let _ : usize ← (Hax_lib.Int.Impl_51.to_usize x);
+  (Hax_lib.Int.Impl_41.to_u8
+    (← (Rust_primitives.Hax.Int.add x (← (Rust_primitives.Hax.Int.mul x x)))))
+
+@[spec]
+def Literals.math_integers.spec (x : Hax_lib.Int.Int)  :
+    Spec
+      (requires :=
+        (Rust_primitives.Hax.logical_op_and
+          (← (Rust_primitives.Hax.Int.gt
+            x
+            (← (Hax_lib.Int.Impl_7._unsafe_from_str \"0\"))))
+          (← (Rust_primitives.Hax.Int.lt
+            x
+            (← (Hax_lib.Int.Impl_7._unsafe_from_str \"16\"))))))
+      (ensures := fun _ => pure True)
+      (Literals.math_integers (x : Hax_lib.Int.Int) ) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Literals.math_integers] <;> try grind
+}
+
+def Literals.panic_with_msg
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (Rust_primitives.Hax.never_to_any
+    (← (Core.Panicking.panic_fmt
+      (← (Core.Fmt.Rt.Impl_1.new_const ((1 : usize)) #v[\"with msg\"])))))
+
+structure Literals.Foo where
+  field : u8
+
+instance Literals.Impl.AssociatedTypes :
+  Core.Marker.StructuralPartialEq.AssociatedTypes Literals.Foo
+  where
+
+instance Literals.Impl : Core.Marker.StructuralPartialEq Literals.Foo where
+
+instance Literals.Impl_1.AssociatedTypes :
+  Core.Cmp.PartialEq.AssociatedTypes Literals.Foo Literals.Foo
+  where
+
+instance Literals.Impl_1 : Core.Cmp.PartialEq Literals.Foo Literals.Foo where
+
+instance Literals.Impl_2.AssociatedTypes :
+  Core.Cmp.Eq.AssociatedTypes Literals.Foo
+  where
+
+instance Literals.Impl_2 : Core.Cmp.Eq Literals.Foo where
+
+def Literals.CONSTANT : Literals.Foo :=
+  RustM.of_isOk (do (pure (Literals.Foo.mk (field := (3 : u8))))) (by rfl)
+
+def Literals.numeric
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ : usize := (123 : usize);
+  let _ : isize := (-42 : isize);
+  let _ : isize := (42 : isize);
+  let _ : i32 := (-42 : i32);
+  let _ : u128 := (22222222222222222222 : u128);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Literals.patterns
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ ←
+    match (1 : u8) with
+      | 2 => (pure Rust_primitives.Hax.Tuple0.mk)
+      | _ => (pure Rust_primitives.Hax.Tuple0.mk);
+  let _ ←
+    match
+      (Rust_primitives.Hax.Tuple2.mk
+        \"hello\" (Rust_primitives.Hax.Tuple2.mk (123 : i32) #v[\"a\", \"b\"]))
+    with
+      | ⟨\"hello\", ⟨123, _todo⟩⟩ => (pure Rust_primitives.Hax.Tuple0.mk)
+      | _ => (pure Rust_primitives.Hax.Tuple0.mk);
+  let _ ←
+    match (Literals.Foo.mk (field := (4 : u8))) with
+      | {field := 3} => (pure Rust_primitives.Hax.Tuple0.mk)
+      | _ => (pure Rust_primitives.Hax.Tuple0.mk);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Literals.casts
+  (x8 : u8)
+  (x16 : u16)
+  (x32 : u32)
+  (x64 : u64)
+  (xs : usize)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ : u64 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8))
+            +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? x64))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : u32 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8))
+            +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? x32))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : u16 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8)) +? x16))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : u8 ←
+    ((← ((← ((← (x8 +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : i64 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8))
+            +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : i32 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8))
+            +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : i16 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8))
+            +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  let _ : i8 ←
+    ((← ((← ((← ((← (Rust_primitives.Hax.cast_op x8))
+            +? (← (Rust_primitives.Hax.cast_op x16))))
+          +? (← (Rust_primitives.Hax.cast_op x32))))
+        +? (← (Rust_primitives.Hax.cast_op x64))))
+      +? (← (Rust_primitives.Hax.cast_op xs)));
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Literals.empty_array
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ : (RustSlice u8) ← (Rust_primitives.unsize #v[]);
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+--  https://github.com/hacspec/hax/issues/500
+def Literals.fn_pointer_cast
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let f : (u32 -> RustM u32) := (fun x => (do (pure x) : RustM u32));
+  (pure Rust_primitives.Hax.Tuple0.mk)"""
