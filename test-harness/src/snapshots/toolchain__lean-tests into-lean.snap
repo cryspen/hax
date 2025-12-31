@@ -53,27 +53,27 @@ Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
    \u001B[1m\u001B[94m|\u001B[0m \u001B[1m\u001B[91m|__________^\u001B[0m
    \u001B[1m\u001B[94m|\u001B[0m"""
 [[stdout.diagnostics]]
-message = """
+message = '''
 Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
 
 This is discussed in issue https://github.com/hacspec/hax/issues/1741.
 Please upvote or comment this issue if you see this error message.
-\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m"""
+Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+'''
 spans = ['Span { lo: Loc { line: 6, col: 17 }, hi: Loc { line: 6, col: 43 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [[stdout.diagnostics]]
-message = """
+message = '''
 Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
 
 This is discussed in issue https://github.com/hacspec/hax/issues/1741.
 Please upvote or comment this issue if you see this error message.
-\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m"""
+Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+'''
 spans = ['Span { lo: Loc { line: 8, col: 10 }, hi: Loc { line: 10, col: 10 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [stdout.files]
@@ -879,7 +879,7 @@ def Lean_tests.Specs.test (x : u8) : RustM u8 := do (pure x)
 def Lean_tests.Specs.test.spec (x : u8)  :
     Spec
       (requires := (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
-      (ensures := fun r => (Rust_primitives.Hax.Machine_int.eq r x))
+      (ensures := fun (r : u8) => (Rust_primitives.Hax.Machine_int.eq r x))
       (Lean_tests.Specs.test (x : u8) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
@@ -892,7 +892,7 @@ def Lean_tests.Specs.test_proof (x : u8) : RustM u8 := do (pure x)
 def Lean_tests.Specs.test_proof.spec (x : u8)  :
     Spec
       (requires := (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
-      (ensures := fun r => (Rust_primitives.Hax.Machine_int.eq r x))
+      (ensures := fun (r : u8) => (Rust_primitives.Hax.Machine_int.eq r x))
       (Lean_tests.Specs.test_proof (x : u8) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
@@ -1183,6 +1183,41 @@ def Lean_tests.Constants.test
   let y : u32 ← (Lean_tests.Constants.C2 +? Lean_tests.Constants.C3);
   let z : u32 ← (Lean_tests.Constants.C4 -? Lean_tests.Constants.C3);
   (pure Rust_primitives.Hax.Tuple0.mk)
+
+--  Returns true if all casting edge cases behave as expected.
+def Lean_tests.Casts.casting_edge_cases (_dummy : Bool) : RustM Bool := do
+  let case1 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (256 : u16)))
+      (0 : u8));
+  let case2 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (-1 : i16)))
+      (255 : u8));
+  let case3 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (-1 : i8)))
+      (-1 : i16));
+  let case4 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (128 : u8)))
+      (-128 : i8));
+  let case5 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (4294967295 : u32)))
+      (-1 : i32));
+  ((← ((← ((← (case1 &&? case2)) &&? case3)) &&? case4)) &&? case5)
+
+@[spec]
+def Lean_tests.Casts.casting_edge_cases.spec (_dummy : Bool)  :
+    Spec
+      (requires := pure True)
+      (ensures := fun (result : Bool) => (pure result))
+      (Lean_tests.Casts.casting_edge_cases (_dummy : Bool) ) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Lean_tests.Casts.casting_edge_cases] <;> try grind
+}
 
 class Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
   (Self : Type) where
