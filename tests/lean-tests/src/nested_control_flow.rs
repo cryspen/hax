@@ -1,8 +1,8 @@
-//! Tests on patterns rejected by the engine as outside of Lean's do-notation DSL
+//! Tests for nested control flow in expressions
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-fn rejected() {
+fn nested_control_flow() {
     let x1 = 1 + (if true { 0 } else { 1 });
     let x2 = 1
         + (match (1, 2) {
@@ -14,8 +14,7 @@ fn rejected() {
     };
 }
 
-/// Code that should be produced from the rejected code
-fn accepted() {
+fn explicit_hoisting() {
     let x1_tmp = if true { 0 } else { 1 };
     let x1 = 1 + x1_tmp;
     let x2_tmp = match (1, 2) {
@@ -27,8 +26,7 @@ fn accepted() {
     let x3 = 1 + x3_tmp;
 }
 
-// Other cases that should be accepted
-fn test() {
+fn complex_nesting() {
     let mut x1 = if true {
         let mut y = if false {
             let mut z = match () {
