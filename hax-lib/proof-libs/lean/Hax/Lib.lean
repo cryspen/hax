@@ -258,7 +258,7 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
   are also provided -/
 namespace Rust_primitives.Hax.Machine_int
 
-@[simp, spec, hax_bv_decide]
+@[simp, hax_bv_decide]
 def eq {α} (x y: α) [BEq α] : RustM Bool := pure (x == y)
 @[simp, spec, hax_bv_decide]
 def ne {α} (x y: α) [BEq α] : RustM Bool := pure (x != y)
@@ -280,6 +280,10 @@ def lt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.
   mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
 
 @[spec]
+def lt_spec_i32 (x y : i32) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toInt < y.toInt) ⌝ ⦄ := by
+  sorry --mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
+
+@[spec]
 def le_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toNat ≤ y.toNat) ⌝ ⦄ := by
   mvcgen [lt]; simp [USize64.le_iff_toNat_le]
 
@@ -288,8 +292,16 @@ def gt_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.
   mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
 
 @[spec]
+def gt_spec_i32 (x y : i32) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toInt > y.toInt ) ⌝ ⦄ := by
+  sorry -- mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
+
+@[spec]
 def ge_spec (x y : usize) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := by
   mvcgen [lt]; simp [USize64.le_iff_toNat_le]
+
+@[spec]
+def eq_spec (x y : i32) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toInt == y.toInt) ⌝ ⦄ := by
+  sorry -- mvcgen [lt]; simp [USize64.lt_iff_toNat_lt]
 
 end Rust_primitives.Hax.Machine_int
 
