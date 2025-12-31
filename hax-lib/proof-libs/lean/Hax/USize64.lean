@@ -224,6 +224,9 @@ theorem USize64.ofNat_sub {a b : Nat} (hab : b ≤ a) : USize64.ofNat (a - b) = 
 @[simp] protected theorem USize64.sub_add_cancel (a b : USize64) : a - b + b = a :=
   USize64.toBitVec_inj.1 (BitVec.sub_add_cancel _ _)
 
+theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m := by
+  rw [le_iff_toNat_le, toNat_ofNat_of_lt' h]
+
 /-!
 ## Grind's ToInt
 

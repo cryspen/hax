@@ -813,9 +813,6 @@ theorem usize.getElemVectorResult_spec
   ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
   by mvcgen [usize.instGetElemResultVector]
 
-theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m := by
-  rw [le_iff_toNat_le, toNat_ofNat_of_lt' h]
-
 @[spec]
 theorem Range.getElemArrayUSize64_spec
   (α : Type) (a: Array α) (s e: usize) :
