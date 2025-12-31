@@ -109,6 +109,41 @@ def Lean_tests.Associated_types.Multiple_projections.func
   := do
   (pure Rust_primitives.Hax.Tuple0.mk)
 
+--  Returns true if all casting edge cases behave as expected.
+def Lean_tests.Casts.casting_edge_cases (_dummy : Bool) : RustM Bool := do
+  let case1 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (256 : u16)))
+      (0 : u8));
+  let case2 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (-1 : i16)))
+      (255 : u8));
+  let case3 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (-1 : i8)))
+      (-1 : i16));
+  let case4 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (128 : u8)))
+      (-128 : i8));
+  let case5 : Bool ←
+    (Rust_primitives.Hax.Machine_int.eq
+      (← (Rust_primitives.Hax.cast_op (4294967295 : u32)))
+      (-1 : i32));
+  ((← ((← ((← (case1 &&? case2)) &&? case3)) &&? case4)) &&? case5)
+
+@[spec]
+def Lean_tests.Casts.casting_edge_cases.spec (_dummy : Bool)  :
+    Spec
+      (requires := do pure True)
+      (ensures := fun result => do (pure result))
+      (Lean_tests.Casts.casting_edge_cases (_dummy : Bool) ) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Lean_tests.Casts.casting_edge_cases] <;> try grind
+}
+
 --  Single line doc comment
 def Lean_tests.Comments.f
   (_ : Rust_primitives.Hax.Tuple0)
