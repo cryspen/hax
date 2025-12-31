@@ -7,4 +7,4 @@ edition = "2021"
 hax-lib = { path = "../../hax-lib" }
 
 [package.metadata.hax-tests]
-into."lean" = { broken = true }
+into."lean" = { broken = false }

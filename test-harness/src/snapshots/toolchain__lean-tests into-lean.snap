@@ -11,7 +11,7 @@ info:
     description: ~
   spec:
     optional: false
-    broken: true
+    broken: false
     issue_id: ~
     positive: true
     snapshot:
@@ -20,61 +20,11 @@ info:
     include_flag: ~
     backend_options: ~
 ---
-exit = 1
-stderr = """
-Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0008] Explicit rejection by a phase in the Hax engine:
-This interleaving of expression and statements does not fit in Lean's do-notation DSL.
-You may try hoisting out let-bindings and control-flow.
+exit = 0
+stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
 
-This is discussed in issue https://github.com/hacspec/hax/issues/1741.
-Please upvote or comment this issue if you see this error message.
-Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m
- \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/reject_do_dsl.rs:6:18
-  \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m6 |\u001B[0m     let x1 = 1 + (if true { 0 } else { 1 });
-  \u001B[1m\u001B[94m|\u001B[0m                  \u001B[1m\u001B[91m^^^^^^^^^^^^^^^^^^^^^^^^^^\u001B[0m
-  \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[91merror\u001B[0m: \u001B[1m[HAX0008] Explicit rejection by a phase in the Hax engine:
-This interleaving of expression and statements does not fit in Lean's do-notation DSL.
-You may try hoisting out let-bindings and control-flow.
-
-This is discussed in issue https://github.com/hacspec/hax/issues/1741.
-Please upvote or comment this issue if you see this error message.
-Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m
-  \u001B[1m\u001B[94m-->\u001B[0m lean-tests/src/reject_do_dsl.rs:8:11
-   \u001B[1m\u001B[94m|\u001B[0m
-\u001B[1m\u001B[94m 8 |\u001B[0m           + (match (1, 2) {
-   \u001B[1m\u001B[94m|\u001B[0m  \u001B[1m\u001B[91m___________^\u001B[0m
-\u001B[1m\u001B[94m 9 |\u001B[0m \u001B[1m\u001B[91m|\u001B[0m             _ => 0,
-\u001B[1m\u001B[94m10 |\u001B[0m \u001B[1m\u001B[91m|\u001B[0m         });
-   \u001B[1m\u001B[94m|\u001B[0m \u001B[1m\u001B[91m|__________^\u001B[0m
-   \u001B[1m\u001B[94m|\u001B[0m"""
-[[stdout.diagnostics]]
-message = """
-Explicit rejection by a phase in the Hax engine:
-This interleaving of expression and statements does not fit in Lean's do-notation DSL.
-You may try hoisting out let-bindings and control-flow.
-
-This is discussed in issue https://github.com/hacspec/hax/issues/1741.
-Please upvote or comment this issue if you see this error message.
-\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 6, col: 17 }, hi: Loc { line: 6, col: 43 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
-
-[[stdout.diagnostics]]
-message = """
-Explicit rejection by a phase in the Hax engine:
-This interleaving of expression and statements does not fit in Lean's do-notation DSL.
-You may try hoisting out let-bindings and control-flow.
-
-This is discussed in issue https://github.com/hacspec/hax/issues/1741.
-Please upvote or comment this issue if you see this error message.
-\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-\u001B[0m"""
-spans = ['Span { lo: Loc { line: 8, col: 10 }, hi: Loc { line: 10, col: 10 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
+[stdout]
+diagnostics = []
 
 [stdout.files]
 "Lean_tests.lean" = '''
@@ -1573,18 +1523,26 @@ abbrev Lean_tests.Types.ESMonad
   (A : Type) (S : Type) (E : Type) : Type :=
   (Rust_primitives.Hax.Tuple2 (Core.Result.Result A E) S)
 
-def Lean_tests.Reject_do_dsl.rejected
+opaque Lean_tests.Opaque.an_opaque_fn
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+
+
+def Lean_tests.Nested_control_flow.nested_control_flow
   (_ : Rust_primitives.Hax.Tuple0)
   : RustM Rust_primitives.Hax.Tuple0
   := do
-  let x1 : i32 ← ((1 : i32) +? sorry);
-  let x2 : i32 ← ((1 : i32) +? sorry);
+  let x1 : i32 ←
+    ((1 : i32) +? (← if true then (pure (0 : i32)) else (pure (1 : i32))));
+  let x2 : i32 ←
+    ((1 : i32)
+      +? (← match (Rust_primitives.Hax.Tuple2.mk (1 : i32) (2 : i32)) with
+        | _ => (pure (0 : i32))));
   let x : i32 := (9 : i32);
   let x3 : i32 ← ((1 : i32) +? (← (x +? (1 : i32))));
   (pure Rust_primitives.Hax.Tuple0.mk)
 
---  Code that should be produced from the rejected code
-def Lean_tests.Reject_do_dsl.accepted
+def Lean_tests.Nested_control_flow.explicit_hoisting
   (_ : Rust_primitives.Hax.Tuple0)
   : RustM Rust_primitives.Hax.Tuple0
   := do
@@ -1599,7 +1557,7 @@ def Lean_tests.Reject_do_dsl.accepted
   let x3 : i32 ← ((1 : i32) +? x3_tmp);
   (pure Rust_primitives.Hax.Tuple0.mk)
 
-def Lean_tests.Reject_do_dsl.test
+def Lean_tests.Nested_control_flow.complex_nesting
   (_ : Rust_primitives.Hax.Tuple0)
   : RustM
   (Rust_primitives.Hax.Tuple2
@@ -1648,11 +1606,6 @@ def Lean_tests.Reject_do_dsl.test
           (pure y);
   (pure (Rust_primitives.Hax.Tuple2.mk
     Rust_primitives.Hax.Tuple0.mk Rust_primitives.Hax.Tuple0.mk))
-
-opaque Lean_tests.Opaque.an_opaque_fn
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM Rust_primitives.Hax.Tuple0
-
 
 def Lean_tests.Matching.test_const_matching
   (x : u32)
