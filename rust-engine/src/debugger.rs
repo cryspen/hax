@@ -205,6 +205,12 @@ impl State {
                         fn visit_metadata(&mut self, x: &mut Metadata) {
                             x.attributes = vec![];
                         }
+                        fn visit_param(&mut self, x: &mut Param) {
+                            x.attributes = vec![];
+                        }
+                        fn visit_variant(&mut self, x: &mut Variant) {
+                            x.attributes = vec![];
+                        }
                     }
                     DropAttributes.visit(&mut items);
                 }
