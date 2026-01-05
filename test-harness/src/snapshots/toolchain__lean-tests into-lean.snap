@@ -1490,6 +1490,11 @@ def Lean_tests.Reject_do_dsl.test
   (pure (Rust_primitives.Hax.Tuple2.mk
     Rust_primitives.Hax.Tuple0.mk Rust_primitives.Hax.Tuple0.mk))
 
+opaque Lean_tests.Opaque.an_opaque_fn
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+
+
 def Lean_tests.Matching.test_const_matching
   (x : u32)
   (c : Char)

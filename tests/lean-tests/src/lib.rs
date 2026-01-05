@@ -11,6 +11,7 @@ pub mod ite;
 pub mod loops;
 pub mod matching;
 pub mod monadic;
+pub mod opaque;
 pub mod reject_do_dsl;
 pub mod specs;
 pub mod structs;

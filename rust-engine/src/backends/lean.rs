@@ -1161,20 +1161,20 @@ set_option linter.unusedVariables false
                     params,
                     safety: _,
                 } => {
+                    let opaque = item.is_opaque();
                     docs![
                         docs![
                             docs![
-                                docs!["def", line!(), name].group(),
+                                docs![if opaque { "opaque" } else { "def" }, line!(), name].group(),
                                 line!(),
                                 generics,
                                 params,
                                 docs![": RustM", line!(), &body.ty].group(),
                                 line!(),
-                                ":= do"
+                                if opaque { nil!() } else { docs![":= do"] }
                             ]
                             .group(),
-                            line!(),
-                            body
+                            if opaque { nil!() } else { docs![line!(), body] }
                         ]
                         .group()
                         .nest(INDENT),
