@@ -304,10 +304,22 @@ pub struct GlobalId(Interned<GlobalIdInner>);
 impl GlobalId {
     /// Import a def_id from the frontend
     pub fn from_frontend(id: hax_frontend_exporter::DefId, is_value: bool) -> Self {
-        let def_id: DefIdInner = id.into();
+        let mut def_id: DefIdInner = id.into();
         use hax_frontend_exporter::DefKind as DK;
-        let is_constructor =
-            is_value && matches!(&def_id.kind, DK::Variant | DK::Union | DK::Struct);
+
+        let mut popped_ctor = false;
+        if let Some(last) = def_id.path.last()
+            && matches!(&last.data, DefPathItem::Ctor)
+        {
+            def_id.path.pop();
+            popped_ctor = true;
+            if let Some(parent) = def_id.parent.as_ref() {
+                def_id.parent = parent.parent.clone();
+            }
+        }
+
+        let is_constructor = is_value
+            && (matches!(&def_id.kind, DK::Variant | DK::Union | DK::Struct) || popped_ctor);
         let inner = GlobalIdInner::Concrete(ConcreteId {
             def_id: ExplicitDefId {
                 is_constructor,
