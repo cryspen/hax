@@ -50,7 +50,7 @@ inductive RustM.{u} (α : Type u) where
   | ok (v: α): RustM α
   | fail (e: Error): RustM α
   | div
-deriving Repr, BEq, DecidableEq
+deriving Repr, BEq, DecidableEq, Inhabited
 
 namespace RustM
 
