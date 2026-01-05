@@ -647,7 +647,7 @@ fn import_block_expr(
         let body = expr.import(context);
         ast::ExprKind::Block { body, safety_mode }.promote(typ.clone(), full_span)
     } else {
-        ast::Expr::tuple(vec![], full_span)
+        Expr::unit(full_span)
     };
 
     for stmt in stmts.into_iter().rev() {
@@ -848,7 +848,7 @@ impl Import<ast::Expr> for frontend::Expr {
                     let else_expr = else_opt
                         .as_ref()
                         .map(|value| value.import(context))
-                        .unwrap_or_else(|| ast::Expr::tuple(vec![], span));
+                        .unwrap_or_else(|| ast::Expr::unit(span));
                     let arm_then = ast::Arm {
                         pat,
                         body: then_expr,
@@ -892,7 +892,7 @@ impl Import<ast::Expr> for frontend::Expr {
             } => {
                 let mut args = args.import(context);
                 if args.is_empty() {
-                    args.push(ast::Expr::tuple(vec![], span));
+                    args.push(ast::Expr::unit(span));
                 }
                 if let frontend::ExprKind::GlobalName { item, .. } = fun.contents.as_ref() {
                     let mut head = fun.import(context);
@@ -1161,7 +1161,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 let value = value
                     .as_ref()
                     .map(|value| value.import(context))
-                    .unwrap_or_else(|| ast::Expr::tuple(vec![], span));
+                    .unwrap_or_else(|| ast::Expr::unit(span));
                 ast::ExprKind::Break {
                     value,
                     label: None, // TODO: honour the label (issue #1800)
@@ -1176,7 +1176,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 let value = value
                     .as_ref()
                     .map(|value| value.import(context))
-                    .unwrap_or_else(|| ast::Expr::tuple(vec![], span));
+                    .unwrap_or_else(|| ast::Expr::unit(span));
                 ast::ExprKind::Return { value }
             }
             frontend::ExprKind::ConstBlock(_item_ref) => {
