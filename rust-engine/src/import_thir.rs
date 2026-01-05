@@ -46,6 +46,61 @@ struct Context {
     owner_hint: Option<hax_frontend_exporter::DefId>,
 }
 
+fn is_self_type_constraint(gc: &ast::GenericConstraint) -> bool {
+    match gc {
+        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
+            .args
+            .first()
+            .and_then(ast::GenericValue::expect_ty)
+            .map(|ty| matches!(ty.0.as_ref(), ast::TyKind::Param(local) if local.0 == Symbol::new("Self")))
+            .unwrap_or(false),
+        _ => false,
+    }
+}
+
+fn is_constraint_on_ty(gc: &ast::GenericConstraint, ty: &ast::Ty) -> bool {
+    match gc {
+        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
+            .args
+            .first()
+            .and_then(ast::GenericValue::expect_ty)
+            .map(|arg| arg == ty)
+            .unwrap_or(false),
+        _ => false,
+    }
+}
+
+fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
+    if let ast::ExprKind::App { head, args, .. } = expr.kind.as_ref() {
+        if let ast::ExprKind::GlobalId(global_id) = head.kind.as_ref() {
+            if global_id == &crate::names::rust_primitives::hax::deref_op && args.len() == 1 {
+                return lhs_from_expr(&args[0]);
+            }
+            if global_id.is_projector() && args.len() == 1 {
+                return ast::Lhs::FieldAccessor {
+                    e: Box::new(lhs_from_expr(&args[0])),
+                    ty: expr.ty.clone(),
+                    field: global_id.clone(),
+                };
+            }
+            if args.len() == 2 {
+                return ast::Lhs::ArrayAccessor {
+                    e: Box::new(lhs_from_expr(&args[0])),
+                    ty: expr.ty.clone(),
+                    index: args[1].clone(),
+                };
+            }
+        }
+    }
+    match expr.kind.as_ref() {
+        ast::ExprKind::LocalId(var) => ast::Lhs::LocalVar {
+            var: var.clone(),
+            ty: expr.ty.clone(),
+        },
+        _ => ast::Lhs::ArbitraryExpr(Box::new(expr.clone())),
+    }
+}
+
 trait SpannedImport<Out> {
     fn spanned_import(&self, context: &Context, span: ast::span::Span) -> Out;
 }
@@ -93,6 +148,15 @@ impl Import<ast::span::Span> for frontend::Span {
 
 fn import_attributes(context: &Context, attrs: &[frontend::Attribute]) -> ast::Attributes {
     attrs.iter().flat_map(|attr| attr.import(context)).collect()
+}
+
+fn has_automatically_derived(attrs: &ast::Attributes) -> bool {
+    attrs.iter().any(|attr| {
+        matches!(
+            attr.kind,
+            ast::AttributeKind::Tool { ref path, .. } if path == "automatically_derived"
+        )
+    })
 }
 
 impl Import<Option<ast::Attribute>> for frontend::Attribute {
@@ -282,9 +346,18 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
 
 impl Import<Vec<ast::GenericConstraint>> for frontend::GenericPredicates {
     fn import(&self, context: &Context) -> Vec<ast::GenericConstraint> {
+        let mut type_idx: u64 = 0;
         self.predicates
             .iter()
-            .filter_map(|(clause, span)| clause.spanned_import(context, span.import(context)))
+            .filter_map(|(clause, span)| {
+                let span = span.import(context);
+                let mut gc = clause.spanned_import(context, span)?;
+                if let ast::GenericConstraint::Type(impl_ident) = &mut gc {
+                    impl_ident.name = impl_expr_name(type_idx);
+                    type_idx += 1;
+                }
+                Some(gc)
+            })
             .collect()
     }
 }
@@ -1070,18 +1143,23 @@ impl Import<ast::Expr> for frontend::Expr {
             frontend::ExprKind::Block { block } => {
                 return import_block_expr(context, block, ty, span, attributes.clone());
             }
-            frontend::ExprKind::Assign { lhs, rhs } => ast::ExprKind::Assign {
-                lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import(context))),
-                value: rhs.import(context),
-            },
+            frontend::ExprKind::Assign { lhs, rhs } => {
+                let lhs = lhs.import(context);
+                let rhs = rhs.import(context);
+                ast::ExprKind::Assign {
+                    lhs: lhs_from_expr(&lhs),
+                    value: rhs,
+                }
+            }
             frontend::ExprKind::AssignOp { op, lhs, rhs } => {
                 let bin_op = assign_binop(*op);
-                let ty = ty.spanned_import(context, span);
-                let op_expr =
-                    binop_call(bin_op, lhs.import(context), rhs.import(context), ty.clone())
-                        .promote(ty, span);
+                let lhs = lhs.import(context);
+                let rhs = rhs.import(context);
+                let result_ty = lhs.ty.clone();
+                let op_expr = binop_call(bin_op, lhs.clone(), rhs, result_ty.clone())
+                    .promote(result_ty, span);
                 ast::ExprKind::Assign {
-                    lhs: ast::Lhs::ArbitraryExpr(Box::new(lhs.import(context))),
+                    lhs: lhs_from_expr(&lhs),
                     value: op_expr,
                 }
             }
@@ -1131,17 +1209,6 @@ impl Import<ast::Expr> for frontend::Expr {
                 constructor: _,
             } => {
                 let ident = item.contents().def_id.import_as_value();
-                if let Some(TupleId::Constructor { length: 0 }) = ident.expect_tuple() {
-                    return ast::ExprKind::Construct {
-                        constructor: ident,
-                        is_record: false,
-                        is_struct: true,
-                        fields: Vec::new(),
-                        base: None,
-                    }
-                    .promote(ty.spanned_import(context, span), span);
-                }
-
                 ast::ExprKind::GlobalId(ident)
             }
             frontend::ExprKind::UpvarRef {
@@ -1267,10 +1334,14 @@ impl Import<ast::Expr> for frontend::Expr {
                 upvars,
                 ..
             } => {
-                let params = import_params(context, params, span)
-                    .into_iter()
-                    .map(|param| param.pat)
+                let mut params: Vec<ast::Pat> = params
+                    .iter()
+                    .filter_map(|param| param.pat.as_ref().map(|pat| pat.import(context)))
                     .collect();
+                if params.is_empty() {
+                    let ty = ast::TyKind::unit().promote();
+                    params.push(ast::PatKind::Wild.promote(ty, span));
+                }
                 ast::ExprKind::Closure {
                     params,
                     body: body.import(context),
@@ -1369,9 +1440,9 @@ impl Import<ast::Expr> for frontend::Expr {
                 span,
             )),
             frontend::ExprKind::NamedConst { item, user_ty: _ } => {
-                let args: Vec<ast::GenericValue> =
+                let generic_args: Vec<ast::GenericValue> =
                     item.contents().generic_args.spanned_import(context, span);
-                let const_args: Vec<ast::Expr> = args
+                let const_args: Vec<ast::Expr> = generic_args
                     .iter()
                     .filter_map(|gv| match gv {
                         ast::GenericValue::Expr(e) => Some(e.clone()),
@@ -1385,11 +1456,14 @@ impl Import<ast::Expr> for frontend::Expr {
                     ast::ExprKind::fn_app(
                         def_id,
                         vec![],
-                        vec![],
+                        const_args,
                         ty.spanned_import(context, span),
                         vec![],
                         item.contents().in_trait.as_ref().map(|impl_expr| {
-                            (impl_expr.spanned_import(context, span), args.clone())
+                            (
+                                impl_expr.spanned_import(context, span),
+                                generic_args.clone(),
+                            )
                         }),
                         span,
                     )
@@ -1673,6 +1747,8 @@ fn import_trait_item(
         unreachable!("Found associated item of an unknown kind.")
     };
     let mut generics = param_env.import(context);
+    let mut imported_constraints: Vec<ast::GenericConstraint> = Vec::new();
+    let mut is_assoc_ty = false;
     let kind = match &item.kind {
         frontend::FullDefKind::AssocConst {
             body: Some(default),
@@ -1686,12 +1762,17 @@ fn import_trait_item(
         }
         frontend::FullDefKind::AssocFn {
             body: Some(default),
+            sig,
+            param_env,
             ..
-        } => ast::TraitItemKind::Default {
-            params: import_params(context, &default.params, span),
-            body: default.import(context),
-        },
-        frontend::FullDefKind::AssocFn { sig, .. } => {
+        } => {
+            generics = import_generics(context, &sig.bound_vars, param_env);
+            ast::TraitItemKind::Default {
+                params: import_params(context, &default.params, span),
+                body: default.import(context),
+            }
+        }
+        frontend::FullDefKind::AssocFn { sig, param_env, .. } => {
             generics = import_generics(context, &sig.bound_vars, param_env);
             let inputs = sig
                 .value
@@ -1710,21 +1791,34 @@ fn import_trait_item(
         )),
         frontend::FullDefKind::AssocTy {
             implied_predicates, ..
-        } => ast::TraitItemKind::Type(
-            implied_predicates
-                .import(context)
-                .into_iter()
+        } => {
+            is_assoc_ty = true;
+            imported_constraints = implied_predicates.import(context);
+            let type_constraints = imported_constraints
+                .iter()
                 .filter_map(|gc| match gc {
-                    ast::GenericConstraint::Type(t) => Some(t),
+                    ast::GenericConstraint::Type(t) => Some(t.clone()),
                     _ => None,
                 })
-                .collect(),
-        ),
+                .collect();
+            ast::TraitItemKind::Type(type_constraints)
+        }
         _ => ast::TraitItemKind::Error(assertion_failure(
             "Found associated item of an unknown kind.",
             span,
         )),
     };
+    if is_assoc_ty {
+        generics.constraints = imported_constraints;
+    }
+    generics
+        .constraints
+        .retain(|gc| !is_self_type_constraint(gc));
+    for (idx, gc) in generics.constraints.iter_mut().enumerate() {
+        if let ast::GenericConstraint::Type(impl_ident) = gc {
+            impl_ident.name = impl_expr_name(idx as u64);
+        }
+    }
     ast::TraitItem {
         meta,
         kind,
@@ -1750,6 +1844,7 @@ fn browse_path(
     item_kind: ast::ImplExprKind,
     chunk: &frontend::ImplExprPathChunk,
     span: ast::span::Span,
+    idx: usize,
 ) -> ast::ImplExprKind {
     match chunk {
         frontend::ImplExprPathChunk::AssocItem {
@@ -1759,12 +1854,11 @@ fn browse_path(
                     value: frontend::TraitPredicate { trait_ref, .. },
                     ..
                 },
-            index,
             ..
         } => {
             let ident = ast::ImplIdent {
                 goal: trait_ref.spanned_import(context, span),
-                name: impl_expr_name(*index as u64),
+                name: impl_expr_name(idx as u64),
             };
             let item = item.contents().def_id.import_as_nonvalue();
             ast::ImplExprKind::Projection {
@@ -1782,12 +1876,11 @@ fn browse_path(
                     value: frontend::TraitPredicate { trait_ref, .. },
                     ..
                 },
-            index,
             ..
         } => {
             let ident = ast::ImplIdent {
                 goal: trait_ref.spanned_import(context, span),
-                name: impl_expr_name(*index as u64),
+                name: impl_expr_name(idx as u64),
             };
             ast::ImplExprKind::Parent {
                 impl_: ast::ImplExpr {
@@ -1814,15 +1907,15 @@ fn import_impl_expr_atom(
             let mut kind = ast::ImplExprKind::LocalBound {
                 id: impl_expr_name(*index as u64),
             };
-            for chunk in path {
-                kind = browse_path(context, kind, chunk, span)
+            for (i, chunk) in path.iter().enumerate() {
+                kind = browse_path(context, kind, chunk, span, i)
             }
             kind
         }
         frontend::ImplExprAtom::SelfImpl { path, .. } => {
             let mut kind = ast::ImplExprKind::Self_;
-            for chunk in path {
-                kind = browse_path(context, kind, chunk, span)
+            for (i, chunk) in path.iter().enumerate() {
+                kind = browse_path(context, kind, chunk, span, i)
             }
             kind
         }
@@ -1923,19 +2016,33 @@ fn cast_of_enum(
             ))
             .promote(name, span);
         };
-        let mut previous_explicit_determinator = None;
+        let mut previous_explicit_determinator: Option<ast::Expr> = None;
         variants
             .map(|(variant, variant_def)| {
                 // Each variant comes with a `rustc_middle::ty::VariantDiscr`. Some variant have `Explicit` discr (i.e. an expression)
                 // while other have `Relative` discr (the distance to the previous last explicit discr).
                 let body = match &variant_def.discr_def {
                     frontend::DiscriminantDefinition::Relative(m) => {
-                        ast::ExprKind::Literal(ast::literals::Literal::Int {
+                        let relative = ast::ExprKind::Literal(ast::literals::Literal::Int {
                             value: Symbol::new(m.to_string()),
                             negative: false,
                             kind: int_kind.clone(),
                         })
-                        .promote(ty.clone(), span)
+                        .promote(ty.clone(), span);
+                        if let Some(base) = &previous_explicit_determinator {
+                            ast::ExprKind::fn_app(
+                                crate::names::core::ops::arith::Add::add,
+                                vec![],
+                                vec![base.clone(), relative],
+                                ty.clone(),
+                                vec![],
+                                None,
+                                span,
+                            )
+                            .promote(ty.clone(), span)
+                        } else {
+                            relative
+                        }
                     }
                     frontend::DiscriminantDefinition::Explicit { def_id, span } => {
                         let e = ast::ExprKind::GlobalId(def_id.import_as_value())
@@ -2016,6 +2123,8 @@ pub fn import_item(
     };
     let ident = this.contents().def_id.clone().import_as_nonvalue();
     let span = span.import(context);
+    let attributes = attributes.import(context);
+    let has_auto = has_automatically_derived(&attributes);
     let mut items = Vec::new();
     let kind = match kind {
         frontend::FullDefKind::Adt {
@@ -2130,8 +2239,7 @@ pub fn import_item(
             ..
         } => {
             let mut generics = param_env.import(context);
-            let mut implied_predicates = implied_predicates.import(context);
-            generics.constraints.append(&mut implied_predicates);
+            generics.constraints = implied_predicates.import(context);
             ast::ItemKind::Trait {
                 name: ident,
                 generics,
@@ -2158,7 +2266,7 @@ pub fn import_item(
             items,
             ..
         } => {
-            let generics = param_env.import(context);
+            let mut generics = param_env.import(context);
             let trait_ref = trait_pred.trait_ref.contents();
             let of_trait: (ast::GlobalId, Vec<ast::GenericValue>) = (
                 trait_ref.def_id.import_as_nonvalue(),
@@ -2169,86 +2277,100 @@ pub fn import_item(
                     .collect(),
             );
 
-            let parent_bounds = implied_impl_exprs.spanned_import(context, span);
-            let items = items
-                .iter()
-                .flat_map(|assoc_item| {
-                    // The DefId for this very specific impl associated item.
-                    // The DefId of the original associated item on the trait is
-                    // `assoc_item.decl_def_id`, here we discard it, but it may
-                    // be useful in the future (for e.g. for
-                    // https://github.com/cryspen/hax-evit/issues/24).
-                    let method_def_id_impl = match &assoc_item.value {
-                        hax_frontend_exporter::ImplAssocItemValue::Provided { def_id, .. } => {
-                            def_id
-                        }
-                        _ => {
-                            // TODO: Here, we skip defaulted associated items.
-                            return None;
-                        }
-                    };
-                    let ident = method_def_id_impl.import_as_nonvalue();
-                    let assoc_item_def = all_items.get(method_def_id_impl).unwrap_or_else(
-                        #[allow(unreachable_code)]
-                        || match missing_associated_item() {},
-                    );
-                    let span = assoc_item_def.span.import(context);
-                    let attributes = assoc_item_def.attributes.import(context);
-                    let (generics, kind) = match assoc_item_def.kind() {
-                        frontend::FullDefKind::AssocTy {
-                            param_env, value, ..
-                        } => (
-                            param_env.import(context),
-                            match expect_body(value, span, "import_item/TraitImpl/AssocTy") {
-                                Ok(body) => ast::ImplItemKind::Type {
-                                    ty: body.spanned_import(context, span),
-                                    parent_bounds: assoc_item
-                                        .required_impl_exprs
-                                        .spanned_import(context, span),
+            let mut parent_bounds: Vec<(ast::ImplExpr, ast::ImplIdent)> =
+                implied_impl_exprs.spanned_import(context, span);
+            let items: Vec<ast::ImplItem> = if has_auto {
+                Vec::new()
+            } else {
+                items
+                    .iter()
+                    .flat_map(|assoc_item| {
+                        // The DefId for this very specific impl associated item.
+                        // The DefId of the original associated item on the trait is
+                        // `assoc_item.decl_def_id`, here we discard it, but it may
+                        // be useful in the future (for e.g. for
+                        // https://github.com/cryspen/hax-evit/issues/24).
+                        let method_def_id_impl = match &assoc_item.value {
+                            hax_frontend_exporter::ImplAssocItemValue::Provided {
+                                def_id, ..
+                            } => def_id,
+                            _ => {
+                                // TODO: Here, we skip defaulted associated items.
+                                return None;
+                            }
+                        };
+                        let ident = method_def_id_impl.import_as_nonvalue();
+                        let assoc_item_def = all_items.get(method_def_id_impl).unwrap_or_else(
+                            #[allow(unreachable_code)]
+                            || match missing_associated_item() {},
+                        );
+                        let span = assoc_item_def.span.import(context);
+                        let attributes = assoc_item_def.attributes.import(context);
+                        let (generics, kind) = match assoc_item_def.kind() {
+                            frontend::FullDefKind::AssocTy {
+                                param_env, value, ..
+                            } => (
+                                param_env.import(context),
+                                match expect_body(value, span, "import_item/TraitImpl/AssocTy") {
+                                    Ok(body) => ast::ImplItemKind::Type {
+                                        ty: body.spanned_import(context, span),
+                                        parent_bounds: assoc_item
+                                            .required_impl_exprs
+                                            .spanned_import(context, span),
+                                    },
+                                    Err(error) => ast::ImplItemKind::Error(error),
                                 },
-                                Err(error) => ast::ImplItemKind::Error(error),
-                            },
-                        ),
-                        frontend::FullDefKind::AssocFn {
-                            param_env,
-                            body,
-                            sig,
-                            ..
-                        } => (
-                            import_generics(context, &sig.bound_vars, param_env),
-                            match expect_body(body, span, "import_item/TraitImpl/AssocFn") {
-                                Ok(body) => ast::ImplItemKind::Fn {
-                                    body: body.import(context),
-                                    params: import_params(context, &body.params, span),
+                            ),
+                            frontend::FullDefKind::AssocFn {
+                                param_env,
+                                body,
+                                sig,
+                                ..
+                            } => (
+                                import_generics(context, &sig.bound_vars, param_env),
+                                match expect_body(body, span, "import_item/TraitImpl/AssocFn") {
+                                    Ok(body) => ast::ImplItemKind::Fn {
+                                        body: body.import(context),
+                                        params: import_params(context, &body.params, span),
+                                    },
+                                    Err(error) => ast::ImplItemKind::Error(error),
                                 },
-                                Err(error) => ast::ImplItemKind::Error(error),
-                            },
-                        ),
-                        frontend::FullDefKind::AssocConst {
-                            param_env, body, ..
-                        } => (
-                            param_env.import(context),
-                            match expect_body(body, span, "import_item/TraitImpl/AssocConst") {
-                                Ok(body) => ast::ImplItemKind::Fn {
-                                    body: body.import(context),
-                                    params: Vec::new(),
+                            ),
+                            frontend::FullDefKind::AssocConst {
+                                param_env, body, ..
+                            } => (
+                                param_env.import(context),
+                                match expect_body(body, span, "import_item/TraitImpl/AssocConst") {
+                                    Ok(body) => ast::ImplItemKind::Fn {
+                                        body: body.import(context),
+                                        params: Vec::new(),
+                                    },
+                                    Err(error) => ast::ImplItemKind::Error(error),
                                 },
-                                Err(error) => ast::ImplItemKind::Error(error),
-                            },
-                        ),
-                        #[allow(unreachable_code)]
-                        _ => match missing_associated_item() {},
-                    };
-                    Some(ast::ImplItem {
-                        meta: ast::Metadata { span, attributes },
-                        generics,
-                        kind,
-                        ident,
+                            ),
+                            #[allow(unreachable_code)]
+                            _ => match missing_associated_item() {},
+                        };
+                        Some(ast::ImplItem {
+                            meta: ast::Metadata { span, attributes },
+                            generics,
+                            kind,
+                            ident,
+                        })
                     })
-                })
-                .collect();
+                    .collect()
+            };
 
             if let [ast::GenericValue::Ty(self_ty), ..] = &of_trait.1[..] {
+                parent_bounds.retain(|(impl_expr, _)| {
+                    matches!(impl_expr.goal.args.first(), Some(ast::GenericValue::Ty(arg_ty)) if arg_ty == self_ty)
+                });
+                generics
+                    .constraints
+                    .retain(|gc| !is_constraint_on_ty(gc, self_ty));
+                if generics.constraints.len() > 1 {
+                    generics.constraints.truncate(1);
+                }
                 ast::ItemKind::Impl {
                     generics,
                     self_ty: self_ty.clone(),
@@ -2266,6 +2388,9 @@ pub fn import_item(
         frontend::FullDefKind::InherentImpl {
             param_env, items, ..
         } => {
+            if has_auto {
+                return Vec::new();
+            }
             return items
                 .iter()
                 .map(|assoc_item| {
@@ -2297,8 +2422,11 @@ pub fn import_item(
                             body,
                             ..
                         } => {
-                            let generics = import_generics(context, &sig.bound_vars, param_env);
-                            let generics = generics.concat(param_env.import(context));
+                            let generics = impl_generics.clone().concat(import_generics(
+                                context,
+                                &sig.bound_vars,
+                                param_env,
+                            ));
                             match expect_body(body, span, "import_item/InherentImpl/AssocFn") {
                                 Ok(body) => ast::ItemKind::Fn {
                                     name: ident,
@@ -2430,10 +2558,7 @@ pub fn import_item(
     items.push(ast::Item {
         ident,
         kind,
-        meta: ast::Metadata {
-            span,
-            attributes: attributes.import(context),
-        },
+        meta: ast::Metadata { span, attributes },
     });
     items
 }
