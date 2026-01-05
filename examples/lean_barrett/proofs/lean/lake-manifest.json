@@ -1,0 +1,12 @@
+{"version": "1.1.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"type": "path",
+   "scope": "",
+   "name": "Hax",
+   "manifestFile": "lake-manifest.json",
+   "inherited": false,
+   "dir": "../../../../hax-lib/proof-libs/lean",
+   "configFile": "lakefile.toml"}],
+ "name": "Lean_barrett",
+ "lakeDir": ".lake"}
