@@ -49,6 +49,12 @@ impl Expr {
         ExprKind::tuple(components).promote(ty, span)
     }
 
+    /// Create a unit (tuple of size 0) expression.
+    pub fn unit(span: Span) -> Self {
+        ExprKind::GlobalId(global_id::TupleId::Constructor { length: 0 }.into())
+            .promote(TyKind::unit().promote(), span)
+    }
+
     /// Creates a `App` node for a standalone function.
     pub fn standalone_fn_app(
         head: impl Into<FnAppHead>,
