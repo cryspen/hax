@@ -13,6 +13,8 @@ import Std.Do.Triple
 import Std.Tactic.Do
 import Std.Tactic.Do.Syntax
 import Hax.Initialize
+import Hax.USize64
+import Hax.MissingLean.Init.Data.UInt.Lemmas
 
 open Std.Do
 open Std.Tactic
@@ -180,7 +182,7 @@ abbrev u8 := UInt8
 abbrev u16 := UInt16
 abbrev u32 := UInt32
 abbrev u64 := UInt64
-abbrev usize := USize
+abbrev usize := USize64
 abbrev i8 := Int8
 abbrev i16 := Int16
 abbrev i32 := Int32
@@ -231,7 +233,7 @@ instance : Coe u32 Nat where
 
 @[simp]
 instance : Coe Nat usize where
-  coe x := USize.ofNat x
+  coe x := USize64.ofNat x
 
 @[simp]
 instance : Coe usize u32 where
@@ -256,22 +258,103 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
   are also provided -/
 namespace Rust_primitives.Hax.Machine_int
 
-@[simp, spec, hax_bv_decide]
+@[simp, hax_bv_decide]
 def eq {α} (x y: α) [BEq α] : RustM Bool := pure (x == y)
-@[simp, spec, hax_bv_decide]
+
+@[simp, hax_bv_decide]
 def ne {α} (x y: α) [BEq α] : RustM Bool := pure (x != y)
-@[simp, spec, hax_bv_decide]
-def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : RustM Bool :=
-  pure (x < y)
-@[simp, spec, hax_bv_decide]
-def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : RustM Bool :=
-  pure (x ≤ y)
-@[simp, spec, hax_bv_decide]
-def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : RustM Bool :=
-  pure (x > y)
-@[simp, spec, hax_bv_decide]
-def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool :=
-  pure (x ≥ y)
+
+@[simp, hax_bv_decide]
+def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : RustM Bool := pure (x < y)
+
+@[simp, hax_bv_decide]
+def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : RustM Bool := pure (x ≤ y)
+
+@[simp, hax_bv_decide]
+def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : RustM Bool := pure (x > y)
+
+@[simp, hax_bv_decide]
+def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool := pure (x ≥ y)
+
+open Lean in
+set_option hygiene false in
+macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
+
+  let signed ← match s.raw[0].getKind with
+  | `signed => pure true
+  | `unsigned => pure false
+  | _ => throw .unsupportedSyntax
+
+  if signed then
+    return ← `(
+      namespace $typeName
+
+      @[spec]
+      def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toInt == y.toInt) ⌝ ⦄ := by
+        mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
+
+      @[spec]
+      def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toInt != y.toInt) ⌝ ⦄ := by
+        mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
+
+      @[spec]
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toInt < y.toInt) ⌝ ⦄ := by
+        mvcgen [lt]; simp [x.lt_iff_toInt_lt]
+
+      @[spec]
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toInt ≤ y.toInt) ⌝ ⦄ := by
+        mvcgen [le]; simp [x.le_iff_toInt_le]
+
+      @[spec]
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toInt > y.toInt ) ⌝ ⦄ := by
+        mvcgen [gt]; simp [y.lt_iff_toInt_lt]
+
+      @[spec]
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toInt ≥ y.toInt) ⌝ ⦄ := by
+        mvcgen [ge]; simp [y.le_iff_toInt_le]
+
+      end $typeName
+    )
+  else return ← `(
+      namespace $typeName
+
+      @[spec]
+      def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toNat == y.toNat) ⌝ ⦄ := by
+        mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
+
+      @[spec]
+      def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toNat != y.toNat) ⌝ ⦄ := by
+        mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
+
+      @[spec]
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toNat < y.toNat) ⌝ ⦄ := by
+        mvcgen [lt]; simp [x.lt_iff_toNat_lt]
+
+      @[spec]
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toNat ≤ y.toNat) ⌝ ⦄ := by
+        mvcgen [le]; simp [x.le_iff_toNat_le]
+
+      @[spec]
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toNat > y.toNat ) ⌝ ⦄ := by
+        mvcgen [gt]; simp [y.lt_iff_toNat_lt]
+
+      @[spec]
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := by
+        mvcgen [ge]; simp [y.le_iff_toNat_le]
+
+      end $typeName
+  )
+
+declare_comparison_specs signed Int8 8
+declare_comparison_specs signed Int16 16
+declare_comparison_specs signed Int32 32
+declare_comparison_specs signed Int64 64
+declare_comparison_specs signed ISize System.Platform.numBits
+declare_comparison_specs unsigned UInt8 8
+declare_comparison_specs unsigned UInt16 16
+declare_comparison_specs unsigned UInt32 32
+declare_comparison_specs unsigned UInt64 64
+declare_comparison_specs unsigned USize64 64
 
 end Rust_primitives.Hax.Machine_int
 
@@ -443,7 +526,7 @@ instance : Cast i64 (RustM i32) where
 
 @[spec]
 instance : Cast usize u32 where
-  cast x := pure (USize.toUInt32 x)
+  cast x := pure (USize64.toUInt32 x)
 
 @[spec]
 instance : Cast String String where
@@ -558,18 +641,17 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
     suffices (s + (e - s)) = e by (rw [← this]; assumption)
     omega
 
-
 @[spec]
 theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
   (s e : usize)
   (inv : α -> usize -> RustM Bool)
   (init: α)
   (body : α -> usize -> RustM α) :
-  s ≤ e →
+  s.toNat ≤ e.toNat →
   inv init s = pure true →
   (∀ (acc:α) (i:usize),
-    s ≤ i →
-    i < e →
+    s.toNat ≤ i.toNat →
+    i.toNat < e.toNat →
     inv acc i = pure true →
     ⦃ ⌜ True ⌝ ⦄
     (body acc i)
@@ -579,20 +661,20 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
   ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
   intro h_inv_s h_le h_body
-  have : s.toNat < USize.size := by apply USize.toNat_lt_size
-  have : e.toNat < USize.size := by apply USize.toNat_lt_size
+  have : s.toNat < USize64.size := by apply USize64.toNat_lt_size
+  have : e.toNat < USize64.size := by apply USize64.toNat_lt_size
   mvcgen [Spec.forIn_list, fold_range]
   case inv1 =>
     simp [Coe.coe]
-    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + (USize.ofNat suff.length)) = pure true ⌝ )
+    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + (USize64.ofNat suff.length)) = pure true ⌝ )
   case vc2.pre | vc4.post.except =>
-    simp [Coe.coe, USize.ofNat] at * <;> try assumption
+    simp [Coe.coe, USize64.ofNat] at * <;> try assumption
   case vc3.post.success =>
     simp at *
-    suffices (s + USize.ofNat (USize.toNat e - USize.toNat s)) = e by rwa [← this]
-    rw [USize.ofNat_sub, USize.ofNat_toNat, USize.ofNat_toNat] <;> try assumption
-    rw (occs := [2])[← USize.sub_add_cancel (b := s) (a := e)]
-    rw [USize.add_comm]
+    suffices (s + USize64.ofNat (USize64.toNat e - USize64.toNat s)) = e by rwa [← this]
+    rw [USize64.ofNat_sub, USize64.ofNat_toNat, USize64.ofNat_toNat] <;> try assumption
+    rw (occs := [2])[← USize64.sub_add_cancel (b := s) (a := e)]
+    rw [USize64.add_comm]
   case vc1.step _ x _ h_list _ h =>
     intros
     simp [Coe.coe] at h_list h
@@ -600,17 +682,14 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
     have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
     let h_suff := Eq.symm h_suff
     let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
-    unfold USize.size at *
-    mstart ; mspec h_body <;> simp [Coe.coe] at * <;> (try grind) <;> (try omega)
-    . apply USize.le_iff_toNat_le.mpr
-      rw [← h_x, USize.toNat_ofNat', Nat.mod_eq_of_lt] <;> try omega
-    . apply USize.lt_iff_toNat_lt.mpr
-      rw [← h_x, USize.toNat_ofNat', Nat.mod_eq_of_lt] <;> try omega
-    . rw [← h_x, USize.ofNat_add, USize.ofNat_toNat]
+    unfold USize64.size at *
+    mstart ; mspec h_body <;> simp [Coe.coe] at *
+    . rw [← h_x, Nat.mod_eq_of_lt] <;> grind
+    . rw [← h_x, Nat.mod_eq_of_lt] <;> grind [Nat.add_sub_cancel']
+    . rw [← h_x, USize64.ofNat_add, USize64.ofNat_toNat]
       rwa [h_pre, List.length_range'] at h
-    . rw [h_pre, List.length_range', ← h_x, USize.ofNat_add, USize.ofNat_toNat, USize.add_assoc]
+    . rw [h_pre, List.length_range', ← h_x, USize64.ofNat_add, USize64.ofNat_toNat, USize64.add_assoc]
       intro; assumption
-
 
 end Fold
 
@@ -721,7 +800,7 @@ Until the backend introduces notations, a definition for the explicit name
 def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (RustM γ) := a[i]_?
 
 
-instance Range.instGetElemResultArrayUSize {α: Type}:
+instance Range.instGetElemResultArrayUSize64 {α: Type}:
   GetElemResult
     (Array α)
     (Range usize)
@@ -729,19 +808,19 @@ instance Range.instGetElemResultArrayUSize {α: Type}:
   getElemResult xs i := match i with
   | ⟨s, e⟩ =>
     let size := xs.size;
-    if s ≤ e && e ≤ size then
+    if s ≤ e && e.toNat ≤ size then
       pure ( xs.extract s e )
     else
       RustM.fail Error.arrayOutOfBounds
 
-instance Range.instGetElemResultVectorUSize {α : Type} {n : Nat} :
+instance Range.instGetElemResultVectorUSize64 {α : Type} {n : Nat} :
   GetElemResult
     (Vector α n)
     (Range usize)
     (Array α) where
   getElemResult xs i := match i with
   | ⟨s, e⟩ =>
-    if s ≤ e && e ≤ n then
+    if s ≤ e && e.toNat ≤ n then
       pure (xs.extract s e).toArray
     else
       RustM.fail Error.arrayOutOfBounds
@@ -800,28 +879,30 @@ theorem usize.getElemVectorResult_spec
   by mvcgen [usize.instGetElemResultVector]
 
 @[spec]
-theorem Range.getElemArrayUSize_spec
+theorem Range.getElemArrayUSize64_spec
   (α : Type) (a: Array α) (s e: usize) :
-  s ≤ e →
-  e ≤ a.size →
+  s.toNat ≤ e.toNat →
+  e.toNat ≤ a.size →
   ⦃ ⌜ True ⌝ ⦄
   ( a[(Range.mk s e)]_? )
   ⦃ ⇓ r => ⌜ r = Array.extract a s e ⌝ ⦄
 := by
   intros
-  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize] ; grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultArrayUSize64]
+  grind [USize64.le_iff_toNat_le]
 
 @[spec]
-theorem Range.getElemVectorUSize_spec
+theorem Range.getElemVectorUSize64_spec
   (α : Type) (n: Nat) (a: Vector α n) (s e: usize) :
-  s ≤ e →
-  e ≤ a.size →
+  s.toNat ≤ e.toNat →
+  e.toNat ≤ a.size →
   ⦃ ⌜ True ⌝ ⦄
   ( a[(Range.mk s e)]_? )
   ⦃ ⇓ r => ⌜ r = (Vector.extract a s e).toArray ⌝ ⦄
 := by
   intros
-  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize] ; grind
+  mvcgen [Core.Ops.Index.Index.index, Range.instGetElemResultVectorUSize64]
+  grind [USize64.le_iff_toNat_le]
 
 
 end Lookup
