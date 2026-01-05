@@ -142,13 +142,14 @@ diff-thir-importers DIR:
   just b
 
   # Utils
-  function readJSON() { cat proofs/rust/extraction/ast.json; }
+  function readJSON() { cat proofs/debugger/extraction/ast.json; }
   BASE="$PWD"
   OUT="$BASE/diff-thir-importers"
   # Remove previous results (if any)
   rm -rf "$OUT"
 
   cd {{DIR}}
+  cargo hax json -o old-thir.json
   cargo hax --experimental-full-def json -o thir.json
   cargo hax --experimental-full-def into debugger
   readJSON > rust-import-thir-ast.json
@@ -156,6 +157,6 @@ diff-thir-importers DIR:
   readJSON > ocaml-import-thir-ast.json
 
   mkdir "$OUT"
-  mv thir.json *ast.json "$OUT"
+  mv thir.json old-thir.json *ast.json "$OUT"
   cd "$OUT"
   diff ocaml-import-thir-ast.json rust-import-thir-ast.json > diff.json
