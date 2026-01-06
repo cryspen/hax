@@ -15,14 +15,8 @@ limitations under the License. -/
 -- This module serves as the root of the `Hax` library.
 -- Import modules here that should be built as part of the library.
 
-/- Main Prelude library -/
-import Hax.Lib
-
 /- Rust primitives (integers, string, slices, etc.) -/
-import Hax.Rust_primitives
-
-/- Tactics -/
-import Hax.Tactics
+import Hax.RustPrimitives
 
 /- Core -/
 import Hax.Core

@@ -1,5 +1,4 @@
-import Hax.Lib
-import Hax.Integers.Ops
+import Hax.RustPrimitives.Integers
 
 abbrev f32 := Float32
 abbrev f64 := Float

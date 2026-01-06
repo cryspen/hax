@@ -12,8 +12,8 @@ import Std
 import Std.Do.Triple
 import Std.Tactic.Do
 import Std.Tactic.Do.Syntax
-import Hax.Initialize
-import Hax.USize64
+import Hax.RustPrimitives.Initialize
+import Hax.RustPrimitives.USize64
 import Hax.MissingLean.Init.Data.UInt.Lemmas
 
 open Std.Do
@@ -1069,7 +1069,12 @@ structure Spec {α}
   pureEnsures : {p : α → Prop // pureRequires.val → ∀ a, ⦃ ⌜ True ⌝ ⦄ ensures a ⦃ ⇓r => ⌜ r = p a ⌝ ⦄}
   contract : ⦃ ⌜ pureRequires.val ⌝ ⦄ f ⦃ ⇓r => ⌜ pureEnsures.val r ⌝ ⦄
 
--- Miscellaneous
+
+/-
+
+# Miscellaneous
+
+-/
 def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
   : RustM (Array α)
   := pure v
@@ -1096,3 +1101,33 @@ abbrev Prop.Impl.from_bool (b : Bool) : Prop := (b = true)
 abbrev Prop.Constructors.implies (a b : Prop) : Prop := a → b
 
 end Hax_lib
+namespace Rust_primitives.Hax
+
+  abbrev Never : Type := Empty
+  abbrev never_to_any.{u} {α : Sort u} : Never → α := Empty.elim
+
+end Rust_primitives.Hax
+
+-- TODO: Why is there `Core_models.Clone` and `Core.Clone`?
+
+namespace Core_models.Clone
+
+class Clone.AssociatedTypes (Self : Type) where
+
+class Clone
+    (Self : Type)
+    [associatedTypes : outParam (Clone.AssociatedTypes (Self : Type))] where
+  clone : Self -> RustM Self
+
+end Core_models.Clone
+
+namespace Core.Clone
+
+class Clone.AssociatedTypes (Self : Type) where
+
+class Clone
+    (Self : Type)
+    [associatedTypes : outParam (Clone.AssociatedTypes (Self : Type))] where
+  clone : Self -> RustM Self
+
+end Core.Clone
