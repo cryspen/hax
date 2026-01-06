@@ -650,7 +650,9 @@ set_option linter.unusedVariables false
                             docs![
                                 impl_ident.goal.trait_,
                                 ".AssociatedTypes",
-                                concat!(impl_ident.goal.args.iter().map(|arg| docs![line!(), arg]))
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                )
                             ]
                             .brackets()
                             .group()
@@ -658,7 +660,9 @@ set_option linter.unusedVariables false
                             line!(),
                             docs![
                                 impl_ident.goal.trait_,
-                                concat!(impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])),
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                ),
                                 line!(),
                                 self.associated_type_projections(impl_ident, projections)
                             ]
