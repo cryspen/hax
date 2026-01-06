@@ -20,6 +20,7 @@ import Hax.RustPrimitives
 
 /- Core -/
 import Hax.Core
+import Hax.MissingCore
 
 /- Additions to the Lean library -/
 import Hax.MissingLean
