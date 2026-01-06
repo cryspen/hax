@@ -9,7 +9,7 @@ function extract_fstar() {
 
 function extract_lean() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::** -**::function::Fn' lean
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::** -**::function::Fn -core_models::result::** +core_models::result::Result' lean
     cp proofs/lean/extraction/*.lean* ../proof-libs/lean/core
 }
 
