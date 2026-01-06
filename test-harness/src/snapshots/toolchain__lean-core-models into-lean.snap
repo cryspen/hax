@@ -155,7 +155,7 @@ instance Lean_core_models.Option.Impl.AssociatedTypes :
 instance Lean_core_models.Option.Impl :
   Core.Default.Default Lean_core_models.Option.S
   where
-  default (_ : Rust_primitives.Hax.Tuple0) := do
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
     (pure (Lean_core_models.Option.S.mk (f1 := (42 : u32))))
 
 def Lean_core_models.Option.test
@@ -252,7 +252,7 @@ instance Lean_core_models.Default.Structs.Impl.AssociatedTypes :
 instance Lean_core_models.Default.Structs.Impl :
   Core.Default.Default Lean_core_models.Default.Structs.S
   where
-  default (_ : Rust_primitives.Hax.Tuple0) := do
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
     (pure (Lean_core_models.Default.Structs.S.mk (f1 := (0 : usize))))
 
 def Lean_core_models.Default.Structs.test
@@ -280,7 +280,7 @@ instance Lean_core_models.Default.Enums.Impl
   :
   Core.Default.Default (Lean_core_models.Default.Enums.E T)
   where
-  default (_ : Rust_primitives.Hax.Tuple0) := do
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
     (pure (Lean_core_models.Default.Enums.E.C2
       (← (Core.Default.Default.default T Rust_primitives.Hax.Tuple0.mk))))
 
