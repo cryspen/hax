@@ -278,3 +278,23 @@ mod trait_level_args {
         x.f3::<C, D>(a, b);
     }
 }
+
+mod trait_with_constraints {
+
+    trait T1 {}
+
+    trait T2 {
+        fn func(&self) -> bool
+        where
+            Self: T1;
+    }
+
+    impl<A: T1> T2 for A {
+        fn func(&self) -> bool
+        where
+            A: T1,
+        {
+            true
+        }
+    }
+}
