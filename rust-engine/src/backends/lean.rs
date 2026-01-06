@@ -1538,9 +1538,19 @@ set_option linter.unusedVariables false
                     docs![
                         name,
                         softline!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        ":= do",
+                        ":=",
+                        line!(),
+                        docs![
+                            "fun",
+                            line!(),
+                            generics,
+                            zip_right!(params, line!()).group(),
+                            "=>",
+                            softline!(),
+                            "do"
+                        ]
+                        .group()
+                        .nest(INDENT)
                     ]
                     .group(),
                     line!(),
