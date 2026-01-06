@@ -28,6 +28,7 @@ Changes to hax-lib:
  - Lean lib: add new setup for `bv_decide` (#1828)
  - Lean lib: base specs on mathematical integers (#1829)
  - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
+ - Automatic generation of core models (#1849)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
