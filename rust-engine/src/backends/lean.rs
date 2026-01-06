@@ -635,14 +635,16 @@ set_option linter.unusedVariables false
                 zip_right!(&generics.params, line!()),
                 zip_right!(
                     generics.type_constraints().map(|impl_ident| {
-                        let projections = generics.projection_constraints()
-                            .map(|p|
-                                if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                        let projections = generics
+                            .projection_constraints()
+                            .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
+                            .map(|p| {
+                                if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
                                     docs![p]
                                 } else {
                                     emit_error!(issue 1710, "Unsupported variant of associated type projection")
                                 }
-                            )
+                            })
                             .collect::<Vec<_>>();
                         docs![
                             docs![

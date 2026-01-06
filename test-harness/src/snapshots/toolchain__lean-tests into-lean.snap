@@ -1235,6 +1235,55 @@ def Lean_tests.Constants.test
   let z : u32 ← (Lean_tests.Constants.C4 -? Lean_tests.Constants.C3);
   (pure Rust_primitives.Hax.Tuple0.mk)
 
+class Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes
+  (Self : Type) (T : Type) where
+  Output : Type
+
+abbrev Lean_tests.Associated_types.Multiple_projections.FnOnce.Output :=
+  Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes.Output
+
+class Lean_tests.Associated_types.Multiple_projections.FnOnce
+  (Self : Type)
+  (T : Type)
+  [associatedTypes : outParam
+    (Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes
+      (Self : Type) (T : Type))]
+  where
+
+def Lean_tests.Associated_types.Multiple_projections.func
+  (T : Type)
+  (U : Type)
+  (D : Type)
+  (F : Type)
+  [Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes F T]
+  [Lean_tests.Associated_types.Multiple_projections.FnOnce
+    F
+    T
+    (associatedTypes := {
+      show
+        Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes
+        F
+        T
+      by infer_instance
+      with Output := U})]
+  [Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes D T]
+  [Lean_tests.Associated_types.Multiple_projections.FnOnce
+    D
+    T
+    (associatedTypes := {
+      show
+        Lean_tests.Associated_types.Multiple_projections.FnOnce.AssociatedTypes
+        D
+        T
+      by infer_instance
+      with Output := U})]
+  (d : D)
+  (f : F)
+  (u : U)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
 class Lean_tests.Associated_types.Multiple_associated_types.Pair.AssociatedTypes
   (Self : Type) where
   First : Type
