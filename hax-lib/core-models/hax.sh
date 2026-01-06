@@ -9,7 +9,8 @@ function extract_fstar() {
 
 function extract_lean() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::** -**::function::Fn -core_models::result::** +core_models::result::Result' lean
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::** -**::function::Fn -core_models::result::** +core_models::result::Result -**::expect -**::unwrap' lean
+    sed -i 's/def Core_models\.Cmp\.Ordering /def Core_models.Cmp.Ordering_ /g' proofs/lean/extraction/Core_models.lean
     cp proofs/lean/extraction/*.lean* ../proof-libs/lean/core
 }
 
