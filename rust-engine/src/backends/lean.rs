@@ -507,7 +507,7 @@ const _: () = {
                             docs![
                                 "requires",
                                 softline!(),
-                                ":= do",
+                                ":=",
                                 line!(),
                                 spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
                             ]
@@ -523,7 +523,7 @@ const _: () = {
                                         line!(),
                                         p.result_binder,
                                         softline!(),
-                                        "=> do",
+                                        "=>",
                                         line!(),
                                         p.body,
                                     ]
@@ -1180,11 +1180,7 @@ set_option linter.unusedVariables false
                         ]
                         .group()
                         .nest(INDENT),
-                        if opaque {
-                            nil!()
-                        } else {
-                            docs![&self.spec(item, name, generics, params)]
-                        }
+                        &self.spec(item, name, generics, params)
                     ]
                 }
                 ItemKind::TyAlias { name, generics, ty } => docs![
@@ -1543,16 +1539,20 @@ set_option linter.unusedVariables false
                 ImplItemKind::Fn { body, params } => docs![
                     docs![
                         name,
-                        line!(),
+                        softline!(),
                         ":=",
                         line!(),
-                        "fun",
-                        line!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        "=>",
-                        line!(),
-                        "do",
+                        docs![
+                            "fun",
+                            line!(),
+                            generics,
+                            zip_right!(params, line!()).group(),
+                            "=>",
+                            softline!(),
+                            "do"
+                        ]
+                        .group()
+                        .nest(INDENT)
                     ]
                     .group(),
                     line!(),
