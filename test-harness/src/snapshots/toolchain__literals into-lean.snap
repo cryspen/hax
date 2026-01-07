@@ -1,6 +1,5 @@
 ---
 source: test-harness/src/harness.rs
-assertion_line: 212
 expression: snapshot
 info:
   kind:
@@ -28,7 +27,7 @@ stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
 diagnostics = []
 
 [stdout.files]
-"Literals.lean" = """
+"Literals.lean" = '''
 
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
@@ -46,34 +45,34 @@ def Literals.math_integers (x : Hax_lib.Int.Int) : RustM u8 := do
   let _ : Hax_lib.Int.Int ← (Rust_primitives.Hax.Int.from_machine (3 : usize));
   let _neg_dec : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"-340282366920938463463374607431768211455000\");
+      "-340282366920938463463374607431768211455000");
   let _pos_dec : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"340282366920938463463374607431768211455000\");
+      "340282366920938463463374607431768211455000");
   let _neg_hex : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"-340282366920938463463374607431768211455000\");
+      "-340282366920938463463374607431768211455000");
   let _pos_hex : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"340282366920938463463374607431768211455000\");
+      "340282366920938463463374607431768211455000");
   let _neg_octal : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"-340282366920938463463374607431768211455000\");
+      "-340282366920938463463374607431768211455000");
   let _pos_octal : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"340282366920938463463374607431768211455000\");
+      "340282366920938463463374607431768211455000");
   let _neg_bin : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"-340282366920938463463374607431768211455000\");
+      "-340282366920938463463374607431768211455000");
   let _pos_bin : Hax_lib.Int.Int ←
     (Hax_lib.Int.Impl_7._unsafe_from_str
-      \"340282366920938463463374607431768211455000\");
+      "340282366920938463463374607431768211455000");
   let _ ←
     (Rust_primitives.Hax.Int.gt
       (← (Hax_lib.Int.Impl_7._unsafe_from_str
-        \"-340282366920938463463374607431768211455000\"))
+        "-340282366920938463463374607431768211455000"))
       (← (Hax_lib.Int.Impl_7._unsafe_from_str
-        \"340282366920938463463374607431768211455000\")));
+        "340282366920938463463374607431768211455000")));
   let _ ← (Rust_primitives.Hax.Int.lt x x);
   let _ ← (Rust_primitives.Hax.Int.ge x x);
   let _ ← (Rust_primitives.Hax.Int.le x x);
@@ -103,10 +102,10 @@ def Literals.math_integers.spec (x : Hax_lib.Int.Int)  :
         (Rust_primitives.Hax.logical_op_and
           (← (Rust_primitives.Hax.Int.gt
             x
-            (← (Hax_lib.Int.Impl_7._unsafe_from_str \"0\"))))
+            (← (Hax_lib.Int.Impl_7._unsafe_from_str "0"))))
           (← (Rust_primitives.Hax.Int.lt
             x
-            (← (Hax_lib.Int.Impl_7._unsafe_from_str \"16\"))))))
+            (← (Hax_lib.Int.Impl_7._unsafe_from_str "16"))))))
       (ensures := fun _ => pure True)
       (Literals.math_integers (x : Hax_lib.Int.Int) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
@@ -120,7 +119,7 @@ def Literals.panic_with_msg
   := do
   (Rust_primitives.Hax.never_to_any
     (← (Core.Panicking.panic_fmt
-      (← (Core.Fmt.Rt.Impl_1.new_const ((1 : usize)) #v[\"with msg\"])))))
+      (← (Core.Fmt.Rt.Impl_1.new_const ((1 : usize)) #v["with msg"])))))
 
 structure Literals.Foo where
   field : u8
@@ -168,9 +167,9 @@ def Literals.patterns
   let _ ←
     match
       (Rust_primitives.Hax.Tuple2.mk
-        \"hello\" (Rust_primitives.Hax.Tuple2.mk (123 : i32) #v[\"a\", \"b\"]))
+        "hello" (Rust_primitives.Hax.Tuple2.mk (123 : i32) #v["a", "b"]))
     with
-      | ⟨\"hello\", ⟨123, _todo⟩⟩ => (pure Rust_primitives.Hax.Tuple0.mk)
+      | ⟨"hello", ⟨123, _todo⟩⟩ => (pure Rust_primitives.Hax.Tuple0.mk)
       | _ => (pure Rust_primitives.Hax.Tuple0.mk);
   let _ ←
     match (Literals.Foo.mk (field := (4 : u8))) with
@@ -247,4 +246,21 @@ def Literals.fn_pointer_cast
   : RustM Rust_primitives.Hax.Tuple0
   := do
   let f : (u32 -> RustM u32) := (fun x => (do (pure x) : RustM u32));
-  (pure Rust_primitives.Hax.Tuple0.mk)"""
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Literals.strings
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  let _ : String := "hello";
+  let _ : String := "hello\"world";
+  let _ : String := "it\'s";
+  let _ : String := "back\\slash";
+  let _ : String := "line\nbreak";
+  let _ : String := "carriage\rreturn";
+  let _ : String := "tab\there";
+  let _ : String := "null\x00byte";
+  let _ : String := "bell\x07char";
+  let _ : String := "\x1b[0m";
+  let _ : String := "🦀";
+  (pure Rust_primitives.Hax.Tuple0.mk)'''
