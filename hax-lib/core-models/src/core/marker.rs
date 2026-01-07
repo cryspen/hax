@@ -1,3 +1,5 @@
+use super::clone::Clone;
+
 pub trait Copy: Clone {}
 pub trait Send {}
 pub trait Sync {}

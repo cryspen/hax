@@ -507,7 +507,7 @@ const _: () = {
                             docs![
                                 "requires",
                                 softline!(),
-                                ":=",
+                                ":= do",
                                 line!(),
                                 spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
                             ]
@@ -523,7 +523,7 @@ const _: () = {
                                         line!(),
                                         p.result_binder,
                                         softline!(),
-                                        "=>",
+                                        "=> do",
                                         line!(),
                                         p.body,
                                     ]
@@ -1180,7 +1180,11 @@ set_option linter.unusedVariables false
                         ]
                         .group()
                         .nest(INDENT),
-                        &self.spec(item, name, generics, params)
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![&self.spec(item, name, generics, params)]
+                        }
                     ]
                 }
                 ItemKind::TyAlias { name, generics, ty } => docs![

@@ -893,7 +893,7 @@ def
       (self : Lean_tests.Specs.Issue_1852.T)
        :
     Spec
-      (requires := (Lean_tests.Specs.Issue_1852.Impl.test self))
+      (requires := do (Lean_tests.Specs.Issue_1852.Impl.test self))
       (ensures := fun _ => pure True)
       (Lean_tests.Specs.Issue_1852.Impl.func
         (self : Lean_tests.Specs.Issue_1852.T)
@@ -908,8 +908,8 @@ def Lean_tests.Specs.test (x : u8) : RustM u8 := do (pure x)
 @[spec]
 def Lean_tests.Specs.test.spec (x : u8)  :
     Spec
-      (requires := (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
-      (ensures := fun r => (Rust_primitives.Hax.Machine_int.eq r x))
+      (requires := do (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
+      (ensures := fun r => do (Rust_primitives.Hax.Machine_int.eq r x))
       (Lean_tests.Specs.test (x : u8) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
@@ -921,8 +921,8 @@ def Lean_tests.Specs.test_proof (x : u8) : RustM u8 := do (pure x)
 @[spec]
 def Lean_tests.Specs.test_proof.spec (x : u8)  :
     Spec
-      (requires := (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
-      (ensures := fun r => (Rust_primitives.Hax.Machine_int.eq r x))
+      (requires := do (Rust_primitives.Hax.Machine_int.gt x (0 : u8)))
+      (ensures := fun r => do (Rust_primitives.Hax.Machine_int.eq r x))
       (Lean_tests.Specs.test_proof (x : u8) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
@@ -1093,8 +1093,8 @@ def Lean_tests.Loops.while_loop1 (s : u32) : RustM u32 := do
 @[spec]
 def Lean_tests.Loops.while_loop1.spec (s : u32)  :
     Spec
-      (requires := pure True)
-      (ensures := fun r => (pure true))
+      (requires := do pure True)
+      (ensures := fun r => do (pure true))
       (Lean_tests.Loops.while_loop1 (s : u32) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
