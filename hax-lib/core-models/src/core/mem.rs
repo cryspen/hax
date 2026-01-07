@@ -1,5 +1,7 @@
 #![allow(unused_variables)]
 
+use super::marker::Copy;
+
 #[hax_lib::opaque]
 pub fn forget<T>(t: T) {
     panic!()
@@ -69,7 +71,7 @@ pub fn replace<T>(dest: &mut T, src: T) -> T {
 pub fn drop<T>(_x: T) {}
 
 pub fn copy<T: Copy>(x: &T) -> T {
-    *x
+    rust_primitives::mem::copy(x)
 }
 
 #[hax_lib::opaque]
