@@ -1108,19 +1108,6 @@ namespace Rust_primitives.Hax
 
 end Rust_primitives.Hax
 
--- TODO: Why is there `Core_models.Clone` and `Core.Clone`?
-
-namespace Core_models.Clone
-
-class Clone.AssociatedTypes (Self : Type) where
-
-class Clone
-    (Self : Type)
-    [associatedTypes : outParam (Clone.AssociatedTypes (Self : Type))] where
-  clone : Self -> RustM Self
-
-end Core_models.Clone
-
 namespace Core.Clone
 
 class Clone.AssociatedTypes (Self : Type) where
@@ -1131,3 +1118,18 @@ class Clone
   clone : Self -> RustM Self
 
 end Core.Clone
+
+namespace Core.Marker
+
+class Copy.AssociatedTypes (Self : Type) where
+  [inst : Core.Clone.Clone.AssociatedTypes Self]
+
+attribute [instance] Copy.AssociatedTypes.inst
+
+class Copy
+  (Self : Type)
+  [associatedTypes : outParam (Copy.AssociatedTypes Self)]
+where
+  [inst : Core.Clone.Clone Self]
+
+end Core.Marker

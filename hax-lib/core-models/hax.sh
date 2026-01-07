@@ -9,10 +9,20 @@ function extract_fstar() {
 
 function extract_lean() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::** -**::function::Fn -core_models::result::** +core_models::result::Result -**::expect -**::unwrap -**::mem::copy' lean
+    LEAN_FILTERS=""
+    LEAN_FILTERS+=" -core_models::ops::function::Fn" # Issue #1710
+    LEAN_FILTERS+=" -core_models::result::**::ok" # Issue #1823
+    LEAN_FILTERS+=" -core_models::result::**::unwrap" # Issues #1818 and #1852
+    LEAN_FILTERS+=" -core_models::result::**::expect" # Issues #1818 and #1852
+    LEAN_FILTERS+=" -core_models::option::**::expect" # Issues #1818 and #1852
+    LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issues #1818 and #1852
+    LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     sed -i 's/import Hax/import Hax.RustPrimitives/g' proofs/lean/extraction/Core_models.lean
-    sed -i 's/def Core_models\.Cmp\.Ordering /def Core_models.Cmp.Ordering_ /g' proofs/lean/extraction/Core_models.lean
-    cp proofs/lean/extraction/*.lean* ../proof-libs/lean/Hax/Core.lean
+    sed -i 's/def Core_models\.Cmp\.Ordering /def Core_models.Cmp.Ordering_ /g' proofs/lean/extraction/Core_models.lean # Issue #1646
+    sed -i 's/Core_models.Convert.From.from/Core_models.Convert.From._from/g' proofs/lean/extraction/Core_models.lean # Issue #1853
+    
+    cp proofs/lean/extraction/Core_models.lean ../proof-libs/lean/Hax/Core.lean
 }
 
 function init_vars() {
