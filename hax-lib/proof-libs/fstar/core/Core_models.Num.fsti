@@ -170,6 +170,12 @@ let impl_u64__overflowing_sub (x y: u64): u64 * bool
 
 let impl_i64__wrapping_mul: i64 -> i64 -> i64 = mul_mod
 
+let impl_i32__wrapping_mul: i32 -> i32 -> i32 = mul_mod
+val impl_u32__wrapping_shl: u32 -> u32 -> u32
+val impl_i16__wrapping_shr: i16 -> u32 -> i16
+val impl_i32__wrapping_shr: i32 -> u32 -> i32
+val impl_i16__wrapping_neg: i16 -> i16
+
 val impl_u128__rotate_left: u128 -> u128 -> u128
 val impl_u128__from_le_bytes: t_Array u8 (sz 16) -> u128
 val impl_u128__from_be_bytes: t_Array u8 (sz 16) -> u128
