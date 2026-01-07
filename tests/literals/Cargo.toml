@@ -7,6 +7,7 @@ edition = "2021"
 hax-lib = { path = "../../hax-lib" }
 
 [package.metadata.hax-tests]
+into."lean" = { broken = false, issue_id = "85" }
 into."fstar" = { broken = false, issue_id = "85" }
 into."coq" = { broken = false, issue_id = "85" }
 into."ssprove" = { broken = true, snapshot = "none", issue_id = "85" }

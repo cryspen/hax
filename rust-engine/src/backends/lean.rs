@@ -202,6 +202,27 @@ impl LeanPrinter {
             .clone();
         self.escape(id)
     }
+
+    /// Escape a string for use in Lean string literals.
+    /// Handles newlines, quotes, backslashes, and other special characters.
+    fn escape_string(&self, s: &str) -> String {
+        let mut result = String::with_capacity(s.len());
+        for c in s.chars() {
+            match c {
+                '"' => result.push_str("\\\""),
+                '\'' => result.push_str("\\'"),
+                '\\' => result.push_str("\\\\"),
+                '\n' => result.push_str("\\n"),
+                '\r' => result.push_str("\\r"),
+                '\t' => result.push_str("\\t"),
+                c if c.is_ascii_control() => {
+                    result.push_str(&format!("\\x{:02x}", c as u8));
+                }
+                c => result.push(c),
+            }
+        }
+        result
+    }
 }
 
 /// Render parameters, adding a line after each parameter
@@ -1068,7 +1089,7 @@ set_option linter.unusedVariables false
 
         fn literal(&self, literal: &Literal) -> DocBuilder<A> {
             docs![match literal {
-                Literal::String(symbol) => format!("\"{symbol}\""),
+                Literal::String(symbol) => format!("\"{}\"", self.escape_string(symbol)),
                 Literal::Char(c) => format!("'{c}'"),
                 Literal::Bool(b) => format!("{b}"),
                 Literal::Int {
@@ -1719,3 +1740,38 @@ set_option linter.unusedVariables false
         }
     }
 };
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_escape_string_identity() {
+        let printer = LeanPrinter::default();
+        assert_eq!(printer.escape_string("hello"), "hello");
+        assert_eq!(printer.escape_string("Hello, World!"), "Hello, World!");
+        assert_eq!(printer.escape_string(""), "");
+    }
+
+    #[test]
+    fn test_escape_string_basic_escapes() {
+        let printer = LeanPrinter::default();
+        assert_eq!(printer.escape_string("hello\"world"), "hello\\\"world");
+        assert_eq!(printer.escape_string("it's"), "it\\'s");
+        assert_eq!(printer.escape_string("back\\slash"), "back\\\\slash");
+        assert_eq!(printer.escape_string("line\nbreak"), "line\\nbreak");
+        assert_eq!(
+            printer.escape_string("carriage\rreturn"),
+            "carriage\\rreturn"
+        );
+        assert_eq!(printer.escape_string("tab\there"), "tab\\there");
+    }
+
+    #[test]
+    fn test_escape_string_control_chars() {
+        let printer = LeanPrinter::default();
+        assert_eq!(printer.escape_string("null\x00byte"), "null\\x00byte");
+        assert_eq!(printer.escape_string("bell\x07char"), "bell\\x07char");
+        assert_eq!(printer.escape_string("\x1b[0m"), "\\x1b[0m");
+    }
+}
