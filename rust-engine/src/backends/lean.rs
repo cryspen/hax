@@ -1760,7 +1760,10 @@ mod tests {
         assert_eq!(printer.escape_string("it's"), "it\\'s");
         assert_eq!(printer.escape_string("back\\slash"), "back\\\\slash");
         assert_eq!(printer.escape_string("line\nbreak"), "line\\nbreak");
-        assert_eq!(printer.escape_string("carriage\rreturn"), "carriage\\rreturn");
+        assert_eq!(
+            printer.escape_string("carriage\rreturn"),
+            "carriage\\rreturn"
+        );
         assert_eq!(printer.escape_string("tab\there"), "tab\\there");
     }
 

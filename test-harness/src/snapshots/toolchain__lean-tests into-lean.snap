@@ -53,27 +53,27 @@ Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
    \u001B[1m\u001B[94m|\u001B[0m \u001B[1m\u001B[91m|__________^\u001B[0m
    \u001B[1m\u001B[94m|\u001B[0m"""
 [[stdout.diagnostics]]
-message = '''
+message = """
 Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
 
 This is discussed in issue https://github.com/hacspec/hax/issues/1741.
 Please upvote or comment this issue if you see this error message.
-Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-'''
+\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+\u001B[0m"""
 spans = ['Span { lo: Loc { line: 6, col: 17 }, hi: Loc { line: 6, col: 43 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [[stdout.diagnostics]]
-message = '''
+message = """
 Explicit rejection by a phase in the Hax engine:
 This interleaving of expression and statements does not fit in Lean's do-notation DSL.
 You may try hoisting out let-bindings and control-flow.
 
 This is discussed in issue https://github.com/hacspec/hax/issues/1741.
 Please upvote or comment this issue if you see this error message.
-Note: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
-'''
+\u001B[90mNote: the error was labeled with context `Engine phase (RejectNotDoLeanDSL)`.
+\u001B[0m"""
 spans = ['Span { lo: Loc { line: 8, col: 10 }, hi: Loc { line: 10, col: 10 }, filename: Real(LocalPath("lean-tests/src/reject_do_dsl.rs")), rust_span_data: None }']
 
 [stdout.files]
