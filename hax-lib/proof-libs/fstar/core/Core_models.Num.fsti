@@ -169,6 +169,7 @@ let impl_u64__overflowing_sub (x y: u64): u64 * bool
     (mk_u64 out, borrow)
 
 let impl_i64__wrapping_mul: i64 -> i64 -> i64 = mul_mod
+let impl_u64__wrapping_mul: u64 -> u64 -> u64 = mul_mod
 
 let impl_i32__wrapping_mul: i32 -> i32 -> i32 = mul_mod
 val impl_u32__wrapping_shl: u32 -> u32 -> u32
