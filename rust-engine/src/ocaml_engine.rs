@@ -64,6 +64,14 @@ pub enum QueryKind {
         /// The items on which the phases will be applied.
         input: Vec<crate::ast::Item>,
     },
+
+    /// Ask the OCaml engine to call an OCaml printer
+    Print {
+        /// Which printer to use
+        printer: hax_types::cli_options::Backend<()>,
+        /// The items after applying the phases.
+        input: Vec<crate::ast::Item>,
+    },
 }
 /// A Response after a [`Query`]
 #[derive(Debug, Clone, ::schemars::JsonSchema, ::serde::Deserialize, ::serde::Serialize)]
@@ -78,6 +86,8 @@ pub enum Response {
         /// The output Rust AST items after phases
         output: Vec<crate::ast::Item>,
     },
+    /// Printing was done successfully
+    PrintOk,
 }
 
 /// Extends the common `FromEngine` messages with one extra case: `Response`.

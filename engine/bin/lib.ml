@@ -292,6 +292,32 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
       let items = Phase.ditems items in
       let output = List.concat_map ~f:ExportFullAst.ditem items in
       Rust_engine_types.ApplyPhases { output }
+  | Types.Print { printer = Fstar backend_options; input } ->
+      let open Fstar_backend in
+      let items = List.concat_map ~f:Import_ast.ditem input in
+
+      let items : AST.item list = Stdlib.Obj.magic items in
+      let with_items = Attrs.with_items items in
+      let bundles, _ =
+        let module DepGraph = Dependencies.Make (InputLanguage) in
+        DepGraph.recursive_bundles items
+      in
+      let items =
+        List.filter items ~f:(fun (i : AST.item) ->
+            Attrs.late_skip i.attrs |> not)
+      in
+      Logs.info (fun m ->
+          m "Translating items with backend %s"
+            ([%show: Diagnostics.Backend.t] Fstar_backend.backend));
+      let files =
+        Profiling.profile (Backend Fstar_backend.backend) (List.length items)
+          (fun _ -> translate with_items backend_options items ~bundles)
+      in
+      List.iter ~f:(fun file -> File file |> Hax_io.write) files;
+      Rust_engine_types.PrintOk
+  | Types.Print _ ->
+      failwith
+        "Using the Ocaml engine for Printing only is reserved to the F* backend"
 
 (** Entry point for interacting with the Rust hax engine *)
 let driver_for_rust_engine () : unit =
