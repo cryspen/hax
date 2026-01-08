@@ -720,7 +720,7 @@ fn import_block_expr(
         let body = expr.import(context);
         ast::ExprKind::Block { body, safety_mode }.promote(typ.clone(), full_span)
     } else {
-        Expr::unit(full_span)
+        ast::Expr::unit(full_span)
     };
 
     for stmt in stmts.into_iter().rev() {
