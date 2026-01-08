@@ -23,7 +23,16 @@ fn loop2() -> u32 {
     x
 }
 
-#[hax_lib::ensures(|r| true)]
+#[hax_lib::ensures(|r| r == 0)]
+#[hax_lib::lean::proof(
+    "by
+    mvcgen[Lean_tests.Loops.while_loop1]
+    grind
+    grind
+    simp only [gt_iff_lt, decide_eq_true_eq, Nat.not_lt, Nat.le_zero_eq, true_and, beq_iff_eq] at *
+    rw [← UInt32.toNat_inj]
+    assumption"
+)]
 fn while_loop1(s: u32) -> u32 {
     let mut x: u32 = s;
     while x > 0 {
