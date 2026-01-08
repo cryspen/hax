@@ -15,6 +15,8 @@ import Std.Tactic.Do.Syntax
 import Hax.Initialize
 import Hax.USize64
 import Hax.MissingLean.Init.Data.UInt.Lemmas
+import Hax.MissingLean.Init.While
+import Hax.MissingLean.Std.Do.Triple.SpecLemmas
 
 open Std.Do
 open Std.Tactic
@@ -144,6 +146,36 @@ instance {α} : Coe (RustM (RustM α)) (RustM α) where
   | .fail e => .fail e
   | .div => .div
 
+section Order
+
+open Lean.Order
+
+/- These instances are required to use `partial_fixpoint` in the `RustM` monad. -/
+
+instance {α} : PartialOrder (RustM α) := inferInstanceAs (PartialOrder (FlatOrder RustM.div))
+
+noncomputable instance {α} : CCPO (RustM α) := inferInstanceAs (CCPO (FlatOrder RustM.div))
+
+noncomputable instance : MonoBind RustM where
+  bind_mono_left h := by
+    cases h
+    · exact FlatOrder.rel.bot
+    · exact FlatOrder.rel.refl
+  bind_mono_right h := by
+    cases ‹RustM _›
+    · exact h _
+    · exact FlatOrder.rel.refl
+    · exact FlatOrder.rel.refl
+
+open Lean Order in
+/-- `Loop.MonoLoopCombinator` is used to implement while loops in `RustM`: -/
+instance {β : Type} (f : Unit → β → RustM (ForInStep β)) : Loop.MonoLoopCombinator f := {
+  mono := by
+    unfold Loop.loopCombinator
+    repeat monotonicity
+}
+
+end Order
 
 end RustM
 
@@ -250,6 +282,9 @@ instance {n: Nat} : OfNat (RustM Nat) n where
 
 instance {α n} [i: OfNat α n] : OfNat (RustM α) n where
   ofNat := pure (i.ofNat)
+
+abbrev Hax_lib.Int.Int : Type := _root_.Int
+abbrev Rust_primitives.Hax.Int.from_machine {α} [ToNat α] (x : α) : RustM Int := Int.ofNat (ToNat.toNat x)
 
 infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
@@ -693,6 +728,60 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
 
 end Fold
 
+/-
+
+# Loops
+
+-/
+section Loop
+open Lean
+
+/-- `while_loop` is used to represent while-loops in `RustM` programs. The function provides
+  extra arguments to store a termination measure and an invariant, which can be used to verify the
+  program. The arguments `pureInv` and `pureTermination` are usually not provided explicitly and
+  derived by the default tactic given below. -/
+def Rust_primitives.Hax.while_loop {β : Type}
+    (inv: β → RustM Prop)
+    (cond: β → RustM Bool)
+    (termination : β -> RustM Hax_lib.Int.Int)
+    (init : β)
+    (body : β -> RustM β)
+    (pureInv:
+        {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ (i b) = r ⌝⦄} := by
+      constructor; intro; mvcgen)
+    (pureTermination :
+        {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ Int.ofNat (t b) = r ⌝⦄} := by
+      constructor; intro; mvcgen) : RustM β :=
+  Loop.MonoLoopCombinator.while_loop Loop.mk cond init body
+
+@[spec]
+theorem Rust_primitives.Hax.while_loop.spec {β : Type}
+    (inv: β → RustM Prop)
+    (cond: β → RustM Bool)
+    (termination: β → RustM Hax_lib.Int.Int)
+    (init : β)
+    (body : β -> RustM β)
+    (pureInv: {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ (i b) = r ⌝⦄})
+    (pureTermination :
+      {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ Int.ofNat (t b) = r ⌝⦄})
+    (step : ∀ (b : β),
+      ⦃⌜pureInv.val b⌝⦄
+        do
+          if ← cond b
+          then ForInStep.yield (← body b)
+          else ForInStep.done b
+      ⦃⇓ r =>
+        match r with
+        | ForInStep.yield b' =>
+          spred(⌜ pureTermination.val b' < pureTermination.val b ⌝ ∧ ⌜ pureInv.val b' ⌝)
+        | ForInStep.done b' =>
+          ⌜ pureInv.val b' ⌝⦄) :
+    ⦃⌜ pureInv.val init ⌝⦄
+      while_loop inv cond termination init body pureInv pureTermination
+    ⦃⇓ r => ⌜ pureInv.val r ⌝⦄ :=
+  Spec.MonoLoopCombinator.while_loop init Loop.mk cond body pureInv pureTermination step
+
+end Loop
 /-
 
 # Arrays
