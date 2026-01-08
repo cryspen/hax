@@ -438,28 +438,28 @@ set_option hygiene false in
 macro "declare_Hax_cast_instances" : command => do
   let mut cmds := #[]
   -- (`int_type`, `signedness`)
-  let tys : List (String × Bool) := [
-    ("UInt8", false),
-    ("UInt16", false),
-    ("UInt32", false),
-    ("UInt64", false),
-    ("USize", false),
-    ("Int8", true),
-    ("Int16", true),
-    ("Int32", true),
-    ("Int64", true),
-    ("ISize", true)
+  let tys : List (Name × Bool) := [
+    (`UInt8, false),
+    (`UInt16, false),
+    (`UInt32, false),
+    (`UInt64, false),
+    (`USize, false),
+    (`Int8, true),
+    (`Int16, true),
+    (`Int32, true),
+    (`Int64, true),
+    (`ISize, true)
   ]
   for (srcName, srcSigned) in tys do
     for (dstName, dstSigned) in tys do
-      let srcIdent := mkIdent srcName.toName
-      let dstIdent := mkIdent dstName.toName
+      let srcIdent := mkIdent srcName
+      let dstIdent := mkIdent dstName
       let toInt ← if srcSigned then `(x.toInt) else `(Int.ofNat x.toNat)
-      let result ← if dstSigned then
-        `($(mkIdent (dstName ++ ".ofInt").toName) $toInt)
-      else
-        let dstSize := mkIdent (dstName ++ ".size").toName
-        `($(mkIdent (dstName ++ ".ofNat").toName) (($toInt).emod $dstSize).toNat)
+      let result ←
+        if dstSigned then
+          `($(mkIdent (dstName ++ `ofInt)) $toInt)
+        else
+          `($(mkIdent (dstName ++ `ofNat)) (($toInt).emod $(mkIdent (dstName ++ `size))).toNat)
       cmds := cmds.push $ ← `(
         @[spec] instance : Cast $srcIdent $dstIdent where cast x := pure $result
       )
