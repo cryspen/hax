@@ -9,7 +9,7 @@
   f_clone: x:self -> r:self {x == r}
 }"
 )]
-trait Clone {
+pub trait Clone {
     fn clone(self) -> Self;
 }
 
