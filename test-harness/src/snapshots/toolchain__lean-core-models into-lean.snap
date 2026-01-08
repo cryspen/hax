@@ -21,7 +21,9 @@ info:
     backend_options: ~
 ---
 exit = 0
-stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
+stderr = '''
+Checking lean-core-models v0.1.0 (WORKSPACE_ROOT/lean-core-models)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'''
 
 [stdout]
 diagnostics = []
