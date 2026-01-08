@@ -22,6 +22,8 @@ pub trait Phase {
 
 mod explicit_monadic;
 mod reject_not_do_lean_dsl;
+mod rename_core;
 
 pub use explicit_monadic::ExplicitMonadic;
 pub use reject_not_do_lean_dsl::RejectNotDoLeanDSL;
+pub use rename_core::RenameCore;
