@@ -12,7 +12,7 @@ in which the function `square` is defined.
 *Note: throughout this tutorial, you can edit the snippets of code and
 extract to F\* by clicking the play button (:material-play:), or even typecheck it with the button (:material-check:).*
 
-```{.rust .playable .expect-failure }
+```{.rust .playable .expect-failure}
 fn square(x: u8) -> u8 {
     x * x
 }
@@ -514,19 +514,178 @@ pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {
 }
 ```
 
-Here, the assumptions help F\* understand that the vector length grows predictably: after each iteration `i`, the length is exactly `i * 64` bytes. Without these hints, F\* might not be able to prove that subsequent operations are safe at all, *even though* we (as programmers) know the invariant holds.
+*Here*, the **assumptions help F\* understand that the vector length grows predictably**: after each iteration `i`, the length is exactly `i * 64` bytes. Without these hints, F\* might not be able to prove that subsequent operations are safe at all, *even though* we (as programmers) know the invariant holds.
 
 > **CAUTION: Use with extreme care!** An incorrect assumption can make F\* verify unsound code. 
 > Unlike pre-conditions (which *shift the burden of proof to callers*) and [refinement types](data-invariants.md) 
 > (which are *enforced by the type system*), **assumptions are taken on faith**. If you assume 
 > something false, you've broken the verification guarantees!
 
+### A Better Approach: Verified Loop Invariants
+
+While `hax_lib::assume!` statements **work** for tracking loop properties, they represent a verification gap: *we're asking F\* to trust these facts without proof*. A far better approach is to use **proper loop invariants** that F\* can actually verify. Hax provides the `hax_lib::loop_invariant!` macro for this purpose: instead of blindly trusting our claims, F\* proves that the invariant holds through mathematical induction. 
+
+Here's the same `chacha20_update` function rewritten with a verified loop invariant:
+```{.rust .playable}
+# // #![feature(stmt_expr_attributes)]
+# use hax_lib as hax;
+# use hax_lib::RefineAs;
+# type State = [u32; 16];
+# type Block = [u8; 64];
+# type StateIdx = hax_bounded_integers::BoundedUsize<0, 15>;
+# // Note: Removed `to_le_u32s_3`, `to_le_u32s_8`, `chacha20_init`, `chacha20_key_block`,
+# // and `chacha20_key_block0` for simplicity, as they aren't called by `chacha20_update`.
+# #[hax::requires(bytes.len() >= 64)]
+# fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
+#     let mut out = [0; 16];
+#     for i in 0..16 {
+#         out[i] = u32::from_le_bytes(bytes[4 * i..4 * i + 4].try_into().unwrap());
+#     }
+#     out
+# }
+# fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
+#     let mut out = [0; 64];
+#     for i in 0..state.len() {
+#         let tmp = state[i].to_le_bytes();
+#         for j in 0..4 {
+#             out[i * 4 + j] = tmp[j];
+#         }
+#     }
+#     out
+# }
+# fn xor_state(mut state: State, other: State) -> State {
+#     for i in 0..16 {
+#         state[i] = state[i] ^ other[i];
+#     }
+#     state
+# }
+# fn add_state(mut state: State, other: State) -> State {
+#     for i in 0..16 {
+#         state[i] = state[i].wrapping_add(other[i]);
+#     }
+#     state
+# }
+# #[hax::requires(val.len() <= 64)]
+# fn update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64] {
+#     assert!(64 >= val.len());
+#     for i in 0..val.len() {
+#         array[i] = val[i];
+#     }
+#     array
+# }
+# fn chacha20_line(a: StateIdx, b: StateIdx, d: StateIdx, s: u32, m: State) -> State {
+#     let mut state = m;
+#     state[a] = state[a].wrapping_add(state[b]);
+#     state[d] = state[d] ^ state[a];
+#     state[d] = state[d].rotate_left(s);
+#     state
+# }
+# fn chacha20_quarter_round(a: StateIdx, b: StateIdx, c: StateIdx, d: StateIdx, state: State) -> State {
+#     let state = chacha20_line(a, b, d, 16, state);
+#     let state = chacha20_line(c, d, b, 12, state);
+#     let state = chacha20_line(a, b, d, 8, state);
+#     chacha20_line(c, d, b, 7, state)
+# }
+# fn chacha20_double_round(state: State) -> State {
+#     let state = chacha20_quarter_round((0 as usize).into_checked(), (4 as usize).into_checked(), (8 as usize).into_checked(), (12 as usize).into_checked(), state);
+#     let state = chacha20_quarter_round((1 as usize).into_checked(), (5 as usize).into_checked(), (9 as usize).into_checked(), (13 as usize).into_checked(), state);
+#     let state = chacha20_quarter_round((2 as usize).into_checked(), (6 as usize).into_checked(), (10 as usize).into_checked(), (14 as usize).into_checked(), state);
+#     let state = chacha20_quarter_round((3 as usize).into_checked(), (7 as usize).into_checked(), (11 as usize).into_checked(), (15 as usize).into_checked(), state);
+#     let state = chacha20_quarter_round((0 as usize).into_checked(), (5 as usize).into_checked(), (10 as usize).into_checked(), (15 as usize).into_checked(), state);
+#     let state = chacha20_quarter_round((1 as usize).into_checked(), (6 as usize).into_checked(), (11 as usize).into_checked(), (12 as usize).into_checked(), state);
+#     let state = chacha20_quarter_round((2 as usize).into_checked(), (7 as usize).into_checked(), (8 as usize).into_checked(), (13 as usize).into_checked(), state);
+#     chacha20_quarter_round((3 as usize).into_checked(), (4 as usize).into_checked(), (9 as usize).into_checked(), (14 as usize).into_checked(), state)
+# }
+# fn chacha20_rounds(state: State) -> State {
+#     let mut st = state;
+#     for _i in 0..10 {
+#         st = chacha20_double_round(st);
+#     }
+#     st
+# }
+# fn chacha20_core(ctr: u32, st0: State) -> State {
+#     let mut state = st0;
+#     state[12] = state[12].wrapping_add(ctr);
+#     let k = chacha20_rounds(state);
+#     add_state(state, k)
+# }
+# fn chacha20_encrypt_block(st0: State, ctr: u32, plain: &Block) -> Block {
+#     let st = chacha20_core(ctr, st0);
+#     let pl: State = to_le_u32s_16(plain);
+#     let encrypted = xor_state(st, pl);
+#     u32s_to_le_bytes(&encrypted)
+# }
+# #[hax::requires(plain.len() <= 64)]
+# fn chacha20_encrypt_last(st0: State, ctr: u32, plain: &[u8]) -> Vec<u8> {
+#     let mut b: Block = [0; 64];
+#     b = update_array(b, plain);
+#     b = chacha20_encrypt_block(st0, ctr, &b);
+#     b[0..plain.len()].to_vec()
+# }
+pub fn chacha20_update(st0: State, m: &[u8]) -> Vec<u8> {
+    let mut blocks_out = Vec::new();
+    let num_blocks = m.len() / 64;
+    let remainder_len = m.len() % 64;
+    for i in 0..num_blocks {
+        // Note that this is a for loop, meaning that loop_invariant!() takes a closure here
+        hax_lib::loop_invariant!(|i: usize| blocks_out.len() == i * 64);
+        let b = chacha20_encrypt_block(st0, i as u32, &m[64 * i..(64 * i + 64)].try_into().unwrap());
+        blocks_out.extend_from_slice(&b);
+    }
+    if remainder_len != 0 {
+        let b = chacha20_encrypt_last(st0, num_blocks as u32, &m[64 * num_blocks..m.len()]);
+        blocks_out.extend_from_slice(&b);
+    }
+    blocks_out
+}
+```
+
+**Why is this better?**
+
+| Approach | Safety | Maintainability | Risk |
+|----------|--------|----------------|------|
+| **`assume!` statements** | Trusted, not verified | Brittle (easy to get wrong) | High (false assumptions break soundness) |
+| **`loop_invariant!` statements** | Actually verified by F\* | Self-documenting | Low (F\* proves them correct) |
+
+With `#[hax_lib::loop_invariant!(...)]`, F\* proves that:
+
+1. The invariant holds *before the loop starts* (**base case**)
+2. If it holds at the *start of iteration* `i`, it still holds *at the end* (**inductive step**)
+3. After the loop *completes*, we can rely on the invariant being true (**conclusion**)
+
+This verification follows the principle of **mathematical induction**: just as induction proves properties for all natural numbers, *loop invariants prove properties across all loop iterations*. This gives us mathematical certainty rather than blind trust. The code is clearer too, since the loop invariant explicitly states what property we're maintaining throughout the iteration.
+
+> **Best Practice**: *Use loop invariants instead of assumptions whenever possible*. Reserve `assume!` for cases where F\* needs temporary hints during development, and always replace them with *proper* specifications **before production use**.
+
+> **IMPORTANT: Loop Invariant Syntax**
+>
+> Loop annotations (such as `loop_invariant!` and `loop_decreases!`) must appear **first** in the loop body, before *any other statements*:
+>
+> - **For `for` loops**: Use a **closure** that *captures the loop variable*:
+>   ```rust
+>   for i in 0..n {
+>       hax_lib::loop_invariant!(|i: usize| property_holds(i));
+>       // ... rest of loop body
+>   }
+>   ```
+>
+> - **For `while` loops**: Use an **expression** directly:
+>   ```rust
+>   while condition {
+>       hax_lib::loop_decreases!(measure);
+>       hax_lib::loop_invariant!(property_holds);
+>       // ... rest of loop body
+>   }
+>   ```
+>
+> The loop variable in the closure parameter (`|i: usize|`) **shadows** the *actual* loop variable, allowing F\* to *reason about the invariant at any iteration*.
+
 ## What's Next?
 
 We've seen how explicit pre-conditions can prove panic freedom, but the approach has limitations:
 
-1. **Verbose**: Every function needs explicit annotations
+1. **Verbose**: *Every* function needs explicit annotations
 2. **Error-prone**: Easy to forget a pre-condition
-3. **Repetitive**: Similar bounds checks appear everywhere
+3. **Repetitive**: Similar bounds checks appear *everywhere*
 
 The ["Data Invariants" chapter](data-invariants.md) shows a more elegant solution: **encoding pre-conditions directly in types** using refinement types. We'll revisit the ChaCha20 example to see how this dramatically simplifies verification!
