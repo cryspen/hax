@@ -6,7 +6,7 @@
 
 use hax_lib_macros_types::AttrPayload;
 use std::collections::HashSet;
-use std::sync::LazyLock;
+use std::sync::OnceLock;
 
 use super::prelude::*;
 use crate::{
@@ -32,31 +32,40 @@ pub struct LeanPrinter;
 
 const INDENT: isize = 2;
 
-static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
-    HashSet::from_iter(
-        [
-            // reserved for Lean:
-            "end",
-            "def",
-            "abbrev",
-            "theorem",
-            "example",
-            "inductive",
-            "structure",
-            "from",
-            // reserved for hax encoding:
-            "associatedTypes",
-            "AssociatedTypes",
-        ]
-        .iter()
-        .map(|s| s.to_string()),
-    )
-});
-
 impl RenderView for LeanPrinter {
+    fn reserved_keywords() -> &'static HashSet<String> {
+        static SET: OnceLock<HashSet<String>> = OnceLock::new();
+        SET.get_or_init(|| {
+            [
+                // reserved for Lean:
+                "end",
+                "def",
+                "abbrev",
+                "theorem",
+                "example",
+                "inductive",
+                "structure",
+                "from",
+                // reserved for hax encoding:
+                "associatedTypes",
+                "AssociatedTypes",
+            ]
+            .into_iter()
+            .map(|s| s.to_string())
+            .collect()
+        })
+    }
+
+    fn should_escape(id: &str) -> bool {
+        Self::is_reserved_keyword(id)
+            || id.starts_with(|c: char| c.is_ascii_digit())
+            || id.starts_with("trait_constr_")
+    }
+
     fn separator(&self) -> &str {
         "."
     }
+
     fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         fn uppercase_first(s: &str) -> String {
             let mut c = s.chars();
@@ -78,8 +87,7 @@ impl RenderView for LeanPrinter {
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
                 Some(vec![
-                    self.render_path_segment_payload(chunk.payload())
-                        .to_string(),
+                    Self::escape(&self.render_path_segment_payload(chunk.payload())),
                     "mk".to_string(),
                 ])
             }
@@ -89,14 +97,8 @@ impl RenderView for LeanPrinter {
                 {
                     chunk.parent().map(|parent| {
                         vec![
-                            self.escape(
-                                self.render_path_segment_payload(parent.payload())
-                                    .to_string(),
-                            ),
-                            self.escape(
-                                self.render_path_segment_payload(chunk.payload())
-                                    .to_string(),
-                            ),
+                            Self::escape(&self.render_path_segment_payload(parent.payload())),
+                            Self::escape(&self.render_path_segment_payload(chunk.payload())),
                         ]
                     })
                 }
@@ -173,34 +175,15 @@ impl LeanPrinter {
         self.render_string(&id.view())
     }
 
-    /// Escapes local identifiers (prefixing reserved keywords with an underscore).
-    /// TODO: This should be treated directly in the name rendering engine, see
-    /// https://github.com/cryspen/hax/issues/1630
-    pub fn escape(&self, id: String) -> String {
-        let id = id.replace([' ', '<', '>'], "_");
-        if id.is_empty() {
-            "_ERROR_EMPTY_ID_".to_string()
-        } else if RESERVED_KEYWORDS.contains(&id)
-            || id.starts_with("trait_constr_")
-            || id.starts_with(|c: char| c.is_ascii_digit())
-        {
-            format!("_{id}")
-        } else {
-            id
-        }
-    }
-
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
-        let id = self
-            .render(&id.view())
+        self.render(&id.view())
             .path
             .last()
             // TODO: Should be ensured by the rendering engine; see
             // https://github.com/cryspen/hax/issues/1660
             .expect("Segments should always be non-empty")
-            .clone();
-        self.escape(id)
+            .clone()
     }
 }
 
@@ -1086,7 +1069,7 @@ set_option linter.unusedVariables false
 
         fn local_id(&self, local_id: &LocalId) -> DocBuilder<A> {
             // TODO: should be done by name rendering, see https://github.com/cryspen/hax/issues/1630
-            docs![self.escape(local_id.0.to_string())]
+            docs![Self::escape(&local_id.0)]
         }
 
         fn spanned_ty(&self, spanned_ty: &SpannedTy) -> DocBuilder<A> {
@@ -1630,7 +1613,7 @@ set_option linter.unusedVariables false
         }
 
         fn symbol(&self, symbol: &Symbol) -> DocBuilder<A> {
-            docs![self.escape(symbol.to_string())]
+            docs![Self::escape(symbol)]
         }
 
         fn metadata(
