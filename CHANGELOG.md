@@ -51,6 +51,7 @@ Changes to the Lean backend:
  - Add support for nonliteral array sizes (#1826)
  - Add `hax_lib::lean::proof` attribute (#1831)
  - Add support for `#[hax_lib::opaque]` (#1846)
+ - Turn rejection phase into a transformation phase (#1840)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
