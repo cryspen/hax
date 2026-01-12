@@ -467,8 +467,8 @@ const _: () = {
             generics: &Generics,
             params: &Vec<Param>,
         ) -> DocBuilder<A> {
-            let spec =
-                HasLinkedItemGraph::linked_item_graph(self).fn_like_linked_expressions(item, None);
+            let spec = HasLinkedItemGraph::linked_item_graph(self)
+                .fn_like_linked_expressions(item, item.self_id());
             if spec.precondition.is_none() && spec.postcondition.is_none() {
                 nil!()
             } else {
