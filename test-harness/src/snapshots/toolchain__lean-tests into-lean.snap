@@ -922,6 +922,37 @@ def Lean_tests.Structs.normal_structs
        _inductive := _inductive}
       => (pure Rust_primitives.Hax.Tuple0.mk)
 
+structure Lean_tests.Specs.Issue_1852.T where
+
+
+def Lean_tests.Specs.Issue_1852.Impl.test
+  (self : Lean_tests.Specs.Issue_1852.T)
+  : RustM Bool
+  := do
+  (pure true)
+
+def Lean_tests.Specs.Issue_1852.Impl.func
+  (self : Lean_tests.Specs.Issue_1852.T)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+@[spec]
+def
+      Lean_tests.Specs.Issue_1852.Impl.func.spec
+      (self : Lean_tests.Specs.Issue_1852.T)
+       :
+    Spec
+      (requires := (Lean_tests.Specs.Issue_1852.Impl.test self))
+      (ensures := fun _ => pure True)
+      (Lean_tests.Specs.Issue_1852.Impl.func
+        (self : Lean_tests.Specs.Issue_1852.T)
+        ) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Lean_tests.Specs.Issue_1852.Impl.func] <;> try grind
+}
+
 def Lean_tests.Specs.test (x : u8) : RustM u8 := do (pure x)
 
 @[spec]
