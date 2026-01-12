@@ -969,8 +969,18 @@ macro_rules! make_quoting_proc_macro {
         #[proc_macro_attribute]
         pub fn ${concat($backend, _replace)}(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
             let item: TokenStream = item.into();
+            let payload: TokenStream = payload.into();
             let attr = AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true });
-            ${concat($backend, _before)}(payload, quote!{#attr #item}.into())
+            quote! {
+                #[cfg(${concat(hax_backend_, $backend)})]
+                #[::hax_lib::$backend::before(#payload)]
+                #attr
+                #item
+
+                #[cfg(not(${concat(hax_backend_, $backend)}))]
+                #item
+            }
+            .into()
         }
 
         #[doc = concat!("Replaces the body of a Rust function with some verbatim ", stringify!($backend)," code.")]

@@ -56,3 +56,16 @@ mod multiple_associated_types {
         pair.first()
     }
 }
+
+mod multiple_projections {
+    trait FnOnce<T> {
+        type Output;
+    }
+
+    pub fn func<T, U, D, F>(d: D, f: F, u: U)
+    where
+        F: FnOnce<T, Output = U>,
+        D: FnOnce<T, Output = U>,
+    {
+    }
+}

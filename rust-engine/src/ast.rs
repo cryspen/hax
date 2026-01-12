@@ -1487,6 +1487,18 @@ pub struct Item {
     pub meta: Metadata,
 }
 
+impl Item {
+    /// Checks whether the item was marked opaque using `hax_lib::opaque`
+    pub fn is_opaque(&self) -> bool {
+        self.meta.attributes.iter().any(|a| {
+            matches!(
+                a.kind,
+                AttributeKind::Hax(hax_lib_macros_types::AttrPayload::Erased)
+            )
+        })
+    }
+}
+
 /// A "flat" module: this contains only non-module items.
 #[derive_group_for_ast]
 pub struct Module {

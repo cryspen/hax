@@ -143,7 +143,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
+        vec![Box::new(ExplicitMonadic)]
     }
 }
 
@@ -635,14 +635,16 @@ set_option linter.unusedVariables false
                 zip_right!(&generics.params, line!()),
                 zip_right!(
                     generics.type_constraints().map(|impl_ident| {
-                        let projections = generics.projection_constraints()
-                            .map(|p|
-                                if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                        let projections = generics
+                            .projection_constraints()
+                            .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
+                            .map(|p| {
+                                if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
                                     docs![p]
                                 } else {
                                     emit_error!(issue 1710, "Unsupported variant of associated type projection")
                                 }
-                            )
+                            })
                             .collect::<Vec<_>>();
                         docs![
                             docs![
@@ -1161,20 +1163,20 @@ set_option linter.unusedVariables false
                     params,
                     safety: _,
                 } => {
+                    let opaque = item.is_opaque();
                     docs![
                         docs![
                             docs![
-                                docs!["def", line!(), name].group(),
+                                docs![if opaque { "opaque" } else { "def" }, line!(), name].group(),
                                 line!(),
                                 generics,
                                 params,
                                 docs![": RustM", line!(), &body.ty].group(),
                                 line!(),
-                                ":= do"
+                                if opaque { nil!() } else { docs![":= do"] }
                             ]
                             .group(),
-                            line!(),
-                            body
+                            if opaque { nil!() } else { docs![line!(), body] }
                         ]
                         .group()
                         .nest(INDENT),
@@ -1538,9 +1540,19 @@ set_option linter.unusedVariables false
                     docs![
                         name,
                         softline!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        ":= do",
+                        ":=",
+                        line!(),
+                        docs![
+                            "fun",
+                            line!(),
+                            generics,
+                            zip_right!(params, line!()).group(),
+                            "=>",
+                            softline!(),
+                            "do"
+                        ]
+                        .group()
+                        .nest(INDENT)
                     ]
                     .group(),
                     line!(),

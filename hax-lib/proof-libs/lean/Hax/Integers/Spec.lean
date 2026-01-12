@@ -26,7 +26,7 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   let minValue := mkIdent (typeName.getId ++ `minValue)
   let grind : TSyntax `tactic ←
     if signed then `(tactic| grind)
-    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_lt, toNat_mul_of_lt])
+    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_le', toNat_mul_of_lt])
 
   let mut cmds ← Syntax.getArgs <$> `(
     namespace $typeName
@@ -95,7 +95,7 @@ declare_Hax_int_ops_spec unsigned UInt8 8
 declare_Hax_int_ops_spec unsigned UInt16 16
 declare_Hax_int_ops_spec unsigned UInt32 32
 declare_Hax_int_ops_spec unsigned UInt64 64
-declare_Hax_int_ops_spec unsigned USize System.Platform.numBits
+declare_Hax_int_ops_spec unsigned USize64 64
 declare_Hax_int_ops_spec signed Int8 8
 declare_Hax_int_ops_spec signed Int16 16
 declare_Hax_int_ops_spec signed Int32 32
