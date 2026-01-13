@@ -185,14 +185,13 @@ and dattributes (m : A.attribute2 list) : B.attrs = List.map ~f:dattr m
 and dspan = Span.from_rust_ast_span
 
 and dattr (a : A.attribute) : B.attr =
-  let kind : B.attr_kind =
-    match a.kind with
-    | Tool { path; tokens } -> B.Tool { path; tokens }
-    | DocComment { kind; body } ->
-        let kind = match kind with Line -> B.DCKLine | Block -> DCKBlock in
-        B.DocComment { kind; body }
-  in
-  { kind; span = dspan a.span }
+  let span = dspan a.span in
+  match a.kind with
+  | Tool { path; tokens } -> { kind = B.Tool { path; tokens }; span }
+  | DocComment { kind; body } ->
+      let kind = match kind with Line -> B.DCKLine | Block -> DCKBlock in
+      { kind = B.DocComment { kind; body }; span }
+  | Hax payload -> Attr_payloads.to_attr payload span
 
 and dpat (p : A.pat) : B.pat =
   let typ = dty p.ty in
@@ -441,6 +440,8 @@ and dlhs (lhs : A.lhs) : B.lhs =
   match lhs with
   | A.LocalVar { var; ty } ->
       B.LhsLocalVar { var = dlocal_ident var; typ = dty ty }
+  | A.VecRef { e; ty } ->
+      B.LhsVecRef { e = dlhs e; typ = dty ty; witness = F.nontrivial_lhs }
   | A.ArbitraryExpr e ->
       B.LhsArbitraryExpr { e = dexpr e; witness = F.arbitrary_lhs }
   | A.FieldAccessor { e; field; ty } ->
