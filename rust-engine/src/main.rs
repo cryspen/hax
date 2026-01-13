@@ -55,8 +55,19 @@ fn main() {
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),
-        Backend::Fstar(options) => {
-            backends::apply_backend(backends::fstar::FStarBackend(options.clone()), items)
+        Backend::Fstar(_) => {
+            let mut items = items;
+            hax_rust_engine::phase::Phase::apply(&backends::fstar::FStarBackend, &mut items);
+
+            let query = hax_rust_engine::ocaml_engine::QueryKind::Print {
+                printer: value.backend.backend,
+                input: items,
+            };
+
+            let Some(Response::PrintOk) = query.execute(None) else {
+                panic!()
+            };
+            return;
         }
         Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
