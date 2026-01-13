@@ -239,7 +239,7 @@ by
   intros
   mvcgen [Lean_chacha20.chacha20_update,
       Alloc.Slice.Impl.to_vec,
-      Core.Result.Impl.unwrap.spec,
+      Core_models.Result.Impl.unwrap.spec,
       Alloc.Vec.Impl.new,
       Alloc.Vec.Impl_1.len,
       ]
