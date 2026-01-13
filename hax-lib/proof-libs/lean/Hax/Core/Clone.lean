@@ -5,8 +5,6 @@ Core-model for Clone represented as a no-op
 -/
 
 import Hax.Lib
-import Hax.Rust_primitives
-open Rust_primitives.Hax
 
 namespace Core.Clone
 

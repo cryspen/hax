@@ -396,7 +396,7 @@ declare_comparison_specs unsigned USize64 64
 end Rust_primitives.Hax.Machine_int
 
 @[simp, spec, hax_bv_decide]
-def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
+def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
 
 abbrev Core.Cmp.PartialEq.eq {α} [BEq α] (a b : α) := BEq.beq a b
 
@@ -410,7 +410,7 @@ for each implementation of typeclasses
 
 -/
 
-namespace Core.Num.Impl_8
+namespace Core_models.Num.Impl_8
 @[simp, spec]
 def wrapping_add (x y: u32) : RustM u32 := pure (x + y)
 
@@ -434,7 +434,7 @@ def to_le_bytes (x:u32) : RustM (Vector u8 4) :=
     (x >>> 24 % 256).toUInt8,
   ]
 
-end Core.Num.Impl_8
+end Core_models.Num.Impl_8
 
 
 
@@ -796,7 +796,7 @@ section RustArray
 abbrev RustArray := Vector
 
 
-inductive Core.Array.TryFromSliceError where
+inductive Core_models.Array.TryFromSliceError where
   | array.TryFromSliceError
 
 def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
@@ -842,11 +842,11 @@ end RustArray
 -/
 
 /-- Type of ranges -/
-structure Core.Ops.Range.Range (α: Type) where
+structure Core_models.Ops.Range.Range (α: Type) where
   start : α
   _end : α
 
-open Core.Ops.Range
+open Core_models.Ops.Range
 
 /-
 
@@ -1013,7 +1013,7 @@ def Rust_primitives.unsize {α n} (a: Vector α n) : RustM (Array α) :=
   pure (a.toArray)
 
 @[simp, spec]
-def Core.Slice.Impl.len α (a: Array α) : RustM usize := pure a.size
+def Core_models.Slice.Impl.len α (a: Array α) : RustM usize := pure a.size
 
 /-
 
@@ -1161,7 +1161,7 @@ structure Spec {α}
 # Miscellaneous
 
 -/
-def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
+def Core_models.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
   : RustM (Array α)
   := pure v
 
@@ -1187,3 +1187,10 @@ abbrev Prop.Impl.from_bool (b : Bool) : Prop := (b = true)
 abbrev Prop.Constructors.implies (a b : Prop) : Prop := a → b
 
 end Hax_lib
+
+namespace Rust_primitives.Hax
+
+  abbrev Never : Type := Empty
+  abbrev never_to_any.{u} {α : Sort u} : Never → α := Empty.elim
+
+end Rust_primitives.Hax

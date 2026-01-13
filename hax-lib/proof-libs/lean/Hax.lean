@@ -18,14 +18,14 @@ limitations under the License. -/
 /- Main Prelude library -/
 import Hax.Lib
 
-/- Rust primitives (integers, string, slices, etc.) -/
-import Hax.Rust_primitives
-
 /- Tactics -/
 import Hax.Tactics
 
-/- Core -/
-import Hax.Core
+/- Core Models -/
+import Hax.CoreModels
+import Hax.Integers.Spec
+import Hax.MissingCoreModels
+import Hax.Float
 
 /- Additions to the Lean library -/
 import Hax.MissingLean

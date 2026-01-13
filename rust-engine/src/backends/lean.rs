@@ -17,6 +17,7 @@ use crate::{
 };
 
 mod binops {
+    pub use crate::names::core::ops::arith::Neg::neg;
     pub use crate::names::core::ops::index::*;
     pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
@@ -774,6 +775,9 @@ set_option linter.unusedVariables false
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
                             docs![reflow!("pure "), arg].parens()
+                        }
+                        ([arg], [], ExprKind::GlobalId(binops::neg)) => {
+                            docs!["-?", softline!(), arg].parens()
                         }
                         _ => {
                             // Fallback for any application
