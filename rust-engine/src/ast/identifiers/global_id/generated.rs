@@ -4,8 +4,8 @@
 // calls `rust_engine::names::export_def_ids_to_mod`.
 
 static TABLE_AND_INTERNED_GLOBAL_IDS: (
-    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 638>,
-    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 638],
+    crate::interning::LazyLockNewWithValue<crate::ast::identifiers::global_id::GlobalIdInner, 660>,
+    [crate::interning::Interned<crate::ast::identifiers::global_id::GlobalIdInner>; 660],
 ) = {
     crate::interning::InterningTable::new_with_values(|| {
         use crate::ast::identifiers::global_id::ExplicitDefId;
@@ -307,13 +307,13 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_51() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
-                Some(did_620()),
+                Some(did_642()),
             )
         }
         fn did_52() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
-                Some(did_620()),
+                Some(did_642()),
             )
         }
         fn did_53() -> ExplicitDefId {
@@ -730,13 +730,13 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_122() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_622()),
+                Some(did_644()),
             )
         }
         fn did_123() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_623()),
+                Some(did_645()),
             )
         }
         fn did_124() -> ExplicitDefId {
@@ -748,7 +748,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_125() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0],[{"ValueNs":"end"},0]],"Field",false]"##,
-                Some(did_624()),
+                Some(did_646()),
             )
         }
         fn did_126() -> ExplicitDefId {
@@ -766,7 +766,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_128() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0],[{"ValueNs":"start"},0]],"Field",false]"##,
-                Some(did_626()),
+                Some(did_648()),
             )
         }
         fn did_129() -> ExplicitDefId {
@@ -1036,7 +1036,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_173() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_627()),
+                Some(did_649()),
             )
         }
         fn did_174() -> ExplicitDefId {
@@ -1066,7 +1066,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_178() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_628()),
+                Some(did_650()),
             )
         }
         fn did_179() -> ExplicitDefId {
@@ -1186,7 +1186,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_198() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_629()),
+                Some(did_651()),
             )
         }
         fn did_199() -> ExplicitDefId {
@@ -2338,7 +2338,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_390() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"0"},0]],"Field",false]"##,
-                Some(did_621()),
+                Some(did_643()),
             )
         }
         fn did_391() -> ExplicitDefId {
@@ -2386,7 +2386,7 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         fn did_398() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0],[{"ValueNs":"1"},0]],"Field",false]"##,
-                Some(did_621()),
+                Some(did_643()),
             )
         }
         fn did_399() -> ExplicitDefId {
@@ -3717,107 +3717,239 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
         }
         fn did_620() -> ExplicitDefId {
             deserialize(
+                r##"["alloc",[[{"TypeNs":"vec"},0],["Impl",1],[{"ValueNs":"as_slice"},0]],"AssocFn",false]"##,
+                Some(did_28()),
+            )
+        }
+        fn did_621() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"Index"},0],[{"TypeNs":"Output"},0]],"AssocTy",false]"##,
+                Some(did_54()),
+            )
+        }
+        fn did_622() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"IndexMut"},0]],"Trait",false]"##,
+                Some(did_53()),
+            )
+        }
+        fn did_623() -> ExplicitDefId {
+            deserialize(
+                r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"index"},0],[{"TypeNs":"IndexMut"},0],[{"ValueNs":"index_mut"},0]],"AssocFn",false]"##,
+                Some(did_622()),
+            )
+        }
+        fn did_624() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",1]],"Use",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_625() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"props"},0],["Use",0]],"Use",false]"##,
+                Some(did_564()),
+            )
+        }
+        fn did_626() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",0]],"Use",false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_627() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],["Use",1]],"Use",false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_628() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[["Use",0]],"Use",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_629() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",0]],"Use",false]"##,
+                Some(did_300()),
+            )
+        }
+        fn did_630() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"MacroNs":"impl_arith"},0]],{"Macro":{"bang":true,"attr":false,"derive":false}},false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_631() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},1],[{"ValueNs":"g"},0]],"Fn",false]"##,
+                Some(did_292()),
+            )
+        }
+        fn did_632() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",0]],"Use",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_633() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"alloc"},0]],"ExternCrate",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_634() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",2]],"Use",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_635() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"std"},0]],"ExternCrate",false]"##,
+                Some(did_0()),
+            )
+        }
+        fn did_636() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",1]],"Use",false]"##,
+                Some(did_300()),
+            )
+        }
+        fn did_637() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",4]],"Use",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_638() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"TypeNs":"crypto_abstractions"},0],["Use",0]],"Use",false]"##,
+                Some(did_293()),
+            )
+        }
+        fn did_639() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"index_mut"},0]],"Fn",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_640() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"ValueNs":"_"},0],["Use",2]],"Use",false]"##,
+                Some(did_300()),
+            )
+        }
+        fn did_641() -> ExplicitDefId {
+            deserialize(
+                r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],["Use",3]],"Use",false]"##,
+                Some(did_291()),
+            )
+        }
+        fn did_642() -> ExplicitDefId {
+            deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"Range"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_621() -> ExplicitDefId {
+        fn did_643() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Tuple2"},0]],"Struct",true]"##,
                 Some(did_1()),
             )
         }
-        fn did_622() -> ExplicitDefId {
+        fn did_644() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Break"},0]],"Variant",true]"##,
                 Some(did_121()),
             )
         }
-        fn did_623() -> ExplicitDefId {
+        fn did_645() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"control_flow"},0],[{"TypeNs":"ControlFlow"},0],[{"TypeNs":"Continue"},0]],"Variant",true]"##,
                 Some(did_121()),
             )
         }
-        fn did_624() -> ExplicitDefId {
+        fn did_646() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeTo"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_625() -> ExplicitDefId {
+        fn did_647() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFull"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_626() -> ExplicitDefId {
+        fn did_648() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"ops"},0],[{"TypeNs":"range"},0],[{"TypeNs":"RangeFrom"},0]],"Struct",true]"##,
                 Some(did_49()),
             )
         }
-        fn did_627() -> ExplicitDefId {
+        fn did_649() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Err"},0]],"Variant",true]"##,
                 Some(did_77()),
             )
         }
-        fn did_628() -> ExplicitDefId {
+        fn did_650() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"Some"},0]],"Variant",true]"##,
                 Some(did_164()),
             )
         }
-        fn did_629() -> ExplicitDefId {
+        fn did_651() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"result"},0],[{"TypeNs":"Result"},0],[{"TypeNs":"Ok"},0]],"Variant",true]"##,
                 Some(did_77()),
             )
         }
-        fn did_630() -> ExplicitDefId {
+        fn did_652() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"TypeNs":"hax"},0],[{"TypeNs":"Failure"},0]],"Struct",true]"##,
                 Some(did_1()),
             )
         }
-        fn did_631() -> ExplicitDefId {
+        fn did_653() -> ExplicitDefId {
             deserialize(
                 r##"["rust_primitives",[[{"ValueNs":"dummy_hax_concrete_ident_wrapper"},0],[{"TypeNs":"Foo"},0]],"Struct",true]"##,
                 Some(did_291()),
             )
         }
-        fn did_632() -> ExplicitDefId {
+        fn did_654() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HashAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
                 Some(did_20()),
             )
         }
-        fn did_633() -> ExplicitDefId {
+        fn did_655() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"HMACAlgorithm"},0],[{"TypeNs":"Sha256"},0]],"Variant",true]"##,
                 Some(did_63()),
             )
         }
-        fn did_634() -> ExplicitDefId {
+        fn did_656() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"DHGroup"},0],[{"TypeNs":"X25519"},0]],"Variant",true]"##,
                 Some(did_65()),
             )
         }
-        fn did_635() -> ExplicitDefId {
+        fn did_657() -> ExplicitDefId {
             deserialize(
                 r##"["hax_lib_protocol",[[{"TypeNs":"crypto"},0],[{"TypeNs":"AEADAlgorithm"},0],[{"TypeNs":"Chacha20Poly1305"},0]],"Variant",true]"##,
                 Some(did_84()),
             )
         }
-        fn did_636() -> ExplicitDefId {
+        fn did_658() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"option"},0],[{"TypeNs":"Option"},0],[{"TypeNs":"None"},0]],"Variant",true]"##,
                 Some(did_164()),
             )
         }
-        fn did_637() -> ExplicitDefId {
+        fn did_659() -> ExplicitDefId {
             deserialize(
                 r##"["core",[[{"TypeNs":"panicking"},0],[{"TypeNs":"AssertKind"},0],[{"TypeNs":"Eq"},0]],"Variant",true]"##,
                 Some(did_162()),
@@ -4462,13 +4594,35 @@ static TABLE_AND_INTERNED_GLOBAL_IDS: (
             did_635().into_global_id_inner(),
             did_636().into_global_id_inner(),
             did_637().into_global_id_inner(),
+            did_638().into_global_id_inner(),
+            did_639().into_global_id_inner(),
+            did_640().into_global_id_inner(),
+            did_641().into_global_id_inner(),
+            did_642().into_global_id_inner(),
+            did_643().into_global_id_inner(),
+            did_644().into_global_id_inner(),
+            did_645().into_global_id_inner(),
+            did_646().into_global_id_inner(),
+            did_647().into_global_id_inner(),
+            did_648().into_global_id_inner(),
+            did_649().into_global_id_inner(),
+            did_650().into_global_id_inner(),
+            did_651().into_global_id_inner(),
+            did_652().into_global_id_inner(),
+            did_653().into_global_id_inner(),
+            did_654().into_global_id_inner(),
+            did_655().into_global_id_inner(),
+            did_656().into_global_id_inner(),
+            did_657().into_global_id_inner(),
+            did_658().into_global_id_inner(),
+            did_659().into_global_id_inner(),
         ]
     })
 };
 
 static INTERNED_GLOBAL_IDS: [crate::interning::Interned<
     crate::ast::identifiers::global_id::GlobalIdInner,
->; 638] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
+>; 660] = TABLE_AND_INTERNED_GLOBAL_IDS.1;
 
 impl crate::interning::Internable for crate::ast::identifiers::global_id::GlobalIdInner {
     fn interning_table() -> &'static std::sync::Mutex<crate::interning::InterningTable<Self>> {
@@ -4562,6 +4716,10 @@ pub mod alloc {
         pub mod Impl__1 {
             #![doc = r##"This is an impl block."##]
             use super::root;
+
+            #[doc = r##"This is the associated function [`::alloc::vec::Impl__1::as_slice`]."##]
+            pub const as_slice: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[620]);
 
             #[doc = r##"This is the associated function [`::alloc::vec::Impl__1::truncate`]."##]
             pub const truncate: crate::ast::identifiers::global_id::GlobalId =
@@ -5187,7 +5345,7 @@ pub mod core {
                     #[doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Break::Constructor`]."##]
                     pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[622],
+                            root::INTERNED_GLOBAL_IDS[644],
                         );
 
                     #[doc = r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Break."##]
@@ -5202,7 +5360,7 @@ pub mod core {
                     #[doc = r##"This is the variant [`::core::ops::control_flow::ControlFlow::Continue::Constructor`]."##]
                     pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
                         crate::ast::identifiers::global_id::GlobalId(
-                            root::INTERNED_GLOBAL_IDS[623],
+                            root::INTERNED_GLOBAL_IDS[645],
                         );
 
                     #[doc = r##"This is the field [`_0`] from ::core::ops::control_flow::ControlFlow::Continue."##]
@@ -5272,14 +5430,30 @@ pub mod core {
                 #![doc = r##"This is the trait [`::core::ops::index::Index`]."##]
                 use super::root;
 
+                #[doc = r##"This is the associated type [`::core::ops::index::Index::Output`]."##]
+                pub const Output: crate::ast::identifiers::global_id::GlobalId =
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[621]);
+
                 #[doc = r##"This is the associated function [`::core::ops::index::Index::index`]."##]
                 pub const index: crate::ast::identifiers::global_id::GlobalId =
                     crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[55]);
+            }
+            pub mod IndexMut {
+                #![doc = r##"This is the trait [`::core::ops::index::IndexMut`]."##]
+                use super::root;
+
+                #[doc = r##"This is the associated function [`::core::ops::index::IndexMut::index_mut`]."##]
+                pub const index_mut: crate::ast::identifiers::global_id::GlobalId =
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[623]);
             }
 
             #[doc = r##"This is the trait [`::core::ops::index::Index`]."##]
             pub const Index: crate::ast::identifiers::global_id::GlobalId =
                 crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[54]);
+
+            #[doc = r##"This is the trait [`::core::ops::index::IndexMut`]."##]
+            pub const IndexMut: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[622]);
         }
         pub mod range {
             #![doc = r##"This is the module [`::core::ops::range`]."##]
@@ -5290,7 +5464,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::Range::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[620]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[642]);
 
                 #[doc = r##"This is the field [`end`] from ::core::ops::range::Range."##]
                 pub const end: crate::ast::identifiers::global_id::GlobalId =
@@ -5306,7 +5480,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::RangeFrom::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[626]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[648]);
 
                 #[doc = r##"This is the field [`start`] from ::core::ops::range::RangeFrom."##]
                 pub const start: crate::ast::identifiers::global_id::GlobalId =
@@ -5318,7 +5492,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::RangeFull::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[625]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[647]);
             }
             pub mod RangeTo {
                 #![doc = r##"This is the struct [`::core::ops::range::RangeTo`]."##]
@@ -5326,7 +5500,7 @@ pub mod core {
 
                 #[doc = r##"This is the struct [`::core::ops::range::RangeTo::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[624]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[646]);
 
                 #[doc = r##"This is the field [`end`] from ::core::ops::range::RangeTo."##]
                 pub const end: crate::ast::identifiers::global_id::GlobalId =
@@ -5441,14 +5615,14 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::option::Option::None::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[636]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[658]);
             }
             pub mod Some {
                 use super::root;
 
                 #[doc = r##"This is the variant [`::core::option::Option::Some::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[628]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[650]);
 
                 #[doc = r##"This is the field [`_0`] from ::core::option::Option::Some."##]
                 pub const _0: crate::ast::identifiers::global_id::GlobalId =
@@ -5475,7 +5649,7 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::panicking::AssertKind::Eq::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[637]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[659]);
             }
         }
 
@@ -5534,7 +5708,7 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::result::Result::Err::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[627]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[649]);
 
                 #[doc = r##"This is the field [`_0`] from ::core::result::Result::Err."##]
                 pub const _0: crate::ast::identifiers::global_id::GlobalId =
@@ -5545,7 +5719,7 @@ pub mod core {
 
                 #[doc = r##"This is the variant [`::core::result::Result::Ok::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[629]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[651]);
 
                 #[doc = r##"This is the field [`_0`] from ::core::result::Result::Ok."##]
                 pub const _0: crate::ast::identifiers::global_id::GlobalId =
@@ -6008,7 +6182,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::AEADAlgorithm::Chacha20Poly1305::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[635]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[657]);
             }
         }
         pub mod DHGroup {
@@ -6019,7 +6193,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::DHGroup::X25519::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[634]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[656]);
             }
         }
         pub mod HMACAlgorithm {
@@ -6030,7 +6204,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::HMACAlgorithm::Sha256::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[633]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[655]);
             }
         }
         pub mod HashAlgorithm {
@@ -6041,7 +6215,7 @@ pub mod hax_lib_protocol {
 
                 #[doc = r##"This is the variant [`::hax_lib_protocol::crypto::HashAlgorithm::Sha256::Constructor`]."##]
                 pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[632]);
+                    crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[654]);
             }
         }
         pub mod Impl {
@@ -6193,6 +6367,10 @@ pub mod rust_primitives {
         #![doc = r##"This is the module [`::rust_primitives::crypto_abstractions`]."##]
         use super::root;
 
+        #[doc = r##"This is the use item [`::rust_primitives::crypto_abstractions::Use`]."##]
+        pub const Use: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[638]);
+
         #[doc = r##"This is the function [`::rust_primitives::crypto_abstractions::crypto_abstractions`]."##]
         pub const crypto_abstractions: crate::ast::identifiers::global_id::GlobalId =
             crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[305]);
@@ -6206,23 +6384,55 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the struct [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Foo::Constructor`]."##]
             pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[631]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[653]);
         }
         pub mod ___1 {
             #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
             use super::root;
 
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use`]."##]
+            pub const Use: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[626]);
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::Use__1`]."##]
+            pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[627]);
+
             #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::f`]."##]
             pub const f: crate::ast::identifiers::global_id::GlobalId =
                 crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[312]);
+
+            #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1::g`]."##]
+            pub const g: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[631]);
         }
         pub mod _anonymous {
             #![doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous`]."##]
             use super::root;
 
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use`]."##]
+            pub const Use: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[629]);
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__1`]."##]
+            pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[636]);
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::Use__2`]."##]
+            pub const Use__2: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[640]);
+
             #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::_anonymous::arith`]."##]
             pub const arith: crate::ast::identifiers::global_id::GlobalId =
                 crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[519]);
+        }
+        pub mod props {
+            #![doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props`]."##]
+            use super::root;
+
+            #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::props::Use`]."##]
+            pub const Use: crate::ast::identifiers::global_id::GlobalId =
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[625]);
         }
 
         #[doc = r##"This is the struct [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Foo`]."##]
@@ -6237,6 +6447,26 @@ pub mod rust_primitives {
         pub const Impl__1: crate::ast::identifiers::global_id::GlobalId =
             crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[611]);
 
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use`]."##]
+        pub const Use: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[632]);
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__1`]."##]
+        pub const Use__1: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[624]);
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__2`]."##]
+        pub const Use__2: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[634]);
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__3`]."##]
+        pub const Use__3: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[641]);
+
+        #[doc = r##"This is the use item [`::rust_primitives::dummy_hax_concrete_ident_wrapper::Use__4`]."##]
+        pub const Use__4: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[637]);
+
         #[doc = r##"This is the const [`::rust_primitives::dummy_hax_concrete_ident_wrapper::___1`]."##]
         pub const ___1: crate::ast::identifiers::global_id::GlobalId =
             crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[292]);
@@ -6248,6 +6478,10 @@ pub mod rust_primitives {
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::dummy`]."##]
         pub const dummy: crate::ast::identifiers::global_id::GlobalId =
             crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[294]);
+
+        #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::index_mut`]."##]
+        pub const index_mut: crate::ast::identifiers::global_id::GlobalId =
+            crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[639]);
 
         #[doc = r##"This is the function [`::rust_primitives::dummy_hax_concrete_ident_wrapper::iterator_functions`]."##]
         pub const iterator_functions: crate::ast::identifiers::global_id::GlobalId =
@@ -6274,7 +6508,7 @@ pub mod rust_primitives {
 
             #[doc = r##"This is the struct [`::rust_primitives::hax::Failure::Constructor`]."##]
             pub const Constructor: crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[630]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[652]);
         }
         pub(in crate::ast::identifiers::global_id) mod Tuple2 {
             #![doc = r##"This is the struct [`::rust_primitives::hax::Tuple2`]."##]
@@ -6283,7 +6517,7 @@ pub mod rust_primitives {
             #[doc = r##"This is the struct [`::rust_primitives::hax::Tuple2::Constructor`]."##]
             pub(in crate::ast::identifiers::global_id) const Constructor:
                 crate::ast::identifiers::global_id::GlobalId =
-                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[621]);
+                crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[643]);
 
             #[doc = r##"This is the field [`_0`] from ::rust_primitives::hax::Tuple2."##]
             pub(in crate::ast::identifiers::global_id) const _0:
@@ -7568,6 +7802,14 @@ pub mod rust_primitives {
             crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[441]);
     }
 
+    #[doc = r##"This is the use item [`::rust_primitives::Use`]."##]
+    pub const Use: crate::ast::identifiers::global_id::GlobalId =
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[628]);
+
+    #[doc = r##"This is the extern crate [`::rust_primitives::alloc`]."##]
+    pub const alloc: crate::ast::identifiers::global_id::GlobalId =
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[633]);
+
     #[doc = r##"This is the module [`::rust_primitives::arithmetic`]."##]
     pub const arithmetic: crate::ast::identifiers::global_id::GlobalId =
         crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[615]);
@@ -7604,6 +7846,10 @@ pub mod rust_primitives {
     pub const i8: crate::ast::identifiers::global_id::GlobalId =
         crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[324]);
 
+    #[doc = r##"This is the macro [`::rust_primitives::impl_arith`]."##]
+    pub const impl_arith: crate::ast::identifiers::global_id::GlobalId =
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[630]);
+
     #[doc = r##"This is the module [`::rust_primitives::isize`]."##]
     pub const isize: crate::ast::identifiers::global_id::GlobalId =
         crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[287]);
@@ -7611,6 +7857,10 @@ pub mod rust_primitives {
     #[doc = r##"This is the function [`::rust_primitives::offset`]."##]
     pub const offset: crate::ast::identifiers::global_id::GlobalId =
         crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[389]);
+
+    #[doc = r##"This is the extern crate [`::rust_primitives::std`]."##]
+    pub const std: crate::ast::identifiers::global_id::GlobalId =
+        crate::ast::identifiers::global_id::GlobalId(root::INTERNED_GLOBAL_IDS[635]);
 
     #[doc = r##"This is the module [`::rust_primitives::u128`]."##]
     pub const u128: crate::ast::identifiers::global_id::GlobalId =

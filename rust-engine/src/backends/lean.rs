@@ -169,15 +169,11 @@ impl Backend for LeanBackend {
             DropReturnBreakContinue.into(),
             FunctionalizeLoops.into(),
             RejectQuestionMark.into(),
-            RejectAsPattern.into(),
             TraitsSpecs.into(),
             SimplifyHoisting.into(),
             NewtypeAsRefinement.into(),
-            RejectTraitItemDefault.into(),
-            BundleCycles.into(),
             ReorderFields.into(),
             SortItems.into(),
-            RejectNotDoLeanDSL,
             ExplicitMonadic,
         ]
     }

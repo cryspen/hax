@@ -88,6 +88,42 @@ impl Expr {
         )
         .promote(output_type, span)
     }
+
+    /// Removes a box
+    pub fn unbox_once(&self) -> Option<&Expr> {
+        if let ExprKind::App { head, args, .. } = self.kind()
+            && let [arg] = &**args
+            && let ExprKind::GlobalId(head) = head.kind()
+            && let crate::names::alloc::boxed::Impl::new
+            | crate::names::rust_primitives::hax::box_new = *head
+        {
+            Some(arg)
+        } else {
+            None
+        }
+    }
+
+    /// Removes a deref
+    pub fn underef_once(&self) -> Option<&Expr> {
+        if let ExprKind::App { head, args, .. } = self.kind()
+            && let [arg] = &**args
+            && let ExprKind::GlobalId(head) = head.kind()
+            && let crate::names::rust_primitives::hax::deref_op = *head
+        {
+            Some(arg)
+        } else {
+            None
+        }
+    }
+
+    /// Removes all boxes and derefs wrapping the expression
+    pub fn unbox_underef(&self) -> &Expr {
+        let mut current = self;
+        while let Some(e) = current.unbox_once().or_else(|| current.underef_once()) {
+            current = e
+        }
+        current
+    }
 }
 
 impl ExprKind {

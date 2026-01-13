@@ -297,6 +297,7 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
       let items = List.concat_map ~f:Import_ast.ditem input in
 
       let items : AST.item list = Stdlib.Obj.magic items in
+      let items = post_process_items items in
       let with_items = Attrs.with_items items in
       let bundles, _ =
         let module DepGraph = Dependencies.Make (InputLanguage) in

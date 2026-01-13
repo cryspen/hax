@@ -101,6 +101,7 @@ make_ocaml_legacy_phase!(
     drop_references,
     drop_return_break_continue,
     drop_sized_trait,
+    explicit_conversions,
     functionalize_loops,
     hoist_disjunctive_patterns,
     local_mutation,

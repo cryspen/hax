@@ -540,7 +540,7 @@ pub struct ExtensibleOptions<E: Extension> {
 
     /// Enables experimental FullDef format for items exported from the frontend
     /// in the haxmeta file.
-    #[arg(long)]
+    #[arg(long, env = "HAX_EXPERIMENTAL_FULL_DEF")]
     pub experimental_full_def: bool,
 
     #[group(flatten)]

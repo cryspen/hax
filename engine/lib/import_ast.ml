@@ -87,12 +87,15 @@ and dint_kind (ik : A.int_kind) : B.int_kind =
 and dfloat_kind (fk : A.float_kind) : B.float_kind =
   match fk with F16 -> F16 | F32 -> F32 | F64 -> F64 | F128 -> F128
 
-and dglobal_ident (Newtypeglobal_id gi : A.global_id) : B.global_ident =
+and dglobal_ident ?(skip_projector : bool = false)
+    (Newtypeglobal_id gi : A.global_id) : B.global_ident =
   match gi with
   | Types.Concrete c -> (
       let ci = Concrete_ident.from_rust_ast c in
       match c.def_id.def_id.kind with
-      | Field -> `Projector (`Concrete ci)
+      | Field ->
+          let res = `Concrete ci in
+          if skip_projector then res else `Projector res
       | _ ->
           let is name = Concrete_ident.eq_name name ci in
           if is Rust_primitives__hax__deref_op then `Primitive Deref
@@ -212,7 +215,11 @@ and dpat' span parent_ty (pat : A.pat_kind) : B.pat' =
           fields =
             List.map
               ~f:(fun (field, pat) ->
-                B.{ field = dglobal_ident field; pat = dpat pat })
+                B.
+                  {
+                    field = dglobal_ident ~skip_projector:true field;
+                    pat = dpat pat;
+                  })
               fields;
         }
   | Or { sub_pats } -> POr { subpats = List.map ~f:dpat sub_pats }
@@ -273,7 +280,10 @@ and dexpr' span typ (expr : A.expr_kind) : B.expr' =
         {
           constructor = dglobal_ident constructor;
           fields =
-            List.map ~f:(fun (id, e) -> (dglobal_ident id, dexpr e)) fields;
+            List.map
+              ~f:(fun (id, e) ->
+                (dglobal_ident ~skip_projector:true id, dexpr e))
+              fields;
           base = Option.map ~f:(fun e -> (dexpr e, F.construct_base)) base;
           is_record;
           is_struct;

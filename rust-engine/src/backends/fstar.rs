@@ -30,6 +30,7 @@ impl super::Backend for FStarBackend {
             DropBlocks.into(),
             DropMatchGuards.into(),
             DropReferences.into(),
+            ExplicitConversions.into(),
             TrivializeAssignLhs.into(),
             HoistSideEffects.into(),
             HoistDisjunctivePatterns.into(),

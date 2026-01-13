@@ -91,6 +91,10 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
         let _: u32 = a.concretize();
     }
 
+    fn index_mut<I, T: std::ops::IndexMut<I>>(mut x: T, index: I) {
+        x.index_mut(index);
+    }
+
     fn question_mark_result<A, B: From<A>>(x: A) -> Result<(), B> {
         Err(x)?;
         Ok(())

@@ -353,6 +353,39 @@ module Drop_sized_trait : PHASE_FULL = struct
     List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
 end
 
+module Explicit_conversions : PHASE_FULL = struct
+  module FA = Features.Full
+  module FB = Features.Full
+  module A = Ast.Full
+  module B = Ast.Full
+
+  module ExpectedFA = struct
+    open Features
+    include On
+  end
+
+  module Phase = Phases.Explicit_conversions (ExpectedFA)
+
+  module Coerce =
+    Feature_gate.Make (Features.Full) (ExpectedFA)
+      (struct
+        module A = Features.Full
+        module B = ExpectedFA
+        include Feature_gate.DefaultSubtype
+
+        let metadata =
+          Phase_reject.make_metadata
+            (CoercionForUntypedPhase
+               ([%show: Diagnostics.Phase.t] Phase.metadata.current_phase))
+      end)
+
+  let metadata = Phase.metadata
+  let to_full_ast : Phase.B.item list -> Ast.Full.item list = Stdlib.Obj.magic
+
+  let ditems =
+    List.map ~f:Coerce.ditem >> List.concat >> Phase.ditems >> to_full_ast
+end
+
 module Functionalize_loops : PHASE_FULL = struct
   module FA = Features.Full
   module FB = Features.Full
@@ -1384,6 +1417,7 @@ let drop_return_break_continue : (module PHASE_FULL) =
   (module Drop_return_break_continue)
 
 let drop_sized_trait : (module PHASE_FULL) = (module Drop_sized_trait)
+let explicit_conversions : (module PHASE_FULL) = (module Explicit_conversions)
 let functionalize_loops : (module PHASE_FULL) = (module Functionalize_loops)
 
 let hoist_disjunctive_patterns : (module PHASE_FULL) =
@@ -1449,6 +1483,7 @@ let phases_list : (module PHASE_FULL) list =
     drop_references;
     drop_return_break_continue;
     drop_sized_trait;
+    explicit_conversions;
     functionalize_loops;
     hoist_disjunctive_patterns;
     local_mutation;
@@ -1491,6 +1526,7 @@ let phase_of_name : string -> (module PHASE_FULL) option = function
   | "drop_references" -> Some drop_references
   | "drop_return_break_continue" -> Some drop_return_break_continue
   | "drop_sized_trait" -> Some drop_sized_trait
+  | "explicit_conversions" -> Some explicit_conversions
   | "functionalize_loops" -> Some functionalize_loops
   | "hoist_disjunctive_patterns" -> Some hoist_disjunctive_patterns
   | "local_mutation" -> Some local_mutation
@@ -1534,6 +1570,7 @@ let phases : string list =
     "drop_references";
     "drop_return_break_continue";
     "drop_sized_trait";
+    "explicit_conversions";
     "functionalize_loops";
     "hoist_disjunctive_patterns";
     "local_mutation";
@@ -1567,5 +1604,5 @@ let phases : string list =
   ]
 
 (*
-and_mut_defsite, bundle_cycles, cf_into_monads, direct_and_mut, drop_blocks, drop_match_guards, drop_references, drop_return_break_continue, drop_sized_trait, functionalize_loops, hoist_disjunctive_patterns, local_mutation, newtype_as_refinement, reconstruct_asserts, reconstruct_for_index_loops, reconstruct_for_loops, reconstruct_question_marks, reconstruct_while_loops, reorder_fields, rewrite_control_flow, rewrite_local_self, simplify_hoisting, simplify_match_return, simplify_question_marks, sort_items, specialize, traits_specs, transform_hax_lib_inline, trivialize_assign_lhs, reject_arbitrary_lhs, reject_continue, reject_question_mark, reject_raw_or_mut_pointer, reject_early_exit, reject_as_pattern, reject_dyn, reject_trait_item_default, reject_unsafe, hoist_side_effects
+and_mut_defsite, bundle_cycles, cf_into_monads, direct_and_mut, drop_blocks, drop_match_guards, drop_references, drop_return_break_continue, drop_sized_trait, explicit_conversions, functionalize_loops, hoist_disjunctive_patterns, local_mutation, newtype_as_refinement, reconstruct_asserts, reconstruct_for_index_loops, reconstruct_for_loops, reconstruct_question_marks, reconstruct_while_loops, reorder_fields, rewrite_control_flow, rewrite_local_self, simplify_hoisting, simplify_match_return, simplify_question_marks, sort_items, specialize, traits_specs, transform_hax_lib_inline, trivialize_assign_lhs, reject_arbitrary_lhs, reject_continue, reject_question_mark, reject_raw_or_mut_pointer, reject_early_exit, reject_as_pattern, reject_dyn, reject_trait_item_default, reject_unsafe, hoist_side_effects
 *)

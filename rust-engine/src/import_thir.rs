@@ -1,6 +1,7 @@
 //! This modules allows to import the THIR AST produced by the frontend, and convert it to the engine's internal AST
 
 use crate::ast;
+use crate::ast::HasKind as _;
 use crate::ast::identifiers::global_id::ReservedSuffix;
 use crate::ast::identifiers::global_id::TupleId;
 use crate::symbol::Symbol;
@@ -70,34 +71,48 @@ fn is_constraint_on_ty(gc: &ast::GenericConstraint, ty: &ast::Ty) -> bool {
     }
 }
 
-fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
-    if let ast::ExprKind::App { head, args, .. } = expr.kind.as_ref() {
-        if let ast::ExprKind::GlobalId(global_id) = head.kind.as_ref() {
-            if global_id == &crate::names::rust_primitives::hax::deref_op && args.len() == 1 {
-                return lhs_from_expr(&args[0]);
-            }
-            if global_id.is_projector() && args.len() == 1 {
-                return ast::Lhs::FieldAccessor {
-                    e: Box::new(lhs_from_expr(&args[0])),
-                    ty: expr.ty.clone(),
-                    field: global_id.clone(),
-                };
-            }
-            if args.len() == 2 {
-                return ast::Lhs::ArrayAccessor {
-                    e: Box::new(lhs_from_expr(&args[0])),
-                    ty: expr.ty.clone(),
-                    index: args[1].clone(),
-                };
-            }
+fn resugar_index_mut(expr: &ast::Expr) -> Option<(&ast::Expr, &ast::Expr)> {
+    if let ast::ExprKind::App { head, args, .. } = expr.kind()
+        && let ast::ExprKind::GlobalId(method) = head.kind()
+        && let [lhs, index] = args.as_slice()
+    {
+        use crate::names::core::ops::index::*;
+        match (*method, lhs.kind()) {
+            (IndexMut::index_mut, ast::ExprKind::Borrow { inner: lhs, .. }) => Some((lhs, index)),
+            (Index::index, _) => Some((lhs, index)),
+            _ => None,
         }
+    } else {
+        None
     }
-    match expr.kind.as_ref() {
-        ast::ExprKind::LocalId(var) => ast::Lhs::LocalVar {
+}
+
+fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
+    if let ast::ExprKind::LocalId(var) = expr.kind() {
+        return ast::Lhs::LocalVar {
             var: var.clone(),
             ty: expr.ty.clone(),
-        },
-        _ => ast::Lhs::ArbitraryExpr(Box::new(expr.clone())),
+        };
+    }
+    let expr = expr.unbox_underef();
+    if let Some((e, index)) = resugar_index_mut(expr) {
+        ast::Lhs::ArrayAccessor {
+            e: Box::new(lhs_from_expr(e)),
+            ty: expr.ty.clone(),
+            index: index.clone(),
+        }
+    } else if let ast::ExprKind::App { head, args, .. } = expr.kind()
+        && let [arg] = args.as_slice()
+        && let ast::ExprKind::GlobalId(field) = head.kind()
+        && field.is_projector()
+    {
+        ast::Lhs::FieldAccessor {
+            e: Box::new(lhs_from_expr(arg)),
+            ty: expr.ty.clone(),
+            field: field.clone(),
+        }
+    } else {
+        ast::Lhs::ArbitraryExpr(Box::new(expr.clone()))
     }
 }
 
