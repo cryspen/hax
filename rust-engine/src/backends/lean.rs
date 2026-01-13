@@ -142,7 +142,7 @@ impl Backend for LeanBackend {
             .with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<crate::phase::PhaseKind> {
+    fn phases(&self) -> Vec<PhaseKind> {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         vec![
             RejectRawOrMutPointer.into(),

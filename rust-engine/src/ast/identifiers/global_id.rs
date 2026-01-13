@@ -314,7 +314,7 @@ impl GlobalId {
             def_id.path.pop();
             popped_ctor = true;
             if let Some(parent) = def_id.parent.as_ref() {
-                def_id.parent = parent.parent.clone();
+                def_id.parent = parent.parent;
             }
         }
 

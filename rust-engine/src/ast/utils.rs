@@ -32,8 +32,6 @@ pub mod mappers {
     }
 }
 
-use super::*;
-
 impl Expr {
     /// Create a tuple expression out of components.
     pub fn tuple(components: Vec<Expr>, span: Span) -> Self {

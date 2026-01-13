@@ -109,7 +109,7 @@ fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
         ast::Lhs::FieldAccessor {
             e: Box::new(lhs_from_expr(arg)),
             ty: expr.ty.clone(),
-            field: field.clone(),
+            field: *field,
         }
     } else {
         ast::Lhs::ArbitraryExpr(Box::new(expr.clone()))
