@@ -333,19 +333,19 @@ macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident wi
         mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
 
       @[spec]
-      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toInt < y.toInt) ⌝ ⦄ := by
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt < y.toInt) ⌝ ⦄ := by
         mvcgen [lt]; simp [x.lt_iff_toInt_lt]
 
       @[spec]
-      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toInt ≤ y.toInt) ⌝ ⦄ := by
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≤ y.toInt) ⌝ ⦄ := by
         mvcgen [le]; simp [x.le_iff_toInt_le]
 
       @[spec]
-      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toInt > y.toInt ) ⌝ ⦄ := by
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt > y.toInt ) ⌝ ⦄ := by
         mvcgen [gt]; simp [y.lt_iff_toInt_lt]
 
       @[spec]
-      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toInt ≥ y.toInt) ⌝ ⦄ := by
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≥ y.toInt) ⌝ ⦄ := by
         mvcgen [ge]; simp [y.le_iff_toInt_le]
 
       end $typeName
@@ -362,20 +362,20 @@ macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident wi
         mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
 
       @[spec]
-      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = (x.toNat < y.toNat) ⌝ ⦄ := by
-        mvcgen [lt]; simp [x.lt_iff_toNat_lt]
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat < y.toNat) ⌝ ⦄ := by
+        mvcgen [lt]
 
       @[spec]
-      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = (x.toNat ≤ y.toNat) ⌝ ⦄ := by
-        mvcgen [le]; simp [x.le_iff_toNat_le]
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≤ y.toNat) ⌝ ⦄ := by
+        mvcgen [le]
 
       @[spec]
-      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = (x.toNat > y.toNat ) ⌝ ⦄ := by
-        mvcgen [gt]; simp [y.lt_iff_toNat_lt]
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat > y.toNat ) ⌝ ⦄ := by
+        mvcgen [gt]
 
       @[spec]
-      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = (x.toNat ≥ y.toNat) ⌝ ⦄ := by
-        mvcgen [ge]; simp [y.le_iff_toNat_le]
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≥ y.toNat) ⌝ ⦄ := by
+        mvcgen [ge]
 
       end $typeName
   )
@@ -747,12 +747,15 @@ def Rust_primitives.Hax.while_loop {β : Type}
     (init : β)
     (body : β -> RustM β)
     (pureInv:
-        {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ (i b) = r ⌝⦄} := by
+        {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ r = (i b) ⌝⦄} := by
       constructor; intro; mvcgen)
     (pureTermination :
-        {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ Int.ofNat (t b) = r ⌝⦄} := by
+        {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ r = Int.ofNat (t b) ⌝⦄} := by
+      constructor; intro; mvcgen)
+    (pureCond :
+        {c : β -> Bool // ∀ b, ⦃⌜ pureInv.val b ⌝⦄ cond b ⦃⇓ r => ⌜ r = c b ⌝⦄} := by
       constructor; intro; mvcgen) : RustM β :=
-  Loop.MonoLoopCombinator.while_loop Loop.mk cond init body
+  Loop.MonoLoopCombinator.while_loop Loop.mk pureCond.val init body
 
 @[spec]
 theorem Rust_primitives.Hax.while_loop.spec {β : Type}
@@ -761,25 +764,19 @@ theorem Rust_primitives.Hax.while_loop.spec {β : Type}
     (termination: β → RustM Hax_lib.Int.Int)
     (init : β)
     (body : β -> RustM β)
-    (pureInv: {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ (i b) = r ⌝⦄})
+    (pureInv: {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ r = (i b) ⌝⦄})
     (pureTermination :
-      {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ Int.ofNat (t b) = r ⌝⦄})
-    (step : ∀ (b : β),
-      ⦃⌜pureInv.val b⌝⦄
-        do
-          if ← cond b
-          then ForInStep.yield (← body b)
-          else ForInStep.done b
-      ⦃⇓ r =>
-        match r with
-        | ForInStep.yield b' =>
-          spred(⌜ pureTermination.val b' < pureTermination.val b ⌝ ∧ ⌜ pureInv.val b' ⌝)
-        | ForInStep.done b' =>
-          ⌜ pureInv.val b' ⌝⦄) :
+      {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ r = Int.ofNat (t b) ⌝⦄})
+    (pureCond : {c : β -> Bool // ∀ b, ⦃⌜ pureInv.val b ⌝⦄ cond b ⦃⇓ r => ⌜ r = c b ⌝⦄})
+    (step :
+      ∀ (b : β), pureCond.val b →
+        ⦃⌜ pureInv.val b ⌝⦄
+          body b
+        ⦃⇓ b' => spred(⌜ pureTermination.val b' < pureTermination.val b ⌝ ∧ ⌜ pureInv.val b' ⌝)⦄ ) :
     ⦃⌜ pureInv.val init ⌝⦄
-      while_loop inv cond termination init body pureInv pureTermination
-    ⦃⇓ r => ⌜ pureInv.val r ⌝⦄ :=
-  Spec.MonoLoopCombinator.while_loop init Loop.mk cond body pureInv pureTermination step
+      while_loop inv cond termination init body pureInv pureTermination pureCond
+    ⦃⇓ r => ⌜ pureInv.val r ∧ ¬ pureCond.val r ⌝⦄ :=
+  Spec.MonoLoopCombinator.while_loop init Loop.mk pureCond.val body pureInv pureTermination step
 
 end Loop
 /-

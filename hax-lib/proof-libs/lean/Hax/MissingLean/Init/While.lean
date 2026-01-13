@@ -36,12 +36,12 @@ def Loop.MonoLoopCombinator.forIn {β : Type u} {m : Type u → Type v} [Monad m
 def Loop.MonoLoopCombinator.while_loop  {m} {ps : PostShape} {β: Type}
     [Monad m] [∀ α, Order.CCPO (m α)] [WPMonad m ps]
     (loop : Loop)
-    (cond: β → m Bool)
+    (cond: β → Bool)
     (init : β)
     (body : β -> m β)
     [∀ f : Unit → β → m (ForInStep β), Loop.MonoLoopCombinator f] : m β :=
   Loop.MonoLoopCombinator.forIn loop init fun () s => do
-    if ← cond s then
+    if cond s then
       let s ← body s
       pure (.yield s)
     else
