@@ -174,9 +174,22 @@ impl LeanPrinter {
         }
     }
 
+    /// Checks if we are extracting core models to be able to use different namespeacing when
+    /// referring to core.
+    pub fn is_hax_core_models_extraction_mode(&self) -> bool {
+        std::env::var("HAX_CORE_MODELS_EXTRACTION_MODE")
+            .map(|v| v == "on")
+            .unwrap_or(false)
+    }
+
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
     /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
+        let id = if !self.is_hax_core_models_extraction_mode() && id.krate() == "core" {
+            id.rename_krate("core_models")
+        } else {
+            *id
+        };
         self.render_string(&id.view())
     }
 
