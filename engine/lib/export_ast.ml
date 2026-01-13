@@ -428,9 +428,9 @@ module Make (FA : Features.T) = struct
   and dlhs span (lhs : A.lhs) : B.lhs =
     match lhs with
     | A.LhsLocalVar { var; typ } ->
-        B.LocalVar { var = dlocal_ident var; ty = dty typ }
-    | A.LhsVecRef { e; typ; _ } -> B.VecRef { e = dlhs e; ty = dty typ }
         B.LocalVar { var = dlocal_ident var; ty = dty span typ }
+    | A.LhsVecRef { e; typ; _ } ->
+        B.VecRef { e = dlhs span e; ty = dty span typ }
     | A.LhsArbitraryExpr { e; witness = _ } -> B.ArbitraryExpr (dexpr e)
     | A.LhsFieldAccessor { e; field; typ; witness = _ } ->
         B.FieldAccessor
