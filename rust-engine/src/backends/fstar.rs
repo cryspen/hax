@@ -4,6 +4,7 @@
 pub struct FStarBackend;
 
 impl super::Backend for FStarBackend {
+    // TODO Replace by an empty printer
     // This is a dummy value. The fstar backend's printer is implemented in OCaml
     type Printer = super::lean::LeanPrinter;
 

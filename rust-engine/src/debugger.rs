@@ -59,9 +59,10 @@ macro_rules! declare_backends {
             fn print_module(self, module: Module) -> (String, SourceMap) {
                 use crate::backends::Backend;
                 use crate::printer::Print;
+                let item_graph = crate::attributes::LinkedItemGraph::new(&module.items, crate::ast::diagnostics::Context::Debugger) ;
                 match self {
                     $(
-                        Self::$name => $backend.printer().print(module),
+                        Self::$name => $backend.printer(std::rc::Rc::new(item_graph)).print(module),
                     )*
                 }
             }
