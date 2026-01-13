@@ -215,10 +215,12 @@ abbrev u16 := UInt16
 abbrev u32 := UInt32
 abbrev u64 := UInt64
 abbrev usize := USize64
+abbrev u128 := BitVec 128
 abbrev i8 := Int8
 abbrev i16 := Int16
 abbrev i32 := Int32
 abbrev i64 := Int64
+abbrev i128 := BitVec 128
 abbrev isize := ISize
 
 /-- Class of objects that can be transformed into Nat -/
@@ -395,6 +397,8 @@ end Rust_primitives.Hax.Machine_int
 
 @[simp, spec, hax_bv_decide]
 def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
+
+abbrev Core.Cmp.PartialEq.eq {α} [BEq α] (a b : α) := BEq.beq a b
 
 
 /-
@@ -1151,7 +1155,12 @@ structure Spec {α}
   pureEnsures : {p : α → Prop // pureRequires.val → ∀ a, ⦃ ⌜ True ⌝ ⦄ ensures a ⦃ ⇓r => ⌜ r = p a ⌝ ⦄}
   contract : ⦃ ⌜ pureRequires.val ⌝ ⦄ f ⦃ ⇓r => ⌜ pureEnsures.val r ⌝ ⦄
 
--- Miscellaneous
+
+/-
+
+# Miscellaneous
+
+-/
 def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
   : RustM (Array α)
   := pure v
@@ -1171,6 +1180,10 @@ abbrev assert (b:Bool) : RustM Tuple0 :=
 
 abbrev assume : Prop -> RustM Tuple0 := fun _ => pure ⟨ ⟩
 
-abbrev Prop.Constructors.from_bool (b :Bool) : Prop := (b = true)
+abbrev Prop.Constructors.from_bool (b : Bool) : Prop := (b = true)
+
+abbrev Prop.Impl.from_bool (b : Bool) : Prop := (b = true)
+
+abbrev Prop.Constructors.implies (a b : Prop) : Prop := a → b
 
 end Hax_lib
