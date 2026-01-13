@@ -220,6 +220,27 @@ impl LeanPrinter {
             .expect("Segments should always be non-empty")
             .clone()
     }
+
+    /// Inject an identifier in before-last position while rendering
+    pub fn render_with_injection(&self, id: &GlobalId, injection: &String) -> String {
+        let rendered = self.render(&id.view());
+        let (last, butlast) = rendered
+            .path
+            .split_last()
+            // TODO: Should be ensured by the rendering engine; see
+            // https://github.com/cryspen/hax/issues/1660
+            .expect("Segments should always be non-empty");
+        let path: Vec<String> = butlast
+            .iter()
+            .chain(std::iter::once(injection))
+            .chain(std::iter::once(last))
+            .map(String::clone)
+            .collect();
+        self.rendered_to_string(Rendered {
+            module: rendered.module,
+            path,
+        })
+    }
 }
 
 /// Render parameters, adding a line after each parameter
@@ -1344,6 +1365,22 @@ set_option linter.unusedVariables false
                             .group()
                             .nest(INDENT))
                         ),
+                        zip_left!(
+                            docs![hardline!(), hardline!()],
+                            items
+                                .iter()
+                                .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                .map(|item| docs![
+                                    "attribute [reducible]",
+                                    line!(),
+                                    self.render_with_injection(
+                                        &item.ident,
+                                        &"AssociatedTypes".to_string()
+                                    )
+                                ]
+                                .group()
+                                .nest(INDENT))
+                        ),
                         // When referencing associated types, we would like to refer to them as
                         // `TraitName.TypeName` instead of `TraitName.AssociatedTypes.TypeName`:
                         zip_left!(
@@ -1459,7 +1496,7 @@ set_option linter.unusedVariables false
                     // One for the associated types...
                     docs![
                         docs![
-                            reflow!("instance "),
+                            reflow!("@[reducible] instance "),
                             ident,
                             ".AssociatedTypes",
                             line!(),
