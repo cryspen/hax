@@ -87,7 +87,7 @@ pub enum Response {
         output: Vec<crate::ast::Item>,
     },
     /// Printing was done successfully
-    PrintOk,
+    Printed(String),
 }
 
 /// Extends the common `FromEngine` messages with one extra case: `Response`.

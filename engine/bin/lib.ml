@@ -292,8 +292,11 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
       let items = Phase.ditems items in
       let output = List.concat_map ~f:ExportFullAst.ditem items in
       Rust_engine_types.ApplyPhases { output }
-  | Types.Print { printer = Fstar backend_options; input } ->
-      let open Fstar_backend in
+  | Types.Print { printer = Fstar backend_options; input } -> (
+      let
+      (* TODO Share this code with the regular track of the Ocaml engine (above in the `run` function)*)
+      open
+        Fstar_backend in
       let items = List.concat_map ~f:Import_ast.ditem input in
 
       let items : AST.item list = Stdlib.Obj.magic items in
@@ -313,8 +316,12 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
         Profiling.profile (Backend Fstar_backend.backend) (List.length items)
           (fun _ -> translate with_items backend_options items ~bundles)
       in
-      List.iter ~f:(fun file -> File file |> Hax_io.write) files;
-      Rust_engine_types.PrintOk
+      match files with
+      | [ file ] -> Rust_engine_types.Printed file.contents
+      | _ ->
+          failwith
+            "Expected a single file when calling the FStar backend from the \
+             Rust engine.")
   | Types.Print _ ->
       failwith
         "Using the Ocaml engine for Printing only is reserved to the F* backend"
