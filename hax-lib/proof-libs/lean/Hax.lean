@@ -26,6 +26,7 @@ import Hax.CoreModels
 import Hax.Integers.Spec
 import Hax.MissingCoreModels
 import Hax.Float
+import Hax.Folds
 
 /- Additions to the Lean library -/
 import Hax.MissingLean
