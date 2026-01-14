@@ -68,7 +68,7 @@ pub trait RenderView: Sized {
         let id = id.replace([' ', '<', '>'], "_");
         if id.is_empty() {
             "_ERROR_EMPTY_ID_".to_string()
-        } else if Self::should_escape(&id) {
+        } else if Self::should_escape(id.trim_start_matches("_")) {
             format!("_{id}")
         } else {
             id
