@@ -39,7 +39,7 @@ let impl_i64__BITS: u32 = mk_int 64
 let impl_i128__BITS: u32 = mk_int 128
 
 
-
+let impl_usize__wrapping_add: usize -> usize -> usize = add_mod
 let impl_u8__wrapping_add: u8 -> u8 -> u8 = add_mod
 let impl_u16__wrapping_add: u16 -> u16 ->  u16 = add_mod
 let impl_u32__wrapping_add: u32 -> u32 -> u32 = add_mod
