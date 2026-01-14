@@ -14,6 +14,9 @@ use crate::{
     symbol::Symbol,
 };
 
+use std::collections::HashSet;
+use std::sync::OnceLock;
+
 /// A helper trait to render a [`View`] (a typed list of path segments) into
 /// strings.
 ///
@@ -42,6 +45,36 @@ use crate::{
 /// [`RenderView::render_path_segment`] returns all display atoms for such a
 /// segment, so callers can flatten or join as needed.
 pub trait RenderView: Sized {
+    /// List of reserved keywords that will be escaped when rendering
+    fn reserved_keywords() -> &'static HashSet<String> {
+        static SET: OnceLock<HashSet<String>> = OnceLock::new();
+        SET.get_or_init(|| [].into_iter().collect())
+    }
+
+    /// Check if a string is a reserved keyword that needs escaping
+    fn is_reserved_keyword(id: &str) -> bool {
+        let reserved = Self::reserved_keywords();
+        reserved.contains(id)
+    }
+
+    /// Check if a string needs escaping
+    fn should_escape(id: &str) -> bool {
+        Self::is_reserved_keyword(id)
+    }
+
+    /// Escape a string if it needs escaping according to `Self::should_escape`
+    fn escape(id: &str) -> String {
+        // See https://github.com/cryspen/hax/issues/1866
+        let id = id.replace([' ', '<', '>'], "_");
+        if id.is_empty() {
+            "_ERROR_EMPTY_ID_".to_string()
+        } else if Self::should_escape(&id) {
+            format!("_{id}")
+        } else {
+            id
+        }
+    }
+
     /// Converts an unnamed path segment payload into a printable [`Symbol`].
     ///
     /// Unnamed segments include `impl`, `anon const`, `inline const`, `foreign mod`,
@@ -183,6 +216,7 @@ pub mod default {
                     format!("{id}")
                 }
             })
+            .map(|str| V::escape(&str))
             .collect();
         strings.reverse();
         strings
