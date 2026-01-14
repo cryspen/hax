@@ -61,7 +61,6 @@ report() {
 authors_and_handles() {
     sort -u <<AUTHORS | sed '/^[[:space:]]*$/d'
 maxime:maximebuyse
-lucas:w95psp
 clement:clementblaudeau
 AUTHORS
 }
