@@ -3,7 +3,12 @@ module Make (F : Features.T) : sig
 
   val uid_associated_items : AST.item list -> Ast.attrs -> AST.item list
   val bundle_cyclic_modules : AST.item list -> AST.item list
-  val global_sort : AST.item list -> AST.item list
+
+  (** Sort within each namespaces: items are first groupped by namespace, then
+    sorted topologically. *)
+  val sort_namespace_wise : AST.item list -> AST.item list
+  (** Sort items regardless of their namespaces. *)
+  val sort : AST.item list -> AST.item list
   val recursive_bundles : AST.item list -> AST.item list list * AST.item list
 
   val filter_by_inclusion_clauses :

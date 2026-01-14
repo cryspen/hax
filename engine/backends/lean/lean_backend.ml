@@ -122,7 +122,7 @@ module TransformToInputLanguage =
   |> Phases.Simplify_hoisting
   |> Phases.Newtype_as_refinement
   |> Phases.Reorder_fields
-  |> Phases.Sort_items
+  |> Phases.Sort_items_namespace_wise
   |> SubtypeToInputLanguage
   |> Identity
   ]
