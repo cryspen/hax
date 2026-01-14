@@ -197,6 +197,48 @@ def Cyclic_modules.Variant_constructor_a.f
   := do
   (Cyclic_modules.Variant_constructor_b.h Rust_primitives.Hax.Tuple0.mk)
 
+structure Cyclic_modules.Issue_1823.First_example.A.A where
+
+
+structure Cyclic_modules.Issue_1823.First_example.B.B where
+
+
+def Cyclic_modules.Issue_1823.First_example.A.Impl.mkb
+  (self : Cyclic_modules.Issue_1823.First_example.A.A)
+  : RustM Cyclic_modules.Issue_1823.First_example.B.B
+  := do
+  (pure Cyclic_modules.Issue_1823.First_example.B.B.mk)
+
+def Cyclic_modules.Issue_1823.First_example.B.Impl.mka
+  (self : Cyclic_modules.Issue_1823.First_example.B.B)
+  : RustM Cyclic_modules.Issue_1823.First_example.A.A
+  := do
+  (pure Cyclic_modules.Issue_1823.First_example.A.A.mk)
+
+def Cyclic_modules.Issue_1823.Second_example.A.a
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Cyclic_modules.Issue_1823.Second_example.B.call_a
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (Cyclic_modules.Issue_1823.Second_example.A.a Rust_primitives.Hax.Tuple0.mk)
+
+def Cyclic_modules.Issue_1823.Second_example.B.b
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+def Cyclic_modules.Issue_1823.Second_example.A.call_b
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Rust_primitives.Hax.Tuple0
+  := do
+  (Cyclic_modules.Issue_1823.Second_example.B.b Rust_primitives.Hax.Tuple0.mk)
+
 inductive Cyclic_modules.Typ_b.T2Rec : Type
 | T2 : Cyclic_modules.Typ_a.TRec -> Cyclic_modules.Typ_b.T2Rec
 
