@@ -78,8 +78,10 @@ impl RenderView for LeanPrinter {
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
                 Some(vec![
-                    self.render_path_segment_payload(chunk.payload())
-                        .to_string(),
+                    self.escape(
+                        self.render_path_segment_payload(chunk.payload())
+                            .to_string(),
+                    ),
                     "mk".to_string(),
                 ])
             }
@@ -104,7 +106,12 @@ impl RenderView for LeanPrinter {
             },
             _ => None,
         })
-        .unwrap_or(default::render_path_segment(self, chunk))
+        .unwrap_or(
+            default::render_path_segment(self, chunk)
+                .into_iter()
+                .map(|s| self.escape(s))
+                .collect(),
+        )
     }
 }
 
@@ -192,15 +199,13 @@ impl LeanPrinter {
 
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
-        let id = self
-            .render(&id.view())
+        self.render(&id.view())
             .path
             .last()
             // TODO: Should be ensured by the rendering engine; see
             // https://github.com/cryspen/hax/issues/1660
             .expect("Segments should always be non-empty")
-            .clone();
-        self.escape(id)
+            .clone()
     }
 }
 
