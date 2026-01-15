@@ -37,15 +37,15 @@ jobs:
       run: |
         nix build .#check-toolchain -L
 
+    - name: Try to extract Rust By Examples
+      run: |
+        nix build .#rust-by-example-hax-extraction -L
+
     - name: Test the examples
       run: |
         cd examples
         nix develop ..#ci-examples --command make clean
         nix develop ..#ci-examples --command make
-
-    - name: Try to extract Rust By Examples
-      run: |
-        nix build .#rust-by-example-hax-extraction -L
 
     - name: Checkout specifications
       uses: actions/checkout@v4
