@@ -1,8 +1,8 @@
-mod evaluate;
+pub mod evaluate;
 mod item_container;
 use std::{collections::HashMap, ops::Add};
 
-pub use item_container::ItemContainer;
+// pub use item_container::ItemContainer;
 
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
@@ -14,100 +14,6 @@ use syn::{
     visit::Visit,
     *,
 };
-
-macro_rules! declare_proc_macro {
-    // (
-    //     $(@)? $(#[doc = $doc:expr])*
-    //     #[proc_macro]
-    //     pub fn $mac:ident ($input:ident : HaxMacroInput) -> TokenStream {
-    //         $body:expr
-    //     }
-    // ) => {
-    //     $(#[doc = $doc])*
-    //     pub(crate) fn $mac($input: $crate::unified_macros::HaxMacroInput) -> ::proc_macro::TokenStream {
-    //         $body
-    //     }
-    //     macro_rules! $mac {
-    //         ($path:expr) => {
-    //             $(#[doc = $doc])*
-    //             #[proc_macro]
-    //             pub fn $mac:ident ($input:ident : $crate::unified_macros::HaxMacroInput) -> ::proc_macro::TokenStream {
-    //                 $path :: $mac ($input)
-    //             }
-    //         };
-    //     }
-    // };
-    // (
-    //     $(@)? $(#[doc = $doc:expr])*
-    //     #[proc_macro_derive($derive_name:ident)]
-    //     pub fn $mac:ident ($input:ident : HaxMacroInput) -> TokenStream {
-    //         $body:expr
-    //     }
-    // ) => {
-    //     $(#[doc = $doc])*
-    //     pub(crate) fn $mac($input: $crate::unified_macros::HaxMacroInput) -> ::proc_macro::TokenStream {
-    //         $body
-    //     }
-    //     macro_rules! $mac {
-    //         ($path:expr) => {
-    //             $(#[doc = $doc])*
-    //             #[proc_macro_derive($derive_name)]
-    //             pub fn $mac:ident ($input:ident : $crate::unified_macros::HaxMacroInput) -> ::proc_macro::TokenStream {
-    //                 $path :: $mac ($input)
-    //             }
-    //         };
-    //     }
-    // };
-    (
-        @#[proc_macro_attribute]
-        $(#$item_attr:tt)*
-        pub fn $mac:ident ($attr:ident : TokenStream, $input:ident : HaxMacroInput) -> HaxMacroOutput {
-            $body:expr
-        }
-    ) => {
-        pub(crate) mod $mac {
-            $(#$item_attr)*
-            pub(crate) fn the_macro($attr : ::proc_macro::TokenStream, $input) -> $crate::unified_macros::HaxMacroOutput {
-                $body
-            }
-            macro_rules! install {
-                () => {
-                    #[proc_macro_attribute]
-                    $(#$item_attr)*
-                    pub fn $mac ($attr : ::proc_macro::TokenStream, $input) -> ::proc_macro::TokenStream {
-                        let $crate::unified_macros::HaxMacroOutput {token_stream, extra_items} = $mac :: the_macro ($attr, $input);
-                        if !extra_items.is_empty() {
-                            let token_stream: proc_macro::TokenStream = token_stream.into();
-                            let mut input = ::syn::parse_macro_input!(token_stream as $crate::unified_macros::ItemContainer);
-                            input.insert_item(::quote::quote!{#(#extra_items)*});
-                            use quote::ToTokens;
-                            input.into_token_stream()
-                        } else {
-                            token_stream
-                        }.into()
-                    }
-                };
-            }
-            pub(crate) use install;
-        }
-    };
-    (
-        $(
-            $(#$attr:tt)*
-            pub fn $mac:ident ($($arg:ident : $ty:tt),*) -> $ret:tt {
-                $body:expr
-            }
-        )*
-    ) => {$(
-        crate::unified_macros::declare_proc_macro!(@
-            $(#$attr)*
-            pub fn $mac ($($arg : $ty),*) -> $ret {
-                $body
-            }
-        );
-    )*}
-}
-pub(crate) use declare_proc_macro;
 
 use crate::merge_generics;
 
@@ -158,14 +64,15 @@ mod kw {
     custom_keyword!(hax_macro_generic_env);
 }
 
+#[derive(Clone, Default)]
 pub struct EnvPayload {
-    at1: Token![@],
-    at2: Token![@],
-    env_kw: kw::hax_macro_generic_env,
-    brace1: Brace,
-    self_type: Option<syn::Type>,
-    brace2: Brace,
-    generics: syn::Generics,
+    pub at1: Token![@],
+    pub at2: Token![@],
+    pub env_kw: kw::hax_macro_generic_env,
+    pub brace1: Brace,
+    pub self_type: Option<syn::Type>,
+    pub brace2: Brace,
+    pub generics: syn::Generics,
 }
 
 impl From<Env> for EnvPayload {
@@ -182,9 +89,18 @@ impl From<Env> for EnvPayload {
     }
 }
 
+impl EnvPayload {
+    pub fn env(&self) -> Env {
+        Env {
+            self_type: self.self_type.clone(),
+            generics: self.generics.clone(),
+        }
+    }
+}
+
 pub struct WithEnvPayload<T> {
-    env_payload: Option<EnvPayload>,
-    value: T,
+    pub env_payload: Option<EnvPayload>,
+    pub value: T,
 }
 
 impl<T: Parse> Parse for WithEnvPayload<T> {
@@ -391,20 +307,21 @@ pub struct HaxMacroOutput {
 
 impl HaxMacroOutput {
     fn into_token_stream(self) -> TokenStream {
-        let Self {
-            token_stream,
-            extra_items,
-        } = self;
-        if !extra_items.is_empty() {
-            let token_stream: proc_macro::TokenStream = token_stream.into();
-            let mut input = ::syn::parse_macro_input!(token_stream as ItemContainer);
-            input.insert_item(::quote::quote! {#(#extra_items)*});
-            use quote::ToTokens;
-            input.into_token_stream()
-        } else {
-            token_stream
-        }
-        .into()
+        todo!()
+        // let Self {
+        //     token_stream,
+        //     extra_items,
+        // } = self;
+        // if !extra_items.is_empty() {
+        //     let token_stream: proc_macro::TokenStream = token_stream.into();
+        //     let mut input = ::syn::parse_macro_input!(token_stream as ItemContainer);
+        //     input.insert_item(::quote::quote! {#(#extra_items)*});
+        //     use quote::ToTokens;
+        //     input.into_token_stream()
+        // } else {
+        //     token_stream
+        // }
+        // .into()
     }
 }
 

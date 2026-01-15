@@ -1,4 +1,4 @@
-use crate::{make_fn_decoration, prelude::*, FnDecorationKind};
+use crate::{make_fn_decoration, prelude::*, unified_macros::WithEnvPayload, FnDecorationKind};
 
 /// Add a logical precondition to a function.
 // Note you can use the `forall` and `exists` operators. (TODO: commented out for now, see #297)
@@ -26,17 +26,13 @@ use crate::{make_fn_decoration, prelude::*, FnDecorationKind};
 /// ```
 
 // #[proc_macro_attribute]
-pub fn requires(
-    attr: pm::TokenStream,
-    HaxMacroInput {
-        parent_generics,
-        token_stream: item,
-        ..
-    }: HaxMacroInput,
-) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
+pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let WithEnvPayload {
+        env_payload,
+        value: phi,
+    }: WithEnvPayload<syn::Expr> = parse_macro_input!(attr);
     let item: FnLike = parse_macro_input!(item);
-    let env = parent_generics.unwrap_or_default() + item.sig.generics.clone();
+    let env = env_payload.unwrap_or_default().env() + item.sig.generics.clone();
     let (requires, attr) = make_fn_decoration(
         phi.clone(),
         item.sig.clone(),
@@ -50,11 +46,9 @@ pub fn requires(
         .stmts
         .insert(0, parse_quote! {debug_assert!(#phi);});
     quote! {
-        #requires #attr
-        // TODO: disable `assert!`s for now (see #297)
+        #requires
+        #attr
         #item
-        // #[cfg(    all(not(#HaxCfgOptionName),     debug_assertions )) ] #item_with_debug
-        // #[cfg(not(all(not(#HaxCfgOptionName),     debug_assertions )))] #item
     }
     .into()
 }

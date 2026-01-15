@@ -9,14 +9,19 @@ use syn::{
     ItemImpl, Meta,
 };
 
-use crate::utils::{impl_item_attrs_mut, impl_item_generics_mut, item_attrs_mut, RetainMapExt};
+use crate::utils::{impl_item_attrs_mut, impl_item_generics_mut, item_attrs_mut};
 
-pub struct ApplyMacrosWithEnvironment {
-    recognized_prefixes: Vec<Vec<String>>,
+pub struct AddGenericsToMacroCalls {
+    // recognized_prefixes: Vec<Vec<String>>,
     parent_generics: Option<Env>,
 }
 
-impl ApplyMacrosWithEnvironment {
+impl AddGenericsToMacroCalls {
+    pub fn new() -> Self {
+        Self {
+            parent_generics: None,
+        }
+    }
     fn is_recongized_macro(&self, path: &syn::Path) -> bool {
         let path = simple_path_idents(&path).unwrap_or_default();
         let path = path.iter().map(String::as_str).collect::<Vec<_>>();
@@ -64,11 +69,10 @@ impl ApplyMacrosWithEnvironment {
     }
 }
 
-impl VisitMut for ApplyMacrosWithEnvironment {
+impl VisitMut for AddGenericsToMacroCalls {
     fn visit_impl_item_mut(&mut self, i: &mut syn::ImplItem) {
         if let Some(generics) = impl_item_generics_mut(i) {
             let Some(parent_generics) = &self.parent_generics else {
-                // *i = syn::ImplItem::Verbatim();
                 return;
             };
             self.with_env(parent_generics.clone() + generics.clone(), |visitor| {

@@ -190,3 +190,7 @@ pub trait RefineAs<RefinedType> {
     /// and its `no_debug_runtime_check` option.
     fn into_checked(self) -> RefinedType;
 }
+
+pub type HaxDummyType<const DUMMY: bool, T> = T;
+pub trait HaxDummyTrait<const DUMMY: bool> {}
+impl<T> HaxDummyTrait<true> for T {}

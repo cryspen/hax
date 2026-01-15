@@ -385,28 +385,15 @@ pub fn fstar_smt_pat(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
 #[proc_macro_error]
 #[proc_macro_attribute]
 pub fn requires(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
-    let phi: syn::Expr = parse_macro_input!(attr);
-    let item: FnLike = parse_macro_input!(item);
-    let (requires, attr) = make_fn_decoration(
-        phi.clone(),
-        item.sig.clone(),
-        FnDecorationKind::Requires,
-        Generics::default(),
-        None,
-    );
-    let mut item_with_debug = item.clone();
-    item_with_debug
-        .block
-        .stmts
-        .insert(0, parse_quote! {debug_assert!(#phi);});
-    quote! {
-        #requires #attr
-        // TODO: disable `assert!`s for now (see #297)
-        #item
-        // #[cfg(    all(not(#HaxCfgOptionName),     debug_assertions )) ] #item_with_debug
-        // #[cfg(not(all(not(#HaxCfgOptionName),     debug_assertions )))] #item
-    }
-    .into()
+    contracts::requires(attr, item)
+}
+
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn new_attributes(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let mut item: Item = parse_macro_input!(item);
+    unified_macros::evaluate::AddGenericsToMacroCalls::new().visit_item_mut(&mut item);
+    item.into_token_stream().into()
 }
 
 /// Add a logical postcondition to a function. Note you can use the

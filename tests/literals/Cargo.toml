@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 hax-lib = { path = "../../hax-lib" }
+hax-lib-macros = { path = "../../hax-lib/macros" }
 
 [package.metadata.hax-tests]
 into."fstar" = { broken = false, issue_id = "85" }
