@@ -13,3 +13,4 @@ hax-frontend-exporter = { path = "../frontend/exporter", default-features = fals
 serde = { workspace = true, features = ["derive"] }
 hax-rust-engine-macros = { path = "macros" }
 schemars.workspace = true
+syn = { workspace = true, features = ["fold"] }

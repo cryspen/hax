@@ -74,12 +74,12 @@ pub fn visitable(_attr: TokenStream, item: TokenStream) -> TokenStream {
     item
 }
 
-#[proc_macro_attribute]
-pub fn pretty_tmpl(attr: TokenStream, item: TokenStream) -> TokenStream {
-    pretty::pretty_tmpl(attr, item)
-}
+// #[proc_macro_attribute]
+// pub fn pretty_tmpl(attr: TokenStream, item: TokenStream) -> TokenStream {
+//     pretty::pretty_tmpl(attr, item)
+// }
 
-#[proc_macro]
-pub fn pretty_s(input: TokenStream) -> TokenStream {
-    pretty::pretty_s(input)
-}
+// #[proc_macro]
+// pub fn pretty_s(input: TokenStream) -> TokenStream {
+//     pretty::pretty_s(input)
+// }

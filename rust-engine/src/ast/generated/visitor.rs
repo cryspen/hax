@@ -1,5 +1,6 @@
 mod visitor_map_reduce_cf {
     use super::*;
+    #[doc = "Map visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST. Each visiting function may break control flow."]
     pub trait VisitorMapReduceCf: Sized + Monoid {
         type Error;
         fn visit_generic_value(
@@ -589,7 +590,26 @@ mod visitor_map_reduce_cf {
                 visitor_reduce_value = visitor.visit_binding_mode(mode)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            PatKind::Construct { .. } => std::ops::ControlFlow::Continue(V::identity()),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_pat(visitor_item_1)?,
+                        );
+                    };
+                }
+                std::ops::ControlFlow::Continue(visitor_reduce_value)
+            }
             PatKind::Error { .. } => std::ops::ControlFlow::Continue(V::identity()),
         }
     }
@@ -1024,7 +1044,27 @@ mod visitor_map_reduce_cf {
                 }
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            ExprKind::Construct { .. } => std::ops::ControlFlow::Continue(V::identity()),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_expr(visitor_item_1)?,
+                        );
+                    };
+                }
+                std::ops::ControlFlow::Continue(visitor_reduce_value)
+            }
             ExprKind::Match { scrutinee, arms } => {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_expr(scrutinee)?;
@@ -1347,7 +1387,24 @@ mod visitor_map_reduce_cf {
         v: &mut Variant,
     ) -> std::ops::ControlFlow<V::Error, <V as Monoid>::T> {
         match v {
-            Variant { .. } => std::ops::ControlFlow::Continue(V::identity()),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        V::append(&mut visitor_reduce_value, visitor.visit_ty(visitor_item_1)?);
+                        ();
+                    };
+                }
+                std::ops::ControlFlow::Continue(visitor_reduce_value)
+            }
         }
     }
     #[allow(unused)]
@@ -1426,6 +1483,16 @@ mod visitor_map_reduce_cf {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_generics(generics)?;
                 V::append(&mut visitor_reduce_value, visitor.visit_ty(self_ty)?);
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_generic_value(visitor_item)?,
+                        );
+                    }
+                };
                 for visitor_item in items {
                     V::append(
                         &mut visitor_reduce_value,
@@ -1483,6 +1550,7 @@ mod visitor_map_reduce_cf {
 }
 mod visitor_map_cf {
     use super::*;
+    #[doc = "Fold visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST. Each visiting function may break control flow."]
     pub trait VisitorMapCf: Sized {
         type Error;
         fn visit_generic_value(
@@ -1967,7 +2035,21 @@ mod visitor_map_cf {
                 visitor.visit_binding_mode(mode)?;
                 std::ops::ControlFlow::Continue(())
             }
-            PatKind::Construct { .. } => std::ops::ControlFlow::Continue(()),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_pat(visitor_item_1)?;
+                    };
+                }
+                std::ops::ControlFlow::Continue(())
+            }
             PatKind::Error { .. } => std::ops::ControlFlow::Continue(()),
         }
     }
@@ -2324,7 +2406,22 @@ mod visitor_map_cf {
                 }
                 std::ops::ControlFlow::Continue(())
             }
-            ExprKind::Construct { .. } => std::ops::ControlFlow::Continue(()),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_expr(visitor_item_1)?;
+                    };
+                }
+                std::ops::ControlFlow::Continue(())
+            }
             ExprKind::Match { scrutinee, arms } => {
                 visitor.visit_expr(scrutinee)?;
                 for visitor_item in arms {
@@ -2602,7 +2699,22 @@ mod visitor_map_cf {
         v: &mut Variant,
     ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
-            Variant { .. } => std::ops::ControlFlow::Continue(()),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        visitor.visit_ty(visitor_item_1)?;
+                        ();
+                    };
+                }
+                std::ops::ControlFlow::Continue(())
+            }
         }
     }
     #[allow(unused)]
@@ -2664,6 +2776,13 @@ mod visitor_map_cf {
             } => {
                 visitor.visit_generics(generics)?;
                 visitor.visit_ty(self_ty)?;
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        visitor.visit_generic_value(visitor_item)?;
+                    }
+                };
                 for visitor_item in items {
                     visitor.visit_impl_item(visitor_item)?;
                 }
@@ -2704,6 +2823,7 @@ mod visitor_map_cf {
 }
 mod visitor_reduce_cf {
     use super::*;
+    #[doc = "Map visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST. Each visiting function may break control flow."]
     pub trait VisitorReduceCf<'lt>: Sized + Monoid {
         type Error;
         fn visit_generic_value(
@@ -3293,7 +3413,26 @@ mod visitor_reduce_cf {
                 visitor_reduce_value = visitor.visit_binding_mode(mode)?;
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            PatKind::Construct { .. } => std::ops::ControlFlow::Continue(V::identity()),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_pat(visitor_item_1)?,
+                        );
+                    };
+                }
+                std::ops::ControlFlow::Continue(visitor_reduce_value)
+            }
             PatKind::Error { .. } => std::ops::ControlFlow::Continue(V::identity()),
         }
     }
@@ -3728,7 +3867,27 @@ mod visitor_reduce_cf {
                 }
                 std::ops::ControlFlow::Continue(visitor_reduce_value)
             }
-            ExprKind::Construct { .. } => std::ops::ControlFlow::Continue(V::identity()),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_expr(visitor_item_1)?,
+                        );
+                    };
+                }
+                std::ops::ControlFlow::Continue(visitor_reduce_value)
+            }
             ExprKind::Match { scrutinee, arms } => {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_expr(scrutinee)?;
@@ -4051,7 +4210,24 @@ mod visitor_reduce_cf {
         v: &'lt Variant,
     ) -> std::ops::ControlFlow<V::Error, <V as Monoid>::T> {
         match v {
-            Variant { .. } => std::ops::ControlFlow::Continue(V::identity()),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        V::append(&mut visitor_reduce_value, visitor.visit_ty(visitor_item_1)?);
+                        ();
+                    };
+                }
+                std::ops::ControlFlow::Continue(visitor_reduce_value)
+            }
         }
     }
     #[allow(unused)]
@@ -4130,6 +4306,16 @@ mod visitor_reduce_cf {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_generics(generics)?;
                 V::append(&mut visitor_reduce_value, visitor.visit_ty(self_ty)?);
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_generic_value(visitor_item)?,
+                        );
+                    }
+                };
                 for visitor_item in items {
                     V::append(
                         &mut visitor_reduce_value,
@@ -4187,6 +4373,7 @@ mod visitor_reduce_cf {
 }
 mod visitor_cf {
     use super::*;
+    #[doc = "Fold visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST. Each visiting function may break control flow."]
     pub trait VisitorCf<'lt>: Sized {
         type Error;
         fn visit_generic_value(
@@ -4671,7 +4858,21 @@ mod visitor_cf {
                 visitor.visit_binding_mode(mode)?;
                 std::ops::ControlFlow::Continue(())
             }
-            PatKind::Construct { .. } => std::ops::ControlFlow::Continue(()),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_pat(visitor_item_1)?;
+                    };
+                }
+                std::ops::ControlFlow::Continue(())
+            }
             PatKind::Error { .. } => std::ops::ControlFlow::Continue(()),
         }
     }
@@ -5028,7 +5229,22 @@ mod visitor_cf {
                 }
                 std::ops::ControlFlow::Continue(())
             }
-            ExprKind::Construct { .. } => std::ops::ControlFlow::Continue(()),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_expr(visitor_item_1)?;
+                    };
+                }
+                std::ops::ControlFlow::Continue(())
+            }
             ExprKind::Match { scrutinee, arms } => {
                 visitor.visit_expr(scrutinee)?;
                 for visitor_item in arms {
@@ -5306,7 +5522,22 @@ mod visitor_cf {
         v: &'lt Variant,
     ) -> std::ops::ControlFlow<V::Error, ()> {
         match v {
-            Variant { .. } => std::ops::ControlFlow::Continue(()),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        visitor.visit_ty(visitor_item_1)?;
+                        ();
+                    };
+                }
+                std::ops::ControlFlow::Continue(())
+            }
         }
     }
     #[allow(unused)]
@@ -5368,6 +5599,13 @@ mod visitor_cf {
             } => {
                 visitor.visit_generics(generics)?;
                 visitor.visit_ty(self_ty)?;
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        visitor.visit_generic_value(visitor_item)?;
+                    }
+                };
                 for visitor_item in items {
                     visitor.visit_impl_item(visitor_item)?;
                 }
@@ -5408,6 +5646,7 @@ mod visitor_cf {
 }
 mod visitor_map_reduce {
     use super::*;
+    #[doc = "Map visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST."]
     pub trait VisitorMapReduce: Sized + Monoid {
         fn visit_generic_value(&mut self, v: &mut GenericValue) -> <Self as Monoid>::T {
             visit_generic_value(self, v)
@@ -5861,7 +6100,23 @@ mod visitor_map_reduce {
                 visitor_reduce_value = visitor.visit_binding_mode(mode);
                 visitor_reduce_value
             }
-            PatKind::Construct { .. } => V::identity(),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(&mut visitor_reduce_value, visitor.visit_pat(visitor_item_1));
+                    };
+                }
+                visitor_reduce_value
+            }
             PatKind::Error { .. } => V::identity(),
         }
     }
@@ -6282,7 +6537,27 @@ mod visitor_map_reduce {
                 }
                 visitor_reduce_value
             }
-            ExprKind::Construct { .. } => V::identity(),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_expr(visitor_item_1),
+                        );
+                    };
+                }
+                visitor_reduce_value
+            }
             ExprKind::Match { scrutinee, arms } => {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_expr(scrutinee);
@@ -6605,7 +6880,24 @@ mod visitor_map_reduce {
         v: &mut Variant,
     ) -> <V as Monoid>::T {
         match v {
-            Variant { .. } => V::identity(),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        V::append(&mut visitor_reduce_value, visitor.visit_ty(visitor_item_1));
+                        ();
+                    };
+                }
+                visitor_reduce_value
+            }
         }
     }
     #[allow(unused)]
@@ -6678,6 +6970,16 @@ mod visitor_map_reduce {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_generics(generics);
                 V::append(&mut visitor_reduce_value, visitor.visit_ty(self_ty));
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_generic_value(visitor_item),
+                        );
+                    }
+                };
                 for visitor_item in items {
                     V::append(
                         &mut visitor_reduce_value,
@@ -6732,6 +7034,7 @@ mod visitor_map_reduce {
 }
 mod visitor_map {
     use super::*;
+    #[doc = "Fold visitor for the abstract syntax tree of hax. Visits mutable nodes of each type of the AST."]
     pub trait VisitorMap: Sized {
         fn visit_generic_value(&mut self, v: &mut GenericValue) -> () {
             visit_generic_value(self, v)
@@ -7095,7 +7398,21 @@ mod visitor_map {
                 visitor.visit_binding_mode(mode);
                 ()
             }
-            PatKind::Construct { .. } => (),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_pat(visitor_item_1);
+                    };
+                }
+                ()
+            }
             PatKind::Error { .. } => (),
         }
     }
@@ -7407,7 +7724,22 @@ mod visitor_map {
                 }
                 ()
             }
-            ExprKind::Construct { .. } => (),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_expr(visitor_item_1);
+                    };
+                }
+                ()
+            }
             ExprKind::Match { scrutinee, arms } => {
                 visitor.visit_expr(scrutinee);
                 for visitor_item in arms {
@@ -7652,7 +7984,22 @@ mod visitor_map {
     #[allow(unused)]
     pub fn visit_variant<V: VisitorMap>(visitor: &mut V, v: &mut Variant) -> () {
         match v {
-            Variant { .. } => (),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        visitor.visit_ty(visitor_item_1);
+                        ();
+                    };
+                }
+                ()
+            }
         }
     }
     #[allow(unused)]
@@ -7711,6 +8058,13 @@ mod visitor_map {
             } => {
                 visitor.visit_generics(generics);
                 visitor.visit_ty(self_ty);
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        visitor.visit_generic_value(visitor_item);
+                    }
+                };
                 for visitor_item in items {
                     visitor.visit_impl_item(visitor_item);
                 }
@@ -7748,6 +8102,7 @@ mod visitor_map {
 }
 mod visitor_reduce {
     use super::*;
+    #[doc = "Map visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST."]
     pub trait VisitorReduce<'lt>: Sized + Monoid {
         fn visit_generic_value(&mut self, v: &'lt GenericValue) -> <Self as Monoid>::T {
             visit_generic_value(self, v)
@@ -8204,7 +8559,23 @@ mod visitor_reduce {
                 visitor_reduce_value = visitor.visit_binding_mode(mode);
                 visitor_reduce_value
             }
-            PatKind::Construct { .. } => V::identity(),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(&mut visitor_reduce_value, visitor.visit_pat(visitor_item_1));
+                    };
+                }
+                visitor_reduce_value
+            }
             PatKind::Error { .. } => V::identity(),
         }
     }
@@ -8625,7 +8996,27 @@ mod visitor_reduce {
                 }
                 visitor_reduce_value
             }
-            ExprKind::Construct { .. } => V::identity(),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_expr(visitor_item_1),
+                        );
+                    };
+                }
+                visitor_reduce_value
+            }
             ExprKind::Match { scrutinee, arms } => {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_expr(scrutinee);
@@ -8948,7 +9339,24 @@ mod visitor_reduce {
         v: &'lt Variant,
     ) -> <V as Monoid>::T {
         match v {
-            Variant { .. } => V::identity(),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                let mut visitor_reduce_value: <V as Monoid>::T;
+                visitor_reduce_value = V::identity();
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        V::append(&mut visitor_reduce_value, visitor.visit_ty(visitor_item_1));
+                        ();
+                    };
+                }
+                visitor_reduce_value
+            }
         }
     }
     #[allow(unused)]
@@ -9021,6 +9429,16 @@ mod visitor_reduce {
                 let mut visitor_reduce_value: <V as Monoid>::T;
                 visitor_reduce_value = visitor.visit_generics(generics);
                 V::append(&mut visitor_reduce_value, visitor.visit_ty(self_ty));
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        V::append(
+                            &mut visitor_reduce_value,
+                            visitor.visit_generic_value(visitor_item),
+                        );
+                    }
+                };
                 for visitor_item in items {
                     V::append(
                         &mut visitor_reduce_value,
@@ -9075,6 +9493,7 @@ mod visitor_reduce {
 }
 mod visitor {
     use super::*;
+    #[doc = "Fold visitor for the abstract syntax tree of hax. Visits nodes of each type of the AST."]
     pub trait Visitor<'lt>: Sized {
         fn visit_generic_value(&mut self, v: &'lt GenericValue) -> () {
             visit_generic_value(self, v)
@@ -9438,7 +9857,21 @@ mod visitor {
                 visitor.visit_binding_mode(mode);
                 ()
             }
-            PatKind::Construct { .. } => (),
+            PatKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_pat(visitor_item_1);
+                    };
+                }
+                ()
+            }
             PatKind::Error { .. } => (),
         }
     }
@@ -9759,7 +10192,22 @@ mod visitor {
                 }
                 ()
             }
-            ExprKind::Construct { .. } => (),
+            ExprKind::Construct {
+                constructor,
+                is_record,
+                is_struct,
+                fields,
+                base,
+            } => {
+                for visitor_item in fields {
+                    {
+                        let (visitor_item_0, visitor_item_1) = visitor_item;
+                        ();
+                        visitor.visit_expr(visitor_item_1);
+                    };
+                }
+                ()
+            }
             ExprKind::Match { scrutinee, arms } => {
                 visitor.visit_expr(scrutinee);
                 for visitor_item in arms {
@@ -10010,7 +10458,22 @@ mod visitor {
     #[allow(unused)]
     pub fn visit_variant<'lt, V: Visitor<'lt>>(visitor: &mut V, v: &'lt Variant) -> () {
         match v {
-            Variant { .. } => (),
+            Variant {
+                name,
+                arguments,
+                is_record,
+                attributes,
+            } => {
+                for visitor_item in arguments {
+                    {
+                        let (visitor_item_0, visitor_item_1, visitor_item_2) = visitor_item;
+                        ();
+                        visitor.visit_ty(visitor_item_1);
+                        ();
+                    };
+                }
+                ()
+            }
         }
     }
     #[allow(unused)]
@@ -10069,6 +10532,13 @@ mod visitor {
             } => {
                 visitor.visit_generics(generics);
                 visitor.visit_ty(self_ty);
+                {
+                    let (visitor_item_0, visitor_item_1) = of_trait;
+                    ();
+                    for visitor_item in visitor_item_1 {
+                        visitor.visit_generic_value(visitor_item);
+                    }
+                };
                 for visitor_item in items {
                     visitor.visit_impl_item(visitor_item);
                 }

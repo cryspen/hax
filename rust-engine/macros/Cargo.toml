@@ -8,9 +8,11 @@ edition = "2024"
 proc-macro = true
 
 [dependencies]
+itertools.workspace = true
 nom = "8.0.0"
 proc-macro2.workspace = true
 quote.workspace = true
+regex = "1.11.1"
 syn = { workspace = true, features = ["fold", "visit", "visit-mut"] }
 
 [dev-dependencies]

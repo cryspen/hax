@@ -1,8 +1,9 @@
+use crate::visitors::utils::{field_typed_idents, fields_to_payload, merge_generics};
 use proc_macro2::{Span, TokenStream};
-use quote::{quote, ToTokens};
+use quote::quote;
 use syn::{
-    parse_quote, visit::Visit, visit_mut::VisitMut, Attribute, Fields, File, Ident, ItemEnum,
-    ItemStruct, Meta, PathArguments,
+    parse, parse_quote, visit::Visit, visit_mut::VisitMut, Attribute, Fields, File, Ident,
+    ItemEnum, ItemStruct, Meta, PathArguments,
 };
 
 /// Just the AST node, without payload.
@@ -28,12 +29,12 @@ struct VisitableItem {
 }
 
 /// Walks a `syn::File` and collects every `(VisitableKind, payload)`.
-struct VisitableCollector {
+struct CollectVisitableItems {
     current_module: syn::Path,
     items: Vec<VisitableItem>,
 }
 
-impl Default for VisitableCollector {
+impl Default for CollectVisitableItems {
     fn default() -> Self {
         Self {
             current_module: parse_quote!(crate),
@@ -42,7 +43,7 @@ impl Default for VisitableCollector {
     }
 }
 
-impl VisitableCollector {
+impl CollectVisitableItems {
     fn insert(
         &mut self,
         kind: VisitableItemKind,
@@ -79,7 +80,7 @@ impl VisitableCollector {
     }
 }
 
-impl<'a> Visit<'a> for VisitableCollector {
+impl<'a> Visit<'a> for CollectVisitableItems {
     fn visit_item_mod(&mut self, i: &'a syn::ItemMod) {
         let prev_module = self.current_module.clone();
         let i_ident = &i.ident;
@@ -88,7 +89,7 @@ impl<'a> Visit<'a> for VisitableCollector {
         self.current_module = prev_module.clone();
     }
     fn visit_item_struct(&mut self, node: &ItemStruct) {
-        if let Some(payload) = extract_visitable_payload(&node.attrs) {
+        if let Some(payload) = find_visitable_attr_tokens(&node.attrs) {
             self.insert(
                 VisitableItemKind::Struct(node.clone()),
                 payload,
@@ -100,7 +101,7 @@ impl<'a> Visit<'a> for VisitableCollector {
     }
 
     fn visit_item_enum(&mut self, node: &ItemEnum) {
-        if let Some(payload) = extract_visitable_payload(&node.attrs) {
+        if let Some(payload) = find_visitable_attr_tokens(&node.attrs) {
             self.insert(
                 VisitableItemKind::Enum(node.clone()),
                 payload,
@@ -112,8 +113,7 @@ impl<'a> Visit<'a> for VisitableCollector {
     }
 }
 
-fn extract_visitable_payload(attrs: &[Attribute]) -> Option<TokenStream> {
-    // eprintln!("{:#?}", attrs);
+fn find_visitable_attr_tokens(attrs: &[Attribute]) -> Option<TokenStream> {
     attrs.iter().find_map(|attr| match &attr.meta {
         Meta::List(m) if m.path.is_ident("visitable") => Some(m.tokens.clone()),
         Meta::Path(path) if path.is_ident("visitable") => Some(quote! {}),
@@ -121,7 +121,7 @@ fn extract_visitable_payload(attrs: &[Attribute]) -> Option<TokenStream> {
     })
 }
 
-fn get_hax_sources() -> File {
+fn load_source_file_with_inlining() -> File {
     let mut module = super::read("src/lib.rs");
     let mut inliner = super::visitors::inline_mods::ModuleInliner::new("src");
     inliner.visit_file_mut(&mut module);
@@ -133,42 +133,51 @@ struct VisitorKind {
     /// Can this visitor short circuit control flow?
     pub short_circuiting: bool,
     /// When visiting a type (say `Expr`), do we take a `&mut Expr` (then `map` is true) or a `&'a Expr`?
-    pub map: bool,
+    pub mutable: bool,
     /// Visitor returns some value (the type must be a monoid)
     pub reduce: bool,
 }
 
 struct VisitorBuilder<'a> {
+    /// The kind of visitor we are building
     pub kind: VisitorKind,
     /// Types allowed to be visited
     pub types: &'a Vec<VisitableItem>,
+    /// Templates for manual drivers implementation
+    pub manual_drivers_templates: Vec<TokenStream>,
 }
 
+/// Types that we recognize.
+#[derive(Clone)]
 enum Ty {
+    /// A vector
     Vec(Box<Ty>),
+    /// A box
     Box(Box<Ty>),
+    /// A tuple
     Tuple(Vec<Ty>),
+    /// An identifier
     Ident(Ident),
+    /// An irrelevant type
+    Erased,
 }
 
-impl Ty {
-    fn interpret(ty: syn::Type, allowed: &impl Fn(&Ident) -> bool) -> Option<Self> {
+impl From<syn::Type> for Ty {
+    fn from(ty: syn::Type) -> Self {
         if let syn::Type::Tuple(tuple) = ty {
-            return Some(Ty::Tuple(
+            return Ty::Tuple(
                 tuple
                     .elems
                     .into_iter()
-                    .map(|t| Ty::interpret(t, allowed))
-                    .collect::<Option<Vec<_>>>()?,
-            ));
+                    .map(|t| Ty::from(t))
+                    .collect::<Vec<_>>(),
+            );
         }
         let syn::Type::Path(type_path) = ty else {
-            unimplemented!()
-            // return None;
+            unimplemented!("Other types than path types are not supported yet")
         };
         let Some(last) = type_path.path.segments.iter().last() else {
-            unimplemented!()
-            // return None
+            unimplemented!("Qualified types are not supported, please `use`.")
         };
         let type_args = match &last.arguments {
             PathArguments::AngleBracketed(args) => args
@@ -183,21 +192,51 @@ impl Ty {
             _ => vec![],
         };
         match (last.ident.to_string().as_str(), &type_args[..]) {
-            ("Vec", [t]) => return Some(Ty::Vec(Box::new(Ty::interpret(t.clone(), allowed)?))),
-            ("Box", [t]) => return Some(Ty::Box(Box::new(Ty::interpret(t.clone(), allowed)?))),
-            _ => (),
-        };
-        allowed(&last.ident).then_some(Self::Ident(last.ident.clone()))
+            ("Vec", [t]) => Ty::Vec(Box::new(Ty::from(t.clone()))),
+            ("Box", [t]) => Ty::Box(Box::new(Ty::from(t.clone()))),
+            _ => Self::Ident(last.ident.clone()),
+        }
     }
 }
 
-use crate::visitors::utils::{field_idents, field_typed_idents, fields_to_payload};
+impl Ty {
+    /// Is this type erased?
+    fn erased(&self) -> bool {
+        matches!(self, Ty::Erased)
+    }
+    /// Apply `f` repeatdely in every nested type
+    fn map(self, f: &impl Fn(Self) -> Self) -> Self {
+        f(match self {
+            Ty::Vec(ty) => Ty::Vec(Box::new(ty.map(f))),
+            Ty::Box(ty) => Ty::Box(Box::new(ty.map(f))),
+            Ty::Tuple(items) => {
+                let items = items.into_iter().map(|ty| ty.map(f)).collect();
+                Ty::Tuple(items)
+            }
+            ty => ty,
+        })
+    }
+    /// Normalize the type: bubble up erased value to root or nearest tuple.
+    /// E.g. `(Erased, Erased)` is reduced to `Erased` while `(T, Erased)` is stuck.
+    fn norm(self) -> Self {
+        self.erase_when(&|ty| match ty {
+            Ty::Vec(ty) | Self::Box(ty) => ty.erased(),
+            Ty::Tuple(items) => items.into_iter().all(Ty::erased),
+            ty => ty.erased(),
+        })
+    }
+    /// Erase type (at any level of nest) when predicate `f` holds
+    fn erase_when(self, f: &impl Fn(&Self) -> bool) -> Self {
+        self.map(&|ty| if f(&ty) { Self::Erased } else { ty })
+    }
+}
 
 impl VisitorKind {
+    /// Computes the components of the name of this visitor kind.
     fn name_components(&self) -> Vec<&str> {
         vec![
             Some("visitor"),
-            self.map.then_some("map"),
+            self.mutable.then_some("map"),
             self.reduce.then_some("reduce"),
             self.short_circuiting.then_some("cf"),
         ]
@@ -205,13 +244,16 @@ impl VisitorKind {
         .flatten()
         .collect()
     }
+    /// Compute the string idenitfier used to target a specific visitor kind in an attribute.
     fn kind(&self) -> String {
         self.name_components()[1..].join("_")
     }
+    /// Compute the name of the module for this visitor kind.
     fn module_name(&self) -> Ident {
         let name = self.name_components().join("_");
         Ident::new(&name, Span::call_site())
     }
+    /// Compute the trait name for this visitor kind.
     fn trait_name(&self) -> Ident {
         fn capitalize_first(s: &str) -> String {
             let mut chars = s.chars();
@@ -232,12 +274,88 @@ impl VisitorKind {
             .join("");
         Ident::new(&name, Span::call_site())
     }
+    /// The trait-level generics for this visitor kind.
+    fn trait_generics(&self) -> syn::Generics {
+        if self.mutable {
+            parse_quote! {<>}
+        } else {
+            parse_quote! {<'lt>}
+        }
+    }
+    /// How should we borrow AST nodes in this visitor?
+    fn borrow(&self) -> TokenStream {
+        if self.mutable {
+            quote! {&mut}
+        } else {
+            quote! {&'lt}
+        }
+    }
+    /// Extra parent bounds imposed on the visitor.
+    fn extra_parent_bounds(&self) -> Option<TokenStream> {
+        // We need to know how to reduce: we need a monoid
+        self.reduce.then_some(quote! {Monoid})
+    }
+    /// Compute the return type of visitor methods or driver functions for this visitor kind.
+    fn return_type(&self, from_method: bool) -> TokenStream {
+        let visitor = if from_method {
+            quote! {Self}
+        } else {
+            quote! {V}
+        };
+        let mut v = quote! {()};
+        if self.reduce {
+            v = quote! {<#visitor as Monoid>::T}
+        };
+        if self.short_circuiting {
+            v = quote! {std::ops::ControlFlow<#visitor::Error, #v>}
+        };
+        v
+    }
+    /// Compute the default return value for this visitor kind. Should inhabit the type produced by `self.return_type()`.
+    fn default_return_value(&self) -> TokenStream {
+        let mut v = quote! {()};
+        if self.reduce {
+            v = quote! {V::identity()}
+        };
+        if self.short_circuiting {
+            v = quote! {std::ops::ControlFlow::Continue(#v)}
+        };
+        v
+    }
+    /// Computes a description for this visitor.
+    fn description(&self) -> String {
+        let sentences = vec![
+            Some(match self.reduce {
+                true => "Map visitor for the abstract syntax tree of hax".into(),
+                false => "Fold visitor for the abstract syntax tree of hax".into(),
+            }),
+            Some(format!(
+                "Visits {}nodes of each type of the AST",
+                if self.mutable { "mutable " } else { "" }
+            )),
+            self.short_circuiting
+                .then_some(format!("Each visiting function may break control flow")),
+        ];
+        sentences
+            .iter()
+            .flatten()
+            .map(|s| format!("{s}."))
+            .collect::<Vec<_>>()
+            .join(" ")
+    }
+    /// Computes a `doc` attribute for this visitor.
+    fn doc(&self) -> TokenStream {
+        let doc = self.description();
+        quote! {#[doc=#doc]}
+    }
 }
 
 impl<'a> VisitorBuilder<'a> {
+    /// Is this type visitable?
     fn visitable_ty(&self, ty: &Ident) -> bool {
         self.types.iter().any(|item| &item.ident == ty)
     }
+    /// Computes the name of a visit function or method
     fn visit_function_name(&self, ty: &Ident) -> Ident {
         fn to_snake_case(s: &str) -> String {
             s.chars().fold(String::new(), |mut acc, c| {
@@ -251,15 +369,21 @@ impl<'a> VisitorBuilder<'a> {
         let ty = to_snake_case(&ty.to_string());
         Ident::new(&format!("visit_{ty}"), Span::call_site())
     }
+    /// Computes the name of a (manual!) visit function or method.
+    /// This happens when a type is marked `#[visitable(manual_driver(...))]`.
     fn visit_function_name_manual(&self, ty: &Ident) -> Ident {
         let fun_name = self.visit_function_name(ty).to_string();
         let mod_name = self.kind.module_name();
         Ident::new(&format!("manual_{mod_name}_{fun_name}"), Span::call_site())
     }
-    fn generate_module(&self, manual_drivers: &mut Vec<TokenStream>) -> TokenStream {
+    fn push_manual_drivers_template(&mut self, _ident: &Ident, template: TokenStream) {
+        self.manual_drivers_templates.push(template)
+    }
+    /// Generate the whole visitor module.
+    fn generate_module(&mut self) -> TokenStream {
         let types = self.types.as_slice();
         let trait_definition = self.generate_trait(types);
-        let driver_functions = self.generate_driver_functions(types, manual_drivers);
+        let driver_functions = self.generate_driver_functions(types);
         let module_name = self.kind.module_name();
         quote! {
             mod #module_name {
@@ -269,17 +393,15 @@ impl<'a> VisitorBuilder<'a> {
             }
         }
     }
-    fn generate_driver_functions(
-        &self,
-        items: &[VisitableItem],
-        manual_drivers: &mut Vec<TokenStream>,
-    ) -> TokenStream {
+    /// Generate the driver functions associated to the visitor being generated.
+    fn generate_driver_functions(&mut self, items: &[VisitableItem]) -> TokenStream {
         let methods: Vec<_> = items
             .iter()
-            .map(|item| self.generate_driver_function(item, manual_drivers))
+            .map(|item| self.generate_driver_function(item))
             .collect();
         quote! {#(#methods)*}
     }
+    /// Generate one method of the visitor trait.
     fn generate_method(&self, item: &VisitableItem) -> TokenStream {
         let type_ident = &item.ident;
         let method = self.visit_function_name(type_ident);
@@ -290,65 +412,53 @@ impl<'a> VisitorBuilder<'a> {
             }
         }
     }
-    fn trait_generics(&self) -> TokenStream {
-        if self.kind.map {
-            quote! {}
-        } else {
-            quote! {'lt}
-        }
-    }
-    fn borrow(&self) -> TokenStream {
-        if self.kind.map {
-            quote! {&mut}
-        } else {
-            quote! {&'lt}
-        }
-    }
-    fn parent_bounds(&self) -> Option<TokenStream> {
-        self.kind.reduce.then_some(quote! {+ Monoid})
-    }
+    /// Generates the trait of the visitor being generated.
     fn generate_trait(&self, items: &[VisitableItem]) -> TokenStream {
         let trait_name = self.kind.trait_name();
-        let generics = self.trait_generics();
+        let trait_generics = self.kind.trait_generics();
         let methods: Vec<_> = items
             .iter()
             .map(|item| self.generate_method(item))
             .collect();
-        let parent_bounds = self.parent_bounds();
+        let parent_bounds = self.kind.extra_parent_bounds();
         let assoc_types = self.kind.short_circuiting.then_some(quote! {type Error;});
+        let doc = self.kind.doc();
         quote! {
-            pub trait #trait_name<#generics>: Sized #parent_bounds {
+            #doc
+            pub trait #trait_name #trait_generics: Sized + #parent_bounds {
                 #assoc_types
                 #(#methods)*
             }
         }
     }
+    /// The signature of a driver function (if `from_method`) or a visitor method (if `!form_method`).
+    /// When `manual` is true, the name fo the function is dervied using `visit_function_name_manual`.
     fn signature(&self, item: &VisitableItem, from_method: bool, manual: bool) -> TokenStream {
         let method = if manual {
             self.visit_function_name_manual(&item.ident)
         } else {
             self.visit_function_name(&item.ident)
         };
-        let borrow = self.borrow();
+        let borrow = self.kind.borrow();
         let self_ty = &item.ident;
-        let ret = self.return_type(from_method);
+        let ret = self.kind.return_type(from_method);
         if from_method {
             quote! {fn #method(&mut self, v: #borrow #self_ty) -> #ret}
         } else {
             let trait_name = self.kind.trait_name();
-            let parent_bounds = self.parent_bounds();
-            let mut trait_generics = self.trait_generics();
-            if !trait_generics.is_empty() {
-                trait_generics = quote! {#trait_generics,};
-            }
-            quote! {pub fn #method<#trait_generics V: #trait_name<#trait_generics> #parent_bounds>(visitor: &mut V, v: #borrow #self_ty) -> #ret}
+            let parent_bounds = self.kind.extra_parent_bounds();
+            let trait_generics = self.kind.trait_generics();
+            let visitor_generics: syn::Generics =
+                parse_quote!(<V: #trait_name #trait_generics + #parent_bounds>);
+            let generics = merge_generics(trait_generics, visitor_generics);
+            quote! {pub fn #method #generics(visitor: &mut V, v: #borrow #self_ty) -> #ret}
         }
     }
-    fn generate_driver_function(
-        &self,
-        item: &VisitableItem,
-        manual_drivers: &mut Vec<TokenStream>,
-    ) -> TokenStream {
+    /// Generate a driver function.
+    /// A driver function takes two arguments: a visitor (a value of type `impl TheVisitorBeingDerived`) and a value of type `T`.
+    /// Such a driver function destructs structurally one level of `T` and visits each subvalue, using the supplied visitor.
+    /// Concretely, it will repetedly call methods from the visitor. In turn, the visitor calls driver functions.
+    fn generate_driver_function(&mut self, item: &VisitableItem) -> TokenStream {
         let type_ident = &item.ident;
         let sig = self.signature(item, false, false);
         match &item.options {
@@ -357,7 +467,10 @@ impl<'a> VisitorBuilder<'a> {
             {
                 let manual_driver = self.visit_function_name_manual(&item.ident);
                 let sig_manual_driver = self.signature(item, false, true);
-                manual_drivers.push(quote! {#sig_manual_driver {todo!()}});
+                self.push_manual_drivers_template(
+                    &manual_driver,
+                    quote! {#sig_manual_driver {todo!()}},
+                );
                 return quote! {
                     #sig {
                         #manual_driver(visitor, v)
@@ -365,7 +478,7 @@ impl<'a> VisitorBuilder<'a> {
                 };
             }
             Some(VisitableOptions::Opaque) => {
-                let v = self.default_value();
+                let v = self.kind.default_return_value();
                 return quote! {
                    #[allow(unused)]  #sig {
                         let _ = v;
@@ -401,21 +514,7 @@ impl<'a> VisitorBuilder<'a> {
             }
         }
     }
-    fn return_type(&self, from_method: bool) -> TokenStream {
-        let visitor = if from_method {
-            quote! {Self}
-        } else {
-            quote! {V}
-        };
-        let mut v = quote! {()};
-        if self.kind.reduce {
-            v = quote! {<#visitor as Monoid>::T}
-        };
-        if self.kind.short_circuiting {
-            v = quote! {std::ops::ControlFlow<#visitor::Error, #v>}
-        };
-        v
-    }
+    // Generate a match arm that destructs a variant or struct named `ident` and visit each of its sub values.
     fn generate_arm(&self, ident: TokenStream, fields: &Fields) -> TokenStream {
         let idents = field_typed_idents(fields.iter());
         let payload = fields_to_payload(fields);
@@ -423,14 +522,20 @@ impl<'a> VisitorBuilder<'a> {
         let visits = idents
             .iter()
             .map(|(id, ty)| {
-                let ty = Ty::interpret(ty.clone(), &|ty| self.visitable_ty(ty));
+                let mut ty = Ty::from(ty.clone());
+                ty = ty
+                    .erase_when(&|ty| match ty {
+                        Ty::Ident(ident) => !self.visitable_ty(&ident),
+                        _ => false,
+                    })
+                    .norm();
                 match ty {
-                    Some(ty) => {
+                    Ty::Erased => parse_quote!(),
+                    ty => {
                         let first = !any_real_visit;
                         any_real_visit = true;
-                        self.visit_expr(parse_quote!(#id), &ty, first)
+                        self.generate_visit_expr(parse_quote!(#id), &ty, first)
                     }
-                    None => parse_quote!(),
                 }
             })
             .collect::<Vec<_>>();
@@ -456,29 +561,20 @@ impl<'a> VisitorBuilder<'a> {
                 }
             }
         } else {
-            let v = self.default_value();
+            let v = self.kind.default_return_value();
             quote! {#ident {..} => #v,}
         }
     }
-    fn default_value(&self) -> TokenStream {
-        let mut v = quote! {()};
-        if self.kind.reduce {
-            v = quote! {V::identity()}
-        };
-        if self.kind.short_circuiting {
-            v = quote! {std::ops::ControlFlow::Continue(#v)}
-        };
-        v
-    }
-    fn visit_expr(&self, e: syn::Expr, ty: &Ty, first: bool) -> TokenStream {
-        let deref = if self.kind.map {
+    /// Generate an expression that visits the expression `e` of type `ty`.
+    fn generate_visit_expr(&self, e: syn::Expr, ty: &Ty, first: bool) -> TokenStream {
+        let deref = if self.kind.mutable {
             quote! {deref_mut}
         } else {
             quote! {deref}
         };
         match ty {
             Ty::Vec(ty) => {
-                let body = self.visit_expr(parse_quote!(visitor_item), ty, false);
+                let body = self.generate_visit_expr(parse_quote!(visitor_item), ty, false);
                 let intialize_visitor_reduce_value = (first && self.kind.reduce)
                     .then_some(quote! {visitor_reduce_value = V::identity();});
                 quote!(
@@ -488,7 +584,7 @@ impl<'a> VisitorBuilder<'a> {
                     }
                 )
             }
-            Ty::Box(ty) => self.visit_expr(parse_quote!(#e.#deref()), ty, first),
+            Ty::Box(ty) => self.generate_visit_expr(parse_quote!(#e.#deref()), ty, first),
             Ty::Tuple(items) => {
                 let named_types: Vec<_> = items
                     .iter()
@@ -504,18 +600,17 @@ impl<'a> VisitorBuilder<'a> {
                 let vars: Vec<_> = named_types.iter().map(|(id, _)| id).collect();
                 let exprs: Vec<_> = named_types
                     .iter()
-                    .map(|(id, ty)| self.visit_expr(parse_quote!(#id), ty, false))
+                    .map(|(id, ty)| self.generate_visit_expr(parse_quote!(#id), ty, false))
                     .collect();
                 quote!(
                     {
                         let (#(#vars),*) = #e;
-                        #(#exprs;)*
+                        #(#exprs)*
                     };
                 )
             }
             Ty::Ident(ident) => {
                 let function = self.visit_function_name(ident);
-
                 let qm = self.kind.short_circuiting.then_some(Some(quote! {?}));
                 let mut e = quote!(visitor.#function(#e)#qm);
                 if self.kind.reduce {
@@ -525,18 +620,17 @@ impl<'a> VisitorBuilder<'a> {
                         e = quote!(V::append(&mut visitor_reduce_value, #e))
                     }
                 };
-                println!("{}", quote!(#e;).to_token_stream());
-                e = quote!(#e;);
-                e
+                quote!(#e;)
             }
+            Ty::Erased => quote!(();),
         }
     }
 }
 
 pub(crate) fn main() {
-    let hax_sources = get_hax_sources();
+    let hax_sources = load_source_file_with_inlining();
     let types = &{
-        let mut visitable_items = VisitableCollector::default();
+        let mut visitable_items = CollectVisitableItems::default();
         visitable_items.visit_file(&hax_sources);
         visitable_items.items
     };
@@ -547,11 +641,16 @@ pub(crate) fn main() {
             for reduce in [true, false] {
                 let kind = VisitorKind {
                     short_circuiting,
-                    map,
+                    mutable: map,
                     reduce,
                 };
-                let make_visitor = VisitorBuilder { kind, types };
-                modules.push(make_visitor.generate_module(&mut manual_drivers));
+                let mut make_visitor = VisitorBuilder {
+                    kind,
+                    types,
+                    manual_drivers_templates: vec![],
+                };
+                modules.push(make_visitor.generate_module());
+                manual_drivers.extend_from_slice(&make_visitor.manual_drivers_templates);
             }
         }
     }
