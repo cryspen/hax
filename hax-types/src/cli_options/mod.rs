@@ -180,6 +180,7 @@ pub enum Backend {
     /// Use the EasyCrypt backend (warning: work in progress!)
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
+    #[clap(alias("proverif"))]
     ProVerif(ProVerifOptions),
     /// Use the Rust backend (warning: work in progress!)
     #[clap(hide = true)]
@@ -601,6 +602,7 @@ pub enum BackendName {
     Coq,
     Ssprove,
     Easycrypt,
+    #[clap(alias("proverif"))]
     ProVerif,
     Lean,
     Rust,
