@@ -1,7 +1,8 @@
-use hax_frontend_exporter::SInto;
 use hax_frontend_exporter::state::LocalContextS;
+use hax_frontend_exporter::{DefId, SInto};
 use hax_types::cli_options::PathOrDash;
 use hax_types::driver_api::Items;
+use hax_types::driver_api::HaxMeta;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::interface;
 use rustc_interface::interface::Compiler;
@@ -99,6 +100,89 @@ impl From<ExtractionCallbacks> for hax_frontend_exporter_options::Options {
     }
 }
 
+fn split_haxmeta_by_module<Body: hax_frontend_exporter::IsBody>(
+    haxmeta: &HaxMeta<Body>,
+) -> HashMap<String, HaxMeta<Body>> {
+    use hax_frontend_exporter::{DefPathItem, DisambiguatedDefPathItem, IsBody};
+
+    fn is_crate_item(def_id: &DefId) -> bool {
+        def_id.path[..].is_empty()
+    }
+
+    fn root_module_name(def_id: &DefId) -> Option<&str> {
+        match &def_id.path[..] {
+            [] => None,
+            [
+                DisambiguatedDefPathItem {
+                    data: DefPathItem::TypeNs(s),
+                    disambiguator: 0,
+                },
+                ..,
+            ] => Some(s.as_str()),
+            _ => None,
+        }
+    }
+
+    /// Remove every item from an `HaxMeta` whose path is not `*::<root_module>::**`, where `root_module` is a string.
+    fn filter_haxmeta<B: IsBody>(haxmeta: &HaxMeta<B>, root_module: &str) -> HaxMeta<B> {
+        let include_def_id = |did| is_crate_item(did) || root_module_name(did) == Some(root_module);
+
+        HaxMeta {
+            crate_name: haxmeta.crate_name.clone(),
+            cg_metadata: haxmeta.cg_metadata.clone(),
+            externs: haxmeta.externs.clone(),
+            items: 
+            
+            match &haxmeta
+                .items {
+                    Items::FullDef(items) =>
+                      Items::FullDef(items.iter()
+                .filter(|item| include_def_id(&item.this.def_id))
+                .cloned()
+                .collect()),
+                Items::Legacy(items) =>
+                      Items::Legacy(items.iter()
+                .filter(|item| include_def_id(&item.owner_id))
+                .cloned()
+                .collect())
+                }
+
+                ,
+            impl_infos: haxmeta
+                .impl_infos
+                .iter()
+                .filter(|(did, _)| include_def_id(did))
+                .cloned()
+                .collect(),
+            def_ids: haxmeta.def_ids.clone(),
+            comments: haxmeta.comments.clone(),
+            hax_version: haxmeta.hax_version.clone(),
+        }
+    }
+
+    let module_names: HashSet<_> = 
+        match &haxmeta
+        .items {
+            Items::Legacy(items) => items.iter()
+        .filter_map(|item| root_module_name(&item.owner_id))
+        .collect(),
+        Items::FullDef(items) => items.iter()
+        .filter_map(|item| root_module_name(&item.this.def_id))
+        .collect(),
+        };
+        
+
+    module_names
+        .into_iter()
+        .map(|root_module| {
+            (
+                root_module.to_string(),
+                filter_haxmeta(haxmeta, root_module),
+            )
+        })
+        .collect()
+}
+
 impl Callbacks for ExtractionCallbacks {
     fn config(&mut self, config: &mut rustc_interface::interface::Config) {
         config.override_queries = Some(|_sess, providers| {
@@ -140,7 +224,7 @@ impl Callbacks for ExtractionCallbacks {
 
         let mut file = BufWriter::new(File::create(&haxmeta_path).unwrap());
 
-        use hax_types::driver_api::{HaxMeta, with_kind_type};
+        use hax_types::driver_api::with_kind_type;
         with_kind_type!(
             self.body_kinds.clone(),
             <Body>|| {
@@ -157,7 +241,7 @@ impl Callbacks for ExtractionCallbacks {
                     }
 
                 ;
-                let haxmeta: HaxMeta<Body> = HaxMeta {
+                let mut haxmeta: HaxMeta<Body> = HaxMeta {
                     crate_name,
                     cg_metadata,
                     externs,
@@ -170,6 +254,12 @@ impl Callbacks for ExtractionCallbacks {
                     def_ids,
                     hax_version: hax_types::HAX_VERSION.into(),
                 };
+                haxmeta.def_ids = vec![];
+                haxmeta.comments = vec![];
+                for (root_module, pruned_haxmeta) in split_haxmeta_by_module(&haxmeta) {
+                    let mut file = BufWriter::new(File::create(&format!("/tmp/{root_module}.haxmeta")).unwrap());
+                    pruned_haxmeta.write(&mut file, cache_map.clone());
+                }
                 haxmeta.write(&mut file, cache_map);
             }
         );

@@ -25,6 +25,10 @@ tracing.workspace = true
 serde-brief ={ version = "0.1", features = ["std", "alloc"]}
 zstd = "0.13.1"
 miette = "7.2.0"
+pot = "3.0.1"
+speedy = "0.8.7"
+serde_bare = "0.5.0"
+ciborium = "0.2.2"
 
 [features]
 rustc = ["hax-frontend-exporter/rustc"]
