@@ -2226,8 +2226,8 @@ pub fn import_item(
                     span,
                     variants.into_iter().zip(frontend_variants()),
                 );
-                return discriminant_const_items
-                    .chain(std::iter::once(adt_item_kind.promote(ident, span)))
+                return std::iter::once(adt_item_kind.promote(ident, span))
+                    .chain(discriminant_const_items)
                     .chain(std::iter::once(cast_item))
                     .collect();
             } else {
