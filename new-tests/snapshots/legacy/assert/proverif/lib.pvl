@@ -35,27 +35,30 @@ letfun bool_default() = false.
 
 letfun tests__legacy__assert__asserts(wildcard5 : bitstring) =
        let wildcard4: bitstring = (
-         if core__ops__bit__f_not(true) then (bitstring_err()) else (())
+         if core_models__ops__bit__f_not(true) then (bitstring_err()) else (())
        ) in
        let wildcard3: bitstring = (
-         if core__ops__bit__f_not(core__cmp__f_eq(1, 1))
+         if core_models__ops__bit__f_not(core_models__cmp__f_eq(1, 1))
          then (bitstring_err())
          else (())
        ) in
        let wildcard2: bitstring = (
          let (left_val: nat, right_val: nat) = (2, 2) in (
-           if core__ops__bit__f_not(core__cmp__f_eq(left_val, right_val))
+           if
+             core_models__ops__bit__f_not(
+                 core_models__cmp__f_eq(left_val, right_val)
+               )
            then
-             (let kind = (core__panicking__AssertKind_Eq()) in
+             (let kind = (core_models__panicking__AssertKind_Eq()) in
               bitstring_err())
            else (())
          )
        ) in
        let wildcard1: bitstring = (
          let (left_val: nat, right_val: nat) = (1, 2) in (
-           if core__cmp__f_eq(left_val, right_val)
+           if core_models__cmp__f_eq(left_val, right_val)
            then
-             (let kind = (core__panicking__AssertKind_Ne()) in
+             (let kind = (core_models__panicking__AssertKind_Ne()) in
               bitstring_err())
            else (())
          )

@@ -1,7 +1,7 @@
 module Tests.Legacy__lean_tests__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let v_FORTYTWO: usize = mk_usize 42
 
@@ -31,10 +31,10 @@ let closure (_: Prims.unit) : i32 =
       (y +! x <: i32) +! z
   in
   let res1:i32 =
-    Core.Ops.Function.f_call #i32 #FStar.Tactics.Typeclasses.solve f1 (mk_i32 1 <: i32)
+    Core_models.Ops.Function.f_call #i32 #FStar.Tactics.Typeclasses.solve f1 (mk_i32 1 <: i32)
   in
   let res2:i32 =
-    Core.Ops.Function.f_call #(i32 & i32)
+    Core_models.Ops.Function.f_call #(i32 & i32)
       #FStar.Tactics.Typeclasses.solve
       f2
       (mk_i32 2, mk_i32 3 <: (i32 & i32))
@@ -44,21 +44,21 @@ let closure (_: Prims.unit) : i32 =
 (* item error backend: ((Diagnostics.Context.Backend FStar),
  Types.AssertionFailure {
    details =
-   "Could not find item with UID (Attr_payloads.UId.T.UId \"0ad959a0909e4c9b940295bdd3fa9bc5\")"})
+   "Could not find item with UID (Attr_payloads.UId.T.UId \"3404e1ed840d43c1b72c5af78a90738e\")"})
 
 Last AST:
-#[<cfg_attr>(hax_compilation, _hax ::
-json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"0ad959a0909e4c9b940295bdd3fa9bc5\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"0ad959a0909e4c9b940295bdd3fa9bc5\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
+#[<cfg_attr_trace>(hax_compilation, _hax ::
+json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"3404e1ed840d43c1b72c5af78a90738e\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"3404e1ed840d43c1b72c5af78a90738e\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]fn test_before_verbatime_single_line(x: int) -> int{42} *)
 
 (* item error backend: ((Diagnostics.Context.Backend FStar),
  Types.AssertionFailure {
    details =
-   "Could not find item with UID (Attr_payloads.UId.T.UId \"a58afa25dee34db7b1a896c83e5e9887\")"})
+   "Could not find item with UID (Attr_payloads.UId.T.UId \"d3b5e636a5a04e169973ac4b154b2bc0\")"})
 
 Last AST:
-#[<cfg_attr>(hax_compilation, _hax ::
-json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"a58afa25dee34db7b1a896c83e5e9887\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"a58afa25dee34db7b1a896c83e5e9887\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
+#[<cfg_attr_trace>(hax_compilation, _hax ::
+json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"d3b5e636a5a04e169973ac4b154b2bc0\"}}}"))]#[_hax::json("{\"AssociatedItem\":{\"role\":\"ItemQuote\",\"item\":{\"uid\":\"d3b5e636a5a04e169973ac4b154b2bc0\"}}}")]#[allow(dead_code)]#[allow(unused_variables)]#[allow(dead_code)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]fn test_before_verbatim_multi_line(x: int) -> int{32} *)
 
 let binop_resugarings (x: u32) : u32 =

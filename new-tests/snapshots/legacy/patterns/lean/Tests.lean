@@ -15,13 +15,13 @@ structure Tests.Legacy__patterns.Other where
   _0 : i32
 
 inductive Tests.Legacy__patterns.Test : Type
-| C1 : Tests.Legacy__patterns.Other -> Tests.Legacy__patterns.Test 
+| C1 : Tests.Legacy__patterns.Other -> Tests.Legacy__patterns.Test
 
 
 def Tests.Legacy__patterns.Impl.test
   (self : Tests.Legacy__patterns.Test)
   : Result i32
   := do
-  (match self with
+  match self with
     | (Tests.Legacy__patterns.Test.C1 c)
-      => do (Tests.Legacy__patterns.Other._0 c))
+      => (pure (Tests.Legacy__patterns.Other._0 c))

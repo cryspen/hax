@@ -16,4 +16,4 @@ def Tests.Legacy__proverif_minimal.add
   (right : usize)
   : Result usize
   := do
-  (← left +? right)
+  (left +? right)

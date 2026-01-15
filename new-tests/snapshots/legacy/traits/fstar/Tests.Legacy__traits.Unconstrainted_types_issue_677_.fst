@@ -1,7 +1,7 @@
 module Tests.Legacy__traits.Unconstrainted_types_issue_677_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_PolyOp (v_Self: Type0) = {
   f_op_pre:u32 -> u32 -> Type0;

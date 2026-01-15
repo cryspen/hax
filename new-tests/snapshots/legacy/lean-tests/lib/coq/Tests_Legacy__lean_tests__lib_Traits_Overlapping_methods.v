@@ -31,19 +31,19 @@ Class t_T3 (v_Self : Type) : Type :=
   }.
 Arguments t_T3 (_).
 
-Instance t_T1_699761545 : t_T1 ((t_u32)) :=
+Instance t_T1_349747921 : t_T1 ((t_u32)) :=
   {
     implaabbcc_t_T1_f_f := fun  (self : t_u32)=>
       (0 : t_usize);
   }.
 
-Instance t_T2_989962278 : t_T2 ((t_u32)) :=
+Instance t_T2_804027373 : t_T2 ((t_u32)) :=
   {
     implaabbcc_t_T2_f_f := fun  (self : t_u32)=>
       (1 : t_usize);
   }.
 
-Instance t_T3_1064794269 : t_T3 ((t_u32)) :=
+Instance t_T3_256839956 : t_T3 ((t_u32)) :=
   {
     implaabbcc_t_T3_f_f := fun  (self : t_u32)=>
       (2 : t_usize);

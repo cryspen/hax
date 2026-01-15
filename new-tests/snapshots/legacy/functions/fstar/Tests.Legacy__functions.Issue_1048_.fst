@@ -1,12 +1,12 @@
 module Tests.Legacy__functions.Issue_1048_
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_CallableViaDeref = | CallableViaDeref : t_CallableViaDeref
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Ops.Deref.t_Deref t_CallableViaDeref =
+let impl: Core_models.Ops.Deref.t_Deref t_CallableViaDeref =
   {
     f_Target = Prims.unit -> bool;
     f_deref_pre = (fun (self: t_CallableViaDeref) -> true);
@@ -21,7 +21,7 @@ let impl: Core.Ops.Deref.t_Deref t_CallableViaDeref =
 
 /// @fail(extraction): coq(HAX0002)
 let call_via_deref (_: Prims.unit) : bool =
-  Core.Ops.Deref.f_deref #t_CallableViaDeref
+  Core_models.Ops.Deref.f_deref #t_CallableViaDeref
     #FStar.Tactics.Typeclasses.solve
     (CallableViaDeref <: t_CallableViaDeref)
     ()

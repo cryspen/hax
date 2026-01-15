@@ -1,7 +1,7 @@
 module Tests.Legacy__patterns
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Other = | Other : i32 -> t_Other
 

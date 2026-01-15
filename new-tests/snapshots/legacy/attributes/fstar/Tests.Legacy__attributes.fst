@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let u32_max: u32 = mk_u32 90000
 
@@ -22,7 +22,7 @@ let swap_and_mut_req_ens (x y: u32)
       (requires x <. mk_u32 40 && y <. mk_u32 300)
       (ensures
         fun temp_0_ ->
-          let x_future, y_future, result:(u32 & u32 & u32) = temp_0_ in
+          let (x_future: u32), (y_future: u32), (result: u32) = temp_0_ in
           x_future =. y && y_future =. x && result =. (x +! y <: u32)) =
   let x0:u32 = x in
   let x:u32 = y in
@@ -96,5 +96,5 @@ let rec fib (x: usize) : Prims.Tot usize (decreases x) =
   if x <=. mk_usize 2
   then x
   else
-    Core.Num.impl_usize__wrapping_add (fib (x -! mk_usize 1 <: usize) <: usize)
+    Core_models.Num.impl_usize__wrapping_add (fib (x -! mk_usize 1 <: usize) <: usize)
       (fib (x -! mk_usize 2 <: usize) <: usize)

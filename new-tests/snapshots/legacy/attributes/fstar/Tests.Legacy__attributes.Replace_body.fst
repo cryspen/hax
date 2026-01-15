@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes.Replace_body
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let f (x y: u8) : u8 = magic x
 

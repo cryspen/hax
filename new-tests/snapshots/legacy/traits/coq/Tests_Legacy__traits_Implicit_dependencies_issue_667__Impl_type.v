@@ -13,7 +13,7 @@ From Core Require Import Core.
 
 (* NotImplementedYet *)
 
-Instance t_MyTrait_518133665 : t_MyTrait ((t_MyType)) :=
+Instance t_MyTrait_86112075 : t_MyTrait ((t_MyType)) :=
   {
     implaabbcc_t_MyTrait_f_my_method := fun  (self : t_MyType)=>
       tt;

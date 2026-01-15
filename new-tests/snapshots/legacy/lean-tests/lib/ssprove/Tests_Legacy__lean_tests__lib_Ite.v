@@ -42,9 +42,9 @@ Fail Next Obligation.
 
 Equations test2 (b : both 'bool) : both int32 :=
   test2 b  :=
-    letb x := (ret_both (1 : int32)) .+ (ifb ret_both (true : 'bool)
+    letb x := ifb b
     then ret_both (0 : int32)
-    else ret_both (1 : int32)) in
+    else ret_both (9 : int32) in
     letb y := ret_both (0 : int32) in
     letb y := ifb ret_both (true : 'bool)
     then (y .+ x) .+ (ret_both (1 : int32))

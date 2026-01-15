@@ -57,17 +57,17 @@ letfun tests__legacy__loops__for_loops__range1(wildcard1 : bitstring) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
  f_end: 15,
  })) {
- |acc| { core::ops::arith::f_add(acc, i) }
+ |acc| { core_models::ops::arith::f_add(acc, i) }
  })(acc)
  }"
          )
@@ -78,17 +78,18 @@ letfun tests__legacy__loops__for_loops__range2(n : nat) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
- f_end: core::ops::arith::f_add(n, 10),
+ f_end: core_models::ops::arith::f_add(n, 10),
  })) {
- |acc| { core::ops::arith::f_add(core::ops::arith::f_add(ac..."
+ |acc| {
+ core_models::ops::arith::f_a..."
          )
        ) in
        acc.
@@ -97,21 +98,18 @@ letfun tests__legacy__loops__for_loops__composed_range(n : nat) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(
- core::iter::traits::iterator::f_chain::<
- core::ops::range::t_Range<int>,
+ (for i in (core_models::iter::traits::collect::f_into_iter(
+ core_models::iter::traits::iterator::f_chain::<
+ core_models::ops::range::t_Range<int>,
  >(
- core::ops::range::Range {
- f_start: 0,
- f_end: n,
- },
- core::ops..."
+ core_models::ops::range::Range {
+ f_start: ..."
          )
        ) in
        acc.
@@ -120,36 +118,37 @@ letfun tests__legacy__loops__for_loops__rev_range(n : nat) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(
- core::iter::traits::iterator::f_rev(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(
+ core_models::iter::traits::iterator::f_rev(core_models::ops::range::Range {
  f_start: 0,
  f_end: n,
  }),
  )) {
- |acc| { core::ops::arith::f_add(core::ops::ar..."
+ |acc| {
+ core_models::op..."
          )
        ) in
        acc.
 
 letfun tests__legacy__loops__for_loops__chunks(arr : bitstring) =
        let acc = (0) in
-       let chunks = (core__slice__impl__chunks_exact(arr, v_CHUNK_LEN)) in
+       let chunks = (core_models__slice__impl__chunks_exact(arr, v_CHUNK_LEN)) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for chunk in (core::iter::traits::collect::f_into_iter(
- core::clone::f_clone(chunks),
+ (for chunk in (core_models::iter::traits::collect::f_into_iter(
+ core_models::clone::f_clone(chunks),
  )) {
  |acc| {
  {
@@ -157,21 +156,21 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  {
  let mean: int = {
  {
- (for item in (core::iter::traits::collect..."
+ (for item in (core_models::..."
          )
        ) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for item in (core::iter::traits::collect::f_into_iter(
- core::slice::iter::impl_88__remainder::<int>(chunks),
+ (for item in (core_models::iter::traits::collect::f_into_iter(
+ core_models::slice::iter::impl_88__remainder::<int>(chunks),
  )) {
- |acc| { core::ops::arith::f_sub(acc, item) }
+ |acc| { core_models::ops::arith::f_sub(acc, item) }
  })(acc)
  }"
          )
@@ -182,18 +181,16 @@ letfun tests__legacy__loops__for_loops__iterator(arr : bitstring) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for item in (core::iter::traits::collect::f_into_iter(
- core::slice::impl__iter::<int>(core::ops::deref::f_deref(arr)),
+ (for item in (core_models::iter::traits::collect::f_into_iter(
+ core_models::slice::impl__iter::<int>(core_models::ops::deref::f_deref(arr)),
  )) {
- |acc| { core::ops::arith::f_add(acc, item) }
- })(acc)
- }"
+ |acc| { core_models::ops::arith::f_add(acc, item..."
          )
        ) in
        acc.
@@ -202,19 +199,18 @@ letfun tests__legacy__loops__for_loops__nested(arr : bitstring) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for item in (core::iter::traits::collect::f_into_iter(
- core::slice::impl__iter::<int>(core::ops::deref::f_deref(arr)),
+ (for item in (core_models::iter::traits::collect::f_into_iter(
+ core_models::slice::impl__iter::<int>(core_models::ops::deref::f_deref(arr)),
  )) {
  |acc| {
  {
- (for i in (core::iter::traits::collect::f_into_iter(
- cor..."
+ (for i in (core_models::iter::traits..."
          )
        ) in
        acc.
@@ -223,14 +219,16 @@ letfun tests__legacy__loops__for_loops__pattern(arr : bitstring) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for Tuple2(x, y) in (core::iter::traits::collect::f_into_iter(arr)) {
- |acc| { core::ops::arith::f_add(acc, core::ops::arith::f_mul(x, y)) }
+ (for Tuple2(x, y) in (core_models::iter::traits::collect::f_into_iter(arr)) {
+ |acc| {
+ core_models::ops::arith::f_add(acc, core_models::ops::arith::f_mul(x, y))
+ }
  })(acc)
  }"
          )
@@ -241,45 +239,42 @@ letfun tests__legacy__loops__for_loops__enumerate_chunks(arr : bitstring) =
        let acc = (0) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for Tuple2(i, chunk) in (core::iter::traits::collect::f_into_iter(
- core::iter::traits::iterator::f_enumerate(
- core::slice::impl__chunks::<int>(core::ops::deref::f_deref(arr), 4),
- ),
- )) {
- |acc..."
+ (for Tuple2(i, chunk) in (core_models::iter::traits::collect::f_into_iter(
+ core_models::iter::traits::iterator::f_enumerate(
+ core_models::slice::impl__chunks::<
+ int,
+ >(core_models::ops::deref::..."
          )
        ) in
        acc.
 
 letfun tests__legacy__loops__for_loops__bool_returning(x : nat) =
-       core__cmp__f_lt(x, 10).
+       core_models__cmp__f_lt(x, 10).
 
 letfun tests__legacy__loops__for_loops__f(wildcard2 : bitstring) =
        let acc = (0) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
  |acc| {
  {
- let acc: int = { core::ops::arith::f_add(acc, i) };
- {
- let _: bool = {
- t..."
+ let acc: int = { core_models::ops::arith::f_add(acc, i) };
+ ..."
          ),
          ()
        ).
@@ -288,26 +283,25 @@ letfun tests__legacy__loops__control_flow__double_sum(wildcard3 : bitstring) =
        let sum = (0) in
        let sum = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
  |sum| {
  {
  let _: tuple0 = {
- (if core::cmp::f_lt(i, 0) {
+ (if core_models::cmp::f_lt(i, 0) {
  {
- #[note("rhs.typ=int")]
-..."
+ #[..."
          )
        ) in
-       let sum = (core__ops__arith__f_mul(sum, 2)) in
+       let sum = (core_models__ops__arith__f_mul(sum, 2)) in
        sum.
 
 letfun tests__legacy__loops__control_flow__double_sum2(wildcard4 : bitstring) =
@@ -315,47 +309,45 @@ letfun tests__legacy__loops__control_flow__double_sum2(wildcard4 : bitstring) =
        let sum2 = (0) in
        let (sum: nat, sum2: nat) = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
  |Tuple2(sum, sum2)| {
  {
  let _: tuple0 = {
- (if core::cmp::f_lt(i, 0) {
- {
- #[note("r..."
+ (if core_models::cmp::f_lt(..."
          )
        ) in
-       core__ops__arith__f_add(sum, sum2).
+       core_models__ops__arith__f_add(sum, sum2).
 
 letfun tests__legacy__loops__control_flow__double_sum_return(v : bitstring) =
        let sum = (0) in
        let sum = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(v)) {
+ (for i in (core_models::iter::traits::collect::f_into_iter(v)) {
  |sum| {
  {
  let _: tuple0 = {
- (if core::cmp::f_lt(i, 0) {
+ (if core_models::cmp::f_lt(i, 0) {
  {
  let hoist9: rust_primitives::hax::t_Never = { (return 0) };
- rust_primitive..."
+ ..."
          )
        ) in
-       let sum = (core__ops__arith__f_mul(sum, 2)) in
+       let sum = (core_models__ops__arith__f_mul(sum, 2)) in
        sum.
 
 letfun tests__legacy__loops__control_flow__double_sum2_return(v : bitstring) =
@@ -363,44 +355,43 @@ letfun tests__legacy__loops__control_flow__double_sum2_return(v : bitstring) =
        let sum2 = (0) in
        let (sum: nat, sum2: nat) = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(v)) {
+ (for i in (core_models::iter::traits::collect::f_into_iter(v)) {
  |Tuple2(sum, sum2)| {
  {
  let _: tuple0 = {
- (if core::cmp::f_lt(i, 0) {
+ (if core_models::cmp::f_lt(i, 0) {
  {
- let hoist10: rust_primitives::hax::t_Never = { (return 0) };
-..."
+ let hoist10: rust_primitives::hax::t_Never = { ..."
          )
        ) in
-       core__ops__arith__f_add(sum, sum2).
+       core_models__ops__arith__f_add(sum, sum2).
 
 letfun tests__legacy__loops__control_flow__bigger_power_2_(x : nat) =
        let pow = (1) in
        let pow = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
  (loop {
  |pow| {
- (if core::cmp::f_lt(pow, 1000000) {
+ (if core_models::cmp::f_lt(pow, 1000000) {
  {
- let pow: int = { core::ops::arith::f_mul(pow, 2) };
+ let pow: int = { core_models::ops::arith::f_mul(pow, 2) };
  {
  let pow: int = {
- (if core::cmp::f_lt(pow, x) {
+ (if core_models::cmp::f_lt(pow, x) {
  {
- let pow: int = { core::ops::ari..."
+ let pow: i..."
          )
        ) in
        pow.
@@ -410,18 +401,18 @@ letfun tests__legacy__loops__control_flow__impl_M__decoded_message(
        ) =
        let wildcard5: bitstring = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
  f_end: alloc::vec::impl_1__len::<
  int,
  alloc::alloc::t_Global,
- >(proj_tests::legacy__loops::control_flo..."
+ >(proj_tests::legacy__loop..."
          )
        ) in
        let hoist15 = (todo return;) in
@@ -431,13 +422,13 @@ letfun tests__legacy__loops__control_flow__nested(wildcard6 : bitstring) =
        let sum = (0) in
        let sum = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
@@ -445,23 +436,23 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  {
  let sum: int = {
  {
- (for j in (core::iter::traits::collect::f_into_iter(c..."
+ (for j in (core_models::iter::traits::c..."
          )
        ) in
-       let sum = (core__ops__arith__f_mul(sum, 2)) in
+       let sum = (core_models__ops__arith__f_mul(sum, 2)) in
        sum.
 
 letfun tests__legacy__loops__control_flow__nested_return(wildcard7 : bitstring) =
        let sum = (0) in
        let sum = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
@@ -469,31 +460,30 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  {
  let sum: int = {
  {
- (for j in (core::iter::traits::collect::f_into_iter(c..."
+ (for j in (core_models::iter::traits::c..."
          )
        ) in
-       let sum = (core__ops__arith__f_mul(sum, 2)) in
+       let sum = (core_models__ops__arith__f_mul(sum, 2)) in
        sum.
 
 letfun tests__legacy__loops__control_flow__continue_only(x : bitstring) =
        let product = (1) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(x)) {
+ (for i in (core_models::iter::traits::collect::f_into_iter(x)) {
  |product| {
  {
  let _: tuple0 = {
- (if core::cmp::f_eq(i, 0) {
+ (if core_models::cmp::f_eq(i, 0) {
  {
  #[note("rhs.typ=int")]
- let hoist18: rust_primitives::hax::t_Never = {
-..."
+ let hoist18: rust_primitives::hax..."
          ),
          ()
        ).
@@ -502,21 +492,20 @@ letfun tests__legacy__loops__control_flow__continue_and_break(x : bitstring) =
        let product = (1) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(x)) {
+ (for i in (core_models::iter::traits::collect::f_into_iter(x)) {
  |product| {
  {
  let _: tuple0 = {
- (if core::cmp::f_eq(i, 0) {
+ (if core_models::cmp::f_eq(i, 0) {
  {
  #[note("rhs.typ=int")]
- let hoist19: rust_primitives::hax::t_Never = {
-..."
+ let hoist19: rust_primitives::hax..."
          ),
          ()
        ).
@@ -525,26 +514,26 @@ letfun tests__legacy__loops__while_loops__f(wildcard8 : bitstring) =
        let x = (0) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
  (loop {
  |x| {
- (if core::cmp::f_lt(x, 10) {
+ (if core_models::cmp::f_lt(x, 10) {
  {
- let x: int = { core::ops::arith::f_add(x, 3) };
+ let x: int = { core_models::ops::arith::f_add(x, 3) };
  x
  }
  } else {
  {
  #[note("rhs.typ=int")]
- let hoist1: rust_primitives::hax::t_Never = { (break (Tu..."
+ let hoist1: rust_primitives::hax::t_Never ..."
          )
        ) in
-       core__ops__arith__f_add(x, 12).
+       core_models__ops__arith__f_add(x, 12).
 
 letfun tests__legacy__loops__while_loops__while_invariant_decr(
          wildcard9 : bitstring
@@ -552,27 +541,26 @@ letfun tests__legacy__loops__while_loops__while_invariant_decr(
        let x = (0) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
  (loop {
  |x| {
- (if core::cmp::f_lt(x, 10) {
+ (if core_models::cmp::f_lt(x, 10) {
  {
  let _: tuple0 = {
  hax_lib::e_internal_while_loop_invariant(
- core::convert::f_from(core::cmp::f_le(x, 10)),
+ core_models::convert::f_from(core_models::cmp::f_le(x, 10)),
  )
  };
  {
- let _: tuple0 = {
- hax_lib::..."
+ let _: ..."
          )
        ) in
-       core__ops__arith__f_add(x, 12).
+       core_models__ops__arith__f_add(x, 12).
 
 letfun tests__legacy__loops__while_loops__while_invariant_decr_rev(
          wildcard10 : bitstring
@@ -580,39 +568,40 @@ letfun tests__legacy__loops__while_loops__while_invariant_decr_rev(
        let x = (0) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
  (loop {
  |x| {
- (if core::cmp::f_lt(x, 10) {
+ (if core_models::cmp::f_lt(x, 10) {
  {
  let _: tuple0 = {
  hax_lib::e_internal_loop_decreases(
- hax_lib::int::f_to_int(core::ops::arith::f_sub(10, x)),
+ hax_lib::int::f_to_int(
+ core_models::ops::arith::f_sub(10, x),
+ ),
  )
  };
  {
- let _: tuple0 = {
- hax_li..."
+ let _:..."
          )
        ) in
-       core__ops__arith__f_add(x, 12).
+       core_models__ops__arith__f_add(x, 12).
 
 letfun tests__legacy__loops__recognized_loops__range(wildcard11 : bitstring) =
        let count = (0) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
  f_end: 10,
  })) {
@@ -620,9 +609,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  {
  let _: tuple0 = {
  hax_lib::e_internal_loop_invariant::<
- int,
- bool,
- a..."
+ ..."
          ),
          ()
        ).
@@ -633,15 +620,15 @@ letfun tests__legacy__loops__recognized_loops__range_step_by(
        let count = (0) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(
- core::iter::traits::iterator::f_step_by(
- core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(
+ core_models::iter::traits::iterator::f_step_by(
+ core_models::ops::range::Range {
  f_start: 0,
  f_end: 10,
  },
@@ -649,8 +636,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
  ),
  )) {
  |count| {
- {
- let _: tuple0 = {..."
+..."
          ),
          ()
        ).
@@ -661,21 +647,20 @@ letfun tests__legacy__loops__recognized_loops__enumerated_slice(
        let count = (0) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(
- core::iter::traits::iterator::f_enumerate(
- core::iter::traits::collect::f_into_iter(slice),
+ (for i in (core_models::iter::traits::collect::f_into_iter(
+ core_models::iter::traits::iterator::f_enumerate(
+ core_models::iter::traits::collect::f_into_iter(slice),
  ),
  )) {
  |count| {
  {
- let _: tuple0 = {
- hax_li..."
+ let ..."
          ),
          ()
        ).
@@ -686,21 +671,20 @@ letfun tests__legacy__loops__recognized_loops__enumerated_chunked_slice(
        let count = (0) in
        (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(
- core::iter::traits::iterator::f_enumerate(
- core::slice::impl__chunks_exact::<T>(slice, 3),
+ (for i in (core_models::iter::traits::collect::f_into_iter(
+ core_models::iter::traits::iterator::f_enumerate(
+ core_models::slice::impl__chunks_exact::<T>(slice, 3),
  ),
  )) {
  |count| {
  {
- let _: tuple0 = {
- hax_lib..."
+ let _..."
          ),
          ()
        ).
@@ -709,18 +693,17 @@ letfun tests__legacy__loops__and_mut_side_effect_loop__looping(array : bitstring
        ) =
        let array = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
- f_end: core::slice::impl__len::<int>(rust_primitives::unsize(array)),
+ f_end: core_models::slice::impl__len::<int>(rust_primitives::unsize(array)),
  })) {
- |array| {
- rust_primitives:..."
+ |array..."
          )
        ) in
        array.
@@ -731,18 +714,17 @@ letfun tests__legacy__loops__and_mut_side_effect_loop__looping_2_(
        let (array: bitstring, result: bitstring) = (
          (
            rust_primitives__hax__failure(
-             "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+             "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
              "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
- f_end: core::slice::impl__len::<int>(rust_primitives::unsize(array)),
+ f_end: core_models::slice::impl__len::<int>(rust_primitives::unsize(array)),
  })) {
- |array| {
- rust_primitives:..."
+ |array..."
            ),
            ()
          )

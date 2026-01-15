@@ -24,20 +24,14 @@ Definition never (h : t_False) : t_Never :=
   match h with
   end.
 
-Definition test__panic_cold_explicit '(_ : unit) : t_Never :=
-  panic_explicit (tt).
-
 Definition test (b : bool) : t_u8 :=
   let _ := if
     b
   then
-    never_to_any (test__panic_cold_explicit (tt))
+    never_to_any (panic (("explicit panic"%string : string)))
   else
     tt in
   (3 : t_u8).
 
-Definition any__panic_cold_explicit '(_ : unit) : t_Never :=
-  panic_explicit (tt).
-
 Definition any `{v_T : Type} '(_ : unit) : v_T :=
-  never_to_any (any__panic_cold_explicit (tt)).
+  never_to_any (panic (("explicit panic"%string : string))).

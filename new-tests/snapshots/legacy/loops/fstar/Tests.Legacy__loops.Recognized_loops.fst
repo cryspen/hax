@@ -1,7 +1,7 @@
 module Tests.Legacy__loops.Recognized_loops
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// @fail(extraction): proverif(HAX0008)
 let range (_: Prims.unit) : (u64 & Prims.unit) =
@@ -68,7 +68,7 @@ let enumerated_chunked_slice (#v_T: Type0) (slice: t_Slice v_T) : (u64 & Prims.u
     (fun count i ->
         let count:u64 = count in
         let i:usize = i in
-        i <= Core.Slice.impl__len #v_T slice)
+        i <= Core_models.Slice.impl__len #v_T slice)
     count
     (fun count i ->
         let count:u64 = count in

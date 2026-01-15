@@ -1,7 +1,7 @@
 module Tests.Legacy__lean_tests__lib.Structs
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_T0 = | T0 : t_T0
 

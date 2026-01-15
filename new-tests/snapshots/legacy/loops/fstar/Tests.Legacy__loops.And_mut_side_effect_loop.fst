@@ -1,13 +1,13 @@
 module Tests.Legacy__loops.And_mut_side_effect_loop
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// @fail(extraction): proverif(HAX0008)
 let looping (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
   let array:t_Array u8 (mk_usize 5) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
-      (Core.Slice.impl__len #u8 (array <: t_Slice u8) <: usize)
+      (Core_models.Slice.impl__len #u8 (array <: t_Slice u8) <: usize)
       (fun array temp_1_ ->
           let array:t_Array u8 (mk_usize 5) = array in
           let _:usize = temp_1_ in
@@ -26,9 +26,9 @@ let looping (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
 
 /// @fail(extraction): proverif(HAX0008)
 let looping_2_ (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
-  let array, result:(t_Array u8 (mk_usize 5) & Prims.unit) =
+  let (array: t_Array u8 (mk_usize 5)), (result: Prims.unit) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
-      (Core.Slice.impl__len #u8 (array <: t_Slice u8) <: usize)
+      (Core_models.Slice.impl__len #u8 (array <: t_Slice u8) <: usize)
       (fun array temp_1_ ->
           let array:t_Array u8 (mk_usize 5) = array in
           let _:usize = temp_1_ in

@@ -293,8 +293,8 @@ letfun tests__legacy__side_effects__issue_1299___impl_Foo__from(
 letfun tests__legacy__side_effects__issue_1299___impl_S__from(
          i : tests__legacy__side_effects__issue_1299___t_OtherS
        ) =
-       let hoist47 = core__option__impl__ok_or(
-         core__option__impl__as_ref(
+       let hoist47 = core_models__option__impl__ok_or(
+         core_models__option__impl__as_ref(
            accessor_tests__legacy__side_effects__issue_1299___t_OtherS_tests__legacy__side_effects__issue_1299___f_g(
              i
            )
@@ -311,74 +311,74 @@ letfun tests__legacy__side_effects__issue_1299___impl_S__from(
 
 letfun tests__legacy__side_effects__issue_1083___f(x : nat) =
        let wildcard1: bitstring = (
-         let core__ops__control_flow__ControlFlow_Break(residual) = core__ops__try_trait__f_branch(
+         let core_models__ops__control_flow__ControlFlow_Break(residual) = core_models__ops__try_trait__f_branch(
            rust_primitives__hax__t_Never_err()
          ) in todo return;
-         else let core__ops__control_flow__ControlFlow_Continue(val) = core__ops__try_trait__f_branch(
+         else let core_models__ops__control_flow__ControlFlow_Continue(val) = core_models__ops__try_trait__f_branch(
            rust_primitives__hax__t_Never_err()
          ) in val
        ) in
        tests__legacy__side_effects__issue_1083___f_my_from(x).
 
 letfun tests__legacy__side_effects__add3(x : nat, y : nat, z : nat) =
-       core__num__impl_u32__wrapping_add(
-         core__num__impl_u32__wrapping_add(x, y), z
+       core_models__num__impl_u32__wrapping_add(
+         core_models__num__impl_u32__wrapping_add(x, y), z
        ).
 
 letfun tests__legacy__side_effects__local_mutation(x : nat) =
        let y = (0) in
-       let x = (core__num__impl_u32__wrapping_add(x, 1)) in
-       let hoist1 = (core__cmp__f_gt(x, 3)) in
+       let x = (core_models__num__impl_u32__wrapping_add(x, 1)) in
+       let hoist1 = (core_models__cmp__f_gt(x, 3)) in
        if hoist1
        then
-         (let x = (core__num__impl_u32__wrapping_sub(x, 3)) in
-          let y = (core__ops__arith__f_div(x, 2)) in
-          let y = (core__num__impl_u32__wrapping_add(y, 2)) in
+         (let x = (core_models__num__impl_u32__wrapping_sub(x, 3)) in
+          let y = (core_models__ops__arith__f_div(x, 2)) in
+          let y = (core_models__num__impl_u32__wrapping_add(y, 2)) in
           let hoist2 = (0) in
-          let hoist3 = (core__ops__range__Range(hoist2,10)) in
-          let hoist4 = (core__iter__traits__collect__f_into_iter(hoist3)) in
+          let hoist3 = (core_models__ops__range__Range(hoist2,10)) in
+          let hoist4 = (core_models__iter__traits__collect__f_into_iter(hoist3)) in
           let y = (
             rust_primitives__hax__failure(
-              "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+              "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
               "{
  (for i in (hoist4) {
- |y| { core::num::impl_u32__wrapping_add(x, i) }
+ |y| { core_models::num::impl_u32__wrapping_add(x, i) }
  })(y)
  }"
             )
           ) in
-          core__num__impl_u32__wrapping_add(x, y))
+          core_models__num__impl_u32__wrapping_add(x, y))
        else (
          let ((x: nat, y: nat), hoist7: nat) = (
            let (=12) = x in (
-             let y = (core__num__impl_u32__wrapping_add(x, y)) in
+             let y = (core_models__num__impl_u32__wrapping_add(x, y)) in
              ((x, y), 3)
            )
            else let (=13) = x in (
              let hoist6 = (x) in
-             let x = (core__num__impl_u32__wrapping_add(x, 1)) in
-             let hoist5 = (core__num__impl_u32__wrapping_add(123, x)) in
+             let x = (core_models__num__impl_u32__wrapping_add(x, 1)) in
+             let hoist5 = (core_models__num__impl_u32__wrapping_add(123, x)) in
              ((x, y), tests__legacy__side_effects__add3(hoist6, hoist5, x))
            )
            else ((x, y), 0)
          ) in
          let x = (hoist7) in
-         core__num__impl_u32__wrapping_add(x, y)
+         core_models__num__impl_u32__wrapping_add(x, y)
        ).
 
 letfun tests__legacy__side_effects__early_returns(x : nat) =
        let wildcard2: bitstring = (
-         if core__cmp__f_gt(x, 3)
+         if core_models__cmp__f_gt(x, 3)
          then
            (let hoist8 = (todo return;) in
             bitstring_err())
          else (())
        ) in
-       let hoist9 = (core__cmp__f_gt(x, 30)) in
+       let hoist9 = (core_models__cmp__f_gt(x, 30)) in
        let (x: nat, hoist11: nat) = (
          if hoist9
          then
@@ -388,12 +388,12 @@ letfun tests__legacy__side_effects__early_returns(x : nat) =
             )
             else (x, 3))
          else (
-           let x = (core__ops__arith__f_add(x, 9)) in
-           (x, core__ops__arith__f_add(x, 1))
+           let x = (core_models__ops__arith__f_add(x, 9)) in
+           (x, core_models__ops__arith__f_add(x, 1))
          )
        ) in
-       let hoist12 = (core__num__impl_u32__wrapping_add(123, hoist11)) in
-       let hoist13 = (core__num__impl_u32__wrapping_add(hoist12, x)) in
+       let hoist12 = (core_models__num__impl_u32__wrapping_add(123, hoist11)) in
+       let hoist13 = (core_models__num__impl_u32__wrapping_add(hoist12, x)) in
        let hoist14 = (todo return;) in
        nat_err().
 
@@ -407,7 +407,7 @@ letfun tests__legacy__side_effects__simplifiable_return(
            (let x = (
               if c2
               then
-                (let x = (core__ops__arith__f_add(x, 10)) in
+                (let x = (core_models__ops__arith__f_add(x, 10)) in
                  if c3
                  then
                    (let hoist15 = (todo return;) in
@@ -415,7 +415,7 @@ letfun tests__legacy__side_effects__simplifiable_return(
                  else (x))
               else (x)
             ) in
-            let x = (core__ops__arith__f_add(x, 1)) in
+            let x = (core_models__ops__arith__f_add(x, 1)) in
             x)
          else (x)
        ) in
@@ -427,14 +427,14 @@ letfun tests__legacy__side_effects__simplifiable_question_mark(
        let a = (
          if c
          then
-           (let Some(nat_to_bitstring(hoist16)) = x in core__ops__arith__f_add(
+           (let Some(nat_to_bitstring(hoist16)) = x in core_models__ops__arith__f_add(
               hoist16, 10
             )
             else let None() = x in todo return;)
          else (0)
        ) in
        let b = (20) in
-       Some(nat_to_bitstring(core__ops__arith__f_add(a, b))).
+       Some(nat_to_bitstring(core_models__ops__arith__f_add(a, b))).
 
 letfun tests__legacy__side_effects__direct_result_question_mark(y : bitstring) =
        let wildcard3: bitstring = y in 0
@@ -447,12 +447,14 @@ letfun tests__legacy__side_effects__direct_result_question_mark_coercion(y : nat
 
 letfun tests__legacy__side_effects__options(x : Option, y : Option, z : Option) =
        let Some(nat_to_bitstring(hoist21)) = x in (
-         let hoist22 = (core__cmp__f_gt(hoist21, 10)) in
+         let hoist22 = (core_models__cmp__f_gt(hoist21, 10)) in
          let hoist28 = (
            if hoist22
            then
              (let Some(nat_to_bitstring(hoist23)) = x in (
-                let hoist24 = (core__num__impl_u8__wrapping_add(hoist23, 3)) in
+                let hoist24 = (
+                  core_models__num__impl_u8__wrapping_add(hoist23, 3)
+                ) in
                 Some(nat_to_bitstring(hoist24))
               )
               else let None() = x in todo return;)
@@ -460,7 +462,8 @@ letfun tests__legacy__side_effects__options(x : Option, y : Option, z : Option) 
              let Some(nat_to_bitstring(hoist26)) = x in let Some(
                nat_to_bitstring(hoist25)
              ) = y in (
-               let hoist27 = (core__num__impl_u8__wrapping_add(hoist26, hoist25)
+               let hoist27 = (
+                 core_models__num__impl_u8__wrapping_add(hoist26, hoist25)
                ) in
                Some(nat_to_bitstring(hoist27))
              )
@@ -473,17 +476,18 @@ letfun tests__legacy__side_effects__options(x : Option, y : Option, z : Option) 
              let (=3) = hoist29 in let Some(nat_to_bitstring(some)) = None() in some
              else let None() = None() in todo return;
              else let (=4) = hoist29 in let Some(nat_to_bitstring(hoist18)) = z in (
-               let hoist19 = (core__cmp__f_gt(hoist18, 4)) in
+               let hoist19 = (core_models__cmp__f_gt(hoist18, 4)) in
                let hoist20 = (if hoist19 then (0) else (3)) in
-               core__ops__arith__f_add(4, hoist20)
+               core_models__ops__arith__f_add(4, hoist20)
              )
              else let None() = z in todo return;
              else 12
            ) in
            let Some(nat_to_bitstring(hoist30)) = x in (
-             let hoist32 = (core__num__impl_u8__wrapping_add(v, hoist30)) in
+             let hoist32 = (core_models__num__impl_u8__wrapping_add(v, hoist30)) in
              let Some(nat_to_bitstring(hoist31)) = y in (
-               let hoist33 = (core__num__impl_u8__wrapping_add(hoist32, hoist31)
+               let hoist33 = (
+                 core_models__num__impl_u8__wrapping_add(hoist32, hoist31)
                ) in
                Some(nat_to_bitstring(hoist33))
              )
@@ -497,13 +501,13 @@ letfun tests__legacy__side_effects__options(x : Option, y : Option, z : Option) 
 
 letfun tests__legacy__side_effects__question_mark(x : nat) =
        let x = (
-         if core__cmp__f_gt(x, 40)
+         if core_models__cmp__f_gt(x, 40)
          then
            (let y = (0) in
-            let x = (core__num__impl_u32__wrapping_add(x, 3)) in
-            let y = (core__num__impl_u32__wrapping_add(x, y)) in
-            let x = (core__num__impl_u32__wrapping_add(x, y)) in
-            let hoist34 = (core__cmp__f_gt(x, 90)) in
+            let x = (core_models__num__impl_u32__wrapping_add(x, 3)) in
+            let y = (core_models__num__impl_u32__wrapping_add(x, y)) in
+            let x = (core_models__num__impl_u32__wrapping_add(x, y)) in
+            let hoist34 = (core_models__cmp__f_gt(x, 90)) in
             if hoist34
             then
               (let ok = bitstring_err() in x
@@ -511,10 +515,10 @@ letfun tests__legacy__side_effects__question_mark(x : nat) =
             else (x))
          else (x)
        ) in
-       core__num__impl_u32__wrapping_add(3, x).
+       core_models__num__impl_u32__wrapping_add(3, x).
 
 letfun tests__legacy__side_effects__monad_lifting(x : nat) =
-       if core__cmp__f_gt(x, 123)
+       if core_models__cmp__f_gt(x, 123)
        then
          (let hoist35 = tests__legacy__side_effects__t_A_err() in (
             let hoist36 = (hoist35) in
@@ -541,7 +545,6 @@ letfun tests__legacy__side_effects__assign_non_trivial_lhs(
                  rust_primitives__hax__failure(
                    "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
 Details: Construct unexpected constructors
-
 
 Note: the error was labeled with context `Generic generic printer`.
 ",
@@ -576,7 +579,6 @@ Note: the error was labeled with context `Generic generic printer`.
                "Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
 Details: Construct unexpected constructors
 
-
 Note: the error was labeled with context `Generic generic printer`.
 ",
                "tuple2 {
@@ -591,9 +593,9 @@ Note: the error was labeled with context `Generic generic printer`.
        foo.
 
 letfun tests__legacy__side_effects__issue_1300___v_fun(wildcard4 : bitstring) =
-       let val = core__iter__traits__iterator__f_collect(
-         core__iter__traits__iterator__f_map(
-           core__slice__impl__iter(rust_primitives__hax__repeat(0, 5)),
+       let val = core_models__iter__traits__iterator__f_collect(
+         core_models__iter__traits__iterator__f_map(
+           core_models__slice__impl__iter(rust_primitives__hax__repeat(0, 5)),
            |prev|let hoist45 = rust_primitives__hax__repeat(0, 32) in (
              let hoist46 = ((prev, hoist45)) in
              hoist46
@@ -604,18 +606,18 @@ letfun tests__legacy__side_effects__issue_1300___v_fun(wildcard4 : bitstring) =
        else bitstring_err().
 
 letfun tests__legacy__side_effects__issue_1089___test(x : Option, y : Option) =
-       let Some(Option_to_bitstring(some)) = core__option__impl__map(
+       let Some(Option_to_bitstring(some)) = core_models__option__impl__map(
          x,
          |i|let Some(nat_to_bitstring(hoist38)) = y in (
-           let hoist39 = (core__ops__arith__f_add(i, hoist38)) in
+           let hoist39 = (core_models__ops__arith__f_add(i, hoist38)) in
            Some(nat_to_bitstring(hoist39))
          )
          else let None() = y in todo return;
        ) in some
-       else let None() = core__option__impl__map(
+       else let None() = core_models__option__impl__map(
          x,
          |i|let Some(nat_to_bitstring(hoist38)) = y in (
-           let hoist39 = (core__ops__arith__f_add(i, hoist38)) in
+           let hoist39 = (core_models__ops__arith__f_add(i, hoist38)) in
            Some(nat_to_bitstring(hoist39))
          )
          else let None() = y in todo return;

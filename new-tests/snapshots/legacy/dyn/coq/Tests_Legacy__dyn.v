@@ -19,7 +19,7 @@ Class t_Printable (v_Self : Type) (v_S : Type) : Type :=
   }.
 Arguments t_Printable (_) (_).
 
-Instance t_Printable_476386987 : t_Printable ((t_i32)) ((t_String)) :=
+Instance t_Printable_520945710 : t_Printable ((t_i32)) ((t_String)) :=
   {
     implaabbcc_t_Printable_f_stringify := fun  (self : t_i32)=>
       (* f_to_string *) (self);

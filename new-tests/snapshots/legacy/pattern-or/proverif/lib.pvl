@@ -77,7 +77,7 @@ letfun tests__legacy__pattern_or__equivalent(x : bitstring) =
        else let (x: nat, wildcard2: bitstring) = x in x.
 
 letfun tests__legacy__pattern_or__deep_capture(x : bitstring) =
-       let (=1| =2, x: nat)| core__result__Result_Err((=3| =4, x: nat)) = x in x
+       let (=1| =2, x: nat)| core_models__result__Result_Err((=3| =4, x: nat)) = x in x
        else let (x: nat, wildcard3: bitstring)|
-       core__result__Result_Err((x: nat, wildcard4: bitstring)) = x in x.
+       core_models__result__Result_Err((x: nat, wildcard4: bitstring)) = x in x.
 

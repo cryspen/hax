@@ -16,7 +16,12 @@ members = [
      "rust-engine",
      "rust-engine/macros",
 ]
-exclude = ["tests", "rustc-coverage-tests", "rust-engine/tests", "hax-lib/core-models"]
+exclude = [
+     "tests",
+     "rustc-coverage-tests",
+     "rust-engine/tests",
+     "hax-lib/core-models",
+]
 default-members = [
      "frontend/exporter",
      "frontend/exporter/options",

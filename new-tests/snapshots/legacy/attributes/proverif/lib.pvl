@@ -630,14 +630,14 @@ reduc forall
 letfun tests__legacy__attributes__verifcation_status__a_function_which_only_laxes(
          wildcard1 : bitstring
        ) =
-       if core__ops__bit__f_not(false) then (bitstring_err()) else (()).
+       if core_models__ops__bit__f_not(false) then (bitstring_err()) else (()).
 
 letfun tests__legacy__attributes__verifcation_status__a_panicfree_function(
          wildcard3 : bitstring
        ) =
        let a = (3) in
        let b = (6) in
-       let result = (core__ops__arith__f_add(a, b)) in
+       let result = (core_models__ops__arith__f_add(a, b)) in
        let wildcard2: bitstring = (()) in
        result.
 
@@ -646,11 +646,11 @@ letfun tests__legacy__attributes__verifcation_status__another_panicfree_function
        ) =
        let not_much = (0) in
        let nothing = (0) in
-       let still_not_much = (core__ops__arith__f_add(not_much, nothing)) in
+       let still_not_much = (core_models__ops__arith__f_add(not_much, nothing)) in
        ().
 
 letfun tests__legacy__attributes__replace_body__f(x : nat, y : nat) =
-       core__ops__arith__f_add(1, 2).
+       core_models__ops__arith__f_add(1, 2).
 
 letfun tests__legacy__attributes__replace_body__impl_Foo__assoc_fn(
          self : tests__legacy__attributes__replace_body__t_Foo, x : nat
@@ -662,19 +662,19 @@ letfun tests__legacy__attributes__refinement_types__bounded_u8(
          y : tests__legacy__attributes__refinement_types__t_BoundedU8_of_10_11
        ) =
        hax_lib__f_new(
-         core__ops__arith__f_add(hax_lib__f_get(x), hax_lib__f_get(y))
+         core_models__ops__arith__f_add(hax_lib__f_get(x), hax_lib__f_get(y))
        ).
 
 letfun tests__legacy__attributes__refinement_types__double(x : nat) =
-       hax_lib__f_new(core__ops__arith__f_add(x, x)).
+       hax_lib__f_new(core_models__ops__arith__f_add(x, x)).
 
 letfun tests__legacy__attributes__refinement_types__double_refine(x : nat) =
-       hax_lib__f_into_checked(core__ops__arith__f_add(x, x)).
+       hax_lib__f_into_checked(core_models__ops__arith__f_add(x, x)).
 
 letfun tests__legacy__attributes__refinement_types__double_abs_i16(
          x : tests__legacy__attributes__refinement_types__t_BoundedAbsI16_of_v_N
        ) =
-       hax_lib__f_into_checked(core__ops__arith__f_mul(x, 2)).
+       hax_lib__f_into_checked(core_models__ops__arith__f_mul(x, 2)).
 
 const tests__legacy__attributes__refined_indexes__v_MAX: bitstring.
 
@@ -699,7 +699,7 @@ letfun tests__legacy__attributes__refined_indexes__mutation_example(
        (uuse_generic_update_at, uuse_specialized_update_at, specialized_as_well).
 
 letfun tests__legacy__attributes__pre_post_on_traits_and_impls__test(x : v_T) =
-       core__ops__arith__f_sub(
+       core_models__ops__arith__f_sub(
          tests__legacy__attributes__pre_post_on_traits_and_impls__f_method(x, 99
          ),
          88
@@ -708,7 +708,10 @@ letfun tests__legacy__attributes__pre_post_on_traits_and_impls__test(x : v_T) =
 const tests__legacy__attributes__newtype_pattern__v_MAX: bitstring.
 
 letfun tests__legacy__attributes__newtype_pattern__impl_SafeIndex__new(i : nat) =
-       if core__cmp__f_lt(i, tests__legacy__attributes__newtype_pattern__v_MAX)
+       if
+         core_models__cmp__f_lt(
+             i, tests__legacy__attributes__newtype_pattern__v_MAX
+           )
        then
          (Some(
             tests__legacy__attributes__newtype_pattern__t_SafeIndex_to_bitstring(
@@ -748,22 +751,38 @@ letfun tests__legacy__attributes__inlined_code_ensures_requires__increment_array
        ) =
        let v = (
          rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v, 0, core__ops__arith__f_add(core__ops__index__f_index(v, 0), 1)
+           v,
+           0,
+           core_models__ops__arith__f_add(
+             core_models__ops__index__f_index(v, 0), 1
+           )
          )
        ) in
        let v = (
          rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v, 1, core__ops__arith__f_add(core__ops__index__f_index(v, 1), 1)
+           v,
+           1,
+           core_models__ops__arith__f_add(
+             core_models__ops__index__f_index(v, 1), 1
+           )
          )
        ) in
        let v = (
          rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v, 2, core__ops__arith__f_add(core__ops__index__f_index(v, 2), 1)
+           v,
+           2,
+           core_models__ops__arith__f_add(
+             core_models__ops__index__f_index(v, 2), 1
+           )
          )
        ) in
        let v = (
          rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           v, 3, core__ops__arith__f_add(core__ops__index__f_index(v, 3), 1)
+           v,
+           3,
+           core_models__ops__arith__f_add(
+             core_models__ops__index__f_index(v, 3), 1
+           )
          )
        ) in
        v.
@@ -786,13 +805,13 @@ letfun tests__legacy__attributes__ensures_on_arity_zero_fns__basically_a_constan
 const tests__legacy__attributes__u32_max: bitstring.
 
 letfun tests__legacy__attributes__add3(x : nat, y : nat, z : nat) =
-       core__ops__arith__f_add(core__ops__arith__f_add(x, y), z).
+       core_models__ops__arith__f_add(core_models__ops__arith__f_add(x, y), z).
 
 letfun tests__legacy__attributes__swap_and_mut_req_ens(x : nat, y : nat) =
        let x0 = (x) in
        let x = (y) in
        let y = (x0) in
-       let hax_temp_output = (core__ops__arith__f_add(x, y)) in
+       let hax_temp_output = (core_models__ops__arith__f_add(x, y)) in
        (x, y, hax_temp_output).
 
 letfun tests__legacy__attributes__issue_844_(e_x : nat) =
@@ -810,12 +829,16 @@ letfun tests__legacy__attributes__apply_dummy_function_lemma(x : nat) =
 letfun tests__legacy__attributes__props(wildcard10 : bitstring) =
        let wildcard9: bitstring = (
          hax_lib__assume(
-           core__convert__f_from(hax_lib__prop__impl_Prop__from_bool(true))
+           core_models__convert__f_from(
+             hax_lib__prop__impl_Prop__from_bool(true)
+           )
          )
        ) in
        let wildcard8: bitstring = (
          hax_lib__assert_prop(
-           core__convert__f_from(hax_lib__prop__impl_Prop__from_bool(true))
+           core_models__convert__f_from(
+             hax_lib__prop__impl_Prop__from_bool(true)
+           )
          )
        ) in
        let wildcard7: bitstring = (()) in
@@ -834,12 +857,12 @@ letfun tests__legacy__attributes__mutliple_before_after(wildcard12 : bitstring) 
        ().
 
 letfun tests__legacy__attributes__fib(x : nat) =
-       if core__cmp__f_le(x, 2)
+       if core_models__cmp__f_le(x, 2)
        then (x)
        else (
-         core__num__impl_usize__wrapping_add(
-           tests__legacy__attributes__fib(core__ops__arith__f_sub(x, 1)),
-           tests__legacy__attributes__fib(core__ops__arith__f_sub(x, 2))
+         core_models__num__impl_usize__wrapping_add(
+           tests__legacy__attributes__fib(core_models__ops__arith__f_sub(x, 1)),
+           tests__legacy__attributes__fib(core_models__ops__arith__f_sub(x, 2))
          )
        ).
 
@@ -848,21 +871,24 @@ letfun tests__legacy__attributes__props__f(x : hax_lib__prop__t_Prop, y : bool) 
          hax_lib__prop__t_Prop_from_bitstring(y)
        ) in
        let p = (
-         core__ops__bit__f_bitand(
-           core__ops__bit__f_bitand(
-             core__ops__bit__f_bitand(hax_lib__abstraction__f_lift(y), xprop), y
+         core_models__ops__bit__f_bitand(
+           core_models__ops__bit__f_bitand(
+             core_models__ops__bit__f_bitand(
+               hax_lib__abstraction__f_lift(y), xprop
+             ),
+             y
            ),
            hax_lib__prop__f_to_prop(y)
          )
        ) in
-       core__ops__bit__f_not(
+       core_models__ops__bit__f_not(
          hax_lib__prop__impl_Prop__implies(
-           core__ops__bit__f_bitor(p, y),
-           core__ops__bit__f_bitand(
+           core_models__ops__bit__f_bitor(p, y),
+           core_models__ops__bit__f_bitand(
              hax_lib__prop__v_forall(
-               |x|core__cmp__f_le(x, core__num__impl_u8__MAX)
+               |x|core_models__cmp__f_le(x, core_models__num__impl_u8__MAX)
              ),
-             hax_lib__prop__exists(|x|core__cmp__f_gt(x, 300))
+             hax_lib__prop__exists(|x|core_models__cmp__f_gt(x, 300))
            )
          )
        ).

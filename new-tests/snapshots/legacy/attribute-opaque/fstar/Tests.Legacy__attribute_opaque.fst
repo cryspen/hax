@@ -1,7 +1,7 @@
 module Tests.Legacy__attribute_opaque
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// @fail(extraction): coq(HAX0002)
 assume
@@ -59,22 +59,24 @@ unfold
 let impl_T_for_u8 = impl_T_for_u8'
 
 class t_TrGeneric (v_Self: Type0) (v_U: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_12400030861545157532:Core.Clone.t_Clone v_U;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_U;
   f_f_pre:v_U -> Type0;
   f_f_post:v_U -> v_Self -> Type0;
   f_f:x0: v_U -> Prims.Pure v_Self (f_f_pre x0) (fun result -> f_f_post x0 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_U:Type0) {|i: t_TrGeneric v_Self v_U|} -> i._super_12400030861545157532
+let _ = fun (v_Self:Type0) (v_U:Type0) {|i: t_TrGeneric v_Self v_U|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_2': #v_U: Type0 -> {| i0: Core.Clone.t_Clone v_U |} -> t_TrGeneric i32 v_U
+val impl_2': #v_U: Type0 -> {| i0: Core_models.Clone.t_Clone v_U |} -> t_TrGeneric i32 v_U
 
 unfold
-let impl_2 (#v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Clone.t_Clone v_U) =
-  impl_2' #v_U #i0
+let impl_2
+      (#v_U: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_U)
+     = impl_2' #v_U #i0
 
 assume
 val v_C': u8

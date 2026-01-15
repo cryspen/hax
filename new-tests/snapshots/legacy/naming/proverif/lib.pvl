@@ -360,66 +360,56 @@ fun tests__legacy__naming__C_items_under_closures__NestedStruct()
 (* Functions *)
 (*****************************************)
 
-letfun tests__legacy__naming__functions_defined_in_trait_impls__f_eq__impl__panic_cold_explicit(
-         wildcard1 : bitstring
-       ) =
-       core__panicking__panic_explicit(()).
-
-letfun tests__legacy__naming__functions_defined_in_trait_impls__f_eq__impl_1__panic_cold_explicit(
-         wildcard2 : bitstring
-       ) =
-       core__panicking__panic_explicit(()).
-
 letfun tests__legacy__naming__ambiguous_names__debug(label : nat, value : nat) =
        let args = ((label, value)) in
        let args = (
-         [core__fmt__rt__impl__new_display(args.0),core__fmt__rt__impl__new_display(
+         [core_models__fmt__rt__impl__new_display(args.0),core_models__fmt__rt__impl__new_display(
            args.1
          )]
        ) in
-       let wildcard3: bitstring = (
+       let wildcard1: bitstring = (
          std__io__stdio__e_print(
-           core__fmt__rt__impl_1__new_v1(["[","] a=","
+           core_models__fmt__rt__impl_1__new_v1(["[","] a=","
 "], args)
          )
        ) in
        ().
 
-letfun tests__legacy__naming__ambiguous_names__f(wildcard7 : bitstring) =
+letfun tests__legacy__naming__ambiguous_names__f(wildcard5 : bitstring) =
        let a_1_ = (104) in
        let a_2_ = (205) in
        let a_3_ = (306) in
        let a = (123) in
-       let wildcard6: bitstring = (
+       let wildcard4: bitstring = (
          tests__legacy__naming__ambiguous_names__debug(3, a_3_)
        ) in
-       let wildcard5: bitstring = (
+       let wildcard3: bitstring = (
          tests__legacy__naming__ambiguous_names__debug(2, a_2_)
        ) in
-       let wildcard4: bitstring = (
+       let wildcard2: bitstring = (
          tests__legacy__naming__ambiguous_names__debug(1, a_1_)
        ) in
        tests__legacy__naming__ambiguous_names__debug(4, a).
 
-letfun tests__legacy__naming__ambiguous_names__ff_expand(wildcard11 : bitstring) =
+letfun tests__legacy__naming__ambiguous_names__ff_expand(wildcard9 : bitstring) =
        let a = (104) in
        let a = (205) in
        let a = (306) in
        let a = (123) in
-       let wildcard10: bitstring = (
+       let wildcard8: bitstring = (
          tests__legacy__naming__ambiguous_names__debug(3, a)
        ) in
-       let wildcard9: bitstring = (
+       let wildcard7: bitstring = (
          tests__legacy__naming__ambiguous_names__debug(2, a)
        ) in
-       let wildcard8: bitstring = (
+       let wildcard6: bitstring = (
          tests__legacy__naming__ambiguous_names__debug(1, a)
        ) in
        tests__legacy__naming__ambiguous_names__debug(0, a).
 
-letfun tests__legacy__naming__mk_c(wildcard14 : bitstring) =
-       let wildcard13: bitstring = (tests__legacy__naming__Foo_B(3)) in
-       let wildcard12: bitstring = (tests__legacy__naming__X()) in
+letfun tests__legacy__naming__mk_c(wildcard12 : bitstring) =
+       let wildcard11: bitstring = (tests__legacy__naming__Foo_B(3)) in
+       let wildcard10: bitstring = (tests__legacy__naming__X()) in
        tests__legacy__naming__C(3).
 
 letfun tests__legacy__naming__impl_Foo__f(self : tests__legacy__naming__t_Foo) =
@@ -428,7 +418,7 @@ letfun tests__legacy__naming__impl_Foo__f(self : tests__legacy__naming__t_Foo) =
 letfun tests__legacy__naming__impl_B__f(self : tests__legacy__naming__t_B) =
        tests__legacy__naming__B().
 
-letfun tests__legacy__naming__f__g(wildcard15 : bitstring) =
+letfun tests__legacy__naming__f__g(wildcard13 : bitstring) =
        ().
 
 letfun tests__legacy__naming__f__g__impl_B__g(self : tests__legacy__naming__t_B) =
@@ -445,24 +435,26 @@ letfun tests__legacy__naming__f(x : tests__legacy__naming__t_Foobar) =
        ).
 
 letfun tests__legacy__naming__f__g__impl_Foo__g__t_hello__h(
-         wildcard16 : bitstring
+         wildcard14 : bitstring
        ) =
        ().
 
 letfun tests__legacy__naming__reserved_names(val : nat, noeq : nat, of : nat) =
-       core__ops__arith__f_add(core__ops__arith__f_add(val, noeq), of).
+       core_models__ops__arith__f_add(
+         core_models__ops__arith__f_add(val, noeq), of
+       ).
 
 letfun tests__legacy__naming__construct_structs(a : nat, b : nat) =
-       let wildcard20: bitstring = (tests__legacy__naming__StructA(a)) in
-       let wildcard19: bitstring = (tests__legacy__naming__StructB(a,b)) in
-       let wildcard18: bitstring = (tests__legacy__naming__StructC(a)) in
-       let wildcard17: bitstring = (tests__legacy__naming__StructD(a,b)) in
+       let wildcard18: bitstring = (tests__legacy__naming__StructA(a)) in
+       let wildcard17: bitstring = (tests__legacy__naming__StructB(a,b)) in
+       let wildcard16: bitstring = (tests__legacy__naming__StructC(a)) in
+       let wildcard15: bitstring = (tests__legacy__naming__StructD(a,b)) in
        ().
 
 const tests__legacy__naming__v_INHERENT_CONSTANT: bitstring.
 
-letfun tests__legacy__naming__constants(wildcard21 : bitstring) =
-       core__ops__arith__f_add(
+letfun tests__legacy__naming__constants(wildcard19 : bitstring) =
+       core_models__ops__arith__f_add(
          tests__legacy__naming__f_ASSOCIATED_CONSTANT(),
          tests__legacy__naming__v_INHERENT_CONSTANT
        ).
@@ -470,17 +462,17 @@ letfun tests__legacy__naming__constants(wildcard21 : bitstring) =
 letfun tests__legacy__naming__string_shadows(string : bitstring, n : bitstring) =
        ().
 
-letfun tests__legacy__naming__items_under_closures(wildcard24 : bitstring) =
-       let wildcard23: bitstring:bitstring = (|wildcard22: bitstring|()) in
+letfun tests__legacy__naming__items_under_closures(wildcard22 : bitstring) =
+       let wildcard21: bitstring:bitstring = (|wildcard20: bitstring|()) in
        ().
 
 letfun tests__legacy__naming__items_under_closures__anon_const_0__nested_function(
-         wildcard25 : bitstring
+         wildcard23 : bitstring
        ) =
        ().
 
 letfun tests__legacy__naming__items_under_closures__nested_function(
-         wildcard26 : bitstring
+         wildcard24 : bitstring
        ) =
        ().
 

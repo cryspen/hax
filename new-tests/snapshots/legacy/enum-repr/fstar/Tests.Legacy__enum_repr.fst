@@ -1,7 +1,7 @@
 module Tests.Legacy__enum_repr
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_EnumWithRepr =
   | EnumWithRepr_ExplicitDiscr1 : t_EnumWithRepr

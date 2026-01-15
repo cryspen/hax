@@ -232,13 +232,11 @@ Definition assign_non_trivial_lhs (foo : t_Foo) : t_Foo :=
   let foo := foo <|t_Foof_bar := f_bar foo <|t_Barf_b := (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
 Details: Construct unexpected constructors
 
-
 Note: the error was labeled with context `Coq printer generic printer`.
 (* ERROR_EXPR *)) |> |> in
   let foo := foo <|t_Foof_z := update_at_usize (f_z foo) ((3 : t_usize)) (f_index (f_z foo) ((3 : t_usize)) <|t_Barf_a := (true : bool) |>) |> in
   let foo := foo <|t_Foof_y := (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
 Details: Construct unexpected constructors
-
 
 Note: the error was labeled with context `Coq printer generic printer`.
 (* ERROR_EXPR *)) |> in

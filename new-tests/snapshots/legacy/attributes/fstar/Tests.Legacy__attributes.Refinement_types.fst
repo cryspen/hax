@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes.Refinement_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let t_BoundedU8 (v_MIN v_MAX: u8) = x: u8{x >=. v_MIN && x <=. v_MAX}
 
@@ -22,18 +22,18 @@ let double_refine (x: u8) : Prims.Pure t_Even (requires x <. mk_u8 127) (fun _ -
 let t_NoE =
   x:
   Alloc.String.t_String
-    { let _, out:(Core.Str.Iter.t_Chars & bool) =
-        Core.Iter.Traits.Iterator.f_any #Core.Str.Iter.t_Chars
+    { let (_: Core_models.Str.Iter.t_Chars), (out: bool) =
+        Core_models.Iter.Traits.Iterator.f_any #Core_models.Str.Iter.t_Chars
           #FStar.Tactics.Typeclasses.solve
-          (Core.Str.impl_str__chars (Core.Ops.Deref.f_deref #Alloc.String.t_String
+          (Core_models.Str.impl_str__chars (Core_models.Ops.Deref.f_deref #Alloc.String.t_String
                   #FStar.Tactics.Typeclasses.solve
                   x
                 <:
                 string)
             <:
-            Core.Str.Iter.t_Chars)
+            Core_models.Str.Iter.t_Chars)
           (fun ch ->
-              let ch:char = ch in
+              let ch:FStar.Char.char = ch in
               ch =. ' ' <: bool)
       in
       ~.out }
@@ -63,54 +63,54 @@ let t_BoundedAbsI16 (v_B: usize) =
       (Rust_primitives.Hax.Int.from_machine x <: Hax_lib.Int.t_Int) <=
       (Rust_primitives.Hax.Int.from_machine v_B <: Hax_lib.Int.t_Int) }
 
-let impl (v_B: usize) : Core.Clone.t_Clone (t_BoundedAbsI16 v_B) =
+let impl (v_B: usize) : Core_models.Clone.t_Clone (t_BoundedAbsI16 v_B) =
   { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1': v_B: usize -> Core.Marker.t_Copy (t_BoundedAbsI16 v_B)
+val impl_1': v_B: usize -> Core_models.Marker.t_Copy (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_1 (v_B: usize) = impl_1' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_3': v_B: usize -> Core.Marker.t_StructuralPartialEq (t_BoundedAbsI16 v_B)
+val impl_3': v_B: usize -> Core_models.Marker.t_StructuralPartialEq (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_3 (v_B: usize) = impl_3' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_4': v_B: usize -> Core.Cmp.t_PartialEq (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
+val impl_4': v_B: usize -> Core_models.Cmp.t_PartialEq (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_4 (v_B: usize) = impl_4' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_2': v_B: usize -> Core.Cmp.t_Eq (t_BoundedAbsI16 v_B)
+val impl_2': v_B: usize -> Core_models.Cmp.t_Eq (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_2 (v_B: usize) = impl_2' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_6': v_B: usize -> Core.Cmp.t_PartialOrd (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
+val impl_6': v_B: usize -> Core_models.Cmp.t_PartialOrd (t_BoundedAbsI16 v_B) (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_6 (v_B: usize) = impl_6' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_5': v_B: usize -> Core.Cmp.t_Ord (t_BoundedAbsI16 v_B)
+val impl_5': v_B: usize -> Core_models.Cmp.t_Ord (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_5 (v_B: usize) = impl_5' v_B
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_7': v_B: usize -> Core.Hash.t_Hash (t_BoundedAbsI16 v_B)
+val impl_7': v_B: usize -> Core_models.Hash.t_Hash (t_BoundedAbsI16 v_B)
 
 unfold
 let impl_7 (v_B: usize) = impl_7' v_B
@@ -125,6 +125,10 @@ let double_abs_i16 (v_N v_M: usize) (x: t_BoundedAbsI16 v_N)
           <:
           Hax_lib.Int.t_Int))
       (fun _ -> Prims.l_True) =
-  Core.Ops.Arith.f_mul #(t_BoundedAbsI16 v_N) #i16 #FStar.Tactics.Typeclasses.solve x (mk_i16 2)
+  Core_models.Ops.Arith.f_mul #(t_BoundedAbsI16 v_N)
+    #i16
+    #FStar.Tactics.Typeclasses.solve
+    x
+    (mk_i16 2)
   <:
   t_BoundedAbsI16 v_M

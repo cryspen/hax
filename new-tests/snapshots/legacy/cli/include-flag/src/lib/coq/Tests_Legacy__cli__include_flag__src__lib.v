@@ -25,7 +25,7 @@ Class t_Trait (v_Self : Type) : Type :=
   }.
 Arguments t_Trait (_).
 
-Instance t_Trait_72786902 : t_Trait ((t_Foo)) :=
+Instance t_Trait_833944687 : t_Trait ((t_Foo)) :=
   {
   }.
 

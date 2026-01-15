@@ -40,8 +40,8 @@ Class t_Printable (Self : choice_type) (v_Self : v_Self) {v_S : v_S} := {
 Fail Next Obligation.
 Hint Unfold int32_t_Printable.
 
-(*ExplicitRejection { reason: "a node of kind [Dyn] have been found in the AST" }
-
+(*Explicit rejection by a phase in the Hax engine:
+a node of kind [Dyn] have been found in the AST
 
 Note: the error was labeled with context `reject_Dyn`.
 
@@ -71,25 +71,30 @@ fn print(
     >,
 ) -> tuple0 {
     {
-        let args: [core::fmt::rt::t_Argument; 1] = {
-            [
-                core::fmt::rt::impl__new_display::<
-                    alloc::string::t_String,
-                >(tests::legacy__dyn::f_stringify(a)),
-            ]
+        let args: tuple1<alloc::string::t_String> = {
+            Tuple1(tests::legacy__dyn::f_stringify(a))
         };
         {
-            let _: tuple0 = {
-                std::io::stdio::e_print(
-                    core::fmt::rt::impl_1__new_v1::<
-                        generic_value!(todo),
-                        generic_value!(todo),
-                    >(["", "\n"], args),
-                )
+            let args: [core_models::fmt::rt::t_Argument; 1] = {
+                [
+                    core_models::fmt::rt::impl__new_display::<
+                        alloc::string::t_String,
+                    >(proj_proj_tuple0(args)),
+                ]
             };
             {
-                let _: tuple0 = { Tuple0 };
-                Tuple0
+                let _: tuple0 = {
+                    std::io::stdio::e_print(
+                        core_models::fmt::rt::impl_1__new_v1::<
+                            generic_value!(todo),
+                            generic_value!(todo),
+                        >(["", "\n"], args),
+                    )
+                };
+                {
+                    let _: tuple0 = { Tuple0 };
+                    Tuple0
+                }
             }
         }
     }

@@ -1,15 +1,15 @@
 module Tests.Legacy__generics
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let dup
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Clone.t_Clone v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
       (x: v_T)
     : (v_T & v_T) =
-  Core.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x,
-  Core.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x
+  Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x,
+  Core_models.Clone.f_clone #v_T #FStar.Tactics.Typeclasses.solve x
   <:
   (v_T & v_T)
 
@@ -34,7 +34,7 @@ let foo (v_LEN: usize) (arr: t_Array usize v_LEN) : usize =
 let repeat
       (v_LEN: usize)
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Marker.t_Copy v_T)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
       (x: v_T)
     : t_Array v_T v_LEN = Rust_primitives.Hax.repeat x v_LEN
 
@@ -45,21 +45,26 @@ let call_f (_: Prims.unit) : usize = (f (mk_usize 10) (mk_usize 3) <: usize) +! 
 let g
       (v_N: usize)
       (#v_T: Type0)
-      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core.Convert.t_Into v_T (t_Array usize v_N))
+      (#[FStar.Tactics.Typeclasses.tcresolve ()]
+          i0:
+          Core_models.Convert.t_Into v_T (t_Array usize v_N))
       (arr: v_T)
     : usize =
-  (Core.Option.impl__unwrap_or #usize
-      (Core.Iter.Traits.Iterator.f_max #(Core.Array.Iter.t_IntoIter usize v_N)
+  (Core_models.Option.impl__unwrap_or #usize
+      (Core_models.Iter.Traits.Iterator.f_max #(Core_models.Array.Iter.t_IntoIter usize v_N)
           #FStar.Tactics.Typeclasses.solve
-          (Core.Iter.Traits.Collect.f_into_iter #(t_Array usize v_N)
+          (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array usize v_N)
               #FStar.Tactics.Typeclasses.solve
-              (Core.Convert.f_into #v_T #(t_Array usize v_N) #FStar.Tactics.Typeclasses.solve arr
+              (Core_models.Convert.f_into #v_T
+                  #(t_Array usize v_N)
+                  #FStar.Tactics.Typeclasses.solve
+                  arr
                 <:
                 t_Array usize v_N)
             <:
-            Core.Array.Iter.t_IntoIter usize v_N)
+            Core_models.Array.Iter.t_IntoIter usize v_N)
         <:
-        Core.Option.t_Option usize)
+        Core_models.Option.t_Option usize)
       v_N
     <:
     usize) +!

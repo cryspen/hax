@@ -45,25 +45,15 @@ Equations never (h : both t_False) : both t_Never :=
     end : both t_Never.
 Fail Next Obligation.
 
-Equations test__panic_cold_explicit (_ : both 'unit) : both t_Never :=
-  test__panic_cold_explicit _  :=
-    panic_explicit : both t_Never.
-Fail Next Obligation.
-
 Equations test (b : both 'bool) : both int8 :=
   test b  :=
     letb _ := ifb b
-    then never_to_any test__panic_cold_explicit
+    then never_to_any (panic (ret_both (explicit panic : chString)))
     else ret_both (tt : 'unit) in
     ret_both (3 : int8) : both int8.
 Fail Next Obligation.
 
-Equations any__panic_cold_explicit (_ : both 'unit) : both t_Never :=
-  any__panic_cold_explicit _  :=
-    panic_explicit : both t_Never.
-Fail Next Obligation.
-
 Equations any {v_T : v_T} (_ : both 'unit) : both v_T :=
   any _  :=
-    never_to_any any__panic_cold_explicit : both v_T.
+    never_to_any (panic (ret_both (explicit panic : chString))) : both v_T.
 Fail Next Obligation.

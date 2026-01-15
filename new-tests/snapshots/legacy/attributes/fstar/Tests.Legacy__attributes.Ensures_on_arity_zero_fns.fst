@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes.Ensures_on_arity_zero_fns
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let doing_nothing (_: Prims.unit)
     : Prims.Pure Prims.unit

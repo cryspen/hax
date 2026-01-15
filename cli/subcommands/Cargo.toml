@@ -69,3 +69,6 @@ file = "../../engine/dune-project"
 search = "version [a-z0-9\\.-]+"
 replace = "version {{version}}"
 prerelease = true
+
+[profile.dev.package.hax-types]
+opt-level = 3

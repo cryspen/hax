@@ -1,7 +1,7 @@
 module Tests.Legacy__cyclic_modules.Variant_constructor_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 include Tests.Legacy__cyclic_modules.Bundle_variant_constructor_a {t_Context as t_Context}
 

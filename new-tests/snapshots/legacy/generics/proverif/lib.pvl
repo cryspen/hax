@@ -130,22 +130,23 @@ letfun tests__legacy__generics__dup(x : v_T) =
        (x, x).
 
 letfun tests__legacy__generics__foo(arr : bitstring) =
-       let acc = (core__ops__arith__f_add(v_LEN, 9)) in
+       let acc = (core_models__ops__arith__f_add(v_LEN, 9)) in
        let acc = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
  f_end: LEN,
  })) {
- |acc| { core::ops::arith::f_add(acc, core::ops::index::f_index(arr, i)) }
- })(acc)
- }"
+ |acc| {
+ core_models::ops::arith::f_add(
+ acc,
+ core_models::ops::index..."
          )
        ) in
        acc.
@@ -154,16 +155,18 @@ letfun tests__legacy__generics__repeat(x : v_T) =
        rust_primitives__hax__repeat(x, v_LEN).
 
 letfun tests__legacy__generics__f(x : nat) =
-       core__ops__arith__f_add(core__ops__arith__f_add(v_N, v_N), x).
+       core_models__ops__arith__f_add(
+         core_models__ops__arith__f_add(v_N, v_N), x
+       ).
 
 letfun tests__legacy__generics__call_f(wildcard3 : bitstring) =
-       core__ops__arith__f_add(tests__legacy__generics__f(3), 3).
+       core_models__ops__arith__f_add(tests__legacy__generics__f(3), 3).
 
 letfun tests__legacy__generics__g(arr : v_T) =
-       core__ops__arith__f_add(
-         core__option__impl__unwrap_or(
-           core__iter__traits__iterator__f_max(
-             core__iter__traits__collect__f_into_iter(
+       core_models__ops__arith__f_add(
+         core_models__option__impl__unwrap_or(
+           core_models__iter__traits__iterator__f_max(
+             core_models__iter__traits__collect__f_into_iter(
                bitstring_from_bitstring(arr)
              )
            ),
@@ -173,7 +176,7 @@ letfun tests__legacy__generics__g(arr : v_T) =
        ).
 
 letfun tests__legacy__generics__call_g(wildcard4 : bitstring) =
-       core__ops__arith__f_add(tests__legacy__generics__g([42,3,49]), 3).
+       core_models__ops__arith__f_add(tests__legacy__generics__g([42,3,49]), 3).
 
 letfun tests__legacy__generics__impl_Bar__inherent_impl_generics(x : bitstring) =
        ().

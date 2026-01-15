@@ -1,7 +1,7 @@
 module Tests.Legacy__cyclic_modules.Rec
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_T =
   | T_t1 : t_T

@@ -22,43 +22,41 @@ def Tests.Legacy__proverif_fn_to_letfun.some_function
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Bool
   := do
-  true
+  (pure true)
 
 def Tests.Legacy__proverif_fn_to_letfun.some_other_function
   (b : Bool)
   : Result u8
   := do
-  (5 : u8)
+  (pure (5 : u8))
 
 def Tests.Legacy__proverif_fn_to_letfun.longer_function
   (x : String)
   : Result Tests.Legacy__proverif_fn_to_letfun.A
   := do
-  let b : Bool ← (pure
-    (← Tests.Legacy__proverif_fn_to_letfun.some_function
-        Rust_primitives.Hax.Tuple0.mk));
-  let d : u8 ← (pure
-    (← Tests.Legacy__proverif_fn_to_letfun.some_other_function b));
-  (Tests.Legacy__proverif_fn_to_letfun.A.mk (x := (12 : usize)) (y := (9 : u8)))
+  let b : Bool ←
+    (Tests.Legacy__proverif_fn_to_letfun.some_function
+      Rust_primitives.Hax.Tuple0.mk);
+  let d : u8 ← (Tests.Legacy__proverif_fn_to_letfun.some_other_function b);
+  (pure (Tests.Legacy__proverif_fn_to_letfun.A.mk
+    (x := (12 : usize)) (y := (9 : u8))))
 
 def Tests.Legacy__proverif_fn_to_letfun.another_longer_function
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Tests.Legacy__proverif_fn_to_letfun.B
   := do
-  let b : Bool ← (pure
-    (← Tests.Legacy__proverif_fn_to_letfun.some_function
-        Rust_primitives.Hax.Tuple0.mk));
-  let d : u8 ← (pure
-    (← Tests.Legacy__proverif_fn_to_letfun.some_other_function b));
-  (Tests.Legacy__proverif_fn_to_letfun.B.mk (b := false))
+  let b : Bool ←
+    (Tests.Legacy__proverif_fn_to_letfun.some_function
+      Rust_primitives.Hax.Tuple0.mk);
+  let d : u8 ← (Tests.Legacy__proverif_fn_to_letfun.some_other_function b);
+  (pure (Tests.Legacy__proverif_fn_to_letfun.B.mk (b := false)))
 
 def Tests.Legacy__proverif_fn_to_letfun.void_function
   (_ : Rust_primitives.Hax.Tuple0)
   : Result Rust_primitives.Hax.Tuple0
   := do
-  let b : Bool ← (pure
-    (← Tests.Legacy__proverif_fn_to_letfun.some_function
-        Rust_primitives.Hax.Tuple0.mk));
-  let d : u8 ← (pure
-    (← Tests.Legacy__proverif_fn_to_letfun.some_other_function b));
-  Rust_primitives.Hax.Tuple0.mk
+  let b : Bool ←
+    (Tests.Legacy__proverif_fn_to_letfun.some_function
+      Rust_primitives.Hax.Tuple0.mk);
+  let d : u8 ← (Tests.Legacy__proverif_fn_to_letfun.some_other_function b);
+  (pure Rust_primitives.Hax.Tuple0.mk)

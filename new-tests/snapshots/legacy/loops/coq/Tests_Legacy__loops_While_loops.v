@@ -24,16 +24,16 @@ Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
  (loop {
  |x| {
- (if core::cmp::f_lt(x, 10) {
+ (if core_models::cmp::f_lt(x, 10) {
  {
- let x: int = { core::ops::arith::f_add(x, 3) };
+ let x: int = { core_models::ops::arith::f_add(x, 3) };
  x
  }
  } else {
  {
  let hoist1: int = {
  rust_primitives::hax::failure(
- "something is not implement..."%string : string)) in
+ "something is..."%string : string)) in
   f_add (x) ((12 : t_u8)).
 
 Definition while_invariant_decr '(_ : unit) : t_u8 :=
@@ -47,16 +47,15 @@ Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
  (loop {
  |x| {
- (if core::cmp::f_lt(x, 10) {
+ (if core_models::cmp::f_lt(x, 10) {
  {
  let _: tuple0 = {
  hax_lib::e_internal_while_loop_invariant(
- core::convert::f_from(core::cmp::f_le(x, 10)),
+ core_models::convert::f_from(core_models::cmp::f_le(x, 10)),
  )
  };
  {
- let _: tuple0 = {
- hax_lib::..."%string : string)) in
+ let _: ..."%string : string)) in
   f_add (x) ((12 : t_u8)).
 
 
@@ -88,16 +87,17 @@ Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
  (loop {
  |x| {
- (if core::cmp::f_lt(x, 10) {
+ (if core_models::cmp::f_lt(x, 10) {
  {
  let _: tuple0 = {
  hax_lib::e_internal_loop_decreases(
- hax_lib::int::f_to_int(core::ops::arith::f_sub(10, x)),
+ hax_lib::int::f_to_int(
+ core_models::ops::arith::f_sub(10, x),
+ ),
  )
  };
  {
- let _: tuple0 = {
- hax_li..."%string : string)) in
+ let _:..."%string : string)) in
   f_add (x) ((12 : t_u8)).
 
 

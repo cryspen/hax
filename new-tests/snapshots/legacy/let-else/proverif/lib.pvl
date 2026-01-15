@@ -39,7 +39,9 @@ letfun tests__legacy__let_else__let_else(opt : Option) =
 
 letfun tests__legacy__let_else__let_else_different_type(opt : Option) =
        let Some(nat_to_bitstring(x)) = opt in (
-         let hoist1 = (Some(nat_to_bitstring(core__ops__arith__f_add(x, 1)))) in
+         let hoist1 = (
+           Some(nat_to_bitstring(core_models__ops__arith__f_add(x, 1)))
+         ) in
          tests__legacy__let_else__let_else(hoist1)
        )
        else todo return;.

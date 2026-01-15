@@ -94,7 +94,7 @@ letfun tests__legacy__literals__math_integers(x : hax_lib__int__t_Int) =
          )
        ) in
        let wildcard20: bitstring = (
-         core__cmp__f_gt(
+         core_models__cmp__f_gt(
            hax_lib__int__impl_Int__e_unsafe_from_str(
              "-340282366920938463463374607431768211455000"
            ),
@@ -103,15 +103,15 @@ letfun tests__legacy__literals__math_integers(x : hax_lib__int__t_Int) =
            )
          )
        ) in
-       let wildcard19: bitstring = (core__cmp__f_lt(x, x)) in
-       let wildcard18: bitstring = (core__cmp__f_ge(x, x)) in
-       let wildcard17: bitstring = (core__cmp__f_le(x, x)) in
-       let wildcard16: bitstring = (core__cmp__f_ne(x, x)) in
-       let wildcard15: bitstring = (core__cmp__f_eq(x, x)) in
-       let wildcard14: bitstring = (core__ops__arith__f_add(x, x)) in
-       let wildcard13: bitstring = (core__ops__arith__f_sub(x, x)) in
-       let wildcard12: bitstring = (core__ops__arith__f_mul(x, x)) in
-       let wildcard11: bitstring = (core__ops__arith__f_div(x, x)) in
+       let wildcard19: bitstring = (core_models__cmp__f_lt(x, x)) in
+       let wildcard18: bitstring = (core_models__cmp__f_ge(x, x)) in
+       let wildcard17: bitstring = (core_models__cmp__f_le(x, x)) in
+       let wildcard16: bitstring = (core_models__cmp__f_ne(x, x)) in
+       let wildcard15: bitstring = (core_models__cmp__f_eq(x, x)) in
+       let wildcard14: bitstring = (core_models__ops__arith__f_add(x, x)) in
+       let wildcard13: bitstring = (core_models__ops__arith__f_sub(x, x)) in
+       let wildcard12: bitstring = (core_models__ops__arith__f_mul(x, x)) in
+       let wildcard11: bitstring = (core_models__ops__arith__f_div(x, x)) in
        let wildcard10: bitstring:nat = (hax_lib__int__impl_Int__to_i16(x)) in
        let wildcard9: bitstring:nat = (hax_lib__int__impl_Int__to_i32(x)) in
        let wildcard8: bitstring:nat = (hax_lib__int__impl_Int__to_i64(x)) in
@@ -123,7 +123,7 @@ letfun tests__legacy__literals__math_integers(x : hax_lib__int__t_Int) =
        let wildcard2: bitstring:nat = (hax_lib__int__impl_Int__to_u128(x)) in
        let wildcard1: bitstring:nat = (hax_lib__int__impl_Int__to_usize(x)) in
        hax_lib__int__impl_Int__to_u8(
-         core__ops__arith__f_add(x, core__ops__arith__f_mul(x, x))
+         core_models__ops__arith__f_add(x, core_models__ops__arith__f_mul(x, x))
        ).
 
 letfun tests__legacy__literals__panic_with_msg(wildcard22 : bitstring) =
@@ -162,65 +162,89 @@ letfun tests__legacy__literals__casts(
          x8 : nat, x16 : nat, x32 : nat, x64 : nat, xs : nat
        ) =
        let wildcard40: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard39: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard38: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard37: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard36: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard35: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard34: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )
        ) in
        let wildcard33: bitstring:nat = (
-         core__ops__arith__f_add(
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(core__ops__arith__f_add(x8, x16), x32), x64
+         core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(x8, x16), x32
+             ),
+             x64
            ),
            xs
          )

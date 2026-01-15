@@ -20,7 +20,7 @@ Record CallableViaDeref_record : Type :=
 #[export]
 Notation "'CallableViaDeref_CallableViaDeref_record'" := Build_CallableViaDeref_record.
 
-Instance t_Deref_363903850 : t_Deref ((t_CallableViaDeref)) :=
+Instance t_Deref_574994479 : t_Deref ((t_CallableViaDeref)) :=
   {
     implaabbcc_t_Deref_f_Target := unit -> bool;
     implaabbcc_t_Deref_f_deref := fun  (self : t_CallableViaDeref)=>
@@ -31,7 +31,6 @@ Instance t_Deref_363903850 : t_Deref ((t_CallableViaDeref)) :=
 Definition call_via_deref '(_ : unit) : bool :=
   (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
 Details: Primitive app of arity 0
-
 
 Note: the error was labeled with context `Coq printer generic printer`.
 (* ERROR_EXPR *)).

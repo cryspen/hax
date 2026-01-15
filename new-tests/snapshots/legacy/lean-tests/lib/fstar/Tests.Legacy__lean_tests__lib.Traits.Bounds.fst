@@ -1,7 +1,7 @@
 module Tests.Legacy__lean_tests__lib.Traits.Bounds
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_T1 (v_Self: Type0) = {
   f_f1_pre:v_Self -> Type0;
@@ -16,8 +16,8 @@ class t_T2 (v_Self: Type0) = {
 }
 
 class t_Test (v_Self: Type0) (v_T: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_1529261179564284687:t_T2 v_Self;
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_5255745353837564140:t_T1 v_T;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_T2 v_Self;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i1:t_T1 v_T;
   f_ff_test_pre:v_Self -> v_T -> Type0;
   f_ff_test_post:v_Self -> v_T -> usize -> Type0;
   f_ff_test:x0: v_Self -> x1: v_T
@@ -25,10 +25,10 @@ class t_Test (v_Self: Type0) (v_T: Type0) = {
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_Test v_Self v_T|} -> i._super_1529261179564284687
+let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_Test v_Self v_T|} -> i._super_i0
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_Test v_Self v_T|} -> i._super_5255745353837564140
+let _ = fun (v_Self:Type0) (v_T:Type0) {|i: t_Test v_Self v_T|} -> i._super_i1
 
 type t_S1 = | S1 : t_S1
 
@@ -53,7 +53,7 @@ let impl_T2_for_S2: t_T2 t_S2 =
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_2: t_Test t_S2 t_S1 =
   {
-    _super_1529261179564284687 = FStar.Tactics.Typeclasses.solve;
+    _super_i0 = FStar.Tactics.Typeclasses.solve;
     f_ff_test_pre = (fun (self: t_S2) (x: t_S1) -> true);
     f_ff_test_post = (fun (self: t_S2) (x: t_S1) (out: usize) -> true);
     f_ff_test

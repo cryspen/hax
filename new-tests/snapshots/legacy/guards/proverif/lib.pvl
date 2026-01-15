@@ -35,17 +35,17 @@ letfun bool_default() = false.
 
 letfun tests__legacy__guards__if_let_guard(x : Option) =
        rust_primitives__hax__failure(
-         "ExplicitRejection { reason: "a node of kind [Match_guard] have been found in the AST" }
-
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [Match_guard] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
          "(match (x) {
- core::option::Option_None => 0,
- core::option::Option_Some(v) if let core::result::Result_Ok(y) = v => y,
- core::option::Option_Some(core::result::Result_Err(y)) => y,
- _ => 1,
- })"
+ core_models::option::Option_None => 0,
+ core_models::option::Option_Some(
+ v,
+ ) if let core_models::result::Result_Ok(y) = v => y,
+ core_models::option::Option_Some(core_models::result:..."
        ).
 
 letfun tests__legacy__guards__equivalent(x : Option) =
@@ -59,33 +59,36 @@ letfun tests__legacy__guards__equivalent(x : Option) =
          nat_to_bitstring(y)
        )
        else None()
-       else None() in let Some(nat_to_bitstring(core__result__Result_Err(y))) = x in y
+       else None() in let Some(
+         nat_to_bitstring(core_models__result__Result_Err(y))
+       ) = x in y
        else 1.
 
 letfun tests__legacy__guards__multiple_guards(x : Option) =
        rust_primitives__hax__failure(
-         "ExplicitRejection { reason: "a node of kind [Match_guard] have been found in the AST" }
-
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [Match_guard] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
          "(match (x) {
- core::option::Option_None => 0,
- core::option::Option_Some(
- core::result::Result_Ok(v),
- ) if let core::option::Option_Some(1) = core::option::Option_Some(
- core::ops::arith::f_add(v, 1..."
+ core_models::option::Option_None => 0,
+ core_models::option::Option_Some(
+ core_models::result::Result_Ok(v),
+ ) if let core_models::option::Option_Some(1) = core_models::option::Option_..."
        ).
 
 letfun tests__legacy__guards__if_guard(x : Option) =
        rust_primitives__hax__failure(
-         "ExplicitRejection { reason: "a node of kind [Match_guard] have been found in the AST" }
-
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [Match_guard] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
          "(match (x) {
- core::option::Option_Some(v) if let true = core::cmp::f_gt(v, 0) => v,
+ core_models::option::Option_Some(
+ v,
+ ) if let true = core_models::cmp::f_gt(v, 0) => v,
  _ => 0,
  })"
        ).

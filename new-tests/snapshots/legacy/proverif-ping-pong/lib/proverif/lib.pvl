@@ -214,16 +214,17 @@ letfun tests__legacy__proverif_ping_pong__lib__b__read_ping_alt(
          msg : tests__legacy__proverif_ping_pong__lib__t_Message
        ) =
        rust_primitives__hax__failure(
-         "ExplicitRejection { reason: "a node of kind [Match_guard] have been found in the AST" }
-
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [Match_guard] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
          "(match (msg) {
  tests::legacy__proverif_ping_pong__lib::Message_Ping(
  received,
- ) if let true = core::cmp::f_eq(received, 42) => {
- core::result::Result_Ok(tests::legacy__proverif_ping_pong__lib::b:..."
+ ) if let true = core_models::cmp::f_eq(received, 42) => {
+ core_models::result::Result_Ok(
+ tests::legacy__proverif_pi..."
        ).
 
 letfun tests__legacy__proverif_ping_pong__lib__b__write_pong(
@@ -239,11 +240,11 @@ letfun tests__legacy__proverif_ping_pong__lib__b__write_pong(
        ).
 
 letfun tests__legacy__proverif_ping_pong__lib__a__init_a(prologue : bitstring) =
-       if core__cmp__f_lt(alloc__vec__impl_1__len(prologue), 1)
+       if core_models__cmp__f_lt(alloc__vec__impl_1__len(prologue), 1)
        then (tests__legacy__proverif_ping_pong__lib__a__t_A0_err())
        else (
          tests__legacy__proverif_ping_pong__lib__a__A0(
-           core__ops__index__f_index(prologue, 0)
+           core_models__ops__index__f_index(prologue, 0)
          )
        ).
 

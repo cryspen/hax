@@ -39,19 +39,22 @@ where
 {
     #[tracing::instrument(level = "trace", skip(self, write, id_table))]
     pub fn write(self, write: &mut impl std::io::Write, id_table: id_table::Table) {
+        let t = std::time::Instant::now();
         let mut write = zstd::stream::write::Encoder::new(write, 0).unwrap();
 
         id_table::WithTable::run(id_table, self, |with_table| {
-            serde_brief::to_writer(with_table, &mut write).unwrap();
+            ciborium::ser::into_writer(&with_table, &mut write).unwrap();
             write.finish().unwrap();
-        })
+        });
+        eprintln!("write={:?}", t.elapsed());
     }
     #[tracing::instrument(level = "trace", skip(reader))]
     pub fn read(reader: impl std::io::Read) -> (Self, id_table::Table) {
+        let t = std::time::Instant::now();
         let reader = zstd::stream::read::Decoder::new(reader).unwrap();
         let reader = std::io::BufReader::new(reader);
         let haxmeta = id_table::WithTable::<HaxMeta<Body>>::destruct(
-            serde_brief::from_reader(reader).unwrap(),
+            ciborium::de::from_reader(reader).unwrap(),
         );
         if haxmeta.0.hax_version != crate::HAX_VERSION {
             let version = haxmeta.0.hax_version;
@@ -60,6 +63,7 @@ where
                 "An invariant was broken: `*.haxmeta` was produced by hax version `{version}` while the current version of hax is `{expected}`. Please report this to https://github.com/hacspec/hax/issues."
             );
         };
+        eprintln!("read={:?}", t.elapsed());
         haxmeta
     }
 }

@@ -15,5 +15,5 @@ def Tests.Legacy__if_let.fun_with_if_let
   (_ : Rust_primitives.Hax.Tuple0)
   : Result u8
   := do
-  let x : (Core.Option.Option u8) ← (pure (Core.Option.Option.Some (5 : u8)));
-  (match x with | (Core.Option.Option.Some x) => do x | _ => do (7 : u8))
+  let x : (Core.Option.Option u8) := (Core.Option.Option.Some (5 : u8));
+  match x with | (Core.Option.Option.Some x) => (pure x) | _ => (pure (7 : u8))

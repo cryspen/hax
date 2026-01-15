@@ -28,12 +28,12 @@ Definition test1 '(_ : unit) : t_i32 :=
     (3 : t_i32).
 
 Definition test2 (b : bool) : t_i32 :=
-  let x := f_add ((1 : t_i32)) (if
-    (true : bool)
+  let x := if
+    b
   then
     (0 : t_i32)
   else
-    (1 : t_i32)) in
+    (9 : t_i32) in
   let y := (0 : t_i32) in
   let y := if
     (true : bool)

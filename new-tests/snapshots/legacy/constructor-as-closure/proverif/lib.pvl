@@ -84,10 +84,12 @@ reduc forall tests__legacy__constructor_as_closure__0: nat;
 (*****************************************)
 
 letfun tests__legacy__constructor_as_closure__impl_Test__test(x : Option) =
-       core__option__impl__map(x, tests__legacy__constructor_as_closure__Test).
+       core_models__option__impl__map(
+         x, tests__legacy__constructor_as_closure__Test
+       ).
 
 letfun tests__legacy__constructor_as_closure__impl_Context__test(x : Option) =
-       core__option__impl__map(
+       core_models__option__impl__map(
          x, tests__legacy__constructor_as_closure__Context_B
        ).
 

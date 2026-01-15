@@ -1,7 +1,7 @@
 module Tests.Legacy__cli__interface_only__src__lib
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// This item contains unsafe blocks and raw references, two features
 /// not supported by hax. Thanks to the `-i` flag and the `+:`
@@ -17,11 +17,11 @@ let f (x: u8)
         fun r ->
           let r:t_Array u8 (mk_usize 4) = r in
           (r.[ mk_usize 0 ] <: u8) >. x) =
-  Rust_primitives.Hax.failure "ExplicitRejection { reason: \"a node of kind [Raw_pointer] have been found in the AST\" }\n\n\nNote: the error was labeled with context `reject_RawOrMutPointer`.\n"
-    "{\n let y: raw_pointer!() = { cast(x) };\n {\n let _: tuple0 = {\n {\n let _: tuple0 = {\n {\n let _: tuple0 = {\n std::io::stdio::e_print({\n let args: [core::fmt::rt::t_Argument<\n lifetime!(something),\n >; 1..."
+  Rust_primitives.Hax.failure "Explicit rejection by a phase in the Hax engine:\na node of kind [Raw_pointer] have been found in the AST\n\nNote: the error was labeled with context `reject_RawOrMutPointer`.\n"
+    "{\n let y: raw_pointer!() = { cast(x) };\n {\n let _: tuple0 = {\n {\n let _: tuple0 = {\n {\n let _: tuple0 = {\n std::io::stdio::e_print({\n let args: tuple1<&int> = { Tuple1(&(deref(y))) };\n {\n let args: [c..."
 
-(* item error backend: ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
-
+(* item error backend: Explicit rejection by a phase in the Hax engine:
+a node of kind [Raw_pointer] have been found in the AST
 
 Note: the error was labeled with context `reject_RawOrMutPointer`.
 
@@ -97,7 +97,7 @@ type t_Bar = | Bar : t_Bar
 /// dropped. This might be a bit surprising: see
 /// https://github.com/hacspec/hax/issues/616.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Convert.t_From t_Bar Prims.unit =
+let impl: Core_models.Convert.t_From t_Bar Prims.unit =
   {
     f_from_pre = (fun ((): Prims.unit) -> true);
     f_from_post = (fun ((): Prims.unit) (out: t_Bar) -> true);
@@ -108,7 +108,7 @@ let f_from__impl_1__from (_: u8) : t_Bar = Bar <: t_Bar
 
 /// If you need to drop the body of a method, please hoist it:
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Convert.t_From t_Bar u8 =
+let impl_1: Core_models.Convert.t_From t_Bar u8 =
   {
     f_from_pre = (fun (x: u8) -> true);
     f_from_post = (fun (x: u8) (out: t_Bar) -> true);
@@ -118,7 +118,7 @@ let impl_1: Core.Convert.t_From t_Bar u8 =
 type t_Holder (v_T: Type0) = { f_value:Alloc.Vec.t_Vec v_T Alloc.Alloc.t_Global }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_2 (#v_T: Type0) : Core.Convert.t_From (t_Holder v_T) Prims.unit =
+let impl_2 (#v_T: Type0) : Core_models.Convert.t_From (t_Holder v_T) Prims.unit =
   {
     f_from_pre = (fun ((): Prims.unit) -> true);
     f_from_post = (fun ((): Prims.unit) (out: t_Holder v_T) -> true);
@@ -128,7 +128,7 @@ let impl_2 (#v_T: Type0) : Core.Convert.t_From (t_Holder v_T) Prims.unit =
 type t_Param (v_SIZE: usize) = { f_value:t_Array u8 v_SIZE }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_3 (v_SIZE: usize) : Core.Convert.t_From (t_Param v_SIZE) Prims.unit =
+let impl_3 (v_SIZE: usize) : Core_models.Convert.t_From (t_Param v_SIZE) Prims.unit =
   {
     f_from_pre = (fun ((): Prims.unit) -> true);
     f_from_post = (fun ((): Prims.unit) (out: t_Param v_SIZE) -> true);
@@ -175,7 +175,7 @@ let impl_T2_for_u8: t_T2 u8 =
 
 let rec padlen (b: t_Slice u8) (n: usize)
     : Prims.Pure usize
-      (requires (Core.Slice.impl__len #u8 b <: usize) >=. n)
+      (requires (Core_models.Slice.impl__len #u8 b <: usize) >=. n)
       (ensures
         fun out ->
           let out:usize = out in

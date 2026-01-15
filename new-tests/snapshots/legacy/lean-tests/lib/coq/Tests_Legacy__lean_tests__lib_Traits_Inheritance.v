@@ -50,31 +50,31 @@ Record S_record : Type :=
 #[export]
 Notation "'S_S_record'" := Build_S_record.
 
-Instance t_T1_165350041 : t_T1 ((t_S)) :=
+Instance t_T1_60778251 : t_T1 ((t_S)) :=
   {
     implaabbcc_t_T1_f_f1 := fun  (self : t_S)=>
       (1 : t_usize);
   }.
 
-Instance t_T2_268319757 : t_T2 ((t_S)) :=
+Instance t_T2_870295563 : t_T2 ((t_S)) :=
   {
     implaabbcc_t_T2_f_f2 := fun  (self : t_S)=>
       (2 : t_usize);
   }.
 
-Instance t_T3_12218887 : t_T3 ((t_S)) :=
+Instance t_T3_773621232 : t_T3 ((t_S)) :=
   {
     implaabbcc_t_T3_f_f3 := fun  (self : t_S)=>
       (3 : t_usize);
   }.
 
-Instance t_Tp1_484842391 : t_Tp1 ((t_S)) :=
+Instance t_Tp1_709526550 : t_Tp1 ((t_S)) :=
   {
     implaabbcc_t_Tp1_f_f1 := fun  (self : t_S)=>
       (10 : t_usize);
   }.
 
-Instance t_Tp2_1026213412 : t_Tp2 ((t_S)) :=
+Instance t_Tp2_663183267 : t_Tp2 ((t_S)) :=
   {
     implaabbcc_t_Tp2_f_fp2 := fun  (self : t_S)=>
       f_add (f_add (f_add (f_f1 (self)) (f_f1 (self))) (f_f2 (self))) (f_f3 (self));

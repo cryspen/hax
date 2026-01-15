@@ -1,7 +1,7 @@
 module Tests.Legacy__loops.For_loops
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// @fail(extraction): proverif(HAX0008)
 let range1 (_: Prims.unit) : usize =
@@ -43,27 +43,27 @@ let range2 (n: usize) : usize =
 let composed_range (n: usize) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Chain.t_Chain
-              (Core.Ops.Range.t_Range usize) (Core.Ops.Range.t_Range usize))
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Iter.Adapters.Chain.t_Chain
+              (Core_models.Ops.Range.t_Range usize) (Core_models.Ops.Range.t_Range usize))
           #FStar.Tactics.Typeclasses.solve
-          (Core.Iter.Traits.Iterator.f_chain #(Core.Ops.Range.t_Range usize)
+          (Core_models.Iter.Traits.Iterator.f_chain #(Core_models.Ops.Range.t_Range usize)
               #FStar.Tactics.Typeclasses.solve
-              #(Core.Ops.Range.t_Range usize)
-              ({ Core.Ops.Range.f_start = mk_usize 0; Core.Ops.Range.f_end = n }
+              #(Core_models.Ops.Range.t_Range usize)
+              ({ Core_models.Ops.Range.f_start = mk_usize 0; Core_models.Ops.Range.f_end = n }
                 <:
-                Core.Ops.Range.t_Range usize)
+                Core_models.Ops.Range.t_Range usize)
               ({
-                  Core.Ops.Range.f_start = n +! mk_usize 10 <: usize;
-                  Core.Ops.Range.f_end = n +! mk_usize 50 <: usize
+                  Core_models.Ops.Range.f_start = n +! mk_usize 10 <: usize;
+                  Core_models.Ops.Range.f_end = n +! mk_usize 50 <: usize
                 }
                 <:
-                Core.Ops.Range.t_Range usize)
+                Core_models.Ops.Range.t_Range usize)
             <:
-            Core.Iter.Adapters.Chain.t_Chain (Core.Ops.Range.t_Range usize)
-              (Core.Ops.Range.t_Range usize))
+            Core_models.Iter.Adapters.Chain.t_Chain (Core_models.Ops.Range.t_Range usize)
+              (Core_models.Ops.Range.t_Range usize))
         <:
-        Core.Iter.Adapters.Chain.t_Chain (Core.Ops.Range.t_Range usize)
-          (Core.Ops.Range.t_Range usize))
+        Core_models.Iter.Adapters.Chain.t_Chain (Core_models.Ops.Range.t_Range usize)
+          (Core_models.Ops.Range.t_Range usize))
       acc
       (fun acc i ->
           let acc:usize = acc in
@@ -76,18 +76,18 @@ let composed_range (n: usize) : usize =
 let rev_range (n: usize) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Rev.t_Rev
-            (Core.Ops.Range.t_Range usize))
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Iter.Adapters.Rev.t_Rev
+            (Core_models.Ops.Range.t_Range usize))
           #FStar.Tactics.Typeclasses.solve
-          (Core.Iter.Traits.Iterator.f_rev #(Core.Ops.Range.t_Range usize)
+          (Core_models.Iter.Traits.Iterator.f_rev #(Core_models.Ops.Range.t_Range usize)
               #FStar.Tactics.Typeclasses.solve
-              ({ Core.Ops.Range.f_start = mk_usize 0; Core.Ops.Range.f_end = n }
+              ({ Core_models.Ops.Range.f_start = mk_usize 0; Core_models.Ops.Range.f_end = n }
                 <:
-                Core.Ops.Range.t_Range usize)
+                Core_models.Ops.Range.t_Range usize)
             <:
-            Core.Iter.Adapters.Rev.t_Rev (Core.Ops.Range.t_Range usize))
+            Core_models.Iter.Adapters.Rev.t_Rev (Core_models.Ops.Range.t_Range usize))
         <:
-        Core.Iter.Adapters.Rev.t_Rev (Core.Ops.Range.t_Range usize))
+        Core_models.Iter.Adapters.Rev.t_Rev (Core_models.Ops.Range.t_Range usize))
       acc
       (fun acc i ->
           let acc:usize = acc in
@@ -99,9 +99,9 @@ let rev_range (n: usize) : usize =
 /// @fail(extraction): proverif(HAX0008, HAX0008)
 let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
-  let chunks:Core.Slice.Iter.t_ChunksExact usize =
-    Core.Slice.impl__chunks_exact #usize
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
+  let chunks:Core_models.Slice.Iter.t_ChunksExact usize =
+    Core_models.Slice.impl__chunks_exact #usize
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           arr
         <:
@@ -109,27 +109,28 @@ let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global
       v_CHUNK_LEN
   in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_ChunksExact
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Slice.Iter.t_ChunksExact
             usize)
           #FStar.Tactics.Typeclasses.solve
-          (Core.Clone.f_clone #(Core.Slice.Iter.t_ChunksExact usize)
+          (Core_models.Clone.f_clone #(Core_models.Slice.Iter.t_ChunksExact usize)
               #FStar.Tactics.Typeclasses.solve
               chunks
             <:
-            Core.Slice.Iter.t_ChunksExact usize)
+            Core_models.Slice.Iter.t_ChunksExact usize)
         <:
-        Core.Slice.Iter.t_ChunksExact usize)
+        Core_models.Slice.Iter.t_ChunksExact usize)
       acc
       (fun acc chunk ->
           let acc:usize = acc in
           let chunk:t_Slice usize = chunk in
           let mean:usize = mk_usize 0 in
           let mean:usize =
-            Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(t_Slice usize)
+            Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Slice
+                    usize)
                   #FStar.Tactics.Typeclasses.solve
                   chunk
                 <:
-                Core.Slice.Iter.t_Iter usize)
+                Core_models.Slice.Iter.t_Iter usize)
               mean
               (fun mean item ->
                   let mean:usize = mean in
@@ -140,11 +141,12 @@ let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global
           acc)
   in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(t_Slice usize)
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Slice
+            usize)
           #FStar.Tactics.Typeclasses.solve
-          (Core.Slice.Iter.impl_88__remainder #usize chunks <: t_Slice usize)
+          (Core_models.Slice.Iter.impl_88__remainder #usize chunks <: t_Slice usize)
         <:
-        Core.Slice.Iter.t_Iter usize)
+        Core_models.Slice.Iter.t_Iter usize)
       acc
       (fun acc item ->
           let acc:usize = acc in
@@ -157,19 +159,19 @@ let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global
 let iterator (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_Iter
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Slice.Iter.t_Iter
             usize)
           #FStar.Tactics.Typeclasses.solve
-          (Core.Slice.impl__iter #usize
-              (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
+          (Core_models.Slice.impl__iter #usize
+              (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
                   #FStar.Tactics.Typeclasses.solve
                   arr
                 <:
                 t_Slice usize)
             <:
-            Core.Slice.Iter.t_Iter usize)
+            Core_models.Slice.Iter.t_Iter usize)
         <:
-        Core.Slice.Iter.t_Iter usize)
+        Core_models.Slice.Iter.t_Iter usize)
       acc
       (fun acc item ->
           let acc:usize = acc in
@@ -183,63 +185,71 @@ let iterator (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
 let nested (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Slice.Iter.t_Iter
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Slice.Iter.t_Iter
             usize)
           #FStar.Tactics.Typeclasses.solve
-          (Core.Slice.impl__iter #usize
-              (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
+          (Core_models.Slice.impl__iter #usize
+              (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
                   #FStar.Tactics.Typeclasses.solve
                   arr
                 <:
                 t_Slice usize)
             <:
-            Core.Slice.Iter.t_Iter usize)
+            Core_models.Slice.Iter.t_Iter usize)
         <:
-        Core.Slice.Iter.t_Iter usize)
+        Core_models.Slice.Iter.t_Iter usize)
       acc
       (fun acc item ->
           let acc:usize = acc in
           let item:usize = item in
-          Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Rev.t_Rev
-                  (Core.Ops.Range.t_Range usize))
+          Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Iter.Adapters.Rev.t_Rev
+                  (Core_models.Ops.Range.t_Range usize))
                 #FStar.Tactics.Typeclasses.solve
-                (Core.Iter.Traits.Iterator.f_rev #(Core.Ops.Range.t_Range usize)
+                (Core_models.Iter.Traits.Iterator.f_rev #(Core_models.Ops.Range.t_Range usize)
                     #FStar.Tactics.Typeclasses.solve
-                    ({ Core.Ops.Range.f_start = mk_usize 0; Core.Ops.Range.f_end = item }
+                    ({
+                        Core_models.Ops.Range.f_start = mk_usize 0;
+                        Core_models.Ops.Range.f_end = item
+                      }
                       <:
-                      Core.Ops.Range.t_Range usize)
+                      Core_models.Ops.Range.t_Range usize)
                   <:
-                  Core.Iter.Adapters.Rev.t_Rev (Core.Ops.Range.t_Range usize))
+                  Core_models.Iter.Adapters.Rev.t_Rev (Core_models.Ops.Range.t_Range usize))
               <:
-              Core.Iter.Adapters.Rev.t_Rev (Core.Ops.Range.t_Range usize))
+              Core_models.Iter.Adapters.Rev.t_Rev (Core_models.Ops.Range.t_Range usize))
             acc
             (fun acc i ->
                 let acc:usize = acc in
                 let i:usize = i in
                 let acc:usize = acc +! mk_usize 1 in
-                Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Zip.t_Zip
-                          (Core.Slice.Iter.t_Iter usize) (Core.Ops.Range.t_Range usize))
+                Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter
+                      #(Core_models.Iter.Adapters.Zip.t_Zip (Core_models.Slice.Iter.t_Iter usize)
+                          (Core_models.Ops.Range.t_Range usize))
                       #FStar.Tactics.Typeclasses.solve
-                      (Core.Iter.Traits.Iterator.f_zip #(Core.Slice.Iter.t_Iter usize)
+                      (Core_models.Iter.Traits.Iterator.f_zip #(Core_models.Slice.Iter.t_Iter usize)
                           #FStar.Tactics.Typeclasses.solve
-                          #(Core.Ops.Range.t_Range usize)
-                          (Core.Slice.impl__iter #usize
-                              (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
+                          #(Core_models.Ops.Range.t_Range usize)
+                          (Core_models.Slice.impl__iter #usize
+                              (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize
+                                      Alloc.Alloc.t_Global)
                                   #FStar.Tactics.Typeclasses.solve
                                   arr
                                 <:
                                 t_Slice usize)
                             <:
-                            Core.Slice.Iter.t_Iter usize)
-                          ({ Core.Ops.Range.f_start = mk_usize 4; Core.Ops.Range.f_end = i }
+                            Core_models.Slice.Iter.t_Iter usize)
+                          ({
+                              Core_models.Ops.Range.f_start = mk_usize 4;
+                              Core_models.Ops.Range.f_end = i
+                            }
                             <:
-                            Core.Ops.Range.t_Range usize)
+                            Core_models.Ops.Range.t_Range usize)
                         <:
-                        Core.Iter.Adapters.Zip.t_Zip (Core.Slice.Iter.t_Iter usize)
-                          (Core.Ops.Range.t_Range usize))
+                        Core_models.Iter.Adapters.Zip.t_Zip (Core_models.Slice.Iter.t_Iter usize)
+                          (Core_models.Ops.Range.t_Range usize))
                     <:
-                    Core.Iter.Adapters.Zip.t_Zip (Core.Slice.Iter.t_Iter usize)
-                      (Core.Ops.Range.t_Range usize))
+                    Core_models.Iter.Adapters.Zip.t_Zip (Core_models.Slice.Iter.t_Iter usize)
+                      (Core_models.Ops.Range.t_Range usize))
                   acc
                   (fun acc j ->
                       let acc:usize = acc in
@@ -254,7 +264,7 @@ let nested (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
 let pattern (arr: Alloc.Vec.t_Vec (usize & usize) Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Alloc.Vec.t_Vec
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Alloc.Vec.t_Vec
               (usize & usize) Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           arr
@@ -263,7 +273,7 @@ let pattern (arr: Alloc.Vec.t_Vec (usize & usize) Alloc.Alloc.t_Global) : usize 
       acc
       (fun acc temp_1_ ->
           let acc:usize = acc in
-          let x, y:(usize & usize) = temp_1_ in
+          let (x: usize), (y: usize) = temp_1_ in
           acc +! (x *! y <: usize) <: usize)
   in
   acc
@@ -272,28 +282,28 @@ let pattern (arr: Alloc.Vec.t_Vec (usize & usize) Alloc.Alloc.t_Global) : usize 
 let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
-    Core.Iter.Traits.Iterator.f_fold (Core.Iter.Traits.Collect.f_into_iter #(Core.Iter.Adapters.Enumerate.t_Enumerate
-            (Core.Slice.Iter.t_Chunks usize))
+    Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Iter.Adapters.Enumerate.t_Enumerate
+            (Core_models.Slice.Iter.t_Chunks usize))
           #FStar.Tactics.Typeclasses.solve
-          (Core.Iter.Traits.Iterator.f_enumerate #(Core.Slice.Iter.t_Chunks usize)
+          (Core_models.Iter.Traits.Iterator.f_enumerate #(Core_models.Slice.Iter.t_Chunks usize)
               #FStar.Tactics.Typeclasses.solve
-              (Core.Slice.impl__chunks #usize
-                  (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
+              (Core_models.Slice.impl__chunks #usize
+                  (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
                       #FStar.Tactics.Typeclasses.solve
                       arr
                     <:
                     t_Slice usize)
                   (mk_usize 4)
                 <:
-                Core.Slice.Iter.t_Chunks usize)
+                Core_models.Slice.Iter.t_Chunks usize)
             <:
-            Core.Iter.Adapters.Enumerate.t_Enumerate (Core.Slice.Iter.t_Chunks usize))
+            Core_models.Iter.Adapters.Enumerate.t_Enumerate (Core_models.Slice.Iter.t_Chunks usize))
         <:
-        Core.Iter.Adapters.Enumerate.t_Enumerate (Core.Slice.Iter.t_Chunks usize))
+        Core_models.Iter.Adapters.Enumerate.t_Enumerate (Core_models.Slice.Iter.t_Chunks usize))
       acc
       (fun acc temp_1_ ->
           let acc:usize = acc in
-          let i, chunk:(usize & t_Slice usize) = temp_1_ in
+          let (i: usize), (chunk: t_Slice usize) = temp_1_ in
           Rust_primitives.Hax.Folds.fold_enumerated_slice chunk
             (fun acc temp_1_ ->
                 let acc:usize = acc in
@@ -302,7 +312,7 @@ let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
             acc
             (fun acc temp_1_ ->
                 let acc:usize = acc in
-                let j, x:(usize & usize) = temp_1_ in
+                let (j: usize), (x: usize) = temp_1_ in
                 (i +! j <: usize) +! x <: usize)
           <:
           usize)

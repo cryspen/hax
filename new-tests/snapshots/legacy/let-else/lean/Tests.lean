@@ -15,15 +15,17 @@ def Tests.Legacy__let_else.let_else
   (opt : (Core.Option.Option u32))
   : Result Bool
   := do
-  (match opt with | (Core.Option.Option.Some x) => do true | _ => do false)
+  match opt with
+    | (Core.Option.Option.Some x) => (pure true)
+    | _ => (pure false)
 
 def Tests.Legacy__let_else.let_else_different_type
   (opt : (Core.Option.Option u32))
   : Result Bool
   := do
-  (match opt with
+  match opt with
     | (Core.Option.Option.Some x)
-      => do
-        (← Tests.Legacy__let_else.let_else
-            (Core.Option.Option.Some (← x +? (1 : u32))))
-    | _ => do false)
+      =>
+        (Tests.Legacy__let_else.let_else
+          (Core.Option.Option.Some (← (x +? (1 : u32)))))
+    | _ => (pure false)

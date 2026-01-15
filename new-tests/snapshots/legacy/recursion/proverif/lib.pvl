@@ -34,11 +34,11 @@ letfun bool_default() = false.
 (*****************************************)
 
 letfun tests__legacy__recursion__f(n : nat) =
-       if core__cmp__f_eq(n, 0)
+       if core_models__cmp__f_eq(n, 0)
        then (0)
        else (
-         core__ops__arith__f_add(
-           n, tests__legacy__recursion__f(core__ops__arith__f_sub(n, 1))
+         core_models__ops__arith__f_add(
+           n, tests__legacy__recursion__f(core_models__ops__arith__f_sub(n, 1))
          )
        ).
 

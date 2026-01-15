@@ -18,40 +18,25 @@ def Tests.Legacy__never_type.False
   (x : Tests.Legacy__never_type.False)
   : Result Rust_primitives.Hax.Never
   := do
-  (match x with )
+  match x with 
 
 def Tests.Legacy__never_type.never
   (h : Tests.Legacy__never_type.False)
   : Result Rust_primitives.Hax.Never
   := do
-  (match h with )
-
-def Tests.Legacy__never_type.test.panic_cold_explicit
-  (_ : Rust_primitives.Hax.Tuple0)
-  : Result Rust_primitives.Hax.Never
-  := do
-  (← Core.Panicking.panic_explicit Rust_primitives.Hax.Tuple0.mk)
+  match h with 
 
 def Tests.Legacy__never_type.test (b : Bool) : Result u8 := do
-  let _ ← (pure
-    (← if b then do
-      (← Rust_primitives.Hax.never_to_any
-          (← Tests.Legacy__never_type.test.panic_cold_explicit
-              Rust_primitives.Hax.Tuple0.mk))
-    else do
-      Rust_primitives.Hax.Tuple0.mk));
-  (3 : u8)
-
-def Tests.Legacy__never_type.any.panic_cold_explicit
-  (_ : Rust_primitives.Hax.Tuple0)
-  : Result Rust_primitives.Hax.Never
-  := do
-  (← Core.Panicking.panic_explicit Rust_primitives.Hax.Tuple0.mk)
+  let _ ←
+    if b then
+      (Rust_primitives.Hax.never_to_any
+        (← (Core.Panicking.panic "explicit panic")))
+    else
+      (pure Rust_primitives.Hax.Tuple0.mk);
+  (pure (3 : u8))
 
 def Tests.Legacy__never_type.any
   (T : Type) (_ : Rust_primitives.Hax.Tuple0)
   : Result T
   := do
-  (← Rust_primitives.Hax.never_to_any
-      (← Tests.Legacy__never_type.any.panic_cold_explicit
-          Rust_primitives.Hax.Tuple0.mk))
+  (Rust_primitives.Hax.never_to_any (← (Core.Panicking.panic "explicit panic")))

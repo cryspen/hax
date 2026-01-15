@@ -378,7 +378,7 @@ letfun tests__legacy__cyclic_modules__rec__g1(
 letfun tests__legacy__cyclic_modules__bundle_variant_constructor_a__impl__test(
          x : Option
        ) =
-       core__option__impl__map(
+       core_models__option__impl__map(
          x,
          tests__legacy__cyclic_modules__bundle_variant_constructor_a__Context_A
        ).
@@ -399,10 +399,10 @@ letfun tests__legacy__cyclic_modules__bundle_typ_a__t_T1_cast_to_repr(
        let tests__legacy__cyclic_modules__bundle_typ_a__T1_T1() = x in 0.
 
 letfun tests__legacy__cyclic_modules__bundle_rec1_same_name__f(x : nat) =
-       if core__cmp__f_gt(x, 0)
+       if core_models__cmp__f_gt(x, 0)
        then
          (tests__legacy__cyclic_modules__bundle_rec1_same_name__f__from__rec1_same_name(
-            core__ops__arith__f_sub(x, 1)
+            core_models__ops__arith__f_sub(x, 1)
           ))
        else (0).
 

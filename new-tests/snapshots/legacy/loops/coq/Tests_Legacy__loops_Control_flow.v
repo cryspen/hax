@@ -98,14 +98,14 @@ Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
  (loop {
  |pow| {
- (if core::cmp::f_lt(pow, 1000000) {
+ (if core_models::cmp::f_lt(pow, 1000000) {
  {
- let pow: int = { core::ops::arith::f_mul(pow, 2) };
+ let pow: int = { core_models::ops::arith::f_mul(pow, 2) };
  {
  let pow: int = {
- (if core::cmp::f_lt(pow, x) {
+ (if core_models::cmp::f_lt(pow, x) {
  {
- let pow: int = { core::ops::ari..."%string : string)) in
+ let pow: i..."%string : string)) in
   pow.
 
 Record M_record : Type :=
@@ -182,8 +182,8 @@ Definition continue_only (x : t_Slice t_i32) : (t_i32*unit) :=
     let _ := if
       f_eq (i) ((0 : t_i32))
     then
-      never_to_any (failure (("ExplicitRejection { reason: "a node of kind [Continue] have been found in the AST" }
-
+      never_to_any (failure (("Explicit rejection by a phase in the Hax engine:
+a node of kind [Continue] have been found in the AST
 
 Note: the error was labeled with context `reject_Continue`.
 "%string : string)) (("continue;"%string : string)))
@@ -197,8 +197,8 @@ Definition continue_and_break (x : t_Slice t_i32) : (t_i32*unit) :=
     let _ := if
       f_eq (i) ((0 : t_i32))
     then
-      never_to_any (failure (("ExplicitRejection { reason: "a node of kind [Continue] have been found in the AST" }
-
+      never_to_any (failure (("Explicit rejection by a phase in the Hax engine:
+a node of kind [Continue] have been found in the AST
 
 Note: the error was labeled with context `reject_Continue`.
 "%string : string)) (("continue;"%string : string)))

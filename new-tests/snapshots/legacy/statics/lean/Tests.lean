@@ -11,10 +11,11 @@ open Std.Tactic
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
-def Tests.Legacy__statics.FOO : usize := 0
+def Tests.Legacy__statics.FOO : usize :=
+  Result.of_isOk (do (pure (0 : usize))) (by rfl)
 
 def Tests.Legacy__statics.get_foo
   (_ : Rust_primitives.Hax.Tuple0)
   : Result usize
   := do
-  Tests.Legacy__statics.FOO
+  (pure Tests.Legacy__statics.FOO)

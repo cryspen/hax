@@ -1,7 +1,7 @@
 module Tests.Legacy__proverif_fn_to_letfun
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_A = {
   f_x:usize;

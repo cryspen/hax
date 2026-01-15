@@ -1,7 +1,7 @@
 module Tests.Legacy__traits.Interlaced_consts_types
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Bar (v_FooConst: usize) (v_FooType: Type0) =
   | Bar : t_Array v_FooType v_FooConst -> t_Bar v_FooConst v_FooType

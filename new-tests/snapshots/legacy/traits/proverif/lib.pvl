@@ -270,7 +270,7 @@ letfun tests__legacy__traits__implement_arithmetic_trait__test(
          x : tests__legacy__traits__implement_arithmetic_trait__t_Wrapped,
          y : tests__legacy__traits__implement_arithmetic_trait__t_Wrapped
        ) =
-       core__ops__arith__f_add(x, y).
+       core_models__ops__arith__f_add(x, y).
 
 letfun tests__legacy__traits__for_clauses__e_f(x : v_X) =
        let wildcard3: bitstring = (tests__legacy__traits__for_clauses__f_to_t(x)
@@ -281,13 +281,13 @@ letfun tests__legacy__traits__impl_2__method(x : v_T) =
        tests__legacy__traits__f_bar(x).
 
 letfun tests__legacy__traits__cclosure_iimpl_expr(it : v_I) =
-       core__iter__traits__iterator__f_collect(
-         core__iter__traits__iterator__f_map(it, |x|x)
+       core_models__iter__traits__iterator__f_collect(
+         core_models__iter__traits__iterator__f_map(it, |x|x)
        ).
 
 letfun tests__legacy__traits__cclosure_iimpl_expr_fngen(it : v_I, f : v_F) =
-       core__iter__traits__iterator__f_collect(
-         core__iter__traits__iterator__f_map(it, f)
+       core_models__iter__traits__iterator__f_collect(
+         core_models__iter__traits__iterator__f_map(it, f)
        ).
 
 letfun tests__legacy__traits__t_Error_cast_to_repr(
@@ -301,14 +301,16 @@ letfun tests__legacy__traits__impl_Error__for_application_callback(
        |wildcard4: bitstring|tests__legacy__traits__Error_Fail().
 
 letfun tests__legacy__traits__iter_option(x : Option) =
-       core__iter__traits__collect__f_into_iter(core__option__impl__as_ref(x)).
+       core_models__iter__traits__collect__f_into_iter(
+         core_models__option__impl__as_ref(x)
+       ).
 
 letfun tests__legacy__traits__uuse_iimpl_trait(wildcard7 : bitstring) =
        let iter = (
          tests__legacy__traits__iter_option(Some(bool_to_bitstring(false)))
        ) in
-       let (tmp0: core__option__t_IntoIter_of_bool, v_out: Option) = (
-         core__iter__traits__iterator__f_next(iter)
+       let (tmp0: core_models__option__t_IntoIter_of_bool, v_out: Option) = (
+         core_models__iter__traits__iterator__f_next(iter)
        ) in
        let iter = (tmp0) in
        let wildcard6: bitstring = (v_out) in
@@ -335,12 +337,13 @@ letfun tests__legacy__traits__for_clauses__issue_495___original_function_from_49
          list : bitstring
        ) =
        let e_indices:bitstring = (
-         core__iter__traits__iterator__f_collect(
-           core__iter__traits__iterator__f_filter(
-             core__ops__range__Range(0,5),
+         core_models__iter__traits__iterator__f_collect(
+           core_models__iter__traits__iterator__f_filter(
+             core_models__ops__range__Range(0,5),
              |i|let (wildcard10: bitstring, v_out: bool) = (
-               core__iter__traits__iterator__f_any(
-                 core__slice__impl__iter(list), |n|core__cmp__f_eq(n, i)
+               core_models__iter__traits__iterator__f_any(
+                 core_models__slice__impl__iter(list),
+                 |n|core_models__cmp__f_eq(n, i)
                )
              ) in
              v_out
@@ -352,15 +355,17 @@ letfun tests__legacy__traits__for_clauses__issue_495___original_function_from_49
 letfun tests__legacy__traits__for_clauses__issue_495___minimized_1_(
          list : bitstring
        ) =
-       core__iter__traits__iterator__f_collect(
-         core__iter__traits__iterator__f_filter(
-           core__ops__range__Range(0,5), |wildcard11: bitstring|true
+       core_models__iter__traits__iterator__f_collect(
+         core_models__iter__traits__iterator__f_filter(
+           core_models__ops__range__Range(0,5), |wildcard11: bitstring|true
          )
        ).
 
 letfun tests__legacy__traits__for_clauses__issue_495___minimized_2_(
-         it : core__iter__adapters__filter__t_Filter_of_core__ops__range__t_Range_of_nat_bitstring
+         it : core_models__iter__adapters__filter__t_Filter_of_core_models__ops__range__t_Range_of_nat_bitstring
        ) =
-       let e_indices:bitstring = (core__iter__traits__iterator__f_collect(it)) in
+       let e_indices:bitstring = (
+         core_models__iter__traits__iterator__f_collect(it)
+       ) in
        ().
 

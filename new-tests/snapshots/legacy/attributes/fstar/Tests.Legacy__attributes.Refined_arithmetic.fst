@@ -1,12 +1,12 @@
 module Tests.Legacy__attributes.Refined_arithmetic
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Foo = | Foo : u8 -> t_Foo
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl: Core.Ops.Arith.t_Add t_Foo t_Foo =
+let impl: Core_models.Ops.Arith.t_Add t_Foo t_Foo =
   {
     f_Output = t_Foo;
     f_add_pre = (fun (self_: t_Foo) (rhs: t_Foo) -> self_._0 <. (mk_u8 255 -! rhs._0 <: u8));
@@ -15,7 +15,7 @@ let impl: Core.Ops.Arith.t_Add t_Foo t_Foo =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Ops.Arith.t_Mul t_Foo t_Foo =
+let impl_1: Core_models.Ops.Arith.t_Mul t_Foo t_Foo =
   {
     f_Output = t_Foo;
     f_mul_pre

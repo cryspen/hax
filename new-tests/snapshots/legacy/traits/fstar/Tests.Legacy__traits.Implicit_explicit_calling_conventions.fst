@@ -1,7 +1,7 @@
 module Tests.Legacy__traits.Implicit_explicit_calling_conventions
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Type (v_TypeArg: Type0) (v_ConstArg: usize) = { f_field:t_Array v_TypeArg v_ConstArg }
 
@@ -168,12 +168,10 @@ let associated_function_caller
   ()
 
 class t_SubTrait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]_super_13222719583123837337:t_Trait v_Self
-    v_TypeArg
-    v_ConstArg;
+  [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait v_Self v_TypeArg v_ConstArg;
   f_AssocType:Type0;
-  f_AssocType_6861958164448569051:t_Trait f_AssocType v_TypeArg v_ConstArg
+  f_AssocType_i0:t_Trait f_AssocType v_TypeArg v_ConstArg
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let _ = fun (v_Self:Type0) (v_TypeArg:Type0) (v_ConstArg:usize) {|i: t_SubTrait v_Self v_TypeArg v_ConstArg|} -> i._super_13222719583123837337
+let _ = fun (v_Self:Type0) (v_TypeArg:Type0) (v_ConstArg:usize) {|i: t_SubTrait v_Self v_TypeArg v_ConstArg|} -> i._super_i0

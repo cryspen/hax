@@ -99,8 +99,8 @@ reduc forall tests__legacy__cli__interface_only__src__lib__f_value: bitstring;
 
 letfun tests__legacy__cli__interface_only__src__lib__f(x : nat) =
        rust_primitives__hax__failure(
-         "ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
-
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [Raw_pointer] have been found in the AST
 
 Note: the error was labeled with context `reject_RawOrMutPointer`.
 ",
@@ -113,9 +113,9 @@ Note: the error was labeled with context `reject_RawOrMutPointer`.
  {
  let _: tuple0 = {
  std::io::stdio::e_print({
- let args: [core::fmt::rt::t_Argument<
- lifetime!(something),
- >; 1..."
+ let args: tuple1<&int> = { Tuple1(&(deref(y))) };
+ {
+ let args: [c..."
        ).
 
 letfun tests__legacy__cli__interface_only__src__lib__f_from__impl_1__from(
@@ -132,14 +132,17 @@ letfun tests__legacy__cli__interface_only__src__lib__padlen(
          b : bitstring, n : nat
        ) =
        if
-         core__cmp__f_gt(n, 0) && core__cmp__f_eq(
-             core__ops__index__f_index(b, core__ops__arith__f_sub(n, 1)), 0
+         core_models__cmp__f_gt(n, 0) && core_models__cmp__f_eq(
+             core_models__ops__index__f_index(
+               b, core_models__ops__arith__f_sub(n, 1)
+             ),
+             0
            )
        then
-         (core__ops__arith__f_add(
+         (core_models__ops__arith__f_add(
             1,
             tests__legacy__cli__interface_only__src__lib__padlen(
-              b, core__ops__arith__f_sub(n, 1)
+              b, core_models__ops__arith__f_sub(n, 1)
             )
           ))
        else (0).

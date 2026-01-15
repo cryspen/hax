@@ -663,7 +663,7 @@ letfun tests__legacy__proverif_noise__lib__noise_crypto__encrypt(
        let chacha_iv = (alloc__vec__from_elem(0, 4)) in
        let chacha_iv = (
          alloc__vec__impl_2__extend_from_slice(
-           chacha_iv, core__num__impl_u64__to_le_bytes(counter)
+           chacha_iv, core_models__num__impl_u64__to_le_bytes(counter)
          )
        ) in
        let (cipher: bitstring, tag: bitstring) = (
@@ -685,23 +685,28 @@ letfun tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
        let chacha_iv = (alloc__vec__from_elem(0, 4)) in
        let chacha_iv = (
          alloc__vec__impl_2__extend_from_slice(
-           chacha_iv, core__num__impl_u64__to_le_bytes(counter)
+           chacha_iv, core_models__num__impl_u64__to_le_bytes(counter)
          )
        ) in
        let cipher_len = (
-         core__ops__arith__f_sub(core__slice__impl__len(cipher), 16)
+         core_models__ops__arith__f_sub(
+           core_models__slice__impl__len(cipher), 16
+         )
        ) in
        let cip = (
-         core__ops__index__f_index(cipher, core__ops__range__Range(0,cipher_len)
+         core_models__ops__index__f_index(
+           cipher, core_models__ops__range__Range(0,cipher_len)
          )
        ) in
        let tag = (
-         core__ops__index__f_index(
+         core_models__ops__index__f_index(
            cipher,
-           core__ops__range__Range(cipher_len,core__slice__impl__len(cipher))
+           core_models__ops__range__Range(
+             cipher_len,core_models__slice__impl__len(cipher)
+           )
          )
        ) in
-       core__result__impl__map_err(
+       core_models__result__impl__map_err(
          hax_lib_protocol__crypto__aead_decrypt(
            hax_lib_protocol__crypto__impl_AEADKey__from_bytes(
              hax_lib_protocol__crypto__AEADAlgorithm_Chacha20Poly1305(), key
@@ -806,7 +811,7 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__initialize_key(
 letfun tests__legacy__proverif_noise__lib__noise_lib__has_key(
          cs : tests__legacy__proverif_noise__lib__noise_lib__t_CipherState
        ) =
-       core__option__impl__is_some(
+       core_models__option__impl__is_some(
          accessor_tests__legacy__proverif_noise__lib__noise_lib__t_CipherState_tests__legacy__proverif_noise__lib__noise_lib__f_k(
            cs
          )
@@ -830,7 +835,7 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad(
        ) =
        let tests__legacy__proverif_noise__lib__noise_lib__CipherState(k,n) = (cs
        ) in
-       if core__cmp__f_eq(n, 18446744073709551615)
+       if core_models__cmp__f_eq(n, 18446744073709551615)
        then (bitstring_err())
        else (
          let Some(bitstring_to_bitstring(k)) = k in (
@@ -841,7 +846,8 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad(
            ) in
            (
              tests__legacy__proverif_noise__lib__noise_lib__CipherState(
-               Some(bitstring_to_bitstring(k)),core__ops__arith__f_add(n, 1)
+               Some(bitstring_to_bitstring(k))
+               ,core_models__ops__arith__f_add(n, 1)
              ),
              cip
            )
@@ -859,14 +865,15 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad(
        ) =
        let tests__legacy__proverif_noise__lib__noise_lib__CipherState(k,n) = (cs
        ) in
-       if core__cmp__f_eq(n, 18446744073709551615)
+       if core_models__cmp__f_eq(n, 18446744073709551615)
        then (bitstring_err())
        else (
          let Some(bitstring_to_bitstring(k)) = k in let plain = tests__legacy__proverif_noise__lib__noise_crypto__decrypt(
            k, n, ad, ciphertext
          ) in (
            tests__legacy__proverif_noise__lib__noise_lib__CipherState(
-             Some(bitstring_to_bitstring(k)),core__ops__arith__f_add(n, 1)
+             Some(bitstring_to_bitstring(k))
+             ,core_models__ops__arith__f_add(n, 1)
            ),
            plain
          )
@@ -894,17 +901,17 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__rekey(
 letfun tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric(
          protocol_name : bitstring
        ) =
-       let pnlen = (core__slice__impl__len(protocol_name)) in
+       let pnlen = (core_models__slice__impl__len(protocol_name)) in
        let hv:bitstring = (
          if
-           core__cmp__f_lt(
+           core_models__cmp__f_lt(
                pnlen,
                tests__legacy__proverif_noise__lib__noise_crypto__v_HASHLEN
              )
          then
            (alloc__slice__impl__concat(
               [protocol_name,alloc__vec__from_elem(
-                0, core__ops__arith__f_sub(32, pnlen)
+                0, core_models__ops__arith__f_sub(32, pnlen)
               )]
             ))
          else (
@@ -934,7 +941,7 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__mix_key(
        ) in
        let temp_k = (
          if
-           core__cmp__f_eq(
+           core_models__cmp__f_eq(
                tests__legacy__proverif_noise__lib__noise_crypto__v_HASHLEN, 64
              )
          then
@@ -990,7 +997,7 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash(
        ) in
        let temp_k = (
          if
-           core__cmp__f_eq(
+           core_models__cmp__f_eq(
                tests__legacy__proverif_noise__lib__noise_crypto__v_HASHLEN, 64
              )
          then
@@ -1101,7 +1108,7 @@ letfun tests__legacy__proverif_noise__lib__noise_lib__split(
        ) in
        let (temp_k1: bitstring, temp_k2: bitstring) = (
          if
-           core__cmp__f_eq(
+           core_models__cmp__f_eq(
                tests__legacy__proverif_noise__lib__noise_crypto__v_HASHLEN, 64
              )
          then
@@ -1244,19 +1251,19 @@ letfun tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message1(
          )
         = (hs) in
        let re = (
-         core__ops__index__f_index(
+         core_models__ops__index__f_index(
            ciphertext,
-           core__ops__range__Range(
+           core_models__ops__range__Range(
              0,tests__legacy__proverif_noise__lib__noise_crypto__v_DHLEN
            )
          )
        ) in
        let ciphertext = (
-         core__ops__index__f_index(
+         core_models__ops__index__f_index(
            ciphertext,
-           core__ops__range__Range(
+           core_models__ops__range__Range(
              tests__legacy__proverif_noise__lib__noise_crypto__v_DHLEN
-             ,core__slice__impl__len(ciphertext)
+             ,core_models__slice__impl__len(ciphertext)
            )
          )
        ) in
@@ -1345,19 +1352,19 @@ letfun tests__legacy__proverif_noise__lib__noise_kkpsk0__read_message2(
          )
         = (hs) in
        let re = (
-         core__ops__index__f_index(
+         core_models__ops__index__f_index(
            ciphertext,
-           core__ops__range__Range(
+           core_models__ops__range__Range(
              0,tests__legacy__proverif_noise__lib__noise_crypto__v_DHLEN
            )
          )
        ) in
        let ciphertext = (
-         core__ops__index__f_index(
+         core_models__ops__index__f_index(
            ciphertext,
-           core__ops__range__Range(
+           core_models__ops__range__Range(
              tests__legacy__proverif_noise__lib__noise_crypto__v_DHLEN
-             ,core__slice__impl__len(ciphertext)
+             ,core_models__slice__impl__len(ciphertext)
            )
          )
        ) in

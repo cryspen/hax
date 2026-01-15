@@ -64,7 +64,7 @@ Definition nested (arr : t_Vec ((t_usize)) ((t_Global))) : t_usize :=
     f_fold (f_into_iter (f_rev (Range ((0 : t_usize)) (item)))) (acc) (fun acc i =>
       let acc := f_add (acc) ((1 : t_usize)) in
       f_fold (f_into_iter (f_zip (impl__iter (f_deref (arr))) (Range ((4 : t_usize)) (i)))) (acc) (fun acc j =>
-        f_add (f_add (f_add (f_add (acc) (item)) (i)) (j)) ((sndj))))) in
+        f_add (f_add (f_add (f_add (acc) (item)) (i)) ((fstj))) ((sndj))))) in
   acc.
 
 Definition pattern (arr : t_Vec (((t_usize*t_usize))) ((t_Global))) : t_usize :=

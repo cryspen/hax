@@ -42,5 +42,6 @@ letfun tests__legacy__slices__r#unsized(wildcard2 : bitstring) =
        ().
 
 letfun tests__legacy__slices__sized(x : bitstring) =
-       tests__legacy__slices__r#unsized([core__ops__index__f_index(x, 0)]).
+       tests__legacy__slices__r#unsized([core_models__ops__index__f_index(x, 0)]
+       ).
 

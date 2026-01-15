@@ -1,7 +1,7 @@
 module Tests.Legacy__assert
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let asserts (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = Hax_lib.v_assert true in

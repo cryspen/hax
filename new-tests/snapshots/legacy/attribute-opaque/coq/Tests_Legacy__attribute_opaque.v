@@ -16,7 +16,6 @@ From Core Require Import Core.
 (Fatal error: something we considered as impossible occurred! Please report this by submitting an issue on GitHub!
 Details: Unreachable
 
-
 Note: the error was labeled with context `Coq printer generic printer`.
 (* ERROR_ITEM *))
 Inductive t_OpaqueEnum (v_X : t_usize) (v_T : Type) (v_U : Type) : Type :=

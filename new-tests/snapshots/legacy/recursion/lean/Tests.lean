@@ -12,7 +12,7 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 def Tests.Legacy__recursion.f (n : u8) : Result u8 := do
-  (← if (← Rust_primitives.Hax.Machine_int.eq n (0 : u8)) then do
-    (0 : u8)
-  else do
-    (← n +? (← Tests.Legacy__recursion.f (← n -? (1 : u8)))))
+  if (← (Rust_primitives.Hax.Machine_int.eq n (0 : u8))) then
+    (pure (0 : u8))
+  else
+    (n +? (← (Tests.Legacy__recursion.f (← (n -? (1 : u8))))))

@@ -21,10 +21,11 @@ Inductive t_Error : Type :=
 
 Definition loop3 '(_ : unit) : t_Result ((t_u32)) ((t_Error)) :=
   let x := (0 : t_u32) in
-  let x := fold_range ((1 : t_i32)) ((10 : t_i32)) (fun x _ =>
+  let end : t_u32 := (10 : t_u32) in
+  let x := fold_range ((1 : t_u32)) (end) (fun x _ =>
     (true : bool)) (x) (fun x i =>
     let _ := if
-      f_eq (i) ((5 : t_i32))
+      f_eq (i) ((5 : t_u32))
     then
       let hoist2 := ControlFlow_Break (Result_Err (Error_Foo)) in
       ControlFlow_Continue (never_to_any (hoist2))

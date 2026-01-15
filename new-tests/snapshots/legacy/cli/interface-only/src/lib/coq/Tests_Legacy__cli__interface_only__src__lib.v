@@ -14,8 +14,8 @@ From Core Require Import Core.
 (* NotImplementedYet *)
 
 Definition f (x : t_u8) `{f_lt (x) ((254 : t_u8)) = true} : t_Array (t_u8) ((4 : t_usize)) :=
-  failure (("ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
-
+  failure (("Explicit rejection by a phase in the Hax engine:
+a node of kind [Raw_pointer] have been found in the AST
 
 Note: the error was labeled with context `reject_RawOrMutPointer`.
 "%string : string)) (("{
@@ -27,9 +27,9 @@ Note: the error was labeled with context `reject_RawOrMutPointer`.
  {
  let _: tuple0 = {
  std::io::stdio::e_print({
- let args: [core::fmt::rt::t_Argument<
- lifetime!(something),
- >; 1..."%string : string)).
+ let args: tuple1<&int> = { Tuple1(&(deref(y))) };
+ {
+ let args: [c..."%string : string)).
 Lemma f_ensures (x : t_u8) :
   forall (H_requires : f_lt (x) ((254 : t_u8)) = true),
   let r := @f (x : t_u8) H_requires in
@@ -45,7 +45,7 @@ Record Bar_record : Type :=
 #[export]
 Notation "'Bar_Bar_record'" := Build_Bar_record.
 
-Instance t_From_825578261 : t_From ((t_Bar)) ((unit)) :=
+Instance t_From_617695777 : t_From ((t_Bar)) ((unit)) :=
   {
     implaabbcc_t_From_f_from := fun  (() : unit)=>
       Bar;
@@ -54,7 +54,7 @@ Instance t_From_825578261 : t_From ((t_Bar)) ((unit)) :=
 Definition f_from__impl_1__from '(_ : t_u8) : t_Bar :=
   Bar.
 
-Instance t_From_981564546 : t_From ((t_Bar)) ((t_u8)) :=
+Instance t_From_12922645 : t_From ((t_Bar)) ((t_u8)) :=
   {
     implaabbcc_t_From_f_from := fun  (x : t_u8)=>
       f_from__impl_1__from (x);
@@ -69,7 +69,7 @@ Arguments Holder_f_value {_}.
 #[export] Instance settable_Holder_record `{v_T : Type} : Settable _ :=
   settable! (Build_Holder_record (v_T := v_T)) <Holder_f_value>.
 
-Instance t_From_633561504 `{v_T : Type} : t_From ((t_Holder ((v_T)))) ((unit)) :=
+Instance t_From_579890508 `{v_T : Type} : t_From ((t_Holder ((v_T)))) ((unit)) :=
   {
     implaabbcc_t_From_f_from := fun  (() : unit)=>
       Holder (impl__new (tt));
@@ -84,7 +84,7 @@ Arguments Param_f_value {_}.
 #[export] Instance settable_Param_record `{v_SIZE : t_usize} : Settable _ :=
   settable! (Build_Param_record (v_SIZE := v_SIZE)) <Param_f_value>.
 
-Instance t_From_765923989 `{v_SIZE : t_usize} : t_From ((t_Param (v_SIZE))) ((unit)) :=
+Instance t_From_843778925 `{v_SIZE : t_usize} : t_From ((t_Param (v_SIZE))) ((unit)) :=
   {
     implaabbcc_t_From_f_from := fun  (() : unit)=>
       Param (repeat ((0 : t_u8)) (v_SIZE));
@@ -100,7 +100,7 @@ Class t_T (v_Self : Type) : Type :=
   }.
 Arguments t_T (_).
 
-Instance t_T_629389323 : t_T ((t_u8)) :=
+Instance t_T_508482456 : t_T ((t_u8)) :=
   {
     implaabbcc_t_T_f_Assoc := t_u8;
     implaabbcc_t_T_f_d := fun  (_ : unit)=>
@@ -113,7 +113,7 @@ Class t_T2 (v_Self : Type) : Type :=
   }.
 Arguments t_T2 (_).
 
-Instance t_T2_632221587 : t_T2 ((t_u8)) :=
+Instance t_T2_360478525 : t_T2 ((t_u8)) :=
   {
     implaabbcc_t_T2_f_d := fun  (_ : unit)=>
       tt;

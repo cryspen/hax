@@ -1,7 +1,7 @@
 module Tests.Legacy__slices
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let v_VERSION: t_Slice u8 =
   (let list = [mk_u8 118; mk_u8 49] in

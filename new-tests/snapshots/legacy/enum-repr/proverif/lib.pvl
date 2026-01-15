@@ -107,12 +107,12 @@ letfun tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(
        ) =
        let tests__legacy__enum_repr__EnumWithRepr_ExplicitDiscr1() = x in tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr1__anon_const_0
        else let tests__legacy__enum_repr__EnumWithRepr_ExplicitDiscr2() = x in tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0
-       else let tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyTuple() = x in core__ops__arith__f_add(
+       else let tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyTuple() = x in core_models__ops__arith__f_add(
          tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0,
          1
        )
        else let tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyStruct(
-       ) = x in core__ops__arith__f_add(
+       ) = x in core_models__ops__arith__f_add(
          tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0,
          2
        ).
@@ -127,27 +127,27 @@ letfun tests__legacy__enum_repr__t_ImplicitReprs_cast_to_repr(
        else let tests__legacy__enum_repr__ImplicitReprs_C() = x in 2
        else let tests__legacy__enum_repr__ImplicitReprs_D() = x in 3
        else let tests__legacy__enum_repr__ImplicitReprs_E() = x in tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0
-       else let tests__legacy__enum_repr__ImplicitReprs_F() = x in core__ops__arith__f_add(
+       else let tests__legacy__enum_repr__ImplicitReprs_F() = x in core_models__ops__arith__f_add(
          tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 1
        )
-       else let tests__legacy__enum_repr__ImplicitReprs_G() = x in core__ops__arith__f_add(
+       else let tests__legacy__enum_repr__ImplicitReprs_G() = x in core_models__ops__arith__f_add(
          tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 2
        )
-       else let tests__legacy__enum_repr__ImplicitReprs_H() = x in core__ops__arith__f_add(
+       else let tests__legacy__enum_repr__ImplicitReprs_H() = x in core_models__ops__arith__f_add(
          tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 3
        )
-       else let tests__legacy__enum_repr__ImplicitReprs_I() = x in core__ops__arith__f_add(
+       else let tests__legacy__enum_repr__ImplicitReprs_I() = x in core_models__ops__arith__f_add(
          tests__legacy__enum_repr__anon_const_ImplicitReprs_E__anon_const_0, 4
        ).
 
 letfun tests__legacy__enum_repr__f(wildcard1 : bitstring) =
        let e_x = (
-         core__ops__arith__f_add(
+         core_models__ops__arith__f_add(
            tests__legacy__enum_repr__anon_const_EnumWithRepr_ExplicitDiscr2__anon_const_0,
            0
          )
        ) in
-       core__ops__arith__f_add(
+       core_models__ops__arith__f_add(
          tests__legacy__enum_repr__t_EnumWithRepr_cast_to_repr(
            tests__legacy__enum_repr__EnumWithRepr_ImplicitDiscrEmptyTuple()
          ),

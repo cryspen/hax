@@ -47,7 +47,8 @@ Fail Next Obligation.
 Equations loop3 (_ : both 'unit) : both (t_Result int32 t_Error) :=
   loop3 _  :=
     letb x := ret_both (0 : int32) in
-    letb x := foldi_both_list (f_into_iter (Build_t_Range (f_start := ret_both (1 : int32)) (f_end := ret_both (10 : int32)))) (fun i =>
+    letb (end : int32) := ret_both (10 : int32) in
+    letb x := foldi_both_list (f_into_iter (Build_t_Range (f_start := ret_both (1 : int32)) (f_end := end))) (fun i =>
       ssp (fun x =>
         letm[choice_typeMonad.result_bind_code (t_Result int32 t_Error)] _ := ifb i =.? (ret_both (5 : int32))
         then letm[choice_typeMonad.result_bind_code (t_Result int32 t_Error)] hoist2 := ControlFlow_Break (Result_Err Error_Foo) in

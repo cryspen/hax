@@ -1,7 +1,7 @@
 module Tests.Legacy__literals
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let math_integers (x: Hax_lib.Int.t_Int)
     : Prims.Pure u8
@@ -42,13 +42,13 @@ let math_integers (x: Hax_lib.Int.t_Int)
   Hax_lib.Int.impl_Int__to_u8 (x + (x * x <: Hax_lib.Int.t_Int) <: Hax_lib.Int.t_Int)
 
 let panic_with_msg (_: Prims.unit) : Prims.unit =
-  Rust_primitives.Hax.never_to_any (Core.Panicking.panic_fmt (Core.Fmt.Rt.impl_1__new_const (mk_usize
-              1)
+  Rust_primitives.Hax.never_to_any (Core_models.Panicking.panic_fmt (Core_models.Fmt.Rt.impl_1__new_const
+            (mk_usize 1)
             (let list = ["with msg"] in
               FStar.Pervasives.assert_norm (Prims.eq2 (List.Tot.length list) 1);
               Rust_primitives.Hax.array_of_list 1 list)
           <:
-          Core.Fmt.t_Arguments)
+          Core_models.Fmt.t_Arguments)
       <:
       Rust_primitives.Hax.t_Never)
 
@@ -56,21 +56,21 @@ type t_Foo = { f_field:u8 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl': Core.Marker.t_StructuralPartialEq t_Foo
+val impl': Core_models.Marker.t_StructuralPartialEq t_Foo
 
 unfold
 let impl = impl'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1': Core.Cmp.t_PartialEq t_Foo t_Foo
+val impl_1': Core_models.Cmp.t_PartialEq t_Foo t_Foo
 
 unfold
 let impl_1 = impl_1'
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_2': Core.Cmp.t_Eq t_Foo
+val impl_2': Core_models.Cmp.t_Eq t_Foo
 
 unfold
 let impl_2 = impl_2'
@@ -199,4 +199,4 @@ let fn_pointer_cast (_: Prims.unit) : Prims.unit =
   ()
 
 /// @fail(extraction): ssprove(HAX0001)
-let null: char = '\0'
+let null: FStar.Char.char = '\0'

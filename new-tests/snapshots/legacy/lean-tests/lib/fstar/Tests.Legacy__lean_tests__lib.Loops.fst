@@ -1,7 +1,7 @@
 module Tests.Legacy__lean_tests__lib.Loops
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 /// @fail(extraction): proverif(HAX0008)
 let loop1 (_: Prims.unit) : u32 =
@@ -37,20 +37,20 @@ let loop2 (_: Prims.unit) : u32 =
           let i:u32 = i in
           if i =. mk_u32 5 <: bool
           then
-            Core.Ops.Control_flow.ControlFlow_Break
-            (Core.Ops.Control_flow.ControlFlow_Break x
+            Core_models.Ops.Control_flow.ControlFlow_Break
+            (Core_models.Ops.Control_flow.ControlFlow_Break x
               <:
-              Core.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32))
+              Core_models.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32))
             <:
-            Core.Ops.Control_flow.t_ControlFlow
-              (Core.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32)) u32
+            Core_models.Ops.Control_flow.t_ControlFlow
+              (Core_models.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32)) u32
           else
-            Core.Ops.Control_flow.ControlFlow_Continue (x +! i <: u32)
+            Core_models.Ops.Control_flow.ControlFlow_Continue (x +! i <: u32)
             <:
-            Core.Ops.Control_flow.t_ControlFlow
-              (Core.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32)) u32)
+            Core_models.Ops.Control_flow.t_ControlFlow
+              (Core_models.Ops.Control_flow.t_ControlFlow u32 (Prims.unit & u32)) u32)
     <:
-    Core.Ops.Control_flow.t_ControlFlow u32 u32
+    Core_models.Ops.Control_flow.t_ControlFlow u32 u32
   with
-  | Core.Ops.Control_flow.ControlFlow_Break ret -> ret
-  | Core.Ops.Control_flow.ControlFlow_Continue x -> x
+  | Core_models.Ops.Control_flow.ControlFlow_Break ret -> ret
+  | Core_models.Ops.Control_flow.ControlFlow_Continue x -> x

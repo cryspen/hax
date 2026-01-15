@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes.Refined_indexes
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let v_MAX: usize = mk_usize 10
 
@@ -34,7 +34,7 @@ let mutation_example
   (t_MyArray & t_Slice u8 & Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_1: Core.Ops.Index.t_Index t_MyArray usize =
+let impl_1: Core_models.Ops.Index.t_Index t_MyArray usize =
   {
     f_Output = u8;
     f_index_pre = (fun (self_: t_MyArray) (index: usize) -> index <. v_MAX);

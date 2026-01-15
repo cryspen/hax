@@ -1,7 +1,7 @@
 module Tests.Legacy__generics.Assoc_const_param
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 type t_Test (v_N: usize) = | Test : t_Test v_N
 

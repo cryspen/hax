@@ -37,13 +37,8 @@ Equations Build_t_A : both (t_A) :=
     ret_both (tt (* Empty tuple *) : (t_A)) : both (t_A).
 Fail Next Obligation.
 
-Equations f_eq__impl__panic_cold_explicit (_ : both 'unit) : both t_Never :=
-  f_eq__impl__panic_cold_explicit _  :=
-    panic_explicit : both t_Never.
-Fail Next Obligation.
-
 #[global] Program Instance t_A_t_PartialEq : t_PartialEq t_A t_A :=
-  let f_eq := fun  (self : both t_A) (other : both t_A) => never_to_any f_eq__impl__panic_cold_explicit : both 'bool in
+  let f_eq := fun  (self : both t_A) (other : both t_A) => never_to_any (panic (ret_both (explicit panic : chString))) : both 'bool in
   {| f_eq := (@f_eq)|}.
 Fail Next Obligation.
 Hint Unfold t_A_t_PartialEq.
@@ -55,13 +50,8 @@ Equations Build_t_B : both (t_B) :=
     ret_both (tt (* Empty tuple *) : (t_B)) : both (t_B).
 Fail Next Obligation.
 
-Equations f_eq__impl_1__panic_cold_explicit (_ : both 'unit) : both t_Never :=
-  f_eq__impl_1__panic_cold_explicit _  :=
-    panic_explicit : both t_Never.
-Fail Next Obligation.
-
 #[global] Program Instance t_B_t_PartialEq : t_PartialEq t_B t_B :=
-  let f_eq := fun  (self : both t_B) (other : both t_B) => never_to_any f_eq__impl_1__panic_cold_explicit : both 'bool in
+  let f_eq := fun  (self : both t_B) (other : both t_B) => never_to_any (panic (ret_both (explicit panic : chString))) : both 'bool in
   {| f_eq := (@f_eq)|}.
 Fail Next Obligation.
 Hint Unfold t_B_t_PartialEq.

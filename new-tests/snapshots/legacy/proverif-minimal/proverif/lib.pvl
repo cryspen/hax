@@ -34,5 +34,5 @@ letfun bool_default() = false.
 (*****************************************)
 
 letfun tests__legacy__proverif_minimal__add(left : nat, right : nat) =
-       core__ops__arith__f_add(left, right).
+       core_models__ops__arith__f_add(left, right).
 

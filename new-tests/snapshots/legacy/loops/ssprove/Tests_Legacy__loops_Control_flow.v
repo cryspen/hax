@@ -185,8 +185,8 @@ Equations continue_only (x : both (seq int32)) : both (int32 × 'unit) :=
     prod_b (foldi_both_list (f_into_iter x) (fun i =>
         ssp (fun product =>
           letb _ := ifb i =.? (ret_both (0 : int32))
-          then never_to_any (failure (ret_both (ExplicitRejection { reason: "a node of kind [Continue] have been found in the AST" }
-
+          then never_to_any (failure (ret_both (Explicit rejection by a phase in the Hax engine:
+a node of kind [Continue] have been found in the AST
 
 Note: the error was labeled with context `reject_Continue`.
  : chString)) (ret_both (continue; : chString)))
@@ -200,8 +200,8 @@ Equations continue_and_break (x : both (seq int32)) : both (int32 × 'unit) :=
     prod_b (foldi_both_list (f_into_iter x) (fun i =>
         ssp (fun product =>
           letb _ := ifb i =.? (ret_both (0 : int32))
-          then never_to_any (failure (ret_both (ExplicitRejection { reason: "a node of kind [Continue] have been found in the AST" }
-
+          then never_to_any (failure (ret_both (Explicit rejection by a phase in the Hax engine:
+a node of kind [Continue] have been found in the AST
 
 Note: the error was labeled with context `reject_Continue`.
  : chString)) (ret_both (continue; : chString)))

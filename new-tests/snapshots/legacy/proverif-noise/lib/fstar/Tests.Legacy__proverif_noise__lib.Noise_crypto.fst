@@ -1,7 +1,7 @@
 module Tests.Legacy__proverif_noise__lib.Noise_crypto
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let _ =
   (* This module has implicit dependencies, here we make them explicit. *)
@@ -33,7 +33,9 @@ let generate_keypair (sk: t_Slice u8) : t_KeyPair =
     Hax_lib_protocol.Crypto.dh_scalar_multiply_base (Hax_lib_protocol.Crypto.DHGroup_X25519
         <:
         Hax_lib_protocol.Crypto.t_DHGroup)
-      (Core.Clone.f_clone #Hax_lib_protocol.Crypto.t_DHScalar #FStar.Tactics.Typeclasses.solve sk
+      (Core_models.Clone.f_clone #Hax_lib_protocol.Crypto.t_DHScalar
+          #FStar.Tactics.Typeclasses.solve
+          sk
         <:
         Hax_lib_protocol.Crypto.t_DHScalar)
   in
@@ -46,7 +48,7 @@ let dh (sk: t_KeyPair) (pk: t_Slice u8) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Globa
   Hax_lib_protocol.Crypto.dh_scalar_multiply (Hax_lib_protocol.Crypto.DHGroup_X25519
       <:
       Hax_lib_protocol.Crypto.t_DHGroup)
-    (Core.Clone.f_clone #Hax_lib_protocol.Crypto.t_DHScalar
+    (Core_models.Clone.f_clone #Hax_lib_protocol.Crypto.t_DHScalar
         #FStar.Tactics.Typeclasses.solve
         sk.f_private_key
       <:
@@ -63,18 +65,19 @@ let encrypt (key: t_Slice u8) (counter: u64) (aad plain: t_Slice u8)
     Alloc.Vec.impl_2__extend_from_slice #u8
       #Alloc.Alloc.t_Global
       chacha_iv
-      (Core.Num.impl_u64__to_le_bytes counter <: t_Slice u8)
+      (Core_models.Num.impl_u64__to_le_bytes counter <: t_Slice u8)
   in
-  let cipher, tag:(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global & Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global
-  ) =
+  let
+  (cipher: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global), (tag: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+  =
     Hax_lib_protocol.Crypto.aead_encrypt (Hax_lib_protocol.Crypto.impl_AEADKey__from_bytes (Hax_lib_protocol.Crypto.AEADAlgorithm_Chacha20Poly1305
             <:
             Hax_lib_protocol.Crypto.t_AEADAlgorithm)
           key
         <:
         Hax_lib_protocol.Crypto.t_AEADKey)
-      (Hax_lib_protocol.Crypto.impl_AEADIV__from_bytes (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8
-                  Alloc.Alloc.t_Global)
+      (Hax_lib_protocol.Crypto.impl_AEADIV__from_bytes (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec
+                  u8 Alloc.Alloc.t_Global)
               #FStar.Tactics.Typeclasses.solve
               chacha_iv
             <:
@@ -88,7 +91,7 @@ let encrypt (key: t_Slice u8) (counter: u64) (aad plain: t_Slice u8)
     Alloc.Vec.impl_2__extend_from_slice #u8
       #Alloc.Alloc.t_Global
       cipher
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           tag
         <:
@@ -97,7 +100,7 @@ let encrypt (key: t_Slice u8) (counter: u64) (aad plain: t_Slice u8)
   cipher
 
 let decrypt (key: t_Slice u8) (counter: u64) (aad cipher: t_Slice u8)
-    : Core.Result.t_Result (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) t_Error =
+    : Core_models.Result.t_Result (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) t_Error =
   let chacha_iv:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
     Alloc.Vec.from_elem #u8 (mk_u8 0) (mk_usize 4)
   in
@@ -105,23 +108,26 @@ let decrypt (key: t_Slice u8) (counter: u64) (aad cipher: t_Slice u8)
     Alloc.Vec.impl_2__extend_from_slice #u8
       #Alloc.Alloc.t_Global
       chacha_iv
-      (Core.Num.impl_u64__to_le_bytes counter <: t_Slice u8)
+      (Core_models.Num.impl_u64__to_le_bytes counter <: t_Slice u8)
   in
-  let cipher_len:usize = (Core.Slice.impl__len #u8 cipher <: usize) -! mk_usize 16 in
+  let cipher_len:usize = (Core_models.Slice.impl__len #u8 cipher <: usize) -! mk_usize 16 in
   let cip:t_Slice u8 =
-    cipher.[ { Core.Ops.Range.f_start = mk_usize 0; Core.Ops.Range.f_end = cipher_len }
+    cipher.[ {
+        Core_models.Ops.Range.f_start = mk_usize 0;
+        Core_models.Ops.Range.f_end = cipher_len
+      }
       <:
-      Core.Ops.Range.t_Range usize ]
+      Core_models.Ops.Range.t_Range usize ]
   in
   let tag:t_Slice u8 =
     cipher.[ {
-        Core.Ops.Range.f_start = cipher_len;
-        Core.Ops.Range.f_end = Core.Slice.impl__len #u8 cipher <: usize
+        Core_models.Ops.Range.f_start = cipher_len;
+        Core_models.Ops.Range.f_end = Core_models.Slice.impl__len #u8 cipher <: usize
       }
       <:
-      Core.Ops.Range.t_Range usize ]
+      Core_models.Ops.Range.t_Range usize ]
   in
-  Core.Result.impl__map_err #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+  Core_models.Result.impl__map_err #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
     #Hax_lib_protocol.t_ProtocolError
     #t_Error
     (Hax_lib_protocol.Crypto.aead_decrypt (Hax_lib_protocol.Crypto.impl_AEADKey__from_bytes (Hax_lib_protocol.Crypto.AEADAlgorithm_Chacha20Poly1305
@@ -130,7 +136,7 @@ let decrypt (key: t_Slice u8) (counter: u64) (aad cipher: t_Slice u8)
             key
           <:
           Hax_lib_protocol.Crypto.t_AEADKey)
-        (Hax_lib_protocol.Crypto.impl_AEADIV__from_bytes (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec
+        (Hax_lib_protocol.Crypto.impl_AEADIV__from_bytes (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec
                     u8 Alloc.Alloc.t_Global)
                 #FStar.Tactics.Typeclasses.solve
                 chacha_iv
@@ -142,7 +148,7 @@ let decrypt (key: t_Slice u8) (counter: u64) (aad cipher: t_Slice u8)
         cip
         (Hax_lib_protocol.Crypto.impl_AEADTag__from_bytes tag <: Hax_lib_protocol.Crypto.t_AEADTag)
       <:
-      Core.Result.t_Result (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      Core_models.Result.t_Result (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         Hax_lib_protocol.t_ProtocolError)
     (fun temp_0_ ->
         let _:Hax_lib_protocol.t_ProtocolError = temp_0_ in
@@ -151,7 +157,7 @@ let decrypt (key: t_Slice u8) (counter: u64) (aad cipher: t_Slice u8)
 let rekey (key: t_Slice u8) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
   encrypt key
     (mk_u64 18446744073709551615)
-    (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         #FStar.Tactics.Typeclasses.solve
         (Alloc.Vec.impl__new #u8 () <: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
       <:
@@ -180,7 +186,7 @@ let hmac_hash (key input: t_Slice u8) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global 
 /// Alternative would be to directly use HKDF
 let kdf_next (secret prev: t_Slice u8) (counter: u8) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
   hmac_hash secret
-    (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         #FStar.Tactics.Typeclasses.solve
         (Alloc.Slice.impl__concat #(t_Slice u8)
             #u8
@@ -205,12 +211,12 @@ let kdf_next (secret prev: t_Slice u8) (counter: u8) : Alloc.Vec.t_Vec u8 Alloc.
 
 let hkdf1 (key ikm: t_Slice u8) : Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
   let secret:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global = hmac_hash key ikm in
-  kdf_next (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+  kdf_next (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         #FStar.Tactics.Typeclasses.solve
         secret
       <:
       t_Slice u8)
-    (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         #FStar.Tactics.Typeclasses.solve
         (Alloc.Vec.impl__new #u8 () <: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
       <:
@@ -221,12 +227,12 @@ let hkdf2 (key ikm: t_Slice u8)
     : (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global & Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) =
   let secret:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global = hmac_hash key ikm in
   let k1:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    kdf_next (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    kdf_next (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           secret
         <:
         t_Slice u8)
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           (Alloc.Vec.impl__new #u8 () <: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         <:
@@ -234,12 +240,12 @@ let hkdf2 (key ikm: t_Slice u8)
       (mk_u8 1)
   in
   let k2:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    kdf_next (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    kdf_next (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           secret
         <:
         t_Slice u8)
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           k1
         <:
@@ -253,12 +259,12 @@ let hkdf3 (key ikm: t_Slice u8)
       Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) =
   let secret:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global = hmac_hash key ikm in
   let k1:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    kdf_next (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    kdf_next (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           secret
         <:
         t_Slice u8)
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           (Alloc.Vec.impl__new #u8 () <: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
         <:
@@ -266,12 +272,12 @@ let hkdf3 (key ikm: t_Slice u8)
       (mk_u8 1)
   in
   let k2:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    kdf_next (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    kdf_next (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           secret
         <:
         t_Slice u8)
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           k1
         <:
@@ -279,12 +285,12 @@ let hkdf3 (key ikm: t_Slice u8)
       (mk_u8 2)
   in
   let k3:Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global =
-    kdf_next (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+    kdf_next (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           secret
         <:
         t_Slice u8)
-      (Core.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
+      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
           #FStar.Tactics.Typeclasses.solve
           k1
         <:

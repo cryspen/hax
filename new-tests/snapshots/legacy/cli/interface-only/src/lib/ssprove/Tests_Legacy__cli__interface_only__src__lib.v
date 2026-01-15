@@ -32,8 +32,8 @@ Obligation Tactic := (* try timeout 8 *) solve_ssprove_obligations.
 
 Equations f (x : both int8) : both (nseq int8 4) :=
   f x  :=
-    failure (ret_both (ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
-
+    failure (ret_both (Explicit rejection by a phase in the Hax engine:
+a node of kind [Raw_pointer] have been found in the AST
 
 Note: the error was labeled with context `reject_RawOrMutPointer`.
  : chString)) (ret_both ({
@@ -45,13 +45,13 @@ Note: the error was labeled with context `reject_RawOrMutPointer`.
  {
  let _: tuple0 = {
  std::io::stdio::e_print({
- let args: [core::fmt::rt::t_Argument<
- lifetime!(something),
- >; 1... : chString)) : both (nseq int8 4).
+ let args: tuple1<&int> = { Tuple1(&(deref(y))) };
+ {
+ let args: [c... : chString)) : both (nseq int8 4).
 Fail Next Obligation.
 
-(*ExplicitRejection { reason: "a node of kind [Raw_pointer] have been found in the AST" }
-
+(*Explicit rejection by a phase in the Hax engine:
+a node of kind [Raw_pointer] have been found in the AST
 
 Note: the error was labeled with context `reject_RawOrMutPointer`.
 

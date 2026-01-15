@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes.Nested_refinement_elim
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 let t_DummyRefinement = x: u16{true}
 

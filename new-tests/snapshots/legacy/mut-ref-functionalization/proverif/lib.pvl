@@ -155,19 +155,19 @@ letfun tests__legacy__mut_ref_functionalization__foo(
        ) =
        let lhs = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
  f_end: 1,
  })) {
  |lhs| {
  tests::legacy__mut_ref_functionalization::t_S {
- f_b: rust_primitives::hax::mo..."
+ f_b: rust_primi..."
          )
        ) in
        lhs.
@@ -191,7 +191,7 @@ letfun tests__legacy__mut_ref_functionalization__impl_S__update(
        self.
 
 letfun tests__legacy__mut_ref_functionalization__index_mutation(
-         x : core__ops__range__t_Range_of_nat, a : bitstring
+         x : core_models__ops__range__t_Range_of_nat, a : bitstring
        ) =
        let v = (alloc__slice__impl__into_vec(rust_primitives__hax__box_new([1]))
        ) in
@@ -199,7 +199,8 @@ letfun tests__legacy__mut_ref_functionalization__index_mutation(
          rust_primitives__hax__monomorphized_update_at__update_at_range(
            v,
            x,
-           core__slice__impl__copy_from_slice(core__ops__index__f_index(v, x), a
+           core_models__slice__impl__copy_from_slice(
+             core_models__ops__index__f_index(v, x), a
            )
          )
        ) in
@@ -214,9 +215,12 @@ letfun tests__legacy__mut_ref_functionalization__index_mutation_unsize(
        let x = (
          rust_primitives__hax__monomorphized_update_at__update_at_range(
            x,
-           core__ops__range__Range(4,5),
-           core__slice__impl__copy_from_slice(
-             core__ops__index__f_index(x, core__ops__range__Range(4,5)), [1,2]
+           core_models__ops__range__Range(4,5),
+           core_models__slice__impl__copy_from_slice(
+             core_models__ops__index__f_index(
+               x, core_models__ops__range__Range(4,5)
+             ),
+             [1,2]
            )
          )
        ) in
@@ -250,8 +254,8 @@ letfun tests__legacy__mut_ref_functionalization__f(wildcard4 : bitstring) =
        let vec = (alloc__vec__impl__new(())) in
        let vec = (alloc__vec__impl_1__push(vec, 1)) in
        let vec = (alloc__vec__impl_1__push(vec, 2)) in
-       let vec = (core__slice__impl__swap(vec, 0, 1)) in
-       let vec = (core__slice__impl__swap(vec, 0, 1)) in
+       let vec = (core_models__slice__impl__swap(vec, 0, 1)) in
+       let vec = (core_models__slice__impl__swap(vec, 0, 1)) in
        vec.
 
 letfun tests__legacy__mut_ref_functionalization__g(
@@ -260,25 +264,25 @@ letfun tests__legacy__mut_ref_functionalization__g(
        let x = (x) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
  |x| {
  tests::legacy__mut_ref_functionalization::t_Pair {
- f_a: alloc::vec::impl_1__pu..."
+ f_a: alloc::v..."
          )
        ) in
        let x = (
          tests__legacy__mut_ref_functionalization__t_Pair(
 
-             core__slice__impl__swap(
+             core_models__slice__impl__swap(
                accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_a(
                  x
                ),
@@ -293,7 +297,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
 
              tests__legacy__mut_ref_functionalization__t_Foo(
 
-                 core__slice__impl__swap(
+                 core_models__slice__impl__swap(
                    accessor_tests__legacy__mut_ref_functionalization__t_Foo_tests__legacy__mut_ref_functionalization__f_field(
                      accessor_tests__legacy__mut_ref_functionalization__t_Pair_tests__legacy__mut_ref_functionalization__f_b(
                        x
@@ -312,7 +316,7 @@ Note: the error was labeled with context `reject_not_in_ProVerif`.
        ).
 
 letfun tests__legacy__mut_ref_functionalization__h(x : nat) =
-       let x = (core__ops__arith__f_add(x, 10)) in
+       let x = (core_models__ops__arith__f_add(x, 10)) in
        x.
 
 letfun tests__legacy__mut_ref_functionalization__i(
@@ -321,7 +325,7 @@ letfun tests__legacy__mut_ref_functionalization__i(
        let bar = (
          tests__legacy__mut_ref_functionalization__t_Bar(
 
-             core__ops__arith__f_add(
+             core_models__ops__arith__f_add(
                accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_b(
                  bar
                ),
@@ -344,7 +348,7 @@ letfun tests__legacy__mut_ref_functionalization__i(
          )
        ) in
        let hax_temp_output = (
-         core__ops__arith__f_add(
+         core_models__ops__arith__f_add(
            accessor_tests__legacy__mut_ref_functionalization__t_Bar_tests__legacy__mut_ref_functionalization__f_a(
              bar
            ),
@@ -364,7 +368,7 @@ letfun tests__legacy__mut_ref_functionalization__j(
        ) in
        let x = (tmp0) in
        let hoist1 = (out1) in
-       let hax_temp_output = (core__ops__arith__f_add(hoist1, v_out)) in
+       let hax_temp_output = (core_models__ops__arith__f_add(hoist1, v_out)) in
        (x, hax_temp_output).
 
 letfun tests__legacy__mut_ref_functionalization__k(
@@ -373,18 +377,19 @@ letfun tests__legacy__mut_ref_functionalization__k(
          arg_1_wild : nat,
          arg_3_wild2 : bitstring
        ) =
-       let arg_1_wild2 = (core__ops__index__f_index(vec, 1)) in
-       let arg_3_wild = (core__ops__index__f_index(vec, 2)) in
-       let arg_1_wild1 = (core__ops__index__f_index(vec, 3)) in
-       let arg_3_wild1 = (core__ops__index__f_index(vec, 4)) in
+       let arg_1_wild2 = (core_models__ops__index__f_index(vec, 1)) in
+       let arg_3_wild = (core_models__ops__index__f_index(vec, 2)) in
+       let arg_1_wild1 = (core_models__ops__index__f_index(vec, 3)) in
+       let arg_3_wild1 = (core_models__ops__index__f_index(vec, 4)) in
        let vec = (
          rust_primitives__hax__monomorphized_update_at__update_at_usize(
            vec,
            0,
-           core__ops__arith__f_add(
-             core__ops__arith__f_add(
-               core__ops__arith__f_add(
-                 core__ops__arith__f_add(arg_1_wild, arg_3_wild), arg_1_wild1
+           core_models__ops__arith__f_add(
+             core_models__ops__arith__f_add(
+               core_models__ops__arith__f_add(
+                 core_models__ops__arith__f_add(arg_1_wild, arg_3_wild),
+                 arg_1_wild1
                ),
                arg_3_wild1
              ),
@@ -398,7 +403,7 @@ letfun tests__legacy__mut_ref_functionalization__k(
 letfun tests__legacy__mut_ref_functionalization__array(x : bitstring) =
        let x = (
          rust_primitives__hax__monomorphized_update_at__update_at_usize(
-           x, 1, core__ops__index__f_index(x, 2)
+           x, 1, core_models__ops__index__f_index(x, 2)
          )
        ) in
        x.

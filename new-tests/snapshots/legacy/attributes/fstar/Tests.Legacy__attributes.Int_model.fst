@@ -1,16 +1,16 @@
 module Tests.Legacy__attributes.Int_model
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 unfold type t_Int = int
 
-let impl_2: Core.Clone.t_Clone t_Int =
+let impl_2: Core_models.Clone.t_Clone t_Int =
   { f_clone = (fun x -> x); f_clone_pre = (fun _ -> True); f_clone_post = (fun _ _ -> True) }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 assume
-val impl_1': Core.Marker.t_Copy t_Int
+val impl_1': Core_models.Marker.t_Copy t_Int
 
 unfold
 let impl_1 = impl_1'

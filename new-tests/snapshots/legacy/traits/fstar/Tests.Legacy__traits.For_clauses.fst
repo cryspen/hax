@@ -1,7 +1,7 @@
 module Tests.Legacy__traits.For_clauses
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_Foo (v_Self: Type0) (v_T: Type0) = {
   f_to_t_pre:v_Self -> Type0;

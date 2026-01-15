@@ -144,6 +144,60 @@ reduc forall tests__legacy__lean_tests__lib__structs__miscellaneous__f_f: nat;
       )
     ) = tests__legacy__lean_tests__lib__structs__miscellaneous__f_f.
 
+type tests__legacy__lean_tests__lib__structs__base_expressions__t_S.
+
+fun tests__legacy__lean_tests__lib__structs__base_expressions__t_S_to_bitstring(
+      tests__legacy__lean_tests__lib__structs__base_expressions__t_S
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__lean_tests__lib__structs__base_expressions__t_S_from_bitstring(
+      bitstring
+    )
+    : tests__legacy__lean_tests__lib__structs__base_expressions__t_S [typeConverter].
+const tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default_value: tests__legacy__lean_tests__lib__structs__base_expressions__t_S.
+letfun tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default() =
+       tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default_value.
+letfun tests__legacy__lean_tests__lib__structs__base_expressions__t_S_err() =
+       let x = construct_fail() in tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default_value.
+fun tests__legacy__lean_tests__lib__structs__base_expressions__S(nat, nat, nat)
+    : tests__legacy__lean_tests__lib__structs__base_expressions__t_S [data].
+reduc forall 
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f1: nat,
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f2: nat,
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f3: nat
+;
+    accessor_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1(
+      tests__legacy__lean_tests__lib__structs__base_expressions__S(
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f1,
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f2,
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f3
+      )
+    ) = tests__legacy__lean_tests__lib__structs__base_expressions__f_f1.
+reduc forall 
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f1: nat,
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f2: nat,
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f3: nat
+;
+    accessor_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2(
+      tests__legacy__lean_tests__lib__structs__base_expressions__S(
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f1,
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f2,
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f3
+      )
+    ) = tests__legacy__lean_tests__lib__structs__base_expressions__f_f2.
+reduc forall 
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f1: nat,
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f2: nat,
+  tests__legacy__lean_tests__lib__structs__base_expressions__f_f3: nat
+;
+    accessor_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3(
+      tests__legacy__lean_tests__lib__structs__base_expressions__S(
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f1,
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f2,
+        tests__legacy__lean_tests__lib__structs__base_expressions__f_f3
+      )
+    ) = tests__legacy__lean_tests__lib__structs__base_expressions__f_f3.
+
 type tests__legacy__lean_tests__lib__structs__t_T0.
 
 fun tests__legacy__lean_tests__lib__structs__t_T0_to_bitstring(
@@ -479,6 +533,28 @@ reduc forall
       )
     ) = tests__legacy__lean_tests__lib__structs__f_inductive.
 
+type tests__legacy__lean_tests__lib__monadic__t_S.
+
+fun tests__legacy__lean_tests__lib__monadic__t_S_to_bitstring(
+      tests__legacy__lean_tests__lib__monadic__t_S
+    )
+    : bitstring [typeConverter].
+fun tests__legacy__lean_tests__lib__monadic__t_S_from_bitstring(bitstring)
+    : tests__legacy__lean_tests__lib__monadic__t_S [typeConverter].
+const tests__legacy__lean_tests__lib__monadic__t_S_default_value: tests__legacy__lean_tests__lib__monadic__t_S.
+letfun tests__legacy__lean_tests__lib__monadic__t_S_default() =
+       tests__legacy__lean_tests__lib__monadic__t_S_default_value.
+letfun tests__legacy__lean_tests__lib__monadic__t_S_err() =
+       let x = construct_fail() in tests__legacy__lean_tests__lib__monadic__t_S_default_value.
+fun tests__legacy__lean_tests__lib__monadic__S(nat)
+    : tests__legacy__lean_tests__lib__monadic__t_S [data].
+reduc forall tests__legacy__lean_tests__lib__monadic__f_f: nat;
+    accessor_tests__legacy__lean_tests__lib__monadic__t_S_tests__legacy__lean_tests__lib__monadic__f_f(
+      tests__legacy__lean_tests__lib__monadic__S(
+        tests__legacy__lean_tests__lib__monadic__f_f
+      )
+    ) = tests__legacy__lean_tests__lib__monadic__f_f.
+
 type tests__legacy__lean_tests__lib__loops__errors__t_Error.
 
 fun tests__legacy__lean_tests__lib__loops__errors__t_Error_to_bitstring(
@@ -666,8 +742,8 @@ letfun tests__legacy__lean_tests__lib__traits__overlapping_methods__test(
          wildcard1 : bitstring
        ) =
        let x:nat = (9) in
-       core__ops__arith__f_add(
-         core__ops__arith__f_add(
+       core_models__ops__arith__f_add(
+         core_models__ops__arith__f_add(
            tests__legacy__lean_tests__lib__traits__overlapping_methods__f_f(x),
            tests__legacy__lean_tests__lib__traits__overlapping_methods__f_f(x)
          ),
@@ -678,7 +754,7 @@ letfun tests__legacy__lean_tests__lib__traits__inheritance__test(
          wildcard2 : bitstring
        ) =
        let s = (tests__legacy__lean_tests__lib__traits__inheritance__S()) in
-       core__ops__arith__f_add(
+       core_models__ops__arith__f_add(
          tests__legacy__lean_tests__lib__traits__inheritance__f_f3(s), 1
        ).
 
@@ -686,13 +762,13 @@ letfun tests__legacy__lean_tests__lib__traits__bounds__test(
          x1 : tests__legacy__lean_tests__lib__traits__bounds__t_S1,
          x2 : tests__legacy__lean_tests__lib__traits__bounds__t_S2
        ) =
-       core__ops__arith__f_add(
+       core_models__ops__arith__f_add(
          tests__legacy__lean_tests__lib__traits__bounds__f_ff_test(x2, x1),
          tests__legacy__lean_tests__lib__traits__bounds__f_f1(x1)
        ).
 
 letfun tests__legacy__lean_tests__lib__traits__basic__f(x : v_T) =
-       core__ops__arith__f_add(
+       core_models__ops__arith__f_add(
          tests__legacy__lean_tests__lib__traits__basic__f_f1(x),
          tests__legacy__lean_tests__lib__traits__basic__f_f2(x, x)
        ).
@@ -713,14 +789,43 @@ letfun tests__legacy__lean_tests__lib__structs__miscellaneous__test_tuples(
          if true
          then ((1, 2))
          else (
-           let z = (core__ops__arith__f_add(1, 2)) in
+           let z = (core_models__ops__arith__f_add(1, 2)) in
            (z, z)
          )
        ) in
        (1, 2).
 
+letfun tests__legacy__lean_tests__lib__structs__base_expressions__test(
+         wildcard11 : bitstring
+       ) =
+       let s1 = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(1,2,3)
+       ) in
+       let wildcard10: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0)
+       ) in
+       let wildcard9: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0)
+       ) in
+       let wildcard8: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0)
+       ) in
+       let wildcard7: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0,1)
+       ) in
+       let wildcard6: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0,1)
+       ) in
+       let wildcard5: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0,2)
+       ) in
+       let wildcard4: bitstring = (
+         tests__legacy__lean_tests__lib__structs__base_expressions__S(0,1,0)
+       ) in
+       ().
+
 letfun tests__legacy__lean_tests__lib__structs__tuple_structs(
-         wildcard27 : bitstring
+         wildcard35 : bitstring
        ) =
        let t0 = (tests__legacy__lean_tests__lib__structs__T0()) in
        let t1 = (tests__legacy__lean_tests__lib__structs__T1(1)) in
@@ -747,9 +852,9 @@ letfun tests__legacy__lean_tests__lib__structs__tuple_structs(
        let
          tests__legacy__lean_tests__lib__structs__T3(
            tests__legacy__lean_tests__lib__structs__T0(),
-           tests__legacy__lean_tests__lib__structs__T1(wildcard24: bitstring),
+           tests__legacy__lean_tests__lib__structs__T1(wildcard32: bitstring),
            tests__legacy__lean_tests__lib__structs__T2(
-             wildcard25: bitstring, wildcard26: bitstring
+             wildcard33: bitstring, wildcard34: bitstring
            )
          )
         = (t3) in
@@ -757,61 +862,61 @@ letfun tests__legacy__lean_tests__lib__structs__tuple_structs(
          tests__legacy__lean_tests__lib__structs__T3p(
            tests__legacy__lean_tests__lib__structs__T0(),
            tests__legacy__lean_tests__lib__structs__T2(
-             tests__legacy__lean_tests__lib__structs__T1(wildcard21: bitstring),
+             tests__legacy__lean_tests__lib__structs__T1(wildcard29: bitstring),
              tests__legacy__lean_tests__lib__structs__T2(
-               wildcard22: bitstring, wildcard23: bitstring
+               wildcard30: bitstring, wildcard31: bitstring
              )
            )
          )
         = (t3p) in
-       let wildcard20: bitstring = (
+       let wildcard28: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T1_tests__legacy__lean_tests__lib__structs__0(
            t1
          )
        ) in
-       let wildcard19: bitstring = (
+       let wildcard27: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__0(
            t2
          )
        ) in
-       let wildcard18: bitstring = (
+       let wildcard26: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__1(
            t2
          )
        ) in
-       let wildcard17: bitstring = (
+       let wildcard25: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T3_tests__legacy__lean_tests__lib__structs__0(
            t3
          )
        ) in
-       let wildcard16: bitstring = (
+       let wildcard24: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T3_tests__legacy__lean_tests__lib__structs__1(
            t3
          )
        ) in
-       let wildcard15: bitstring = (
+       let wildcard23: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T3_tests__legacy__lean_tests__lib__structs__2(
            t3
          )
        ) in
-       let wildcard14: bitstring = (
+       let wildcard22: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__1(
            accessor_tests__legacy__lean_tests__lib__structs__t_T3_tests__legacy__lean_tests__lib__structs__2(
              t3
            )
          )
        ) in
-       let wildcard13: bitstring = (
+       let wildcard21: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T3p_tests__legacy__lean_tests__lib__structs__0(
            t3p
          )
        ) in
-       let wildcard12: bitstring = (
+       let wildcard20: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T3p_tests__legacy__lean_tests__lib__structs__1(
            t3p
          )
        ) in
-       let wildcard11: bitstring = (
+       let wildcard19: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__0(
            accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__1(
              accessor_tests__legacy__lean_tests__lib__structs__t_T3p_tests__legacy__lean_tests__lib__structs__1(
@@ -820,37 +925,37 @@ letfun tests__legacy__lean_tests__lib__structs__tuple_structs(
            )
          )
        ) in
-       let wildcard10: bitstring = (
+       let wildcard18: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__0(
            accessor_tests__legacy__lean_tests__lib__structs__t_T3p_tests__legacy__lean_tests__lib__structs__1(
              t3p
            )
          )
        ) in
-       let wildcard9: bitstring = (
+       let wildcard17: bitstring = (
          accessor_tests__legacy__lean_tests__lib__structs__t_T2_tests__legacy__lean_tests__lib__structs__1(
            accessor_tests__legacy__lean_tests__lib__structs__t_T3p_tests__legacy__lean_tests__lib__structs__1(
              t3p
            )
          )
        ) in
-       let wildcard8: bitstring = (
+       let wildcard16: bitstring = (
          let tests__legacy__lean_tests__lib__structs__T0() = t0 in ()
        ) in
-       let wildcard7: bitstring = (
+       let wildcard15: bitstring = (
          let tests__legacy__lean_tests__lib__structs__T1(u1) = t1 in ()
        ) in
-       let wildcard6: bitstring = (
+       let wildcard14: bitstring = (
          let tests__legacy__lean_tests__lib__structs__T2(u2, u3) = t2 in ()
        ) in
-       let wildcard5: bitstring = (
+       let wildcard13: bitstring = (
          let tests__legacy__lean_tests__lib__structs__T3(
            tests__legacy__lean_tests__lib__structs__T0(),
            tests__legacy__lean_tests__lib__structs__T1(u1),
            tests__legacy__lean_tests__lib__structs__T2(u2, u3)
          ) = t3 in ()
        ) in
-       let wildcard4: bitstring = (
+       let wildcard12: bitstring = (
          let tests__legacy__lean_tests__lib__structs__T3p(
            tests__legacy__lean_tests__lib__structs__T0(),
            tests__legacy__lean_tests__lib__structs__T2(
@@ -862,7 +967,7 @@ letfun tests__legacy__lean_tests__lib__structs__tuple_structs(
        ().
 
 letfun tests__legacy__lean_tests__lib__structs__normal_structs(
-         wildcard32 : bitstring
+         wildcard40 : bitstring
        ) =
        let s1 = (tests__legacy__lean_tests__lib__structs__S1(0,1)) in
        let s2 = (
@@ -885,7 +990,7 @@ letfun tests__legacy__lean_tests__lib__structs__normal_structs(
            end,v_def,theorem,structure,inductive
          )
         = (s3) in
-       let wildcard31: bitstring = (
+       let wildcard39: bitstring = (
          (
            accessor_tests__legacy__lean_tests__lib__structs__t_S1_tests__legacy__lean_tests__lib__structs__f_f1(
              s1
@@ -895,7 +1000,7 @@ letfun tests__legacy__lean_tests__lib__structs__normal_structs(
            )
          )
        ) in
-       let wildcard30: bitstring = (
+       let wildcard38: bitstring = (
          (
            accessor_tests__legacy__lean_tests__lib__structs__t_S1_tests__legacy__lean_tests__lib__structs__f_f1(
              s1
@@ -927,10 +1032,10 @@ letfun tests__legacy__lean_tests__lib__structs__normal_structs(
            )
          )
        ) in
-       let wildcard29: bitstring = (
+       let wildcard37: bitstring = (
          let tests__legacy__lean_tests__lib__structs__S1(f1,f2) = s1 in ()
        ) in
-       let wildcard28: bitstring = (
+       let wildcard36: bitstring = (
          let tests__legacy__lean_tests__lib__structs__S2(
            tests__legacy__lean_tests__lib__structs__S1(f1,other_name_for_f2),f2
          ) = s2 in ()
@@ -939,58 +1044,114 @@ letfun tests__legacy__lean_tests__lib__structs__normal_structs(
          end,v_def,theorem,structure,inductive
        ) = s3 in ().
 
+letfun tests__legacy__lean_tests__lib__monadic__test(wildcard52 : bitstring) =
+       let wildcard51: bitstring = (9) in
+       let wildcard50: bitstring = (core_models__ops__arith__f_add(9, 9)) in
+       let wildcard49: bitstring = (
+         tests__legacy__lean_tests__lib__monadic__S(9)
+       ) in
+       let wildcard48: bitstring = (
+         tests__legacy__lean_tests__lib__monadic__S(
+           core_models__ops__arith__f_add(9, 9)
+         )
+       ) in
+       let wildcard47: bitstring = (
+         accessor_tests__legacy__lean_tests__lib__monadic__t_S_tests__legacy__lean_tests__lib__monadic__f_f(
+           tests__legacy__lean_tests__lib__monadic__S(
+             core_models__ops__arith__f_add(9, 9)
+           )
+         )
+       ) in
+       let wildcard46: bitstring = (
+         core_models__ops__arith__f_add(
+           accessor_tests__legacy__lean_tests__lib__monadic__t_S_tests__legacy__lean_tests__lib__monadic__f_f(
+             tests__legacy__lean_tests__lib__monadic__S(
+               core_models__ops__arith__f_add(9, 9)
+             )
+           ),
+           9
+         )
+       ) in
+       let wildcard45: bitstring = (
+         if true
+         then (core_models__ops__arith__f_add(3, 4))
+         else (core_models__ops__arith__f_sub(3, 4))
+       ) in
+       let wildcard44: bitstring = (
+         if core_models__cmp__f_eq(core_models__ops__arith__f_add(9, 9), 0)
+         then (core_models__ops__arith__f_add(3, 4))
+         else (core_models__ops__arith__f_sub(3, 4))
+       ) in
+       let wildcard43: bitstring = (
+         if true
+         then
+           (let x = (9) in
+            let wildcard41: bitstring = (core_models__ops__arith__f_add(3, x)) in
+            ())
+         else (
+           let y = (19) in
+           let wildcard42: bitstring = (
+             core_models__ops__arith__f_sub(
+               core_models__ops__arith__f_add(3, y), 4
+             )
+           ) in
+           ()
+         )
+       ) in
+       ().
+
 letfun tests__legacy__lean_tests__lib__loops__errors__loop3(
-         wildcard33 : bitstring
+         wildcard53 : bitstring
        ) =
        let x = (0) in
+       let end:nat = (10) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
- f_end: 10,
+ f_end: end,
  })) {
  |x| {
  {
  let _: tuple0 = {
- (if core::cmp::f_eq(i, 5) {
+ (if core_models::cmp::f_eq(i, 5) {
  {
- let hoist2: rust_primitiv..."
+ let..."
          )
        ) in
        x.
 
 letfun tests__legacy__lean_tests__lib__loops__errors__loop4(
-         wildcard34 : bitstring
+         wildcard54 : bitstring
        ) =
        let e = (0) in
        let f = (|()|42) in
        let e = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 0,
- f_end: core::ops::function::f_call(f, Tuple1(Tuple0())),
+ f_end: core_models::ops::function::f_call(f, Tuple1(Tuple0())),
  })) {
  |e| {
  {
- let _: tuple0 = {
- (if core::c..."
+ let _: tu..."
          )
        ) in
        (e, e).
 
-letfun tests__legacy__lean_tests__lib__enums__enums(wildcard36 : bitstring) =
+letfun tests__legacy__lean_tests__lib__enums__enums(wildcard56 : bitstring) =
        let e_v1 = (tests__legacy__lean_tests__lib__enums__E_V1()) in
        let e_v2 = (tests__legacy__lean_tests__lib__enums__E_V2()) in
        let e_v3 = (tests__legacy__lean_tests__lib__enums__E_V3(23)) in
@@ -1007,41 +1168,76 @@ letfun tests__legacy__lean_tests__lib__enums__enums(wildcard36 : bitstring) =
        let tests__legacy__lean_tests__lib__enums__E_V1() = e_v1 in ()
        else let tests__legacy__lean_tests__lib__enums__E_V2() = e_v1 in ()
        else let tests__legacy__lean_tests__lib__enums__E_V3(
-         wildcard35: bitstring
+         wildcard55: bitstring
        ) = e_v1 in ()
        else let tests__legacy__lean_tests__lib__enums__E_V4(x1, x2, x3) = e_v1 in (
-         let y1 = (core__ops__arith__f_add(x1, x2)) in
-         let y2 = (core__ops__arith__f_sub(y1, x2)) in
-         let y3 = (core__ops__arith__f_add(y2, x3)) in
+         let y1 = (core_models__ops__arith__f_add(x1, x2)) in
+         let y2 = (core_models__ops__arith__f_sub(y1, x2)) in
+         let y3 = (core_models__ops__arith__f_add(y2, x3)) in
          ()
        )
        else let tests__legacy__lean_tests__lib__enums__E_V5(f1,f2) = e_v1 in ()
        else let tests__legacy__lean_tests__lib__enums__E_V6(f1,other_name_for_f2
        ) = e_v1 in ().
 
+const tests__legacy__lean_tests__lib__constants__v_C1: bitstring.
+
+const tests__legacy__lean_tests__lib__constants__v_C2: bitstring.
+
+const tests__legacy__lean_tests__lib__constants__v_C3: bitstring.
+
+letfun tests__legacy__lean_tests__lib__constants__computation(x : nat) =
+       core_models__ops__arith__f_add(core_models__ops__arith__f_add(x, x), 1).
+
+const tests__legacy__lean_tests__lib__constants__v_C4: bitstring.
+
+letfun tests__legacy__lean_tests__lib__constants__test(wildcard57 : bitstring) =
+       let x = (
+         core_models__ops__arith__f_add(
+           tests__legacy__lean_tests__lib__constants__v_C1, 1
+         )
+       ) in
+       let y = (
+         core_models__ops__arith__f_add(
+           tests__legacy__lean_tests__lib__constants__v_C2,
+           tests__legacy__lean_tests__lib__constants__v_C3
+         )
+       ) in
+       let z = (
+         core_models__ops__arith__f_sub(
+           tests__legacy__lean_tests__lib__constants__v_C4,
+           tests__legacy__lean_tests__lib__constants__v_C3
+         )
+       ) in
+       ().
+
 const tests__legacy__lean_tests__lib__v_FORTYTWO: bitstring.
 
 const tests__legacy__lean_tests__lib__v_MINUS_FORTYTWO: bitstring.
 
-letfun tests__legacy__lean_tests__lib__returns42(wildcard37 : bitstring) =
+letfun tests__legacy__lean_tests__lib__returns42(wildcard58 : bitstring) =
        tests__legacy__lean_tests__lib__v_FORTYTWO.
 
 letfun tests__legacy__lean_tests__lib__add_two_numbers(x : nat, y : nat) =
-       core__ops__arith__f_add(x, y).
+       core_models__ops__arith__f_add(x, y).
 
 letfun tests__legacy__lean_tests__lib__letBinding(x : nat, y : nat) =
        let useless = (()) in
-       let result1 = (core__ops__arith__f_add(x, y)) in
-       let result2 = (core__ops__arith__f_add(result1, 2)) in
-       core__ops__arith__f_add(result2, 1).
+       let result1 = (core_models__ops__arith__f_add(x, y)) in
+       let result2 = (core_models__ops__arith__f_add(result1, 2)) in
+       core_models__ops__arith__f_add(result2, 1).
 
-letfun tests__legacy__lean_tests__lib__closure(wildcard38 : bitstring) =
+letfun tests__legacy__lean_tests__lib__closure(wildcard59 : bitstring) =
        let x = (41) in
-       let f1 = (|y|core__ops__arith__f_add(y, x)) in
-       let f2 = (|y,z|core__ops__arith__f_add(core__ops__arith__f_add(y, x), z)) in
-       let res1 = (core__ops__function__f_call(f1, (1))) in
-       let res2 = (core__ops__function__f_call(f2, (2, 3))) in
-       core__ops__arith__f_add(res1, res2).
+       let f1 = (|y|core_models__ops__arith__f_add(y, x)) in
+       let f2 = (
+         |y,z|core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(y, x), z
+         )
+       ) in
+       let res1 = (core_models__ops__function__f_call(f1, (1))) in
+       let res2 = (core_models__ops__function__f_call(f2, (2, 3))) in
+       core_models__ops__arith__f_add(res1, res2).
 
 letfun tests__legacy__lean_tests__lib__test_before_verbatime_single_line(x : nat
        ) =
@@ -1051,85 +1247,170 @@ letfun tests__legacy__lean_tests__lib__test_before_verbatim_multi_line(x : nat) 
        32.
 
 letfun tests__legacy__lean_tests__lib__binop_resugarings(x : nat) =
-       let add = (core__ops__arith__f_add(x, 1)) in
-       let sub = (core__ops__arith__f_sub(add, 2)) in
-       let mul = (core__ops__arith__f_mul(sub, 3)) in
-       let rem = (core__ops__arith__f_rem(mul, 4)) in
-       let div = (core__ops__arith__f_div(rem, 5)) in
-       let rshift = (core__ops__bit__f_shr(div, x)) in
+       let add = (core_models__ops__arith__f_add(x, 1)) in
+       let sub = (core_models__ops__arith__f_sub(add, 2)) in
+       let mul = (core_models__ops__arith__f_mul(sub, 3)) in
+       let rem = (core_models__ops__arith__f_rem(mul, 4)) in
+       let div = (core_models__ops__arith__f_div(rem, 5)) in
+       let rshift = (core_models__ops__bit__f_shr(div, x)) in
        x.
 
-letfun tests__legacy__lean_tests__lib__loops__loop1(wildcard39 : bitstring) =
+letfun tests__legacy__lean_tests__lib__reject_do_dsl__rejected(
+         wildcard60 : bitstring
+       ) =
+       let x1 = (core_models__ops__arith__f_add(1, if true then (0) else (1))) in
+       let x2 = (core_models__ops__arith__f_add(1, 0)) in
+       let x = (9) in
+       let x3 = (
+         core_models__ops__arith__f_add(1, core_models__ops__arith__f_add(x, 1))
+       ) in
+       ().
+
+letfun tests__legacy__lean_tests__lib__reject_do_dsl__accepted(
+         wildcard61 : bitstring
+       ) =
+       let x1_tmp = (if true then (0) else (1)) in
+       let x1 = (core_models__ops__arith__f_add(1, x1_tmp)) in
+       let x2_tmp = (0) in
+       let x2 = (core_models__ops__arith__f_add(1, x2_tmp)) in
+       let x3_tmp_x = (9) in
+       let x3_tmp = (core_models__ops__arith__f_add(x3_tmp_x, 1)) in
+       let x3 = (core_models__ops__arith__f_add(1, x3_tmp)) in
+       ().
+
+letfun tests__legacy__lean_tests__lib__reject_do_dsl__test(
+         wildcard62 : bitstring
+       ) =
+       let x1 = (
+         if true
+         then
+           (let y = (
+              if false
+              then
+                (let z = (9) in
+                 let z = (core_models__ops__arith__f_add(1, z)) in
+                 core_models__ops__arith__f_add(z, 1))
+              else (
+                let z = (9) in
+                let z = (core_models__ops__arith__f_add(z, 1)) in
+                z
+              )
+            ) in
+            let y = (core_models__ops__arith__f_add(y, 1)) in
+            core_models__ops__arith__f_add(y, 1))
+         else (0)
+       ) in
+       let x1 = (core_models__ops__arith__f_add(x1, 1)) in
+       let x2 = (
+         let Some(nat_to_bitstring(a)) = Some(nat_to_bitstring(89)) in (
+           let y = (core_models__ops__arith__f_add(1, a)) in
+           let y = (core_models__ops__arith__f_add(y, 1)) in
+           if core_models__cmp__f_eq(y, 0)
+           then
+             (let z = (9) in
+              let z = (
+                core_models__ops__arith__f_add(
+                  core_models__ops__arith__f_add(z, y), 1
+                )
+              ) in
+              z)
+           else (10)
+         )
+         else let None() = Some(nat_to_bitstring(89)) in (
+           let y = (
+             if false
+             then (9)
+             else (
+               let z = (9) in
+               let z = (core_models__ops__arith__f_add(z, 1)) in
+               core_models__ops__arith__f_add(z, 9)
+             )
+           ) in
+           let y = (core_models__ops__arith__f_add(y, 1)) in
+           y
+         )
+       ) in
+       ((), ()).
+
+letfun tests__legacy__lean_tests__lib__loops__loop1(wildcard63 : bitstring) =
        let x:nat = (0) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
- |x| { core::ops::arith::f_add(x, i) }
+ |x| { core_models::ops::arith::f_add(x, i) }
  })(x)
  }"
          )
        ) in
        x.
 
-letfun tests__legacy__lean_tests__lib__loops__loop2(wildcard40 : bitstring) =
+letfun tests__legacy__lean_tests__lib__loops__loop2(wildcard64 : bitstring) =
        let x:nat = (0) in
        let x = (
          rust_primitives__hax__failure(
-           "ExplicitRejection { reason: "a node of kind [Loop] have been found in the AST" }
-
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
 
 Note: the error was labeled with context `reject_not_in_ProVerif`.
 ",
            "{
- (for i in (core::iter::traits::collect::f_into_iter(core::ops::range::Range {
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
  f_start: 1,
  f_end: 10,
  })) {
  |x| {
  {
  let _: tuple0 = {
- (if core::cmp::f_eq(i, 5) {
+ (if core_models::cmp::f_eq(i, 5) {
  {
- let hoist1: rust_primitiv..."
+ let ..."
          )
        ) in
        x.
 
-letfun tests__legacy__lean_tests__lib__ite__test1(wildcard41 : bitstring) =
+letfun tests__legacy__lean_tests__lib__ite__test1(wildcard65 : bitstring) =
        let x = (if true then (0) else (1)) in
        if false then (2) else (3).
 
 letfun tests__legacy__lean_tests__lib__ite__test2(b : bool) =
-       let x = (core__ops__arith__f_add(1, if true then (0) else (1))) in
+       let x = (if b then (0) else (9)) in
        let y = (0) in
        let y = (
          if true
-         then (core__ops__arith__f_add(core__ops__arith__f_add(y, x), 1))
-         else (core__ops__arith__f_sub(core__ops__arith__f_sub(y, x), 1))
+         then
+           (core_models__ops__arith__f_add(
+              core_models__ops__arith__f_add(y, x), 1
+            ))
+         else (
+           core_models__ops__arith__f_sub(
+             core_models__ops__arith__f_sub(y, x), 1
+           )
+         )
        ) in
        if b
        then
-         (let z = (core__ops__arith__f_add(y, y)) in
-          core__ops__arith__f_add(core__ops__arith__f_add(z, y), x))
+         (let z = (core_models__ops__arith__f_add(y, y)) in
+          core_models__ops__arith__f_add(core_models__ops__arith__f_add(z, y), x
+          ))
        else (
-         let z = (core__ops__arith__f_sub(y, x)) in
-         core__ops__arith__f_add(core__ops__arith__f_add(z, y), x)
+         let z = (core_models__ops__arith__f_sub(y, x)) in
+         core_models__ops__arith__f_add(core_models__ops__arith__f_add(z, y), x)
        ).
 
-letfun tests__legacy__lean_tests__lib__comments__f(wildcard42 : bitstring) =
+letfun tests__legacy__lean_tests__lib__comments__f(wildcard66 : bitstring) =
        ().
 
 letfun tests__legacy__lean_tests__lib__comments__heavily_documented(
-         wildcard43 : bitstring
+         wildcard67 : bitstring
        ) =
        4.
 

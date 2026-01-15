@@ -1,7 +1,7 @@
 module Tests.Legacy__traits.Impl_expr_in_goal
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_T1 (v_Self: Type0) = { f_Assoc:Type0 }
 

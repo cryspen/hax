@@ -21,7 +21,7 @@ instance Tests.Legacy__enum_struct_variant.Impl :
 
 inductive Tests.Legacy__enum_struct_variant.EnumWithStructVariant : Type
 | Funds (balance : Tests.Legacy__enum_struct_variant.Money)
-    : Tests.Legacy__enum_struct_variant.EnumWithStructVariant 
+    : Tests.Legacy__enum_struct_variant.EnumWithStructVariant
 
 
 instance Tests.Legacy__enum_struct_variant.Impl_1 :

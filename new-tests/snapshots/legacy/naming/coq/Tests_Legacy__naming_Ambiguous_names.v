@@ -15,7 +15,7 @@ From Core Require Import Core.
 
 Definition debug (label : t_u32) (value : t_u32) : unit :=
   let args := (label,value) in
-  let args := [impl__new_display (args); impl__new_display ((sndargs))] in
+  let args := [impl__new_display ((fstargs)); impl__new_display ((sndargs))] in
   let _ := e_print (impl_1__new_v1 ([("["%string : string); ("] a="%string : string); ("
 "%string : string)]) (args)) in
   tt.

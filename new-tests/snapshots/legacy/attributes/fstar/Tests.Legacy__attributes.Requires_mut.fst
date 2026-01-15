@@ -1,7 +1,7 @@
 module Tests.Legacy__attributes.Requires_mut
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
-open Core
 open FStar.Mul
+open Core_models
 
 class t_Foo (v_Self: Type0) = {
   f_f_pre:x: u8 -> y: u8
@@ -17,7 +17,7 @@ class t_Foo (v_Self: Type0) = {
     -> pred:
       Type0
         { pred ==>
-          (let y_future, output_variable:(u8 & u8) = x1 in
+          (let (y_future: u8), (output_variable: u8) = x1 in
             output_variable =. y_future) };
   f_f:x0: u8 -> x1: u8 -> Prims.Pure (u8 & u8) (f_f_pre x0 x1) (fun result -> f_f_post x0 x1 result);
   f_g_pre:u8 -> u8 -> Type0;
