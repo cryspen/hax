@@ -22,9 +22,9 @@ serde_json.workspace = true
 annotate-snippets.workspace = true
 hax-adt-into.workspace = true
 tracing.workspace = true
-serde-brief ={ version = "0.1", features = ["std", "alloc"]}
 zstd = "0.13.1"
 miette = "7.2.0"
+ciborium = { version = "0.2", default-features = true }
 
 [features]
 rustc = ["hax-frontend-exporter/rustc"]
