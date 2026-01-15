@@ -1,5 +1,5 @@
 { craneLib, stdenv, makeWrapper, lib, rustc, rustc-docs, gcc, hax-engine
-, doCheck ? true, libz, libiconv }:
+, doCheck ? true, libz, just, libiconv }:
 let
   pname = "hax";
   is-webapp-static-asset = path:
@@ -63,16 +63,16 @@ let
     CI = "true";
     cargoBuildCommand = "true";
     checkPhaseCargoCommand = ''
-      SNAPS_DIR=test-harness/src/snapshots && rmdir "$SNAPS_DIR"
       TESTS_DIR=tests                      && rmdir "$TESTS_DIR"
-
-      ln -s ${../test-harness/src/snapshots}        "$SNAPS_DIR"
       cp -r --no-preserve=mode   ${../tests}        "$TESTS_DIR"
 
-      cargo test --test toolchain --profile release
+      cp ${../justfile} justfile
+
+      mv tests/snapshots tests/old-snapshots
+      just test
+      diff tests/snapshots tests/old-snapshots
     '';
-    buildInputs = binaries;
-    CARGO_TESTS_ASSUME_BUILT = "yes";
+    buildInputs = binaries ++ [ just ];
   });
 in stdenv.mkDerivation {
   name = hax.name;
