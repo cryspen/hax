@@ -25,16 +25,18 @@
       url = "github:rust-lang/rust-by-example";
       flake = false;
     };
+    opam-nix.url = "github:tweag/opam-nix";
   };
 
   outputs =
-    { flake-utils, nixpkgs, rust-overlay, crane, hacl-star, ... }@inputs:
+    { flake-utils, nixpkgs, rust-overlay, crane, opam-nix, hacl-star, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [ rust-overlay.overlays.default ];
         };
+        opam-lib = opam-nix.lib.${system};
         toolchain =
           (fromTOML (pkgs.lib.readFile ./rust-toolchain.toml)).toolchain;
         rustc = pkgs.rust-bin.fromRustupToolchain toolchain;
@@ -66,9 +68,21 @@
           fi
         '';
         ocamlPackages = pkgs.ocamlPackages;
+        ocaml-pkgs = opam-lib.buildOpamProject { } "hax-engine" ./engine { };
       in rec {
         packages = {
           inherit rustc ocamlformat rustfmt fstar hax-env rustc-docs;
+          xx = ocaml-pkgs.hax-engine.override (o: {
+            buildInputs = o.buildInputs ++ [
+              pkgs.cargo
+              rustc
+              packages.hax-rust-frontend.unwrapped
+              pkgs.writeScriptBin "hax-engine-names-extract" ''
+                #!${pkgs.stdenv.shell}
+                ${packages.hax-rust-frontend.hax-engine-names-extract}/bin/hax-engine-names-extract | sed 's|/nix/store/\(.\{6\}\)|/nix_store/\1-|g'
+              ''
+            ];
+          });
           docs = pkgs.python312Packages.callPackage ./docs {
             hax-frontend-docs = packages.hax-rust-frontend.docs;
             hax-engine-docs = packages.hax-engine.docs;
