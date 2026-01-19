@@ -396,7 +396,7 @@ declare_comparison_specs unsigned USize64 64
 end Rust_primitives.Hax.Machine_int
 
 @[simp, spec, hax_bv_decide]
-def Core.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
+def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
 
 abbrev Core.Cmp.PartialEq.eq {α} [BEq α] (a b : α) := BEq.beq a b
 
@@ -410,7 +410,7 @@ for each implementation of typeclasses
 
 -/
 
-namespace Core.Num.Impl_8
+namespace Core_models.Num.Impl_8
 @[simp, spec]
 def wrapping_add (x y: u32) : RustM u32 := pure (x + y)
 
@@ -434,7 +434,7 @@ def to_le_bytes (x:u32) : RustM (Vector u8 4) :=
     (x >>> 24 % 256).toUInt8,
   ]
 
-end Core.Num.Impl_8
+end Core_models.Num.Impl_8
 
 
 
@@ -579,161 +579,6 @@ end Cast
 
 /-
 
-# Folds
-
-Hax represents for-loops as folds over a range
-
--/
-section Fold
-
-/--
-
-Hax-introduced function for for-loops, represented as a fold of the body of the
-loop `body` from index `e` to `s`. If the invariant is not checked at runtime,
-only passed around
-
--/
-
-inductive Core.Ops.Control_flow.ControlFlow (α β: Type 0) where
-| Break (x: α)
-| Continue (y : β)
-open Core.Ops.Control_flow
-
-class Rust_primitives.Hax.Folds {int_type: Type} where
-  fold_range {α : Type}
-    (s e : int_type)
-    (inv : α -> int_type -> RustM Bool)
-    (init: α)
-    (body : α -> int_type -> RustM α)
-    : RustM α
-  fold_range_return  {α_acc α_ret : Type}
-    (s e: int_type)
-    (inv : α_acc -> int_type -> RustM Bool)
-    (init: α_acc)
-    (body : α_acc -> int_type ->
-      RustM (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc ))
-    : RustM (ControlFlow α_ret α_acc)
-
-instance : Coe Nat Nat where
-  coe x := x
-
-@[simp]
-instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
-  fold_range s e inv init body := do
-    let mut acc := init
-    for i in [s:e] do
-      acc := (← body acc i)
-    return acc
-
-  fold_range_return {α_acc α_ret} s e inv init body := do
-    let mut acc := init
-    for i in [s:e] do
-      match (← body acc i) with
-      | .Break (.Break res ) => return (.Break res)
-      | .Break (.Continue ⟨ ⟨ ⟩, res⟩) => return (.Continue res)
-      | .Continue acc' => acc := acc'
-    pure (ControlFlow.Continue acc)
-
-/-
-Nat-based specification for hax_folds_fold_range. It requires that the invariant
-holds on the initial value, and that for any index `i` between the start and end
-values, executing body of the loop on a value that satisfies the invariant
-produces a result that also satisfies the invariant.
-
--/
-@[spec]
-theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
-  (s e : Nat)
-  (inv : α -> Nat -> RustM Bool)
-  (init: α)
-  (body : α -> Nat -> RustM α) :
-  s ≤ e →
-  inv init s = pure true →
-  (∀ (acc:α) (i:Nat),
-    s ≤ i →
-    i < e →
-    inv acc i = pure true →
-    ⦃ ⌜ True ⌝ ⦄
-    (body acc i)
-    ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
-  ⦃ ⌜ True ⌝ ⦄
-  (Rust_primitives.Hax.Folds.fold_range s e inv init body)
-  ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
-:= by
-  intro h_inv_s h_le h_body
-  mvcgen [Spec.forIn_list, fold_range]
-  case inv1 =>
-    simp [Coe.coe]
-    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + suff.length) = pure true ⌝ )
-  case vc1.step _ x _ h_list _ h =>
-    intros
-    simp [Coe.coe] at h_list h
-    simp [Std.Range.toList] at h_list
-    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
-    let h_suff := Eq.symm h_suff
-    let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
-    mstart ; mspec h_body <;> simp [Coe.coe] at * <;> try grind
-  case vc2.pre | vc4.post.except =>
-    simp [Coe.coe] at * <;> try assumption
-  case vc3.post.success =>
-    simp at *
-    suffices (s + (e - s)) = e by (rw [← this]; assumption)
-    omega
-
-@[spec]
-theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
-  (s e : usize)
-  (inv : α -> usize -> RustM Bool)
-  (init: α)
-  (body : α -> usize -> RustM α) :
-  s.toNat ≤ e.toNat →
-  inv init s = pure true →
-  (∀ (acc:α) (i:usize),
-    s.toNat ≤ i.toNat →
-    i.toNat < e.toNat →
-    inv acc i = pure true →
-    ⦃ ⌜ True ⌝ ⦄
-    (body acc i)
-    ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
-  ⦃ ⌜ True ⌝ ⦄
-  (Rust_primitives.Hax.Folds.fold_range s e inv init body)
-  ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
-:= by
-  intro h_inv_s h_le h_body
-  have : s.toNat < USize64.size := by apply USize64.toNat_lt_size
-  have : e.toNat < USize64.size := by apply USize64.toNat_lt_size
-  mvcgen [Spec.forIn_list, fold_range]
-  case inv1 =>
-    simp [Coe.coe]
-    exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + (USize64.ofNat suff.length)) = pure true ⌝ )
-  case vc2.pre | vc4.post.except =>
-    simp [Coe.coe, USize64.ofNat] at * <;> try assumption
-  case vc3.post.success =>
-    simp at *
-    suffices (s + USize64.ofNat (USize64.toNat e - USize64.toNat s)) = e by rwa [← this]
-    rw [USize64.ofNat_sub, USize64.ofNat_toNat, USize64.ofNat_toNat] <;> try assumption
-    rw (occs := [2])[← USize64.sub_add_cancel (b := s) (a := e)]
-    rw [USize64.add_comm]
-  case vc1.step _ x _ h_list _ h =>
-    intros
-    simp [Coe.coe] at h_list h
-    simp [Std.Range.toList] at h_list
-    have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
-    let h_suff := Eq.symm h_suff
-    let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
-    unfold USize64.size at *
-    mstart ; mspec h_body <;> simp [Coe.coe] at *
-    . rw [← h_x, Nat.mod_eq_of_lt] <;> grind
-    . rw [← h_x, Nat.mod_eq_of_lt] <;> grind [Nat.add_sub_cancel']
-    . rw [← h_x, USize64.ofNat_add, USize64.ofNat_toNat]
-      rwa [h_pre, List.length_range'] at h
-    . rw [h_pre, List.length_range', ← h_x, USize64.ofNat_add, USize64.ofNat_toNat, USize64.add_assoc]
-      intro; assumption
-
-end Fold
-
-/-
-
 # Loops
 
 -/
@@ -796,7 +641,7 @@ section RustArray
 abbrev RustArray := Vector
 
 
-inductive Core.Array.TryFromSliceError where
+inductive Core_models.Array.TryFromSliceError where
   | array.TryFromSliceError
 
 def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
@@ -842,11 +687,11 @@ end RustArray
 -/
 
 /-- Type of ranges -/
-structure Core.Ops.Range.Range (α: Type) where
+structure Core_models.Ops.Range.Range (α: Type) where
   start : α
   _end : α
 
-open Core.Ops.Range
+open Core_models.Ops.Range
 
 /-
 
@@ -1013,7 +858,7 @@ def Rust_primitives.unsize {α n} (a: Vector α n) : RustM (Array α) :=
   pure (a.toArray)
 
 @[simp, spec]
-def Core.Slice.Impl.len α (a: Array α) : RustM usize := pure a.size
+def Core_models.Slice.Impl.len α (a: Array α) : RustM usize := pure a.size
 
 /-
 
@@ -1161,7 +1006,7 @@ structure Spec {α}
 # Miscellaneous
 
 -/
-def Core.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
+def Core_models.Ops.Deref.Deref.deref {α Allocator} (β : Type) (v: Alloc.Vec.Vec α Allocator)
   : RustM (Array α)
   := pure v
 
@@ -1187,3 +1032,10 @@ abbrev Prop.Impl.from_bool (b : Bool) : Prop := (b = true)
 abbrev Prop.Constructors.implies (a b : Prop) : Prop := a → b
 
 end Hax_lib
+
+namespace Rust_primitives.Hax
+
+  abbrev Never : Type := Empty
+  abbrev never_to_any.{u} {α : Sort u} : Never → α := Empty.elim
+
+end Rust_primitives.Hax

@@ -15,6 +15,14 @@ pub mod arith {
         type Output;
         fn div(self, rhs: Rhs) -> Self::Output;
     }
+    pub trait Neg {
+        type Output;
+        fn neg(self) -> Self::Output;
+    }
+    pub trait Rem<Rhs = Self> {
+        type Output;
+        fn rem(self, rhs: Rhs) -> Self::Output;
+    }
     pub trait AddAssign<Rhs = Self> {
         type Output;
         fn add_assign(self, rhs: Rhs) -> Self::Output;
@@ -31,12 +39,20 @@ pub mod arith {
         type Output;
         fn div_assign(self, rhs: Rhs) -> Self::Output;
     }
+    pub trait RemAssign<Rhs = Self> {
+        type Output;
+        fn rem_assign(self, rhs: Rhs) -> Self::Output;
+    }
 }
 
 pub mod bit {
     trait Shr<Rhs = Self> {
         type Output;
         fn shr(self, rhs: Rhs) -> Self::Output;
+    }
+    trait Shl<Rhs = Self> {
+        type Output;
+        fn shl(self, rhs: Rhs) -> Self::Output;
     }
     trait BitXor<Rhs = Self> {
         type Output;

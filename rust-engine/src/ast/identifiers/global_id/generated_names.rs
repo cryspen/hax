@@ -38,25 +38,17 @@ pub mod codegen {
     use crate::ast::Item;
     use crate::ast::identifiers::{
         GlobalId,
-        global_id::{DefIdInner, ExplicitDefId, compact_serialization},
+        global_id::{ExplicitDefId, compact_serialization},
     };
-    use crate::interning::Internable;
     use hax_frontend_exporter::DefKind;
 
     use std::collections::{HashMap, HashSet};
 
     /// Replace the crate name `"hax_engine_names"` with `"rust_primitives"` in the given `DefId`.
     fn rename_krate(def_id: &mut ExplicitDefId) {
-        fn inner(mut def_id: DefIdInner) -> DefIdInner {
-            if def_id.krate == "hax_engine_names" {
-                def_id.krate = "rust_primitives".into();
-            }
-            def_id.parent = def_id
-                .parent
-                .map(|parent| inner((*parent).clone()).intern());
-            def_id
+        if def_id.def_id.krate == "hax_engine_names" {
+            def_id.rename_krate("rust_primitives");
         }
-        def_id.def_id = inner(def_id.def_id.get().clone()).intern();
     }
 
     /// Visit items and collect all the `DefId`s
