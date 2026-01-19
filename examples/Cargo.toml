@@ -3,7 +3,6 @@ members = [
     "chacha20",
     "lean_chacha20",
     "lean_barrett",
-    "lean_tutorial",
     "limited-order-book",
     "sha256",
     "barrett",
