@@ -223,6 +223,7 @@ impl LeanPrinter {
     }
 
     /// Inject an identifier in before-last position while rendering
+    /// TODO: use `DefIdInner::kind` for this instead (https://github.com/cryspen/hax/issues/1877)
     pub fn render_with_injection(&self, id: &GlobalId, injection: &String) -> String {
         let rendered = self.render(&id.view());
         let (last, butlast) = rendered
