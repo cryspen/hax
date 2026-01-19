@@ -273,6 +273,78 @@ include Cyclic_modules.Bundle_enums_a {T_C as T_C}
 
 include Cyclic_modules.Bundle_enums_a {f as f}
 '''
+"Cyclic_modules.Issue_1823_.First_example.A.fst" = '''
+module Cyclic_modules.Issue_1823_.First_example.A
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+include Cyclic_modules.Issue_1823_.First_example.Bundle {t_A as t_A}
+
+include Cyclic_modules.Issue_1823_.First_example.Bundle {A as A}
+
+include Cyclic_modules.Issue_1823_.First_example.Bundle {impl__mkb as impl_A__mkb}
+'''
+"Cyclic_modules.Issue_1823_.First_example.B.fst" = '''
+module Cyclic_modules.Issue_1823_.First_example.B
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+include Cyclic_modules.Issue_1823_.First_example.Bundle {t_B as t_B}
+
+include Cyclic_modules.Issue_1823_.First_example.Bundle {B as B}
+
+include Cyclic_modules.Issue_1823_.First_example.Bundle {impl__mka as impl_B__mka}
+'''
+"Cyclic_modules.Issue_1823_.First_example.Bundle.fst" = '''
+module Cyclic_modules.Issue_1823_.First_example.Bundle
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+type t_A = | A : t_A
+
+type t_B = | B : t_B
+
+let impl__mkb (self: t_A) : t_B = B <: t_B
+
+let impl__mka (self: t_B) : t_A = A <: t_A
+'''
+"Cyclic_modules.Issue_1823_.Second_example.A.fst" = '''
+module Cyclic_modules.Issue_1823_.Second_example.A
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+include Cyclic_modules.Issue_1823_.Second_example.Bundle {call_b as call_b}
+
+include Cyclic_modules.Issue_1823_.Second_example.Bundle {a as a}
+'''
+"Cyclic_modules.Issue_1823_.Second_example.B.fst" = '''
+module Cyclic_modules.Issue_1823_.Second_example.B
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+include Cyclic_modules.Issue_1823_.Second_example.Bundle {call_a as call_a}
+
+include Cyclic_modules.Issue_1823_.Second_example.Bundle {b as b}
+'''
+"Cyclic_modules.Issue_1823_.Second_example.Bundle.fst" = '''
+module Cyclic_modules.Issue_1823_.Second_example.Bundle
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Core_models
+
+let a (_: Prims.unit) : Prims.unit = ()
+
+let call_a (_: Prims.unit) : Prims.unit = a ()
+
+let b (_: Prims.unit) : Prims.unit = ()
+
+let call_b (_: Prims.unit) : Prims.unit = b ()
+'''
 "Cyclic_modules.Late_skip_a.fst" = '''
 module Cyclic_modules.Late_skip_a
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"

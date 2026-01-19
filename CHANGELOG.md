@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+
+Changes to the frontend:
+
+Changes to cargo-hax:
+
+Changes to hax-lib:
+
+Changes to the Lean backend:
+
+Miscellaneous:
+
+## 0.3.6
+
+Changes to the Rust Engine:
  - Add a rejection phase for interleaving of expressions and statements not
    supported by the Lean do-notation syntax (#1739).
  - Add a phase to handle the monadic encoding: it explicitly introduces two new

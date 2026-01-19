@@ -11,7 +11,9 @@ let
     src = lib.cleanSourceWith {
       src = craneLib.path ./..;
       filter = path: type:
-        builtins.isNull (builtins.match ".*/tests/.*" path)
+        builtins.isNull
+        (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
+        && builtins.isNull (builtins.match ".*[.](md|svg)" path)
         && (craneLib.filterCargoSources path type
           || is-webapp-static-asset path);
     };
@@ -26,7 +28,14 @@ let
     };
   } else
     { });
+  # hax dependencies (without hax itself)
   cargoArtifacts = craneLib.buildDepsOnly (commonArgs // { pname = pname; });
+  # hax with cargo artifact for incremental compilation
+  hax_with_artifacts = craneLib.buildPackage (commonArgs // {
+    inherit cargoArtifacts pname;
+    doInstallCargoArtifacts = true;
+  });
+  # hax without cargo artifacts: only binaries
   hax = stdenv.mkDerivation {
     name = hax_with_artifacts.name;
     unpackPhase = "true";
@@ -36,10 +45,6 @@ let
       cp -r ${hax_with_artifacts}/bin $out/bin
     '';
   };
-  hax_with_artifacts = craneLib.buildPackage (commonArgs // {
-    inherit cargoArtifacts pname;
-    doInstallCargoArtifacts = true;
-  });
   hax_rust_engine = craneLib.buildPackage (commonArgs // {
     inherit cargoArtifacts;
     buildInputs = buildInputs ++ [ makeWrapper ];
