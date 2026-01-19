@@ -390,7 +390,7 @@ module Make (F : Features.T) = struct
       Set.equal items items');
     items'
 
-  (** Sort within each namespaces: items are first groupped by namespace, then
+  (** Sort within each namespaces: items are first grouped by namespace, then
       sorted topologically. *)
   let sort_namespace_wise (items : item list) : item list =
     let sorted_by_namespace =

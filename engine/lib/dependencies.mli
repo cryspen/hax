@@ -4,7 +4,7 @@ module Make (F : Features.T) : sig
   val uid_associated_items : AST.item list -> Ast.attrs -> AST.item list
   val bundle_cyclic_modules : AST.item list -> AST.item list
 
-  (** Sort within each namespaces: items are first groupped by namespace, then
+  (** Sort within each namespaces: items are first grouped by namespace, then
     sorted topologically. *)
   val sort_namespace_wise : AST.item list -> AST.item list
   (** Sort items regardless of their namespaces. *)
