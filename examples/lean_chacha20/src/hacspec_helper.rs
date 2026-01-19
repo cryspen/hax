@@ -114,13 +114,7 @@ pub(super) fn xor_state(mut state: State, other: State) -> State {
 theorem Lean_chacha20.Hacspec_helper.add_state_spec (state : (Vector u32 16)) (other : (Vector u32 16)) :
   ⦃ ⌜ True ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.add_state state other)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  have := USize.le_size
-  mvcgen [Lean_chacha20.Hacspec_helper.add_state]
-  <;> simp [Vector.size] at *
-  <;> apply (USize.lt_ofNat_iff _).mp
-  <;> omega
-  done
+  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by mvcgen [Lean_chacha20.Hacspec_helper.add_state] <;> grind
 "
 )]
 pub(super) fn add_state(mut state: State, other: State) -> State {
@@ -134,8 +128,7 @@ pub(super) fn add_state(mut state: State, other: State) -> State {
     "
 @[spec]
 theorem Lean_chacha20.Hacspec_helper.update_array_spec (a: (Vector u8 64)) (v: Array u8) :
-  v.size ≤ 64 →
-  ⦃ ⌜ True ⌝ ⦄
+  ⦃ ⌜ v.size ≤ 64 ⌝ ⦄
   (Lean_chacha20.Hacspec_helper.update_array a v)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
