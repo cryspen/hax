@@ -2,7 +2,7 @@
 authors:
   - alex
 title: "Verifying a real world Rust crate"
-date: 2026-01-13
+date: 2026-01-19
 ---
 
 # Verifying a while loop in Hax/Lean
