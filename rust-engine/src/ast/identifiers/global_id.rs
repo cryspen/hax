@@ -148,10 +148,8 @@ impl ExplicitDefId {
     }
 
     /// Change the krate name to `name`.
-    fn rename_krate(&self, name: &str) -> Self {
-        let mut def_id = self.clone();
-        def_id.def_id = def_id.def_id.rename_krate(name);
-        def_id
+    fn rename_krate(&mut self, name: &str) {
+        self.def_id = self.def_id.rename_krate(name);
     }
 
     /// Helper to get a `GlobalIdInner` out of an `ExplicitDefId`.
@@ -365,7 +363,8 @@ impl GlobalId {
 
     /// Change the krate name (the first element of the `GlobalId`) to `name`.
     pub fn rename_krate(self, name: &str) -> Self {
-        let concrete_id = ConcreteId::from_global_id(self).rename_krate(name);
+        let mut concrete_id = ConcreteId::from_global_id(self).clone();
+        concrete_id.rename_krate(name);
         Self(GlobalIdInner::Concrete(concrete_id).intern())
     }
 }
@@ -443,10 +442,8 @@ impl ConcreteId {
         }
     }
 
-    fn rename_krate(&self, name: &str) -> Self {
-        let mut global_id = self.clone();
-        global_id.def_id = global_id.def_id.rename_krate(name);
-        global_id
+    fn rename_krate(&mut self, name: &str) {
+        self.def_id.rename_krate(name);
     }
 
     /// Get a static reference to a `ConcreteId` out of a `GlobalId`.
