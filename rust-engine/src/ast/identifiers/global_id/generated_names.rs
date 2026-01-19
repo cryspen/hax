@@ -38,9 +38,8 @@ pub mod codegen {
     use crate::ast::Item;
     use crate::ast::identifiers::{
         GlobalId,
-        global_id::{DefIdInner, ExplicitDefId, compact_serialization},
+        global_id::{ExplicitDefId, compact_serialization},
     };
-    use crate::interning::Internable;
     use hax_frontend_exporter::DefKind;
 
     use std::collections::{HashMap, HashSet};
