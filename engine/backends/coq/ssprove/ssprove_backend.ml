@@ -579,7 +579,7 @@ module TransformToInputLanguage =
     |> Phases.Reject.Dyn
     |> Phases.Reject.Trait_item_default
     |> Phases.Bundle_cycles
-    |> Phases.Sort_items
+    |> Phases.Sort_items_namespace_wise
     |> SubtypeToInputLanguage
     |> Identity
   ]
