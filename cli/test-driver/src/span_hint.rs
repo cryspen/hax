@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use hax_frontend_exporter::{Attribute, AttributeKind, DefId, Item, ItemKind, Span};
+use hax_frontend_exporter::{Attribute, AttributeKind, DefId, FullDefKind, ItemKind, Span};
 
 #[derive(Debug)]
 /// Captures the best location to display diagnostics for a given definition.
@@ -17,28 +17,23 @@ pub struct SpanHint {
     pub module_file: Option<PathBuf>,
 }
 
-fn test_module_path(item: &Item<()>) -> Option<PathBuf> {
-    let path = item.span.filename.to_path()?;
+fn test_module_path(span: &Span, attributes: &Vec<Attribute>) -> Option<PathBuf> {
+    let path = span.filename.to_path()?;
     let dir = path.parent()?;
-    let ItemKind::Mod(_, _) = item.kind else {
-        return None;
-    };
-    item.attributes
-        .attributes
-        .iter()
-        .find_map(|attr| match attr {
-            Attribute::Parsed(AttributeKind::Path(relative_path, _span)) => {
-                Some(dir.join(relative_path).to_path_buf())
-            }
-            _ => None,
-        })
+    attributes.iter().find_map(|attr| match attr {
+        Attribute::Parsed(AttributeKind::Path(relative_path, _span)) => {
+            Some(dir.join(relative_path).to_path_buf())
+        }
+        _ => None,
+    })
 }
 
 impl SpanHint {
-    fn new(item: &Item<()>) -> Self {
+    fn new(span: &Span, attributes: Option<&Vec<Attribute>>) -> Self {
+        let module_file = attributes.and_then(|attributes| test_module_path(span, attributes));
         Self {
-            span: item.span.clone(),
-            module_file: test_module_path(item),
+            span: span.clone(),
+            module_file,
         }
     }
 
@@ -64,13 +59,35 @@ pub async fn span_hint(owner_id: &DefId) -> Result<Option<&'static SpanHint>> {
 }
 
 /// Builds the in-memory lookup table for span hints.
-pub fn init(items: &[Item<()>]) -> Result<()> {
+pub fn init(items: &hax_types::driver_api::Items<()>) -> Result<()> {
+    let v = match items {
+        hax_types::driver_api::Items::FullDef(full_defs) => full_defs
+            .iter()
+            .map(|item| {
+                let attributes = if let FullDefKind::Mod { .. } = item.kind {
+                    Some(&item.attributes)
+                } else {
+                    None
+                };
+                (
+                    item.this.def_id.clone(),
+                    SpanHint::new(&item.span, attributes),
+                )
+            })
+            .collect(),
+        hax_types::driver_api::Items::Legacy(items) => items
+            .iter()
+            .map(|item| {
+                let attributes = if let ItemKind::Mod(_, _) = item.kind {
+                    Some(&item.attributes.attributes)
+                } else {
+                    None
+                };
+                (item.owner_id.clone(), SpanHint::new(&item.span, attributes))
+            })
+            .collect(),
+    };
     SPAN_HINTS
-        .set(
-            items
-                .iter()
-                .map(|item| (item.owner_id.clone(), SpanHint::new(item)))
-                .collect(),
-        )
+        .set(v)
         .map_err(|_| anyhow::Error::msg("`collect` was called more than once"))
 }

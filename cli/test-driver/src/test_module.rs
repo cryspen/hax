@@ -104,21 +104,35 @@ async fn compute_def_id_attrs() -> Result<HashMap<DefId, Vec<Directive>>> {
 
     span_hint::init(&haxmeta.items)?;
 
-    haxmeta
-        .items
-        .iter()
-        .map(|item| {
-            let directives = item
-                .attributes
-                .attributes
-                .iter()
-                .map(crate::directives::directive_of_attribute)
-                .collect::<Result<Vec<Option<_>>>>()?
-                .into_iter()
-                .flatten();
-            Ok((item.owner_id.clone(), directives.collect()))
-        })
-        .collect()
+    match haxmeta.items {
+        hax_types::driver_api::Items::FullDef(full_defs) => full_defs
+            .iter()
+            .map(|item| {
+                let directives = item
+                    .attributes
+                    .iter()
+                    .map(crate::directives::directive_of_attribute)
+                    .collect::<Result<Vec<Option<_>>>>()?
+                    .into_iter()
+                    .flatten();
+                Ok((item.this.def_id.clone(), directives.collect()))
+            })
+            .collect(),
+        hax_types::driver_api::Items::Legacy(items) => items
+            .iter()
+            .map(|item| {
+                let directives = item
+                    .attributes
+                    .attributes
+                    .iter()
+                    .map(crate::directives::directive_of_attribute)
+                    .collect::<Result<Vec<Option<_>>>>()?
+                    .into_iter()
+                    .flatten();
+                Ok((item.owner_id.clone(), directives.collect()))
+            })
+            .collect(),
+    }
 }
 
 /// Compute a list of test modules for the Rust crate of the current working directory.
