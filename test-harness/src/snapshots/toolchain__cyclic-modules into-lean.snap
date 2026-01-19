@@ -175,10 +175,11 @@ inductive Cyclic_modules.Variant_constructor_a.Context : Type
 
 
 def Cyclic_modules.Variant_constructor_a.Impl.test
-  (x : (Core.Option.Option i32))
-  : RustM (Core.Option.Option Cyclic_modules.Variant_constructor_a.Context)
+  (x : (Core_models.Option.Option i32))
+  : RustM
+  (Core_models.Option.Option Cyclic_modules.Variant_constructor_a.Context)
   := do
-  (Core.Option.Impl.map
+  (Core_models.Option.Impl.map
     i32
     Cyclic_modules.Variant_constructor_a.Context
     (i32 -> RustM Cyclic_modules.Variant_constructor_a.Context)
