@@ -142,8 +142,40 @@ impl Backend for LeanBackend {
             .with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![Box::new(ExplicitMonadic)]
+    fn phases(&self) -> Vec<PhaseKind> {
+        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
+        vec![
+            RejectRawOrMutPointer.into(),
+            RewriteLocalSelf.into(),
+            TransformHaxLibInline.into(),
+            Specialize.into(),
+            DropSizedTrait.into(),
+            SimplifyQuestionMarks.into(),
+            AndMutDefsite.into(),
+            ReconstructAsserts.into(),
+            ReconstructForLoops.into(),
+            ReconstructWhileLoops.into(),
+            DirectAndMut.into(),
+            RejectArbitraryLhs.into(),
+            DropBlocks.into(),
+            DropMatchGuards.into(),
+            DropReferences.into(),
+            TrivializeAssignLhs.into(),
+            HoistSideEffects.into(),
+            HoistDisjunctivePatterns.into(),
+            SimplifyMatchReturn.into(),
+            LocalMutation.into(),
+            RewriteControlFlow.into(),
+            DropReturnBreakContinue.into(),
+            FunctionalizeLoops.into(),
+            RejectQuestionMark.into(),
+            TraitsSpecs.into(),
+            SimplifyHoisting.into(),
+            NewtypeAsRefinement.into(),
+            ReorderFields.into(),
+            SortItems.into(),
+            ExplicitMonadic,
+        ]
     }
 }
 
@@ -154,7 +186,10 @@ impl LeanPrinter {
     pub fn printable_item(item: &Item) -> bool {
         match &item.kind {
             // Other unprintable items
-            ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
+            ItemKind::Error(_)
+            | ItemKind::NotImplementedYet
+            | ItemKind::Use { .. }
+            | ItemKind::RustModule => false,
             // Printable items
             ItemKind::Fn { .. }
             | ItemKind::TyAlias { .. }
@@ -455,6 +490,7 @@ const _: () = {
                     TraitItemKind::Resugared(_) => {
                         unreachable!("This backend has no resugaring for trait items")
                     }
+                    TraitItemKind::Error(e) => docs![e],
                 }]
             }
         }
@@ -889,7 +925,7 @@ set_option linter.unusedVariables false
                 ]
                 .group(),
 
-                ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
+                ExprKind::Borrow { .. } => {
                     unreachable_by_invariant!(Drop_references)
                 }
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
@@ -1194,11 +1230,7 @@ set_option linter.unusedVariables false
                 ]
                 .nest(INDENT)
                 .group(),
-                ItemKind::Use {
-                    path: _,
-                    is_external: _,
-                    rename: _,
-                } => nil!(),
+                ItemKind::RustModule | ItemKind::Use { .. } => nil!(),
                 ItemKind::Quote { quote, origin: _ } => docs![quote],
                 ItemKind::NotImplementedYet => {
                     emit_error!(issue 1706, "Item unsupported by the Hax engine (unimplemented yet)")
@@ -1265,6 +1297,7 @@ set_option linter.unusedVariables false
                     name,
                     generics,
                     items,
+                    safety: _,
                 } => {
                     let generic_types = generics.type_constraints().collect::<Vec<_>>();
                     if generic_types.len() < generics.constraints.len() {
@@ -1431,7 +1464,6 @@ set_option linter.unusedVariables false
                     of_trait: (trait_, args),
                     items,
                     parent_bounds: _,
-                    safety: _,
                 } => docs![
                     // An impl is encoded as two Lean instances:
                     // One for the associated types...
@@ -1563,6 +1595,7 @@ set_option linter.unusedVariables false
                 ImplItemKind::Resugared(_) => {
                     unreachable!("This backend has no resugaring for impl items")
                 }
+                ImplItemKind::Error(err) => docs!(err),
             }
         }
 

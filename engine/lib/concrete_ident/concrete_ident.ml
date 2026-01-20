@@ -698,8 +698,10 @@ let of_name ~value = Concrete_ident_generated.def_id_of >> of_def_id ~value
 
 let eq_name name id =
   let of_name = Concrete_ident_generated.def_id_of name in
-  [%equal: Types.def_id_contents] of_name.contents.value
-    (Explicit_def_id.to_def_id id.def_id)
+  let a = of_name.contents.value in
+  let b = Explicit_def_id.to_def_id id.def_id in
+  String.equal a.krate b.krate
+  && [%eq: Types.disambiguated_def_path_item list] a.path b.path
 
 module DefaultNamePolicy : NAME_POLICY = struct
   let reserved_words = Hash_set.create (module String)

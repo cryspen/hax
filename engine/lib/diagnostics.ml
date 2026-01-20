@@ -10,6 +10,7 @@ module Phase = struct
   module Rejection = struct
     type t =
       | NotInBackendLang of Backend.t
+      | CoercionForUntypedPhase of string
       | ArbitraryLhs
       | Continue
       | Break

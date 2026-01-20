@@ -310,7 +310,7 @@ fn prune_sized_predicates<'tcx>(tcx: TyCtxt<'tcx>, generic_predicates: &mut Pred
     let predicates: Vec<(Clause<'tcx>, rustc_span::Span)> = generic_predicates
         .iter()
         .filter(|(clause, _)| {
-            clause.as_trait_clause().is_some_and(|trait_predicate| {
+            clause.as_trait_clause().is_none_or(|trait_predicate| {
                 !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
             })
         })

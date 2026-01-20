@@ -104,8 +104,21 @@ sinto_as_usize!(rustc_middle::ty, BoundVar);
 pub enum BoundRegionKind {
     Anon,
     NamedAnon(Symbol),
-    #[custom_arm(&FROM_TYPE::Named(def_id) => TO_TYPE::Named(def_id.sinto(s), s.base().tcx.item_name(def_id).sinto(s)),)]
-    Named(DefId, Symbol),
+    #[custom_arm(&FROM_TYPE::Named(def_id) => {
+        let tcx = s.base().tcx;
+        TO_TYPE::Named {
+            def_id: def_id.sinto(s),
+            name: tcx.item_name(def_id).sinto(s),
+            span: tcx.def_span(def_id).sinto(s),
+            attributes: get_def_attrs(tcx, def_id, get_def_kind(tcx, def_id)).sinto(s),
+        }
+    })]
+    Named {
+        def_id: DefId,
+        name: Symbol,
+        span: Span,
+        attributes: Vec<Attribute>,
+    },
     ClosureEnv,
 }
 
@@ -217,9 +230,13 @@ pub enum UserType {
 /// Reflects [`ty::VariantDiscr`]
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
-#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::VariantDiscr, state: S as gstate)]
+#[args(<'tcx, S: UnderOwnerState<'tcx>>, from: ty::VariantDiscr, state: S as s)]
 pub enum DiscriminantDefinition {
-    Explicit(DefId),
+    #[custom_arm(FROM_TYPE::Explicit(did) => TO_TYPE::Explicit { def_id: did.sinto(s), span: s.base().tcx.def_span(did).sinto(s) },)]
+    Explicit {
+        def_id: DefId,
+        span: Span,
+    },
     Relative(u32),
 }
 
@@ -263,6 +280,7 @@ pub struct FieldDef {
     pub vis: Visibility<DefId>,
     pub ty: Ty,
     pub span: Span,
+    pub attributes: Vec<Attribute>,
 }
 
 #[cfg(feature = "rustc")]
@@ -291,6 +309,7 @@ impl FieldDef {
             vis: fdef.vis.sinto(s),
             ty,
             span: tcx.def_span(fdef.did).sinto(s),
+            attributes: get_def_attrs(tcx, fdef.did, get_def_kind(tcx, fdef.did)).sinto(s),
         }
     }
 }
@@ -310,6 +329,7 @@ pub struct VariantDef {
     pub fields: IndexVec<FieldIdx, FieldDef>,
     /// Span of the definition of the variant
     pub span: Span,
+    pub attributes: Vec<Attribute>,
 }
 
 #[cfg(feature = "rustc")]
@@ -335,6 +355,7 @@ impl VariantDef {
                 .map(|f| FieldDef::sfrom(s, f, instantiate))
                 .collect(),
             span: s.base().tcx.def_span(def.def_id).sinto(s),
+            attributes: get_def_attrs(tcx, def.def_id, get_def_kind(tcx, def.def_id)).sinto(s),
         }
     }
 }
@@ -868,6 +889,13 @@ pub struct GenericParamDef {
         }
     })]
     pub variance: Option<Variance>,
+    #[value(s.base().tcx.def_span(self.def_id).sinto(s))]
+    pub span: Span,
+    #[value({
+        let tcx = s.base().tcx;
+        get_def_attrs(tcx, self.def_id, get_def_kind(tcx, self.def_id)).sinto(s)
+    })]
+    pub attributes: Vec<Attribute>,
 }
 
 /// Reflects [`ty::GenericParamDefKind`]

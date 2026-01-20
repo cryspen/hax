@@ -22,8 +22,7 @@ end)
 module Attrs = Attr_payloads.MakeBase (Error)
 
 let import_thir_items (include_clauses : Types.inclusion_clause list)
-    (items : Types.item_for__decorated_for__expr_kind list) : Ast.Rust.item list
-    =
+    (items : Types.item_for__thir_body list) : Ast.Rust.item list =
   let imported_items =
     List.map
       ~f:(fun item ->
@@ -100,9 +99,15 @@ let run (options : Types.engine_options) : Types.output =
     let include_clauses =
       options.backend.translation_options.include_namespaces
     in
+    let input =
+      match options.input with
+      | Types.FullDef _ ->
+          failwith "Internal error: the ocaml engine does not support FullDef"
+      | Types.Legacy i -> i
+    in
     let items =
-      Profiling.profile ThirImport (List.length options.input) (fun _ ->
-          import_thir_items include_clauses options.input)
+      Profiling.profile ThirImport (List.length input) (fun _ ->
+          import_thir_items include_clauses input)
     in
     let items =
       if options.backend.extract_type_aliases then items
@@ -157,7 +162,7 @@ let run (options : Types.engine_options) : Types.output =
   {
     diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;
     files = Option.value ~default:[] files;
-    debug_json = None;
+    debug_json = [];
   }
 
 (** Shallow parses a `id_table::Node<T>` (or a raw `T`) JSON *)
@@ -224,6 +229,10 @@ let parse_options () =
   Profiling.enabled := options.backend.profile;
   options
 
+let send_debug_strings =
+  Phase_utils.DebugBindPhase.export
+  >> List.iter ~f:(fun json -> DebugString json |> Hax_io.write)
+
 (** Entrypoint of the engine. Assumes `Hax_io.init` was called. *)
 let engine () =
   let options = Profiling.profile (Other "parse_options") 1 parse_options in
@@ -241,16 +250,12 @@ let engine () =
   in
   match result with
   | Ok results ->
-      let debug_json = Phase_utils.DebugBindPhase.export () in
-      let results = { results with debug_json } in
-      Logs.info (fun m -> m "Outputting JSON");
-
       List.iter
         ~f:(fun diag -> Diagnostic diag |> Hax_io.write)
         results.diagnostics;
       List.iter ~f:(fun file -> File file |> Hax_io.write) results.files;
 
-      Option.iter ~f:(fun json -> DebugString json |> Hax_io.write) debug_json;
+      send_debug_strings ();
       Hax_io.close ();
 
       Logs.info (fun m -> m "Exiting Hax engine (success)")
@@ -258,8 +263,62 @@ let engine () =
       Logs.info (fun m -> m "Exiting Hax engine (with an unexpected failure)");
       Printexc.raise_with_backtrace exn bt
 
+module ExportFullAst = Export_ast.Make (Features.Full)
 module ExportRustAst = Export_ast.Make (Features.Rust)
 module ExportLeanAst = Export_ast.Make (Lean_backend.InputLanguage)
+
+let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
+    Rust_engine_types.response =
+  Profiling.enabled := query.profiling;
+  if query.debug_bind_phase then Phase_utils.DebugBindPhase.enable ();
+  match query.kind with
+  | Types.ImportThir { input; translation_options } ->
+      let imported_items =
+        import_thir_items translation_options.include_namespaces input
+      in
+      let rust_ast_items =
+        List.concat_map ~f:ExportRustAst.ditem imported_items
+      in
+      Rust_engine_types.ImportThir { output = rust_ast_items }
+  | Types.ApplyPhases { input; phases } ->
+      let items = List.concat_map ~f:Import_ast.ditem input in
+      let module Phase =
+        (val List.map
+               ~f:(fun name ->
+                 Untyped_phases.phase_of_name name |> Option.value_exn)
+               phases
+             |> Untyped_phases.bind_list)
+      in
+      let items = Phase.ditems items in
+      let output = List.concat_map ~f:ExportFullAst.ditem items in
+      Rust_engine_types.ApplyPhases { output }
+  | Types.Print { printer = Fstar backend_options; input } ->
+      let open Fstar_backend in
+      let items = List.concat_map ~f:Import_ast.ditem input in
+
+      let items : AST.item list = Stdlib.Obj.magic items in
+      let items = post_process_items items in
+      let with_items = Attrs.with_items items in
+      let bundles, _ =
+        let module DepGraph = Dependencies.Make (InputLanguage) in
+        DepGraph.recursive_bundles items
+      in
+      let items =
+        List.filter items ~f:(fun (i : AST.item) ->
+            Attrs.late_skip i.attrs |> not)
+      in
+      Logs.info (fun m ->
+          m "Translating items with backend %s"
+            ([%show: Diagnostics.Backend.t] Fstar_backend.backend));
+      let files =
+        Profiling.profile (Backend Fstar_backend.backend) (List.length items)
+          (fun _ -> translate with_items backend_options items ~bundles)
+      in
+      List.iter ~f:(fun file -> File file |> Hax_io.write) files;
+      Rust_engine_types.PrintOk
+  | Types.Print _ ->
+      failwith
+        "Using the Ocaml engine for Printing only is reserved to the F* backend"
 
 (** Entry point for interacting with the Rust hax engine *)
 let driver_for_rust_engine () : unit =
@@ -269,23 +328,7 @@ let driver_for_rust_engine () : unit =
   in
   Concrete_ident.ImplInfoStore.init
     (Concrete_ident_generated.impl_infos @ query.impl_infos);
-  match query.kind with
-  | Types.ImportThir { input; apply_phases; translation_options } ->
-      (* Note: `apply_phases` comes from the type `QueryKind` in
-       `ocaml_engine.rs`. This is a temporary flag that applies some phases while
-       importing THIR. In the future (when #1550 is merged), we will be able to
-       import THIR and then apply phases. *)
-      let imported_items =
-        import_thir_items translation_options.include_namespaces input
-      in
-      let rust_ast_items =
-        if apply_phases then
-          let imported_items = Lean_backend.apply_phases imported_items in
-          List.concat_map
-            ~f:(fun item -> ExportLeanAst.ditem item)
-            imported_items
-        else List.concat_map ~f:ExportRustAst.ditem imported_items
-      in
-      let response = Rust_engine_types.ImportThir { output = rust_ast_items } in
-      Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
-      Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
+  let response = driver_for_rust_engine_inner query in
+  send_debug_strings ();
+  Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
+  Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
