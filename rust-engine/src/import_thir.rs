@@ -47,14 +47,24 @@ struct Context {
     owner_hint: Option<hax_frontend_exporter::DefId>,
 }
 
-fn is_self_type_constraint(gc: &ast::GenericConstraint) -> bool {
+fn is_self_type_constraint(
+    gc: &ast::GenericConstraint,
+    container: &frontend::AssocItemContainer,
+) -> bool {
+    let frontend::AssocItemContainer::TraitContainer { trait_ref } = container else {
+        return false;
+    };
+    let trait_ = trait_ref.contents().def_id.import_as_value();
+
     match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
+        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) =>
+            goal
             .args
             .first()
             .and_then(ast::GenericValue::expect_ty)
             .map(|ty| matches!(ty.0.as_ref(), ast::TyKind::Param(local) if local.0 == Symbol::new("Self")))
-            .unwrap_or(false),
+            .unwrap_or(false)
+            && goal.trait_ == trait_,
         _ => false,
     }
 }
@@ -1755,12 +1765,25 @@ fn import_trait_item(
     let span = item.span.import(context);
     let attributes = item.attributes.import(context);
     let meta = ast::Metadata { span, attributes };
-    let (frontend::FullDefKind::AssocConst { param_env, .. }
-    | frontend::FullDefKind::AssocFn { param_env, .. }
-    | frontend::FullDefKind::AssocTy { param_env, .. }) = &item.kind
+    let (frontend::FullDefKind::AssocConst {
+        param_env,
+        associated_item,
+        ..
+    }
+    | frontend::FullDefKind::AssocFn {
+        param_env,
+        associated_item,
+        ..
+    }
+    | frontend::FullDefKind::AssocTy {
+        param_env,
+        associated_item,
+        ..
+    }) = &item.kind
     else {
         unreachable!("Found associated item of an unknown kind.")
     };
+    let assoc_item_container = &associated_item.container;
     let mut generics = param_env.import(context);
     let mut imported_constraints: Vec<ast::GenericConstraint> = Vec::new();
     let mut is_assoc_ty = false;
@@ -1828,7 +1851,7 @@ fn import_trait_item(
     }
     generics
         .constraints
-        .retain(|gc| !is_self_type_constraint(gc));
+        .retain(|gc| !is_self_type_constraint(gc, assoc_item_container));
     for (idx, gc) in generics.constraints.iter_mut().enumerate() {
         if let ast::GenericConstraint::Type(impl_ident) = gc {
             impl_ident.name = impl_expr_name(idx as u64);
@@ -2380,12 +2403,6 @@ pub fn import_item(
                 parent_bounds.retain(|(impl_expr, _)| {
                     matches!(impl_expr.goal.args.first(), Some(ast::GenericValue::Ty(arg_ty)) if arg_ty == self_ty)
                 });
-                generics
-                    .constraints
-                    .retain(|gc| !is_constraint_on_ty(gc, self_ty));
-                if generics.constraints.len() > 1 {
-                    generics.constraints.truncate(1);
-                }
                 ast::ItemKind::Impl {
                     generics,
                     self_ty: self_ty.clone(),
