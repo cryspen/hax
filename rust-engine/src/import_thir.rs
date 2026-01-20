@@ -69,18 +69,6 @@ fn is_self_type_constraint(
     }
 }
 
-fn is_constraint_on_ty(gc: &ast::GenericConstraint, ty: &ast::Ty) -> bool {
-    match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
-            .args
-            .first()
-            .and_then(ast::GenericValue::expect_ty)
-            .map(|arg| arg == ty)
-            .unwrap_or(false),
-        _ => false,
-    }
-}
-
 fn resugar_index_mut(expr: &ast::Expr) -> Option<(&ast::Expr, &ast::Expr)> {
     if let ast::ExprKind::App { head, args, .. } = expr.kind()
         && let ast::ExprKind::GlobalId(method) = head.kind()
