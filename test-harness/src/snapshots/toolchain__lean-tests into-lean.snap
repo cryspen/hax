@@ -568,6 +568,32 @@ opaque Lean_tests.Opaque.an_opaque_fn
   : RustM Rust_primitives.Hax.Tuple0
 
 
+class Lean_tests.Opaque.T.AssociatedTypes (Self : Type) where
+  A : Type
+
+attribute [reducible] Lean_tests.Opaque.T.AssociatedTypes.A
+
+abbrev Lean_tests.Opaque.T.A :=
+  Lean_tests.Opaque.T.AssociatedTypes.A
+
+class Lean_tests.Opaque.T
+  (Self : Type)
+  [associatedTypes : outParam (Lean_tests.Opaque.T.AssociatedTypes (Self :
+      Type))]
+  where
+  f (Self) : (Rust_primitives.Hax.Tuple0 -> RustM Rust_primitives.Hax.Tuple0)
+
+structure Lean_tests.Opaque.S where
+
+
+@[instance] opaque Lean_tests.Opaque.Impl.AssociatedTypes :
+  Lean_tests.Opaque.T.AssociatedTypes Lean_tests.Opaque.S :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Lean_tests.Opaque.Impl :
+  Lean_tests.Opaque.T Lean_tests.Opaque.S :=
+  by constructor <;> exact Inhabited.default
+
 def Lean_tests.Specs.test (x : u8) : RustM u8 := do (pure x)
 
 @[spec]
