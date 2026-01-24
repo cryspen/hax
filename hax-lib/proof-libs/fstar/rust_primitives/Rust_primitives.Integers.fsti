@@ -252,17 +252,23 @@ let gte (#t:inttype) (a:int_t t) (b:int_t t) = v a >= v b
 
 /// Bitwise Operations
 
-/// Todo: define bitvector-based normalizable definitions
-///       for all these operations
+/// Note: logxor, logand, and logor are defined directly using
+/// FStar.UInt (for unsigned types) and FStar.Int (for signed types).
+/// This makes equivalence proofs trivial by definition.
 
-let ones (#t:inttype) : n:int_t t =
+let ones (#t:inttype) : int_t t =
   if unsigned t then mk_int #t (pow2 (bits t) - 1)
   else mk_int #t (-1)
 
-let zero (#t:inttype) : n:int_t t =
+let zero (#t:inttype) : int_t t =
   mk_int #t 0
 
-val lognot: #t:inttype -> int_t t -> int_t t
+/// Bitwise NOT
+let lognot (#t:inttype) (a:int_t t) : int_t t =
+  if unsigned t
+  then mk_int #t (pow2 (bits t) - 1 - v a)
+  else mk_int #t (-1 - v a)
+
 val lognot_lemma: #t:inttype -> a:int_t t -> Lemma
   (lognot #t zero == ones /\
    lognot #t ones == zero /\
@@ -271,11 +277,19 @@ val lognot_lemma: #t:inttype -> a:int_t t -> Lemma
    (unsigned t ==> v (lognot a)  = pow2 (bits t) - 1 - v a)
    )
 
-val logxor: #t:inttype
-  -> int_t t
-  -> int_t t
-  -> int_t t
- 
+/// Equivalence with FStar.UInt.lognot for unsigned types
+let lognot_equiv (#t: inttype{unsigned t}) (a: int_t t)
+  : Lemma (v (lognot a) == FStar.UInt.lognot #(bits t) (v a))
+  = FStar.UInt.lemma_lognot_value_mod #(bits t) (v a)
+
+
+/// Bitwise XOR
+let logxor (#t:inttype) (a:int_t t) (b:int_t t) : int_t t =
+  if unsigned t then
+    mk_int #t (FStar.UInt.logxor #(bits t) (v a) (v b))
+  else
+    mk_int #t (FStar.Int.logxor #(bits t) (v a) (v b))
+
 val logxor_lemma: #t:inttype -> a:int_t t -> b:int_t t -> Lemma
   (a `logxor` a == zero /\
    (a `logxor` b == zero ==> b == a) /\
@@ -285,11 +299,13 @@ val logxor_lemma: #t:inttype -> a:int_t t -> b:int_t t -> Lemma
    a `logxor` zero == a /\
    ones `logxor` a == lognot a /\
    a `logxor` ones == lognot a)
-    
-val logand: #t:inttype
-  -> int_t t
-  -> int_t t
-  -> int_t t
+
+/// Bitwise AND
+let logand (#t:inttype) (a:int_t t) (b:int_t t) : int_t t =
+  if unsigned t then
+    mk_int #t (FStar.UInt.logand #(bits t) (v a) (v b))
+  else
+    mk_int #t (FStar.Int.logand #(bits t) (v a) (v b))
 
 val logand_lemma: #t:inttype -> a:int_t t -> b:int_t t ->
   Lemma (logand a zero == zero /\
@@ -309,10 +325,12 @@ val logand_mask_lemma: #t:inttype
          mk_int (v a % pow2 m))
   [SMTPat (logand #t a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)))]
 
-val logor: #t:inttype
-  -> int_t t
-  -> int_t t
-  -> int_t t
+/// Bitwise OR
+let logor (#t:inttype) (a:int_t t) (b:int_t t) : int_t t =
+  if unsigned t then
+    mk_int #t (FStar.UInt.logor #(bits t) (v a) (v b))
+  else
+    mk_int #t (FStar.Int.logor #(bits t) (v a) (v b))
 
 val logor_disjoint: #t:inttype -> a:int_t t -> b:int_t t -> m:nat{m < bits t} ->
   Lemma
@@ -326,6 +344,7 @@ val logor_lemma: #t:inttype -> a:int_t t -> b:int_t t ->
          logor ones a == ones /\
          ((v a >= 0 /\ v b >= 0) ==> (v (logor a b) >= v a /\ v (logor a b) >= v b)))
 
+/// Shift right
 unfold type shiftval (t:inttype) (t':inttype) =
      b:int_t t'{v b >= 0 /\ v b < bits t}
 unfold type rotval (t:inttype) (t':inttype) =
@@ -342,9 +361,18 @@ val shift_right_lemma (#t:inttype) (#t':inttype)
     (a:int_t t) (b:shiftval t t'):
     Lemma (v (shift_right #t #t' a b) == (v a / pow2 (v b)))
           [SMTPat (shift_right #t #t' a b)]
-    
-val shift_left (#t:inttype) (#t':inttype)
-    (a:int_t t) (b:shiftval t t') : int_t t
+
+/// Equivalence with FStar.UInt.shift_right for unsigned types
+let shift_right_equiv (#t: inttype{unsigned t}) (#t': inttype)
+  (a: int_t t) (s: shiftval t t')
+  : Lemma (v (shift_right a s) == FStar.UInt.shift_right #(bits t) (v a) (v s))
+  = FStar.UInt.shift_right_value_lemma #(bits t) (v a) (v s)
+
+/// Shift left
+[@"opaque_to_smt"]
+let shift_left (#t:inttype) (#t':inttype)
+    (a:int_t t) (b:shiftval t t') : int_t t =
+    mk_int #t ((v a * pow2 (v b)) @%. t)
 
 val shift_left_positive_lemma (#t:inttype) (#t':inttype)
     (a:int_t t) (b:shiftval t t'):
@@ -352,17 +380,33 @@ val shift_left_positive_lemma (#t:inttype) (#t':inttype)
           (ensures ((v (shift_left #t #t' a b) == (v a * pow2 (v b)) @%. t)))
           [SMTPat (shift_left #t #t' a b)]
 
+/// Equivalence with FStar.UInt.shift_left for unsigned types
+let shift_left_equiv (#t: inttype{unsigned t}) (#t': inttype)
+  (a: int_t t) (s: shiftval t t')
+  : Lemma (v (shift_left a s) == FStar.UInt.shift_left #(bits t) (v a) (v s))
+  = FStar.UInt.shift_left_value_lemma #(bits t) (v a) (v s)
 
-val rotate_right: #t:inttype{unsigned t} -> #t':inttype
-  -> a:int_t t
-  -> rotval t t'
-  -> int_t t
+/// Rotate right
+[@"opaque_to_smt"]
+let rotate_right (#t:inttype{unsigned t}) (#t':inttype)
+  (a:int_t t) (s:rotval t t') : int_t t =
+  let n = bits t in
+  let shift = v s in
+  let low_bits = v a % pow2 shift in
+  let high_bits = v a / pow2 shift in
+  mk_int #t ((low_bits * pow2 (n - shift) + high_bits) % pow2 n)
 
-val rotate_left: #t:inttype{unsigned t} -> #t':inttype
-  -> a:int_t t
-  -> rotval t t'
-  -> int_t t
+/// Rotate left
+[@"opaque_to_smt"]
+let rotate_left (#t:inttype{unsigned t}) (#t':inttype)
+  (a:int_t t) (s:rotval t t') : int_t t =
+  let n = bits t in
+  let shift = v s in
+  let high_bits = (v a * pow2 shift) / pow2 n in
+  let low_bits = (v a * pow2 shift) % pow2 n in
+  mk_int #t ((low_bits + high_bits) % pow2 n)
 
+/// Flip argument versions of shift/rotate (shift amount first, value second)
 let shift_right_i (#t:inttype) (#t':inttype) (s:shiftval t t') (u:int_t t) : int_t t = shift_right u s
 
 let shift_left_i (#t:inttype) (#t':inttype) (s:shiftval t t') (u:int_t t{v u >= 0}) : int_t t = shift_left u s
@@ -371,9 +415,11 @@ let rotate_right_i (#t:inttype{unsigned t}) (#t':inttype) (s:rotval t t') (u:int
 
 let rotate_left_i (#t:inttype{unsigned t}) (#t':inttype) (s:rotval t t') (u:int_t t) : int_t t = rotate_left u s
 
+/// Absolute value
 let abs_int (#t:inttype) (a:int_t t{minint t < v a}) =
     mk_int #t (abs (v a))
 
+/// Negation (signed types only)
 let neg (#t:inttype{signed t}) (a:int_t t{range (0 - v a) t}) =
     mk_int #t (0 - (v a))
 
