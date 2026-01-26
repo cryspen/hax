@@ -74,11 +74,11 @@ function extract_lean() {
     
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
-    sed -i 's/import Hax/import Hax.Core/g' proofs/lean/extraction/Core_models.lean
+    sed -i 's/import Hax/import Hax.MissingCore/g' proofs/lean/extraction/Core_models.lean
     sed -i 's/def Core_models\.Cmp\.Ordering /def Core_models.Cmp.Ordering_ /g' proofs/lean/extraction/Core_models.lean # Issue #1646
     sed -i 's/Core_models.Convert.From.from/Core_models.Convert.From._from/g' proofs/lean/extraction/Core_models.lean # Issue #1853
     
-    cp proofs/lean/extraction/Core_models.lean ../proof-libs/lean/Hax/CoreModels.lean
+    cp proofs/lean/extraction/Core_models.lean ../proof-libs/lean/Hax/Core_models/Extracted.lean
 }
 
 function init_vars() {
