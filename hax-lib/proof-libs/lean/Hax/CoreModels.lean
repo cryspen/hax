@@ -341,7 +341,7 @@ class Core_models.Convert.From
   [associatedTypes : outParam (Core_models.Convert.From.AssociatedTypes (Self :
       Type) (T : Type))]
   where
-  __from (Self T) : (T -> RustM Self)
+  _from (Self T) : (T -> RustM Self)
 
 @[reducible] instance Core_models.Convert.Impl.AssociatedTypes
   (T : Type)
@@ -358,7 +358,7 @@ instance Core_models.Convert.Impl
   :
   Core_models.Convert.Into T U
   where
-  into := fun (self : T) => do (Core_models.Convert.From.__from U T self)
+  into := fun (self : T) => do (Core_models.Convert.From._from U T self)
 
 structure Core_models.Convert.Infallible where
 
@@ -370,7 +370,7 @@ structure Core_models.Convert.Infallible where
 instance Core_models.Convert.Impl_3 (T : Type) :
   Core_models.Convert.From T T
   where
-  __from := fun (x : T) => do (pure x)
+  _from := fun (x : T) => do (pure x)
 
 class Core_models.Convert.AsRef.AssociatedTypes (Self : Type) (T : Type) where
 
@@ -2320,7 +2320,7 @@ instance Core_models.Convert.Impl_1
   where
   try_from := fun (x : T) => do
     (pure (Core_models.Result.Result.Ok
-      (← (Core_models.Convert.From.__from U T x))))
+      (← (Core_models.Convert.From._from U T x))))
 
 @[reducible] instance Core_models.Convert.Impl_2.AssociatedTypes
   (T : Type)
