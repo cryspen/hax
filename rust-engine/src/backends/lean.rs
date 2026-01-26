@@ -107,12 +107,7 @@ impl RenderView for LeanPrinter {
             },
             _ => None,
         })
-        .unwrap_or(
-            default::render_path_segment(self, chunk)
-                .into_iter()
-                .map(|s| Self::escape(&s))
-                .collect(),
-        )
+        .unwrap_or(default::render_path_segment(self, chunk))
     }
 }
 
