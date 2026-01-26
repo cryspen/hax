@@ -42,10 +42,10 @@ macro "declare_Hax_cast_instances" : command => do
       let dstIdent := mkIdent dstName
       let toInt ← if srcSigned then `(x.toInt) else `(Int.ofNat x.toNat)
       let result ←
-        if dstSigned then
-          `($(mkIdent (dstName ++ `ofInt)) $toInt)
+        if dstName == srcName then
+          `(x)
         else
-          `($(mkIdent (dstName ++ `ofNat)) (($toInt).emod $(mkIdent (dstName ++ `size))).toNat)
+          `($(mkIdent (srcName ++ dstName.appendBefore "to")) x)
       cmds := cmds.push $ ← `(
         @[spec] instance : Cast $srcIdent $dstIdent where cast x := pure $result
       )
