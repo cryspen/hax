@@ -3,8 +3,14 @@ set -e
 
 function extract_fstar() {
     go_to "./"
-    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i '-**::ops::arith::** -**::convert::**' fstar --interfaces '+!**::num::* +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::num +!core_models::ops::bit'
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into fstar --interfaces '+!core_models::str::* +!**::num::error +!**::panicking::internal +!core_models::borrow +!core_models::default +!core_models::error +!core_models::hash +!core_models::hint +!core_models::ops::bit +!core_models::ops::arith +!core_models::fmt +!core_models::fmt::rt +!core_models::mem +!core_models::mem::*'
     cp proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p std \; into -i '-core_models::**' fstar --interfaces '+!**' 
+    cp std/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p alloc \; into fstar --interfaces '+!**::collections::btree::** +!**::collections::vec_deque::**' 
+    cp alloc/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
+    HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax -C -p rand_core \; into fstar --interfaces '+!**' 
+    cp rand_core/proofs/fstar/extraction/*.fst* ../proof-libs/fstar/core
 }
 
 function extract_lean() {
@@ -16,6 +22,7 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
+    LEAN_FILTERS+=" -core_models::iter::traits::iterator::IteratorMethods" # Issue #1710
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     sed -i 's/import Hax/import Hax.Core/g' proofs/lean/extraction/Core_models.lean

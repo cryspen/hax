@@ -136,6 +136,17 @@ let process_order
               let other_side:Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global =
                 if other.f_quantity >. mk_u64 0
                 then
+                  let _:Prims.unit =
+                    Hax_lib.v_assume (b2t
+                        ((Alloc.Collections.Binary_heap.impl_11__len #v_T
+                              #Alloc.Alloc.t_Global
+                              other_side
+                            <:
+                            usize) <.
+                          Core_models.Num.impl_usize__MAX
+                          <:
+                          bool))
+                  in
                   let other_side:Alloc.Collections.Binary_heap.t_BinaryHeap v_T Alloc.Alloc.t_Global
                   =
                     Alloc.Collections.Binary_heap.impl_10__push #v_T
@@ -152,6 +163,13 @@ let process_order
                   in
                   other_side
                 else other_side
+              in
+              let _:Prims.unit =
+                Hax_lib.v_assume (b2t
+                    ((Alloc.Vec.impl_1__len #t_Match #Alloc.Alloc.t_Global matches <: usize) <.
+                      Core_models.Num.impl_usize__MAX
+                      <:
+                      bool))
               in
               let matches:Alloc.Vec.t_Vec t_Match Alloc.Alloc.t_Global =
                 Alloc.Vec.impl_1__push #t_Match #Alloc.Alloc.t_Global matches m

@@ -18,6 +18,7 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
     let mut v = vec![()];
     v[0];
     v[0] = ();
+    let _ = v.as_slice().to_vec();
     use std::ops::FromResidual;
     let _ = Result::<String, i64>::from_residual(Err(3u8));
     let _ = Box::new(());
@@ -90,6 +91,10 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
         let _: u32 = a.concretize();
     }
 
+    fn index_mut<I, T: std::ops::IndexMut<I>>(mut x: T, index: I) {
+        x.index_mut(index);
+    }
+
     fn question_mark_result<A, B: From<A>>(x: A) -> Result<(), B> {
         Err(x)?;
         Ok(())
@@ -149,6 +154,10 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
         use std::ops::DerefMut;
         fn f<T: DerefMut>(x: T) {
             let _: &mut _ = { x }.deref_mut();
+        }
+        use std::ops::Deref;
+        fn g<T: Deref>(x: T) {
+            let _: &_ = { x }.deref();
         }
     };
 
@@ -286,6 +295,11 @@ mod hax {
         fn lt() {}
         fn ge() {}
         fn gt() {}
+
+        fn add_with_overflow() {}
+        fn sub_with_overflow() {}
+        fn mul_with_overflow() {}
+        fn cmp() {}
     }
 
     mod control_flow_monad {
@@ -308,4 +322,8 @@ mod hax {
         fn lift() {}
         fn pure() {}
     }
+}
+
+mod arithmetic {
+    fn neg() {}
 }

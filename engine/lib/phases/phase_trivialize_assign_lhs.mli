@@ -6,6 +6,7 @@ module Make (F : Features.T) : sig
       include F
       include Features.Off.Nontrivial_lhs
       include Features.On.Construct_base
+      include Features.On.Slice
     end
 
     module A = Ast.Make (F)

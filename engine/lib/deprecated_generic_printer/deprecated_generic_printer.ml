@@ -78,6 +78,7 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
         method lhs : lhs fn =
           function
           | LhsLocalVar { var; _ } -> print#local_ident var
+          | LhsVecRef { e; _ } -> print#lhs e
           | LhsArbitraryExpr { e; _ } -> print#expr_at Lhs_LhsArbitraryExpr e
           | LhsFieldAccessor { e; field; _ } ->
               print#lhs e |> parens

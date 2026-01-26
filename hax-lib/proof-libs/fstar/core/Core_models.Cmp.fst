@@ -1,8 +1,7 @@
 module Core_models.Cmp
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
-
-open Rust_primitives.Integers
+open Rust_primitives
 
 class t_PartialEq (v_Self: Type0) (v_Rhs: Type0) = {
   f_eq_pre:self_: v_Self -> other: v_Rhs -> pred: Type0{true ==> pred};
@@ -68,26 +67,26 @@ let impl (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_PartialE
   }
 
 class t_PartialOrdDefaults (v_Self: Type0) (v_Rhs: Type0) = {
-  f_lt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_lt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_lt_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_lt:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_lt_pre #i0 x0 x1) (fun result -> f_lt_post #i0 x0 x1 result);
-  f_le_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_lt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_lt:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_lt_pre #i1 x0 x1) (fun result -> f_lt_post #i1 x0 x1 result);
+  f_le_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_le_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_le:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_le_pre #i0 x0 x1) (fun result -> f_le_post #i0 x0 x1 result);
-  f_gt_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_le_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_le:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_le_pre #i1 x0 x1) (fun result -> f_le_post #i1 x0 x1 result);
+  f_gt_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_gt_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_gt:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_gt_pre #i0 x0 x1) (fun result -> f_gt_post #i0 x0 x1 result);
-  f_ge_pre:{| i0: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
+  f_gt_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_gt:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_gt_pre #i1 x0 x1) (fun result -> f_gt_post #i1 x0 x1 result);
+  f_ge_pre:{| i1: t_PartialOrd v_Self v_Rhs |} -> self_: v_Self -> y: v_Rhs
     -> pred: Type0{true ==> pred};
-  f_ge_post:{| i0: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
-  f_ge:{| i0: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure bool (f_ge_pre #i0 x0 x1) (fun result -> f_ge_post #i0 x0 x1 result)
+  f_ge_post:{| i1: t_PartialOrd v_Self v_Rhs |} -> v_Self -> v_Rhs -> bool -> Type0;
+  f_ge:{| i1: t_PartialOrd v_Self v_Rhs |} -> x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure bool (f_ge_pre #i1 x0 x1) (fun result -> f_ge_post #i1 x0 x1 result)
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

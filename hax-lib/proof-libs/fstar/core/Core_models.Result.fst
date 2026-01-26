@@ -1,6 +1,7 @@
 module Core_models.Result
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 include Core_models.Bundle {t_Result as t_Result}
 

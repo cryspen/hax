@@ -1,9 +1,9 @@
 module Std.Io.Error
-
-open Core_models
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
-type t_Error = { f__hax_placeholder:Prims.unit }
+type t_Error = | Error : t_Error
 
 type t_ErrorKind =
   | ErrorKind_NotFound : t_ErrorKind
@@ -48,4 +48,7 @@ type t_ErrorKind =
   | ErrorKind_InProgress : t_ErrorKind
   | ErrorKind_Other : t_ErrorKind
 
-val impl_Error__kind: t_Error -> t_ErrorKind
+val t_ErrorKind_cast_to_repr (x: t_ErrorKind)
+    : Prims.Pure isize Prims.l_True (fun _ -> Prims.l_True)
+
+val impl_Error__kind (self: t_Error) : Prims.Pure t_ErrorKind Prims.l_True (fun _ -> Prims.l_True)

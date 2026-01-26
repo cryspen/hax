@@ -1,3 +1,4 @@
+#[cfg(feature = "rustc")]
 use crate::prelude::*;
 
 #[cfg(feature = "rustc")]
