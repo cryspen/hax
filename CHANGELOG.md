@@ -44,6 +44,7 @@ Changes to hax-lib:
  - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
  - Lean lib: Add support for while loops (#1857, #1863)
  - Lean lib: use Rust core models (#1865)
+ - Lean lib: specs for negation (#1891)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
