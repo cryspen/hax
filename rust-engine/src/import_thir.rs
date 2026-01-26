@@ -1800,12 +1800,17 @@ fn import_trait_item(
         }
         frontend::FullDefKind::AssocFn { sig, param_env, .. } => {
             generics = import_generics(context, &sig.bound_vars, param_env);
-            let inputs = sig
+            let inputs: Vec<ast::Ty> = sig
                 .value
                 .inputs
                 .iter()
                 .map(|ty| ty.spanned_import(context, span))
                 .collect();
+            let inputs = if inputs.is_empty() {
+                vec![ast::TyKind::unit().promote()]
+            } else {
+                inputs
+            };
             let output = sig.value.output.spanned_import(context, span);
             ast::TraitItemKind::Fn(ast::TyKind::Arrow { inputs, output }.promote())
         }
@@ -2292,7 +2297,7 @@ pub fn import_item(
             items,
             ..
         } => {
-            let mut generics = param_env.import(context);
+            let generics = param_env.import(context);
             let trait_ref = trait_pred.trait_ref.contents();
             let of_trait: (ast::GlobalId, Vec<ast::GenericValue>) = (
                 trait_ref.def_id.import_as_nonvalue(),
