@@ -1496,64 +1496,107 @@ set_option linter.unusedVariables false
                     items,
                     parent_bounds: _,
                     safety: _,
-                } => docs![
-                    // An impl is encoded as two Lean instances:
-                    // One for the associated types...
+                } => {
+                    let opaque = item.is_opaque();
                     docs![
+                        // An impl is encoded as two Lean instances:
+                        // One for the associated types...
                         docs![
-                            reflow!("@[reducible] instance "),
-                            ident,
-                            ".AssociatedTypes",
+                            docs![
+                                if opaque {
+                                    reflow!("@[instance] opaque ")
+                                } else {
+                                    reflow!("@[reducible] instance ")
+                                },
+                                ident,
+                                ".AssociatedTypes",
+                                line!(),
+                                generics,
+                                ":"
+                            ]
+                            .group(),
                             line!(),
-                            generics,
-                            ":"
+                            docs![
+                                trait_,
+                                ".AssociatedTypes",
+                                concat!(args.iter().map(|gv| docs![line!(), gv]))
+                            ]
+                            .group(),
+                            if opaque {
+                                docs![
+                                    softline!(),
+                                    ":=",
+                                    line!(),
+                                    reflow!("by constructor <;> exact Inhabited.default")
+                                ]
+                            } else {
+                                docs![line!(), "where"]
+                            },
                         ]
-                        .group(),
-                        line!(),
+                        .group()
+                        .nest(INDENT),
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![zip_left!(
+                                hardline!(),
+                                items.iter().filter(|item| {
+                                    matches!(item.kind, ImplItemKind::Type { .. })
+                                })
+                            )]
+                            .nest(INDENT)
+                        },
+                        hardline!(),
+                        hardline!(),
+                        // ...and one for all other fields:
                         docs![
-                            trait_,
-                            ".AssociatedTypes",
-                            concat!(args.iter().map(|gv| docs![line!(), gv]))
+                            docs![
+                                if opaque {
+                                    reflow!("@[instance] opaque ")
+                                } else {
+                                    reflow!("instance ")
+                                },
+                                ident,
+                                line!(),
+                                generics,
+                                ":"
+                            ]
+                            .group(),
+                            line!(),
+                            docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))]
+                                .group(),
+                            if opaque {
+                                docs![
+                                    softline!(),
+                                    ":=",
+                                    line!(),
+                                    reflow!("by constructor <;> exact Inhabited.default")
+                                ]
+                            } else {
+                                docs![line!(), "where"]
+                            },
                         ]
-                        .group(),
-                        line!(),
-                        "where",
+                        .group()
+                        .nest(INDENT),
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![zip_left!(
+                                hardline!(),
+                                items.iter().filter(|item| {
+                                    !(
+                                        // TODO: should be treated directly by name rendering, see :
+                                        // https://github.com/cryspen/hax/issues/1646
+                                        item.ident.is_precondition() || item.ident.is_postcondition() ||
+                                    // Associated types are encoded into a separate type class
+                                    matches!(item.kind, ImplItemKind::Type { .. })
+                                    )
+                                })
+                            )]
+                            .nest(INDENT)
+                        },
                     ]
-                    .group()
-                    .nest(INDENT),
-                    docs![zip_left!(
-                        hardline!(),
-                        items
-                            .iter()
-                            .filter(|item| { matches!(item.kind, ImplItemKind::Type { .. }) })
-                    )]
-                    .nest(INDENT),
-                    hardline!(),
-                    hardline!(),
-                    // ...and one for all other fields:
-                    docs![
-                        docs![reflow!("instance "), ident, line!(), generics, ":"].group(),
-                        line!(),
-                        docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))].group(),
-                        line!(),
-                        "where",
-                    ]
-                    .group()
-                    .nest(INDENT),
-                    docs![zip_left!(
-                        hardline!(),
-                        items.iter().filter(|item| {
-                            !(
-                                // TODO: should be treated directly by name rendering, see :
-                                // https://github.com/cryspen/hax/issues/1646
-                                item.ident.is_precondition() || item.ident.is_postcondition() ||
-                                // Associated types are encoded into a separate type class
-                                matches!(item.kind, ImplItemKind::Type { .. })
-                            )
-                        })
-                    )]
-                    .nest(INDENT),
-                ],
+                }
                 ItemKind::Resugared(resugared_item_kind) => match resugared_item_kind {
                     ResugaredItemKind::Constant {
                         name,

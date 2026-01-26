@@ -227,13 +227,13 @@ inductive Lean_core_models.Result.E1 : Type
 | C2 : u32 -> Lean_core_models.Result.E1
 
 
-@[reducible] instance Lean_core_models.Result.Impl.AssociatedTypes :
-  Core_models.Clone.Clone.AssociatedTypes Lean_core_models.Result.E1
-  where
+@[instance] opaque Lean_core_models.Result.Impl.AssociatedTypes :
+  Core_models.Clone.Clone.AssociatedTypes Lean_core_models.Result.E1 :=
+  by constructor <;> exact Inhabited.default
 
-instance Lean_core_models.Result.Impl :
-  Core_models.Clone.Clone Lean_core_models.Result.E1
-  where
+@[instance] opaque Lean_core_models.Result.Impl :
+  Core_models.Clone.Clone Lean_core_models.Result.E1 :=
+  by constructor <;> exact Inhabited.default
 
 inductive Lean_core_models.Result.E2 : Type
 | C1 : Lean_core_models.Result.E2
