@@ -1,9 +1,5 @@
--- This module contains the Hax representation of Rust Core library.
+-- This module contains spurious dependencies of Core_models on Core, and
+-- should eventually be removed.
 
-import Hax.Core.Default
 import Hax.Core.Clone
-import Hax.Core.Ops
-import Hax.Core.Panicking
-import Hax.Core.Result
-import Hax.Core.Option
-import Hax.Core.Convert
+import Hax.Core.Marker

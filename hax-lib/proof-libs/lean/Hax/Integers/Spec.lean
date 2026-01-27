@@ -26,65 +26,74 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   let minValue := mkIdent (typeName.getId ++ `minValue)
   let grind : TSyntax `tactic ←
     if signed then `(tactic| grind)
-    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_lt, toNat_mul_of_lt])
+    else `(tactic| grind [toNat_add_of_lt, toNat_sub_of_le', toNat_mul_of_lt])
 
   let mut cmds ← Syntax.getArgs <$> `(
     namespace $typeName
 
-      /-- Bitvec-based specification for rust addition -/
+      /-- Specification for rust addition -/
       @[spec]
       theorem haxAdd_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `addOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX + y.$toX ⌝ ⦄ := by
-        mvcgen [HaxAdd.add]; $grind
+        mvcgen [Core_models.Ops.Arith.Add.add]; $grind
 
-      /-- Bitvec-based specification for rust subtraction -/
+      /-- Specification for rust subtraction -/
       @[spec]
       theorem haxSub_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `subOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX - y.$toX ⌝ ⦄ := by
-        mvcgen [HaxSub.sub]; $grind
+        mvcgen [Core_models.Ops.Arith.Sub.sub]; $grind
 
-      /-- Bitvec-based specification for rust multiplication -/
+      /-- Specification for rust multiplication -/
       @[spec]
       theorem haxMul_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `mulOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX * y.$toX ⌝ ⦄ := by
-        mvcgen [HaxMul.mul]; $grind
+        mvcgen [Core_models.Ops.Arith.Mul.mul]; $grind
   )
   if signed then
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
-      /-- Bitvec-based specification for rust multiplication for signed integers-/
+      /-- Specification for rust negation for signed integers-/
+      @[spec]
+      theorem haxNeg_spec {x : $typeName} (hx : x ≠ $minValue) :
+          ⦃ ⌜ True ⌝ ⦄ (-? x) ⦃ ⇓ r => ⌜ r.toInt = - x.toInt ⌝ ⦄ := by
+        mvcgen [Core_models.Ops.Arith.Neg.neg]
+        rw [toInt_neg_of_ne_intMin hx]
+
+      /-- Specification for rust multiplication for signed integers-/
       @[spec]
       theorem haxDiv_spec {x y : $typeName}
           (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tdiv y.toInt ⌝ ⦄ := by
         have : ¬ (x = $minValue && y = -1) := by grind
-        mvcgen [HaxDiv.div]
+        mvcgen [Core_models.Ops.Arith.Div.div]
         cases hx with
         | inl hx => apply toInt_div_of_ne_left x y hx
         | inr hx => apply toInt_div_of_ne_right x y hx
 
-      /-- Bitvec-based specification for rust remainder for signed integers -/
+      /-- Specification for rust remainder for signed integers -/
       @[spec]
       theorem haxRem_spec (x y : $typeName)
           (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tmod y.toInt ⌝ ⦄ :=  by
         have : ¬ (x = $minValue && y = -1) := by grind
-        mvcgen [HaxRem.rem]
+        mvcgen [Core_models.Ops.Arith.Rem.rem]
         apply toInt_mod
     )
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
-      /-- Bitvec-based specification for rust multiplication for unsigned integers -/
+      /-- Specification for rust multiplication for unsigned integers -/
       @[spec]
       theorem haxDiv_spec (x y : $typeName) (h : ¬ y = 0) :
-          ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat / y.toNat ⌝ ⦄ := by mvcgen [HaxDiv.div]
+          ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat / y.toNat ⌝ ⦄ := by
+        mvcgen [Core_models.Ops.Arith.Div.div]
 
-      /-- Bitvec-based specification for rust remainder for unsigned integers -/
+      /-- Specification for rust remainder for unsigned integers -/
       @[spec]
       theorem haxRem_spec (x y : $typeName) (h : ¬ y = 0) :
-          ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat % y.toNat ⌝ ⦄ := by mvcgen [HaxRem.rem]
+          ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat % y.toNat ⌝ ⦄ := by
+        mvcgen [Core_models.Ops.Arith.Rem.rem]
     )
   cmds := cmds.push $ ← `(
     end $typeName
@@ -95,7 +104,7 @@ declare_Hax_int_ops_spec unsigned UInt8 8
 declare_Hax_int_ops_spec unsigned UInt16 16
 declare_Hax_int_ops_spec unsigned UInt32 32
 declare_Hax_int_ops_spec unsigned UInt64 64
-declare_Hax_int_ops_spec unsigned USize System.Platform.numBits
+declare_Hax_int_ops_spec unsigned USize64 64
 declare_Hax_int_ops_spec signed Int8 8
 declare_Hax_int_ops_spec signed Int16 16
 declare_Hax_int_ops_spec signed Int32 32
@@ -129,21 +138,21 @@ macro "declare_Hax_shift_ops_spec" : command => do
 
       cmds := cmds.push $ ← `(
         namespace $ty1Ident
-          /-- Bitvec-based specification for rust remainder on unsigned integers -/
+          /-- Specification for rust remainder on unsigned integers -/
           @[spec]
           theorem $haxShiftRight_spec (x : $ty1Ident) (y : $ty2Ident) :
             0 ≤ y →
             y.$ty2ToNat < $width1 →
             ⦃ ⌜ True ⌝ ⦄ (x >>>? y) ⦃ ⇓ r => ⌜ r = x >>> $yConverted ⌝ ⦄
-            := by intros; mvcgen [HaxShiftRight.shiftRight]; grind
+            := by intros; mvcgen [Core_models.Ops.Bit.Shr.shr]; grind
 
-          /-- Bitvec-based specification for rust remainder on unsigned integers -/
+          /-- Specification for rust remainder on unsigned integers -/
           @[spec]
           theorem $haxShiftLeft_spec (x : $ty1Ident) (y : $ty2Ident) :
             0 ≤ y →
             y.$ty2ToNat < $width1 →
             ⦃ ⌜ True ⌝ ⦄ (x <<<? y) ⦃ ⇓ r => ⌜ r = x <<< $yConverted ⌝ ⦄
-            := by intros; mvcgen [HaxShiftLeft.shiftLeft]; grind
+            := by intros; mvcgen [Core_models.Ops.Bit.Shl.shl]; grind
         end $ty1Ident
       )
   return ⟨mkNullNode cmds⟩

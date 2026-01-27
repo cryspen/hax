@@ -115,26 +115,22 @@ impl ExplicitMonadicVisitor {
                 [Some(then), else_.as_mut()]
                     .into_iter()
                     .flatten()
-                    // The constraint is propagated on each branch
-                    .for_each(|branch| self.visit_expr_coerce(constraint, branch));
-                // No need to coerce the `If` node itself, the coercion is propagated on branches
-                None
+                    .for_each(|branch| self.visit_expr_coerce(MonadicStatus::Computation, branch));
+                Some(MonadicStatus::Computation)
             }
             ExprKind::Match { scrutinee, arms } => {
                 self.visit_expr_coerce(MonadicStatus::Value, scrutinee);
-                arms.iter_mut()
-                    // The constraint is propagated on each arm
-                    .for_each(|arm| {
-                        if let Some(Guard {
-                            kind: GuardKind::IfLet { rhs, .. },
-                            ..
-                        }) = &mut arm.guard
-                        {
-                            self.visit_expr_coerce(MonadicStatus::Value, rhs);
-                        };
-                        self.visit_expr_coerce(constraint, &mut arm.body)
-                    });
-                None
+                arms.iter_mut().for_each(|arm| {
+                    if let Some(Guard {
+                        kind: GuardKind::IfLet { rhs, .. },
+                        ..
+                    }) = &mut arm.guard
+                    {
+                        self.visit_expr_coerce(MonadicStatus::Value, rhs);
+                    };
+                    self.visit_expr_coerce(MonadicStatus::Computation, &mut arm.body)
+                });
+                Some(MonadicStatus::Computation)
             }
             ExprKind::Block { body, .. } => {
                 self.visit_expr_coerce(constraint, body);

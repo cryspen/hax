@@ -86,3 +86,26 @@ class t_Div (v_Self: Type0) (v_Rhs: Type0) = {
   f_div:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure f_Output (f_div_pre x0 x1) (fun result -> f_div_post x0 x1 result)
 }
+
+class t_Neg (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
+  f_neg_pre:v_Self -> Type0;
+  f_neg_post:v_Self -> f_Output -> Type0;
+  f_neg:x0: v_Self -> Prims.Pure f_Output (f_neg_pre x0) (fun result -> f_neg_post x0 result)
+}
+
+class t_Rem (v_Self: Type0) (v_Rhs: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
+  f_rem_pre:v_Self -> v_Rhs -> Type0;
+  f_rem_post:v_Self -> v_Rhs -> f_Output -> Type0;
+  f_rem:x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure f_Output (f_rem_pre x0 x1) (fun result -> f_rem_post x0 x1 result)
+}
+
+class t_RemAssign (v_Self: Type0) (v_Rhs: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
+  f_rem_assign_pre:v_Self -> v_Rhs -> Type0;
+  f_rem_assign_post:v_Self -> v_Rhs -> f_Output -> Type0;
+  f_rem_assign:x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure f_Output (f_rem_assign_pre x0 x1) (fun result -> f_rem_assign_post x0 x1 result)
+}

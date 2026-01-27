@@ -5,6 +5,7 @@ Support for integer operations
 -/
 
 import Hax.Lib
+import Hax.CoreModels
 open Std.Do
 open Std.Tactic
 
@@ -21,71 +22,32 @@ return a `RustM`, that is `.fail` when arithmetic overflows occur.
 
 -/
 
-/-- The notation typeclass for homogeneous addition that returns a RustM.  This
-enables the notation `a +? b : α` where `a : α`, `b : α`. For now, there is no
-heterogeneous version -/
-class HaxAdd α where
-  /-- `a +? b` computes the panicking sum of `a` and `b`.  The meaning of this
-  notation is type-dependent. -/
-  add : α → α → RustM α
+infixl:65 " +? "   => @Core_models.Ops.Arith.Add.add _ _
+infixl:65 " -? "   => @Core_models.Ops.Arith.Sub.sub _ _
+infixl:70 " *? "   => @Core_models.Ops.Arith.Mul.mul _ _
+infixl:75 " >>>? " => @Core_models.Ops.Bit.Shr.shr _ _
+infixl:75 " <<<? " => @Core_models.Ops.Bit.Shl.shl _ _
+infixl:70 " %? "   => @Core_models.Ops.Arith.Rem.rem _ _
+infixl:70 " /? "   => @Core_models.Ops.Arith.Div.div _ _
+prefix:75 "-?"   => @Core_models.Ops.Arith.Neg.neg _
 
-/-- The notation typeclass for homogeneous subtraction that returns a RustM.
-This enables the notation `a -? b : α` where `a : α`, `b : α`. For now, there is
-no heterogeneous version -/
-class HaxSub α where
-  /-- `a -? b` computes the panicking subtraction of `a` and `b`.
-  The meaning of this notation is type-dependent. -/
-  sub : α → α → RustM α
-
-/-- The notation typeclass for homogeneous multiplication that returns a RustM.
-This enables the notation `a *? b : RustM α` where `a b : α`. For now, there is
-no heterogeneous version -/
-class HaxMul α where
-  /-- `a *? b` computes the panicking multiplication of `a` and `b`.  The
-  meaning of this notation is type-dependent. -/
-  mul : α → α → RustM α
-
-/-- The notation typeclass for homogeneous division that returns a RustM.  This
-enables the notation `a /? b : RustM α` where `a b : α`. For now, there is no
-heterogeneous version -/
-class HaxDiv α where
-  /-- `a /? b` computes the panicking division of `a` and `b`.  The
-  meaning of this notation is type-dependent. -/
-  div : α → α → RustM α
-
-/--The notation typeclass for right shift that returns a RustM. It enables the
- notation `a >>>? b : RustM α` where `a : α` and `b : β`. -/
-class HaxShiftRight α β where
-  /-- `a >>>? b` computes the panicking right-shift of `a` by `b`.  The meaning
-  of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
-  -/
-  shiftRight : α → β → RustM α
-
-/--The notation typeclass for left shift that returns a RustM. It enables the
- notation `a <<<? b : RustM α` where `a : α` and `b : β`. -/
-class HaxShiftLeft α β where
-  /-- `a <<<? b` computes the panicking left-shift of `a` by `b`.  The meaning
-  of this notation is type-dependent. It panics if `b` exceeds the size of `a`.
-  -/
-  shiftLeft : α → β → RustM α
-
-/-- The notation typeclass for remainder.  This enables the notation `a %? b :
-RustM α` where `a b : α`.  -/
-class HaxRem α where
-  /-- `a %? b` computes the panicking remainder upon dividing `a` by `b`.  The
-  meaning of this notation is type-dependent. It panics if b is zero -/
-  rem : α → α → RustM α
-
-@[inherit_doc] infixl:65 " +? "   => HaxAdd.add
-@[inherit_doc] infixl:65 " -? "   => HaxSub.sub
-@[inherit_doc] infixl:70 " *? "   => HaxMul.mul
-@[inherit_doc] infixl:75 " >>>? " => HaxShiftRight.shiftRight
-@[inherit_doc] infixl:75 " <<<? " => HaxShiftLeft.shiftLeft
-@[inherit_doc] infixl:70 " %? "   => HaxRem.rem
-@[inherit_doc] infixl:70 " /? "   => HaxDiv.div
-
-attribute [hax_bv_decide] HaxAdd.add HaxMul.mul HaxShiftRight.shiftRight HaxShiftLeft.shiftLeft
-  HaxSub.sub HaxRem.rem HaxDiv.div
+attribute [hax_bv_decide]
+  Core_models.Ops.Arith.Add.AssociatedTypes.Output
+  Core_models.Ops.Arith.Sub.AssociatedTypes.Output
+  Core_models.Ops.Arith.Mul.AssociatedTypes.Output
+  Core_models.Ops.Arith.Div.AssociatedTypes.Output
+  Core_models.Ops.Arith.Rem.AssociatedTypes.Output
+  Core_models.Ops.Arith.Neg.AssociatedTypes.Output
+  Core_models.Ops.Bit.Shl.AssociatedTypes.Output
+  Core_models.Ops.Bit.Shr.AssociatedTypes.Output
+  Core_models.Ops.Arith.Add.add
+  Core_models.Ops.Arith.Sub.sub
+  Core_models.Ops.Arith.Mul.mul
+  Core_models.Ops.Bit.Shr.shr
+  Core_models.Ops.Bit.Shl.shl
+  Core_models.Ops.Arith.Rem.rem
+  Core_models.Ops.Arith.Div.div
+  Core_models.Ops.Arith.Neg.neg
 
 open Lean in
 macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
@@ -96,22 +58,36 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
   | _ => throw .unsupportedSyntax
 
   let mut cmds ← Syntax.getArgs <$> `(
+
+    @[reducible] instance : Core_models.Ops.Arith.Add.AssociatedTypes $typeName $typeName where
+      Output := $typeName
+    @[reducible] instance : Core_models.Ops.Arith.Sub.AssociatedTypes $typeName $typeName where
+      Output := $typeName
+    @[reducible] instance : Core_models.Ops.Arith.Mul.AssociatedTypes $typeName $typeName where
+      Output := $typeName
+    @[reducible] instance : Core_models.Ops.Arith.Div.AssociatedTypes $typeName $typeName where
+      Output := $typeName
+    @[reducible] instance : Core_models.Ops.Arith.Rem.AssociatedTypes $typeName $typeName where
+      Output := $typeName
+    @[reducible] instance : Core_models.Ops.Arith.Neg.AssociatedTypes $typeName where
+      Output := $typeName
+
     /-- Addition on Rust integers. Panics on overflow. -/
-    instance : HaxAdd $typeName where
+    instance : Core_models.Ops.Arith.Add $typeName $typeName where
       add x y :=
         if ($(mkIdent (if signed then `BitVec.saddOverflow else `BitVec.uaddOverflow)) x.toBitVec y.toBitVec) then
           .fail .integerOverflow
         else pure (x + y)
 
     /-- Subtraction on Rust integers. Panics on overflow. -/
-    instance : HaxSub $typeName where
+    instance : Core_models.Ops.Arith.Sub $typeName $typeName where
       sub x y :=
         if ($(mkIdent (if signed then `BitVec.ssubOverflow else `BitVec.usubOverflow)) x.toBitVec y.toBitVec) then
           .fail .integerOverflow
         else pure (x - y)
 
     /-- Multiplication on Rust integers. Panics on overflow. -/
-    instance : HaxMul $typeName where
+    instance : Core_models.Ops.Arith.Mul $typeName $typeName where
       mul x y :=
         if ($(mkIdent (if signed then `BitVec.smulOverflow else `BitVec.umulOverflow)) x.toBitVec y.toBitVec) then
           .fail .integerOverflow
@@ -121,7 +97,7 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Division of signed Rust integers. Panics on overflow (when x is IntMin and `y = -1`)
         and when dividing by zero. -/
-      instance : HaxDiv $typeName where
+      instance : Core_models.Ops.Arith.Div $typeName $typeName where
         div x y :=
           if x = $(mkIdent (typeName.getId ++ `minValue)) && y = -1 then .fail .integerOverflow
           else if y = 0 then .fail .divisionByZero
@@ -129,22 +105,24 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
 
       /-- Remainder of signed Rust integers. Panics on overflow (when x is IntMin and `y = -1`)
         and when the modulus is zero. -/
-      instance : HaxRem $typeName where
+      instance : Core_models.Ops.Arith.Rem $typeName $typeName where
         rem x y :=
           if x = $(mkIdent (typeName.getId ++ `minValue)) && y = -1 then .fail .integerOverflow
           else if y = 0 then .fail .divisionByZero
           else pure (x % y)
+
+      instance : Core_models.Ops.Arith.Neg $typeName where neg := fun x => pure (- x)
     )
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Division on unsigned Rust integers. Panics when dividing by zero.  -/
-      instance : HaxDiv $typeName where
+      instance : Core_models.Ops.Arith.Div $typeName $typeName where
         div x y :=
           if y = 0 then .fail .divisionByZero
           else pure (x / y)
 
       /-- Division on unsigned Rust integers. Panics when the modulus is zero. -/
-      instance : HaxRem $typeName where
+      instance : Core_models.Ops.Arith.Rem $typeName $typeName where
         rem x y :=
           if y = 0 then .fail .divisionByZero
           else pure (x % y)
@@ -155,14 +133,17 @@ declare_Hax_int_ops unsigned UInt8 8
 declare_Hax_int_ops unsigned UInt16 16
 declare_Hax_int_ops unsigned UInt32 32
 declare_Hax_int_ops unsigned UInt64 64
-declare_Hax_int_ops unsigned USize System.Platform.numBits
+declare_Hax_int_ops unsigned USize64 64
 declare_Hax_int_ops signed Int8 8
 declare_Hax_int_ops signed Int16 16
 declare_Hax_int_ops signed Int32 32
 declare_Hax_int_ops signed Int64 64
 declare_Hax_int_ops signed ISize System.Platform.numBits
 
+
+
 open Lean in
+set_option hygiene false in
 macro "declare_Hax_shift_ops" : command => do
   let mut cmds := #[]
   let tys := [
@@ -170,7 +151,7 @@ macro "declare_Hax_shift_ops" : command => do
     ("UInt16", ← `(term| 16)),
     ("UInt32", ← `(term| 32)),
     ("UInt64", ← `(term| 64)),
-    ("USize", ← `(term| OfNat.ofNat System.Platform.numBits)),
+    ("USize64", ← `(term| 64)),
     ("Int8", ← `(term| 8)),
     ("Int16", ← `(term| 16)),
     ("Int32", ← `(term| 32)),
@@ -188,18 +169,25 @@ macro "declare_Hax_shift_ops" : command => do
       let yConverted ← if ty1 == ty2 then `(y) else `(y.$ty2ToNat.$toTy1)
 
       cmds := cmds.push $ ← `(
+        @[reducible]
+        instance : Core_models.Ops.Bit.Shr.AssociatedTypes $ty1Ident $ty2Ident where
+          Output := $ty1Ident
+        @[reducible]
+        instance : Core_models.Ops.Bit.Shl.AssociatedTypes $ty1Ident $ty2Ident where
+          Output := $ty1Ident
+
         /-- Shift right for Rust integers. Panics when shifting by a negative number or
           by the bitsize or more. -/
-        instance : HaxShiftRight $ty1Ident $ty2Ident where
-          shiftRight x y :=
+        instance : Core_models.Ops.Bit.Shr $ty1Ident $ty2Ident where
+          shr x y :=
             if 0 ≤ y && y < $width1
             then pure (x >>> $yConverted)
             else .fail .integerOverflow
 
         /-- Left shifting on signed integers. Panics when shifting by a negative number,
           or when shifting by more than the size. -/
-        instance : HaxShiftLeft $ty1Ident $ty2Ident where
-          shiftLeft x y :=
+        instance : Core_models.Ops.Bit.Shl $ty1Ident $ty2Ident where
+          shl x y :=
             if 0 ≤ y && y < $width1
             then pure (x <<< $yConverted)
             else
@@ -210,24 +198,38 @@ macro "declare_Hax_shift_ops" : command => do
 declare_Hax_shift_ops
 
 
-/- Check that all operations are implemented -/
+open Lean in
+set_option hygiene false in
+macro "declare_Hax_convert_from_instances" : command => do
+  let mut cmds := #[]
+  let tys := [
+    ("UInt8", 8, false),
+    ("UInt16", 16, false),
+    ("UInt32", 32, false),
+    ("UInt64", 64, false),
+    ("Int8", 8, true),
+    ("Int16", 16, true),
+    ("Int32", 32, true),
+    ("Int64", 64, true)
+  ]
+  for (ty1, width1, signed1) in tys do
+    for (ty2, width2, signed2) in tys do
 
-class Operations α where
-  [instHaxAdd: HaxAdd α]
-  [instHaxSub: HaxSub α]
-  [instHaxMul: HaxMul α]
-  [instHaxDiv: HaxDiv α]
-  [instHaxRem: HaxRem α]
-  [instHaxShiftRight: HaxShiftRight α α]
-  [instHaxShiftLeft: HaxShiftLeft α α]
+      if ty1 == ty2 || signed1 != signed2 || width1 < width2 then continue
 
-instance : Operations u8 where
-instance : Operations u16 where
-instance : Operations u32 where
-instance : Operations u64 where
-instance : Operations usize where
-instance : Operations i8 where
-instance : Operations i16 where
-instance : Operations i32 where
-instance : Operations i64 where
-instance : Operations isize where
+      let ty1Ident := mkIdent ty1.toName
+      let ty2Ident := mkIdent ty2.toName
+      let toTy1 := mkIdent ("to" ++ ty1).toName
+
+      cmds := cmds.push $ ← `(
+        @[reducible]
+        instance : Core_models.Convert.From.AssociatedTypes $ty1Ident $ty2Ident where
+        instance : Core_models.Convert.From $ty1Ident $ty2Ident where
+          _from := fun x => x.$toTy1
+      )
+  return ⟨mkNullNode cmds⟩
+
+declare_Hax_convert_from_instances
+
+attribute [hax_bv_decide]
+  Core_models.Convert.From._from

@@ -13,6 +13,13 @@ pub mod global_id;
 #[derive_group_for_ast]
 pub struct LocalId(pub Symbol);
 
+impl LocalId {
+    /// Returns true if `self` is a local identifier named `self`: the Rust keyword `self`.
+    pub fn is_self(&self) -> bool {
+        self.0.as_ref() == "self"
+    }
+}
+
 impl fmt::Display for LocalId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)

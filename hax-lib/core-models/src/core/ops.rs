@@ -15,6 +15,14 @@ pub mod arith {
         type Output;
         fn div(self, rhs: Rhs) -> Self::Output;
     }
+    pub trait Neg {
+        type Output;
+        fn neg(self) -> Self::Output;
+    }
+    pub trait Rem<Rhs = Self> {
+        type Output;
+        fn rem(self, rhs: Rhs) -> Self::Output;
+    }
     pub trait AddAssign<Rhs = Self> {
         fn add_assign(&mut self, rhs: Rhs);
     }
@@ -27,12 +35,16 @@ pub mod arith {
     pub trait DivAssign<Rhs = Self> {
         fn div_assign(&mut self, rhs: Rhs);
     }
+    pub trait RemAssign<Rhs = Self> {
+        fn rem_assign(&mut self, rhs: Rhs);
+    }
 
     macro_rules! int_trait_impls {
         ($($Self:ty)*) => {
             use hax_lib::ToInt;
             $(
             #[hax_lib::attributes]
+            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
             impl crate::ops::arith::AddAssign<$Self> for $Self {
                 #[hax_lib::requires(self.to_int() + rhs.to_int() <= $Self::MAX.to_int())]
                 fn add_assign(&mut self, rhs: $Self) {
@@ -40,6 +52,7 @@ pub mod arith {
                 }
             }
             #[hax_lib::attributes]
+            #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
             impl crate::ops::arith::SubAssign<$Self> for $Self {
                 #[hax_lib::requires(self.to_int() - rhs.to_int() >= 0.to_int())]
                 fn sub_assign(&mut self, rhs: $Self) {
@@ -56,6 +69,10 @@ pub mod bit {
     trait Shr<Rhs = Self> {
         type Output;
         fn shr(self, rhs: Rhs) -> Self::Output;
+    }
+    trait Shl<Rhs = Self> {
+        type Output;
+        fn shl(self, rhs: Rhs) -> Self::Output;
     }
     trait BitXor<Rhs = Self> {
         type Output;

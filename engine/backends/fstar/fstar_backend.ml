@@ -2035,7 +2035,7 @@ module TransformToInputLanguage =
   |> Phases.Reject.Trait_item_default
   |> Phases.Bundle_cycles
   |> Phases.Reorder_fields
-  |> Phases.Sort_items
+  |> Phases.Sort_items_namespace_wise
   |> SubtypeToInputLanguage
   |> Identity
   ]

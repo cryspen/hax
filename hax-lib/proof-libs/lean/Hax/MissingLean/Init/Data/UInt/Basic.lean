@@ -7,7 +7,7 @@ macro "additional_uint_decls" typeName:ident width:term : command => do
     theorem toNat_add_of_lt {x y : $typeName} (h : x.toNat + y.toNat < 2 ^ $width) :
         (x + y).toNat = x.toNat + y.toNat := BitVec.toNat_add_of_lt h
 
-    theorem toNat_sub_of_lt {x y : $typeName} (h : y.toNat ≤ x.toNat) :
+    theorem toNat_sub_of_le' {x y : $typeName} (h : y.toNat ≤ x.toNat) :
         (x - y).toNat = x.toNat - y.toNat := BitVec.toNat_sub_of_le h
 
     theorem toNat_mul_of_lt {x y : $typeName} (h : x.toNat * y.toNat < 2 ^ $width) :

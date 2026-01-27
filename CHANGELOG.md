@@ -8,6 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+
+Changes to the frontend:
+
+Changes to cargo-hax:
+
+Changes to hax-lib:
+ - Lean lib: use Rust core models (#1865)
+ - Lean lib: specs for negation (#1891)
+
+Changes to the Lean backend:
+ - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
+ - Add support for opaque `impl`s (#1887)
+
+Miscellaneous:
+
+## 0.3.6
+
+Changes to the Rust Engine:
  - Add a rejection phase for interleaving of expressions and statements not
    supported by the Lean do-notation syntax (#1739).
  - Add a phase to handle the monadic encoding: it explicitly introduces two new
@@ -28,6 +46,8 @@ Changes to hax-lib:
  - Lean lib: use macros for int operations (#1795)
  - Lean lib: add new setup for `bv_decide` (#1828)
  - Lean lib: base specs on mathematical integers (#1829)
+ - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
+ - Lean lib: Add support for while loops (#1857, #1863)
  - Core models: integers, arrays, iterators, full replacement of the F* proof-lib (#1898)
 
 Changes to the Lean backend:
@@ -50,6 +70,8 @@ Changes to the Lean backend:
  - Add generation of specs from requires/ensures-annotations (#1815)
  - Add support for nonliteral array sizes (#1826)
  - Add `hax_lib::lean::proof` attribute (#1831)
+ - Add support for `#[hax_lib::opaque]` (#1846)
+ - Turn rejection phase into a transformation phase (#1840)
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)

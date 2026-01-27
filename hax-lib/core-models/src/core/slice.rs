@@ -133,6 +133,7 @@ impl<T> Slice<T> {
 }
 
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> crate::iter::traits::collect::IntoIterator for &[T] {
     type IntoIter = iter::Iter<T>;
     fn into_iter(self) -> Self::IntoIter {
@@ -156,6 +157,7 @@ pub trait SliceIndex<T: ?Sized> {
 }
 
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> SliceIndex<[T]> for usize {
     type Output = T;
     fn get(self, slice: &[T]) -> Option<&T> {
@@ -168,6 +170,7 @@ impl<T> SliceIndex<[T]> for usize {
 }
 
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> SliceIndex<[T]> for crate::ops::range::RangeFull {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
@@ -176,6 +179,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeFull {
 }
 
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> SliceIndex<[T]> for crate::ops::range::RangeFrom<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
@@ -187,6 +191,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeFrom<usize> {
     }
 }
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> SliceIndex<[T]> for crate::ops::range::RangeTo<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
@@ -198,6 +203,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeTo<usize> {
     }
 }
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> SliceIndex<[T]> for crate::ops::range::Range<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
@@ -215,6 +221,7 @@ use crate::ops::{
 };
 
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> Index<Range<usize>> for &[T] {
     type Output = [T];
     #[hax_lib::requires(i.start <= i.end && i.end <= self.len())]
@@ -223,6 +230,7 @@ impl<T> Index<Range<usize>> for &[T] {
     }
 }
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> Index<RangeTo<usize>> for &[T] {
     type Output = [T];
     #[hax_lib::requires(i.end <= self.len())]
@@ -231,6 +239,7 @@ impl<T> Index<RangeTo<usize>> for &[T] {
     }
 }
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> Index<RangeFrom<usize>> for &[T] {
     type Output = [T];
     #[hax_lib::requires(i.start <= self.len())]
@@ -239,6 +248,7 @@ impl<T> Index<RangeFrom<usize>> for &[T] {
     }
 }
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> Index<RangeFull> for &[T] {
     type Output = [T];
     fn index(&self, i: RangeFull) -> &[T] {
@@ -247,6 +257,7 @@ impl<T> Index<RangeFull> for &[T] {
 }
 
 #[hax_lib::attributes]
+#[cfg_attr(hax_backend_lean, hax_lib::exclude)]
 impl<T> crate::ops::index::Index<usize> for &[T] {
     type Output = T;
     #[hax_lib::requires(i < self.len())]

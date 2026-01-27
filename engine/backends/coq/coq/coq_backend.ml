@@ -1040,14 +1040,14 @@ let make (module M : Attrs.WITH_ITEMS) =
 
 let translate m _ ~bundles:_ (items : AST.item list) : Types.file list =
   let my_printer = make m in
-  let groupped_items =
+  let grouped_items =
     U.group_items_by_namespace items
     |> Map.to_alist
     |> List.filter_map ~f:(fun (_, items) ->
            let* first_item = List.hd items in
            Some ((RenderId.render first_item.ident).path, items))
   in
-  (groupped_items
+  (grouped_items
   |> List.map ~f:(fun (ns, items) ->
          let mod_name =
            String.concat ~sep:"_"
@@ -1071,7 +1071,7 @@ let translate m _ ~bundles:_ (items : AST.item list) : Types.file list =
             "-R ./ " ^ "TODO" ^ "\n-arg -w\n-arg all\n\n"
             ^ String.concat ~sep:"\n"
                 (List.rev
-                   (groupped_items
+                   (grouped_items
                    |> List.map ~f:(fun (ns, items) ->
                           let mod_name =
                             String.concat ~sep:"_"
@@ -1114,7 +1114,7 @@ module TransformToInputLanguage =
   |> Phases.Reject.Trait_item_default
   |> Phases.Reorder_fields
   |> Phases.Bundle_cycles
-  |> Phases.Sort_items
+  |> Phases.Sort_items_namespace_wise
   |> SubtypeToInputLanguage
   |> Identity
   ]

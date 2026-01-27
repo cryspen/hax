@@ -51,7 +51,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -60,7 +60,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro-error2",
@@ -71,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "proc-macro2",
  "quote",

@@ -18,6 +18,7 @@ use crate::{
 
 mod binops {
     pub use crate::names::core::ops::index::*;
+    pub use crate::names::rust_primitives::arithmetic::neg;
     pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
@@ -78,8 +79,10 @@ impl RenderView for LeanPrinter {
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
                 Some(vec![
-                    self.render_path_segment_payload(chunk.payload())
-                        .to_string(),
+                    self.escape(
+                        self.render_path_segment_payload(chunk.payload())
+                            .to_string(),
+                    ),
                     "mk".to_string(),
                 ])
             }
@@ -104,7 +107,12 @@ impl RenderView for LeanPrinter {
             },
             _ => None,
         })
-        .unwrap_or(default::render_path_segment(self, chunk))
+        .unwrap_or(
+            default::render_path_segment(self, chunk)
+                .into_iter()
+                .map(|s| self.escape(s))
+                .collect(),
+        )
     }
 }
 
@@ -143,7 +151,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![Box::new(RejectNotDoLeanDSL), Box::new(ExplicitMonadic)]
+        vec![Box::new(ExplicitMonadic)]
     }
 }
 
@@ -167,9 +175,22 @@ impl LeanPrinter {
         }
     }
 
+    /// Checks if we are extracting core models to be able to use different namespeacing when
+    /// referring to core.
+    pub fn is_hax_core_models_extraction_mode(&self) -> bool {
+        std::env::var("HAX_CORE_MODELS_EXTRACTION_MODE")
+            .map(|v| v == "on")
+            .unwrap_or(false)
+    }
+
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
     /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
+        let id = if !self.is_hax_core_models_extraction_mode() && id.krate() == "core" {
+            id.rename_krate("core_models")
+        } else {
+            *id
+        };
         self.render_string(&id.view())
     }
 
@@ -192,15 +213,35 @@ impl LeanPrinter {
 
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
     pub fn render_last(&self, id: &GlobalId) -> String {
-        let id = self
-            .render(&id.view())
+        self.render(&id.view())
             .path
             .last()
             // TODO: Should be ensured by the rendering engine; see
             // https://github.com/cryspen/hax/issues/1660
             .expect("Segments should always be non-empty")
-            .clone();
-        self.escape(id)
+            .clone()
+    }
+
+    /// Inject an identifier in before-last position while rendering
+    /// TODO: use `DefIdInner::kind` for this instead (https://github.com/cryspen/hax/issues/1877)
+    pub fn render_with_injection(&self, id: &GlobalId, injection: &String) -> String {
+        let rendered = self.render(&id.view());
+        let (last, butlast) = rendered
+            .path
+            .split_last()
+            // TODO: Should be ensured by the rendering engine; see
+            // https://github.com/cryspen/hax/issues/1660
+            .expect("Segments should always be non-empty");
+        let path: Vec<String> = butlast
+            .iter()
+            .chain(std::iter::once(injection))
+            .chain(std::iter::once(last))
+            .map(String::clone)
+            .collect();
+        self.rendered_to_string(Rendered {
+            module: rendered.module,
+            path,
+        })
     }
 }
 
@@ -467,8 +508,8 @@ const _: () = {
             generics: &Generics,
             params: &Vec<Param>,
         ) -> DocBuilder<A> {
-            let spec =
-                HasLinkedItemGraph::linked_item_graph(self).fn_like_linked_expressions(item, None);
+            let spec = HasLinkedItemGraph::linked_item_graph(self)
+                .fn_like_linked_expressions(item, item.self_id());
             if spec.precondition.is_none() && spec.postcondition.is_none() {
                 nil!()
             } else {
@@ -507,7 +548,7 @@ const _: () = {
                             docs![
                                 "requires",
                                 softline!(),
-                                ":=",
+                                ":= do",
                                 line!(),
                                 spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
                             ]
@@ -523,7 +564,7 @@ const _: () = {
                                         line!(),
                                         p.result_binder,
                                         softline!(),
-                                        "=>",
+                                        "=> do",
                                         line!(),
                                         p.body,
                                     ]
@@ -635,14 +676,16 @@ set_option linter.unusedVariables false
                 zip_right!(&generics.params, line!()),
                 zip_right!(
                     generics.type_constraints().map(|impl_ident| {
-                        let projections = generics.projection_constraints()
-                            .map(|p|
-                                if let ImplExprKind::LocalBound { id } = &*p.impl_.kind && *id == impl_ident.name {
+                        let projections = generics
+                            .projection_constraints()
+                            .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
+                            .map(|p| {
+                                if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
                                     docs![p]
                                 } else {
                                     emit_error!(issue 1710, "Unsupported variant of associated type projection")
                                 }
-                            )
+                            })
                             .collect::<Vec<_>>();
                         docs![
                             docs![
@@ -733,6 +776,9 @@ set_option linter.unusedVariables false
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
                             docs![reflow!("pure "), arg].parens()
+                        }
+                        ([arg], [], ExprKind::GlobalId(binops::neg)) => {
+                            docs!["-?", softline!(), arg].parens()
                         }
                         _ => {
                             // Fallback for any application
@@ -1161,24 +1207,28 @@ set_option linter.unusedVariables false
                     params,
                     safety: _,
                 } => {
+                    let opaque = item.is_opaque();
                     docs![
                         docs![
                             docs![
-                                docs!["def", line!(), name].group(),
+                                docs![if opaque { "opaque" } else { "def" }, line!(), name].group(),
                                 line!(),
                                 generics,
                                 params,
                                 docs![": RustM", line!(), &body.ty].group(),
                                 line!(),
-                                ":= do"
+                                if opaque { nil!() } else { docs![":= do"] }
                             ]
                             .group(),
-                            line!(),
-                            body
+                            if opaque { nil!() } else { docs![line!(), body] }
                         ]
                         .group()
                         .nest(INDENT),
-                        &self.spec(item, name, generics, params)
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![&self.spec(item, name, generics, params)]
+                        }
                     ]
                 }
                 ItemKind::TyAlias { name, generics, ty } => docs![
@@ -1320,6 +1370,22 @@ set_option linter.unusedVariables false
                             .group()
                             .nest(INDENT))
                         ),
+                        zip_left!(
+                            docs![hardline!(), hardline!()],
+                            items
+                                .iter()
+                                .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                .map(|item| docs![
+                                    "attribute [reducible]",
+                                    line!(),
+                                    self.render_with_injection(
+                                        &item.ident,
+                                        &"AssociatedTypes".to_string()
+                                    )
+                                ]
+                                .group()
+                                .nest(INDENT))
+                        ),
                         // When referencing associated types, we would like to refer to them as
                         // `TraitName.TypeName` instead of `TraitName.AssociatedTypes.TypeName`:
                         zip_left!(
@@ -1430,64 +1496,107 @@ set_option linter.unusedVariables false
                     items,
                     parent_bounds: _,
                     safety: _,
-                } => docs![
-                    // An impl is encoded as two Lean instances:
-                    // One for the associated types...
+                } => {
+                    let opaque = item.is_opaque();
                     docs![
+                        // An impl is encoded as two Lean instances:
+                        // One for the associated types...
                         docs![
-                            reflow!("instance "),
-                            ident,
-                            ".AssociatedTypes",
+                            docs![
+                                if opaque {
+                                    reflow!("@[instance] opaque ")
+                                } else {
+                                    reflow!("@[reducible] instance ")
+                                },
+                                ident,
+                                ".AssociatedTypes",
+                                line!(),
+                                generics,
+                                ":"
+                            ]
+                            .group(),
                             line!(),
-                            generics,
-                            ":"
+                            docs![
+                                trait_,
+                                ".AssociatedTypes",
+                                concat!(args.iter().map(|gv| docs![line!(), gv]))
+                            ]
+                            .group(),
+                            if opaque {
+                                docs![
+                                    softline!(),
+                                    ":=",
+                                    line!(),
+                                    reflow!("by constructor <;> exact Inhabited.default")
+                                ]
+                            } else {
+                                docs![line!(), "where"]
+                            },
                         ]
-                        .group(),
-                        line!(),
+                        .group()
+                        .nest(INDENT),
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![zip_left!(
+                                hardline!(),
+                                items.iter().filter(|item| {
+                                    matches!(item.kind, ImplItemKind::Type { .. })
+                                })
+                            )]
+                            .nest(INDENT)
+                        },
+                        hardline!(),
+                        hardline!(),
+                        // ...and one for all other fields:
                         docs![
-                            trait_,
-                            ".AssociatedTypes",
-                            concat!(args.iter().map(|gv| docs![line!(), gv]))
+                            docs![
+                                if opaque {
+                                    reflow!("@[instance] opaque ")
+                                } else {
+                                    reflow!("instance ")
+                                },
+                                ident,
+                                line!(),
+                                generics,
+                                ":"
+                            ]
+                            .group(),
+                            line!(),
+                            docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))]
+                                .group(),
+                            if opaque {
+                                docs![
+                                    softline!(),
+                                    ":=",
+                                    line!(),
+                                    reflow!("by constructor <;> exact Inhabited.default")
+                                ]
+                            } else {
+                                docs![line!(), "where"]
+                            },
                         ]
-                        .group(),
-                        line!(),
-                        "where",
+                        .group()
+                        .nest(INDENT),
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![zip_left!(
+                                hardline!(),
+                                items.iter().filter(|item| {
+                                    !(
+                                        // TODO: should be treated directly by name rendering, see :
+                                        // https://github.com/cryspen/hax/issues/1646
+                                        item.ident.is_precondition() || item.ident.is_postcondition() ||
+                                    // Associated types are encoded into a separate type class
+                                    matches!(item.kind, ImplItemKind::Type { .. })
+                                    )
+                                })
+                            )]
+                            .nest(INDENT)
+                        },
                     ]
-                    .group()
-                    .nest(INDENT),
-                    docs![zip_left!(
-                        hardline!(),
-                        items
-                            .iter()
-                            .filter(|item| { matches!(item.kind, ImplItemKind::Type { .. }) })
-                    )]
-                    .nest(INDENT),
-                    hardline!(),
-                    hardline!(),
-                    // ...and one for all other fields:
-                    docs![
-                        docs![reflow!("instance "), ident, line!(), generics, ":"].group(),
-                        line!(),
-                        docs![trait_, concat!(args.iter().map(|gv| docs![line!(), gv]))].group(),
-                        line!(),
-                        "where",
-                    ]
-                    .group()
-                    .nest(INDENT),
-                    docs![zip_left!(
-                        hardline!(),
-                        items.iter().filter(|item| {
-                            !(
-                                // TODO: should be treated directly by name rendering, see :
-                                // https://github.com/cryspen/hax/issues/1646
-                                item.ident.is_precondition() || item.ident.is_postcondition() ||
-                                // Associated types are encoded into a separate type class
-                                matches!(item.kind, ImplItemKind::Type { .. })
-                            )
-                        })
-                    )]
-                    .nest(INDENT),
-                ],
+                }
                 ItemKind::Resugared(resugared_item_kind) => match resugared_item_kind {
                     ResugaredItemKind::Constant {
                         name,
@@ -1538,9 +1647,19 @@ set_option linter.unusedVariables false
                     docs![
                         name,
                         softline!(),
-                        generics,
-                        zip_right!(params, line!()).group(),
-                        ":= do",
+                        ":=",
+                        line!(),
+                        docs![
+                            "fun",
+                            line!(),
+                            generics,
+                            zip_right!(params, line!()).group(),
+                            "=>",
+                            softline!(),
+                            "do"
+                        ]
+                        .group()
+                        .nest(INDENT)
                     ]
                     .group(),
                     line!(),
