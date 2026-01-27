@@ -1,5 +1,15 @@
 {"version": "1.1.0",
  "packagesDir": ".lake/packages",
- "packages": [],
+ "packages":
+ [{"url": "https://github.com/leanprover-community/quote4",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "9b703a545097978aef0e7e243ab8b71c32a9ff65",
+   "name": "Qq",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "v4.23.0",
+   "inherited": false,
+   "configFile": "lakefile.toml"}],
  "name": "Hax",
  "lakeDir": ".lake"}

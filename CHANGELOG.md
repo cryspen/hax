@@ -14,8 +14,12 @@ Changes to the frontend:
 Changes to cargo-hax:
 
 Changes to hax-lib:
+ - Lean lib: use Rust core models (#1865)
+ - Lean lib: specs for negation (#1891)
 
 Changes to the Lean backend:
+ - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
+ - Add support for opaque `impl`s (#1887)
 
 Miscellaneous:
 
@@ -43,8 +47,6 @@ Changes to hax-lib:
  - Lean lib: base specs on mathematical integers (#1829)
  - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
  - Lean lib: Add support for while loops (#1857, #1863)
- - Lean lib: use Rust core models (#1865)
- - Lean lib: specs for negation (#1891)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
@@ -66,7 +68,7 @@ Changes to the Lean backend:
  - Add generation of specs from requires/ensures-annotations (#1815)
  - Add support for nonliteral array sizes (#1826)
  - Add `hax_lib::lean::proof` attribute (#1831)
- - Add support for `#[hax_lib::opaque]` (#1846, #1887)
+ - Add support for `#[hax_lib::opaque]` (#1846)
  - Turn rejection phase into a transformation phase (#1840)
 
 Miscellaneous:

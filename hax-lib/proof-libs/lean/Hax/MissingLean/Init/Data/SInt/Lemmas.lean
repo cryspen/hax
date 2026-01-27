@@ -21,6 +21,9 @@ macro "additional_int_lemmas" typeName:ident width:term : command => do `(
         rfl
       simp only [toInt, minValue, toBitVec_neg, BitVec.toInt_neg_of_ne_intMin this] at *
 
+      theorem ofInt_eq_of_toInt_eq {a : Int} {b : $typeName} (h : b.toInt = a) : ofInt a = b := by
+        subst_vars; exact (ofInt_toInt b)
+
   end $typeName
 )
 
