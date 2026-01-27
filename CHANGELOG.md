@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+
+Changes to the frontend:
+
+Changes to cargo-hax:
+
+Changes to hax-lib:
+
+Changes to the Lean backend:
+
+Miscellaneous:
+
+## 0.3.6
+
+Changes to the Rust Engine:
  - Add a rejection phase for interleaving of expressions and statements not
    supported by the Lean do-notation syntax (#1739).
  - Add a phase to handle the monadic encoding: it explicitly introduces two new
@@ -28,7 +42,8 @@ Changes to hax-lib:
  - Lean lib: add new setup for `bv_decide` (#1828)
  - Lean lib: base specs on mathematical integers (#1829)
  - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
- - Lean lib: Add support for while loops (#1857)
+ - Lean lib: Add support for while loops (#1857, #1863)
+ - Lean lib: use Rust core models (#1865)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)

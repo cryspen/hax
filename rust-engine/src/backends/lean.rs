@@ -18,6 +18,7 @@ use crate::{
 
 mod binops {
     pub use crate::names::core::ops::index::*;
+    pub use crate::names::rust_primitives::arithmetic::neg;
     pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }
@@ -204,9 +205,22 @@ impl LeanPrinter {
         }
     }
 
+    /// Checks if we are extracting core models to be able to use different namespeacing when
+    /// referring to core.
+    pub fn is_hax_core_models_extraction_mode(&self) -> bool {
+        std::env::var("HAX_CORE_MODELS_EXTRACTION_MODE")
+            .map(|v| v == "on")
+            .unwrap_or(false)
+    }
+
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
     /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
+        let id = if !self.is_hax_core_models_extraction_mode() && id.krate() == "core" {
+            id.rename_krate("core_models")
+        } else {
+            *id
+        };
         self.render_string(&id.view())
     }
 
@@ -219,6 +233,28 @@ impl LeanPrinter {
             // https://github.com/cryspen/hax/issues/1660
             .expect("Segments should always be non-empty")
             .clone()
+    }
+
+    /// Inject an identifier in before-last position while rendering
+    /// TODO: use `DefIdInner::kind` for this instead (https://github.com/cryspen/hax/issues/1877)
+    pub fn render_with_injection(&self, id: &GlobalId, injection: &String) -> String {
+        let rendered = self.render(&id.view());
+        let (last, butlast) = rendered
+            .path
+            .split_last()
+            // TODO: Should be ensured by the rendering engine; see
+            // https://github.com/cryspen/hax/issues/1660
+            .expect("Segments should always be non-empty");
+        let path: Vec<String> = butlast
+            .iter()
+            .chain(std::iter::once(injection))
+            .chain(std::iter::once(last))
+            .map(String::clone)
+            .collect();
+        self.rendered_to_string(Rendered {
+            module: rendered.module,
+            path,
+        })
     }
 }
 
@@ -486,8 +522,8 @@ const _: () = {
             generics: &Generics,
             params: &Vec<Param>,
         ) -> DocBuilder<A> {
-            let spec =
-                HasLinkedItemGraph::linked_item_graph(self).fn_like_linked_expressions(item, None);
+            let spec = HasLinkedItemGraph::linked_item_graph(self)
+                .fn_like_linked_expressions(item, item.self_id());
             if spec.precondition.is_none() && spec.postcondition.is_none() {
                 nil!()
             } else {
@@ -526,7 +562,7 @@ const _: () = {
                             docs![
                                 "requires",
                                 softline!(),
-                                ":=",
+                                ":= do",
                                 line!(),
                                 spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
                             ]
@@ -542,7 +578,7 @@ const _: () = {
                                         line!(),
                                         p.result_binder,
                                         softline!(),
-                                        "=>",
+                                        "=> do",
                                         line!(),
                                         p.body,
                                     ]
@@ -754,6 +790,9 @@ set_option linter.unusedVariables false
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
                             docs![reflow!("pure "), arg].parens()
+                        }
+                        ([arg], [], ExprKind::GlobalId(binops::neg)) => {
+                            docs!["-?", softline!(), arg].parens()
                         }
                         _ => {
                             // Fallback for any application
@@ -1199,7 +1238,11 @@ set_option linter.unusedVariables false
                         ]
                         .group()
                         .nest(INDENT),
-                        &self.spec(item, name, generics, params)
+                        if opaque {
+                            nil!()
+                        } else {
+                            docs![&self.spec(item, name, generics, params)]
+                        }
                     ]
                 }
                 ItemKind::TyAlias { name, generics, ty } => docs![
@@ -1338,6 +1381,22 @@ set_option linter.unusedVariables false
                             .group()
                             .nest(INDENT))
                         ),
+                        zip_left!(
+                            docs![hardline!(), hardline!()],
+                            items
+                                .iter()
+                                .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                .map(|item| docs![
+                                    "attribute [reducible]",
+                                    line!(),
+                                    self.render_with_injection(
+                                        &item.ident,
+                                        &"AssociatedTypes".to_string()
+                                    )
+                                ]
+                                .group()
+                                .nest(INDENT))
+                        ),
                         // When referencing associated types, we would like to refer to them as
                         // `TraitName.TypeName` instead of `TraitName.AssociatedTypes.TypeName`:
                         zip_left!(
@@ -1452,7 +1511,7 @@ set_option linter.unusedVariables false
                     // One for the associated types...
                     docs![
                         docs![
-                            reflow!("instance "),
+                            reflow!("@[reducible] instance "),
                             ident,
                             ".AssociatedTypes",
                             line!(),

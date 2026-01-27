@@ -16,5 +16,5 @@ module Make (F : Features.T) =
 
       let ditems items =
         let module Deps = Dependencies.Make (F) in
-        Deps.sort items
+        Deps.sort_namespace_wise items
     end)

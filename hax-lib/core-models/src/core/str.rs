@@ -20,6 +20,7 @@ mod traits {
     }
 
     #[hax_lib::opaque]
+    #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
     impl FromStr for u64 {
         type Err = u64;
         fn from_str(s: &str) -> crate::result::Result<Self, Self::Err> {

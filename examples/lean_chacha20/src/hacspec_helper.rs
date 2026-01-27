@@ -73,7 +73,7 @@ theorem Lean_chacha20.Hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 
   (Lean_chacha20.Hacspec_helper.u32s_to_le_bytes state)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [Lean_chacha20.Hacspec_helper.u32s_to_le_bytes, Core.Num.Impl_8.to_le_bytes]
+  mvcgen [Lean_chacha20.Hacspec_helper.u32s_to_le_bytes, Core_models.Num.Impl_8.to_le_bytes]
     <;> try grind
 "
 )]
@@ -97,7 +97,7 @@ theorem Lean_chacha20.Hacspec_helper.xor_state_spec (state other: (Vector u32 16
   (Lean_chacha20.Hacspec_helper.xor_state state other)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [Lean_chacha20.Hacspec_helper.xor_state, Core.Num.Impl_8.to_le_bytes]
+  mvcgen [Lean_chacha20.Hacspec_helper.xor_state, Core_models.Num.Impl_8.to_le_bytes]
     <;> try grind
 "
 )]

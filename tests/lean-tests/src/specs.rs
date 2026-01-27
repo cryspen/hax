@@ -10,3 +10,19 @@ fn test(x: u8) -> u8 {
 fn test_proof(x: u8) -> u8 {
     x
 }
+
+/// The Lean backend used to produce `self_` instead of `self` in annotations in
+/// impl blocks. See https://github.com/cryspen/hax/issues/1852.
+mod issue_1852 {
+    struct T {}
+
+    #[hax_lib::attributes]
+    impl T {
+        pub fn test(self) -> bool {
+            true
+        }
+
+        #[hax_lib::requires(T::test(self))]
+        pub fn func(self) {}
+    }
+}

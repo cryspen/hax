@@ -178,3 +178,40 @@ pub mod late_skip_b {
         super::late_skip_a::f()
     }
 }
+
+mod issue_1823 {
+    mod first_example {
+        pub mod a {
+            pub struct A {}
+
+            impl A {
+                pub fn mkb(self) -> super::b::B {
+                    super::b::B {}
+                }
+            }
+        }
+        pub mod b {
+            pub struct B {}
+
+            impl B {
+                pub fn mka(self) -> super::a::A {
+                    super::a::A {}
+                }
+            }
+        }
+    }
+    mod second_example {
+        pub mod a {
+            pub fn call_b() {
+                super::b::b()
+            }
+            pub fn a() {}
+        }
+        pub mod b {
+            pub fn call_a() {
+                super::a::a()
+            }
+            pub fn b() {}
+        }
+    }
+}

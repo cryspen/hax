@@ -69,6 +69,14 @@ impl From<hax_frontend_exporter::DefId> for DefIdInner {
 }
 
 impl DefIdInner {
+    /// Change the krate field of `self` and propagate the change into all parents.
+    fn rename_krate(&self, name: &str) -> Self {
+        let mut def_id = self.clone();
+        def_id.krate = name.into();
+        def_id.parent = def_id.parent.map(|parent: DefId| parent.rename_krate(name));
+        def_id
+    }
+
     fn to_debug_string(&self) -> String {
         fn disambiguator_suffix(disambiguator: u32) -> String {
             if disambiguator == 0 {
@@ -107,6 +115,13 @@ impl Internable for DefIdInner {
 /// An interned Rust `DefId`: a lighter version of [`hax_frontend_exporter::DefId`].
 type DefId = Interned<DefIdInner>;
 
+impl DefId {
+    /// Change the krate name to `name`.
+    fn rename_krate(&self, name: &str) -> Self {
+        (*self).get().rename_krate(name).intern()
+    }
+}
+
 /// An [`ExpliciDefId`] is a Rust [`DefId`] tagged withg some disambiguation metadata.
 ///
 /// [`DefId`] can be ambiguous, consider the following Rust code:
@@ -144,6 +159,11 @@ impl ExplicitDefId {
     /// This iterator is non-empty.
     fn parents(&self) -> impl Iterator<Item = Self> {
         std::iter::successors(Some(self.clone()), |id| id.parent())
+    }
+
+    /// Change the krate name to `name`.
+    fn rename_krate(&mut self, name: &str) {
+        self.def_id = self.def_id.rename_krate(name);
     }
 
     /// Helper to get a `GlobalIdInner` out of an `ExplicitDefId`.
@@ -384,6 +404,13 @@ impl GlobalId {
         Self(GlobalIdInner::Concrete(concrete_id).intern())
     }
 
+    /// Change the krate name (the first element of the `GlobalId`) to `name`.
+    pub fn rename_krate(self, name: &str) -> Self {
+        let mut concrete_id = ConcreteId::from_global_id(self).clone();
+        concrete_id.rename_krate(name);
+        Self(GlobalIdInner::Concrete(concrete_id).intern())
+    }
+
     /// Add a suffix to a GlobalId
     pub fn with_suffix(self, suffix: ReservedSuffix) -> Self {
         match self.0.get() {
@@ -470,6 +497,10 @@ impl ConcreteId {
             moved: self.moved.clone(),
             suffix: None,
         }
+    }
+
+    fn rename_krate(&mut self, name: &str) {
+        self.def_id.rename_krate(name);
     }
 
     /// Get a static reference to a `ConcreteId` out of a `GlobalId`.

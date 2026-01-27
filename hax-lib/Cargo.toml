@@ -23,3 +23,6 @@ macros = ["dep:hax-lib-macros"]
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)'] }
+
+[package.metadata."docs.rs"]
+rustdoc-args = ["--cfg", "doc_cfg", "--cfg", "hax"]

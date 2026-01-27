@@ -390,7 +390,9 @@ module Make (F : Features.T) = struct
       Set.equal items items');
     items'
 
-  let global_sort (items : item list) : item list =
+  (** Sort within each namespaces: items are first grouped by namespace, then
+      sorted topologically. *)
+  let sort_namespace_wise (items : item list) : item list =
     let sorted_by_namespace =
       U.group_items_by_namespace items
       |> Map.data
