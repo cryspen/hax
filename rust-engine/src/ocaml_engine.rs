@@ -80,11 +80,15 @@ pub enum Response {
     ImportThir {
         /// The output Rust AST items
         output: Vec<crate::ast::Item>,
+        /// The diagnostics reported while importing
+        diagnostics: Vec<hax_types::diagnostics::Diagnostics>,
     },
     /// Return items after phase application
     ApplyPhases {
         /// The output Rust AST items after phases
         output: Vec<crate::ast::Item>,
+        /// The diagnostics reported while applying the phases
+        diagnostics: Vec<hax_types::diagnostics::Diagnostics>,
     },
     /// Printing was done successfully
     PrintOk,

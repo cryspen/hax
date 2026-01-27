@@ -109,7 +109,7 @@ module Core : sig
   val raise_fatal_error : 'never. t -> 'never
   val report : t -> unit
   val try_ : 'x. (unit -> 'x) -> t list * 'x option
-  val capture : 'a. (unit -> 'a) -> 'a * t list
+  val capture : 'a. (unit -> 'a) -> t list * 'a
 end = struct
   (* a mutable state for collecting errors *)
   let state = ref []
@@ -125,12 +125,12 @@ end = struct
     let result = try Some (f ()) with Error -> None in
     (!state, result)
 
-  let capture (type a) (f : unit -> a) : a * t list =
+  let capture (type a) (f : unit -> a) : t list * a =
     let previous_state = !state in
     state := [];
     let result =
       let x = f () in
-      (x, !state)
+      (!state, x)
     in
     state := previous_state;
     result
