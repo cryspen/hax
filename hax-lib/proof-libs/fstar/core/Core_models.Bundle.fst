@@ -202,6 +202,11 @@ let impl__ok_or_else
     <:
     t_Result v_T v_E
 
+let impl__unwrap_or__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) (v_default: v_T) : v_T =
+  match self <: t_Result v_T v_E with
+  | Result_Ok t -> t
+  | Result_Err _ -> v_default
+
 let impl__map__from__result
       (#v_T #v_E #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
