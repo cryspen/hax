@@ -273,11 +273,12 @@ fn run_engine(
         impl_infos: haxmeta.impl_infos,
     };
     let mut hax_engine_command = match &engine_options.backend.backend {
-        Backend::Fstar(_)
-        | Backend::Coq
-        | Backend::Ssprove
-        | Backend::Easycrypt
-        | Backend::ProVerif(_) => find_hax_engine(message_format),
+        Backend::Coq | Backend::Ssprove | Backend::Easycrypt | Backend::ProVerif(_) => {
+            find_hax_engine(message_format)
+        }
+        Backend::Fstar(_) if matches!(&engine_options.input, Items::Legacy(_)) => {
+            find_hax_engine(message_format)
+        }
         _ => find_rust_hax_engine(message_format),
     };
     let mut engine_subprocess = hax_engine_command
@@ -298,7 +299,7 @@ fn run_engine(
     let mut output = Output {
         diagnostics: vec![],
         files: vec![],
-        debug_json: None,
+        debug_json: vec![],
     };
     {
         let mut rctx = hax_types::diagnostics::report::ReportCtx::default();
@@ -396,9 +397,7 @@ fn run_engine(
                         HaxMessage::ProducedFile { path, wrote }.report(message_format, None)
                     }
                 }
-                FromEngine::DebugString(debug) => {
-                    output.debug_json = Some(debug);
-                }
+                FromEngine::DebugString(debug) => output.debug_json.push(debug),
                 FromEngine::PrettyPrintDiagnostic(diag) => {
                     send!(&ToEngine::PrettyPrintedDiagnostic(format!("{}", diag)));
                 }
@@ -447,8 +446,9 @@ fn run_engine(
     if backend.dry_run {
         serde_json::to_writer(std::io::BufWriter::new(std::io::stdout()), &output).unwrap()
     }
-    if let Some(debug_json) = &output.debug_json {
+    if !output.debug_json.is_empty() {
         use DebugEngineMode;
+        let debug_json = &format!("[{}]", output.debug_json.join(","));
         match &backend.debug_engine {
             Some(DebugEngineMode::Interactive) => {
                 eprintln!("----------------------------------------------");
@@ -460,8 +460,9 @@ fn run_engine(
                 eprintln!("----------------------------------------------");
                 engine_debug_webapp::run(|| debug_json.clone())
             }
-            Some(DebugEngineMode::File(_file)) if !backend.dry_run => {
-                println!("{}", debug_json)
+            Some(DebugEngineMode::File(file)) if !backend.dry_run => {
+                let mut file = file.open_or_stdout();
+                write!(file, "{debug_json}").unwrap()
             }
             _ => (),
         }
@@ -655,17 +656,34 @@ fn run_command(options: &Options, haxmeta_files: Vec<EmitHaxMetaMessage>) -> boo
 
                     /// Remove every item from an `HaxMeta` whose path is not `*::<root_module>::**`, where `root_module` is a string.
                     fn prune_haxmeta<B: IsBody>(haxmeta: &mut HaxMeta<B>, root_module: &str) {
-                        haxmeta.items.retain(|item| match &item.owner_id.path[..] {
-                            [] => true,
-                            [
-                                DisambiguatedDefPathItem {
-                                    data: DefPathItem::TypeNs(s),
-                                    disambiguator: 0,
-                                },
-                                ..,
-                            ] => s == root_module,
-                            _ => false,
-                        })
+                        match &mut haxmeta.items {
+                            Items::Legacy(items) => {
+                                items.retain(|item| match &item.owner_id.path[..] {
+                                    [] => true,
+                                    [
+                                        DisambiguatedDefPathItem {
+                                            data: DefPathItem::TypeNs(s),
+                                            disambiguator: 0,
+                                        },
+                                        ..,
+                                    ] => s == root_module,
+                                    _ => false,
+                                })
+                            }
+                            Items::FullDef(items) => {
+                                items.retain(|item| match &item.this.contents().def_id.path[..] {
+                                    [] => true,
+                                    [
+                                        DisambiguatedDefPathItem {
+                                            data: DefPathItem::TypeNs(s),
+                                            disambiguator: 0,
+                                        },
+                                        ..,
+                                    ] => s == root_module,
+                                    _ => false,
+                                })
+                            }
+                        };
                     }
                     prune_haxmeta(&mut haxmeta, root_module.as_str())
                 }

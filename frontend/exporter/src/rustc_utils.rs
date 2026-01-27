@@ -209,16 +209,13 @@ pub fn get_def_attrs<'tcx>(
     def_id: RDefId,
     def_kind: RDefKind,
 ) -> &'tcx [rustc_hir::Attribute] {
-    use RDefKind::*;
-    match def_kind {
-        // These kinds cause `get_attrs` to panic.
-        ConstParam | LifetimeParam | TyParam | ForeignMod => &[],
-        _ => {
-            if let Some(ldid) = def_id.as_local() {
-                tcx.hir_attrs(tcx.local_def_id_to_hir_id(ldid))
-            } else {
-                tcx.attrs_for_def(def_id)
-            }
+    if let Some(ldid) = def_id.as_local() {
+        tcx.hir_attrs(tcx.local_def_id_to_hir_id(ldid))
+    } else {
+        match def_kind {
+            // These kinds cause `get_attrs` to panic.
+            RDefKind::ConstParam | RDefKind::LifetimeParam | RDefKind::ForeignMod | RDefKind::TyParam => &[],
+            _ => tcx.attrs_for_def(def_id),
         }
     }
 }

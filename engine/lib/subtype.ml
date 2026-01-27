@@ -167,7 +167,7 @@ struct
       let typ : B.ty =
         try dty e.span e.typ
         with Diagnostics.SpanFreeError.Exn (Data (_context, _kind)) ->
-          UB.hax_failure_typ
+          UB.HaxFailure.Build.ty ""
       in
       UB.hax_failure_expr e.span typ (context, kind) (UA.LiftToFullAst.expr e)
 
@@ -379,6 +379,13 @@ struct
             witness = S.nontrivial_lhs span witness;
           }
     | LhsLocalVar { var; typ } -> LhsLocalVar { var; typ = dty span typ }
+    | LhsVecRef { e; typ; witness } ->
+        LhsVecRef
+          {
+            e = dlhs span e;
+            typ = dty span typ;
+            witness = S.nontrivial_lhs span witness;
+          }
     | LhsArbitraryExpr { e; witness } ->
         LhsArbitraryExpr { e = dexpr e; witness = S.arbitrary_lhs span witness }
 

@@ -256,7 +256,9 @@ let translate' (_bo : BackendOptions.t) (items : AST.item list) :
     | _ -> .
   and doit_lhs (fmt : Formatter.t) (lhs : lhs) =
     match lhs with
-    | LhsFieldAccessor _ -> assert false
+    | LhsFieldAccessor _ | LhsVecRef _ | LhsArrayAccessor { e = LhsVecRef _; _ }
+      ->
+        assert false
     | LhsArrayAccessor
         { e = LhsLocalVar { var = { name; _ }; _ }; index; typ = _; _ } ->
         Stdlib.Format.fprintf fmt "%s.[%a]" name doit_expr index

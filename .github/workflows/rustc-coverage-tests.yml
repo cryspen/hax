@@ -9,7 +9,7 @@ on:
 
 jobs:
     rustc-coverage-tests:
-      runs-on: ubuntu-latest
+      runs-on: linux
   
       steps:
         - uses: actions/checkout@v4

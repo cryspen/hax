@@ -1,9 +1,10 @@
 module Std.Io.Impls
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Rust_primitives
 
-[@@FStar.Tactics.Typeclasses.tcinstance]
-val write_vec: Std.Io.t_Write (Alloc.Vec.t_Vec Rust_primitives.Integers.u8
-            Alloc.Alloc.t_Global)
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl:Std.Io.t_Read (t_Slice u8)
 
-[@@FStar.Tactics.Typeclasses.tcinstance]
-val read_slice: Std.Io.t_Read (Rust_primitives.Arrays.t_Slice 
-  Rust_primitives.Integers.u8)
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+val impl_1:Std.Io.t_Write (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)

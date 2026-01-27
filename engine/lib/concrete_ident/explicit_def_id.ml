@@ -34,7 +34,7 @@ let pure_of_def_id ?constructor (def_id : Types.def_id_contents) : t option =
   let path_without_ctor =
     (* Get rid of extra [Ctor] *)
     let* init, last = last_init def_id.path in
-    let*? _ = [%matches? Types.Ctor] last.data in
+    let*? _ = [%matches? (Types.Ctor : Types.def_path_item)] last.data in
     Some init
   in
   let parent = def_id.parent in
@@ -149,7 +149,7 @@ module FromRustAST = struct
       ({ krate; path; parent; kind; _ } : A.def_id) : B.def_id_contents =
     let f (o : A.def_id) : B.def_id =
       let contents : B.node_for__def_id_contents =
-        { value = def_id_contents_to_rust_ast o; id = Int64.of_int (-1) }
+        { value = def_id_contents_to_rust_ast o; id = Int64.zero }
       in
       { contents }
     in
@@ -159,7 +159,7 @@ module FromRustAST = struct
       path;
       parent;
       kind;
-      index = (Int64.of_int (-1), Int64.of_int (-1), None);
+      index = (Int64.zero, Int64.zero, None);
       is_local = false;
     }
 
@@ -167,5 +167,7 @@ module FromRustAST = struct
     { is_constructor; def_id = def_id_contents_to_rust_ast def_id }
 end
 
+let def_id_to_rust_ast = ToRustAST.def_id_contents_to_rust_ast
+let def_id_from_rust_ast = FromRustAST.def_id_contents_to_rust_ast
 let to_rust_ast = ToRustAST.to_rust_ast
 let from_rust_ast = FromRustAST.to_rust_ast

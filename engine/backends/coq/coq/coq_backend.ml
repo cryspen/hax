@@ -793,6 +793,9 @@ struct
       method lhs_LhsLocalVar ~var:_ ~typ:_ =
         default_document_for "lhs_LhsLocalVar"
 
+      method lhs_LhsVecRef ~e:_ ~typ:_ ~witness:_ =
+        default_document_for "lhs_LhsVecRef"
+
       method literal_Bool x1 = string (if x1 then "true" else "false")
 
       method literal_Char x1 =

@@ -245,8 +245,7 @@ inductive Cyclic_modules.Typ_b.T2Rec : Type
 
 
 inductive Cyclic_modules.Typ_b.T1Rec : Type
-| T1 : (Alloc.Boxed.Box Cyclic_modules.Typ_b.T2Rec Alloc.Alloc.Global) ->
-  Cyclic_modules.Typ_b.T1Rec
+| T1 : Cyclic_modules.Typ_b.T2Rec -> Cyclic_modules.Typ_b.T1Rec
 
 
 inductive Cyclic_modules.Typ_a.TRec : Type

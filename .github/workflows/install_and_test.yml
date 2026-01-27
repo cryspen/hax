@@ -10,7 +10,7 @@ on:
 jobs:
   tests:
     name: nix-action
-    runs-on: ubuntu-latest
+    runs-on: linux
     steps:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
@@ -58,5 +58,6 @@ jobs:
       env:
         CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
       run: |
-        nix-store -qR --include-outputs $(nix build .# --json | jq -r '.[].outputs | to_entries[].value') \
+        nix build .# .#fstar --json \
+          | jq -r '.[].outputs | to_entries[].value' \
           | cachix push hax

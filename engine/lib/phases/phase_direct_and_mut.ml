@@ -88,6 +88,13 @@ struct
       let typ = dty p.span p.typ in
       match p.place with
       | LocalVar var -> LhsLocalVar { var; typ }
+      | VecRef inner ->
+          LhsVecRef
+            {
+              e = place_to_lhs inner;
+              typ;
+              witness = Features.On.nontrivial_lhs;
+            }
       | FieldProjection { place; projector } ->
           let e = place_to_lhs place in
           LhsFieldAccessor
@@ -242,15 +249,35 @@ struct
           | [ { e = Assign { lhs; witness; _ }; span; typ } ]
             when UB.is_unit_typ otype ->
               { e = Assign { lhs; e = f_call; witness }; span; typ }
+              |> extract_vec_ref
           | _ ->
               let body =
                 let init =
                   if UB.is_unit_typ otype then UB.unit_expr f.span
                   else B.{ typ = otype; span = f.span; e = LocalVar out_var }
                 in
-                List.fold_right ~init ~f:UB.make_seq assigns
+                assigns
+                |> List.map ~f:extract_vec_ref
+                |> List.fold_right ~init ~f:UB.make_seq
               in
-              UB.make_let pat f_call body)
+              let r = UB.make_let pat f_call body in
+              r)
+
+    and extract_vec_ref : B.expr -> B.expr = function
+      | { e = Assign { lhs = LhsVecRef { e = lhs; _ }; witness; e }; span; typ }
+        ->
+          {
+            e =
+              Assign
+                {
+                  lhs;
+                  e = UB.call Alloc__slice__Impl__to_vec [ e ] e.span typ;
+                  witness;
+                };
+            span;
+            typ;
+          }
+      | e -> e
 
     and dexpr' (span : span) (e : A.expr') : B.expr' =
       match e with

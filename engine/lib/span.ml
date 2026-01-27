@@ -156,12 +156,24 @@ let owner_hint span =
          Option.value_exn
            (List.nth !owner_id_list (!owner_id_list_len - id - 1)))
 
-let to_span2 span : Types.span2 =
+let to_rust_ast_span span : Rust_engine_types.span =
+  let owner_hint =
+    let f (did : Types.def_id) : Types.def_id2 = { contents = did.contents } in
+    owner_hint span |> Option.map ~f
+  in
   {
     data = List.map ~f:Imported.span_to_thir span.data;
-    id = Int.to_string span.id;
-    owner_hint =
-      Option.map
-        ~f:(fun (OwnerId n) -> Types.Newtypeowner_id (Int.to_string n))
-        span.owner_hint;
+    id = Int.to_int64 span.id;
+    owner_hint;
+  }
+
+let from_rust_ast_span (span : Rust_engine_types.span) : t =
+  let owner_hint =
+    let f (did : Types.def_id2) : Types.def_id = { contents = did.contents } in
+    Option.map ~f span.owner_hint
+  in
+  {
+    data = List.map ~f:Imported.span_of_thir span.data;
+    id = Int.of_int64_exn span.id;
+    owner_hint = Option.map ~f:fresh_owner_id owner_hint;
   }

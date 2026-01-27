@@ -36,6 +36,9 @@ struct
     let rec dty (span : span) (t : A.ty) : B.ty =
       match t with
       | [%inline_arms "dty.*" - TApp - TRef] -> auto
+      | TApp { ident; args = [ GType boxed_ty; _ ] }
+        when Global_ident.eq_name Alloc__boxed__Box ident ->
+          dty span boxed_ty
       | TApp { ident; args } ->
           TApp { ident; args = List.filter_map ~f:(dgeneric_value span) args }
       | TRef { typ; mut = Immutable; _ } -> dty span typ

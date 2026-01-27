@@ -1,16 +1,13 @@
 module Core_models.Option
 #set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
 open FStar.Mul
+open Rust_primitives
 
 include Core_models.Bundle {t_Option as t_Option}
 
 include Core_models.Bundle {Option_Some as Option_Some}
 
 include Core_models.Bundle {Option_None as Option_None}
-
-include Core_models.Bundle {t_Dummy as t_Dummy}
-
-include Core_models.Bundle {Dummy as Dummy}
 
 include Core_models.Bundle {impl__is_some as impl__is_some}
 

@@ -1,9 +1,10 @@
 module Core_models.Iter.Adapters.Step_by
-open Rust_primitives.Integers
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Rust_primitives
 
-type t_StepBy t = { 
-  f_iter: t;
-  f_step: n: usize {v n > 0};
-  f_first_take: bool;
-}
+include Core_models.Iter.Bundle {t_StepBy as t_StepBy}
 
+include Core_models.Iter.Bundle {impl__new__from__step_by as impl__new}
+
+include Core_models.Iter.Bundle {impl_1__from__step_by as impl_1}

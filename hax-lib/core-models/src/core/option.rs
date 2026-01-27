@@ -3,9 +3,6 @@ pub enum Option<T> {
     None,
 }
 
-#[hax_lib::fstar::before("open Rust_primitives.Integers")]
-struct Dummy;
-
 use super::default::Default;
 use super::ops::function::*;
 use super::result::Result::*;

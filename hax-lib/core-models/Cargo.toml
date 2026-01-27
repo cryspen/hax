@@ -4,10 +4,16 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+pastey = "0.1.1"
+rust_primitives = { "path" = "rust_primitives" }
+hax-lib.workspace = true
+
+[workspace.dependencies]
 hax-lib = { "path" = ".." }
 
 # Workaround for https://github.com/rust-lang/cargo/issues/6745
 [workspace]
+members = ["alloc", "rand_core", "rust_primitives", "std"]
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)'] }

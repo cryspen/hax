@@ -32,7 +32,9 @@ module Traits.Block_size
 open FStar.Mul
 open Core_models
 
-class t_BlockSizeUser (v_Self: Type0) = { f_BlockSize:Type0 }
+class t_BlockSizeUser (v_Self: Type0) = {
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_BlockSize:Type0
+}
 
 class t_ParBlocksSizeUser (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_BlockSizeUser v_Self
@@ -62,7 +64,7 @@ class t_Bar (v_Self: Type0) (v_T: Type0) = { __marker_trait_t_Bar:Prims.unit }
 
 class t_Foo (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Bar v_Self f_U;
-  f_U:Type0
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -96,6 +98,7 @@ let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) 
       #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
       (Core_models.Iter.Traits.Iterator.f_filter #(Core_models.Ops.Range.t_Range u8)
           #FStar.Tactics.Typeclasses.solve
+          #(u8 -> bool)
           ({ Core_models.Ops.Range.f_start = mk_u8 0; Core_models.Ops.Range.f_end = mk_u8 5 }
             <:
             Core_models.Ops.Range.t_Range u8)
@@ -104,12 +107,8 @@ let original_function_from_495_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global) 
               let (_: Core_models.Slice.Iter.t_Iter u8), (out: bool) =
                 Core_models.Iter.Traits.Iterator.f_any #(Core_models.Slice.Iter.t_Iter u8)
                   #FStar.Tactics.Typeclasses.solve
-                  (Core_models.Slice.impl__iter #u8
-                      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
-                          #FStar.Tactics.Typeclasses.solve
-                          list
-                        <:
-                        t_Slice u8)
+                  #(u8 -> bool)
+                  (Core_models.Slice.impl__iter #u8 (Alloc.Vec.impl_1__as_slice list <: t_Slice u8)
                     <:
                     Core_models.Slice.Iter.t_Iter u8)
                   (fun n ->
@@ -130,6 +129,7 @@ let minimized_1_ (list: Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
     #(Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
     (Core_models.Iter.Traits.Iterator.f_filter #(Core_models.Ops.Range.t_Range u8)
         #FStar.Tactics.Typeclasses.solve
+        #(u8 -> bool)
         ({ Core_models.Ops.Range.f_start = mk_u8 0; Core_models.Ops.Range.f_end = mk_u8 5 }
           <:
           Core_models.Ops.Range.t_Range u8)
@@ -175,7 +175,7 @@ module Traits.Impl_expr_in_goal
 open FStar.Mul
 open Core_models
 
-class t_T1 (v_Self: Type0) = { f_Assoc:Type0 }
+class t_T1 (v_Self: Type0) = { [@@@ FStar.Tactics.Typeclasses.no_method]f_Assoc:Type0 }
 
 class t_T2 (v_Self: Type0) = { __marker_trait_t_T2:Prims.unit }
 
@@ -437,7 +437,7 @@ let associated_function_caller
 
 class t_SubTrait (v_Self: Type0) (v_TypeArg: Type0) (v_ConstArg: usize) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait v_Self v_TypeArg v_ConstArg;
-  f_AssocType:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
   f_AssocType_i0:t_Trait f_AssocType v_TypeArg v_ConstArg
 }
 
@@ -517,13 +517,13 @@ open FStar.Mul
 open Core_models
 
 class t_Trait1 (v_Self: Type0) = {
-  f_T:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_T:Type0;
   f_T_i0:t_Trait1 f_T
 }
 
 class t_Trait2 (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_Trait1 v_Self;
-  f_U:Type0
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_U:Type0
 }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -686,6 +686,7 @@ let cclosure_iimpl_expr
     (Core_models.Iter.Traits.Iterator.f_map #v_I
         #FStar.Tactics.Typeclasses.solve
         #Prims.unit
+        #(Prims.unit -> Prims.unit)
         it
         (fun x -> x)
       <:
@@ -696,10 +697,10 @@ let cclosure_iimpl_expr_fngen
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i0:
           Core_models.Iter.Traits.Iterator.t_Iterator v_I)
-      (#_: unit{i0.Core_models.Iter.Traits.Iterator.f_Item == Prims.unit})
       (#[FStar.Tactics.Typeclasses.tcresolve ()]
           i1:
           Core_models.Ops.Function.t_FnMut v_F Prims.unit)
+      (#_: unit{i0.Core_models.Iter.Traits.Iterator.f_Item == Prims.unit})
       (it: v_I)
       (f: v_F)
     : Alloc.Vec.t_Vec Prims.unit Alloc.Alloc.t_Global =
@@ -744,7 +745,7 @@ let uuse_iimpl_trait (_: Prims.unit) : Prims.unit =
   ()
 
 class t_Foo (v_Self: Type0) = {
-  f_AssocType:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_AssocType:Type0;
   f_AssocType_i0:t_SuperTrait f_AssocType;
   f_N:usize;
   f_assoc_f_pre:Prims.unit -> Type0;
@@ -755,17 +756,17 @@ class t_Foo (v_Self: Type0) = {
   f_method_f_post:v_Self -> Prims.unit -> Type0;
   f_method_f:x0: v_Self
     -> Prims.Pure Prims.unit (f_method_f_pre x0) (fun result -> f_method_f_post x0 result);
-  f_assoc_type_pre:{| i0: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Type0;
-  f_assoc_type_post:{| i0: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Prims.unit
+  f_assoc_type_pre:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Type0;
+  f_assoc_type_post:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> f_AssocType -> Prims.unit
     -> Type0;
-  f_assoc_type:{| i0: Core_models.Marker.t_Copy f_AssocType |} -> x0: f_AssocType
+  f_assoc_type:{| i1: Core_models.Marker.t_Copy f_AssocType |} -> x0: f_AssocType
     -> Prims.Pure Prims.unit
-        (f_assoc_type_pre #i0 x0)
-        (fun result -> f_assoc_type_post #i0 x0 result)
+        (f_assoc_type_pre #i1 x0)
+        (fun result -> f_assoc_type_post #i1 x0 result)
 }
 
 class t_Lang (v_Self: Type0) = {
-  f_Var:Type0;
+  [@@@ FStar.Tactics.Typeclasses.no_method]f_Var:Type0;
   f_s_pre:v_Self -> i32 -> Type0;
   f_s_post:v_Self -> i32 -> (v_Self & f_Var) -> Type0;
   f_s:x0: v_Self -> x1: i32
