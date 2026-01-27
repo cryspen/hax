@@ -783,35 +783,39 @@ instance Nat.instGetElemResultVector {α n} : GetElemResult (Vector α n) Nat α
 
 @[spec]
 theorem Nat.getElemArrayResult_spec
-  (α : Type) (a: Array α) (i: Nat) (h: i < a.size) :
-  ⦃ ⌜ True ⌝ ⦄
-  ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
-  by mvcgen [RustM.ofOption, Nat.instGetElemResultArray]
+    (α : Type) (a: Array α) (i: Nat) (h: ⊢ₛ (⌜i < a.size⌝ : SPred.{0} [])) :
+    ⦃ ⌜ True ⌝ ⦄
+    ( a[i]_? )
+    ⦃ ⇓ r => ⌜ r = a[i]'(by simpa using h) ⌝ ⦄ := by
+  simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
+  mvcgen [RustM.ofOption, Nat.instGetElemResultArray]
 
 @[spec]
 theorem Nat.getElemVectorResult_spec
-  (α : Type) (n:Nat) (a: Vector α n) (i: Nat) (h : i < n) :
-  ⦃ ⌜ True ⌝ ⦄
-  ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
-  by mvcgen [Nat.instGetElemResultVector]
+    (α : Type) (n:Nat) (a: Vector α n) (i: Nat) (h: ⊢ₛ (⌜i < n⌝ : SPred.{0} [])) :
+    ⦃ ⌜ True ⌝ ⦄
+    ( a[i]_? )
+    ⦃ ⇓ r => ⌜ r = a[i]'(by simpa using h) ⌝ ⦄ := by
+  simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
+  mvcgen [Nat.instGetElemResultVector]
 
 @[spec]
 theorem usize.getElemArrayResult_spec
-  (α : Type) (a: Array α) (i: usize) (h: i.toNat < a.size) :
-  ⦃ ⌜ True ⌝ ⦄
-  ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
-  by mvcgen [usize.instGetElemResultArray]
+    (α : Type) (a: Array α) (i: usize) (h: ⊢ₛ (⌜i.toNat < a.size⌝ : SPred.{0} [])) :
+    ⦃ ⌜ True ⌝ ⦄
+    ( a[i]_? )
+    ⦃ ⇓ r => ⌜ r = a[i.toNat]'(by simpa using h) ⌝ ⦄ := by
+  simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
+  mvcgen [usize.instGetElemResultArray]
 
 @[spec]
 theorem usize.getElemVectorResult_spec
-  (α : Type) (n:Nat) (a: Vector α n) (i: usize) (h: i.toNat < n) :
+  (α : Type) (n:Nat) (a: Vector α n) (i: usize) (h: ⊢ₛ (⌜i.toNat < n⌝ : SPred.{0} [])) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
-  by mvcgen [usize.instGetElemResultVector]
+  ⦃ ⇓ r => ⌜ r = a[i.toNat]'(by simpa using h) ⌝ ⦄ := by
+  simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
+  mvcgen [usize.instGetElemResultVector]
 
 @[spec]
 theorem Range.getElemArrayUSize64_spec

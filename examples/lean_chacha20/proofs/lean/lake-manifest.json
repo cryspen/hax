@@ -8,5 +8,5 @@
    "inherited": false,
    "dir": "../../../../hax-lib/proof-libs/lean",
    "configFile": "lakefile.toml"}],
- "name": "Lean_tutorial",
+ "name": "Lean_chacha20",
  "lakeDir": ".lake"}

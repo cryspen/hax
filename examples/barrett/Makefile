@@ -1,9 +1,6 @@
-.PHONY: default lean clean
-default: lean
+.PHONY: default clean
+default:
 	make -C proofs/fstar/extraction
-
-lean:
-	cargo hax into lean
 
 clean:
 	rm -f proofs/fstar/extraction/.depend

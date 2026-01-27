@@ -287,8 +287,8 @@ theorem USize64.intCast_ofNat (x : Nat) : (OfNat.ofNat (α := Int) x : USize64) 
     rw [Int.toNat_emod (Int.zero_le_ofNat x) (by decide)]
     erw [Int.toNat_natCast]
     rw [Int.toNat_pow_of_nonneg (by decide)]
-    simp only [USize64.ofNat, BitVec.ofNat, Fin.ofNat, Int.reduceToNat, Nat.dvd_refl,
-      Nat.mod_mod_of_dvd]
+    simp only [USize64.ofNat, BitVec.ofNat, Fin.Internal.ofNat_eq_ofNat, Fin.ofNat, Int.reduceToNat, Nat.dvd_refl,
+      Nat.mod_mod_of_dvd, USize64.instOfNat]
     rfl
 
 theorem USize64.intCast_neg (x : Int) : ((-x : Int) : USize64) = - (x : USize64) := by

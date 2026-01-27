@@ -34,22 +34,25 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
       /-- Specification for rust addition -/
       @[spec]
       theorem haxAdd_spec {x y : $typeName}
-          (h : ¬ $(mkIdent (typeName.getId ++ `addOverflow)) x y) :
+          (h : ⊢ₛ (⌜¬ $(mkIdent (typeName.getId ++ `addOverflow)) x y⌝ : SPred.{0} [])) :
           ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX + y.$toX ⌝ ⦄ := by
+        simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
         mvcgen [Core_models.Ops.Arith.Add.add]; $grind
 
       /-- Specification for rust subtraction -/
       @[spec]
       theorem haxSub_spec {x y : $typeName}
-          (h : ¬ $(mkIdent (typeName.getId ++ `subOverflow)) x y) :
+          (h : ⊢ₛ (⌜¬ $(mkIdent (typeName.getId ++ `subOverflow)) x y⌝ : SPred.{0} [])) :
           ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX - y.$toX ⌝ ⦄ := by
+        simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
         mvcgen [Core_models.Ops.Arith.Sub.sub]; $grind
 
       /-- Specification for rust multiplication -/
       @[spec]
       theorem haxMul_spec {x y : $typeName}
-          (h : ¬ $(mkIdent (typeName.getId ++ `mulOverflow)) x y) :
+          (h : ⊢ₛ (⌜¬ $(mkIdent (typeName.getId ++ `mulOverflow)) x y⌝ : SPred.{0} [])) :
           ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX * y.$toX ⌝ ⦄ := by
+        simp only [SPred.entails_nil, SPred.down_pure, forall_const] at h
         mvcgen [Core_models.Ops.Arith.Mul.mul]; $grind
   )
   if signed then

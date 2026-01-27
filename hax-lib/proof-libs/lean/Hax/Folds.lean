@@ -102,12 +102,14 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
   (inv : α -> usize -> RustM Bool)
   (init: α)
   (body : α -> usize -> RustM α) :
-  s.toNat ≤ e.toNat →
-  inv init s = pure true →
-  (∀ (acc:α) (i:usize),
-    s.toNat ≤ i.toNat →
-    i.toNat < e.toNat →
-    inv acc i = pure true →
+  -- Workaround for https://github.com/leanprover/lean4/pull/12048
+  (⊢ₛ (⌜s.toNat ≤ e.toNat⌝ : SPred.{0} [])) →
+  (⊢ₛ (⌜inv init s = pure true⌝ : SPred.{0} [])) →
+  (
+    ∀ (acc:α) (i:usize),
+    (⊢ₛ (⌜s.toNat ≤ i.toNat⌝ : SPred.{0} [])) →
+    (⊢ₛ (⌜i.toNat < e.toNat⌝ : SPred.{0} [])) →
+    (⊢ₛ (⌜inv acc i = pure true⌝ : SPred.{0} [])) →
     ⦃ ⌜ True ⌝ ⦄
     (body acc i)
     ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
