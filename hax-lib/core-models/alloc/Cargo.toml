@@ -1,0 +1,9 @@
+[package]
+name = "alloc"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+rust_primitives = {path = "../rust_primitives"}
+hax-lib.workspace = true

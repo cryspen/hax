@@ -668,12 +668,6 @@ opaque Core_models.Mem.drop
   : RustM Rust_primitives.Hax.Tuple0
 
 
-def Core_models.Mem.copy
-  (T : Type) [Core.Marker.Copy.AssociatedTypes T] [Core.Marker.Copy T ] (x : T)
-  : RustM T
-  := do
-  (pure x)
-
 opaque Core_models.Mem.take
   (T : Type) (x : T)
   : RustM (Rust_primitives.Hax.Tuple2 T T)
@@ -694,6 +688,11 @@ opaque Core_models.Mem.zeroed
   : RustM T
 
 
+opaque Core_models.Mem.transmute
+  (Src : Type) (Dst : Type) (src : Src)
+  : RustM Dst
+
+
 structure Core_models.Mem.Manually_drop.ManuallyDrop (T : Type) where
   value : T
 
@@ -705,6 +704,464 @@ structure Core_models.Num.Error.IntErrorKind where
 
 structure Core_models.Num.Error.ParseIntError where
   kind : Core_models.Num.Error.IntErrorKind
+
+opaque Core_models.Num.Impl_1.rotate_right (x : u8) (n : u32) : RustM u8 
+
+opaque Core_models.Num.Impl_1.rotate_left (x : u8) (n : u32) : RustM u8 
+
+opaque Core_models.Num.Impl_1.leading_zeros (x : u8) : RustM u32 
+
+opaque Core_models.Num.Impl_1.ilog2 (x : u8) : RustM u32 
+
+opaque Core_models.Num.Impl_1.from_be_bytes
+  (bytes : (RustArray u8 1))
+  : RustM u8
+
+
+opaque Core_models.Num.Impl_1.from_le_bytes
+  (bytes : (RustArray u8 1))
+  : RustM u8
+
+
+opaque Core_models.Num.Impl_1.to_be_bytes (bytes : u8) : RustM (RustArray u8 1) 
+
+opaque Core_models.Num.Impl_1.to_le_bytes (bytes : u8) : RustM (RustArray u8 1) 
+
+@[reducible] instance Core_models.Num.Impl.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u8
+  where
+
+instance Core_models.Num.Impl : Core_models.Default.Default u8 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
+
+opaque Core_models.Num.Impl_3.rotate_right (x : u16) (n : u32) : RustM u16 
+
+opaque Core_models.Num.Impl_3.rotate_left (x : u16) (n : u32) : RustM u16 
+
+opaque Core_models.Num.Impl_3.leading_zeros (x : u16) : RustM u32 
+
+opaque Core_models.Num.Impl_3.ilog2 (x : u16) : RustM u32 
+
+opaque Core_models.Num.Impl_3.from_be_bytes
+  (bytes : (RustArray u8 2))
+  : RustM u16
+
+
+opaque Core_models.Num.Impl_3.from_le_bytes
+  (bytes : (RustArray u8 2))
+  : RustM u16
+
+
+opaque Core_models.Num.Impl_3.to_be_bytes
+  (bytes : u16)
+  : RustM (RustArray u8 2)
+
+
+opaque Core_models.Num.Impl_3.to_le_bytes
+  (bytes : u16)
+  : RustM (RustArray u8 2)
+
+
+@[reducible] instance Core_models.Num.Impl_2.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u16
+  where
+
+instance Core_models.Num.Impl_2 : Core_models.Default.Default u16 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
+
+opaque Core_models.Num.Impl_5.rotate_right (x : u32) (n : u32) : RustM u32 
+
+opaque Core_models.Num.Impl_5.rotate_left (x : u32) (n : u32) : RustM u32 
+
+opaque Core_models.Num.Impl_5.leading_zeros (x : u32) : RustM u32 
+
+opaque Core_models.Num.Impl_5.ilog2 (x : u32) : RustM u32 
+
+opaque Core_models.Num.Impl_5.from_be_bytes
+  (bytes : (RustArray u8 4))
+  : RustM u32
+
+
+opaque Core_models.Num.Impl_5.from_le_bytes
+  (bytes : (RustArray u8 4))
+  : RustM u32
+
+
+opaque Core_models.Num.Impl_5.to_be_bytes
+  (bytes : u32)
+  : RustM (RustArray u8 4)
+
+
+opaque Core_models.Num.Impl_5.to_le_bytes
+  (bytes : u32)
+  : RustM (RustArray u8 4)
+
+
+@[reducible] instance Core_models.Num.Impl_4.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u32
+  where
+
+instance Core_models.Num.Impl_4 : Core_models.Default.Default u32 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
+
+opaque Core_models.Num.Impl_7.rotate_right (x : u64) (n : u32) : RustM u64 
+
+opaque Core_models.Num.Impl_7.rotate_left (x : u64) (n : u32) : RustM u64 
+
+opaque Core_models.Num.Impl_7.leading_zeros (x : u64) : RustM u32 
+
+opaque Core_models.Num.Impl_7.ilog2 (x : u64) : RustM u32 
+
+opaque Core_models.Num.Impl_7.from_be_bytes
+  (bytes : (RustArray u8 8))
+  : RustM u64
+
+
+opaque Core_models.Num.Impl_7.from_le_bytes
+  (bytes : (RustArray u8 8))
+  : RustM u64
+
+
+opaque Core_models.Num.Impl_7.to_be_bytes
+  (bytes : u64)
+  : RustM (RustArray u8 8)
+
+
+opaque Core_models.Num.Impl_7.to_le_bytes
+  (bytes : u64)
+  : RustM (RustArray u8 8)
+
+
+@[reducible] instance Core_models.Num.Impl_6.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u64
+  where
+
+instance Core_models.Num.Impl_6 : Core_models.Default.Default u64 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
+
+opaque Core_models.Num.Impl_9.rotate_right (x : u128) (n : u32) : RustM u128 
+
+opaque Core_models.Num.Impl_9.rotate_left (x : u128) (n : u32) : RustM u128 
+
+opaque Core_models.Num.Impl_9.leading_zeros (x : u128) : RustM u32 
+
+opaque Core_models.Num.Impl_9.ilog2 (x : u128) : RustM u32 
+
+opaque Core_models.Num.Impl_9.from_be_bytes
+  (bytes : (RustArray u8 16))
+  : RustM u128
+
+
+opaque Core_models.Num.Impl_9.from_le_bytes
+  (bytes : (RustArray u8 16))
+  : RustM u128
+
+
+opaque Core_models.Num.Impl_9.to_be_bytes
+  (bytes : u128)
+  : RustM (RustArray u8 16)
+
+
+opaque Core_models.Num.Impl_9.to_le_bytes
+  (bytes : u128)
+  : RustM (RustArray u8 16)
+
+
+@[reducible] instance Core_models.Num.Impl_8.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u128
+  where
+
+instance Core_models.Num.Impl_8 : Core_models.Default.Default u128 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
+
+opaque Core_models.Num.Impl_11.rotate_right (x : usize) (n : u32) : RustM usize 
+
+opaque Core_models.Num.Impl_11.rotate_left (x : usize) (n : u32) : RustM usize 
+
+opaque Core_models.Num.Impl_11.leading_zeros (x : usize) : RustM u32 
+
+opaque Core_models.Num.Impl_11.ilog2 (x : usize) : RustM u32 
+
+opaque Core_models.Num.Impl_11.from_be_bytes
+  (bytes : (RustArray u8 0))
+  : RustM usize
+
+
+opaque Core_models.Num.Impl_11.from_le_bytes
+  (bytes : (RustArray u8 0))
+  : RustM usize
+
+
+opaque Core_models.Num.Impl_11.to_be_bytes
+  (bytes : usize)
+  : RustM (RustArray u8 0)
+
+
+opaque Core_models.Num.Impl_11.to_le_bytes
+  (bytes : usize)
+  : RustM (RustArray u8 0)
+
+
+@[reducible] instance Core_models.Num.Impl_10.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes usize
+  where
+
+instance Core_models.Num.Impl_10 : Core_models.Default.Default usize where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : usize))
+
+opaque Core_models.Num.Impl_13.rotate_right (x : i8) (n : u32) : RustM i8 
+
+opaque Core_models.Num.Impl_13.rotate_left (x : i8) (n : u32) : RustM i8 
+
+opaque Core_models.Num.Impl_13.leading_zeros (x : i8) : RustM u32 
+
+opaque Core_models.Num.Impl_13.ilog2 (x : i8) : RustM u32 
+
+opaque Core_models.Num.Impl_13.from_be_bytes
+  (bytes : (RustArray u8 1))
+  : RustM i8
+
+
+opaque Core_models.Num.Impl_13.from_le_bytes
+  (bytes : (RustArray u8 1))
+  : RustM i8
+
+
+opaque Core_models.Num.Impl_13.to_be_bytes
+  (bytes : i8)
+  : RustM (RustArray u8 1)
+
+
+opaque Core_models.Num.Impl_13.to_le_bytes
+  (bytes : i8)
+  : RustM (RustArray u8 1)
+
+
+@[reducible] instance Core_models.Num.Impl_12.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes i8
+  where
+
+instance Core_models.Num.Impl_12 : Core_models.Default.Default i8 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i8))
+
+opaque Core_models.Num.Impl_15.rotate_right (x : i16) (n : u32) : RustM i16 
+
+opaque Core_models.Num.Impl_15.rotate_left (x : i16) (n : u32) : RustM i16 
+
+opaque Core_models.Num.Impl_15.leading_zeros (x : i16) : RustM u32 
+
+opaque Core_models.Num.Impl_15.ilog2 (x : i16) : RustM u32 
+
+opaque Core_models.Num.Impl_15.from_be_bytes
+  (bytes : (RustArray u8 2))
+  : RustM i16
+
+
+opaque Core_models.Num.Impl_15.from_le_bytes
+  (bytes : (RustArray u8 2))
+  : RustM i16
+
+
+opaque Core_models.Num.Impl_15.to_be_bytes
+  (bytes : i16)
+  : RustM (RustArray u8 2)
+
+
+opaque Core_models.Num.Impl_15.to_le_bytes
+  (bytes : i16)
+  : RustM (RustArray u8 2)
+
+
+@[reducible] instance Core_models.Num.Impl_14.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes i16
+  where
+
+instance Core_models.Num.Impl_14 : Core_models.Default.Default i16 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i16))
+
+opaque Core_models.Num.Impl_17.rotate_right (x : i32) (n : u32) : RustM i32 
+
+opaque Core_models.Num.Impl_17.rotate_left (x : i32) (n : u32) : RustM i32 
+
+opaque Core_models.Num.Impl_17.leading_zeros (x : i32) : RustM u32 
+
+opaque Core_models.Num.Impl_17.ilog2 (x : i32) : RustM u32 
+
+opaque Core_models.Num.Impl_17.from_be_bytes
+  (bytes : (RustArray u8 4))
+  : RustM i32
+
+
+opaque Core_models.Num.Impl_17.from_le_bytes
+  (bytes : (RustArray u8 4))
+  : RustM i32
+
+
+opaque Core_models.Num.Impl_17.to_be_bytes
+  (bytes : i32)
+  : RustM (RustArray u8 4)
+
+
+opaque Core_models.Num.Impl_17.to_le_bytes
+  (bytes : i32)
+  : RustM (RustArray u8 4)
+
+
+@[reducible] instance Core_models.Num.Impl_16.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes i32
+  where
+
+instance Core_models.Num.Impl_16 : Core_models.Default.Default i32 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i32))
+
+opaque Core_models.Num.Impl_19.rotate_right (x : i64) (n : u32) : RustM i64 
+
+opaque Core_models.Num.Impl_19.rotate_left (x : i64) (n : u32) : RustM i64 
+
+opaque Core_models.Num.Impl_19.leading_zeros (x : i64) : RustM u32 
+
+opaque Core_models.Num.Impl_19.ilog2 (x : i64) : RustM u32 
+
+opaque Core_models.Num.Impl_19.from_be_bytes
+  (bytes : (RustArray u8 8))
+  : RustM i64
+
+
+opaque Core_models.Num.Impl_19.from_le_bytes
+  (bytes : (RustArray u8 8))
+  : RustM i64
+
+
+opaque Core_models.Num.Impl_19.to_be_bytes
+  (bytes : i64)
+  : RustM (RustArray u8 8)
+
+
+opaque Core_models.Num.Impl_19.to_le_bytes
+  (bytes : i64)
+  : RustM (RustArray u8 8)
+
+
+@[reducible] instance Core_models.Num.Impl_18.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes i64
+  where
+
+instance Core_models.Num.Impl_18 : Core_models.Default.Default i64 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i64))
+
+opaque Core_models.Num.Impl_21.rotate_right (x : i128) (n : u32) : RustM i128 
+
+opaque Core_models.Num.Impl_21.rotate_left (x : i128) (n : u32) : RustM i128 
+
+opaque Core_models.Num.Impl_21.leading_zeros (x : i128) : RustM u32 
+
+opaque Core_models.Num.Impl_21.ilog2 (x : i128) : RustM u32 
+
+opaque Core_models.Num.Impl_21.from_be_bytes
+  (bytes : (RustArray u8 16))
+  : RustM i128
+
+
+opaque Core_models.Num.Impl_21.from_le_bytes
+  (bytes : (RustArray u8 16))
+  : RustM i128
+
+
+opaque Core_models.Num.Impl_21.to_be_bytes
+  (bytes : i128)
+  : RustM (RustArray u8 16)
+
+
+opaque Core_models.Num.Impl_21.to_le_bytes
+  (bytes : i128)
+  : RustM (RustArray u8 16)
+
+
+@[reducible] instance Core_models.Num.Impl_20.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes i128
+  where
+
+instance Core_models.Num.Impl_20 : Core_models.Default.Default i128 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i128))
+
+opaque Core_models.Num.Impl_23.rotate_right (x : isize) (n : u32) : RustM isize 
+
+opaque Core_models.Num.Impl_23.rotate_left (x : isize) (n : u32) : RustM isize 
+
+opaque Core_models.Num.Impl_23.leading_zeros (x : isize) : RustM u32 
+
+opaque Core_models.Num.Impl_23.ilog2 (x : isize) : RustM u32 
+
+opaque Core_models.Num.Impl_23.from_be_bytes
+  (bytes : (RustArray u8 0))
+  : RustM isize
+
+
+opaque Core_models.Num.Impl_23.from_le_bytes
+  (bytes : (RustArray u8 0))
+  : RustM isize
+
+
+opaque Core_models.Num.Impl_23.to_be_bytes
+  (bytes : isize)
+  : RustM (RustArray u8 0)
+
+
+opaque Core_models.Num.Impl_23.to_le_bytes
+  (bytes : isize)
+  : RustM (RustArray u8 0)
+
+
+@[reducible] instance Core_models.Num.Impl_22.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes isize
+  where
+
+instance Core_models.Num.Impl_22 : Core_models.Default.Default isize where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : isize))
+
+class Core_models.Ops.Arith.AddAssign.AssociatedTypes (Self : Type) (Rhs : Type)
+  where
+
+class Core_models.Ops.Arith.AddAssign
+  (Self : Type)
+  (Rhs : Type)
+  [associatedTypes : outParam (Core_models.Ops.Arith.AddAssign.AssociatedTypes
+      (Self : Type) (Rhs : Type))]
+  where
+  add_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+
+class Core_models.Ops.Arith.SubAssign.AssociatedTypes (Self : Type) (Rhs : Type)
+  where
+
+class Core_models.Ops.Arith.SubAssign
+  (Self : Type)
+  (Rhs : Type)
+  [associatedTypes : outParam (Core_models.Ops.Arith.SubAssign.AssociatedTypes
+      (Self : Type) (Rhs : Type))]
+  where
+  sub_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+
+class Core_models.Ops.Arith.MulAssign.AssociatedTypes (Self : Type) (Rhs : Type)
+  where
+
+class Core_models.Ops.Arith.MulAssign
+  (Self : Type)
+  (Rhs : Type)
+  [associatedTypes : outParam (Core_models.Ops.Arith.MulAssign.AssociatedTypes
+      (Self : Type) (Rhs : Type))]
+  where
+  mul_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+
+class Core_models.Ops.Arith.DivAssign.AssociatedTypes (Self : Type) (Rhs : Type)
+  where
+
+class Core_models.Ops.Arith.DivAssign
+  (Self : Type)
+  (Rhs : Type)
+  [associatedTypes : outParam (Core_models.Ops.Arith.DivAssign.AssociatedTypes
+      (Self : Type) (Rhs : Type))]
+  where
+  div_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
 
 inductive Core_models.Ops.Control_flow.ControlFlow (B : Type) (C : Type) : Type
 | Continue : C -> Core_models.Ops.Control_flow.ControlFlow
@@ -723,6 +1180,15 @@ class Core_models.Ops.Try_trait.FromResidual
       Type))]
   where
   from_residual (Self R) : (R -> RustM Self)
+
+class Core_models.Ops.Drop.Drop.AssociatedTypes (Self : Type) where
+
+class Core_models.Ops.Drop.Drop
+  (Self : Type)
+  [associatedTypes : outParam (Core_models.Ops.Drop.Drop.AssociatedTypes (Self :
+      Type))]
+  where
+  drop (Self) : (Self -> RustM Self)
 
 inductive Core_models.Option.Option (T : Type) : Type
 | Some : T -> Core_models.Option.Option (T : Type) 
@@ -1261,9 +1727,6 @@ instance Core_models.Cmp.Impl_53 : Core_models.Cmp.Ord isize where
       else
         (pure Core_models.Cmp.Ordering.Equal)
 
-structure Core_models.Option.Dummy where
-
-
 def Core_models.Option.Impl.as_ref
   (T : Type) (self : (Core_models.Option.Option T))
   : RustM (Core_models.Option.Option T)
@@ -1483,6 +1946,33 @@ def Core_models.Result.Impl.is_ok
     | (Core_models.Result.Result.Ok _) => (pure true)
     | _ => (pure false)
 
+opaque Core_models.Slice.Impl.contains
+  (T : Type) (s : (RustSlice T))
+  (v : T)
+  : RustM Bool
+
+
+opaque Core_models.Slice.Impl.copy_within
+  (T : Type)
+  (R : Type)
+  [Core.Marker.Copy.AssociatedTypes T] [Core.Marker.Copy T ]
+  (s : (RustSlice T))
+  (src : R)
+  (dest : usize)
+  : RustM (RustSlice T)
+
+
+structure Core_models.Str.Error.Utf8Error where
+
+
+opaque Core_models.Str.Converts.from_utf8
+  (s : (RustSlice u8))
+  : RustM (Core_models.Result.Result String Core_models.Str.Error.Utf8Error)
+
+
+structure Core_models.Str.Iter.Split (T : Type) where
+  _0 : T
+
 class Core_models.Convert.TryInto.AssociatedTypes (Self : Type) (T : Type) where
   Error : Type
 
@@ -1518,6 +2008,24 @@ class Core_models.Convert.TryFrom
   try_from (Self T)
     :
     (T -> RustM (Core_models.Result.Result Self associatedTypes.Error))
+
+class Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes (Self : Type)
+  where
+  IntoIter : Type
+
+attribute [reducible]
+  Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes.IntoIter
+
+abbrev Core_models.Iter.Traits.Collect.IntoIterator.IntoIter :=
+  Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes.IntoIter
+
+class Core_models.Iter.Traits.Collect.IntoIterator
+  (Self : Type)
+  [associatedTypes : outParam
+    (Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes (Self :
+      Type))]
+  where
+  into_iter (Self) : (Self -> RustM associatedTypes.IntoIter)
 
 class Core_models.Ops.Arith.Add.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1613,74 +2121,6 @@ class Core_models.Ops.Arith.Rem
       Type) (Rhs : Type))]
   where
   rem (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
-
-class Core_models.Ops.Arith.AddAssign.AssociatedTypes (Self : Type) (Rhs : Type)
-  where
-  Output : Type
-
-attribute [reducible] Core_models.Ops.Arith.AddAssign.AssociatedTypes.Output
-
-abbrev Core_models.Ops.Arith.AddAssign.Output :=
-  Core_models.Ops.Arith.AddAssign.AssociatedTypes.Output
-
-class Core_models.Ops.Arith.AddAssign
-  (Self : Type)
-  (Rhs : Type)
-  [associatedTypes : outParam (Core_models.Ops.Arith.AddAssign.AssociatedTypes
-      (Self : Type) (Rhs : Type))]
-  where
-  add_assign (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
-
-class Core_models.Ops.Arith.SubAssign.AssociatedTypes (Self : Type) (Rhs : Type)
-  where
-  Output : Type
-
-attribute [reducible] Core_models.Ops.Arith.SubAssign.AssociatedTypes.Output
-
-abbrev Core_models.Ops.Arith.SubAssign.Output :=
-  Core_models.Ops.Arith.SubAssign.AssociatedTypes.Output
-
-class Core_models.Ops.Arith.SubAssign
-  (Self : Type)
-  (Rhs : Type)
-  [associatedTypes : outParam (Core_models.Ops.Arith.SubAssign.AssociatedTypes
-      (Self : Type) (Rhs : Type))]
-  where
-  sub_assign (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
-
-class Core_models.Ops.Arith.MulAssign.AssociatedTypes (Self : Type) (Rhs : Type)
-  where
-  Output : Type
-
-attribute [reducible] Core_models.Ops.Arith.MulAssign.AssociatedTypes.Output
-
-abbrev Core_models.Ops.Arith.MulAssign.Output :=
-  Core_models.Ops.Arith.MulAssign.AssociatedTypes.Output
-
-class Core_models.Ops.Arith.MulAssign
-  (Self : Type)
-  (Rhs : Type)
-  [associatedTypes : outParam (Core_models.Ops.Arith.MulAssign.AssociatedTypes
-      (Self : Type) (Rhs : Type))]
-  where
-  mul_assign (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
-
-class Core_models.Ops.Arith.DivAssign.AssociatedTypes (Self : Type) (Rhs : Type)
-  where
-  Output : Type
-
-attribute [reducible] Core_models.Ops.Arith.DivAssign.AssociatedTypes.Output
-
-abbrev Core_models.Ops.Arith.DivAssign.Output :=
-  Core_models.Ops.Arith.DivAssign.AssociatedTypes.Output
-
-class Core_models.Ops.Arith.DivAssign
-  (Self : Type)
-  (Rhs : Type)
-  [associatedTypes : outParam (Core_models.Ops.Arith.DivAssign.AssociatedTypes
-      (Self : Type) (Rhs : Type))]
-  where
-  div_assign (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Core_models.Ops.Arith.RemAssign.AssociatedTypes (Self : Type) (Rhs : Type)
   where
@@ -1826,6 +2266,42 @@ class Core_models.Ops.Try_trait.Try
       associatedTypes.Residual
       associatedTypes.Output))
 
+class Core_models.Slice.SliceIndex.AssociatedTypes (Self : Type) (T : Type)
+  where
+  Output : Type
+
+attribute [reducible] Core_models.Slice.SliceIndex.AssociatedTypes.Output
+
+abbrev Core_models.Slice.SliceIndex.Output :=
+  Core_models.Slice.SliceIndex.AssociatedTypes.Output
+
+class Core_models.Slice.SliceIndex
+  (Self : Type)
+  (T : Type)
+  [associatedTypes : outParam (Core_models.Slice.SliceIndex.AssociatedTypes
+      (Self : Type) (T : Type))]
+  where
+  get (Self T)
+    :
+    (Self -> T -> RustM (Core_models.Option.Option associatedTypes.Output))
+
+class Core_models.Str.Traits.FromStr.AssociatedTypes (Self : Type) where
+  Err : Type
+
+attribute [reducible] Core_models.Str.Traits.FromStr.AssociatedTypes.Err
+
+abbrev Core_models.Str.Traits.FromStr.Err :=
+  Core_models.Str.Traits.FromStr.AssociatedTypes.Err
+
+class Core_models.Str.Traits.FromStr
+  (Self : Type)
+  [associatedTypes : outParam (Core_models.Str.Traits.FromStr.AssociatedTypes
+      (Self : Type))]
+  where
+  from_str (Self)
+    :
+    (String -> RustM (Core_models.Result.Result Self associatedTypes.Err))
+
 @[reducible] instance Core_models.Convert.Impl_1.AssociatedTypes
   (T : Type)
   (U : Type)
@@ -1866,6 +2342,81 @@ instance Core_models.Convert.Impl_2
   where
   try_into := fun (self : T) => do
     (Core_models.Convert.TryFrom.try_from U T self)
+
+class Core_models.Iter.Traits.Collect.FromIterator.AssociatedTypes (Self : Type)
+  (A : Type) where
+
+class Core_models.Iter.Traits.Collect.FromIterator
+  (Self : Type)
+  (A : Type)
+  [associatedTypes : outParam
+    (Core_models.Iter.Traits.Collect.FromIterator.AssociatedTypes (Self : Type)
+      (A : Type))]
+  where
+  from_iter (Self A)
+    (T : Type)
+    [Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes T]
+    [Core_models.Iter.Traits.Collect.IntoIterator T ]
+    :
+    (T -> RustM Self)
+
+@[reducible] instance Core_models.Ops.Function.Impl_2.AssociatedTypes
+  (Arg : Type) (Out : Type) :
+  Core_models.Ops.Function.FnOnce.AssociatedTypes (Arg -> RustM Out) Arg
+  where
+  Output := Out
+
+instance Core_models.Ops.Function.Impl_2 (Arg : Type) (Out : Type) :
+  Core_models.Ops.Function.FnOnce (Arg -> RustM Out) Arg
+  where
+  call_once := fun (self : (Arg -> RustM Out)) (arg : Arg) => do (self arg)
+
+@[reducible] instance Core_models.Ops.Function.Impl.AssociatedTypes
+  (Arg1 : Type) (Arg2 : Type) (Out : Type) :
+  Core_models.Ops.Function.FnOnce.AssociatedTypes
+  (Arg1 -> Arg2 -> RustM Out)
+  (Rust_primitives.Hax.Tuple2 Arg1 Arg2)
+  where
+  Output := Out
+
+instance Core_models.Ops.Function.Impl
+  (Arg1 : Type) (Arg2 : Type) (Out : Type) :
+  Core_models.Ops.Function.FnOnce
+  (Arg1 -> Arg2 -> RustM Out)
+  (Rust_primitives.Hax.Tuple2 Arg1 Arg2)
+  where
+  call_once :=
+    fun
+      (self : (Arg1 -> Arg2 -> RustM Out))
+      (arg : (Rust_primitives.Hax.Tuple2 Arg1 Arg2))
+      => do
+    (self
+      (Rust_primitives.Hax.Tuple2._0 arg)
+      (Rust_primitives.Hax.Tuple2._1 arg))
+
+@[reducible] instance Core_models.Ops.Function.Impl_1.AssociatedTypes
+  (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
+  Core_models.Ops.Function.FnOnce.AssociatedTypes
+  (Arg1 -> Arg2 -> Arg3 -> RustM Out)
+  (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3)
+  where
+  Output := Out
+
+instance Core_models.Ops.Function.Impl_1
+  (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
+  Core_models.Ops.Function.FnOnce
+  (Arg1 -> Arg2 -> Arg3 -> RustM Out)
+  (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3)
+  where
+  call_once :=
+    fun
+      (self : (Arg1 -> Arg2 -> Arg3 -> RustM Out))
+      (arg : (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3))
+      => do
+    (self
+      (Rust_primitives.Hax.Tuple3._0 arg)
+      (Rust_primitives.Hax.Tuple3._1 arg)
+      (Rust_primitives.Hax.Tuple3._2 arg))
 
 def Core_models.Option.Impl.is_some_and
   (T : Type)
@@ -2218,3 +2769,16 @@ def Core_models.Result.Impl.and_then
       => (Core_models.Ops.Function.FnOnce.call_once F T op t)
     | (Core_models.Result.Result.Err e)
       => (pure (Core_models.Result.Result.Err e))
+
+def Core_models.Slice.Impl.get
+  (T : Type)
+  (I : Type)
+  [Core_models.Slice.SliceIndex.AssociatedTypes I (RustSlice T)]
+  [Core_models.Slice.SliceIndex I (RustSlice T) ]
+  (s : (RustSlice T))
+  (index : I)
+  : RustM
+  (Core_models.Option.Option
+    (Core_models.Slice.SliceIndex.Output I (RustSlice T)))
+  := do
+  (Core_models.Slice.SliceIndex.get I (RustSlice T) index s)

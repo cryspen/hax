@@ -32,6 +32,7 @@ Changes to the Rust Engine:
    Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
    lift monadic computations into values) (#1746)
  - Add a mechanism to lookup pre- and post-conditions (#1805)
+ - Add a proper Rust backend (#1898)
 
 Changes to the frontend:
  - Update the pin of rustc (#1765)
@@ -47,6 +48,7 @@ Changes to hax-lib:
  - Lean lib: base specs on mathematical integers (#1829)
  - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
  - Lean lib: Add support for while loops (#1857, #1863)
+ - Core models: integers, arrays, iterators, full replacement of the F* proof-lib (#1898)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)

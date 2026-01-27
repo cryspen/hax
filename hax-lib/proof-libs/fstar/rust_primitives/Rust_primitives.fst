@@ -6,28 +6,6 @@ include Rust_primitives.BitVectors
 include Rust_primitives.Float
 include Rust_primitives.Char
 
-let (let?) 
-  (#a #b: Type)
-  (x: Core_models.Option.t_Option a) (f: a -> Core_models.Option.t_Option b): Core_models.Option.t_Option b
-  = match x with
-  | Core_models.Option.Option_Some x -> f x
-  | Core_models.Option.Option_None   -> Core_models.Option.Option_None
-
-let (let|) (#e #a #b: Type) (x: Core_models.Result.t_Result a e) (f: a -> Core_models.Result.t_Result b e)
-    : Core_models.Result.t_Result b e
-    = match x with
-    | Core_models.Result.Result_Ok x -> f x
-    | Core_models.Result.Result_Err e -> Core_models.Result.Result_Err e
-
-let (let!)
-    #break #continue #continue'
-    (v: Core_models.Ops.Control_flow.t_ControlFlow break continue)
-    (f: continue -> Core_models.Ops.Control_flow.t_ControlFlow break continue')
-    : Core_models.Ops.Control_flow.t_ControlFlow break continue'
-    = match v with
-    | Core_models.Ops.Control_flow.ControlFlow_Continue v -> f v
-    | Core_models.Ops.Control_flow.ControlFlow_Break b -> Core_models.Ops.Control_flow.ControlFlow_Break b
-
 class cast_tc a b = {
   cast: a -> b; 
 }

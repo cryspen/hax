@@ -1,10 +1,6 @@
 module Core_models.Str.Iter
+#set-options "--fuel 0 --ifuel 1 --z3rlimit 15"
+open FStar.Mul
+open Rust_primitives
 
-/// Split strings on patterns (chars, strings, functions)
-[@FStar.Tactics.Typeclasses.tcclass]
-type t_Split (pattern: Type)
-
-/// Basic implementations
-
-[@FStar.Tactics.Typeclasses.tcinstance]
-val impl_t_split_char: (t_Split Rust_primitives.Char.char)
+type t_Split (v_T: Type0) = | Split : v_T -> t_Split v_T

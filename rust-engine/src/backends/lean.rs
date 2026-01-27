@@ -17,8 +17,8 @@ use crate::{
 };
 
 mod binops {
-    pub use crate::names::core::ops::arith::Neg::neg;
     pub use crate::names::core::ops::index::*;
+    pub use crate::names::rust_primitives::arithmetic::neg;
     pub use crate::names::rust_primitives::hax::machine_int::*;
     pub use crate::names::rust_primitives::hax::{logical_op_and, logical_op_or};
 }

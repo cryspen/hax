@@ -3,6 +3,14 @@
 version = 4
 
 [[package]]
+name = "alloc"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+ "rust_primitives",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -25,6 +33,8 @@ name = "core-models"
 version = "0.1.0"
 dependencies = [
  "hax-lib",
+ "pastey",
+ "rust_primitives",
 ]
 
 [[package]]
@@ -41,7 +51,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -50,7 +60,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro-error2",
@@ -61,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -139,6 +149,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
+name = "pastey"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35fb2e5f958ec131621fdd531e9fc186ed768cbe395337403ae56c17a74c68ec"
+
+[[package]]
 name = "proc-macro-error-attr2"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -185,6 +201,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
 
 [[package]]
+name = "rand_core"
+version = "0.1.0"
+
+[[package]]
+name = "rust_primitives"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+ "pastey",
+]
+
+[[package]]
 name = "rustversion"
 version = "1.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -226,6 +254,14 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "std"
+version = "0.1.0"
+dependencies = [
+ "core-models",
+ "hax-lib",
 ]
 
 [[package]]

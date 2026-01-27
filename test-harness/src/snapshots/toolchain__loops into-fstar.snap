@@ -542,11 +542,7 @@ let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global
   let acc:usize = mk_usize 0 in
   let chunks:Core_models.Slice.Iter.t_ChunksExact usize =
     Core_models.Slice.impl__chunks_exact #usize
-      (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
-          #FStar.Tactics.Typeclasses.solve
-          arr
-        <:
-        t_Slice usize)
+      (Alloc.Vec.impl_1__as_slice arr <: t_Slice usize)
       v_CHUNK_LEN
   in
   let acc:usize =
@@ -602,12 +598,7 @@ let iterator (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Slice.Iter.t_Iter
             usize)
           #FStar.Tactics.Typeclasses.solve
-          (Core_models.Slice.impl__iter #usize
-              (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
-                  #FStar.Tactics.Typeclasses.solve
-                  arr
-                <:
-                t_Slice usize)
+          (Core_models.Slice.impl__iter #usize (Alloc.Vec.impl_1__as_slice arr <: t_Slice usize)
             <:
             Core_models.Slice.Iter.t_Iter usize)
         <:
@@ -626,12 +617,7 @@ let nested (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Slice.Iter.t_Iter
             usize)
           #FStar.Tactics.Typeclasses.solve
-          (Core_models.Slice.impl__iter #usize
-              (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
-                  #FStar.Tactics.Typeclasses.solve
-                  arr
-                <:
-                t_Slice usize)
+          (Core_models.Slice.impl__iter #usize (Alloc.Vec.impl_1__as_slice arr <: t_Slice usize)
             <:
             Core_models.Slice.Iter.t_Iter usize)
         <:
@@ -668,12 +654,7 @@ let nested (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
                           #FStar.Tactics.Typeclasses.solve
                           #(Core_models.Ops.Range.t_Range usize)
                           (Core_models.Slice.impl__iter #usize
-                              (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize
-                                      Alloc.Alloc.t_Global)
-                                  #FStar.Tactics.Typeclasses.solve
-                                  arr
-                                <:
-                                t_Slice usize)
+                              (Alloc.Vec.impl_1__as_slice arr <: t_Slice usize)
                             <:
                             Core_models.Slice.Iter.t_Iter usize)
                           ({
@@ -724,11 +705,7 @@ let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
           (Core_models.Iter.Traits.Iterator.f_enumerate #(Core_models.Slice.Iter.t_Chunks usize)
               #FStar.Tactics.Typeclasses.solve
               (Core_models.Slice.impl__chunks #usize
-                  (Core_models.Ops.Deref.f_deref #(Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global)
-                      #FStar.Tactics.Typeclasses.solve
-                      arr
-                    <:
-                    t_Slice usize)
+                  (Alloc.Vec.impl_1__as_slice arr <: t_Slice usize)
                   (mk_usize 4)
                 <:
                 Core_models.Slice.Iter.t_Chunks usize)
