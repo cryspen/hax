@@ -10,7 +10,7 @@ on:
 jobs:
   tests:
     name: nix-action
-    runs-on: linux
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
@@ -37,15 +37,15 @@ jobs:
       run: |
         nix build .#check-toolchain -L
 
+    - name: Try to extract Rust By Examples
+      run: |
+        nix build .#rust-by-example-hax-extraction -L
+
     - name: Test the examples
       run: |
         cd examples
         nix develop ..#ci-examples --command make clean
         nix develop ..#ci-examples --command make
-
-    - name: Try to extract Rust By Examples
-      run: |
-        nix build .#rust-by-example-hax-extraction -L
 
     - name: Checkout specifications
       uses: actions/checkout@v4
@@ -58,6 +58,5 @@ jobs:
       env:
         CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
       run: |
-        nix build .# .#fstar --json \
-          | jq -r '.[].outputs | to_entries[].value' \
+        nix-store -qR --include-outputs $(nix build .# --json | jq -r '.[].outputs | to_entries[].value') \
           | cachix push hax

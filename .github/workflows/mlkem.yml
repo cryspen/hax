@@ -13,7 +13,7 @@ env:
 jobs:
   extract-mlkem:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'merge_group' }}
-    runs-on: linux
+    runs-on: "ubuntu-latest"
 
     steps:
       - name: ⤵ Extract libcrux version from PR body
@@ -29,12 +29,14 @@ jobs:
               core.notice(`Using libcrux ref: ${resolved}`);
               return resolved;
             } else if (context.eventName === 'merge_group') {
-              const mergeGroupPRs = context.payload.merge_group?.pull_requests || [];
-              for (const prInfo of mergeGroupPRs) {
-                const pull_number = prInfo.number;
-                const pr = await github.rest.pulls.get({...context.repo, pull_number}).data;
+              const query = 'query {repository(owner:"cryspen", name:"hax") {mergeQueue {entries(first:100) {nodes {pullRequest {body, number}}}}}}';
+              const result = await github.graphql(query);
+              const mergeQueuePRs = result.repository.mergeQueue.entries.nodes;
+              for (const entry of mergeQueuePRs) {
+                const pr = entry.pullRequest
+                core.notice("Found merge queue PR:", pr);
                 const ref = extractLibcruxRef(pr.body);
-                ref && refMap.set(pull_number, ref);
+                ref && refMap.set(pr.number, ref);
               }
               if (refMap.size === 0) {
                 core.notice('No libcrux-ref specified, defaulting to "main"');
@@ -73,8 +75,7 @@ jobs:
           cargo remove hax-lib -v -p libcrux-ml-kem
           cargo add hax-lib --path "../hax/hax-lib" -v -p libcrux-ml-kem
 
-      - if: runner.environment == 'github-hosted'
-        uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/nix-installer-action@main
       - name: Set up Cachix
         uses: cachix/cachix-action@v15
         with:
