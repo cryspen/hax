@@ -14,6 +14,7 @@ Changes to the Rust Engine:
    Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
    lift monadic computations into values) (#1746)
  - Add a mechanism to lookup pre- and post-conditions (#1805)
+ - Add a proper Rust backend (#1898)
 
 Changes to the frontend:
  - Update the pin of rustc (#1765)
@@ -27,6 +28,7 @@ Changes to hax-lib:
  - Lean lib: use macros for int operations (#1795)
  - Lean lib: add new setup for `bv_decide` (#1828)
  - Lean lib: base specs on mathematical integers (#1829)
+ - Core models: integers, arrays, iterators, full replacement of the F* proof-lib (#1898)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
@@ -68,7 +70,6 @@ Changes to the Rust Engine:
    on functions, impl definitions. The typeclass resolution in the generated code is left implicit
    (relies on Lean). Limited support for associated types. No support for default implementations.
  - Refactor of the printing infrastructure: lowers the boilerplate, get rid of most lifetimes annotation, add proper contextual span support (#1735)
- - Add a proper Rust backend (evit fork: #114)
 
 Changes to the frontend:
 - Add an explicit `Self: Trait` clause to trait methods and consts (#1559)
