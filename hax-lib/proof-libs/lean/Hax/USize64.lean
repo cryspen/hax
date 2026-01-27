@@ -227,6 +227,9 @@ theorem USize64.ofNat_sub {a b : Nat} (hab : b ≤ a) : USize64.ofNat (a - b) = 
 theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m := by
   rw [le_iff_toNat_le, toNat_ofNat_of_lt' h]
 
+theorem USize64.ofNat_eq_of_toNat_eq {a : Nat} {b : USize64} (h : b.toNat = a) : ofNat a = b := by
+  subst_vars; exact USize64.ofNat_toNat
+
 /-!
 ## Grind's ToInt
 

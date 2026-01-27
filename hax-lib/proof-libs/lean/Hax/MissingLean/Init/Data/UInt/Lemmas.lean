@@ -23,3 +23,21 @@ theorem UInt64.add_le_of_le {a b c : UInt64} (habc : a + b ≤ c) (hab : a.toNat
     a ≤ c := by
   rw [UInt64.le_iff_toNat_le, UInt64.toNat_add_of_lt hab] at *
   omega
+
+
+open Lean in
+set_option hygiene false in
+macro "additional_uint_lemmas" typeName:ident _width:term : command => do `(
+  namespace $typeName
+
+    theorem ofNat_eq_of_toNat_eq {a : Nat} {b : $typeName} (h : b.toNat = a) : ofNat a = b := by
+      subst_vars; exact $(mkIdent (typeName.getId ++ `ofNat_toNat))
+
+  end $typeName
+)
+
+additional_uint_lemmas UInt8 8
+additional_uint_lemmas UInt16 16
+additional_uint_lemmas UInt32 32
+additional_uint_lemmas UInt64 64
+additional_uint_lemmas USize System.Platform.numBits
