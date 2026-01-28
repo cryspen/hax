@@ -1,3 +1,4 @@
+#[cfg_attr(test, derive(PartialEq))]
 pub enum Option<T> {
     Some(T),
     None,
@@ -7,7 +8,7 @@ use super::default::Default;
 use super::ops::function::*;
 use super::result::Result::*;
 use super::result::*;
-use Option::*;
+use self::Option::*;
 
 #[hax_lib::attributes]
 impl<T> Option<T> {
@@ -149,5 +150,38 @@ impl<T> Option<T> {
     // We cannot make a useful model with the right interface so we loose the executability.
     pub fn take(self) -> (Option<T>, Option<T>) {
         (None, self)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::testing::Inject;
+    impl <T: Inject> Inject for Option<T> {
+        type Model = super::Option<T::Model>;
+        fn inject(self) -> Self::Model {
+            match self {
+                Some(v) => super::Option::Some(v.inject()),
+                None => super::Option::None
+            }
+        }
+    } 
+
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_is_some(x in any::<Option<u8>>()) {
+            prop_assert!(x.clone().inject().is_some() == x.is_some());
+        }
+        #[test]
+        fn test_unwrap_or_default(x in any::<Option<u8>>()) {
+            prop_assert!(x.clone().inject().unwrap_or_default() == x.unwrap_or_default());
+        }
+
+        #[test]
+        fn test_map(x in any::<Option<u8>>(), a in any::<[u8; 256]>()) {
+            let f = |x: u8| a[x as usize];
+            prop_assert!(x.clone().inject().map(f) == x.map(f).inject());
+        }
     }
 }
