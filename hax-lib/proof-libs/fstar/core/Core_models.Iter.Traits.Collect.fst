@@ -12,7 +12,8 @@ class t_IntoIterator (v_Self: Type0) = {
 }
 
 class t_FromIterator (v_Self: Type0) (v_A: Type0) = {
-  f_from_iter_pre:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> v_T -> Type0;
+  f_from_iter_pre:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> iter: v_T
+    -> pred: Type0{true ==> pred};
   f_from_iter_post:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> v_T -> v_Self -> Type0;
   f_from_iter:#v_T: Type0 -> {| i1: t_IntoIterator v_T |} -> x0: v_T
     -> Prims.Pure v_Self

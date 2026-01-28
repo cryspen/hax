@@ -183,12 +183,13 @@ pub mod arithmetic {
         }
     }
 
-    // Dummy values, to be defined by backends
-    pub const SIZE_BYTES: usize = 0;
-    pub const SIZE_BITS: u32 = 0;
-    pub const USIZE_MAX: usize = 0;
-    pub const ISIZE_MAX: isize = 0;
-    pub const ISIZE_MIN: isize = 0;
+    // Rust inlines these values, for now we model usize by u64
+    // eventually we could try to define in the backend as 32 or 64
+    pub const SIZE_BYTES: usize = 8;
+    pub const SIZE_BITS: u32 = 64;
+    pub const USIZE_MAX: usize = u64::MAX as usize;
+    pub const ISIZE_MAX: isize = i64::MAX as isize;
+    pub const ISIZE_MIN: isize = i64::MIN as isize;
 
     arithmetic_ops! {
         types: u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize,

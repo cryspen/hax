@@ -31,6 +31,13 @@ class t_DivAssign (v_Self: Type0) (v_Rhs: Type0) = {
     -> Prims.Pure v_Self (f_div_assign_pre x0 x1) (fun result -> f_div_assign_post x0 x1 result)
 }
 
+class t_RemAssign (v_Self: Type0) (v_Rhs: Type0) = {
+  f_rem_assign_pre:v_Self -> v_Rhs -> Type0;
+  f_rem_assign_post:v_Self -> v_Rhs -> v_Self -> Type0;
+  f_rem_assign:x0: v_Self -> x1: v_Rhs
+    -> Prims.Pure v_Self (f_rem_assign_pre x0 x1) (fun result -> f_rem_assign_post x0 x1 result)
+}
+
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl:t_AddAssign u8 u8
 
@@ -100,12 +107,4 @@ class t_Rem (v_Self: Type0) (v_Rhs: Type0) = {
   f_rem_post:v_Self -> v_Rhs -> f_Output -> Type0;
   f_rem:x0: v_Self -> x1: v_Rhs
     -> Prims.Pure f_Output (f_rem_pre x0 x1) (fun result -> f_rem_post x0 x1 result)
-}
-
-class t_RemAssign (v_Self: Type0) (v_Rhs: Type0) = {
-  [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
-  f_rem_assign_pre:v_Self -> v_Rhs -> Type0;
-  f_rem_assign_post:v_Self -> v_Rhs -> f_Output -> Type0;
-  f_rem_assign:x0: v_Self -> x1: v_Rhs
-    -> Prims.Pure f_Output (f_rem_assign_pre x0 x1) (fun result -> f_rem_assign_post x0 x1 result)
 }

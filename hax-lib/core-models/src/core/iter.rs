@@ -118,7 +118,9 @@ pub mod traits {
             type IntoIter; //: Iterator<Item = Self::Item>
             fn into_iter(self) -> Self::IntoIter;
         }
+        #[hax_lib::attributes]
         pub trait FromIterator<A>: Sized {
+            #[hax_lib::requires(true)]
             fn from_iter<T: IntoIterator>(iter: T) -> Self;
         }
     }

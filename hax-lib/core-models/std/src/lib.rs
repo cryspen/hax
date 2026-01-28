@@ -43,8 +43,11 @@ pub mod hash {
 }
 
 mod io {
+    #[hax_lib::attributes]
     pub trait Read {
         // Required method
+        #[hax_lib::requires(true)]
+        #[hax_lib::ensures(|_| future(buf).len() == buf.len())]
         fn read(&mut self, buf: &mut [u8]) -> Result<usize, error::Error>;
 
         // Provided methods (not provided in this model as hax doesn't support default methods)
@@ -52,6 +55,8 @@ mod io {
         fn is_read_vectored(&self) -> bool;
         fn read_to_end(&mut self, buf: &mut Vec<u8>) -> Result<usize>;
         fn read_to_string(&mut self, buf: &mut String) -> Result<usize>; */
+        #[hax_lib::requires(true)]
+        #[hax_lib::ensures(|_| future(buf).len() == buf.len())]
         fn read_exact(&mut self, buf: &mut [u8]) -> Result<(), error::Error>;
         /* fn read_buf(&mut self, buf: BorrowedCursor<'_>) -> Result<()>;
         fn read_buf_exact(&mut self, cursor: BorrowedCursor<'_>) -> Result<()>;
@@ -64,14 +69,18 @@ mod io {
         fn take(self, limit: u64) -> Take<Self>
         where Self: Sized; */
     }
+    #[hax_lib::attributes]
     pub trait Write {
         // Required methods
+        #[hax_lib::requires(true)]
         fn write(&mut self, buf: &[u8]) -> Result<usize, error::Error>;
+        #[hax_lib::requires(true)]
         fn flush(&mut self) -> Result<(), error::Error>;
 
         // Provided methods (not provided in this model as hax doesn't support default methods)
         /* fn write_vectored(&mut self, bufs: &[IoSlice<'_>]) -> Result<usize>;
         fn is_write_vectored(&self) -> bool; */
+        #[hax_lib::requires(true)]
         fn write_all(&mut self, buf: &[u8]) -> Result<(), error::Error>;
         /* fn write_all_vectored(&mut self, bufs: &mut [IoSlice<'_>]) -> Result<()>;
         fn write_fmt(&mut self, args: Arguments<'_>) -> Result<()>;
