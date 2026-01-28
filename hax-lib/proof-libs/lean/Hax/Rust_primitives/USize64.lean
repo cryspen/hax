@@ -98,7 +98,21 @@ def USize64.toUInt16 (a : USize64) : UInt16 := a.toNat.toUInt16
 def UInt32.toUSize64 (a : UInt32) : USize64 := USize64.ofNat32 a.toBitVec.toNat a.toBitVec.isLt
 def USize64.toUInt32 (a : USize64) : UInt32 := a.toNat.toUInt32
 def UInt64.toUSize64 (a : UInt64) : USize64 := a.toNat.toUSize64
+def USize64.toUInt64 (a : USize64) : UInt64 := a.toNat.toUInt64
 def USize64.toUSize (a : USize64) : USize := a.toNat.toUSize
+
+def USize64.toInt8 (a : USize64) : Int8 := a.toNat.toInt8
+def USize64.toInt16 (a : USize64) : Int16 := a.toNat.toInt16
+def USize64.toInt32 (a : USize64) : Int32 := a.toNat.toInt32
+def USize64.toInt64 (a : USize64) : Int64 := a.toNat.toInt64
+def USize64.toISize (a : USize64) : ISize := a.toNat.toISize
+
+def Int8.toUSize64 (a : Int8) : USize64 := USize64.ofInt a.toInt
+def Int16.toUSize64 (a : Int16) : USize64 := USize64.ofInt a.toInt
+def Int32.toUSize64 (a : Int32) : USize64 := USize64.ofInt a.toInt
+def Int64.toUSize64 (a : Int64) : USize64 := USize64.ofInt a.toInt
+def ISize.toUSize64 (a : ISize) : USize64 := USize64.ofInt a.toInt
+
 def Bool.toUSize64 (b : Bool) : USize64 := if b then 1 else 0
 def USize64.decLt (a b : USize64) : Decidable (a < b) :=
   inferInstanceAs (Decidable (a.toBitVec < b.toBitVec))

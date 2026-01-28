@@ -48,3 +48,34 @@ additional_int_decls Int16 16
 additional_int_decls Int32 32
 additional_int_decls Int64 64
 additional_int_decls ISize System.Platform.numBits
+
+open Lean in
+set_option hygiene false in
+macro "declare_missing_int_conversions" : command => do
+  let mut cmds := #[]
+  let src : List (Name × Nat) := [
+    (`Int8, 8),
+    (`Int16, 16),
+    (`Int32, 32),
+    (`Int64, 64),
+    (`ISize, 0)
+  ]
+  let dst : List (Name × Nat) := [
+    (`UInt8, 8),
+    (`UInt16, 16),
+    (`UInt32, 32),
+    (`UInt64, 64),
+    (`USize, 0),
+  ]
+  for (srcName, srcIdx) in src do
+    for (dstName, dstIdx) in dst do
+      let srcIdent := mkIdent srcName
+      let dstIdent := mkIdent dstName
+      if srcIdx != dstIdx then
+        cmds := cmds.push $ ← `(
+          def $(mkIdent (srcName ++ dstName.appendBefore "to")) (x : $srcIdent) : $dstIdent :=
+            $(mkIdent (dstName ++ `ofInt)) x.toInt
+        )
+  return ⟨mkNullNode cmds⟩
+
+declare_missing_int_conversions

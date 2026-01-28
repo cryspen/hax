@@ -16,6 +16,7 @@ Changes to cargo-hax:
 Changes to hax-lib:
  - Lean lib: use Rust core models (#1865)
  - Lean lib: specs for negation (#1891)
+ - Lean lib: Add casting for all integer type pairs (#1837)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)

@@ -3,6 +3,7 @@
 
 pub mod array;
 pub mod associated_types;
+pub mod casts;
 pub mod comments;
 pub mod constants;
 pub mod enums;
