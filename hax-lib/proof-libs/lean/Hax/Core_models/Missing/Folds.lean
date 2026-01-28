@@ -1,4 +1,4 @@
-import Hax.CoreModels
+import Hax.Core_models.Extracted
 open Std.Do
 
 set_option mvcgen.warning false

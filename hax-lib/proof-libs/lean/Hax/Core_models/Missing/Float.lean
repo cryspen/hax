@@ -1,8 +1,4 @@
-import Hax.Lib
-import Hax.Integers.Ops
-
-abbrev f32 := Float32
-abbrev f64 := Float
+import Hax.Core_models.Missing.Integers
 
 macro "declare_Hax_float_ops" typeName:ident : command =>
   `(

@@ -4,7 +4,7 @@ Hax Lean Backend - Cryspen
 Core-model for Clone represented as a no-op
 -/
 
-import Hax.Lib
+import Hax.Rust_primitives
 
 namespace Core.Clone
 
