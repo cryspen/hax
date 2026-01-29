@@ -86,17 +86,18 @@ fn resugar_index_mut(expr: &ast::Expr) -> Option<(&ast::Expr, &ast::Expr)> {
 }
 
 fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
+    let ty = expr.ty.clone();
     if let ast::ExprKind::LocalId(var) = expr.kind() {
         return ast::Lhs::LocalVar {
             var: var.clone(),
-            ty: expr.ty.clone(),
+            ty: ty.clone(),
         };
     }
     let expr = expr.unbox_underef();
     if let Some((e, index)) = resugar_index_mut(expr) {
         ast::Lhs::ArrayAccessor {
             e: Box::new(lhs_from_expr(e)),
-            ty: expr.ty.clone(),
+            ty: ty.clone(),
             index: index.clone(),
         }
     } else if let ast::ExprKind::App { head, args, .. } = expr.kind()
@@ -106,7 +107,7 @@ fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
     {
         ast::Lhs::FieldAccessor {
             e: Box::new(lhs_from_expr(arg)),
-            ty: expr.ty.clone(),
+            ty,
             field: *field,
         }
     } else {
