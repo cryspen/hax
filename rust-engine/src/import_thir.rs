@@ -45,6 +45,7 @@ fn assertion_failure(msg: &str, span: ast::span::Span) -> ast::ErrorNode {
 
 struct Context {
     owner_hint: Option<hax_frontend_exporter::DefId>,
+    impl_expr_offset: u64,
 }
 
 fn is_self_type_constraint(
@@ -360,7 +361,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
 
 impl Import<Vec<ast::GenericConstraint>> for frontend::GenericPredicates {
     fn import(&self, context: &Context) -> Vec<ast::GenericConstraint> {
-        let mut type_idx: u64 = 0;
+        let mut type_idx: u64 = context.impl_expr_offset;
         self.predicates
             .iter()
             .filter_map(|(clause, span)| {
@@ -1848,7 +1849,7 @@ fn import_trait_item(
         .retain(|gc| !is_self_type_constraint(gc, assoc_item_container));
     for (idx, gc) in generics.constraints.iter_mut().enumerate() {
         if let ast::GenericConstraint::Type(impl_ident) = gc {
-            impl_ident.name = impl_expr_name(idx as u64);
+            impl_ident.name = impl_expr_name(idx as u64 + context.impl_expr_offset);
         }
     }
     ast::TraitItem {
@@ -2152,6 +2153,7 @@ pub fn import_item(
     } = item;
     let context = &Context {
         owner_hint: Some(this.contents().def_id.clone()),
+        impl_expr_offset: 0,
     };
     let ident = this.contents().def_id.clone().import_as_nonvalue();
     let span = span.import(context);
@@ -2272,6 +2274,10 @@ pub fn import_item(
         } => {
             let mut generics = param_env.import(context);
             generics.constraints = implied_predicates.import(context);
+            let context = &Context {
+                owner_hint: context.owner_hint.clone(),
+                impl_expr_offset: generics.constraints.len() as u64,
+            };
             ast::ItemKind::Trait {
                 name: ident,
                 generics,
@@ -2314,6 +2320,10 @@ pub fn import_item(
             let items: Vec<ast::ImplItem> = if has_auto {
                 Vec::new()
             } else {
+                let context = &Context {
+                    owner_hint: context.owner_hint.clone(),
+                    impl_expr_offset: generics.constraints.len() as u64,
+                };
                 items
                     .iter()
                     .flat_map(|assoc_item| {
@@ -2428,6 +2438,10 @@ pub fn import_item(
                     let span = assoc_item.span.import(context);
                     let attributes = assoc_item.attributes.import(context);
                     let impl_generics = param_env.import(context);
+                    let context = &Context {
+                        owner_hint: context.owner_hint.clone(),
+                        impl_expr_offset: impl_generics.constraints.len() as u64,
+                    };
                     let kind = match assoc_item.kind() {
                         frontend::FullDefKind::AssocTy {
                             param_env, value, ..
