@@ -140,9 +140,10 @@ theorem USize64.umulOverflow_iff (x y : USize64) :
     BitVec.umulOverflow x.toBitVec y.toBitVec ↔ x.toNat * y.toNat ≥ 2 ^ 64 :=
   by simp [BitVec.umulOverflow]
 
-
-attribute [grind] USize64.not_le USize64.toNat_toBitVec USize64.toNat_ofNat_of_lt
-  USize64.toNat_ofNat_of_lt' USize64.toBitVec_ofNat USize64.toNat_add
+attribute [grind =] USize64.toNat_toBitVec
+attribute [grind =] USize64.toNat_ofNat_of_lt
+attribute [grind =] USize64.toNat_ofNat_of_lt'
+grind_pattern USize64.toBitVec_ofNat => USize64.toBitVec (OfNat.ofNat n)
 
 additional_uint_decls USize64 64
 
@@ -301,8 +302,8 @@ theorem USize64.intCast_ofNat (x : Nat) : (OfNat.ofNat (α := Int) x : USize64) 
     rw [Int.toNat_emod (Int.zero_le_ofNat x) (by decide)]
     erw [Int.toNat_natCast]
     rw [Int.toNat_pow_of_nonneg (by decide)]
-    simp only [USize64.ofNat, BitVec.ofNat, Fin.ofNat, Int.reduceToNat, Nat.dvd_refl,
-      Nat.mod_mod_of_dvd]
+    simp only [USize64.ofNat, BitVec.ofNat, Nat.reducePow, Int.reduceToNat,
+      Fin.Internal.ofNat_eq_ofNat, Fin.ofNat, Nat.dvd_refl, Nat.mod_mod_of_dvd]
     rfl
 
 theorem USize64.intCast_neg (x : Int) : ((-x : Int) : USize64) = - (x : USize64) := by

@@ -13,17 +13,17 @@ macro "additional_int_decls" typeName:ident width:term : command => do `(
   def mulOverflow (a b : $typeName) : Bool :=
     BitVec.smulOverflow a.toBitVec b.toBitVec
 
-  @[grind]
+  @[grind .]
   theorem addOverflow_iff {a b : $typeName} : addOverflow a b ↔
       a.toInt + b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt + b.toInt < - 2 ^ ($width - 1) := by
     simp [addOverflow, BitVec.saddOverflow]
 
-  @[grind]
+  @[grind .]
   theorem subOverflow_iff {a b : $typeName} : subOverflow a b ↔
       a.toInt - b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt - b.toInt < - 2 ^ ($width - 1) := by
     simp [subOverflow, BitVec.ssubOverflow]
 
-  @[grind]
+  @[grind .]
   theorem mulOverflow_iff {a b : $typeName} : mulOverflow a b ↔
       a.toInt * b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt * b.toInt < - 2 ^ ($width - 1) := by
     simp [mulOverflow, BitVec.smulOverflow]

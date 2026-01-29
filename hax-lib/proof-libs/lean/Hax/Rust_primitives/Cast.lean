@@ -23,24 +23,11 @@ open Lean in
 set_option hygiene false in
 macro "declare_Hax_cast_instances" : command => do
   let mut cmds := #[]
-  -- (`int_type`, `signedness`)
-  let tys : List (Name × Bool) := [
-    (`UInt8, false),
-    (`UInt16, false),
-    (`UInt32, false),
-    (`UInt64, false),
-    (`USize64, false),
-    (`Int8, true),
-    (`Int16, true),
-    (`Int32, true),
-    (`Int64, true),
-    (`ISize, true)
-  ]
-  for (srcName, srcSigned) in tys do
-    for (dstName, dstSigned) in tys do
+  let tys : List Name := [`UInt8,`UInt16,`UInt32,`UInt64,`USize64,`Int8,`Int16,`Int32,`Int64,`ISize]
+  for srcName in tys do
+    for dstName in tys do
       let srcIdent := mkIdent srcName
       let dstIdent := mkIdent dstName
-      let toInt ← if srcSigned then `(x.toInt) else `(Int.ofNat x.toNat)
       let result ←
         if dstName == srcName then
           `(x)

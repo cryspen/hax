@@ -84,7 +84,6 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
   case vc1.step _ x _ h_list _ h =>
     intros
     simp [Coe.coe] at h_list h
-    simp [Std.Range.toList] at h_list
     have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
     let h_suff := Eq.symm h_suff
     let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
@@ -133,7 +132,6 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
   case vc1.step _ x _ h_list _ h =>
     intros
     simp [Coe.coe] at h_list h
-    simp [Std.Range.toList] at h_list
     have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
     let h_suff := Eq.symm h_suff
     let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff

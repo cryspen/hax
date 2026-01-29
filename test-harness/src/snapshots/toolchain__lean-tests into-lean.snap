@@ -141,7 +141,8 @@ def Lean_tests.Casts.casting_edge_cases.spec (_dummy : Bool)  :
       (Lean_tests.Casts.casting_edge_cases (_dummy : Bool) ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Lean_tests.Casts.casting_edge_cases] <;> try grind
+  contract :=
+    by mvcgen [Lean_tests.Casts.casting_edge_cases]; simp_all [Int16.toUInt8]
 }
 
 --  Single line doc comment
