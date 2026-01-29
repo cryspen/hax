@@ -6,8 +6,6 @@ use hax_lib_macros_types::{AssociationRole, AttrPayload, ItemUid};
 
 use crate::ast::diagnostics::{Context, DiagnosticInfo, DiagnosticInfoKind};
 
-use crate::ast::identifiers::global_id::DebugString;
-
 use super::ast::*;
 use visitors::AstVisitorMut;
 

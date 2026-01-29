@@ -1,5 +1,5 @@
 use hax_rust_engine::{
-    backends::{self, lean::LeanBackend, rust::RustBackend},
+    backends,
     ocaml_engine::{ExtendedToEngine, Response},
 };
 use hax_types::{cli_options::Backend, engine_api::File};
@@ -24,8 +24,7 @@ fn main() {
         panic!()
     };
 
-    let backend = &value.backend.backend;
-    let files = match backend {
+    let files = match &value.backend.backend {
         Backend::Fstar { .. }
         | Backend::Coq
         | Backend::Ssprove
@@ -34,8 +33,8 @@ fn main() {
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),
-        Backend::Lean => backends::Backend::apply(&LeanBackend, items),
-        Backend::Rust => backends::Backend::apply(&RustBackend, items),
+        Backend::Lean => backends::apply_backend(backends::lean::LeanBackend, items),
+        Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
         Backend::GenerateRustEngineNames => vec![File {
             path: "generated.rs".into(),
             contents: hax_rust_engine::names::codegen::export_def_ids_to_mod(items),

@@ -4,24 +4,21 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
+use crate::ast::identifiers::global_id::view::View;
 use hax_lib_macros_types::AttrPayload;
-use std::collections::{HashMap, HashSet};
-use std::rc::Rc;
+use std::collections::HashSet;
 use std::sync::LazyLock;
 
-use capitalize::Capitalize;
-use hax_types::engine_api::File;
-
 use super::prelude::*;
-use crate::ast::identifiers::global_id::view::View;
-use crate::ast::span::Span;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    attributes::LinkedItemGraph,
+    ast::span::Span,
     attributes::hax_attributes,
     names::rust_primitives::hax::explicit_monadic::{lift, pure},
     phase::*,
 };
+use camino::Utf8PathBuf;
+use hax_types::engine_api::File;
 
 mod binops {
     pub use crate::names::core::ops::index::*;
@@ -39,15 +36,22 @@ const PURE: GlobalId = pure;
 pub struct LeanPrinter {
     current_namespace: Option<GlobalId>,
 }
+
 const INDENT: isize = 2;
-const FILE_HEADER: &str = "
+
+const HEADER: &str = "
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
 import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
 open Std.Do
+open Std.Tactic
+
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
+
 
 ";
 
@@ -72,40 +76,30 @@ static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     )
 });
 
+fn uppercase_first(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
+    }
+}
+
 impl RenderView for LeanPrinter {
     fn separator(&self) -> &str {
         "."
     }
 
-    fn render_string(&self, view: &View) -> String {
-        self.render_strings(view)
-            .collect::<Vec<_>>()
-            .join(self.separator())
-    }
-
-    fn render_strings(&self, view: &View) -> impl Iterator<Item = String> {
-        let mut path = view.segments();
+    fn relativize_module_path<'a>(&self, module_path: &'a [PathSegment]) -> &'a [PathSegment] {
         if let Some(namespace) = self.current_namespace
-            && let Some((i, _)) = path
-                .iter()
-                .enumerate()
-                .find(|(_, segment)| *segment == &namespace)
+            && namespace.view().segments() == module_path
         {
-            path = path.get((i + 1)..).unwrap_or(path);
-        };
-        path.iter()
-            .flat_map(|segment| self.render_path_segment(segment))
+            &[]
+        } else {
+            module_path
+        }
     }
 
     fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
-        fn uppercase_first(s: &str) -> String {
-            let mut c = s.chars();
-            match c.next() {
-                None => String::new(),
-                Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
-            }
-        }
-
         // Returning None indicates that the default rendering should be used
         (match chunk.kind() {
             AnyKind::Mod => {
@@ -185,9 +179,9 @@ pub struct LeanBackend;
 impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
-    fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from_iter(LeanPrinter::default().render_strings(&module.ident.view()))
-            .with_extension("lean")
+    fn module_path(&self, module: &Module) -> Utf8PathBuf {
+        let krate = module.ident.krate();
+        Utf8PathBuf::from(uppercase_first(krate)).with_extension("lean")
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
@@ -195,90 +189,45 @@ impl Backend for LeanBackend {
     }
 
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
-        // This is incorrect, as it ignores dependencies
-        let mut modules: HashMap<_, Vec<_>> = HashMap::new();
+        let mut modules: Vec<Module> = Vec::new();
+
         for item in items {
             let module_ident = item.ident.mod_only_closest_parent();
-            modules.entry(module_ident).or_default().push(item);
+
+            if let Some(last_module) = modules.last_mut()
+                && last_module.ident == module_ident
+            {
+                last_module.items.push(item);
+            } else {
+                modules.push(Module {
+                    ident: module_ident,
+                    items: vec![item],
+                    meta: Metadata {
+                        span: Span::dummy(),
+                        attributes: vec![],
+                    },
+                });
+            }
         }
         modules
-            .into_iter()
-            .map(|(ident, items)| Module {
-                ident,
-                items,
-                meta: Metadata {
-                    span: Span::dummy(),
-                    attributes: vec![],
-                },
-            })
-            .collect()
     }
 
-    fn apply(&self, mut items: Vec<Item>) -> Vec<File> {
-        // This function decides how the Lean backend turns a list of items into a list of
-        // files. Right now, all items are bundled in a single file.
-
-        // Applying Rust-engine phases (OCaml engines phases have already been applied at this
-        // point)
-        for phase in self.phases() {
-            phase.apply(&mut items);
+    fn modules_to_files(&self, modules: Vec<Module>, mut printer: Self::Printer) -> Vec<File> {
+        if modules.is_empty() {
+            return vec![];
         }
-
-        let linked_items_graph = Rc::new(LinkedItemGraph::new(
-            &items,
-            diagnostics::Context::Printer(Self::NAME.into()),
-        ));
-
-        /// Drop any item marked with a hax attribute whose payload deserializes to
-        /// `AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true })`.
-        ///
-        /// Items with such a "late-skip" attribute are typically generated by hax
-        /// attributes.
-        fn drop_skip_late_items(items: &mut Vec<Item>) {
-            items.retain_mut(|item| {
-                use hax_lib_macros_types::{AttrPayload, ItemStatus};
-                !item.meta.hax_attributes().any(|attr| {
-                    matches!(
-                        attr,
-                        AttrPayload::ItemStatus(ItemStatus::Included { late_skip: true })
-                    )
-                })
-            });
-        }
-
-        drop_skip_late_items(&mut items);
-
-        // Removing unprintable items
-        let items: Vec<Item> = items
+        let path = self.module_path(modules.first().unwrap()).to_string();
+        let contents = modules
             .into_iter()
-            .filter(LeanPrinter::printable_item)
-            .collect();
-
-        // All modules are bundled in a single file, named after the crate
-        let krate = items
-            .first()
-            .expect("The list of items should be non-empty")
-            .ident
-            .krate()
-            .capitalize();
-        let mut path = camino::Utf8PathBuf::new();
-        path.push(krate);
-        path.set_extension("lean");
-
-        // The split in modules is used to introduce namespaces
-        let modules = self.items_to_module(items);
-        let content = modules
-            .into_iter()
-            .map(|module: Module| self.printer(linked_items_graph.clone()).print(module).0)
+            .map(|module: Module| {
+                let (c, _) = printer.print(module);
+                c
+            })
             .collect::<Vec<String>>()
             .join("\n");
-
-        let header: String = FILE_HEADER.to_string();
-
-        // Single bundle output
         vec![File {
-            path: path.into_string(),
-            contents: header + &content,
+            path,
+            contents: format!("{}{}", HEADER, contents),
             sourcemap: None,
         }]
     }
@@ -778,17 +727,19 @@ const _: () = {
             let current_namespace = module.ident;
             let new_printer = LeanPrinter {
                 current_namespace: Some(current_namespace),
-                ..LeanPrinter::default()
+                ..self.clone()
             };
             let items = &module.items;
-
             docs![
                 "namespace ",
                 current_namespace,
                 hardline!(),
                 hardline!(),
                 intersperse!(
-                    items.iter().map(|item| { item.to_document(&new_printer) }),
+                    items
+                        .iter()
+                        .filter(|item| LeanPrinter::printable_item(item))
+                        .map(|item| { item.to_document(&new_printer) }),
                     docs![hardline!(), hardline!()]
                 ),
                 hardline!(),

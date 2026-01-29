@@ -62,6 +62,27 @@ impl DefIdInner {
         def_id.parent = def_id.parent.map(|parent: DefId| parent.rename_krate(name));
         def_id
     }
+
+    fn to_debug_string(&self) -> String {
+        fn disambiguator_suffix(disambiguator: u32) -> String {
+            if disambiguator == 0 {
+                "".into()
+            } else {
+                format!("__{disambiguator}")
+            }
+        }
+        use itertools::Itertools;
+        std::iter::once(self.krate.clone())
+            .chain(self.path.iter().map(|item| match &item.data {
+                DefPathItem::TypeNs(s)
+                | DefPathItem::ValueNs(s)
+                | DefPathItem::MacroNs(s)
+                | DefPathItem::LifetimeNs(s) => s.clone(),
+                DefPathItem::Impl => "impl".into(),
+                other => format!("{other:?}"),
+            } + &disambiguator_suffix(item.disambiguator)))
+            .join("::")
+    }
 }
 
 use std::{
@@ -156,6 +177,28 @@ impl FreshModule {
     /// Renders a view of the fresh module identifier.
     fn view(&self) -> view::View {
         self.clone().into()
+    }
+
+    /// Change the krate name in all hints.
+    fn rename_krate(&self, name: &str) -> Self {
+        let hints = self
+            .hints
+            .iter()
+            .map(|hint| {
+                let mut hint = hint.clone();
+                hint.rename_krate(name);
+                hint
+            })
+            .collect();
+        Self {
+            hints,
+            id: self.id,
+            label: self.label.clone(),
+        }
+    }
+
+    fn to_debug_string(&self) -> String {
+        format!("fresh_module_{}_{}", self.id, self.label)
     }
 }
 
@@ -341,21 +384,14 @@ impl GlobalId {
         }
     }
 
-    /// Returns true if this global identifier refers to a anonymous constant item.
-    /// TODO: drop this function. No logic should be derived from this.
-    pub fn is_anonymous_const(self) -> bool {
-        let GlobalIdInner::Concrete(concrete_id) = self.0.get() else {
-            return false;
-        };
-        let def_id = concrete_id.def_id.def_id.get();
-        let Some(DisambiguatedDefPathItem {
-            data: DefPathItem::ValueNs(s),
-            ..
-        }) = def_id.path.last()
-        else {
-            return false;
-        };
-        matches!(def_id.kind, DefKind::Const) && s == "_"
+    /// Debug printing of identifiers, for testing purposes only.
+    /// Prints path in a Rust-like way, as a `::` separated dismabiguated path.
+    pub fn to_debug_string(self) -> String {
+        match self.0.get() {
+            GlobalIdInner::Concrete(id) => id.to_debug_string(),
+            GlobalIdInner::FreshModule(id) => id.to_debug_string(),
+            GlobalIdInner::Tuple(id) => id.as_concreteid().to_debug_string(),
+        }
     }
 
     /// Returns true if the underlying identifier is a constructor
@@ -413,23 +449,7 @@ impl GlobalId {
     pub fn rename_krate(self, name: &str) -> Self {
         match self.0.get() {
             GlobalIdInner::FreshModule(fresh_module) => {
-                let hints = fresh_module
-                    .hints
-                    .iter()
-                    .map(|hint| {
-                        let mut hint = hint.clone();
-                        hint.rename_krate(name);
-                        hint
-                    })
-                    .collect();
-                Self(
-                    GlobalIdInner::FreshModule(FreshModule {
-                        hints,
-                        id: fresh_module.id,
-                        label: fresh_module.label.clone(),
-                    })
-                    .intern(),
-                )
+                Self(GlobalIdInner::FreshModule(fresh_module.rename_krate(name)).intern())
             }
             GlobalIdInner::Concrete(concrete_id) => {
                 let mut concrete_id = concrete_id.clone();
@@ -519,6 +539,10 @@ impl ConcreteId {
     fn rename_krate(&mut self, name: &str) {
         self.def_id.rename_krate(name);
     }
+
+    fn to_debug_string(&self) -> String {
+        self.def_id.def_id.get().to_debug_string()
+    }
 }
 
 impl PartialEq<DefId> for GlobalId {
@@ -545,69 +569,5 @@ impl PartialEq<ExplicitDefId> for GlobalId {
 impl PartialEq<GlobalId> for ExplicitDefId {
     fn eq(&self, other: &GlobalId) -> bool {
         other == &self.def_id
-    }
-}
-
-#[allow(unused)]
-/// Prints identifiers for debugging/development. Should not be used in production code.
-pub trait DebugString {
-    /// Debug printing of identifiers, for testing purposes only.
-    /// Prints path in a Rust-like way, as a `::` separated dismabiguated path.
-    fn to_debug_string(&self) -> String;
-}
-
-impl DebugString for TupleId {
-    fn to_debug_string(&self) -> String {
-        match self {
-            TupleId::Type { length } => format!("Tuple_type({length})"),
-            TupleId::Constructor { length } => format!("Tuple_constructor({length})"),
-            TupleId::Field { length, field } => format!("Tuple_projector({length}, {field})"),
-        }
-    }
-}
-
-impl DebugString for FreshModule {
-    /// Used only for debugging purposes. Does not guarantee to be unique
-    fn to_debug_string(&self) -> String {
-        format!("fresh_module_{}_{}", self.id, self.label)
-    }
-}
-
-impl DebugString for ConcreteId {
-    fn to_debug_string(&self) -> String {
-        self.def_id.def_id.get().to_debug_string()
-    }
-}
-
-impl DebugString for DefIdInner {
-    fn to_debug_string(&self) -> String {
-        fn disambiguator_suffix(disambiguator: u32) -> String {
-            if disambiguator == 0 {
-                "".into()
-            } else {
-                format!("__{disambiguator}")
-            }
-        }
-        use itertools::Itertools;
-        std::iter::once(self.krate.clone())
-            .chain(self.path.iter().map(|item| match &item.data {
-                DefPathItem::TypeNs(s)
-                | DefPathItem::ValueNs(s)
-                | DefPathItem::MacroNs(s)
-                | DefPathItem::LifetimeNs(s) => s.clone(),
-                DefPathItem::Impl => "impl".into(),
-                other => format!("{other:?}"),
-            } + &disambiguator_suffix(item.disambiguator)))
-            .join("::")
-    }
-}
-
-impl DebugString for GlobalId {
-    fn to_debug_string(&self) -> String {
-        match self.0.get() {
-            GlobalIdInner::Concrete(id) => id.to_debug_string(),
-            GlobalIdInner::FreshModule(id) => id.to_debug_string(),
-            GlobalIdInner::Tuple(id) => id.to_debug_string(),
-        }
     }
 }

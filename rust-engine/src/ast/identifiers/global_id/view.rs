@@ -589,14 +589,9 @@ impl PathSegment<AssocItemContainerKind> {
     }
 }
 
-impl<K> PartialEq<GlobalId> for PathSegment<K> {
-    fn eq(&self, other: &GlobalId) -> bool {
-        match other.0.get() {
-            super::GlobalIdInner::Concrete(concrete_id) => {
-                concrete_id.def_id.def_id == self.identifier
-            }
-            _ => false,
-        }
+impl<K> PartialEq<PathSegment> for PathSegment<K> {
+    fn eq(&self, other: &PathSegment) -> bool {
+        self.identifier == other.identifier && self.disambiguator == other.disambiguator
     }
 }
 
@@ -843,16 +838,16 @@ mod view_encapsulation {
         fn from(value: FreshModule) -> Self {
             use crate::ast::diagnostics::{Context, DiagnosticInfo};
             (DiagnosticInfo {
-            context: Context::NameView,
-            span: Span::dummy(),
-            kind: hax_types::diagnostics::Kind::Unimplemented {
-                issue_id: Some(1779),
-                details: Some(
-                    "Unsupported fresh modules, which should only come from the fstar-phase for bundling"
-                        .into(),
-                ),
-            },
-        }).emit();
+                context: Context::NameView,
+                span: Span::dummy(),
+                kind: hax_types::diagnostics::Kind::Unimplemented {
+                    issue_id: Some(1779),
+                    details: Some(
+                        "Fresh modules are not implemented yet in the Rust engine".into(),
+                    ),
+                },
+            })
+            .emit();
             // dummy value
             value
                 .hints
