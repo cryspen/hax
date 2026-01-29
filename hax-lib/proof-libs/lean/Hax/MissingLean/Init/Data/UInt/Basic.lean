@@ -22,15 +22,15 @@ macro "additional_uint_decls" typeName:ident width:term : command => do
     def mulOverflow (a b : $typeName) : Bool :=
       BitVec.umulOverflow a.toBitVec b.toBitVec
 
-    @[grind]
+    @[grind .]
     theorem addOverflow_iff {a b : $typeName} : addOverflow a b ↔ a.toNat + b.toNat ≥ 2 ^ $width :=
       decide_eq_true_iff
 
-    @[grind]
+    @[grind .]
     theorem subOverflow_iff {a b : $typeName} : subOverflow a b ↔ a.toNat < b.toNat :=
       decide_eq_true_iff
 
-    @[grind]
+    @[grind .]
     theorem mulOverflow_iff {a b : $typeName} : mulOverflow a b ↔ a.toNat * b.toNat ≥ 2 ^ $width :=
       decide_eq_true_iff
 
