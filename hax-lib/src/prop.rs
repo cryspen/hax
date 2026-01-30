@@ -91,6 +91,8 @@ impl ToProp for bool {
     }
 }
 
+
+
 impl From<bool> for Prop {
     fn from(value: bool) -> Self {
         Prop(value)
@@ -118,6 +120,10 @@ impl Not for Prop {
     }
 }
 
+
+pub use constructors::eq;
+pub use constructors::ne;
+
 /// The universal quantifier. This should be used only for Hax code: in
 /// Rust, this is always true.
 ///
@@ -143,4 +149,59 @@ pub fn implies(lhs: impl Into<Prop>, rhs: impl Into<Prop>) -> Prop {
     constructors::implies(lhs.into(), rhs.into())
 }
 
-pub use constructors::eq;
+pub trait Includes<T> {
+    fn includes(&self, item: &T) -> Prop;
+}
+
+impl<T:PartialOrd> Includes<T> for Range<T> {
+    fn includes(&self, item: &T) -> Prop {
+        constructors::from_bool(*item >= self.start && *item < self.end)
+    }
+}
+
+impl<T:PartialOrd> Includes<T> for RangeInclusive<T> {
+    fn includes(&self, item: &T) -> Prop {
+        constructors::from_bool(*item >= *self.start() && *item <= *self.end())
+    }
+}
+
+impl<T:PartialOrd> Includes<T> for RangeFrom<T> {
+    fn includes(&self, item: &T) -> Prop {
+        constructors::from_bool(*item >= self.start)
+    }
+}
+
+impl<T:PartialOrd> Includes<T> for RangeTo<T> {
+    fn includes(&self, item: &T) -> Prop {
+        constructors::from_bool(*item <= self.end)
+    }
+}
+impl<T:PartialOrd> Includes<T> for RangeToInclusive<T> {
+    fn includes(&self, item: &T) -> Prop {
+        constructors::from_bool(*item <= self.end)
+    }
+}
+
+impl<T:PartialOrd> Includes<T> for &[T] {
+    fn includes(&self, item: &T) -> Prop {
+        constructors::from_bool(self.contains(item))
+    }
+}
+
+pub trait Quantifiable<T> {
+    fn forall<U: Into<Prop>>(&self, f:impl Fn(&T) -> U) -> Prop;
+    fn exists<U: Into<Prop>>(&self, f:impl Fn(&T) -> U) -> Prop;
+}
+
+impl<T, U:Includes<T>> Quantifiable<T> for U {
+    fn forall<V: Into<Prop>>(&self, f: impl Fn(&T) -> V) -> Prop {
+        constructors::forall(|x| 
+            implies(self.includes(&x), f(&x).into()))
+    }
+    fn exists<V: Into<Prop>>(&self, f: impl Fn(&T) -> V) -> Prop {
+        constructors::exists(|x| 
+            implies(self.includes(&x), f(&x).into()))
+    }
+}
+
+
