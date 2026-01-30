@@ -1776,7 +1776,6 @@ fn import_trait_item(
     let assoc_item_container = &associated_item.container;
     let mut generics = param_env.import(context);
     let mut imported_constraints: Vec<ast::GenericConstraint> = Vec::new();
-    let mut is_assoc_ty = false;
     let kind = match &item.kind {
         frontend::FullDefKind::AssocConst {
             body: Some(default),
@@ -1825,7 +1824,7 @@ fn import_trait_item(
         frontend::FullDefKind::AssocTy {
             implied_predicates, ..
         } => {
-            is_assoc_ty = true;
+            generics.constraints = imported_constraints;
             imported_constraints = implied_predicates.import(context);
             let type_constraints = imported_constraints
                 .iter()
@@ -1841,17 +1840,14 @@ fn import_trait_item(
             span,
         )),
     };
-    if is_assoc_ty {
-        generics.constraints = imported_constraints;
+    for (idx, gc) in generics.constraints.iter_mut().enumerate() {
+        if let ast::GenericConstraint::Type(impl_ident) = gc {
+            impl_ident.name = impl_expr_name(idx as u64);
+        }
     }
     generics
         .constraints
         .retain(|gc| !is_self_type_constraint(gc, assoc_item_container));
-    for (idx, gc) in generics.constraints.iter_mut().enumerate() {
-        if let ast::GenericConstraint::Type(impl_ident) = gc {
-            impl_ident.name = impl_expr_name(idx as u64 + context.impl_expr_offset);
-        }
-    }
     ast::TraitItem {
         meta,
         kind,
@@ -1947,7 +1943,8 @@ fn import_impl_expr_atom(
             kind
         }
         // This is not produced by the rustc anymore. Instead we get LocalBound with index 0.
-        // Self bounds are reconstructed by phase RewriteLocalSelf.
+        // Self bounds are reconstructed by phase RewriteLocalSelf. We could try to pass the
+        // Self constraint in the context (see `import_trait_item`).
         frontend::ImplExprAtom::SelfImpl { path, .. } => {
             let mut kind = ast::ImplExprKind::Self_;
             for chunk in path {
@@ -2277,10 +2274,6 @@ pub fn import_item(
         } => {
             let mut generics = param_env.import(context);
             generics.constraints = implied_predicates.import(context);
-            let context = &Context {
-                owner_hint: context.owner_hint.clone(),
-                impl_expr_offset: 1,
-            };
             ast::ItemKind::Trait {
                 name: ident,
                 generics,
