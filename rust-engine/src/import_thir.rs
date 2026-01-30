@@ -1877,7 +1877,6 @@ fn browse_path(
     item_kind: ast::ImplExprKind,
     chunk: &frontend::ImplExprPathChunk,
     span: ast::span::Span,
-    idx: usize,
 ) -> ast::ImplExprKind {
     match chunk {
         frontend::ImplExprPathChunk::AssocItem {
@@ -1887,11 +1886,12 @@ fn browse_path(
                     value: frontend::TraitPredicate { trait_ref, .. },
                     ..
                 },
+            index,
             ..
         } => {
             let ident = ast::ImplIdent {
                 goal: trait_ref.spanned_import(context, span),
-                name: impl_expr_name(idx as u64),
+                name: impl_expr_name(*index as u64),
             };
             let item = item.contents().def_id.import_as_nonvalue();
             ast::ImplExprKind::Projection {
@@ -1909,11 +1909,12 @@ fn browse_path(
                     value: frontend::TraitPredicate { trait_ref, .. },
                     ..
                 },
+            index,
             ..
         } => {
             let ident = ast::ImplIdent {
                 goal: trait_ref.spanned_import(context, span),
-                name: impl_expr_name(idx as u64),
+                name: impl_expr_name(*index as u64),
             };
             ast::ImplExprKind::Parent {
                 impl_: ast::ImplExpr {
@@ -1940,15 +1941,17 @@ fn import_impl_expr_atom(
             let mut kind = ast::ImplExprKind::LocalBound {
                 id: impl_expr_name(*index as u64),
             };
-            for (i, chunk) in path.iter().enumerate() {
-                kind = browse_path(context, kind, chunk, span, i)
+            for chunk in path {
+                kind = browse_path(context, kind, chunk, span)
             }
             kind
         }
+        // This is not produced by the rustc anymore. Instead we get LocalBound with index 0.
+        // Self bounds are reconstructed by phase RewriteLocalSelf.
         frontend::ImplExprAtom::SelfImpl { path, .. } => {
             let mut kind = ast::ImplExprKind::Self_;
-            for (i, chunk) in path.iter().enumerate() {
-                kind = browse_path(context, kind, chunk, span, i)
+            for chunk in path {
+                kind = browse_path(context, kind, chunk, span)
             }
             kind
         }
@@ -2276,7 +2279,7 @@ pub fn import_item(
             generics.constraints = implied_predicates.import(context);
             let context = &Context {
                 owner_hint: context.owner_hint.clone(),
-                impl_expr_offset: generics.constraints.len() as u64,
+                impl_expr_offset: 1,
             };
             ast::ItemKind::Trait {
                 name: ident,
