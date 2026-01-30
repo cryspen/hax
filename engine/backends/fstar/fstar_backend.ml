@@ -434,8 +434,11 @@ struct
         let* impl = pimpl_expr span impl in
         let* args = List.map ~f:(pimpl_expr span) args |> Option.all in
         F.mk_e_app impl args |> some
-    | Projection _ when hax_unstable_impl_exprs ->
-        F.term_of_lid [ "_Projection" ] |> some
+    | Projection { impl; item; ident }
+      when hax_unstable_impl_exprs && [%matches? Self _] impl.kind ->
+        F.term_of_lid
+          [ (pconcrete_ident item |> F.Ident.text_of_lid) ^ "_" ^ ident.name ]
+        |> some
     | Dyn _ when hax_unstable_impl_exprs -> F.term_of_lid [ "_Dyn" ] |> some
     | Builtin _ when hax_unstable_impl_exprs ->
         F.term_of_lid [ "_Builtin" ] |> some
