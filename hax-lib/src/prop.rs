@@ -92,7 +92,6 @@ impl ToProp for bool {
 }
 
 
-
 impl From<bool> for Prop {
     fn from(value: bool) -> Self {
         Prop(value)
