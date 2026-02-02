@@ -8,5 +8,5 @@ val import_clause :
 
 val import_item :
   type_only:bool ->
-  Types.item_for__decorated_for__expr_kind ->
+  Types.item_for__thir_body ->
   Concrete_ident.t * (Ast.Rust.item list * Diagnostics.t list)

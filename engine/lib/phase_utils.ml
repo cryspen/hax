@@ -181,7 +181,7 @@ end
 
 module DebugBindPhase : sig
   val add : DebugPhaseInfo.t -> int -> (unit -> Ast.Full.item list) -> unit
-  val export : unit -> string option
+  val export : unit -> string list
   val enable : unit -> unit
 end = struct
   let enabled = ref false
@@ -205,40 +205,38 @@ end = struct
 
   let export' () =
     Logs.info (fun m -> m "Exporting debug informations");
-    let json =
-      Hashtbl.to_alist cache
-      |> List.sort ~compare:(fun (_, (a, _)) (_, (b, _)) -> Int.compare a b)
-      |> List.map ~f:(fun (k, (nth, l)) ->
-             let regenerate_span_ids =
-               (object
-                  inherit [_] Visitors.map
-                  method! visit_span = Fn.const Span.refresh_id
-               end)
-                 #visit_item
-                 ()
-             in
-             (* we regenerate spans IDs, so that we have more precise regions *)
-             let l = List.map ~f:regenerate_span_ids !l in
-             let rustish = Print_rust.pitems l in
-             let json =
-               `Assoc
-                 [
-                   ("name", `String ([%show: DebugPhaseInfo.t] k));
-                   ("nth", `Int nth);
-                   ("items", [%yojson_of: Ast.Full.item list] l);
-                   ( "rustish",
-                     [%yojson_of: Print_rust.AnnotatedString.Output.t] rustish
-                   );
-                 ]
-             in
-             json)
-    in
-    `List json |> Yojson.Safe.pretty_to_string
+
+    Hashtbl.to_alist cache
+    |> List.sort ~compare:(fun (_, (a, _)) (_, (b, _)) -> Int.compare a b)
+    |> List.map ~f:(fun (k, (nth, l)) ->
+           let regenerate_span_ids =
+             (object
+                inherit [_] Visitors.map
+                method! visit_span = Fn.const Span.refresh_id
+             end)
+               #visit_item
+               ()
+           in
+           (* we regenerate spans IDs, so that we have more precise regions *)
+           let l = List.map ~f:regenerate_span_ids !l in
+           let rustish = Print_rust.pitems l in
+           let json =
+             `Assoc
+               [
+                 ("name", `String ([%show: DebugPhaseInfo.t] k));
+                 ("nth", `Int nth);
+                 ("items", [%yojson_of: Ast.Full.item list] l);
+                 ( "rustish",
+                   [%yojson_of: Print_rust.AnnotatedString.Output.t] rustish );
+               ]
+           in
+           json)
+    |> List.map ~f:Yojson.Safe.to_string
 
   let export () =
     if !enabled (* recall: ! is deref, not `not`, great op. choice..... *) then
-      Some (export' ())
-    else None
+      export' ()
+    else []
 end
 
 module type S = sig

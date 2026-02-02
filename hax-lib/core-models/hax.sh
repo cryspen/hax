@@ -72,6 +72,7 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::ops::range::**"
     LEAN_FILTERS+=" -core_models::f32::**::abs"
     
+  
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     sed -i 's/import Hax/import Hax.MissingCore/g' proofs/lean/extraction/Core_models.lean

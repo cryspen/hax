@@ -18,7 +18,6 @@ use crate::ast::*;
 use pretty::BoxAllocator;
 
 use crate::symbol::Symbol;
-use identifiers::*;
 use literals::*;
 use resugared::*;
 

@@ -16,12 +16,19 @@ pub enum HaxDriverMessage {
 }
 
 #[derive_group(Serializers)]
+#[derive(JsonSchema, Debug, Clone)]
+pub enum Items<Body: hax_frontend_exporter::IsBody> {
+    FullDef(Vec<hax_frontend_exporter::FullDef<Body>>),
+    Legacy(Vec<hax_frontend_exporter::Item<Body>>),
+}
+
+#[derive_group(Serializers)]
 #[derive(Debug, Clone)]
 pub struct HaxMeta<Body: hax_frontend_exporter::IsBody> {
     pub crate_name: String,
     pub cg_metadata: String,
     pub externs: Vec<PathBuf>,
-    pub items: Vec<hax_frontend_exporter::Item<Body>>,
+    pub items: Items<Body>,
     pub impl_infos: Vec<(
         hax_frontend_exporter::DefId,
         hax_frontend_exporter::ImplInfos,

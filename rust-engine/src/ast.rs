@@ -23,7 +23,7 @@ use crate::{ast::diagnostics::Context, symbol::Symbol};
 use diagnostics::Diagnostic;
 use fragment::Fragment;
 use hax_rust_engine_macros::*;
-use identifiers::*;
+pub use identifiers::*;
 use literals::*;
 use resugared::*;
 use span::Span;
@@ -46,14 +46,6 @@ pub enum GenericValue {
     /// # Example:
     /// `'a` in `foo<'a>`
     Lifetime,
-}
-
-impl GenericValue {
-    /// Tries to extract a [`Ty`] out of a [`GenericValue`].
-    pub fn expect_ty(&self) -> Option<&Ty> {
-        let Self::Ty(ty) = self else { return None };
-        Some(ty)
-    }
 }
 
 /// Built-in primitive types.
@@ -201,7 +193,7 @@ pub enum TyKind {
 }
 
 #[derive_group_for_ast]
-/// Represent a node of the AST where an error occured.
+/// Represent a node of the AST where an error occurred.
 pub struct ErrorNode {
     /// The node from the AST at the time something failed
     pub fragment: Box<Fragment>,
@@ -593,6 +585,8 @@ pub enum ImplExprKind {
     Dyn,
     /// A trait implemented natively by rust.
     Builtin(TraitGoal),
+    /// Fallback constructor to carry errors.
+    Error(ErrorNode),
 }
 
 /// Represents an impl item (associated type or function)
@@ -655,6 +649,9 @@ pub enum ImplItemKind {
     /// This variant is introduced before printing only.
     /// Phases must not produce this variant.
     Resugared(ResugaredImplItemKind),
+
+    /// Fallback constructor to carry errors.
+    Error(ErrorNode),
 }
 
 /// Represents a trait item (associated type, fn, or default)
@@ -706,6 +703,9 @@ pub enum TraitItemKind {
     /// This variant is introduced before printing only.
     /// Phases must not produce this variant.
     Resugared(ResugaredTraitItemKind),
+
+    /// Fallback constructor to carry errors.
+    Error(ErrorNode),
 }
 
 /// A QuoteContent is a component of a quote: it can be a verbatim string, a Rust expression to embed in the quote, a pattern etc.
@@ -959,12 +959,6 @@ pub enum ExprKind {
         inner: Expr,
     },
 
-    /// A dereference
-    ///
-    /// # Example:
-    /// `*x`
-    Deref(Expr),
-
     /// A `let` expression used in expressions.
     ///
     /// # Example:
@@ -1041,6 +1035,9 @@ pub enum ExprKind {
         value: Expr,
         /// What loop shall we break? By default, the parent enclosing loop.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Return from a function.
@@ -1059,6 +1056,9 @@ pub enum ExprKind {
     Continue {
         /// The loop we continue.
         label: Option<Symbol>,
+        /// When a loop has a state (see [`ExprKind::Loop::state`]), this field
+        /// `state` is `Some(_)`. This carries the updated state for the loop.
+        state: Option<Expr>,
     },
 
     /// Closure (anonymous function)
@@ -1269,6 +1269,7 @@ pub struct Variant {
     pub arguments: Vec<(GlobalId, Ty, Attributes)>,
     /// True if fields are named
     pub is_record: bool,
+    // TODO Missing span
     /// Attributes of the variant
     pub attributes: Attributes,
 }
@@ -1391,6 +1392,9 @@ pub enum ItemKind {
         /// # Example:
         /// `type Assoc;`, `fn m ...;`
         items: Vec<TraitItem>,
+
+        /// Safe or unsafe
+        safety: SafetyKind,
     },
 
     /// A trait implementation.
@@ -1428,9 +1432,6 @@ pub enum ItemKind {
 
         /// Implementations of traits required for this impl
         parent_bounds: Vec<(ImplExpr, ImplIdent)>,
-
-        /// Safe or unsafe
-        safety: SafetyKind,
     },
 
     /// Internal node introduced by phases, corresponds to an alias to any item.
@@ -1463,6 +1464,10 @@ pub enum ItemKind {
         /// Description of the quote target position
         origin: ItemQuoteOrigin,
     },
+
+    /// A Rust module (`mod`, inline or not).
+    /// This exists solely because modules can have attributes relevant to the hax engine.
+    RustModule,
 
     /// Fallback constructor to carry errors.
     Error(ErrorNode),
@@ -1551,7 +1556,7 @@ pub mod traits {
     }
     impl<T: HasMetadata> HasSpan for T {
         fn span(&self) -> Span {
-            self.metadata().span.clone()
+            self.metadata().span
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.metadata_mut().span
@@ -1611,7 +1616,7 @@ pub mod traits {
 
     impl HasSpan for Attribute {
         fn span(&self) -> Span {
-            self.span.clone()
+            self.span
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.span
@@ -1636,7 +1641,7 @@ pub mod traits {
 
     impl HasSpan for SpannedTy {
         fn span(&self) -> Span {
-            self.span.clone()
+            self.span
         }
         fn span_mut(&mut self) -> &mut Span {
             &mut self.span

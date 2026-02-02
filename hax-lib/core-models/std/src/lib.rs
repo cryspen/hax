@@ -28,6 +28,7 @@ mod collections {
 
 mod f64 {
     #[hax_lib::exclude]
+    #[allow(non_camel_case_types)]
     struct f64;
     impl f64 {
         fn powf(x: core::primitive::f64, y: core::primitive::f64) -> core::primitive::f64 {

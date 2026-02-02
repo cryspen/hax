@@ -258,6 +258,7 @@ mod replaced {
             ), infallible),
             skip(
                 String, bool, char, hax_frontend_exporter::Span,
+                for<T> crate::interning::Interned<T>,
             ),
             drive(
                 for<T: AstVisitable> Box<T>, for<T: AstVisitable> Option<T>, for<T: AstVisitable> Vec<T>,
@@ -289,6 +290,7 @@ mod replaced {
             )),
             skip(
                 String, bool, char, hax_frontend_exporter::Span,
+                for<T> crate::interning::Interned<T>,
             ),
             drive(
                 for<T: AstVisitable> Box<T>, for<T: AstVisitable> Option<T>, for<T: AstVisitable> Vec<T>,

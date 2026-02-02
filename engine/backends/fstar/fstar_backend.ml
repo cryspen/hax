@@ -410,7 +410,6 @@ struct
 
   and pimpl_expr span (ie : impl_expr) =
     let some = Option.some in
-    let hax_unstable_impl_exprs = hax_core_models_extraction in
     match ie.kind with
     | Concrete tr -> c_trait_goal span tr |> some
     | LocalBound { id } ->
@@ -418,27 +417,24 @@ struct
           Local_ident.{ name = id; id = Local_ident.mk_id Expr 0 }
         in
         F.term @@ F.AST.Var (F.lid_of_id @@ plocal_ident local_ident) |> some
-    | ImplApp { impl; _ } when not hax_unstable_impl_exprs ->
-        pimpl_expr span impl
-    | Parent { impl; ident }
-      when hax_unstable_impl_exprs && [%matches? Self _] impl.kind ->
+    | Parent { impl; ident } when [%matches? Self _] impl.kind ->
         let trait = "_super_" ^ ident.name in
         F.term_of_lid [ trait ] |> some
-    | Parent { impl; ident } when hax_unstable_impl_exprs ->
+    | Parent { impl; ident } ->
         let* impl = pimpl_expr span impl in
         let trait = "_super_" ^ ident.name in
         F.term @@ F.AST.Project (impl, F.lid [ trait ]) |> some
-    | ImplApp { impl; args = [] } when hax_unstable_impl_exprs ->
-        pimpl_expr span impl
-    | ImplApp { impl; args } when hax_unstable_impl_exprs ->
+    | ImplApp { impl; args = [] } -> pimpl_expr span impl
+    | ImplApp { impl; args } ->
         let* impl = pimpl_expr span impl in
         let* args = List.map ~f:(pimpl_expr span) args |> Option.all in
         F.mk_e_app impl args |> some
-    | Projection _ when hax_unstable_impl_exprs ->
-        F.term_of_lid [ "_Projection" ] |> some
-    | Dyn _ when hax_unstable_impl_exprs -> F.term_of_lid [ "_Dyn" ] |> some
-    | Builtin _ when hax_unstable_impl_exprs ->
-        F.term_of_lid [ "_Builtin" ] |> some
+    | Projection { impl; item; ident } when [%matches? Self _] impl.kind ->
+        F.term_of_lid
+          [ (pconcrete_ident item |> F.Ident.text_of_lid) ^ "_" ^ ident.name ]
+        |> some
+    | Dyn _ -> F.term_of_lid [ "_Dyn" ] |> some
+    | Builtin _ -> F.term_of_lid [ "_Builtin" ] |> some
     | _ -> None
 
   and c_trait_goal span trait_goal =
@@ -1964,6 +1960,31 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"
 
+(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
+    `unsize_identity_typ` *)
+let unsize_as_identity =
+  (* Tells if a unsize should be treated as identity by type *)
+  let rec unsize_identity_typ = function
+    | TArray _ -> true
+    | TRef { typ; _ } -> unsize_identity_typ typ
+    | _ -> false
+  in
+  let visitor =
+    object
+      inherit [_] U.Visitors.map as super
+
+      method! visit_expr () e =
+        match e.e with
+        | App { f = { e = GlobalVar f; _ }; args = [ x ]; _ }
+          when Global_ident.eq_name Rust_primitives__unsize f
+               && unsize_identity_typ x.typ ->
+            let x = super#visit_expr () x in
+            { e with e = Ascription { e = x; typ = e.typ } }
+        | _ -> super#visit_expr () e
+    end
+  in
+  visitor#visit_item ()
+
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
     (items : AST.item list) : Types.file list =
@@ -2041,30 +2062,10 @@ module TransformToInputLanguage =
   ]
   [@ocamlformat "disable"]
 
-(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
-    `unsize_identity_typ` *)
-let unsize_as_identity =
-  (* Tells if a unsize should be treated as identity by type *)
-  let rec unsize_identity_typ = function
-    | TArray _ -> true
-    | TRef { typ; _ } -> unsize_identity_typ typ
-    | _ -> false
-  in
-  let visitor =
-    object
-      inherit [_] U.Visitors.map as super
-
-      method! visit_expr () e =
-        match e.e with
-        | App { f = { e = GlobalVar f; _ }; args = [ x ]; _ }
-          when Global_ident.eq_name Rust_primitives__unsize f
-               && unsize_identity_typ x.typ ->
-            let x = super#visit_expr () x in
-            { e with e = Ascription { e = x; typ = e.typ } }
-        | _ -> super#visit_expr () e
-    end
-  in
-  visitor#visit_item ()
+let post_process_items =
+  List.map ~f:unsize_as_identity
+  >> List.map ~f:unsize_as_identity
+  >> List.map ~f:U.Mappers.add_typ_ascription
 
 let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     AST.item list =
@@ -2081,10 +2082,5 @@ let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     (* else *)
     items
   in
-  let items =
-    TransformToInputLanguage.ditems items
-    |> List.map ~f:unsize_as_identity
-    |> List.map ~f:unsize_as_identity
-    |> List.map ~f:U.Mappers.add_typ_ascription
-  in
+  let items = TransformToInputLanguage.ditems items |> post_process_items in
   items

@@ -68,14 +68,11 @@ inductive Core_models.Cmp.Ordering : Type
 | Greater : Core_models.Cmp.Ordering
 
 
-def Core_models.Cmp.Ordering.Less.AnonConst : isize :=
-  RustM.of_isOk (do (pure (-1 : isize))) (by rfl)
+def Core_models.Cmp.Ordering.Less.AnonConst : isize := (-1 : isize)
 
-def Core_models.Cmp.Ordering.Equal.AnonConst : isize :=
-  RustM.of_isOk (do (pure (0 : isize))) (by rfl)
+def Core_models.Cmp.Ordering.Equal.AnonConst : isize := (0 : isize)
 
-def Core_models.Cmp.Ordering.Greater.AnonConst : isize :=
-  RustM.of_isOk (do (pure (1 : isize))) (by rfl)
+def Core_models.Cmp.Ordering.Greater.AnonConst : isize := (1 : isize)
 
 def Core_models.Cmp.Ordering_ (x : Core_models.Cmp.Ordering) : RustM isize := do
   match x with

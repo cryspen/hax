@@ -1,3 +1,4 @@
+#[allow(non_camel_case_types)]
 #[hax_lib::exclude]
 struct f32;
 
