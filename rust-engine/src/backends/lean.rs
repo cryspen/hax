@@ -185,7 +185,7 @@ impl Backend for LeanBackend {
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![Box::new(ExplicitMonadic)]
+        vec![Box::new(FilterUnprintableItems), Box::new(ExplicitMonadic)]
     }
 
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
@@ -234,25 +234,6 @@ impl Backend for LeanBackend {
 }
 
 impl LeanPrinter {
-    /// A filter for items blacklisted by the Lean backend : returns false if
-    /// the item is definitely not printable, but might return true on
-    /// unsupported items
-    pub fn printable_item(item: &Item) -> bool {
-        match &item.kind {
-            // Other unprintable items
-            ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
-            // Printable items
-            ItemKind::Fn { .. }
-            | ItemKind::TyAlias { .. }
-            | ItemKind::Type { .. }
-            | ItemKind::Trait { .. }
-            | ItemKind::Impl { .. }
-            | ItemKind::Alias { .. }
-            | ItemKind::Resugared(_)
-            | ItemKind::Quote { .. } => true,
-        }
-    }
-
     /// Checks if we are extracting core models to be able to use different namespeacing when
     /// referring to core.
     pub fn is_hax_core_models_extraction_mode(&self) -> bool {
@@ -736,10 +717,7 @@ const _: () = {
                 hardline!(),
                 hardline!(),
                 intersperse!(
-                    items
-                        .iter()
-                        .filter(|item| LeanPrinter::printable_item(item))
-                        .map(|item| { item.to_document(&new_printer) }),
+                    items.iter().map(|item| { item.to_document(&new_printer) }),
                     docs![hardline!(), hardline!()]
                 ),
                 hardline!(),
