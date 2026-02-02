@@ -168,8 +168,7 @@ def Lean_tests.Comments.heavily_documented
   := do
   (pure (4 : u32))
 
-def Lean_tests.Constants.C1 : u32 :=
-  RustM.of_isOk (do (pure (5678 : u32))) (by rfl)
+def Lean_tests.Constants.C1 : u32 := (5678 : u32)
 
 def Lean_tests.Constants.C2 : u32 :=
   RustM.of_isOk (do (Lean_tests.Constants.C1 +? (1 : u32))) (by rfl)
@@ -205,11 +204,9 @@ def Lean_tests.Constants.Const_parameters.f
   := do
   (pure N)
 
-def Lean_tests.Constants.Const_parameters.N0 : usize :=
-  RustM.of_isOk (do (pure (1 : usize))) (by rfl)
+def Lean_tests.Constants.Const_parameters.N0 : usize := (1 : usize)
 
-def Lean_tests.Constants.Const_parameters.N1 : usize :=
-  RustM.of_isOk (do (pure (10 : usize))) (by rfl)
+def Lean_tests.Constants.Const_parameters.N1 : usize := (10 : usize)
 
 def Lean_tests.Constants.Const_parameters.test
   (_ : Rust_primitives.Hax.Tuple0)
@@ -288,7 +285,7 @@ inductive Lean_tests.Enums.E : Type
 | V6 (f1 : usize) (f2 : usize) : Lean_tests.Enums.E
 
 
-def Lean_tests.Floats.N : f32 := RustM.of_isOk (do (pure (1.0 : f32))) (by rfl)
+def Lean_tests.Floats.N : f32 := (1.0 : f32)
 
 def Lean_tests.Floats.test
   (_ : Rust_primitives.Hax.Tuple0)
@@ -1473,7 +1470,7 @@ instance Lean_tests.Traits.Associated_constant.Impl :
   Lean_tests.Traits.Associated_constant.Foo
   Lean_tests.Traits.Associated_constant.Bar
   where
-  f := Id.run do (pure true)
+  f := true
 
 abbrev Lean_tests.Types.UsizeAlias : Type := usize
 
@@ -1497,11 +1494,9 @@ abbrev Lean_tests.Types.ESMonad
   (A : Type) (S : Type) (E : Type) : Type :=
   (Rust_primitives.Hax.Tuple2 (Core_models.Result.Result A E) S)
 
-def Lean_tests.FORTYTWO : usize :=
-  RustM.of_isOk (do (pure (42 : usize))) (by rfl)
+def Lean_tests.FORTYTWO : usize := (42 : usize)
 
-def Lean_tests.MINUS_FORTYTWO : isize :=
-  RustM.of_isOk (do (pure (-42 : isize))) (by rfl)
+def Lean_tests.MINUS_FORTYTWO : isize := (-42 : isize)
 
 def Lean_tests.returns42 (_ : Rust_primitives.Hax.Tuple0) : RustM usize := do
   (pure Lean_tests.FORTYTWO)

@@ -414,24 +414,34 @@ const _: () = {
         /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
         /// reflexivity as a proof witness.
         fn monad_extract<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
-            match *expr.kind() {
-                ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) => {
-                    // Pure values are displayed directly. Note that constructors, while pure, may
-                    // contain sub-expressions that are not, so they must be wrapped in a do-block
-                    docs![expr]
-                }
-                _ => {
-                    // All other expressions are wrapped in a do-block, and extracted out of the monad
-                    docs![
-                        "RustM.of_isOk",
-                        line!(),
-                        self.do_block(expr).parens(),
-                        line!(),
-                        "(by rfl)"
-                    ]
-                    .group()
-                    .nest(INDENT)
-                }
+            if let ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) = expr.kind()
+            {
+                // Pure values are displayed directly. Note that constructors, while pure, may
+                // contain sub-expressions that are not, so they must be wrapped in a do-block
+                docs![expr]
+            } else {
+                // All other expressions are wrapped in a do-block, and extracted out of the monad
+                docs![
+                    "RustM.of_isOk",
+                    line!(),
+                    self.do_block(expr).parens(),
+                    line!(),
+                    "(by rfl)"
+                ]
+                .group()
+                .nest(INDENT)
+            }
+        }
+
+        /// When possible, unwraps the `pure` surrounding an expression to simplify it
+        fn simplify_pure<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+            if let ExprKind::App { head, args, .. } = expr.kind()
+                && let ExprKind::GlobalId(PURE) = head.kind()
+                && let [pure_expr] = &args[..]
+            {
+                self.monad_extract(pure_expr)
+            } else {
+                self.monad_extract(expr)
             }
         }
 
@@ -1613,7 +1623,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         line!(),
-                        self.monad_extract(body),
+                        self.simplify_pure(body),
                     ]
                     .group()
                     .nest(INDENT),
@@ -1673,7 +1683,7 @@ set_option linter.unusedVariables false
                         softline!(),
                         ":=",
                         softline!(),
-                        self.monad_extract(body)
+                        self.simplify_pure(body)
                     ]
                 }
             }
