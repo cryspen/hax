@@ -588,7 +588,7 @@ impl PathSegment<AssocItemContainerKind> {
     }
 }
 
-impl<K> PartialEq<PathSegment> for PathSegment<K> {
+impl PartialEq<PathSegment> for PathSegment {
     fn eq(&self, other: &PathSegment) -> bool {
         self.identifier == other.identifier && self.disambiguator == other.disambiguator
     }
