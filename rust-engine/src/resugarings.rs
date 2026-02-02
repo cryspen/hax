@@ -38,6 +38,14 @@ impl AstVisitorMut for FunctionsToConstants {
             generics: generics.clone(),
         });
     }
+    fn enter_impl_item_kind(&mut self, item_kind: &mut ImplItemKind) {
+        if let ImplItemKind::Fn { body, params } = item_kind
+            && params.is_empty()
+        {
+            *item_kind =
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body: body.clone() })
+        }
+    }
 }
 
 impl Resugaring for FunctionsToConstants {

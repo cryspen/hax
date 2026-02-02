@@ -22,6 +22,7 @@ Changes to hax-lib:
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
  - Add support for opaque `impl`s (#1887)
+ - Fix support for associated constants in trait impls (#1906)
 
 Miscellaneous:
 
