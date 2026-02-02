@@ -1667,8 +1667,16 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(_) => {
-                    unreachable!("This backend has no resugaring for impl items")
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => {
+                    docs![
+                        name,
+                        softline!(),
+                        ":=",
+                        softline!(),
+                        "Id.run do",
+                        softline!(),
+                        body
+                    ]
                 }
             }
         }

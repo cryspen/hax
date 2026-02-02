@@ -298,3 +298,15 @@ mod trait_with_constraints {
         }
     }
 }
+
+mod associated_constant {
+    pub trait Foo { 
+        const f: bool;
+    }
+
+    pub struct Bar;
+
+    impl Foo for Bar {
+        const f: bool = true;
+    }
+}
