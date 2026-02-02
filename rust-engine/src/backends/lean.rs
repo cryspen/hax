@@ -1673,9 +1673,7 @@ set_option linter.unusedVariables false
                         softline!(),
                         ":=",
                         softline!(),
-                        "Id.run do",
-                        softline!(),
-                        body
+                        self.monad_extract(body)
                     ]
                 }
             }
