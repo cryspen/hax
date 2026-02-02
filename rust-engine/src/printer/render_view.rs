@@ -87,6 +87,12 @@ pub trait RenderView: Sized {
         self.render(view).module
     }
 
+    /// Allows backends to adjust a module path before rendering, e.g., to shorten it according
+    /// to currenly open namespaces.
+    fn relativize_module_path<'a>(&self, module_path: &'a [PathSegment]) -> &'a [PathSegment] {
+        module_path
+    }
+
     /// Renders a [`View`] into a structured [`Rendered`] value,
     /// splitting output into `module` and `path` parts.
     ///
@@ -95,6 +101,7 @@ pub trait RenderView: Sized {
     /// [`render_path_segment`].
     fn render(&self, view: &View) -> Rendered {
         let (module_path, relative_path) = view.split_at_module();
+        let module_path = self.relativize_module_path(module_path);
         let path_segment = |seg| self.render_path_segment(seg);
         Rendered {
             module: module_path.iter().flat_map(path_segment).collect(),

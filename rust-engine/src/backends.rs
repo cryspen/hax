@@ -80,6 +80,22 @@ pub trait Backend {
             .collect()
     }
 
+    /// Print a list of modules into files
+    fn modules_to_files(&self, modules: Vec<Module>, mut printer: Self::Printer) -> Vec<File> {
+        modules
+            .into_iter()
+            .map(|module: Module| {
+                let path = self.module_path(&module).into_string();
+                let (contents, _) = printer.print(module);
+                File {
+                    path,
+                    contents,
+                    sourcemap: None,
+                }
+            })
+            .collect()
+    }
+
     /// Compute the relative filesystem path where a given module should be written.
     fn module_path(&self, module: &Module) -> Utf8PathBuf;
 }
@@ -119,18 +135,8 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
     drop_skip_late_items(&mut items);
 
     let modules = backend.items_to_module(items);
-    modules
-        .into_iter()
-        .map(|module: Module| {
-            let path = backend.module_path(&module).into_string();
-            let (contents, _) = backend.printer(linked_items_graph.clone()).print(module);
-            File {
-                path,
-                contents,
-                sourcemap: None,
-            }
-        })
-        .collect()
+    let printer = backend.printer(linked_items_graph.clone());
+    backend.modules_to_files(modules, printer)
 }
 
 mod prelude {

@@ -11,10 +11,13 @@ use std::sync::LazyLock;
 use super::prelude::*;
 use crate::{
     ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+    ast::span::Span,
     attributes::hax_attributes,
     names::rust_primitives::hax::explicit_monadic::{lift, pure},
     phase::*,
 };
+use camino::Utf8PathBuf;
+use hax_types::engine_api::File;
 
 mod binops {
     pub use crate::names::core::ops::index::*;
@@ -29,9 +32,27 @@ const PURE: GlobalId = pure;
 /// The Lean printer
 #[setup_printer_struct]
 #[derive(Default, Clone)]
-pub struct LeanPrinter;
+pub struct LeanPrinter {
+    current_namespace: Option<GlobalId>,
+}
 
 const INDENT: isize = 2;
+
+const HEADER: &str = "
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
+
+
+";
 
 static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     HashSet::from_iter(
@@ -54,18 +75,30 @@ static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     )
 });
 
+fn uppercase_first(s: &str) -> String {
+    let mut c = s.chars();
+    match c.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
+    }
+}
+
 impl RenderView for LeanPrinter {
     fn separator(&self) -> &str {
         "."
     }
-    fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
-        fn uppercase_first(s: &str) -> String {
-            let mut c = s.chars();
-            match c.next() {
-                None => String::new(),
-                Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
-            }
+
+    fn relativize_module_path<'a>(&self, module_path: &'a [PathSegment]) -> &'a [PathSegment] {
+        if let Some(namespace) = self.current_namespace
+            && namespace.view().segments() == module_path
+        {
+            &[]
+        } else {
+            module_path
         }
+    }
+
+    fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         // Returning None indicates that the default rendering should be used
         (match chunk.kind() {
             AnyKind::Mod => {
@@ -145,36 +178,61 @@ pub struct LeanBackend;
 impl Backend for LeanBackend {
     type Printer = LeanPrinter;
 
-    fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
-        camino::Utf8PathBuf::from_iter(LeanPrinter::default().render_strings(&module.ident.view()))
-            .with_extension("lean")
+    fn module_path(&self, module: &Module) -> Utf8PathBuf {
+        let krate = module.ident.krate();
+        Utf8PathBuf::from(uppercase_first(krate)).with_extension("lean")
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![Box::new(ExplicitMonadic)]
+        vec![Box::new(FilterUnprintableItems), Box::new(ExplicitMonadic)]
+    }
+
+    fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
+        let mut modules: Vec<Module> = Vec::new();
+
+        for item in items {
+            let module_ident = item.ident.mod_only_closest_parent();
+
+            if let Some(last_module) = modules.last_mut()
+                && last_module.ident == module_ident
+            {
+                last_module.items.push(item);
+            } else {
+                modules.push(Module {
+                    ident: module_ident,
+                    items: vec![item],
+                    meta: Metadata {
+                        span: Span::dummy(),
+                        attributes: vec![],
+                    },
+                });
+            }
+        }
+        modules
+    }
+
+    fn modules_to_files(&self, modules: Vec<Module>, mut printer: Self::Printer) -> Vec<File> {
+        if modules.is_empty() {
+            return vec![];
+        }
+        let path = self.module_path(modules.first().unwrap()).to_string();
+        let contents = modules
+            .into_iter()
+            .map(|module: Module| {
+                let (c, _) = printer.print(module);
+                c
+            })
+            .collect::<Vec<String>>()
+            .join("\n");
+        vec![File {
+            path,
+            contents: format!("{}{}", HEADER, contents),
+            sourcemap: None,
+        }]
     }
 }
 
 impl LeanPrinter {
-    /// A filter for items blacklisted by the Lean backend : returns false if
-    /// the item is definitely not printable, but might return true on
-    /// unsupported items
-    pub fn printable_item(item: &Item) -> bool {
-        match &item.kind {
-            // Other unprintable items
-            ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
-            // Printable items
-            ItemKind::Fn { .. }
-            | ItemKind::TyAlias { .. }
-            | ItemKind::Type { .. }
-            | ItemKind::Trait { .. }
-            | ItemKind::Impl { .. }
-            | ItemKind::Alias { .. }
-            | ItemKind::Resugared(_)
-            | ItemKind::Quote { .. } => true,
-        }
-    }
-
     /// Checks if we are extracting core models to be able to use different namespeacing when
     /// referring to core.
     pub fn is_hax_core_models_extraction_mode(&self) -> bool {
@@ -646,33 +704,27 @@ const _: () = {
         }
 
         fn module(&self, module: &Module) -> DocBuilder<A> {
+            let current_namespace = module.ident;
+            let new_printer = LeanPrinter {
+                current_namespace: Some(current_namespace),
+                ..self.clone()
+            };
             let items = &module.items;
             docs![
+                "namespace ",
+                current_namespace,
+                hardline!(),
+                hardline!(),
                 intersperse!(
-                    "
--- Experimental lean backend for Hax
--- The Hax prelude library can be found in hax/proof-libs/lean
-import Hax
-import Std.Tactic.Do
-import Std.Do.Triple
-import Std.Tactic.Do.Syntax
-open Std.Do
-open Std.Tactic
-
-set_option mvcgen.warning false
-set_option linter.unusedVariables false
-
-
-"
-                    .lines(),
-                    hardline!(),
-                ),
-                intersperse!(
-                    items
-                        .iter()
-                        .filter(|item| LeanPrinter::printable_item(item)),
+                    items.iter().map(|item| { item.to_document(&new_printer) }),
                     docs![hardline!(), hardline!()]
-                )
+                ),
+                hardline!(),
+                hardline!(),
+                "end ",
+                current_namespace,
+                hardline!(),
+                hardline!(),
             ]
         }
 
@@ -1275,7 +1327,9 @@ set_option linter.unusedVariables false
                                 "Structures should always have a constructor (even empty ones)"
                             )
                         };
-                        let args = if !variant.is_record {
+                        let args = if variant.arguments.is_empty() {
+                            comment!["no fields"]
+                        } else if !variant.is_record {
                             // Tuple-like structure, using positional arguments
                             intersperse!(
                                 variant.arguments.iter().enumerate().map(|(i, (_, ty, _))| {
@@ -1311,11 +1365,16 @@ set_option linter.unusedVariables false
                         docs![
                             docs!["inductive ", name, line!(), generics, ": Type"].group(),
                             hardline!(),
-                            concat!(variants.iter().map(|variant| docs![
-                                "| ",
-                                docs![variant, applied_name.clone()].group().nest(INDENT),
+                            intersperse!(
+                                variants.iter().map(|variant| docs![
+                                    "| ",
+                                    variant,
+                                    applied_name.clone()
+                                ]
+                                .group()
+                                .nest(INDENT)),
                                 hardline!()
-                            ])),
+                            ),
                         ]
                     }
                 }
@@ -1598,8 +1657,8 @@ set_option linter.unusedVariables false
                                         // TODO: should be treated directly by name rendering, see :
                                         // https://github.com/cryspen/hax/issues/1646
                                         item.ident.is_precondition() || item.ident.is_postcondition() ||
-                                    // Associated types are encoded into a separate type class
-                                    matches!(item.kind, ImplItemKind::Type { .. })
+                                        // Associated types are encoded into a separate type class
+                                        matches!(item.kind, ImplItemKind::Type { .. })
                                     )
                                 })
                             )]

@@ -21,7 +21,9 @@ pub trait Phase {
 }
 
 mod explicit_monadic;
+mod filter_unprintable_items;
 mod reject_not_do_lean_dsl;
 
 pub use explicit_monadic::ExplicitMonadic;
+pub use filter_unprintable_items::FilterUnprintableItems;
 pub use reject_not_do_lean_dsl::RejectNotDoLeanDSL;

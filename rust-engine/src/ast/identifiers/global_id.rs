@@ -173,6 +173,35 @@ pub struct FreshModule {
     label: String,
 }
 
+impl FreshModule {
+    /// Renders a view of the fresh module identifier.
+    fn view(&self) -> view::View {
+        self.clone().into()
+    }
+
+    /// Change the krate name in all hints.
+    fn rename_krate(&self, name: &str) -> Self {
+        let hints = self
+            .hints
+            .iter()
+            .map(|hint| {
+                let mut hint = hint.clone();
+                hint.rename_krate(name);
+                hint
+            })
+            .collect();
+        Self {
+            hints,
+            id: self.id,
+            label: self.label.clone(),
+        }
+    }
+
+    fn to_debug_string(&self) -> String {
+        format!("fresh_module_{}_{}", self.id, self.label)
+    }
+}
+
 /// [`ReservedSuffix`] helps at deriving fresh identifiers out of existing (Rust) ones.
 #[derive_group_for_ast]
 pub enum ReservedSuffix {
@@ -200,6 +229,8 @@ pub struct ConcreteId {
 enum GlobalIdInner {
     /// A concrete identifier that exists in Rust.
     Concrete(ConcreteId),
+    /// A fresh module introduced by Hax (typically, a bundle)
+    FreshModule(FreshModule),
     /// A projector.
     Tuple(TupleId),
 }
@@ -252,8 +283,9 @@ impl From<TupleId> for GlobalId {
     }
 }
 
-impl From<TupleId> for ConcreteId {
-    fn from(value: TupleId) -> Self {
+impl TupleId {
+    /// Creates a ConcreteId from a TupleId: `Tuple(1)` returns `Tuple1`
+    fn into_owned_concrete_id(self) -> ConcreteId {
         fn patch_def_id(template: GlobalId, length: usize, field: usize) -> ConcreteId {
             let GlobalIdInner::Concrete(mut concrete_id) = template.0.get().clone() else {
                 // `patch_def_id` is called with constant values (`hax::Tuple2`
@@ -294,11 +326,39 @@ impl From<TupleId> for ConcreteId {
 
         use crate::names::rust_primitives::hax;
 
-        match value {
+        match self {
             TupleId::Type { length } => patch_def_id(hax::Tuple2, length, 0),
             TupleId::Constructor { length } => patch_def_id(hax::Tuple2::Constructor, length, 0),
             TupleId::Field { length, field } => patch_def_id(hax::Tuple2::_1, length, field),
         }
+    }
+
+    /// Creates a static [`ConcreteId`] from a [`TupleId`]: `Tuple(1)` returns `Tuple1`. The function is
+    /// memoized (as the same tuple ids may appear a lot in a program), and inserts identifiers in
+    /// the GlobalId table to return a static lifetime.
+    pub fn as_concreteid(self) -> &'static ConcreteId {
+        thread_local! {
+            static MEMO: LazyCell<RefCell<HashMap<TupleId, &'static ConcreteId>>> =
+                LazyCell::new(|| RefCell::new(HashMap::new()));
+        }
+
+        MEMO.with(|memo| {
+            let mut memo = memo.borrow_mut();
+            let reference: &'static ConcreteId = memo.entry(self).or_insert_with(|| {
+                match GlobalIdInner::Concrete(self.into_owned_concrete_id())
+                    .intern()
+                    .get()
+                {
+                    GlobalIdInner::Concrete(concrete_id) => concrete_id,
+                    GlobalIdInner::FreshModule(_) | GlobalIdInner::Tuple(_) => {
+                        // This is a match on the Id that was just inserted in the table as a
+                        // ConcreteId
+                        unreachable!()
+                    }
+                }
+            });
+            reference
+        })
     }
 }
 
@@ -310,13 +370,28 @@ pub struct GlobalId(Interned<GlobalIdInner>);
 impl GlobalId {
     /// Extracts the Crate info
     pub fn krate(self) -> &'static str {
-        &ConcreteId::from_global_id(self).def_id.def_id.krate
+        match self.0.get() {
+            GlobalIdInner::FreshModule(fresh_module) => {
+                &fresh_module
+                    .hints
+                    .first()
+                    .expect("The hint list should always be non-empty")
+                    .def_id
+                    .krate
+            }
+            GlobalIdInner::Concrete(concrete_id) => &concrete_id.def_id.def_id.krate,
+            GlobalIdInner::Tuple(tuple_id) => &tuple_id.as_concreteid().def_id.def_id.krate,
+        }
     }
 
     /// Debug printing of identifiers, for testing purposes only.
     /// Prints path in a Rust-like way, as a `::` separated dismabiguated path.
     pub fn to_debug_string(self) -> String {
-        ConcreteId::from_global_id(self).to_debug_string()
+        match self.0.get() {
+            GlobalIdInner::Concrete(id) => id.to_debug_string(),
+            GlobalIdInner::FreshModule(id) => id.to_debug_string(),
+            GlobalIdInner::Tuple(id) => id.as_concreteid().to_debug_string(),
+        }
     }
 
     /// Returns true if the underlying identifier is a constructor
@@ -341,48 +416,61 @@ impl GlobalId {
         self.0.get().is_postcondition()
     }
 
-    /// Renders a view of the concrete identifier.
+    /// Renders a view of the global identifier.
     pub fn view(self) -> view::View {
-        ConcreteId::from_global_id(self).view()
+        match self.0.get() {
+            GlobalIdInner::FreshModule(id) => id.view(),
+            GlobalIdInner::Concrete(id) => id.view(),
+            GlobalIdInner::Tuple(id) => id.as_concreteid().view(),
+        }
     }
 
     /// Returns a tuple identifier if `self` is indeed a tuple.
     pub fn expect_tuple(self) -> Option<TupleId> {
         match self.0.get() {
-            GlobalIdInner::Concrete(..) => None,
             GlobalIdInner::Tuple(tuple_id) => Some(*tuple_id),
+            _ => None,
         }
     }
 
-    /// Gets the closest module only parent identifier, that is, the closest
-    /// parent whose path contains only path chunks of kind `DefKind::Mod`.
+    /// Gets the closest module only parent identifier, that is, the closest parent whose path
+    /// contains only path chunks of kind `DefKind::Mod`. Can be itself (for fresh modules).
     pub fn mod_only_closest_parent(self) -> Self {
-        let concrete_id = ConcreteId::from_global_id(self).mod_only_closest_parent();
-        Self(GlobalIdInner::Concrete(concrete_id).intern())
+        match self.0.get() {
+            GlobalIdInner::FreshModule(_) => self,
+            GlobalIdInner::Concrete(concrete_id) => concrete_id.mod_only_closest_parent().into(),
+            GlobalIdInner::Tuple(tuple_id) => {
+                tuple_id.as_concreteid().mod_only_closest_parent().into()
+            }
+        }
     }
 
     /// Change the krate name (the first element of the `GlobalId`) to `name`.
     pub fn rename_krate(self, name: &str) -> Self {
-        let mut concrete_id = ConcreteId::from_global_id(self).clone();
-        concrete_id.rename_krate(name);
-        Self(GlobalIdInner::Concrete(concrete_id).intern())
+        match self.0.get() {
+            GlobalIdInner::FreshModule(fresh_module) => {
+                Self(GlobalIdInner::FreshModule(fresh_module.rename_krate(name)).intern())
+            }
+            GlobalIdInner::Concrete(concrete_id) => {
+                let mut concrete_id = concrete_id.clone();
+                concrete_id.rename_krate(name);
+                Self(GlobalIdInner::Concrete(concrete_id).intern())
+            }
+            GlobalIdInner::Tuple(tuple_id) => {
+                let mut concrete_id = tuple_id.as_concreteid().clone();
+                concrete_id.rename_krate(name);
+                Self(GlobalIdInner::Concrete(concrete_id).intern())
+            }
+        }
     }
 }
 
 impl GlobalIdInner {
-    /// Extract the raw `DefId` from a `GlobalId`.
-    /// This should never be used for name printing.
-    fn def_id(&self) -> DefId {
-        ConcreteId::from_global_id(GlobalId(self.intern()))
-            .def_id
-            .def_id
-    }
-
     /// Extract the `ExplicitDefId` from a `GlobalId`.
     fn explicit_def_id(&self) -> Option<ExplicitDefId> {
         match self {
             GlobalIdInner::Concrete(concrete_id) => Some(concrete_id.def_id.clone()),
-            GlobalIdInner::Tuple(_) => None,
+            _ => None,
         }
     }
 
@@ -419,6 +507,12 @@ impl GlobalIdInner {
     }
 }
 
+impl From<ConcreteId> for GlobalId {
+    fn from(concrete_id: ConcreteId) -> Self {
+        Self(GlobalIdInner::Concrete(concrete_id).intern())
+    }
+}
+
 impl ConcreteId {
     /// Renders a view of the concrete identifier.
     fn view(&self) -> view::View {
@@ -433,7 +527,7 @@ impl ConcreteId {
         let def_id = parents
             .into_iter()
             .take_while(|id| matches!(id.def_id.kind, DefKind::Mod))
-            .next()
+            .last()
             .expect("Invariant broken: a DefId must always contain at least on `mod` segment (the crate)");
         Self {
             def_id,
@@ -444,31 +538,6 @@ impl ConcreteId {
 
     fn rename_krate(&mut self, name: &str) {
         self.def_id.rename_krate(name);
-    }
-
-    /// Get a static reference to a `ConcreteId` out of a `GlobalId`.
-    /// When a tuple is encountered, the tuple is rendered into a proper Rust name.
-    /// This function is memoized, so that we don't recompute Rust names for tuples all the time.
-    fn from_global_id(value: GlobalId) -> &'static ConcreteId {
-        thread_local! {
-            static MEMO: LazyCell<RefCell<HashMap<GlobalId, &'static ConcreteId>>> =
-                LazyCell::new(|| RefCell::new(HashMap::new()));
-        }
-
-        MEMO.with(|memo| {
-            let mut memo = memo.borrow_mut();
-            let reference: &'static ConcreteId =
-                memo.entry(value).or_insert_with(|| match value.0.get() {
-                    GlobalIdInner::Concrete(concrete_id) => concrete_id,
-                    GlobalIdInner::Tuple(tuple_id) => {
-                        match GlobalIdInner::Concrete((*tuple_id).into()).intern().get() {
-                            GlobalIdInner::Concrete(concrete_id) => concrete_id,
-                            GlobalIdInner::Tuple(_) => unreachable!(),
-                        }
-                    }
-                });
-            reference
-        })
     }
 
     fn to_debug_string(&self) -> String {
