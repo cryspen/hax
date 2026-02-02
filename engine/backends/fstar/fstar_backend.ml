@@ -410,7 +410,6 @@ struct
 
   and pimpl_expr span (ie : impl_expr) =
     let some = Option.some in
-    let hax_unstable_impl_exprs = hax_core_models_extraction in
     match ie.kind with
     | Concrete tr -> c_trait_goal span tr |> some
     | LocalBound { id } ->
@@ -418,27 +417,24 @@ struct
           Local_ident.{ name = id; id = Local_ident.mk_id Expr 0 }
         in
         F.term @@ F.AST.Var (F.lid_of_id @@ plocal_ident local_ident) |> some
-    | ImplApp { impl; _ } when not hax_unstable_impl_exprs ->
-        pimpl_expr span impl
-    | Parent { impl; ident }
-      when hax_unstable_impl_exprs && [%matches? Self _] impl.kind ->
+    | Parent { impl; ident } when [%matches? Self _] impl.kind ->
         let trait = "_super_" ^ ident.name in
         F.term_of_lid [ trait ] |> some
-    | Parent { impl; ident } when hax_unstable_impl_exprs ->
+    | Parent { impl; ident } ->
         let* impl = pimpl_expr span impl in
         let trait = "_super_" ^ ident.name in
         F.term @@ F.AST.Project (impl, F.lid [ trait ]) |> some
-    | ImplApp { impl; args = [] } when hax_unstable_impl_exprs ->
-        pimpl_expr span impl
-    | ImplApp { impl; args } when hax_unstable_impl_exprs ->
+    | ImplApp { impl; args = [] } -> pimpl_expr span impl
+    | ImplApp { impl; args } ->
         let* impl = pimpl_expr span impl in
         let* args = List.map ~f:(pimpl_expr span) args |> Option.all in
         F.mk_e_app impl args |> some
-    | Projection _ when hax_unstable_impl_exprs ->
-        F.term_of_lid [ "_Projection" ] |> some
-    | Dyn _ when hax_unstable_impl_exprs -> F.term_of_lid [ "_Dyn" ] |> some
-    | Builtin _ when hax_unstable_impl_exprs ->
-        F.term_of_lid [ "_Builtin" ] |> some
+    | Projection { impl; item; ident } when [%matches? Self _] impl.kind ->
+        F.term_of_lid
+          [ (pconcrete_ident item |> F.Ident.text_of_lid) ^ "_" ^ ident.name ]
+        |> some
+    | Dyn _ -> F.term_of_lid [ "_Dyn" ] |> some
+    | Builtin _ -> F.term_of_lid [ "_Builtin" ] |> some
     | _ -> None
 
   and c_trait_goal span trait_goal =

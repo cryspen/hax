@@ -110,7 +110,8 @@ and dglobal_ident ?(skip_projector : bool = false)
       | Types.Type { length } -> `TupleType (Int.of_string length)
       | Types.Constructor { length } -> `TupleCons (Int.of_string length)
       | Types.Field { length; field } ->
-          `TupleField (Int.of_string field, Int.of_string length))
+          let res = `TupleField (Int.of_string field, Int.of_string length) in
+          if skip_projector then res else `Projector res)
 
 and dlocal_ident (Newtypelocal_id (Newtypesymbol li) : A.local_id) :
     B.local_ident =

@@ -45,28 +45,27 @@ fn assertion_failure(msg: &str, span: ast::span::Span) -> ast::ErrorNode {
 
 struct Context {
     owner_hint: Option<hax_frontend_exporter::DefId>,
+    impl_expr_offset: u64,
 }
 
-fn is_self_type_constraint(gc: &ast::GenericConstraint) -> bool {
+fn is_self_type_constraint(
+    gc: &ast::GenericConstraint,
+    container: &frontend::AssocItemContainer,
+) -> bool {
+    let frontend::AssocItemContainer::TraitContainer { trait_ref } = container else {
+        return false;
+    };
+    let trait_ = trait_ref.contents().def_id.import_as_value();
+
     match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
+        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) =>
+            goal
             .args
             .first()
             .and_then(ast::GenericValue::expect_ty)
             .map(|ty| matches!(ty.0.as_ref(), ast::TyKind::Param(local) if local.0 == Symbol::new("Self")))
-            .unwrap_or(false),
-        _ => false,
-    }
-}
-
-fn is_constraint_on_ty(gc: &ast::GenericConstraint, ty: &ast::Ty) -> bool {
-    match gc {
-        ast::GenericConstraint::Type(ast::ImplIdent { goal, .. }) => goal
-            .args
-            .first()
-            .and_then(ast::GenericValue::expect_ty)
-            .map(|arg| arg == ty)
-            .unwrap_or(false),
+            .unwrap_or(false)
+            && goal.trait_ == trait_,
         _ => false,
     }
 }
@@ -88,17 +87,18 @@ fn resugar_index_mut(expr: &ast::Expr) -> Option<(&ast::Expr, &ast::Expr)> {
 }
 
 fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
+    let ty = expr.ty.clone();
     if let ast::ExprKind::LocalId(var) = expr.kind() {
         return ast::Lhs::LocalVar {
             var: var.clone(),
-            ty: expr.ty.clone(),
+            ty: ty.clone(),
         };
     }
     let expr = expr.unbox_underef();
     if let Some((e, index)) = resugar_index_mut(expr) {
         ast::Lhs::ArrayAccessor {
             e: Box::new(lhs_from_expr(e)),
-            ty: expr.ty.clone(),
+            ty: ty.clone(),
             index: index.clone(),
         }
     } else if let ast::ExprKind::App { head, args, .. } = expr.kind()
@@ -108,7 +108,7 @@ fn lhs_from_expr(expr: &ast::Expr) -> ast::Lhs {
     {
         ast::Lhs::FieldAccessor {
             e: Box::new(lhs_from_expr(arg)),
-            ty: expr.ty.clone(),
+            ty,
             field: *field,
         }
     } else {
@@ -361,7 +361,7 @@ impl SpannedImport<Option<ast::GenericConstraint>> for frontend::Clause {
 
 impl Import<Vec<ast::GenericConstraint>> for frontend::GenericPredicates {
     fn import(&self, context: &Context) -> Vec<ast::GenericConstraint> {
-        let mut type_idx: u64 = 0;
+        let mut type_idx: u64 = context.impl_expr_offset;
         self.predicates
             .iter()
             .filter_map(|(clause, span)| {
@@ -1755,15 +1755,27 @@ fn import_trait_item(
     let span = item.span.import(context);
     let attributes = item.attributes.import(context);
     let meta = ast::Metadata { span, attributes };
-    let (frontend::FullDefKind::AssocConst { param_env, .. }
-    | frontend::FullDefKind::AssocFn { param_env, .. }
-    | frontend::FullDefKind::AssocTy { param_env, .. }) = &item.kind
+    let (frontend::FullDefKind::AssocConst {
+        param_env,
+        associated_item,
+        ..
+    }
+    | frontend::FullDefKind::AssocFn {
+        param_env,
+        associated_item,
+        ..
+    }
+    | frontend::FullDefKind::AssocTy {
+        param_env,
+        associated_item,
+        ..
+    }) = &item.kind
     else {
         unreachable!("Found associated item of an unknown kind.")
     };
+    let assoc_item_container = &associated_item.container;
     let mut generics = param_env.import(context);
     let mut imported_constraints: Vec<ast::GenericConstraint> = Vec::new();
-    let mut is_assoc_ty = false;
     let kind = match &item.kind {
         frontend::FullDefKind::AssocConst {
             body: Some(default),
@@ -1789,12 +1801,17 @@ fn import_trait_item(
         }
         frontend::FullDefKind::AssocFn { sig, param_env, .. } => {
             generics = import_generics(context, &sig.bound_vars, param_env);
-            let inputs = sig
+            let inputs: Vec<ast::Ty> = sig
                 .value
                 .inputs
                 .iter()
                 .map(|ty| ty.spanned_import(context, span))
                 .collect();
+            let inputs = if inputs.is_empty() {
+                vec![ast::TyKind::unit().promote()]
+            } else {
+                inputs
+            };
             let output = sig.value.output.spanned_import(context, span);
             ast::TraitItemKind::Fn(ast::TyKind::Arrow { inputs, output }.promote())
         }
@@ -1807,7 +1824,6 @@ fn import_trait_item(
         frontend::FullDefKind::AssocTy {
             implied_predicates, ..
         } => {
-            is_assoc_ty = true;
             imported_constraints = implied_predicates.import(context);
             let type_constraints = imported_constraints
                 .iter()
@@ -1823,17 +1839,9 @@ fn import_trait_item(
             span,
         )),
     };
-    if is_assoc_ty {
-        generics.constraints = imported_constraints;
-    }
     generics
         .constraints
-        .retain(|gc| !is_self_type_constraint(gc));
-    for (idx, gc) in generics.constraints.iter_mut().enumerate() {
-        if let ast::GenericConstraint::Type(impl_ident) = gc {
-            impl_ident.name = impl_expr_name(idx as u64);
-        }
-    }
+        .retain(|gc| !is_self_type_constraint(gc, assoc_item_container));
     ast::TraitItem {
         meta,
         kind,
@@ -1859,7 +1867,6 @@ fn browse_path(
     item_kind: ast::ImplExprKind,
     chunk: &frontend::ImplExprPathChunk,
     span: ast::span::Span,
-    idx: usize,
 ) -> ast::ImplExprKind {
     match chunk {
         frontend::ImplExprPathChunk::AssocItem {
@@ -1869,11 +1876,12 @@ fn browse_path(
                     value: frontend::TraitPredicate { trait_ref, .. },
                     ..
                 },
+            index,
             ..
         } => {
             let ident = ast::ImplIdent {
                 goal: trait_ref.spanned_import(context, span),
-                name: impl_expr_name(idx as u64),
+                name: impl_expr_name(*index as u64),
             };
             let item = item.contents().def_id.import_as_nonvalue();
             ast::ImplExprKind::Projection {
@@ -1891,11 +1899,12 @@ fn browse_path(
                     value: frontend::TraitPredicate { trait_ref, .. },
                     ..
                 },
+            index,
             ..
         } => {
             let ident = ast::ImplIdent {
                 goal: trait_ref.spanned_import(context, span),
-                name: impl_expr_name(idx as u64),
+                name: impl_expr_name(*index as u64),
             };
             ast::ImplExprKind::Parent {
                 impl_: ast::ImplExpr {
@@ -1922,15 +1931,18 @@ fn import_impl_expr_atom(
             let mut kind = ast::ImplExprKind::LocalBound {
                 id: impl_expr_name(*index as u64),
             };
-            for (i, chunk) in path.iter().enumerate() {
-                kind = browse_path(context, kind, chunk, span, i)
+            for chunk in path {
+                kind = browse_path(context, kind, chunk, span)
             }
             kind
         }
+        // This is not produced by the rustc anymore. Instead we get LocalBound with index 0.
+        // Self bounds are reconstructed by phase RewriteLocalSelf. We could try to pass the
+        // Self constraint in the context (see `import_trait_item`).
         frontend::ImplExprAtom::SelfImpl { path, .. } => {
             let mut kind = ast::ImplExprKind::Self_;
-            for (i, chunk) in path.iter().enumerate() {
-                kind = browse_path(context, kind, chunk, span, i)
+            for chunk in path {
+                kind = browse_path(context, kind, chunk, span)
             }
             kind
         }
@@ -2135,6 +2147,7 @@ pub fn import_item(
     } = item;
     let context = &Context {
         owner_hint: Some(this.contents().def_id.clone()),
+        impl_expr_offset: 0,
     };
     let ident = this.contents().def_id.clone().import_as_nonvalue();
     let span = span.import(context);
@@ -2281,7 +2294,7 @@ pub fn import_item(
             items,
             ..
         } => {
-            let mut generics = param_env.import(context);
+            let generics = param_env.import(context);
             let trait_ref = trait_pred.trait_ref.contents();
             let of_trait: (ast::GlobalId, Vec<ast::GenericValue>) = (
                 trait_ref.def_id.import_as_nonvalue(),
@@ -2297,6 +2310,10 @@ pub fn import_item(
             let items: Vec<ast::ImplItem> = if has_auto {
                 Vec::new()
             } else {
+                let context = &Context {
+                    owner_hint: context.owner_hint.clone(),
+                    impl_expr_offset: generics.constraints.len() as u64,
+                };
                 items
                     .iter()
                     .flat_map(|assoc_item| {
@@ -2380,12 +2397,6 @@ pub fn import_item(
                 parent_bounds.retain(|(impl_expr, _)| {
                     matches!(impl_expr.goal.args.first(), Some(ast::GenericValue::Ty(arg_ty)) if arg_ty == self_ty)
                 });
-                generics
-                    .constraints
-                    .retain(|gc| !is_constraint_on_ty(gc, self_ty));
-                if generics.constraints.len() > 1 {
-                    generics.constraints.truncate(1);
-                }
                 ast::ItemKind::Impl {
                     generics,
                     self_ty: self_ty.clone(),
@@ -2417,6 +2428,10 @@ pub fn import_item(
                     let span = assoc_item.span.import(context);
                     let attributes = assoc_item.attributes.import(context);
                     let impl_generics = param_env.import(context);
+                    let context = &Context {
+                        owner_hint: context.owner_hint.clone(),
+                        impl_expr_offset: impl_generics.constraints.len() as u64,
+                    };
                     let kind = match assoc_item.kind() {
                         frontend::FullDefKind::AssocTy {
                             param_env, value, ..

@@ -91,42 +91,6 @@ let rec parents (did : t) =
 let to_def_id { def_id; _ } = def_id
 let is_constructor { is_constructor; _ } = is_constructor
 
-(** Stateful store that maps [def_id]s to implementation information (which
-    trait is implemented? for which type? under which constraints?) *)
-module ImplInfoStore = struct
-  let state : (Types.def_id_contents, Types.impl_infos) Hashtbl.t option ref =
-    ref None
-
-  module T = struct
-    type t = Types.def_id_contents [@@deriving show, compare, sexp, eq, hash]
-  end
-
-  let init (impl_infos : (Types.def_id * Types.impl_infos) list) =
-    state :=
-      impl_infos
-      |> List.map ~f:(fun ((id : Types.def_id), impl_infos) ->
-             (id.contents.value, impl_infos))
-      |> Hashtbl.of_alist_multi (module T)
-      |> Hashtbl.map ~f:List.hd_exn |> Option.some
-
-  let get_state () =
-    match !state with
-    | None -> failwith "ImplInfoStore was not initialized"
-    | Some state -> state
-
-  (** Given a [id] of type [def_id], [find id] will return [Some impl_info] when
-      [id] is an (non-inherent[1]) impl. [impl_info] contains information about
-      the trait being implemented and for which type.
-
-      [1]:
-      https://doc.rust-lang.org/reference/items/implementations.html#inherent-implementations
-  *)
-  let find k = Hashtbl.find (get_state ()) k
-
-  let lookup_raw (impl_def_id : t) : Types.impl_infos option =
-    find (to_def_id impl_def_id)
-end
-
 module ToRustAST = struct
   module A = Types
   module B = Rust_engine_types
@@ -171,3 +135,39 @@ let def_id_to_rust_ast = ToRustAST.def_id_contents_to_rust_ast
 let def_id_from_rust_ast = FromRustAST.def_id_contents_to_rust_ast
 let to_rust_ast = ToRustAST.to_rust_ast
 let from_rust_ast = FromRustAST.to_rust_ast
+
+(** Stateful store that maps [def_id]s to implementation information (which
+    trait is implemented? for which type? under which constraints?) *)
+module ImplInfoStore = struct
+  let state : (Types.def_id_inner, Types.impl_infos) Hashtbl.t option ref =
+    ref None
+
+  module T = struct
+    type t = Types.def_id_inner [@@deriving show, compare, sexp, eq, hash]
+  end
+
+  let init (impl_infos : (Types.def_id * Types.impl_infos) list) =
+    state :=
+      impl_infos
+      |> List.map ~f:(fun ((id : Types.def_id), impl_infos) ->
+             (def_id_to_rust_ast id.contents.value, impl_infos))
+      |> Hashtbl.of_alist_multi (module T)
+      |> Hashtbl.map ~f:List.hd_exn |> Option.some
+
+  let get_state () =
+    match !state with
+    | None -> failwith "ImplInfoStore was not initialized"
+    | Some state -> state
+
+  (** Given a [id] of type [def_id], [find id] will return [Some impl_info] when
+      [id] is an (non-inherent[1]) impl. [impl_info] contains information about
+      the trait being implemented and for which type.
+
+      [1]:
+      https://doc.rust-lang.org/reference/items/implementations.html#inherent-implementations
+  *)
+  let find k = Hashtbl.find (get_state ()) k
+
+  let lookup_raw (impl_def_id : t) : Types.impl_infos option =
+    find (to_def_id impl_def_id |> def_id_to_rust_ast)
+end
