@@ -1824,7 +1824,6 @@ fn import_trait_item(
         frontend::FullDefKind::AssocTy {
             implied_predicates, ..
         } => {
-            generics.constraints = imported_constraints;
             imported_constraints = implied_predicates.import(context);
             let type_constraints = imported_constraints
                 .iter()
@@ -1840,11 +1839,6 @@ fn import_trait_item(
             span,
         )),
     };
-    for (idx, gc) in generics.constraints.iter_mut().enumerate() {
-        if let ast::GenericConstraint::Type(impl_ident) = gc {
-            impl_ident.name = impl_expr_name(idx as u64);
-        }
-    }
     generics
         .constraints
         .retain(|gc| !is_self_type_constraint(gc, assoc_item_container));
