@@ -33,9 +33,14 @@ diagnostics = []
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
 import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
 open Std.Do
+open Std.Tactic
+
 set_option mvcgen.warning false
 set_option linter.unusedVariables false
+
 
 namespace Lean_core_models.Default.Structs
 
@@ -54,6 +59,62 @@ def test (_ : Rust_primitives.Hax.Tuple0) : RustM S := do
   (Core_models.Default.Default.default S Rust_primitives.Hax.Tuple0.mk)
 
 end Lean_core_models.Default.Structs
+
+
+namespace Lean_core_models.Default.Enums
+
+inductive E (T : Type) : Type
+| C1 : u32 -> E (T : Type) 
+| C2 : T -> E (T : Type) 
+
+@[reducible] instance Impl.AssociatedTypes
+  (T : Type)
+  [Core_models.Default.Default.AssociatedTypes T]
+  [Core_models.Default.Default T ]
+  :
+  Core_models.Default.Default.AssociatedTypes (E T)
+  where
+
+instance Impl
+  (T : Type)
+  [Core_models.Default.Default.AssociatedTypes T]
+  [Core_models.Default.Default T ]
+  :
+  Core_models.Default.Default (E T)
+  where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
+    (pure (E.C2
+      (← (Core_models.Default.Default.default
+        T Rust_primitives.Hax.Tuple0.mk))))
+
+end Lean_core_models.Default.Enums
+
+
+namespace Lean_core_models.Function
+
+def test (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
+  let f_1 : (u32 -> RustM u32) := (fun _ => (do (pure (9 : u32)) : RustM u32));
+  let f_2 : (u32 -> u32 -> RustM u32) := (fun x y => (do (x +? y) : RustM u32));
+  let f_2_tuple : ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32) :=
+    (fun ⟨x, y⟩ => (do (x +? y) : RustM u32));
+  ((← ((← (Core_models.Ops.Function.Fn.call
+        (u32 -> RustM u32)
+        (Rust_primitives.Hax.Tuple1 u32)
+        f_1
+        (Rust_primitives.Hax.Tuple1.mk (0 : u32))))
+      +? (← (Core_models.Ops.Function.Fn.call
+        (u32 -> u32 -> RustM u32)
+        (Rust_primitives.Hax.Tuple2 u32 u32)
+        f_2
+        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
+    +? (← (Core_models.Ops.Function.Fn.call
+      ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32)
+      (Rust_primitives.Hax.Tuple1 (Rust_primitives.Hax.Tuple2 u32 u32))
+      f_2_tuple
+      (Rust_primitives.Hax.Tuple1.mk
+        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
+
+end Lean_core_models.Function
 
 
 namespace Lean_core_models.Option
@@ -257,61 +318,5 @@ def tests
       => (pure (Core_models.Result.Result.Err err))
 
 end Lean_core_models.Result
-
-
-namespace Lean_core_models.Default.Enums
-
-inductive E (T : Type) : Type
-| C1 : u32 -> E (T : Type) 
-| C2 : T -> E (T : Type) 
-
-@[reducible] instance Impl.AssociatedTypes
-  (T : Type)
-  [Core_models.Default.Default.AssociatedTypes T]
-  [Core_models.Default.Default T ]
-  :
-  Core_models.Default.Default.AssociatedTypes (E T)
-  where
-
-instance Impl
-  (T : Type)
-  [Core_models.Default.Default.AssociatedTypes T]
-  [Core_models.Default.Default T ]
-  :
-  Core_models.Default.Default (E T)
-  where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
-    (pure (E.C2
-      (← (Core_models.Default.Default.default
-        T Rust_primitives.Hax.Tuple0.mk))))
-
-end Lean_core_models.Default.Enums
-
-
-namespace Lean_core_models.Function
-
-def test (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
-  let f_1 : (u32 -> RustM u32) := (fun _ => (do (pure (9 : u32)) : RustM u32));
-  let f_2 : (u32 -> u32 -> RustM u32) := (fun x y => (do (x +? y) : RustM u32));
-  let f_2_tuple : ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32) :=
-    (fun ⟨x, y⟩ => (do (x +? y) : RustM u32));
-  ((← ((← (Core_models.Ops.Function.Fn.call
-        (u32 -> RustM u32)
-        (Rust_primitives.Hax.Tuple1 u32)
-        f_1
-        (Rust_primitives.Hax.Tuple1.mk (0 : u32))))
-      +? (← (Core_models.Ops.Function.Fn.call
-        (u32 -> u32 -> RustM u32)
-        (Rust_primitives.Hax.Tuple2 u32 u32)
-        f_2
-        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
-    +? (← (Core_models.Ops.Function.Fn.call
-      ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32)
-      (Rust_primitives.Hax.Tuple1 (Rust_primitives.Hax.Tuple2 u32 u32))
-      f_2_tuple
-      (Rust_primitives.Hax.Tuple1.mk
-        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
-
-end Lean_core_models.Function
 
 '''
