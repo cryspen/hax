@@ -434,7 +434,7 @@ const _: () = {
         }
 
         /// When possible, unwraps the `pure` surrounding an expression to simplify it
-        fn simplify_pure<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
+        fn monad_extract_simplify<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
             if let ExprKind::App { head, args, .. } = expr.kind()
                 && let ExprKind::GlobalId(PURE) = head.kind()
                 && let [pure_expr] = &args[..]
@@ -1623,7 +1623,7 @@ set_option linter.unusedVariables false
                         ]
                         .group(),
                         line!(),
-                        self.simplify_pure(body),
+                        self.monad_extract_simplify(body),
                     ]
                     .group()
                     .nest(INDENT),
@@ -1683,7 +1683,7 @@ set_option linter.unusedVariables false
                         softline!(),
                         ":=",
                         softline!(),
-                        self.simplify_pure(body)
+                        self.monad_extract_simplify(body)
                     ]
                 }
             }
