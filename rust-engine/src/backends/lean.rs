@@ -531,7 +531,7 @@ const _: () = {
                             name,
                             softline!(),
                             trait_generics,
-                            item_generics,
+                            self.generics(item_generics, &self.render_last(ident)),
                             ":",
                             line!(),
                             ty
@@ -540,7 +540,7 @@ const _: () = {
                         .nest(INDENT)
                     }
                     TraitItemKind::Type(_) => {
-                        docs![name.clone(), softline!(), ":", line!(), "Type"]
+                        docs![name, softline!(), ":", line!(), "Type"]
                             .group()
                             .nest(INDENT)
                     }
@@ -549,7 +549,7 @@ const _: () = {
                             name,
                             softline!(),
                             trait_generics,
-                            item_generics,
+                            self.generics(item_generics, &self.render_last(ident)),
                             zip_right!(params, line!()).group(),
                             docs![": RustM ", body.ty].group(),
                             line!(),
@@ -566,6 +566,59 @@ const _: () = {
                     }
                 }]
             }
+        }
+
+        // Print generics, using `name` as a disambiguator for constraint names
+        fn generics<A: 'static + Clone>(&self, generics: &Generics, name: &str) -> DocBuilder<A> {
+            docs![
+                zip_left!(line!(), &generics.params),
+                zip_left!(
+                    line!(),
+                    generics.type_constraints().map(|impl_ident| {
+                        let projections = generics
+                            .projection_constraints()
+                            .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
+                            .map(|p| {
+                                if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
+                                    docs![p]
+                                } else {
+                                    emit_error!(issue 1710, "Unsupported variant of associated type projection")
+                                }
+                            })
+                            .collect::<Vec<_>>();
+                        docs![
+                            docs![
+                                self.constraint_name(&format!("{}_associated_type", name), impl_ident),
+                                reflow!(" : "),
+                                impl_ident.goal.trait_,
+                                ".AssociatedTypes",
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                )
+                            ]
+                            .brackets()
+                            .group()
+                            .nest(INDENT),
+                            line!(),
+                            docs![
+                                self.constraint_name(&name.to_string(), impl_ident),
+                                reflow!(" : "),
+                                impl_ident.goal.trait_,
+                                concat!(
+                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
+                                ),
+                                line!(),
+                                self.associated_type_projections(impl_ident, projections)
+                            ]
+                            .brackets()
+                            .nest(INDENT)
+                            .group()
+                        ]
+                        .group()
+                    })
+                ),
+            ]
+            .group()
         }
 
         /// Print spec of an item
@@ -601,8 +654,7 @@ const _: () = {
                             line!(),
                             name,
                             ".spec",
-                            line!(),
-                            generics,
+                            self.generics(generics, &self.render_last(name)),
                             params,
                             softline!(),
                             ":"
@@ -643,10 +695,15 @@ const _: () = {
                             .group()
                             .nest(INDENT),
                             line!(),
-                            docs![name, line!(), generics, params]
-                                .parens()
-                                .group()
-                                .nest(INDENT)
+                            docs![
+                                name,
+                                self.generics(generics, &self.render_last(name)),
+                                line!(),
+                                params
+                            ]
+                            .parens()
+                            .group()
+                            .nest(INDENT)
                         ]
                         .group()
                         .nest(INDENT),
@@ -732,53 +789,8 @@ const _: () = {
             docs![self.render_id(global_id)]
         }
 
-        /// Render generics, adding a space after each parameter
         fn generics(&self, generics: &Generics) -> DocBuilder<A> {
-            docs![
-                zip_right!(&generics.params, line!()),
-                zip_right!(
-                    generics.type_constraints().map(|impl_ident| {
-                        let projections = generics
-                            .projection_constraints()
-                            .filter(|p| !matches!(&*p.impl_.kind, ImplExprKind::LocalBound { id } if *id != impl_ident.name ))
-                            .map(|p| {
-                                if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
-                                    docs![p]
-                                } else {
-                                    emit_error!(issue 1710, "Unsupported variant of associated type projection")
-                                }
-                            })
-                            .collect::<Vec<_>>();
-                        docs![
-                            docs![
-                                impl_ident.goal.trait_,
-                                ".AssociatedTypes",
-                                concat!(
-                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
-                                )
-                            ]
-                            .brackets()
-                            .group()
-                            .nest(INDENT),
-                            line!(),
-                            docs![
-                                impl_ident.goal.trait_,
-                                concat!(
-                                    impl_ident.goal.args.iter().map(|arg| docs![line!(), arg])
-                                ),
-                                line!(),
-                                self.associated_type_projections(impl_ident, projections)
-                            ]
-                            .brackets()
-                            .nest(INDENT)
-                            .group()
-                        ]
-                        .group()
-                    }),
-                    line!()
-                ),
-            ]
-            .group()
+            self.generics(generics, "")
         }
 
         fn generic_constraint(&self, _: &GenericConstraint) -> DocBuilder<A> {
@@ -1147,6 +1159,13 @@ const _: () = {
                     let kind = impl_.kind();
                     match &kind {
                         ImplExprKind::Self_ => docs!["associatedTypes.", self.render_last(item)],
+                        ImplExprKind::Parent { ident, .. } => docs![
+                            item,
+                            concat!(ident.goal.args.iter().map(|arg| docs![line!(), arg]))
+                        ]
+                        .parens()
+                        .group()
+                        .nest(INDENT),
                         ImplExprKind::LocalBound { .. } => docs![
                             item,
                             concat!(impl_.goal.args.iter().map(|arg| docs![line!(), arg])),
@@ -1274,8 +1293,7 @@ const _: () = {
                         docs![
                             docs![
                                 docs![if opaque { "opaque" } else { "def" }, line!(), name].group(),
-                                line!(),
-                                generics,
+                                self.generics(generics, &self.render_last(name)),
                                 params,
                                 docs![": RustM", line!(), &body.ty].group(),
                                 line!(),
@@ -1296,8 +1314,7 @@ const _: () = {
                 ItemKind::TyAlias { name, generics, ty } => docs![
                     "abbrev ",
                     name,
-                    line!(),
-                    generics,
+                    self.generics(generics, &self.render_last(name)),
                     reflow!(": Type :="),
                     line!(),
                     ty
@@ -1349,21 +1366,35 @@ const _: () = {
                             )
                         };
                         docs![
-                            docs![reflow!("structure "), name, line!(), generics, "where"].group(),
+                            docs![
+                                reflow!("structure "),
+                                name,
+                                self.generics(generics, &self.render_last(name)),
+                                line!(),
+                                "where"
+                            ]
+                            .group(),
                             docs![hardline!(), args],
                         ]
                         .nest(INDENT)
                         .group()
                     } else {
                         // Enums
-                        let applied_name: DocBuilder<A> =
-                            if generics.params.is_empty() && generics.constraints.is_empty() {
-                                docs![name]
-                            } else {
-                                docs![name, line!(), generics].group()
-                            };
+                        let applied_name: DocBuilder<A> = if generics.params.is_empty()
+                            && generics.constraints.is_empty()
+                        {
+                            docs![name]
+                        } else {
+                            docs![name, self.generics(generics, &self.render_last(name))].group()
+                        };
                         docs![
-                            docs!["inductive ", name, line!(), generics, ": Type"].group(),
+                            docs![
+                                "inductive ",
+                                name,
+                                self.generics(generics, &self.render_last(name)),
+                                ": Type"
+                            ]
+                            .group(),
                             hardline!(),
                             intersperse!(
                                 variants.iter().map(|variant| docs![
@@ -1530,6 +1561,19 @@ const _: () = {
                                 .group()
                                 .brackets())
                             ),
+                            // We also add constraints on associated types here:
+                            concat!(
+                                items
+                                    .iter()
+                                    .filter(|item| { matches!(item.kind, TraitItemKind::Type(_)) })
+                                    .map(|item| docs![
+                                        self.generics(
+                                            &item.generics,
+                                            &self.render_last(&item.ident)
+                                        )
+                                    ])
+                            ),
+                            // Finally the regular trait items:
                             zip_left!(
                                 hardline!(),
                                 items.iter().filter(|item| {!(
@@ -1579,8 +1623,7 @@ const _: () = {
                                 },
                                 ident,
                                 ".AssociatedTypes",
-                                line!(),
-                                generics,
+                                self.generics(generics, &self.render_last(ident)),
                                 ":"
                             ]
                             .group(),
@@ -1626,8 +1669,7 @@ const _: () = {
                                     reflow!("instance ")
                                 },
                                 ident,
-                                line!(),
-                                generics,
+                                self.generics(generics, &self.render_last(ident)),
                                 ":"
                             ]
                             .group(),
@@ -1674,8 +1716,7 @@ const _: () = {
                     } => docs![
                         docs![
                             docs!["def", line!(), name].group(),
-                            line!(),
-                            generics,
+                            self.generics(generics, &self.render_last(ident)),
                             docs![":", line!(), &body.ty].group(),
                             line!(),
                             ":="
@@ -1720,8 +1761,7 @@ const _: () = {
                         line!(),
                         docs![
                             "fun",
-                            line!(),
-                            generics,
+                            self.generics(generics, &self.render_last(ident)),
                             zip_right!(params, line!()).group(),
                             "=>",
                             softline!(),
