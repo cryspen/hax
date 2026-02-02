@@ -1456,6 +1456,7 @@ class Lean_tests.Traits.Associated_constant.Foo
     (Lean_tests.Traits.Associated_constant.Foo.AssociatedTypes (Self : Type))]
   where
   f (Self) : Bool
+  x (Self) : u8
 
 structure Lean_tests.Traits.Associated_constant.Bar where
 
@@ -1471,6 +1472,7 @@ instance Lean_tests.Traits.Associated_constant.Impl :
   Lean_tests.Traits.Associated_constant.Bar
   where
   f := true
+  x := RustM.of_isOk (do ((1 : u8) +? (1 : u8))) (by rfl)
 
 abbrev Lean_tests.Types.UsizeAlias : Type := usize
 
