@@ -109,7 +109,6 @@
 use hax_frontend_exporter::{CtorOf, DefKind, DefPathItem, ImplInfos};
 
 use crate::{
-    ast::GlobalId,
     ast::identifiers::global_id::{DefId, ExplicitDefId},
     symbol::Symbol,
 };

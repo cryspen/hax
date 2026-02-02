@@ -4,7 +4,6 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
-use crate::ast::identifiers::global_id::view::View;
 use hax_lib_macros_types::AttrPayload;
 use std::collections::HashSet;
 use std::sync::LazyLock;
