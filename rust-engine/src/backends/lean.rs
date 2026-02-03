@@ -1319,8 +1319,22 @@ const _: () = {
                     variants,
                     is_struct,
                 } => {
+                    if item.is_opaque() {
+                        docs![
+                            reflow!("opaque "),
+                            name,
+                            line!(),
+                            generics,
+                            softline!(),
+                            ":",
+                            line!(),
+                            "Type"
+                        ]
+                        .group()
+                        .nest(INDENT)
+                    }
                     // TODO: use a resugaring, see https://github.com/cryspen/hax/issues/1668
-                    if *is_struct {
+                    else if *is_struct {
                         // Structures
                         let Some(variant) = variants.first() else {
                             unreachable!(
