@@ -1370,8 +1370,7 @@ const _: () = {
                         docs![
                             reflow!("opaque "),
                             name,
-                            line!(),
-                            generics,
+                            self.generics(generics, &self.render_last(name)),
                             softline!(),
                             ":",
                             line!(),
