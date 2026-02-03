@@ -16,13 +16,10 @@ function extract_fstar() {
 function extract_lean() {
     go_to "./"
     LEAN_FILTERS=""
-    LEAN_FILTERS+=" -core_models::ops::function::Fn" # Issue #1710
-    LEAN_FILTERS+=" -core_models::result::**::ok" # Issue #1823
     LEAN_FILTERS+=" -core_models::result::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
-    LEAN_FILTERS+=" -core_models::iter::traits::iterator::**" # Issue #1710
     LEAN_FILTERS+=" -core_models::array::TryFromSliceError"
     LEAN_FILTERS+=" -core_models::array::**::as_slice"
     LEAN_FILTERS+=" -core_models::array::**::map"
@@ -62,13 +59,13 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::slice::**::split_at"
     LEAN_FILTERS+=" -core_models::slice::**::split_at_checked"
     LEAN_FILTERS+=" -core_models::ops::deref::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::step_by::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::take::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::flat_map::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::flatten::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::zip::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::enumerate::**"
-    LEAN_FILTERS+=" -core_models::iter::adapters::map::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::step_by::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::take::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::flat_map::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::flatten::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::zip::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::enumerate::**"
+    # LEAN_FILTERS+=" -core_models::iter::adapters::map::**"
     LEAN_FILTERS+=" -core_models::ops::range::**"
     LEAN_FILTERS+=" -core_models::f32::**::abs"
     
