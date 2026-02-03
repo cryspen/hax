@@ -834,25 +834,25 @@ unfold
 let impl_usize__from_str_radix = impl_usize__from_str_radix'
 
 assume
-val impl_usize__from_be_bytes': bytes: t_Array u8 (mk_usize 0) -> usize
+val impl_usize__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> usize
 
 unfold
 let impl_usize__from_be_bytes = impl_usize__from_be_bytes'
 
 assume
-val impl_usize__from_le_bytes': bytes: t_Array u8 (mk_usize 0) -> usize
+val impl_usize__from_le_bytes': bytes: t_Array u8 (mk_usize 8) -> usize
 
 unfold
 let impl_usize__from_le_bytes = impl_usize__from_le_bytes'
 
 assume
-val impl_usize__to_be_bytes': bytes: usize -> t_Array u8 (mk_usize 0)
+val impl_usize__to_be_bytes': bytes: usize -> t_Array u8 (mk_usize 8)
 
 unfold
 let impl_usize__to_be_bytes = impl_usize__to_be_bytes'
 
 assume
-val impl_usize__to_le_bytes': bytes: usize -> t_Array u8 (mk_usize 0)
+val impl_usize__to_le_bytes': bytes: usize -> t_Array u8 (mk_usize 8)
 
 unfold
 let impl_usize__to_le_bytes = impl_usize__to_le_bytes'
@@ -1716,25 +1716,25 @@ unfold
 let impl_isize__from_str_radix = impl_isize__from_str_radix'
 
 assume
-val impl_isize__from_be_bytes': bytes: t_Array u8 (mk_usize 0) -> isize
+val impl_isize__from_be_bytes': bytes: t_Array u8 (mk_usize 8) -> isize
 
 unfold
 let impl_isize__from_be_bytes = impl_isize__from_be_bytes'
 
 assume
-val impl_isize__from_le_bytes': bytes: t_Array u8 (mk_usize 0) -> isize
+val impl_isize__from_le_bytes': bytes: t_Array u8 (mk_usize 8) -> isize
 
 unfold
 let impl_isize__from_le_bytes = impl_isize__from_le_bytes'
 
 assume
-val impl_isize__to_be_bytes': bytes: isize -> t_Array u8 (mk_usize 0)
+val impl_isize__to_be_bytes': bytes: isize -> t_Array u8 (mk_usize 8)
 
 unfold
 let impl_isize__to_be_bytes = impl_isize__to_be_bytes'
 
 assume
-val impl_isize__to_le_bytes': bytes: isize -> t_Array u8 (mk_usize 0)
+val impl_isize__to_le_bytes': bytes: isize -> t_Array u8 (mk_usize 8)
 
 unfold
 let impl_isize__to_le_bytes = impl_isize__to_le_bytes'

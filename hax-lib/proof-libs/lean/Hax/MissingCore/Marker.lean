@@ -1,4 +1,4 @@
-import Hax.Core.Clone
+import Hax.MissingCore.Clone
 
 class Core.Marker.Copy.AssociatedTypes (Self : Type) where
 

@@ -87,7 +87,14 @@ pub enum ResugaredTyKind {
 
 /// Resugared variants for impl. items. This represent extra printing-only impl. items, see [`super::ImplItemKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredImplItemKind {}
+pub enum ResugaredImplItemKind {
+    /// An associated `const` impl item, for example `const NAME: T = body;`.
+    /// The type of the constant is `body.ty`.
+    Constant {
+        /// The body of the constant, for example `body`.
+        body: Expr,
+    },
+}
 
 /// Resugared variants for trait items. This represent extra printing-only trait items, see [`super::TraitItemKind::Resugared`].
 #[derive_group_for_ast]

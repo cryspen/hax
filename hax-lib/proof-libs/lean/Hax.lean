@@ -15,18 +15,14 @@ limitations under the License. -/
 -- This module serves as the root of the `Hax` library.
 -- Import modules here that should be built as part of the library.
 
-/- Main Prelude library -/
-import Hax.Lib
-
-/- Tactics -/
-import Hax.Tactics
-
-/- Core Models -/
-import Hax.CoreModels
-import Hax.Integers.Spec
-import Hax.MissingCoreModels
-import Hax.Float
-import Hax.Folds
-
 /- Additions to the Lean library -/
 import Hax.MissingLean
+
+/- Implementation of Rust primitives in Lean -/
+import Hax.Rust_primitives
+
+/- Core Models, extracted from our model written in Rust -/
+import Hax.Core_models
+
+/- Tactics -/
+import Hax.Tactic

@@ -69,7 +69,9 @@ impl<T> From<T> for T {
     }
 }
 
+#[hax_lib::attributes]
 trait AsRef<T> {
+    #[hax_lib::requires(true)]
     fn as_ref(self) -> T;
 }
 
@@ -119,21 +121,21 @@ macro_rules! int_try_from {
 }
 
 int_from! {
-    u8  u8  u16 u8  u16 u32 usize u8   u16  u32  u64  usize u8    u16   u32,
-    u16 u32 u32 u64 u64 u64 u64   u128 u128 u128 u128 u128  usize usize usize,
+    u8  u8  u16 u8  u16 u32 u8   u16  u32  u64  usize u8    u16,
+    u16 u32 u32 u64 u64 u64 u128 u128 u128 u128 u128  usize usize,
 }
 
 int_from! {
-    i8  i8  i16 i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32,
-    i16 i32 i32 i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize,
+    i8  i8  i16 i8  i16 i32 i8   i16  i32  i64  isize i8    i16,
+    i16 i32 i32 i64 i64 i64 i128 i128 i128 i128 i128  isize isize,
 }
 
 int_try_from! {
-    u16 u32 u32 u64 u64 u64 u64   u128 u128 u128 u128 u128  usize usize usize,
-    u8  u8  u16 u8  u16 u32 usize u8   u16  u32  u64  usize u8    u16   u32,
+    u16 u32 u32 u32   u64 u64 u64 u64   u128 u128 u128 u128 u128  usize usize usize usize,
+    u8  u8  u16 usize u8  u16 u32 usize u8   u16  u32  u64  usize u8    u16   u32   u64,
 }
 
 int_try_from! {
-    i16 i32 i32 i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize,
-    i8  i8  i16 i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32,
+    i16 i32 i32 i32   i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize isize,
+    i8  i8  i16 isize i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32   i64,
 }

@@ -36,8 +36,7 @@ pub mod arith {
         fn div_assign(&mut self, rhs: Rhs);
     }
     pub trait RemAssign<Rhs = Self> {
-        type Output;
-        fn rem_assign(self, rhs: Rhs) -> Self::Output;
+        fn rem_assign(&mut self, rhs: Rhs);
     }
 
     macro_rules! int_trait_impls {

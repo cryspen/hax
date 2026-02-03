@@ -1,7 +1,7 @@
 
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
-import Hax.Core
+import Hax.MissingCore
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -68,14 +68,11 @@ inductive Core_models.Cmp.Ordering : Type
 | Greater : Core_models.Cmp.Ordering
 
 
-def Core_models.Cmp.Ordering.Less.AnonConst : isize :=
-  RustM.of_isOk (do (pure (-1 : isize))) (by rfl)
+def Core_models.Cmp.Ordering.Less.AnonConst : isize := (-1 : isize)
 
-def Core_models.Cmp.Ordering.Equal.AnonConst : isize :=
-  RustM.of_isOk (do (pure (0 : isize))) (by rfl)
+def Core_models.Cmp.Ordering.Equal.AnonConst : isize := (0 : isize)
 
-def Core_models.Cmp.Ordering.Greater.AnonConst : isize :=
-  RustM.of_isOk (do (pure (1 : isize))) (by rfl)
+def Core_models.Cmp.Ordering.Greater.AnonConst : isize := (1 : isize)
 
 def Core_models.Cmp.Ordering_ (x : Core_models.Cmp.Ordering) : RustM isize := do
   match x with
@@ -883,23 +880,23 @@ opaque Core_models.Num.Impl_11.leading_zeros (x : usize) : RustM u32
 opaque Core_models.Num.Impl_11.ilog2 (x : usize) : RustM u32 
 
 opaque Core_models.Num.Impl_11.from_be_bytes
-  (bytes : (RustArray u8 0))
+  (bytes : (RustArray u8 8))
   : RustM usize
 
 
 opaque Core_models.Num.Impl_11.from_le_bytes
-  (bytes : (RustArray u8 0))
+  (bytes : (RustArray u8 8))
   : RustM usize
 
 
 opaque Core_models.Num.Impl_11.to_be_bytes
   (bytes : usize)
-  : RustM (RustArray u8 0)
+  : RustM (RustArray u8 8)
 
 
 opaque Core_models.Num.Impl_11.to_le_bytes
   (bytes : usize)
-  : RustM (RustArray u8 0)
+  : RustM (RustArray u8 8)
 
 
 @[reducible] instance Core_models.Num.Impl_10.AssociatedTypes :
@@ -1093,23 +1090,23 @@ opaque Core_models.Num.Impl_23.leading_zeros (x : isize) : RustM u32
 opaque Core_models.Num.Impl_23.ilog2 (x : isize) : RustM u32 
 
 opaque Core_models.Num.Impl_23.from_be_bytes
-  (bytes : (RustArray u8 0))
+  (bytes : (RustArray u8 8))
   : RustM isize
 
 
 opaque Core_models.Num.Impl_23.from_le_bytes
-  (bytes : (RustArray u8 0))
+  (bytes : (RustArray u8 8))
   : RustM isize
 
 
 opaque Core_models.Num.Impl_23.to_be_bytes
   (bytes : isize)
-  : RustM (RustArray u8 0)
+  : RustM (RustArray u8 8)
 
 
 opaque Core_models.Num.Impl_23.to_le_bytes
   (bytes : isize)
-  : RustM (RustArray u8 0)
+  : RustM (RustArray u8 8)
 
 
 @[reducible] instance Core_models.Num.Impl_22.AssociatedTypes :
@@ -1162,6 +1159,17 @@ class Core_models.Ops.Arith.DivAssign
       (Self : Type) (Rhs : Type))]
   where
   div_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+
+class Core_models.Ops.Arith.RemAssign.AssociatedTypes (Self : Type) (Rhs : Type)
+  where
+
+class Core_models.Ops.Arith.RemAssign
+  (Self : Type)
+  (Rhs : Type)
+  [associatedTypes : outParam (Core_models.Ops.Arith.RemAssign.AssociatedTypes
+      (Self : Type) (Rhs : Type))]
+  where
+  rem_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
 
 inductive Core_models.Ops.Control_flow.ControlFlow (B : Type) (C : Type) : Type
 | Continue : C -> Core_models.Ops.Control_flow.ControlFlow
@@ -1938,6 +1946,15 @@ def Core_models.Option.Impl.ok_or
     | (Core_models.Option.Option.None )
       => (pure (Core_models.Result.Result.Err err))
 
+def Core_models.Result.Impl.unwrap_or
+  (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
+  (default : T)
+  : RustM T
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t) => (pure t)
+    | (Core_models.Result.Result.Err _) => (pure default)
+
 def Core_models.Result.Impl.is_ok
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   : RustM Bool
@@ -2121,23 +2138,6 @@ class Core_models.Ops.Arith.Rem
       Type) (Rhs : Type))]
   where
   rem (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
-
-class Core_models.Ops.Arith.RemAssign.AssociatedTypes (Self : Type) (Rhs : Type)
-  where
-  Output : Type
-
-attribute [reducible] Core_models.Ops.Arith.RemAssign.AssociatedTypes.Output
-
-abbrev Core_models.Ops.Arith.RemAssign.Output :=
-  Core_models.Ops.Arith.RemAssign.AssociatedTypes.Output
-
-class Core_models.Ops.Arith.RemAssign
-  (Self : Type)
-  (Rhs : Type)
-  [associatedTypes : outParam (Core_models.Ops.Arith.RemAssign.AssociatedTypes
-      (Self : Type) (Rhs : Type))]
-  where
-  rem_assign (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Core_models.Ops.Bit.Shr.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type

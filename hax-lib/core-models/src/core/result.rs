@@ -16,6 +16,12 @@ impl<T, E> Result<T, E> {
             Err(_) => super::panicking::internal::panic(),
         }
     }
+    pub fn unwrap_or(self, default: T) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => default,
+        }
+    }
     #[hax_lib::requires(self.is_ok())]
     pub fn expect(self, _msg: &str) -> T {
         match self {
