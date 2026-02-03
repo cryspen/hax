@@ -374,8 +374,7 @@ end Core_models.Fmt
 
 namespace Core_models.Fmt.Rt
 
-inductive ArgumentType : Type
-
+opaque ArgumentType : Type
 
 structure Argument where
   ty : ArgumentType
@@ -476,6 +475,63 @@ def must_use.spec (T : Type) (value : T) :
 }
 
 end Core_models.Hint
+
+
+namespace Core_models.Iter.Adapters.Enumerate
+
+structure Enumerate (I : Type) where
+  iter : I
+  count : usize
+
+def Impl.new (I : Type) (iter : I) : RustM (Enumerate I) := do
+  (pure (Enumerate.mk (iter := iter) (count := (0 : usize))))
+
+end Core_models.Iter.Adapters.Enumerate
+
+
+namespace Core_models.Iter.Adapters.Step_by
+
+structure StepBy (I : Type) where
+  iter : I
+  step : usize
+
+def Impl.new (I : Type) (iter : I) (step : usize) : RustM (StepBy I) := do
+  (pure (StepBy.mk (iter := iter) (step := step)))
+
+end Core_models.Iter.Adapters.Step_by
+
+
+namespace Core_models.Iter.Adapters.Map
+
+structure Map (I : Type) (F : Type) where
+  iter : I
+  f : F
+
+def Impl.new (I : Type) (F : Type) (iter : I) (f : F) : RustM (Map I F) := do
+  (pure (Map.mk (iter := iter) (f := f)))
+
+end Core_models.Iter.Adapters.Map
+
+
+namespace Core_models.Iter.Adapters.Take
+
+structure Take (I : Type) where
+  iter : I
+  n : usize
+
+def Impl.new (I : Type) (iter : I) (n : usize) : RustM (Take I) := do
+  (pure (Take.mk (iter := iter) (n := n)))
+
+end Core_models.Iter.Adapters.Take
+
+
+namespace Core_models.Iter.Adapters.Zip
+
+structure Zip (I1 : Type) (I2 : Type) where
+  it1 : I1
+  it2 : I2
+
+end Core_models.Iter.Adapters.Zip
 
 
 namespace Core_models.Marker
@@ -1468,6 +1524,16 @@ instance Impl_53 : Ord isize where
 end Core_models.Cmp
 
 
+namespace Core_models.Iter.Adapters.Flat_map
+
+structure FlatMap (I : Type) (U : Type) (F : Type) where
+  it : I
+  f : F
+  current : (Core_models.Option.Option U)
+
+end Core_models.Iter.Adapters.Flat_map
+
+
 namespace Core_models.Option
 
 def Impl.as_ref (T : Type) (self : (Option T)) : RustM (Option T) := do
@@ -1676,6 +1742,12 @@ def Impl.unwrap_or (T : Type) (E : Type) (self : (Result T E)) (default : T) :
 def Impl.is_ok (T : Type) (E : Type) (self : (Result T E)) : RustM Bool := do
   match self with | (Result.Ok  _) => (pure true) | _ => (pure false)
 
+def Impl.ok (T : Type) (E : Type) (self : (Result T E)) :
+    RustM (Core_models.Option.Option T) := do
+  match self with
+    | (Result.Ok  x) => (pure (Core_models.Option.Option.Some x))
+    | (Result.Err  _) => (pure Core_models.Option.Option.None)
+
 end Core_models.Result
 
 
@@ -1755,6 +1827,28 @@ class TryFrom (Self : Type) (T : Type)
     (T -> RustM (Core_models.Result.Result Self associatedTypes.Error))
 
 end Core_models.Convert
+
+
+namespace Core_models.Iter.Traits.Iterator
+
+class Iterator.AssociatedTypes (Self : Type) where
+  Item : Type
+
+attribute [reducible] Iterator.AssociatedTypes.Item
+
+abbrev Iterator.Item :=
+  Iterator.AssociatedTypes.Item
+
+class Iterator (Self : Type)
+  [associatedTypes : outParam (Iterator.AssociatedTypes (Self : Type))]
+  where
+  next (Self) :
+    (Self ->
+    RustM (Rust_primitives.Hax.Tuple2
+      Self
+      (Core_models.Option.Option associatedTypes.Item)))
+
+end Core_models.Iter.Traits.Iterator
 
 
 namespace Core_models.Iter.Traits.Collect
@@ -2065,6 +2159,27 @@ instance Impl_2
 end Core_models.Convert
 
 
+namespace Core_models.Iter.Traits.Iterator
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_1_i0 : Iterator I ] :
+  Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes I
+  where
+  IntoIter := I
+
+instance Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_1_i0 : Iterator I ] :
+  Core_models.Iter.Traits.Collect.IntoIterator I
+  where
+  into_iter := fun (self : I) => do (pure self)
+
+end Core_models.Iter.Traits.Iterator
+
+
 namespace Core_models.Iter.Traits.Collect
 
 class FromIterator.AssociatedTypes (Self : Type) (A : Type) where
@@ -2082,7 +2197,649 @@ class FromIterator (Self : Type) (A : Type)
 end Core_models.Iter.Traits.Collect
 
 
+namespace Core_models.Iter.Adapters.Enumerate
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Enumerate I)
+  where
+  Item := (Rust_primitives.Hax.Tuple2
+    usize
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I))
+
+instance Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Enumerate I)
+  where
+  next := fun (self : (Enumerate I)) => do
+    let ⟨tmp0, out⟩ ←
+      (Core_models.Iter.Traits.Iterator.Iterator.next I (Enumerate.iter self));
+    let self : (Enumerate I) := {self with iter := tmp0};
+    let ⟨self, hax_temp_output⟩ ←
+      match out with
+        | (Core_models.Option.Option.Some  a) =>
+          let i : usize := (Enumerate.count self);
+          let _ ←
+            (Hax_lib.assume
+              (← (Hax_lib.Prop.Constructors.from_bool
+                (← (Rust_primitives.Hax.Machine_int.lt
+                  (Enumerate.count self)
+                  Core.Num.Impl_11.MAX)))));
+          let self : (Enumerate I) :=
+            {self with count := (← ((Enumerate.count self) +? (1 : usize)))};
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            (Core_models.Option.Option.Some
+              (Rust_primitives.Hax.Tuple2.mk i a))))
+        | (Core_models.Option.Option.None ) =>
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            Core_models.Option.Option.None));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Iter.Adapters.Enumerate
+
+
+namespace Core_models.Iter.Adapters.Step_by
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (StepBy I) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator (StepBy I) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Step_by
+
+
+namespace Core_models.Iter.Adapters.Map
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  (O : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := O})] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Map I F)
+  where
+  Item := O
+
+instance Impl_1
+  (I : Type)
+  (O : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := O})] :
+  Core_models.Iter.Traits.Iterator.Iterator (Map I F)
+  where
+  next := fun (self : (Map I F)) => do
+    let ⟨tmp0, out⟩ ←
+      (Core_models.Iter.Traits.Iterator.Iterator.next I (Map.iter self));
+    let self : (Map I F) := {self with iter := tmp0};
+    let hax_temp_output : (Core_models.Option.Option O) ←
+      match out with
+        | (Core_models.Option.Option.Some  v) =>
+          (pure (Core_models.Option.Option.Some
+            (← (Core_models.Ops.Function.FnOnce.call_once
+              F
+              (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+              (Map.f self)
+              v))))
+        | (Core_models.Option.Option.None ) =>
+          (pure Core_models.Option.Option.None);
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Iter.Adapters.Map
+
+
+namespace Core_models.Iter.Adapters.Take
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Take I)
+  where
+  Item := (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+
+instance Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Take I)
+  where
+  next := fun (self : (Take I)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if (← (Rust_primitives.Hax.Machine_int.ne (Take.n self) (0 : usize))) then
+        let self : (Take I) :=
+          {self with n := (← ((Take.n self) -? (1 : usize)))};
+        let ⟨tmp0, out⟩ ←
+          (Core_models.Iter.Traits.Iterator.Iterator.next I (Take.iter self));
+        let self : (Take I) := {self with iter := tmp0};
+        (pure (Rust_primitives.Hax.Tuple2.mk self out))
+      else
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Iter.Adapters.Take
+
+
+namespace Core_models.Iter.Adapters.Flat_map
+
+def Impl.new
+    (I : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_new_associated_type_i0 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I]
+    [trait_constr_new_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+    [trait_constr_new_associated_type_i1 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      U]
+    [trait_constr_new_i1 : Core_models.Iter.Traits.Iterator.Iterator U ]
+    [trait_constr_new_associated_type_i2 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+    [trait_constr_new_i2 : Core_models.Ops.Function.FnOnce
+      F
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+        by infer_instance
+        with Output := U})]
+    (it : I)
+    (f : F) :
+    RustM (FlatMap I U F) := do
+  (pure (FlatMap.mk
+    (it := it)
+    (f := f)
+    (current := Core_models.Option.Option.None)))
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I : Type)
+  (U : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    U]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator U ]
+  [trait_constr_Impl_1_associated_type_i2 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i2 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := U})] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (FlatMap I U F) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I : Type)
+  (U : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    U]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator U ]
+  [trait_constr_Impl_1_associated_type_i2 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i2 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := U})] :
+  Core_models.Iter.Traits.Iterator.Iterator (FlatMap I U F) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Flat_map
+
+
+namespace Core_models.Iter.Adapters.Flatten
+
+structure Flatten
+  (I : Type)
+  [trait_constr_Flatten_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Flatten_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Flatten_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Flatten_i1 : Core_models.Iter.Traits.Iterator.Iterator
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    ]
+  where
+  it : I
+  current : (Core_models.Option.Option
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I))
+
+end Core_models.Iter.Adapters.Flatten
+
+
+namespace Core_models.Iter.Traits.Iterator
+
+class IteratorMethods.AssociatedTypes (Self : Type) where
+  [trait_constr_IteratorMethods_i0 : Iterator.AssociatedTypes Self]
+
+attribute [instance]
+  IteratorMethods.AssociatedTypes.trait_constr_IteratorMethods_i0
+
+class IteratorMethods (Self : Type)
+  [associatedTypes : outParam (IteratorMethods.AssociatedTypes (Self : Type))]
+  where
+  [trait_constr_IteratorMethods_i0 : Iterator Self]
+  fold (Self)
+    (B : Type)
+    (F : Type)
+    [trait_constr_fold_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Rust_primitives.Hax.Tuple2 B (Iterator.Item Self))]
+    [trait_constr_fold_i1 : Core_models.Ops.Function.FnOnce
+      F
+      (Rust_primitives.Hax.Tuple2 B (Iterator.Item Self))
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Rust_primitives.Hax.Tuple2 B (Iterator.Item Self))
+        by infer_instance
+        with Output := B})] :
+    (Self -> B -> F -> RustM B)
+  enumerate (Self) :
+    (Self -> RustM (Core_models.Iter.Adapters.Enumerate.Enumerate Self))
+  step_by (Self) :
+    (Self -> usize -> RustM (Core_models.Iter.Adapters.Step_by.StepBy Self))
+  map (Self)
+    (O : Type)
+    (F : Type)
+    [trait_constr_map_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Iterator.Item Self)]
+    [trait_constr_map_i1 : Core_models.Ops.Function.FnOnce
+      F
+      (Iterator.Item Self)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Iterator.Item Self)
+        by infer_instance
+        with Output := O})] :
+    (Self -> F -> RustM (Core_models.Iter.Adapters.Map.Map Self F))
+  all (Self)
+    (F : Type)
+    [trait_constr_all_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Iterator.Item Self)]
+    [trait_constr_all_i1 : Core_models.Ops.Function.FnOnce
+      F
+      (Iterator.Item Self)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Iterator.Item Self)
+        by infer_instance
+        with Output := Bool})] :
+    (Self -> F -> RustM Bool)
+  take (Self) :
+    (Self -> usize -> RustM (Core_models.Iter.Adapters.Take.Take Self))
+  flat_map (Self)
+    (U : Type)
+    (F : Type)
+    [trait_constr_flat_map_associated_type_i1 : Iterator.AssociatedTypes U]
+    [trait_constr_flat_map_i1 : Iterator U ]
+    [trait_constr_flat_map_associated_type_i2 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Iterator.Item Self)]
+    [trait_constr_flat_map_i2 : Core_models.Ops.Function.FnOnce
+      F
+      (Iterator.Item Self)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Iterator.Item Self)
+        by infer_instance
+        with Output := U})] :
+    (Self -> F -> RustM (Core_models.Iter.Adapters.Flat_map.FlatMap Self U F))
+  flatten (Self)
+    [trait_constr_flatten_associated_type_i1 : Iterator.AssociatedTypes
+      (Iterator.Item Self)]
+    [trait_constr_flatten_i1 : Iterator (Iterator.Item Self) ] :
+    (Self -> RustM (Core_models.Iter.Adapters.Flatten.Flatten Self))
+  zip (Self)
+    (I2 : Type)
+    [trait_constr_zip_associated_type_i1 : Iterator.AssociatedTypes I2]
+    [trait_constr_zip_i1 : Iterator I2 ] :
+    (Self -> I2 -> RustM (Core_models.Iter.Adapters.Zip.Zip Self I2))
+
+attribute [instance] IteratorMethods.trait_constr_IteratorMethods_i0
+
+end Core_models.Iter.Traits.Iterator
+
+
+namespace Core_models.Iter.Adapters.Flatten
+
+def Impl.new
+    (I : Type)
+    [trait_constr_new_associated_type_i0 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I]
+    [trait_constr_new_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+    [trait_constr_new_associated_type_i1 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+    [trait_constr_new_i1 : Core_models.Iter.Traits.Iterator.Iterator
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      ]
+    (it : I) :
+    RustM (Flatten I) := do
+  (pure (Flatten.mk (it := it) (current := Core_models.Option.Option.None)))
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Flatten I) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Flatten I) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Flatten
+
+
+namespace Core_models.Iter.Adapters.Zip
+
+def Impl.new
+    (I1 : Type)
+    (I2 : Type)
+    [trait_constr_new_associated_type_i0 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I1]
+    [trait_constr_new_i0 : Core_models.Iter.Traits.Iterator.Iterator I1 ]
+    [trait_constr_new_associated_type_i1 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I2]
+    [trait_constr_new_i1 : Core_models.Iter.Traits.Iterator.Iterator I2 ]
+    (it1 : I1)
+    (it2 : I2) :
+    RustM (Zip I1 I2) := do
+  (pure (Zip.mk (it1 := it1) (it2 := it2)))
+
+end Core_models.Iter.Adapters.Zip
+
+
+namespace Core_models.Iter.Traits.Iterator
+
+@[reducible] instance Impl.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_i0 : Iterator I ] :
+  IteratorMethods.AssociatedTypes I
+  where
+
+instance Impl
+  (I : Type)
+  [trait_constr_Impl_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_i0 : Iterator I ] :
+  IteratorMethods I
+  where
+  fold :=
+    fun
+      (B : Type)
+      (F : Type)
+      [trait_constr_fold_associated_type_i1 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Rust_primitives.Hax.Tuple2 B (Iterator.Item I))]
+      [trait_constr_fold_i1 : Core_models.Ops.Function.FnOnce
+        F
+        (Rust_primitives.Hax.Tuple2 B (Iterator.Item I))
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Rust_primitives.Hax.Tuple2 B (Iterator.Item I))
+          by infer_instance
+          with Output := B})] (self : I) (init : B) (f : F) => do
+    (pure init)
+  enumerate := fun (self : I) => do
+    (Core_models.Iter.Adapters.Enumerate.Impl.new I self)
+  step_by := fun (self : I) (step : usize) => do
+    (Core_models.Iter.Adapters.Step_by.Impl.new I self step)
+  map :=
+    fun
+      (O : Type)
+      (F : Type)
+      [trait_constr_map_associated_type_i1 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Iterator.Item I)]
+      [trait_constr_map_i1 : Core_models.Ops.Function.FnOnce
+        F
+        (Iterator.Item I)
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Iterator.Item I)
+          by infer_instance
+          with Output := O})] (self : I) (f : F) => do
+    (Core_models.Iter.Adapters.Map.Impl.new I F self f)
+  all :=
+    fun
+      (F : Type)
+      [trait_constr_all_associated_type_i1 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Iterator.Item I)]
+      [trait_constr_all_i1 : Core_models.Ops.Function.FnOnce
+        F
+        (Iterator.Item I)
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Iterator.Item I)
+          by infer_instance
+          with Output := Bool})] (self : I) (f : F) => do
+    (pure true)
+  take := fun (self : I) (n : usize) => do
+    (Core_models.Iter.Adapters.Take.Impl.new I self n)
+  flat_map :=
+    fun
+      (U : Type)
+      (F : Type)
+      [trait_constr_flat_map_associated_type_i1 : Iterator.AssociatedTypes U]
+      [trait_constr_flat_map_i1 : Iterator U ]
+      [trait_constr_flat_map_associated_type_i2 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Iterator.Item I)]
+      [trait_constr_flat_map_i2 : Core_models.Ops.Function.FnOnce
+        F
+        (Iterator.Item I)
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Iterator.Item I)
+          by infer_instance
+          with Output := U})] (self : I) (f : F) => do
+    (Core_models.Iter.Adapters.Flat_map.Impl.new I U F self f)
+  flatten :=
+    fun
+      [trait_constr_flatten_associated_type_i1 : Iterator.AssociatedTypes
+        (Iterator.Item I)]
+      [trait_constr_flatten_i1 : Iterator (Iterator.Item I) ] (self : I) => do
+    (Core_models.Iter.Adapters.Flatten.Impl.new I self)
+  zip :=
+    fun
+      (I2 : Type)
+      [trait_constr_zip_associated_type_i1 : Iterator.AssociatedTypes I2]
+      [trait_constr_zip_i1 : Iterator I2 ] (self : I) (it2 : I2) => do
+    (Core_models.Iter.Adapters.Zip.Impl.new I I2 self it2)
+
+end Core_models.Iter.Traits.Iterator
+
+
+namespace Core_models.Iter.Adapters.Zip
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I1 : Type)
+  (I2 : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I1]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I1 ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I2]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator I2 ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Zip I1 I2) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I1 : Type)
+  (I2 : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I1]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I1 ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I2]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator I2 ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Zip I1 I2) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Zip
+
+
 namespace Core_models.Ops.Function
+
+class Fn.AssociatedTypes (Self : Type) (Args : Type) where
+  [trait_constr_Fn_i0 : FnOnce.AssociatedTypes Self Args]
+
+attribute [instance] Fn.AssociatedTypes.trait_constr_Fn_i0
+
+class Fn (Self : Type) (Args : Type)
+  [associatedTypes : outParam (Fn.AssociatedTypes (Self : Type) (Args : Type))]
+  where
+  [trait_constr_Fn_i0 : FnOnce Self Args]
+  call (Self) (Args) : (Self -> Args -> RustM (FnOnce.Output Self Args))
+
+attribute [instance] Fn.trait_constr_Fn_i0
 
 @[reducible] instance Impl_2.AssociatedTypes (Arg : Type) (Out : Type) :
   FnOnce.AssociatedTypes (Arg -> RustM Out) Arg
