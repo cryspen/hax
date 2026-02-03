@@ -84,4 +84,13 @@ structure Tuple10 (α0 α1 α2 α3 α4 α5 α6 α7 α8 α9: Type) where
   _8 : α8
   _9 : α9
 
+def Tuple2.fst {α0 α1 : Type} (t : Tuple2 α0 α1) : α0 := t._0
+def Tuple2.snd {α0 α1 : Type} (t : Tuple2 α0 α1) : α1 := t._1
+
+@[simp] theorem Tuple2.fst_mk {α0 α1 : Type} (a : α0) (b : α1) :
+  (Tuple2.fst (Tuple2.mk a b)) = a := rfl
+
+@[simp] theorem Tuple2.snd_mk {α0 α1 : Type} (a : α0) (b : α1) :
+  (Tuple2.snd (Tuple2.mk a b)) = b := rfl
+
 end Rust_primitives.Hax
