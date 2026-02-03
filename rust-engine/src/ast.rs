@@ -1648,17 +1648,6 @@ pub mod traits {
         }
     }
 
-    impl ExprKind {
-        /// Convert to full `Expr` with type, span and attributes
-        pub fn into_expr(self, span: Span, ty: Ty, attributes: Vec<Attribute>) -> Expr {
-            Expr {
-                kind: Box::new(self),
-                ty,
-                meta: Metadata { span, attributes },
-            }
-        }
-    }
-
     /// Manual implementation of HasKind as the Ty struct contains a Box<TyKind>
     /// instead of a TyKind directly.
     impl HasKind for Ty {
