@@ -10,7 +10,9 @@ import Hax.Rust_primitives.Never
 import Hax.Rust_primitives.Num
 import Hax.Rust_primitives.Range
 import Hax.Rust_primitives.RustM
+import Hax.Rust_primitives.Sequence
 import Hax.Rust_primitives.Spec
+import Hax.Rust_primitives.Slice
 import Hax.Rust_primitives.String
 import Hax.Rust_primitives.Tuple
 import Hax.Rust_primitives.USize64
