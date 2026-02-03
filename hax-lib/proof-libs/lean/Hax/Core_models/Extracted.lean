@@ -12,6 +12,26 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 
+namespace Core_models.Array
+
+structure TryFromSliceError where
+  -- no fields
+
+def Impl_23.as_slice (T : Type) (N : usize) (s : (RustArray T N)) :
+    RustM (RustSlice T) := do
+  (Rust_primitives.Slice.array_as_slice T (N) s)
+
+end Core_models.Array
+
+
+namespace Core_models.Array.Iter
+
+structure IntoIter (T : Type) (N : usize) where
+  _0 : (Rust_primitives.Sequence.Seq T)
+
+end Core_models.Array.Iter
+
+
 namespace Core_models.Borrow
 
 class Borrow.AssociatedTypes (Self : Type) (Borrowed : Type) where
@@ -2115,6 +2135,51 @@ class FromStr (Self : Type)
     (String -> RustM (Core_models.Result.Result Self associatedTypes.Err))
 
 end Core_models.Str.Traits
+
+
+namespace Core_models.Array
+
+def Impl_23.map
+    (T : Type)
+    (N : usize)
+    (F : Type)
+    (U : Type)
+    [trait_constr_map_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (s : (RustArray T N))
+    (f : (T -> RustM U)) :
+    RustM (RustArray U N) := do
+  (Rust_primitives.Slice.array_map T U (N) (T -> RustM U) s f)
+
+def from_fn
+    (T : Type)
+    (N : usize)
+    (F : Type)
+    [trait_constr_from_fn_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      usize]
+    [trait_constr_from_fn_i0 : Core_models.Ops.Function.FnOnce
+      F
+      usize
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F usize
+        by infer_instance
+        with Output := T})]
+    (f : (usize -> RustM T)) :
+    RustM (RustArray T N) := do
+  (Rust_primitives.Slice.array_from_fn T (N) (usize -> RustM T) f)
+
+end Core_models.Array
 
 
 namespace Core_models.Convert
