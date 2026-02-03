@@ -666,6 +666,14 @@ opaque replace (T : Type) (dest : T) (src : T) :
 
 opaque drop (T : Type) (_x : T) : RustM Rust_primitives.Hax.Tuple0 
 
+def copy
+    (T : Type)
+    [trait_constr_copy_associated_type_i0 : Core.Marker.Copy.AssociatedTypes T]
+    [trait_constr_copy_i0 : Core.Marker.Copy T ]
+    (x : T) :
+    RustM T := do
+  (pure x)
+
 opaque take (T : Type) (x : T) : RustM (Rust_primitives.Hax.Tuple2 T T) 
 
 opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
@@ -703,6 +711,15 @@ end Core_models.Num.Error
 
 namespace Core_models.Num
 
+def Impl_1.wrapping_add (x : u8) (y : u8) : RustM u8 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u8 x y)
+
+def Impl_1.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u8 x y)
+
+def Impl_1.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u8 x y)
+
 opaque Impl_1.rotate_right (x : u8) (n : u32) : RustM u8 
 
 opaque Impl_1.rotate_left (x : u8) (n : u32) : RustM u8 
@@ -725,6 +742,15 @@ opaque Impl_1.to_le_bytes (bytes : u8) : RustM (RustArray u8 1)
 
 instance Impl : Core_models.Default.Default u8 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
+
+def Impl_3.wrapping_add (x : u16) (y : u16) : RustM u16 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u16 x y)
+
+def Impl_3.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u16 x y)
+
+def Impl_3.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u16 x y)
 
 opaque Impl_3.rotate_right (x : u16) (n : u32) : RustM u16 
 
@@ -749,6 +775,15 @@ opaque Impl_3.to_le_bytes (bytes : u16) : RustM (RustArray u8 2)
 instance Impl_2 : Core_models.Default.Default u16 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
 
+def Impl_5.wrapping_add (x : u32) (y : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u32 x y)
+
+def Impl_5.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u32 x y)
+
+def Impl_5.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u32 x y)
+
 opaque Impl_5.rotate_right (x : u32) (n : u32) : RustM u32 
 
 opaque Impl_5.rotate_left (x : u32) (n : u32) : RustM u32 
@@ -771,6 +806,15 @@ opaque Impl_5.to_le_bytes (bytes : u32) : RustM (RustArray u8 4)
 
 instance Impl_4 : Core_models.Default.Default u32 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
+
+def Impl_7.wrapping_add (x : u64) (y : u64) : RustM u64 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u64 x y)
+
+def Impl_7.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u64 x y)
+
+def Impl_7.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u64 x y)
 
 opaque Impl_7.rotate_right (x : u64) (n : u32) : RustM u64 
 
@@ -795,6 +839,15 @@ opaque Impl_7.to_le_bytes (bytes : u64) : RustM (RustArray u8 8)
 instance Impl_6 : Core_models.Default.Default u64 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
 
+def Impl_9.wrapping_add (x : u128) (y : u128) : RustM u128 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u128 x y)
+
+def Impl_9.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u128 x y)
+
+def Impl_9.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u128 x y)
+
 opaque Impl_9.rotate_right (x : u128) (n : u32) : RustM u128 
 
 opaque Impl_9.rotate_left (x : u128) (n : u32) : RustM u128 
@@ -817,6 +870,15 @@ opaque Impl_9.to_le_bytes (bytes : u128) : RustM (RustArray u8 16)
 
 instance Impl_8 : Core_models.Default.Default u128 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
+
+def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
+  (Rust_primitives.Arithmetic.wrapping_add_usize x y)
+
+def Impl_11.wrapping_sub (x : usize) (y : usize) : RustM usize := do
+  (Rust_primitives.Arithmetic.wrapping_sub_usize x y)
+
+def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
+  (Rust_primitives.Arithmetic.wrapping_mul_usize x y)
 
 opaque Impl_11.rotate_right (x : usize) (n : u32) : RustM usize 
 
@@ -841,6 +903,15 @@ opaque Impl_11.to_le_bytes (bytes : usize) : RustM (RustArray u8 8)
 instance Impl_10 : Core_models.Default.Default usize where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : usize))
 
+def Impl_13.wrapping_add (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i8 x y)
+
+def Impl_13.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i8 x y)
+
+def Impl_13.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i8 x y)
+
 opaque Impl_13.rotate_right (x : i8) (n : u32) : RustM i8 
 
 opaque Impl_13.rotate_left (x : i8) (n : u32) : RustM i8 
@@ -863,6 +934,15 @@ opaque Impl_13.to_le_bytes (bytes : i8) : RustM (RustArray u8 1)
 
 instance Impl_12 : Core_models.Default.Default i8 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i8))
+
+def Impl_15.wrapping_add (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i16 x y)
+
+def Impl_15.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i16 x y)
+
+def Impl_15.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i16 x y)
 
 opaque Impl_15.rotate_right (x : i16) (n : u32) : RustM i16 
 
@@ -887,6 +967,15 @@ opaque Impl_15.to_le_bytes (bytes : i16) : RustM (RustArray u8 2)
 instance Impl_14 : Core_models.Default.Default i16 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i16))
 
+def Impl_17.wrapping_add (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i32 x y)
+
+def Impl_17.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i32 x y)
+
+def Impl_17.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i32 x y)
+
 opaque Impl_17.rotate_right (x : i32) (n : u32) : RustM i32 
 
 opaque Impl_17.rotate_left (x : i32) (n : u32) : RustM i32 
@@ -909,6 +998,15 @@ opaque Impl_17.to_le_bytes (bytes : i32) : RustM (RustArray u8 4)
 
 instance Impl_16 : Core_models.Default.Default i32 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i32))
+
+def Impl_19.wrapping_add (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i64 x y)
+
+def Impl_19.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i64 x y)
+
+def Impl_19.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i64 x y)
 
 opaque Impl_19.rotate_right (x : i64) (n : u32) : RustM i64 
 
@@ -933,6 +1031,15 @@ opaque Impl_19.to_le_bytes (bytes : i64) : RustM (RustArray u8 8)
 instance Impl_18 : Core_models.Default.Default i64 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i64))
 
+def Impl_21.wrapping_add (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i128 x y)
+
+def Impl_21.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i128 x y)
+
+def Impl_21.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i128 x y)
+
 opaque Impl_21.rotate_right (x : i128) (n : u32) : RustM i128 
 
 opaque Impl_21.rotate_left (x : i128) (n : u32) : RustM i128 
@@ -955,6 +1062,15 @@ opaque Impl_21.to_le_bytes (bytes : i128) : RustM (RustArray u8 16)
 
 instance Impl_20 : Core_models.Default.Default i128 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i128))
+
+def Impl_23.wrapping_add (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_add_isize x y)
+
+def Impl_23.wrapping_sub (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_sub_isize x y)
+
+def Impl_23.wrapping_mul (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_mul_isize x y)
 
 opaque Impl_23.rotate_right (x : isize) (n : u32) : RustM isize 
 
