@@ -1,3 +1,4 @@
+import Hax.Rust_primitives.Arithmetic
 import Hax.Rust_primitives.Array
 import Hax.Rust_primitives.Boxed
 import Hax.Rust_primitives.BVDecide

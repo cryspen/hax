@@ -20,15 +20,10 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
-    LEAN_FILTERS+=" -core_models::Convert::impl_6"
-    LEAN_FILTERS+=" -core_models::mem::copy"
-    LEAN_FILTERS+=" -core_models::num::**::wrapping_add"
     LEAN_FILTERS+=" -core_models::num::**::saturating_add"
     LEAN_FILTERS+=" -core_models::num::**::overflowing_add"
-    LEAN_FILTERS+=" -core_models::num::**::wrapping_sub"
     LEAN_FILTERS+=" -core_models::num::**::saturating_sub"
     LEAN_FILTERS+=" -core_models::num::**::overflowing_sub"
-    LEAN_FILTERS+=" -core_models::num::**::wrapping_mul"
     LEAN_FILTERS+=" -core_models::num::**::saturating_mul"
     LEAN_FILTERS+=" -core_models::num::**::overflowing_mul"
     LEAN_FILTERS+=" -core_models::num::**::pow"
