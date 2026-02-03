@@ -1422,7 +1422,7 @@ pub enum ItemKind {
         ///
         /// # Example:
         /// `T<u8>`
-        of_trait: (GlobalId, Vec<GenericValue>),
+        of_trait: TraitGoal,
 
         /// Items in this impl
         ///

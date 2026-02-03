@@ -77,6 +77,17 @@ impl DefIdInner {
         def_id
     }
 
+    /// Rename assoc fn ident from its name under the trait definition to its name under a specific impl
+    fn rename_method_as_hoisted(&self, trait_: DefId, impl_: DefId) -> Self {
+        let mut new_id = self.clone();
+        if self.parent.is_some_and(|p| p == trait_) {
+            new_id.parent = Some(impl_.clone());
+            new_id.path = impl_.path.clone();
+            new_id.path.push(self.path.last().unwrap().clone());
+        }
+        new_id
+    }
+
     fn to_debug_string(&self) -> String {
         fn disambiguator_suffix(disambiguator: u32) -> String {
             if disambiguator == 0 {
@@ -119,6 +130,14 @@ impl DefId {
     /// Change the krate name to `name`.
     fn rename_krate(&self, name: &str) -> Self {
         (*self).get().rename_krate(name).intern()
+    }
+
+    /// Rename assoc fn ident from its name under the trait definition to its name under a specific impl
+    fn rename_method_as_hoisted(&self, trait_: Self, impl_: Self) -> Self {
+        (*self)
+            .get()
+            .rename_method_as_hoisted(trait_, impl_)
+            .intern()
     }
 }
 
@@ -411,6 +430,15 @@ impl GlobalId {
         Self(GlobalIdInner::Concrete(concrete_id).intern())
     }
 
+    /// Rename assoc fn ident from its name under the trait definition to its name under a specific impl
+    pub fn rename_method_as_hoisted(self, trait_: GlobalId, impl_: GlobalId) -> Self {
+        let mut concrete_id = ConcreteId::from_global_id(self).clone();
+        let trait_ = ConcreteId::from_global_id(trait_);
+        let impl_ = ConcreteId::from_global_id(impl_);
+        concrete_id.rename_method_as_hoisted(trait_, impl_);
+        Self(GlobalIdInner::Concrete(concrete_id).intern())
+    }
+
     /// Add a suffix to a GlobalId
     pub fn with_suffix(self, suffix: ReservedSuffix) -> Self {
         match self.0.get() {
@@ -526,6 +554,14 @@ impl ConcreteId {
                 });
             reference
         })
+    }
+
+    /// Rename assoc fn ident from its name under the trait definition to its name under a specific impl
+    fn rename_method_as_hoisted(&mut self, trait_: &ConcreteId, impl_: &ConcreteId) {
+        self.def_id.def_id = self
+            .def_id
+            .def_id
+            .rename_method_as_hoisted(trait_.def_id.def_id, impl_.def_id.def_id);
     }
 
     fn to_debug_string(&self) -> String {

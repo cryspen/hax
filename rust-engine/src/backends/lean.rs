@@ -176,6 +176,7 @@ impl Backend for LeanBackend {
             SimplifyHoisting.into(),
             NewtypeAsRefinement.into(),
             ReorderFields.into(),
+            HoistAssociatedFns,
             SortItems.into(),
             ExplicitMonadic,
         ]
@@ -1513,7 +1514,7 @@ set_option linter.unusedVariables false
                 ItemKind::Impl {
                     generics,
                     self_ty: _,
-                    of_trait: (trait_, args),
+                    of_trait: TraitGoal { trait_, args },
                     items,
                     parent_bounds: _,
                 } => {
