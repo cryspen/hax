@@ -122,10 +122,8 @@ end Cyclic_modules.E
 
 namespace Cyclic_modules.De
 
-def de1
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM Rust_primitives.Hax.Tuple0
-  := do
+def de1 (_ : Rust_primitives.Hax.Tuple0) :
+    RustM Rust_primitives.Hax.Tuple0 := do
   (Cyclic_modules.E.e1 Rust_primitives.Hax.Tuple0.mk)
 
 end Cyclic_modules.De
@@ -217,10 +215,8 @@ inductive Context : Type
 | A : i32 -> Context
 | B : i32 -> Context
 
-def Impl.test
-  (x : (Core_models.Option.Option i32))
-  : RustM (Core_models.Option.Option Context)
-  := do
+def Impl.test (x : (Core_models.Option.Option i32)) :
+    RustM (Core_models.Option.Option Context) := do
   (Core_models.Option.Impl.map i32 Context (i32 -> RustM Context) x Context.A)
 
 end Cyclic_modules.Variant_constructor_a
@@ -228,10 +224,8 @@ end Cyclic_modules.Variant_constructor_a
 
 namespace Cyclic_modules.Variant_constructor_b
 
-def h
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM Cyclic_modules.Variant_constructor_a.Context
-  := do
+def h (_ : Rust_primitives.Hax.Tuple0) :
+    RustM Cyclic_modules.Variant_constructor_a.Context := do
   (pure (Cyclic_modules.Variant_constructor_a.Context.A (1 : i32)))
 
 end Cyclic_modules.Variant_constructor_b
@@ -263,10 +257,8 @@ end Cyclic_modules.Issue_1823.First_example.B
 
 namespace Cyclic_modules.Issue_1823.First_example.A
 
-def Impl.mkb
-  (self : A)
-  : RustM Cyclic_modules.Issue_1823.First_example.B.B
-  := do
+def Impl.mkb (self : A) :
+    RustM Cyclic_modules.Issue_1823.First_example.B.B := do
   (pure Cyclic_modules.Issue_1823.First_example.B.B.mk)
 
 end Cyclic_modules.Issue_1823.First_example.A
@@ -274,10 +266,8 @@ end Cyclic_modules.Issue_1823.First_example.A
 
 namespace Cyclic_modules.Issue_1823.First_example.B
 
-def Impl.mka
-  (self : B)
-  : RustM Cyclic_modules.Issue_1823.First_example.A.A
-  := do
+def Impl.mka (self : B) :
+    RustM Cyclic_modules.Issue_1823.First_example.A.A := do
   (pure Cyclic_modules.Issue_1823.First_example.A.A.mk)
 
 end Cyclic_modules.Issue_1823.First_example.B
@@ -293,10 +283,8 @@ end Cyclic_modules.Issue_1823.Second_example.A
 
 namespace Cyclic_modules.Issue_1823.Second_example.B
 
-def call_a
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM Rust_primitives.Hax.Tuple0
-  := do
+def call_a (_ : Rust_primitives.Hax.Tuple0) :
+    RustM Rust_primitives.Hax.Tuple0 := do
   (Cyclic_modules.Issue_1823.Second_example.A.a Rust_primitives.Hax.Tuple0.mk)
 
 def b (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
@@ -307,10 +295,8 @@ end Cyclic_modules.Issue_1823.Second_example.B
 
 namespace Cyclic_modules.Issue_1823.Second_example.A
 
-def call_b
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM Rust_primitives.Hax.Tuple0
-  := do
+def call_b (_ : Rust_primitives.Hax.Tuple0) :
+    RustM Rust_primitives.Hax.Tuple0 := do
   (Cyclic_modules.Issue_1823.Second_example.B.b Rust_primitives.Hax.Tuple0.mk)
 
 end Cyclic_modules.Issue_1823.Second_example.A
@@ -368,11 +354,11 @@ def f (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
   (Cyclic_modules.Late_skip_a.f Rust_primitives.Hax.Tuple0.mk)
 
 @[spec]
-def f.spec (_ : Rust_primitives.Hax.Tuple0)  :
+def f.spec (_ : Rust_primitives.Hax.Tuple0) :
     Spec
       (requires := do (pure true))
       (ensures := fun _ => pure True)
-      (f (_ : Rust_primitives.Hax.Tuple0) ) := {
+      (f (_ : Rust_primitives.Hax.Tuple0)) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
   contract := by mvcgen[f] <;> try grind
