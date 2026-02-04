@@ -25,8 +25,8 @@ macro "declare_Hax_convert_from_instances" : command => do
 
       cmds := cmds.push $ ← `(
         @[reducible]
-        instance : Rust_primitives.Convert.From.AssociatedTypes $ty1Ident $ty2Ident where
-        instance : Rust_primitives.Convert.From $ty1Ident $ty2Ident where
+        instance : Core_models.Convert.From.AssociatedTypes $ty1Ident $ty2Ident where
+        instance : Core_models.Convert.From $ty1Ident $ty2Ident where
           _from := fun x => x.$toTy1
       )
   return ⟨mkNullNode cmds⟩
@@ -34,4 +34,4 @@ macro "declare_Hax_convert_from_instances" : command => do
 declare_Hax_convert_from_instances
 
 attribute [hax_bv_decide]
-  Rust_primitives.Convert.From._from
+  Core_models.Convert.From._from

@@ -10,7 +10,6 @@ import Hax.Rust_primitives.Loop
 import Hax.Rust_primitives.Mem
 import Hax.Rust_primitives.Never
 import Hax.Rust_primitives.Num
-import Hax.Rust_primitives.Range
 import Hax.Rust_primitives.RustM
 import Hax.Rust_primitives.Sequence
 import Hax.Rust_primitives.Spec
