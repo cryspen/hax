@@ -1213,6 +1213,24 @@ class Drop (Self : Type)
 end Core_models.Ops.Drop
 
 
+namespace Core_models.Ops.Range
+
+structure RangeTo (T : Type) where
+  _end : T
+
+structure RangeFrom (T : Type) where
+  start : T
+
+structure Range (T : Type) where
+  start : T
+  _end : T
+
+structure RangeFull where
+  -- no fields
+
+end Core_models.Ops.Range
+
+
 namespace Core_models.Option
 
 inductive Option (T : Type) : Type
