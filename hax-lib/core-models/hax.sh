@@ -35,6 +35,12 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::num::**::MIN"
     LEAN_FILTERS+=" -core_models::num::**::MAX"
     LEAN_FILTERS+=" -core_models::num::**::BITS"
+    LEAN_FILTERS+=" -core_models::num::**::from_be_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::from_le_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::to_be_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::to_le_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::rotate_left"
+    LEAN_FILTERS+=" -core_models::num::**::rotate_right"
     
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean

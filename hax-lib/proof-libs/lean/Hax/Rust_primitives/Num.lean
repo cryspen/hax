@@ -538,7 +538,7 @@ macro "declare_Hax_shift_ops_spec" : command => do
     ("Int64", ← `(term| 64)),
   ]
   for (ty1, width1) in tys do
-    for (ty2, width2) in tys do
+    for (ty2, _width2) in tys do
 
       let ty1Ident := mkIdent ty1.toName
       let ty2Ident := mkIdent ty2.toName

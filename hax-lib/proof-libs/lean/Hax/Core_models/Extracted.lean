@@ -718,180 +718,85 @@ end Core_models.Num.Error
 
 namespace Core_models.Num
 
-def Impl_1.wrapping_add (x : u8) (y : u8) : RustM u8 := do
+def Impl_6.wrapping_add (x : u8) (y : u8) : RustM u8 := do
   (Rust_primitives.Arithmetic.wrapping_add_u8 x y)
 
-def Impl_1.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
+def Impl_6.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
   (Rust_primitives.Arithmetic.wrapping_sub_u8 x y)
 
-def Impl_1.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
+def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u8 x y)
 
-def Impl_1.pow (x : u8) (exp : u32) : RustM u8 := do
+def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
   (Rust_primitives.Arithmetic.pow_u8 x exp)
 
-opaque Impl_1.rotate_right (x : u8) (n : u32) : RustM u8 
+opaque Impl_6.leading_zeros (x : u8) : RustM u32 
 
-opaque Impl_1.rotate_left (x : u8) (n : u32) : RustM u8 
+opaque Impl_6.ilog2 (x : u8) : RustM u32 
 
-opaque Impl_1.leading_zeros (x : u8) : RustM u32 
-
-opaque Impl_1.ilog2 (x : u8) : RustM u32 
-
-opaque Impl_1.from_be_bytes (bytes : (RustArray u8 1)) : RustM u8 
-
-opaque Impl_1.from_le_bytes (bytes : (RustArray u8 1)) : RustM u8 
-
-opaque Impl_1.to_be_bytes (bytes : u8) : RustM (RustArray u8 1) 
-
-opaque Impl_1.to_le_bytes (bytes : u8) : RustM (RustArray u8 1) 
-
-@[reducible] instance Impl.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u8
-  where
-
-instance Impl : Core_models.Default.Default u8 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
-
-def Impl_3.wrapping_add (x : u16) (y : u16) : RustM u16 := do
+def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
   (Rust_primitives.Arithmetic.wrapping_add_u16 x y)
 
-def Impl_3.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
+def Impl_7.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
   (Rust_primitives.Arithmetic.wrapping_sub_u16 x y)
 
-def Impl_3.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
+def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u16 x y)
 
-def Impl_3.pow (x : u16) (exp : u32) : RustM u16 := do
+def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
   (Rust_primitives.Arithmetic.pow_u16 x exp)
 
-opaque Impl_3.rotate_right (x : u16) (n : u32) : RustM u16 
+opaque Impl_7.leading_zeros (x : u16) : RustM u32 
 
-opaque Impl_3.rotate_left (x : u16) (n : u32) : RustM u16 
+opaque Impl_7.ilog2 (x : u16) : RustM u32 
 
-opaque Impl_3.leading_zeros (x : u16) : RustM u32 
-
-opaque Impl_3.ilog2 (x : u16) : RustM u32 
-
-opaque Impl_3.from_be_bytes (bytes : (RustArray u8 2)) : RustM u16 
-
-opaque Impl_3.from_le_bytes (bytes : (RustArray u8 2)) : RustM u16 
-
-opaque Impl_3.to_be_bytes (bytes : u16) : RustM (RustArray u8 2) 
-
-opaque Impl_3.to_le_bytes (bytes : u16) : RustM (RustArray u8 2) 
-
-@[reducible] instance Impl_2.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u16
-  where
-
-instance Impl_2 : Core_models.Default.Default u16 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
-
-def Impl_5.wrapping_add (x : u32) (y : u32) : RustM u32 := do
+def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
   (Rust_primitives.Arithmetic.wrapping_add_u32 x y)
 
-def Impl_5.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
+def Impl_8.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
   (Rust_primitives.Arithmetic.wrapping_sub_u32 x y)
 
-def Impl_5.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
+def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u32 x y)
 
-def Impl_5.pow (x : u32) (exp : u32) : RustM u32 := do
+def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
   (Rust_primitives.Arithmetic.pow_u32 x exp)
 
-opaque Impl_5.rotate_right (x : u32) (n : u32) : RustM u32 
+opaque Impl_8.leading_zeros (x : u32) : RustM u32 
 
-opaque Impl_5.rotate_left (x : u32) (n : u32) : RustM u32 
+opaque Impl_8.ilog2 (x : u32) : RustM u32 
 
-opaque Impl_5.leading_zeros (x : u32) : RustM u32 
-
-opaque Impl_5.ilog2 (x : u32) : RustM u32 
-
-opaque Impl_5.from_be_bytes (bytes : (RustArray u8 4)) : RustM u32 
-
-opaque Impl_5.from_le_bytes (bytes : (RustArray u8 4)) : RustM u32 
-
-opaque Impl_5.to_be_bytes (bytes : u32) : RustM (RustArray u8 4) 
-
-opaque Impl_5.to_le_bytes (bytes : u32) : RustM (RustArray u8 4) 
-
-@[reducible] instance Impl_4.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u32
-  where
-
-instance Impl_4 : Core_models.Default.Default u32 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
-
-def Impl_7.wrapping_add (x : u64) (y : u64) : RustM u64 := do
+def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
   (Rust_primitives.Arithmetic.wrapping_add_u64 x y)
 
-def Impl_7.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
+def Impl_9.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
   (Rust_primitives.Arithmetic.wrapping_sub_u64 x y)
 
-def Impl_7.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
+def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u64 x y)
 
-def Impl_7.pow (x : u64) (exp : u32) : RustM u64 := do
+def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
   (Rust_primitives.Arithmetic.pow_u64 x exp)
 
-opaque Impl_7.rotate_right (x : u64) (n : u32) : RustM u64 
+opaque Impl_9.leading_zeros (x : u64) : RustM u32 
 
-opaque Impl_7.rotate_left (x : u64) (n : u32) : RustM u64 
+opaque Impl_9.ilog2 (x : u64) : RustM u32 
 
-opaque Impl_7.leading_zeros (x : u64) : RustM u32 
-
-opaque Impl_7.ilog2 (x : u64) : RustM u32 
-
-opaque Impl_7.from_be_bytes (bytes : (RustArray u8 8)) : RustM u64 
-
-opaque Impl_7.from_le_bytes (bytes : (RustArray u8 8)) : RustM u64 
-
-opaque Impl_7.to_be_bytes (bytes : u64) : RustM (RustArray u8 8) 
-
-opaque Impl_7.to_le_bytes (bytes : u64) : RustM (RustArray u8 8) 
-
-@[reducible] instance Impl_6.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u64
-  where
-
-instance Impl_6 : Core_models.Default.Default u64 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
-
-def Impl_9.wrapping_add (x : u128) (y : u128) : RustM u128 := do
+def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
   (Rust_primitives.Arithmetic.wrapping_add_u128 x y)
 
-def Impl_9.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
+def Impl_10.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
   (Rust_primitives.Arithmetic.wrapping_sub_u128 x y)
 
-def Impl_9.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
+def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u128 x y)
 
-def Impl_9.pow (x : u128) (exp : u32) : RustM u128 := do
+def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
   (Rust_primitives.Arithmetic.pow_u128 x exp)
 
-opaque Impl_9.rotate_right (x : u128) (n : u32) : RustM u128 
+opaque Impl_10.leading_zeros (x : u128) : RustM u32 
 
-opaque Impl_9.rotate_left (x : u128) (n : u32) : RustM u128 
-
-opaque Impl_9.leading_zeros (x : u128) : RustM u32 
-
-opaque Impl_9.ilog2 (x : u128) : RustM u32 
-
-opaque Impl_9.from_be_bytes (bytes : (RustArray u8 16)) : RustM u128 
-
-opaque Impl_9.from_le_bytes (bytes : (RustArray u8 16)) : RustM u128 
-
-opaque Impl_9.to_be_bytes (bytes : u128) : RustM (RustArray u8 16) 
-
-opaque Impl_9.to_le_bytes (bytes : u128) : RustM (RustArray u8 16) 
-
-@[reducible] instance Impl_8.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u128
-  where
-
-instance Impl_8 : Core_models.Default.Default u128 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
+opaque Impl_10.ilog2 (x : u128) : RustM u32 
 
 def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
   (Rust_primitives.Arithmetic.wrapping_add_usize x y)
@@ -905,237 +810,188 @@ def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
 def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
   (Rust_primitives.Arithmetic.pow_usize x exp)
 
-opaque Impl_11.rotate_right (x : usize) (n : u32) : RustM usize 
-
-opaque Impl_11.rotate_left (x : usize) (n : u32) : RustM usize 
-
 opaque Impl_11.leading_zeros (x : usize) : RustM u32 
 
 opaque Impl_11.ilog2 (x : usize) : RustM u32 
 
-opaque Impl_11.from_be_bytes (bytes : (RustArray u8 8)) : RustM usize 
+def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i8 x y)
 
-opaque Impl_11.from_le_bytes (bytes : (RustArray u8 8)) : RustM usize 
+def Impl_12.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i8 x y)
 
-opaque Impl_11.to_be_bytes (bytes : usize) : RustM (RustArray u8 8) 
+def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i8 x y)
 
-opaque Impl_11.to_le_bytes (bytes : usize) : RustM (RustArray u8 8) 
+def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
+  (Rust_primitives.Arithmetic.pow_i8 x exp)
 
-@[reducible] instance Impl_10.AssociatedTypes :
+opaque Impl_12.leading_zeros (x : i8) : RustM u32 
+
+opaque Impl_12.ilog2 (x : i8) : RustM u32 
+
+def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i16 x y)
+
+def Impl_13.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i16 x y)
+
+def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i16 x y)
+
+def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
+  (Rust_primitives.Arithmetic.pow_i16 x exp)
+
+opaque Impl_13.leading_zeros (x : i16) : RustM u32 
+
+opaque Impl_13.ilog2 (x : i16) : RustM u32 
+
+def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i32 x y)
+
+def Impl_14.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i32 x y)
+
+def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i32 x y)
+
+def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.pow_i32 x exp)
+
+opaque Impl_14.leading_zeros (x : i32) : RustM u32 
+
+opaque Impl_14.ilog2 (x : i32) : RustM u32 
+
+def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i64 x y)
+
+def Impl_15.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i64 x y)
+
+def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i64 x y)
+
+def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
+  (Rust_primitives.Arithmetic.pow_i64 x exp)
+
+opaque Impl_15.leading_zeros (x : i64) : RustM u32 
+
+opaque Impl_15.ilog2 (x : i64) : RustM u32 
+
+def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i128 x y)
+
+def Impl_16.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i128 x y)
+
+def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i128 x y)
+
+def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
+  (Rust_primitives.Arithmetic.pow_i128 x exp)
+
+opaque Impl_16.leading_zeros (x : i128) : RustM u32 
+
+opaque Impl_16.ilog2 (x : i128) : RustM u32 
+
+def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_add_isize x y)
+
+def Impl_17.wrapping_sub (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_sub_isize x y)
+
+def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_mul_isize x y)
+
+def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
+  (Rust_primitives.Arithmetic.pow_isize x exp)
+
+opaque Impl_17.leading_zeros (x : isize) : RustM u32 
+
+opaque Impl_17.ilog2 (x : isize) : RustM u32 
+
+@[reducible] instance Impl_18.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u8
+  where
+
+instance Impl_18 : Core_models.Default.Default u8 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
+
+@[reducible] instance Impl_19.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u16
+  where
+
+instance Impl_19 : Core_models.Default.Default u16 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
+
+@[reducible] instance Impl_20.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u32
+  where
+
+instance Impl_20 : Core_models.Default.Default u32 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
+
+@[reducible] instance Impl_21.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u64
+  where
+
+instance Impl_21 : Core_models.Default.Default u64 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
+
+@[reducible] instance Impl_22.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u128
+  where
+
+instance Impl_22 : Core_models.Default.Default u128 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
+
+@[reducible] instance Impl_23.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes usize
   where
 
-instance Impl_10 : Core_models.Default.Default usize where
+instance Impl_23 : Core_models.Default.Default usize where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : usize))
 
-def Impl_13.wrapping_add (x : i8) (y : i8) : RustM i8 := do
-  (Rust_primitives.Arithmetic.wrapping_add_i8 x y)
-
-def Impl_13.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
-  (Rust_primitives.Arithmetic.wrapping_sub_i8 x y)
-
-def Impl_13.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
-  (Rust_primitives.Arithmetic.wrapping_mul_i8 x y)
-
-def Impl_13.pow (x : i8) (exp : u32) : RustM i8 := do
-  (Rust_primitives.Arithmetic.pow_i8 x exp)
-
-opaque Impl_13.rotate_right (x : i8) (n : u32) : RustM i8 
-
-opaque Impl_13.rotate_left (x : i8) (n : u32) : RustM i8 
-
-opaque Impl_13.leading_zeros (x : i8) : RustM u32 
-
-opaque Impl_13.ilog2 (x : i8) : RustM u32 
-
-opaque Impl_13.from_be_bytes (bytes : (RustArray u8 1)) : RustM i8 
-
-opaque Impl_13.from_le_bytes (bytes : (RustArray u8 1)) : RustM i8 
-
-opaque Impl_13.to_be_bytes (bytes : i8) : RustM (RustArray u8 1) 
-
-opaque Impl_13.to_le_bytes (bytes : i8) : RustM (RustArray u8 1) 
-
-@[reducible] instance Impl_12.AssociatedTypes :
+@[reducible] instance Impl_24.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i8
   where
 
-instance Impl_12 : Core_models.Default.Default i8 where
+instance Impl_24 : Core_models.Default.Default i8 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i8))
 
-def Impl_15.wrapping_add (x : i16) (y : i16) : RustM i16 := do
-  (Rust_primitives.Arithmetic.wrapping_add_i16 x y)
-
-def Impl_15.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
-  (Rust_primitives.Arithmetic.wrapping_sub_i16 x y)
-
-def Impl_15.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
-  (Rust_primitives.Arithmetic.wrapping_mul_i16 x y)
-
-def Impl_15.pow (x : i16) (exp : u32) : RustM i16 := do
-  (Rust_primitives.Arithmetic.pow_i16 x exp)
-
-opaque Impl_15.rotate_right (x : i16) (n : u32) : RustM i16 
-
-opaque Impl_15.rotate_left (x : i16) (n : u32) : RustM i16 
-
-opaque Impl_15.leading_zeros (x : i16) : RustM u32 
-
-opaque Impl_15.ilog2 (x : i16) : RustM u32 
-
-opaque Impl_15.from_be_bytes (bytes : (RustArray u8 2)) : RustM i16 
-
-opaque Impl_15.from_le_bytes (bytes : (RustArray u8 2)) : RustM i16 
-
-opaque Impl_15.to_be_bytes (bytes : i16) : RustM (RustArray u8 2) 
-
-opaque Impl_15.to_le_bytes (bytes : i16) : RustM (RustArray u8 2) 
-
-@[reducible] instance Impl_14.AssociatedTypes :
+@[reducible] instance Impl_25.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i16
   where
 
-instance Impl_14 : Core_models.Default.Default i16 where
+instance Impl_25 : Core_models.Default.Default i16 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i16))
 
-def Impl_17.wrapping_add (x : i32) (y : i32) : RustM i32 := do
-  (Rust_primitives.Arithmetic.wrapping_add_i32 x y)
-
-def Impl_17.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
-  (Rust_primitives.Arithmetic.wrapping_sub_i32 x y)
-
-def Impl_17.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
-  (Rust_primitives.Arithmetic.wrapping_mul_i32 x y)
-
-def Impl_17.pow (x : i32) (exp : u32) : RustM i32 := do
-  (Rust_primitives.Arithmetic.pow_i32 x exp)
-
-opaque Impl_17.rotate_right (x : i32) (n : u32) : RustM i32 
-
-opaque Impl_17.rotate_left (x : i32) (n : u32) : RustM i32 
-
-opaque Impl_17.leading_zeros (x : i32) : RustM u32 
-
-opaque Impl_17.ilog2 (x : i32) : RustM u32 
-
-opaque Impl_17.from_be_bytes (bytes : (RustArray u8 4)) : RustM i32 
-
-opaque Impl_17.from_le_bytes (bytes : (RustArray u8 4)) : RustM i32 
-
-opaque Impl_17.to_be_bytes (bytes : i32) : RustM (RustArray u8 4) 
-
-opaque Impl_17.to_le_bytes (bytes : i32) : RustM (RustArray u8 4) 
-
-@[reducible] instance Impl_16.AssociatedTypes :
+@[reducible] instance Impl_26.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i32
   where
 
-instance Impl_16 : Core_models.Default.Default i32 where
+instance Impl_26 : Core_models.Default.Default i32 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i32))
 
-def Impl_19.wrapping_add (x : i64) (y : i64) : RustM i64 := do
-  (Rust_primitives.Arithmetic.wrapping_add_i64 x y)
-
-def Impl_19.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
-  (Rust_primitives.Arithmetic.wrapping_sub_i64 x y)
-
-def Impl_19.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
-  (Rust_primitives.Arithmetic.wrapping_mul_i64 x y)
-
-def Impl_19.pow (x : i64) (exp : u32) : RustM i64 := do
-  (Rust_primitives.Arithmetic.pow_i64 x exp)
-
-opaque Impl_19.rotate_right (x : i64) (n : u32) : RustM i64 
-
-opaque Impl_19.rotate_left (x : i64) (n : u32) : RustM i64 
-
-opaque Impl_19.leading_zeros (x : i64) : RustM u32 
-
-opaque Impl_19.ilog2 (x : i64) : RustM u32 
-
-opaque Impl_19.from_be_bytes (bytes : (RustArray u8 8)) : RustM i64 
-
-opaque Impl_19.from_le_bytes (bytes : (RustArray u8 8)) : RustM i64 
-
-opaque Impl_19.to_be_bytes (bytes : i64) : RustM (RustArray u8 8) 
-
-opaque Impl_19.to_le_bytes (bytes : i64) : RustM (RustArray u8 8) 
-
-@[reducible] instance Impl_18.AssociatedTypes :
+@[reducible] instance Impl_27.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i64
   where
 
-instance Impl_18 : Core_models.Default.Default i64 where
+instance Impl_27 : Core_models.Default.Default i64 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i64))
 
-def Impl_21.wrapping_add (x : i128) (y : i128) : RustM i128 := do
-  (Rust_primitives.Arithmetic.wrapping_add_i128 x y)
-
-def Impl_21.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
-  (Rust_primitives.Arithmetic.wrapping_sub_i128 x y)
-
-def Impl_21.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
-  (Rust_primitives.Arithmetic.wrapping_mul_i128 x y)
-
-def Impl_21.pow (x : i128) (exp : u32) : RustM i128 := do
-  (Rust_primitives.Arithmetic.pow_i128 x exp)
-
-opaque Impl_21.rotate_right (x : i128) (n : u32) : RustM i128 
-
-opaque Impl_21.rotate_left (x : i128) (n : u32) : RustM i128 
-
-opaque Impl_21.leading_zeros (x : i128) : RustM u32 
-
-opaque Impl_21.ilog2 (x : i128) : RustM u32 
-
-opaque Impl_21.from_be_bytes (bytes : (RustArray u8 16)) : RustM i128 
-
-opaque Impl_21.from_le_bytes (bytes : (RustArray u8 16)) : RustM i128 
-
-opaque Impl_21.to_be_bytes (bytes : i128) : RustM (RustArray u8 16) 
-
-opaque Impl_21.to_le_bytes (bytes : i128) : RustM (RustArray u8 16) 
-
-@[reducible] instance Impl_20.AssociatedTypes :
+@[reducible] instance Impl_28.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i128
   where
 
-instance Impl_20 : Core_models.Default.Default i128 where
+instance Impl_28 : Core_models.Default.Default i128 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i128))
 
-def Impl_23.wrapping_add (x : isize) (y : isize) : RustM isize := do
-  (Rust_primitives.Arithmetic.wrapping_add_isize x y)
-
-def Impl_23.wrapping_sub (x : isize) (y : isize) : RustM isize := do
-  (Rust_primitives.Arithmetic.wrapping_sub_isize x y)
-
-def Impl_23.wrapping_mul (x : isize) (y : isize) : RustM isize := do
-  (Rust_primitives.Arithmetic.wrapping_mul_isize x y)
-
-def Impl_23.pow (x : isize) (exp : u32) : RustM isize := do
-  (Rust_primitives.Arithmetic.pow_isize x exp)
-
-opaque Impl_23.rotate_right (x : isize) (n : u32) : RustM isize 
-
-opaque Impl_23.rotate_left (x : isize) (n : u32) : RustM isize 
-
-opaque Impl_23.leading_zeros (x : isize) : RustM u32 
-
-opaque Impl_23.ilog2 (x : isize) : RustM u32 
-
-opaque Impl_23.from_be_bytes (bytes : (RustArray u8 8)) : RustM isize 
-
-opaque Impl_23.from_le_bytes (bytes : (RustArray u8 8)) : RustM isize 
-
-opaque Impl_23.to_be_bytes (bytes : isize) : RustM (RustArray u8 8) 
-
-opaque Impl_23.to_le_bytes (bytes : isize) : RustM (RustArray u8 8) 
-
-@[reducible] instance Impl_22.AssociatedTypes :
+@[reducible] instance Impl_29.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes isize
   where
 
-instance Impl_22 : Core_models.Default.Default isize where
+instance Impl_29 : Core_models.Default.Default isize where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : isize))
 
 end Core_models.Num
@@ -1919,40 +1775,40 @@ end Core_models.Fmt
 
 namespace Core_models.Num
 
-opaque Impl_1.from_str_radix (src : String) (radix : u32) :
+opaque Impl_6.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result u8 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_3.from_str_radix (src : String) (radix : u32) :
+opaque Impl_7.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result u16 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_5.from_str_radix (src : String) (radix : u32) :
+opaque Impl_8.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result u32 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_7.from_str_radix (src : String) (radix : u32) :
+opaque Impl_9.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result u64 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_9.from_str_radix (src : String) (radix : u32) :
+opaque Impl_10.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result u128 Core_models.Num.Error.ParseIntError) 
 
 opaque Impl_11.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result usize Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_13.from_str_radix (src : String) (radix : u32) :
+opaque Impl_12.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result i8 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_15.from_str_radix (src : String) (radix : u32) :
+opaque Impl_13.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result i16 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_17.from_str_radix (src : String) (radix : u32) :
+opaque Impl_14.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result i32 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_19.from_str_radix (src : String) (radix : u32) :
+opaque Impl_15.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result i64 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_21.from_str_radix (src : String) (radix : u32) :
+opaque Impl_16.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result i128 Core_models.Num.Error.ParseIntError) 
 
-opaque Impl_23.from_str_radix (src : String) (radix : u32) :
+opaque Impl_17.from_str_radix (src : String) (radix : u32) :
     RustM (Core_models.Result.Result isize Core_models.Num.Error.ParseIntError) 
 
 end Core_models.Num
