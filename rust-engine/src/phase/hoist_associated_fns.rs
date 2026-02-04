@@ -95,18 +95,12 @@ impl Phase for HoistAssociatedFns {
                             let mut fn_body = body.clone();
                             HoistAssociatedFnsVisitor::new(of_trait, item.ident)
                                 .visit_expr(&mut fn_body);
-                            let fn_item = Item {
-                                ident: fn_name,
-                                kind: ItemKind::Fn {
-                                    name: fn_name,
-                                    generics: full_generics.clone(),
-                                    body: fn_body,
-                                    params: params.clone(),
-                                    safety: SafetyKind::Safe,
-                                },
-                                meta: meta.clone(),
-                            };
-                            new_items.push(fn_item);
+                            let used_params: Vec<Param> = params
+                                .iter()
+                                .filter(|p| !matches!(p.pat.kind(), PatKind::Wild))
+                                .cloned()
+                                .collect();
+
                             let generic_args = full_generics
                                 .params
                                 .iter()
@@ -121,7 +115,7 @@ impl Phase for HoistAssociatedFns {
                                     ),
                                 })
                                 .collect();
-                            let args = params.iter().map(|p| match p.pat.kind() {
+                            let args = used_params.iter().map(|p| match p.pat.kind() {
                                 PatKind::Binding { var, .. } =>
                                 ExprKind::LocalId(var.clone()),
                                 _ => ExprKind::Error(
@@ -129,6 +123,18 @@ impl Phase for HoistAssociatedFns {
                                     "Non-trivial patterns are not supported for associated functions hoisting.")
                                 ),
                             }.promote(p.ty.clone(), p.pat.span())).collect();
+                            let fn_item = Item {
+                                ident: fn_name,
+                                kind: ItemKind::Fn {
+                                    name: fn_name,
+                                    generics: full_generics.clone(),
+                                    body: fn_body,
+                                    params: used_params,
+                                    safety: SafetyKind::Safe,
+                                },
+                                meta: meta.clone(),
+                            };
+                            new_items.push(fn_item);
                             *body.kind_mut() = ExprKind::standalone_fn_app(
                                 fn_name,
                                 generic_args,
