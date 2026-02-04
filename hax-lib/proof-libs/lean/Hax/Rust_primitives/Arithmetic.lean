@@ -13,12 +13,15 @@ macro "declare_arith_ops" s:(&"signed" <|> &"unsigned") typeName:ident suffix:id
   let mut cmds ← Syntax.getArgs <$> `(
     namespace Rust_primitives.Arithmetic
 
+    @[spec]
     def $(ident "wrapping_add") (x : $typeName) (y : $typeName) : RustM $typeName :=
       pure (x + y)
 
+    @[spec]
     def $(ident "wrapping_sub") (x : $typeName) (y : $typeName) : RustM $typeName :=
       pure (x - y)
 
+    @[spec]
     def $(ident "wrapping_mul") (x : $typeName) (y : $typeName) : RustM $typeName :=
       pure (x * y)
   )

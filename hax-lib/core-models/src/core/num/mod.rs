@@ -124,11 +124,6 @@ macro_rules! uint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
         }
-        impl crate::default::Default for $Self {
-            fn default() -> $Self {
-                0
-            }
-        }
     };
 }
 
@@ -257,11 +252,6 @@ macro_rules! iint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
         }
-        impl crate::default::Default for $Self {
-            fn default() -> $Self {
-                0
-            }
-        }
     };
 }
 
@@ -291,6 +281,20 @@ pub struct i64;
 pub struct i128;
 #[hax_lib::exclude]
 pub struct isize;
+
+// Placeholders to get the same impl numbering as in core:
+#[hax_lib::attributes]
+impl i8 {}
+#[hax_lib::attributes]
+impl i16 {}
+#[hax_lib::attributes]
+impl i32 {}
+#[hax_lib::attributes]
+impl i64 {}
+#[hax_lib::attributes]
+impl i128 {}
+#[hax_lib::attributes]
+impl isize {}
 
 uint_impl! {
     core::primitive::u8,
@@ -392,4 +396,88 @@ iint_impl! {
     ISIZE_MIN,
     SIZE_BITS,
     SIZE_BYTES,
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::u8 {
+    fn default() -> core::primitive::u8 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::u16 {
+    fn default() -> core::primitive::u16 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::u32 {
+    fn default() -> core::primitive::u32 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::u64 {
+    fn default() -> core::primitive::u64 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::u128 {
+    fn default() -> core::primitive::u128 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::usize {
+    fn default() -> core::primitive::usize {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::i8 {
+    fn default() -> core::primitive::i8 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::i16 {
+    fn default() -> core::primitive::i16 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::i32 {
+    fn default() -> core::primitive::i32 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::i64 {
+    fn default() -> core::primitive::i64 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::i128 {
+    fn default() -> core::primitive::i128 {
+        0
+    }
+}
+
+#[hax_lib::attributes]
+impl crate::default::Default for core::primitive::isize {
+    fn default() -> core::primitive::isize {
+        0
+    }
 }
