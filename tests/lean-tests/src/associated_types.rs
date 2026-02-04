@@ -24,6 +24,17 @@ mod basic {
     }
 }
 
+mod projection {
+    trait T1 {
+        type A1;
+    }
+
+    trait T2 {
+        type A2: T1;
+        fn f() -> <Self::A2 as T1>::A1;
+    }
+}
+
 mod multiple_associated_types {
     trait Pair {
         type First;

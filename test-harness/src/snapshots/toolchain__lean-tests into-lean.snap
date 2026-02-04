@@ -58,6 +58,23 @@ def g (N : usize) (x : (RustArray u8 N)) :
 end Lean_tests.Array
 
 
+namespace Lean_tests.Associated_types.Projection
+
+class T1.AssociatedTypes (Self : Type) where
+  A1 : Type
+
+attribute [reducible] T1.AssociatedTypes.A1
+
+abbrev T1.A1 :=
+  T1.AssociatedTypes.A1
+
+class T1 (Self : Type)
+  [associatedTypes : outParam (T1.AssociatedTypes (Self : Type))]
+  where
+
+end Lean_tests.Associated_types.Projection
+
+
 namespace Lean_tests.Associated_types.Multiple_projections
 
 class FnOnce.AssociatedTypes (Self : Type) (T : Type) where
@@ -1377,6 +1394,26 @@ class Iterable (Self : Type)
   first (Self) : (Self -> RustM associatedTypes.Item)
 
 end Lean_tests.Associated_types.Basic
+
+
+namespace Lean_tests.Associated_types.Projection
+
+class T2.AssociatedTypes (Self : Type) where
+  A2 : Type
+
+attribute [reducible] T2.AssociatedTypes.A2
+
+abbrev T2.A2 :=
+  T2.AssociatedTypes.A2
+
+class T2 (Self : Type)
+  [associatedTypes : outParam (T2.AssociatedTypes (Self : Type))]
+  where
+  [trait_constr_A2_associated_type_i1 : T1.AssociatedTypes associatedTypes.A2]
+  [trait_constr_A2_i1 : T1 associatedTypes.A2 ]
+  f (Self) : (Rust_primitives.Hax.Tuple0 -> RustM (T1.A1 associatedTypes.A2))
+
+end Lean_tests.Associated_types.Projection
 
 
 namespace Lean_tests.Associated_types.Multiple_associated_types

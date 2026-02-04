@@ -1170,20 +1170,21 @@ const _: () = {
                     let kind = impl_.kind();
                     match &kind {
                         ImplExprKind::Self_ => docs!["associatedTypes.", self.render_last(item)],
-                        ImplExprKind::Parent { ident, .. } => {
+                        ImplExprKind::Parent { ident, .. }
+                        | ImplExprKind::Projection { ident, .. } => {
                             docs![item, zip_left!(line!(), ident.goal.args.iter())]
                                 .parens()
                                 .group()
                                 .nest(INDENT)
                         }
                         ImplExprKind::LocalBound { .. } => {
-                            docs![item, zip_left!(line!(), impl_.goal.args.iter()),]
+                            docs![item, zip_left!(line!(), impl_.goal.args.iter())]
                                 .parens()
                                 .group()
                                 .nest(INDENT)
                         }
                         _ => {
-                            emit_error!(issue 1710, "Unsupported variant of associated type")
+                            emit_error!(issue 1922, "Unsupported variant of associated type")
                         }
                     }
                 }
