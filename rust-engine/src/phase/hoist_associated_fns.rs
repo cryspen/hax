@@ -72,50 +72,50 @@ impl Phase for HoistAssociatedFns {
         let mut new_items = Vec::new();
         for item in items.iter() {
             let mut new_item = item.clone();
-            match new_item.kind_mut() {
-                ItemKind::Impl {
-                    generics: impl_generics,
-                    of_trait,
-                    items,
-                    ..
-                } => {
-                    for trait_item in items {
-                        if let ImplItem {
-                            meta,
-                            generics,
-                            kind: ImplItemKind::Fn { body, params },
-                            ident,
-                        } = trait_item
-                            && !ident.is_postcondition()
-                            && !ident.is_precondition()
-                        // We ignore specs as they are not supported by the Lean backend for now
-                        {
-                            let fn_name = hoisted_name(ident.clone());
-                            let full_generics = impl_generics.clone().concat(generics.clone());
-                            let mut fn_body = body.clone();
-                            HoistAssociatedFnsVisitor::new(of_trait, item.ident)
-                                .visit_expr(&mut fn_body);
-                            let used_params: Vec<Param> = params
-                                .iter()
-                                .filter(|p| !matches!(p.pat.kind(), PatKind::Wild))
-                                .cloned()
-                                .collect();
+            if let ItemKind::Impl {
+                generics: impl_generics,
+                of_trait,
+                items,
+                ..
+            } = new_item.kind_mut()
+            {
+                for trait_item in items {
+                    if let ImplItem {
+                        meta,
+                        generics,
+                        kind: ImplItemKind::Fn { body, params },
+                        ident,
+                    } = trait_item
+                        && !ident.is_postcondition()
+                        && !ident.is_precondition()
+                    // We ignore specs as they are not supported by the Lean backend for now
+                    {
+                        let fn_name = hoisted_name(*ident);
+                        let full_generics = impl_generics.clone().concat(generics.clone());
+                        let mut fn_body = body.clone();
+                        HoistAssociatedFnsVisitor::new(of_trait, item.ident)
+                            .visit_expr(&mut fn_body);
+                        let used_params: Vec<Param> = params
+                            .iter()
+                            .filter(|p| !matches!(p.pat.kind(), PatKind::Wild))
+                            .cloned()
+                            .collect();
 
-                            let generic_args = full_generics
-                                .params
-                                .iter()
-                                .map(|p| match p.kind() {
-                                    GenericParamKind::Lifetime => GenericValue::Lifetime,
-                                    GenericParamKind::Type => {
-                                        GenericValue::Ty(TyKind::Param(p.ident.clone()).promote())
-                                    }
-                                    GenericParamKind::Const { ty } => GenericValue::Expr(
-                                        ExprKind::LocalId(p.ident.clone())
-                                            .promote(ty.clone(), p.span()),
-                                    ),
-                                })
-                                .collect();
-                            let args = used_params.iter().map(|p| match p.pat.kind() {
+                        let generic_args = full_generics
+                            .params
+                            .iter()
+                            .map(|p| match p.kind() {
+                                GenericParamKind::Lifetime => GenericValue::Lifetime,
+                                GenericParamKind::Type => {
+                                    GenericValue::Ty(TyKind::Param(p.ident.clone()).promote())
+                                }
+                                GenericParamKind::Const { ty } => GenericValue::Expr(
+                                    ExprKind::LocalId(p.ident.clone())
+                                        .promote(ty.clone(), p.span()),
+                                ),
+                            })
+                            .collect();
+                        let args = used_params.iter().map(|p| match p.pat.kind() {
                                 PatKind::Binding { var, .. } =>
                                 ExprKind::LocalId(var.clone()),
                                 _ => ExprKind::Error(
@@ -123,29 +123,27 @@ impl Phase for HoistAssociatedFns {
                                     "Non-trivial patterns are not supported for associated functions hoisting.")
                                 ),
                             }.promote(p.ty.clone(), p.pat.span())).collect();
-                            let fn_item = Item {
-                                ident: fn_name,
-                                kind: ItemKind::Fn {
-                                    name: fn_name,
-                                    generics: full_generics.clone(),
-                                    body: fn_body,
-                                    params: used_params,
-                                    safety: SafetyKind::Safe,
-                                },
-                                meta: meta.clone(),
-                            };
-                            new_items.push(fn_item);
-                            *body.kind_mut() = ExprKind::standalone_fn_app(
-                                fn_name,
-                                generic_args,
-                                args,
-                                body.ty.clone(),
-                                body.span(),
-                            )
-                        }
+                        let fn_item = Item {
+                            ident: fn_name,
+                            kind: ItemKind::Fn {
+                                name: fn_name,
+                                generics: full_generics.clone(),
+                                body: fn_body,
+                                params: used_params,
+                                safety: SafetyKind::Safe,
+                            },
+                            meta: meta.clone(),
+                        };
+                        new_items.push(fn_item);
+                        *body.kind_mut() = ExprKind::standalone_fn_app(
+                            fn_name,
+                            generic_args,
+                            args,
+                            body.ty.clone(),
+                            body.span(),
+                        )
                     }
                 }
-                _ => (),
             }
             new_items.push(new_item)
         }

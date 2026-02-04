@@ -81,7 +81,7 @@ impl DefIdInner {
     fn rename_method_as_hoisted(&self, trait_: DefId, impl_: DefId) -> Self {
         let mut new_id = self.clone();
         if self.parent.is_some_and(|p| p == trait_) {
-            new_id.parent = Some(impl_.clone());
+            new_id.parent = Some(impl_);
             new_id.path = impl_.path.clone();
             new_id.path.push(self.path.last().unwrap().clone());
         }
