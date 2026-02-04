@@ -39,6 +39,10 @@ impl<'a> VisitorWithContext for HoistAssociatedFnsVisitor<'a> {
     }
 }
 
+fn hoisted_name(assoc_item_name: GlobalId) -> GlobalId {
+    assoc_item_name.map_last(&(|s: &mut String| s.push_str("_hoisted")))
+}
+
 impl<'a> AstVisitorMut for HoistAssociatedFnsVisitor<'a> {
     setup_error_handling_impl!();
 
@@ -57,13 +61,10 @@ impl<'a> AstVisitorMut for HoistAssociatedFnsVisitor<'a> {
             new_generic_args.append(generic_args);
             *generic_args = new_generic_args;
             *trait_ = None;
-            *name = name.rename_method_as_hoisted(self.of_trait.trait_, self.impl_name);
+            *name =
+                hoisted_name(name.rename_method_as_hoisted(self.of_trait.trait_, self.impl_name));
         }
     }
-}
-
-fn item_name(assoc_item_name: GlobalId) -> GlobalId {
-    assoc_item_name
 }
 
 impl Phase for HoistAssociatedFns {
@@ -89,7 +90,7 @@ impl Phase for HoistAssociatedFns {
                             && !ident.is_precondition()
                         // We ignore specs as they are not supported by the Lean backend for now
                         {
-                            let fn_name = item_name(ident.clone());
+                            let fn_name = hoisted_name(ident.clone());
                             let full_generics = impl_generics.clone().concat(generics.clone());
                             let mut fn_body = body.clone();
                             HoistAssociatedFnsVisitor::new(of_trait, item.ident)
@@ -105,7 +106,7 @@ impl Phase for HoistAssociatedFns {
                                 },
                                 meta: meta.clone(),
                             };
-                            new_items.push(fn_item); // TODO: Visit
+                            new_items.push(fn_item);
                             let generic_args = full_generics
                                 .params
                                 .iter()
@@ -145,5 +146,3 @@ impl Phase for HoistAssociatedFns {
         *items = new_items;
     }
 }
-
-// hoist, add a context, catch the context in visit_global_id. Or maybe the `Self` argument is what we need to look for?
