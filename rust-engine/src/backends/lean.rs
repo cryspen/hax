@@ -10,10 +10,15 @@ use std::sync::LazyLock;
 
 use super::prelude::*;
 use crate::{
-    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    ast::span::Span,
+    ast::{
+        identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+        span::Span,
+    },
     attributes::hax_attributes,
-    names::rust_primitives::hax::explicit_monadic::{lift, pure},
+    names::rust_primitives::hax::{
+        cast_op,
+        explicit_monadic::{lift, pure},
+    },
     phase::*,
 };
 use camino::Utf8PathBuf;
@@ -28,6 +33,7 @@ mod binops {
 
 const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
+const CAST_OP: GlobalId = cast_op;
 
 /// The Lean printer
 #[setup_printer_struct]
@@ -839,6 +845,15 @@ const _: () = {
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
                             docs![reflow!("pure "), arg].parens()
                         }
+                        ([arg], [], ExprKind::GlobalId(CAST_OP)) => docs![
+                            docs![head, zip_left!(line!(), args).group()].parens(),
+                            softline!(),
+                            ":",
+                            line!(),
+                            ty
+                        ]
+                        .group()
+                        .nest(INDENT),
                         ([arg], [], ExprKind::GlobalId(binops::neg)) => {
                             docs!["-?", softline!(), arg].parens()
                         }
