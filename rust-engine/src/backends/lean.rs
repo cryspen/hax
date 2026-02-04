@@ -1442,7 +1442,7 @@ const _: () = {
                 } => {
                     let generic_types = generics.type_constraints().collect::<Vec<_>>();
                     if generic_types.len() < generics.constraints.len() {
-                        emit_error!(issue 1710, "Unsupported equality constraints on associated types")
+                        emit_error!(issue 1921, "Unsupported equality constraints on associated types")
                     }
                     docs![
                         // A trait is encoded as two Lean type classes: one holding the associated types,
