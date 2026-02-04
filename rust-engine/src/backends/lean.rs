@@ -567,8 +567,12 @@ const _: () = {
             }
         }
 
-        // Print generics, using `name` as a disambiguator for constraint names
-        fn generics<A: 'static + Clone>(&self, generics: &Generics, name: &str) -> DocBuilder<A> {
+        // Print generics, using `name` as a prefix for constraint names
+        fn generics<A: 'static + Clone>(
+            &self,
+            generics: &Generics,
+            name: &String,
+        ) -> DocBuilder<A> {
             docs![
                 zip_left!(line!(), &generics.params),
                 zip_left!(
@@ -600,7 +604,7 @@ const _: () = {
                             .nest(INDENT),
                             line!(),
                             docs![
-                                self.constraint_name(&name.to_string(), impl_ident),
+                                self.constraint_name(name, impl_ident),
                                 reflow!(" : "),
                                 impl_ident.goal.trait_,
                                 concat!(
@@ -788,7 +792,7 @@ const _: () = {
         }
 
         fn generics(&self, generics: &Generics) -> DocBuilder<A> {
-            self.generics(generics, "")
+            self.generics(generics, &String::new())
         }
 
         fn generic_constraint(&self, _: &GenericConstraint) -> DocBuilder<A> {
