@@ -16,13 +16,11 @@ namespace Core_models.Borrow
 
 class Borrow.AssociatedTypes (Self : Type) (Borrowed : Type) where
 
-class Borrow
-  (Self : Type)
-  (Borrowed : Type)
+class Borrow (Self : Type) (Borrowed : Type)
   [associatedTypes : outParam (Borrow.AssociatedTypes (Self : Type) (Borrowed :
       Type))]
   where
-  borrow (Self Borrowed) : (Self -> RustM Borrowed)
+  borrow (Self) (Borrowed) : (Self -> RustM Borrowed)
 
 end Core_models.Borrow
 
@@ -31,8 +29,7 @@ namespace Core_models.Clone
 
 class Clone.AssociatedTypes (Self : Type) where
 
-class Clone
-  (Self : Type)
+class Clone (Self : Type)
   [associatedTypes : outParam (Clone.AssociatedTypes (Self : Type))]
   where
   clone (Self) : (Self -> RustM Self)
@@ -51,21 +48,19 @@ namespace Core_models.Cmp
 
 class PartialEq.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class PartialEq
-  (Self : Type)
-  (Rhs : Type)
+class PartialEq (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (PartialEq.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  eq (Self Rhs) : (Self -> Rhs -> RustM Bool)
+  eq (Self) (Rhs) : (Self -> Rhs -> RustM Bool)
 
 class Eq.AssociatedTypes (Self : Type) where
   [trait_constr_Eq_i0 : PartialEq.AssociatedTypes Self Self]
 
 attribute [instance] Eq.AssociatedTypes.trait_constr_Eq_i0
 
-class Eq
-  (Self : Type) [associatedTypes : outParam (Eq.AssociatedTypes (Self : Type))]
+class Eq (Self : Type)
+  [associatedTypes : outParam (Eq.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Eq_i0 : PartialEq Self Self]
 
@@ -76,14 +71,11 @@ inductive Ordering : Type
 | Equal : Ordering
 | Greater : Ordering
 
-def Ordering.Less.AnonConst : isize :=
-  RustM.of_isOk (do (pure (-1 : isize))) (by rfl)
+def Ordering.Less.AnonConst : isize := (-1 : isize)
 
-def Ordering.Equal.AnonConst : isize :=
-  RustM.of_isOk (do (pure (0 : isize))) (by rfl)
+def Ordering.Equal.AnonConst : isize := (0 : isize)
 
-def Ordering.Greater.AnonConst : isize :=
-  RustM.of_isOk (do (pure (1 : isize))) (by rfl)
+def Ordering.Greater.AnonConst : isize := (1 : isize)
 
 def Ordering_ (x : Ordering) : RustM isize := do
   match x with
@@ -93,19 +85,22 @@ def Ordering_ (x : Ordering) : RustM isize := do
 
 class Neq.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class Neq
-  (Self : Type)
-  (Rhs : Type)
+class Neq (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Neq.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  neq (Self Rhs) : (Self -> Rhs -> RustM Bool)
+  neq (Self) (Rhs) : (Self -> Rhs -> RustM Bool)
 
 @[reducible] instance Impl.AssociatedTypes
-  (T : Type) [PartialEq.AssociatedTypes T T] [PartialEq T T ] :
+  (T : Type)
+  [trait_constr_Impl_associated_type_i0 : PartialEq.AssociatedTypes T T]
+  [trait_constr_Impl_i0 : PartialEq T T ] :
   Neq.AssociatedTypes T T
   where
 
-instance Impl (T : Type) [PartialEq.AssociatedTypes T T] [PartialEq T T ] :
+instance Impl
+  (T : Type)
+  [trait_constr_Impl_associated_type_i0 : PartialEq.AssociatedTypes T T]
+  [trait_constr_Impl_i0 : PartialEq T T ] :
   Neq T T
   where
   neq := fun (self : T) (y : T) => do
@@ -115,22 +110,34 @@ structure Reverse (T : Type) where
   _0 : T
 
 @[reducible] instance Impl_3.AssociatedTypes
-  (T : Type) [PartialEq.AssociatedTypes T T] [PartialEq T T ] :
+  (T : Type)
+  [trait_constr_Impl_3_associated_type_i0 : PartialEq.AssociatedTypes T T]
+  [trait_constr_Impl_3_i0 : PartialEq T T ] :
   PartialEq.AssociatedTypes (Reverse T) (Reverse T)
   where
 
-instance Impl_3 (T : Type) [PartialEq.AssociatedTypes T T] [PartialEq T T ] :
+instance Impl_3
+  (T : Type)
+  [trait_constr_Impl_3_associated_type_i0 : PartialEq.AssociatedTypes T T]
+  [trait_constr_Impl_3_i0 : PartialEq T T ] :
   PartialEq (Reverse T) (Reverse T)
   where
   eq := fun (self : (Reverse T)) (other : (Reverse T)) => do
     (PartialEq.eq T T (Reverse._0 other) (Reverse._0 self))
 
 @[reducible] instance Impl_4.AssociatedTypes
-  (T : Type) [Eq.AssociatedTypes T] [Eq T ] :
+  (T : Type)
+  [trait_constr_Impl_4_associated_type_i0 : Eq.AssociatedTypes T]
+  [trait_constr_Impl_4_i0 : Eq T ] :
   Eq.AssociatedTypes (Reverse T)
   where
 
-instance Impl_4 (T : Type) [Eq.AssociatedTypes T] [Eq T ] : Eq (Reverse T) where
+instance Impl_4
+  (T : Type)
+  [trait_constr_Impl_4_associated_type_i0 : Eq.AssociatedTypes T]
+  [trait_constr_Impl_4_i0 : Eq T ] :
+  Eq (Reverse T)
+  where
 
 @[reducible] instance Impl_6.AssociatedTypes :
   PartialEq.AssociatedTypes u8 u8
@@ -283,28 +290,31 @@ namespace Core_models.Convert
 
 class Into.AssociatedTypes (Self : Type) (T : Type) where
 
-class Into
-  (Self : Type)
-  (T : Type)
+class Into (Self : Type) (T : Type)
   [associatedTypes : outParam (Into.AssociatedTypes (Self : Type) (T : Type))]
   where
-  into (Self T) : (Self -> RustM T)
+  into (Self) (T) : (Self -> RustM T)
 
 class From.AssociatedTypes (Self : Type) (T : Type) where
 
-class From
-  (Self : Type)
-  (T : Type)
+class From (Self : Type) (T : Type)
   [associatedTypes : outParam (From.AssociatedTypes (Self : Type) (T : Type))]
   where
-  _from (Self T) : (T -> RustM Self)
+  _from (Self) (T) : (T -> RustM Self)
 
 @[reducible] instance Impl.AssociatedTypes
-  (T : Type) (U : Type) [From.AssociatedTypes U T] [From U T ] :
+  (T : Type)
+  (U : Type)
+  [trait_constr_Impl_associated_type_i0 : From.AssociatedTypes U T]
+  [trait_constr_Impl_i0 : From U T ] :
   Into.AssociatedTypes T U
   where
 
-instance Impl (T : Type) (U : Type) [From.AssociatedTypes U T] [From U T ] :
+instance Impl
+  (T : Type)
+  (U : Type)
+  [trait_constr_Impl_associated_type_i0 : From.AssociatedTypes U T]
+  [trait_constr_Impl_i0 : From U T ] :
   Into T U
   where
   into := fun (self : T) => do (From._from U T self)
@@ -321,12 +331,10 @@ instance Impl_3 (T : Type) : From T T where
 
 class AsRef.AssociatedTypes (Self : Type) (T : Type) where
 
-class AsRef
-  (Self : Type)
-  (T : Type)
+class AsRef (Self : Type) (T : Type)
   [associatedTypes : outParam (AsRef.AssociatedTypes (Self : Type) (T : Type))]
   where
-  as_ref (Self T) : (Self -> RustM T)
+  as_ref (Self) (T) : (Self -> RustM T)
 
 @[reducible] instance Impl_4.AssociatedTypes (T : Type) :
   AsRef.AssociatedTypes T T
@@ -342,8 +350,7 @@ namespace Core_models.Default
 
 class Default.AssociatedTypes (Self : Type) where
 
-class Default
-  (Self : Type)
+class Default (Self : Type)
   [associatedTypes : outParam (Default.AssociatedTypes (Self : Type))]
   where
   default (Self) : (Rust_primitives.Hax.Tuple0 -> RustM Self)
@@ -381,32 +388,25 @@ opaque Impl.new_lower_hex (T : Type) (x : T) : RustM Argument
 
 opaque Impl_1.new_binary (T : Type) (x : T) : RustM Argument 
 
-opaque Impl_1.new_const
-  (T : Type) (U : Type) (x : T)
-  (y : U)
-  : RustM Core_models.Fmt.Arguments
+opaque Impl_1.new_const (T : Type) (U : Type) (x : T) (y : U) :
+    RustM Core_models.Fmt.Arguments 
 
+opaque Impl_1.new_v1 (T : Type) (U : Type) (V : Type) (W : Type)
+    (x : T)
+    (y : U)
+    (z : V)
+    (t : W) :
+    RustM Core_models.Fmt.Arguments 
 
-opaque Impl_1.new_v1
-  (T : Type) (U : Type) (V : Type) (W : Type) (x : T)
-  (y : U)
-  (z : V)
-  (t : W)
-  : RustM Core_models.Fmt.Arguments
-
-
-def Impl_1.none
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM (RustArray Argument 0)
-  := do
+def Impl_1.none (_ : Rust_primitives.Hax.Tuple0) :
+    RustM (RustArray Argument 0) := do
   (pure #v[])
 
-opaque Impl_1.new_v1_formatted
-  (T : Type) (U : Type) (V : Type) (x : T)
-  (y : U)
-  (z : V)
-  : RustM Core_models.Fmt.Arguments
-
+opaque Impl_1.new_v1_formatted (T : Type) (U : Type) (V : Type)
+    (x : T)
+    (y : U)
+    (z : V) :
+    RustM Core_models.Fmt.Arguments 
 
 inductive Count : Type
 | Is : u16 -> Count
@@ -429,19 +429,19 @@ namespace Core_models.Hash
 
 class Hasher.AssociatedTypes (Self : Type) where
 
-class Hasher
-  (Self : Type)
+class Hasher (Self : Type)
   [associatedTypes : outParam (Hasher.AssociatedTypes (Self : Type))]
   where
 
 class Hash.AssociatedTypes (Self : Type) where
 
-class Hash
-  (Self : Type)
+class Hash (Self : Type)
   [associatedTypes : outParam (Hash.AssociatedTypes (Self : Type))]
   where
   hash (Self)
-    (H : Type) [Hasher.AssociatedTypes H] [Hasher H ] :
+    (H : Type)
+    [trait_constr_hash_associated_type_i1 : Hasher.AssociatedTypes H]
+    [trait_constr_hash_i1 : Hasher H ] :
     (Self -> H -> RustM H)
 
 end Core_models.Hash
@@ -452,11 +452,11 @@ namespace Core_models.Hint
 def black_box (T : Type) (dummy : T) : RustM T := do (pure dummy)
 
 @[spec]
-def black_box.spec (T : Type) (dummy : T)  :
+def black_box.spec (T : Type) (dummy : T) :
     Spec
       (requires := do pure True)
       (ensures := fun res => do (Hax_lib.Prop.Impl.from_bool true))
-      (black_box (T : Type) (dummy : T) ) := {
+      (black_box (T : Type) (dummy : T)) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
   contract := by mvcgen[black_box] <;> try grind
@@ -465,11 +465,11 @@ def black_box.spec (T : Type) (dummy : T)  :
 def must_use (T : Type) (value : T) : RustM T := do (pure value)
 
 @[spec]
-def must_use.spec (T : Type) (value : T)  :
+def must_use.spec (T : Type) (value : T) :
     Spec
       (requires := do pure True)
       (ensures := fun res => do (Hax_lib.Prop.Impl.from_bool true))
-      (must_use (T : Type) (value : T) ) := {
+      (must_use (T : Type) (value : T)) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
   contract := by mvcgen[must_use] <;> try grind
@@ -485,8 +485,7 @@ class Copy.AssociatedTypes (Self : Type) where
 
 attribute [instance] Copy.AssociatedTypes.trait_constr_Copy_i0
 
-class Copy
-  (Self : Type)
+class Copy (Self : Type)
   [associatedTypes : outParam (Copy.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Copy_i0 : Core_models.Clone.Clone Self]
@@ -495,29 +494,25 @@ attribute [instance] Copy.trait_constr_Copy_i0
 
 class Send.AssociatedTypes (Self : Type) where
 
-class Send
-  (Self : Type)
+class Send (Self : Type)
   [associatedTypes : outParam (Send.AssociatedTypes (Self : Type))]
   where
 
 class Sync.AssociatedTypes (Self : Type) where
 
-class Sync
-  (Self : Type)
+class Sync (Self : Type)
   [associatedTypes : outParam (Sync.AssociatedTypes (Self : Type))]
   where
 
 class Sized.AssociatedTypes (Self : Type) where
 
-class Sized
-  (Self : Type)
+class Sized (Self : Type)
   [associatedTypes : outParam (Sized.AssociatedTypes (Self : Type))]
   where
 
 class StructuralPartialEq.AssociatedTypes (Self : Type) where
 
-class StructuralPartialEq
-  (Self : Type)
+class StructuralPartialEq (Self : Type)
   [associatedTypes : outParam (StructuralPartialEq.AssociatedTypes (Self :
       Type))]
   where
@@ -542,15 +537,19 @@ instance Impl_2 (T : Type) : Sized T where
 
 @[reducible] instance Impl_3.AssociatedTypes
   (T : Type)
-  [Core_models.Clone.Clone.AssociatedTypes T] [Core_models.Clone.Clone T ]
-  :
+  [trait_constr_Impl_3_associated_type_i0 :
+    Core_models.Clone.Clone.AssociatedTypes
+    T]
+  [trait_constr_Impl_3_i0 : Core_models.Clone.Clone T ] :
   Copy.AssociatedTypes T
   where
 
 instance Impl_3
   (T : Type)
-  [Core_models.Clone.Clone.AssociatedTypes T] [Core_models.Clone.Clone T ]
-  :
+  [trait_constr_Impl_3_associated_type_i0 :
+    Core_models.Clone.Clone.AssociatedTypes
+    T]
+  [trait_constr_Impl_3_i0 : Core_models.Clone.Clone T ] :
   Copy T
   where
 
@@ -586,11 +585,8 @@ opaque uninitialized (T : Type) (_ : Rust_primitives.Hax.Tuple0) : RustM T
 
 opaque swap (T : Type) (x : T) (y : T) : RustM (Rust_primitives.Hax.Tuple2 T T) 
 
-opaque replace
-  (T : Type) (dest : T)
-  (src : T)
-  : RustM (Rust_primitives.Hax.Tuple2 T T)
-
+opaque replace (T : Type) (dest : T) (src : T) :
+    RustM (Rust_primitives.Hax.Tuple2 T T) 
 
 opaque drop (T : Type) (_x : T) : RustM Rust_primitives.Hax.Tuple0 
 
@@ -914,53 +910,43 @@ namespace Core_models.Ops.Arith
 
 class AddAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class AddAssign
-  (Self : Type)
-  (Rhs : Type)
+class AddAssign (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (AddAssign.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  add_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+  add_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
 class SubAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class SubAssign
-  (Self : Type)
-  (Rhs : Type)
+class SubAssign (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (SubAssign.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  sub_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+  sub_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
 class MulAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class MulAssign
-  (Self : Type)
-  (Rhs : Type)
+class MulAssign (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (MulAssign.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  mul_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+  mul_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
 class DivAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class DivAssign
-  (Self : Type)
-  (Rhs : Type)
+class DivAssign (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (DivAssign.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  div_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+  div_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
 class RemAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class RemAssign
-  (Self : Type)
-  (Rhs : Type)
+class RemAssign (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (RemAssign.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  rem_assign (Self Rhs) : (Self -> Rhs -> RustM Self)
+  rem_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
 end Core_models.Ops.Arith
 
@@ -968,8 +954,8 @@ end Core_models.Ops.Arith
 namespace Core_models.Ops.Control_flow
 
 inductive ControlFlow (B : Type) (C : Type) : Type
-| Continue : C -> ControlFlow (B : Type) (C : Type) 
-| Break : B -> ControlFlow (B : Type) (C : Type) 
+| Continue : C -> ControlFlow (B : Type) (C : Type)
+| Break : B -> ControlFlow (B : Type) (C : Type)
 
 end Core_models.Ops.Control_flow
 
@@ -978,13 +964,11 @@ namespace Core_models.Ops.Try_trait
 
 class FromResidual.AssociatedTypes (Self : Type) (R : Type) where
 
-class FromResidual
-  (Self : Type)
-  (R : Type)
+class FromResidual (Self : Type) (R : Type)
   [associatedTypes : outParam (FromResidual.AssociatedTypes (Self : Type) (R :
       Type))]
   where
-  from_residual (Self R) : (R -> RustM Self)
+  from_residual (Self) (R) : (R -> RustM Self)
 
 end Core_models.Ops.Try_trait
 
@@ -993,8 +977,7 @@ namespace Core_models.Ops.Drop
 
 class Drop.AssociatedTypes (Self : Type) where
 
-class Drop
-  (Self : Type)
+class Drop (Self : Type)
   [associatedTypes : outParam (Drop.AssociatedTypes (Self : Type))]
   where
   drop (Self) : (Self -> RustM Self)
@@ -1005,8 +988,8 @@ end Core_models.Ops.Drop
 namespace Core_models.Option
 
 inductive Option (T : Type) : Type
-| Some : T -> Option (T : Type) 
-| None : Option (T : Type) 
+| Some : T -> Option (T : Type)
+| None : Option (T : Type)
 
 end Core_models.Option
 
@@ -1018,79 +1001,83 @@ class PartialOrd.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 attribute [instance] PartialOrd.AssociatedTypes.trait_constr_PartialOrd_i0
 
-class PartialOrd
-  (Self : Type)
-  (Rhs : Type)
+class PartialOrd (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (PartialOrd.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
   [trait_constr_PartialOrd_i0 : PartialEq Self Rhs]
-  partial_cmp (Self Rhs)
-    :
+  partial_cmp (Self) (Rhs) :
     (Self -> Rhs -> RustM (Core_models.Option.Option Ordering))
 
 attribute [instance] PartialOrd.trait_constr_PartialOrd_i0
 
 class PartialOrdDefaults.AssociatedTypes (Self : Type) (Rhs : Type) where
 
-class PartialOrdDefaults
-  (Self : Type)
-  (Rhs : Type)
+class PartialOrdDefaults (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (PartialOrdDefaults.AssociatedTypes (Self : Type)
       (Rhs : Type))]
   where
-  lt (Self Rhs)
-    [PartialOrd.AssociatedTypes Self Rhs] [PartialOrd Self Rhs ] :
+  lt (Self) (Rhs)
+    [trait_constr_lt_associated_type_i1 : PartialOrd.AssociatedTypes Self Rhs]
+    [trait_constr_lt_i1 : PartialOrd Self Rhs ] :
     (Self -> Rhs -> RustM Bool)
-  le (Self Rhs)
-    [PartialOrd.AssociatedTypes Self Rhs] [PartialOrd Self Rhs ] :
+  le (Self) (Rhs)
+    [trait_constr_le_associated_type_i1 : PartialOrd.AssociatedTypes Self Rhs]
+    [trait_constr_le_i1 : PartialOrd Self Rhs ] :
     (Self -> Rhs -> RustM Bool)
-  gt (Self Rhs)
-    [PartialOrd.AssociatedTypes Self Rhs] [PartialOrd Self Rhs ] :
+  gt (Self) (Rhs)
+    [trait_constr_gt_associated_type_i1 : PartialOrd.AssociatedTypes Self Rhs]
+    [trait_constr_gt_i1 : PartialOrd Self Rhs ] :
     (Self -> Rhs -> RustM Bool)
-  ge (Self Rhs)
-    [PartialOrd.AssociatedTypes Self Rhs] [PartialOrd Self Rhs ] :
+  ge (Self) (Rhs)
+    [trait_constr_ge_associated_type_i1 : PartialOrd.AssociatedTypes Self Rhs]
+    [trait_constr_ge_i1 : PartialOrd Self Rhs ] :
     (Self -> Rhs -> RustM Bool)
 
 @[reducible] instance Impl_1.AssociatedTypes
-  (T : Type) [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] :
+  (T : Type)
+  [trait_constr_Impl_1_associated_type_i0 : PartialOrd.AssociatedTypes T T]
+  [trait_constr_Impl_1_i0 : PartialOrd T T ] :
   PartialOrdDefaults.AssociatedTypes T T
   where
 
-instance Impl_1 (T : Type) [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] :
+instance Impl_1
+  (T : Type)
+  [trait_constr_Impl_1_associated_type_i0 : PartialOrd.AssociatedTypes T T]
+  [trait_constr_Impl_1_i0 : PartialOrd T T ] :
   PartialOrdDefaults T T
   where
   lt :=
     fun
-      [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] (self : T) (y : T) =>
-      do
+      [trait_constr_lt_associated_type_i1 : PartialOrd.AssociatedTypes T T]
+      [trait_constr_lt_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Ordering.Less )) => (pure true)
+      | (Core_models.Option.Option.Some  (Ordering.Less )) => (pure true)
       | _ => (pure false)
   le :=
     fun
-      [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] (self : T) (y : T) =>
-      do
+      [trait_constr_le_associated_type_i1 : PartialOrd.AssociatedTypes T T]
+      [trait_constr_le_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Ordering.Less )) |
-        (Core_models.Option.Option.Some (Ordering.Equal ))
-        => (pure true)
+      | (Core_models.Option.Option.Some  (Ordering.Less )) |
+        (Core_models.Option.Option.Some  (Ordering.Equal )) =>
+        (pure true)
       | _ => (pure false)
   gt :=
     fun
-      [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] (self : T) (y : T) =>
-      do
+      [trait_constr_gt_associated_type_i1 : PartialOrd.AssociatedTypes T T]
+      [trait_constr_gt_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Ordering.Greater )) => (pure true)
+      | (Core_models.Option.Option.Some  (Ordering.Greater )) => (pure true)
       | _ => (pure false)
   ge :=
     fun
-      [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] (self : T) (y : T) =>
-      do
+      [trait_constr_ge_associated_type_i1 : PartialOrd.AssociatedTypes T T]
+      [trait_constr_ge_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Ordering.Greater )) |
-        (Core_models.Option.Option.Some (Ordering.Equal ))
-        => (pure true)
+      | (Core_models.Option.Option.Some  (Ordering.Greater )) |
+        (Core_models.Option.Option.Some  (Ordering.Equal )) =>
+        (pure true)
       | _ => (pure false)
 
 class Ord.AssociatedTypes (Self : Type) where
@@ -1101,8 +1088,8 @@ attribute [instance] Ord.AssociatedTypes.trait_constr_Ord_i0
 
 attribute [instance] Ord.AssociatedTypes.trait_constr_Ord_i1
 
-class Ord
-  (Self : Type) [associatedTypes : outParam (Ord.AssociatedTypes (Self : Type))]
+class Ord (Self : Type)
+  [associatedTypes : outParam (Ord.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Ord_i0 : Eq Self]
   [trait_constr_Ord_i1 : PartialOrd Self Self]
@@ -1113,40 +1100,54 @@ attribute [instance] Ord.trait_constr_Ord_i0
 attribute [instance] Ord.trait_constr_Ord_i1
 
 def max
-  (T : Type) [Ord.AssociatedTypes T] [Ord T ] (v1 : T)
-  (v2 : T)
-  : RustM T
-  := do
+    (T : Type)
+    [trait_constr_max_associated_type_i0 : Ord.AssociatedTypes T]
+    [trait_constr_max_i0 : Ord T ]
+    (v1 : T)
+    (v2 : T) :
+    RustM T := do
   match (← (Ord.cmp T v1 v2)) with
     | (Ordering.Greater ) => (pure v1)
     | _ => (pure v2)
 
 def min
-  (T : Type) [Ord.AssociatedTypes T] [Ord T ] (v1 : T)
-  (v2 : T)
-  : RustM T
-  := do
+    (T : Type)
+    [trait_constr_min_associated_type_i0 : Ord.AssociatedTypes T]
+    [trait_constr_min_i0 : Ord T ]
+    (v1 : T)
+    (v2 : T) :
+    RustM T := do
   match (← (Ord.cmp T v1 v2)) with
     | (Ordering.Greater ) => (pure v2)
     | _ => (pure v1)
 
 @[reducible] instance Impl_2.AssociatedTypes
-  (T : Type) [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] :
+  (T : Type)
+  [trait_constr_Impl_2_associated_type_i0 : PartialOrd.AssociatedTypes T T]
+  [trait_constr_Impl_2_i0 : PartialOrd T T ] :
   PartialOrd.AssociatedTypes (Reverse T) (Reverse T)
   where
 
-instance Impl_2 (T : Type) [PartialOrd.AssociatedTypes T T] [PartialOrd T T ] :
+instance Impl_2
+  (T : Type)
+  [trait_constr_Impl_2_associated_type_i0 : PartialOrd.AssociatedTypes T T]
+  [trait_constr_Impl_2_i0 : PartialOrd T T ] :
   PartialOrd (Reverse T) (Reverse T)
   where
   partial_cmp := fun (self : (Reverse T)) (other : (Reverse T)) => do
     (PartialOrd.partial_cmp T T (Reverse._0 other) (Reverse._0 self))
 
 @[reducible] instance Impl_5.AssociatedTypes
-  (T : Type) [Ord.AssociatedTypes T] [Ord T ] :
+  (T : Type)
+  [trait_constr_Impl_5_associated_type_i0 : Ord.AssociatedTypes T]
+  [trait_constr_Impl_5_i0 : Ord T ] :
   Ord.AssociatedTypes (Reverse T)
   where
 
-instance Impl_5 (T : Type) [Ord.AssociatedTypes T] [Ord T ] :
+instance Impl_5
+  (T : Type)
+  [trait_constr_Impl_5_associated_type_i0 : Ord.AssociatedTypes T]
+  [trait_constr_Impl_5_i0 : Ord T ] :
   Ord (Reverse T)
   where
   cmp := fun (self : (Reverse T)) (other : (Reverse T)) => do
@@ -1471,37 +1472,36 @@ namespace Core_models.Option
 
 def Impl.as_ref (T : Type) (self : (Option T)) : RustM (Option T) := do
   match self with
-    | (Option.Some x) => (pure (Option.Some x))
+    | (Option.Some  x) => (pure (Option.Some x))
     | (Option.None ) => (pure Option.None)
 
 def Impl.unwrap_or (T : Type) (self : (Option T)) (default : T) : RustM T := do
   match self with
-    | (Option.Some x) => (pure x)
+    | (Option.Some  x) => (pure x)
     | (Option.None ) => (pure default)
 
 def Impl.unwrap_or_default
-  (T : Type)
-  [Core_models.Default.Default.AssociatedTypes T]
-  [Core_models.Default.Default T ]
-  (self : (Option T))
-  : RustM T
-  := do
+    (T : Type)
+    [trait_constr_unwrap_or_default_associated_type_i0 :
+      Core_models.Default.Default.AssociatedTypes
+      T]
+    [trait_constr_unwrap_or_default_i0 : Core_models.Default.Default T ]
+    (self : (Option T)) :
+    RustM T := do
   match self with
-    | (Option.Some x) => (pure x)
-    | (Option.None )
-      => (Core_models.Default.Default.default T Rust_primitives.Hax.Tuple0.mk)
+    | (Option.Some  x) => (pure x)
+    | (Option.None ) =>
+      (Core_models.Default.Default.default T Rust_primitives.Hax.Tuple0.mk)
 
-def Impl.take
-  (T : Type) (self : (Option T))
-  : RustM (Rust_primitives.Hax.Tuple2 (Option T) (Option T))
-  := do
+def Impl.take (T : Type) (self : (Option T)) :
+    RustM (Rust_primitives.Hax.Tuple2 (Option T) (Option T)) := do
   (pure (Rust_primitives.Hax.Tuple2.mk Option.None self))
 
 def Impl.is_some (T : Type) (self : (Option T)) : RustM Bool := do
-  match self with | (Option.Some _) => (pure true) | _ => (pure false)
+  match self with | (Option.Some  _) => (pure true) | _ => (pure false)
 
 @[spec]
-def Impl.is_some.spec (T : Type) (self : (Option T))  :
+def Impl.is_some.spec (T : Type) (self : (Option T)) :
     Spec
       (requires := do pure True)
       (ensures := fun
@@ -1509,7 +1509,7 @@ def Impl.is_some.spec (T : Type) (self : (Option T))  :
           (Hax_lib.Prop.Constructors.implies
             (← (Hax_lib.Prop.Constructors.from_bool res))
             (← (Hax_lib.Prop.Impl.from_bool true))))
-      (Impl.is_some (T : Type) (self : (Option T)) ) := {
+      (Impl.is_some (T : Type) (self : (Option T))) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
   contract := by mvcgen[Impl.is_some] <;> try grind
@@ -1523,17 +1523,13 @@ end Core_models.Option
 
 namespace Core_models.Panicking
 
-opaque panic_explicit
-  (_ : Rust_primitives.Hax.Tuple0)
-  : RustM Rust_primitives.Hax.Never
-
+opaque panic_explicit (_ : Rust_primitives.Hax.Tuple0) :
+    RustM Rust_primitives.Hax.Never 
 
 opaque panic (_msg : String) : RustM Rust_primitives.Hax.Never 
 
-opaque panic_fmt
-  (_fmt : Core_models.Fmt.Arguments)
-  : RustM Rust_primitives.Hax.Never
-
+opaque panic_fmt (_fmt : Core_models.Fmt.Arguments) :
+    RustM Rust_primitives.Hax.Never 
 
 end Core_models.Panicking
 
@@ -1554,7 +1550,9 @@ namespace Core_models.Hash
 instance Impl (T : Type) : Hash T where
   hash :=
     fun
-      (H : Type) [Hasher.AssociatedTypes H] [Hasher H ] (self : T) (h : H) => do
+      (H : Type)
+      [trait_constr_hash_associated_type_i0 : Hasher.AssociatedTypes H]
+      [trait_constr_hash_i0 : Hasher H ] (self : T) (h : H) => do
     (Core_models.Panicking.Internal.panic H Rust_primitives.Hax.Tuple0.mk)
 
 end Core_models.Hash
@@ -1563,43 +1561,39 @@ end Core_models.Hash
 namespace Core_models.Result
 
 inductive Result (T : Type) (E : Type) : Type
-| Ok : T -> Result (T : Type) (E : Type) 
-| Err : E -> Result (T : Type) (E : Type) 
+| Ok : T -> Result (T : Type) (E : Type)
+| Err : E -> Result (T : Type) (E : Type)
 
 end Core_models.Result
 
 
 namespace Core_models.Fmt
 
-abbrev Result
-  : Type :=
+abbrev Result :
+  Type :=
   (Core_models.Result.Result Rust_primitives.Hax.Tuple0 Error)
 
 class Display.AssociatedTypes (Self : Type) where
 
-class Display
-  (Self : Type)
+class Display (Self : Type)
   [associatedTypes : outParam (Display.AssociatedTypes (Self : Type))]
   where
-  fmt (Self)
-    :
-    (Self
-    -> Formatter
-    -> RustM (Rust_primitives.Hax.Tuple2
+  fmt (Self) :
+    (Self ->
+    Formatter ->
+    RustM (Rust_primitives.Hax.Tuple2
       Formatter
       (Core_models.Result.Result Rust_primitives.Hax.Tuple0 Error)))
 
 class Debug.AssociatedTypes (Self : Type) where
 
-class Debug
-  (Self : Type)
+class Debug (Self : Type)
   [associatedTypes : outParam (Debug.AssociatedTypes (Self : Type))]
   where
-  dbg_fmt (Self)
-    :
-    (Self
-    -> Formatter
-    -> RustM (Rust_primitives.Hax.Tuple2
+  dbg_fmt (Self) :
+    (Self ->
+    Formatter ->
+    RustM (Rust_primitives.Hax.Tuple2
       Formatter
       (Core_models.Result.Result Rust_primitives.Hax.Tuple0 Error)))
 
@@ -1616,8 +1610,7 @@ attribute [instance] Error.AssociatedTypes.trait_constr_Error_i0
 
 attribute [instance] Error.AssociatedTypes.trait_constr_Error_i1
 
-class Error
-  (Self : Type)
+class Error (Self : Type)
   [associatedTypes : outParam (Error.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Error_i0 : Core_models.Fmt.Display Self]
@@ -1645,14 +1638,12 @@ instance Impl (T : Type) : Debug T where
       (Core_models.Result.Result.Ok Rust_primitives.Hax.Tuple0.mk);
     (pure (Rust_primitives.Hax.Tuple2.mk f hax_temp_output))
 
-def Impl_11.write_fmt
-  (f : Formatter)
-  (args : Arguments)
-  : RustM
-  (Rust_primitives.Hax.Tuple2
-    Formatter
-    (Core_models.Result.Result Rust_primitives.Hax.Tuple0 Error))
-  := do
+def Impl_11.write_fmt (f : Formatter) (args : Arguments) :
+    RustM
+    (Rust_primitives.Hax.Tuple2
+      Formatter
+      (Core_models.Result.Result Rust_primitives.Hax.Tuple0 Error))
+    := do
   let
     hax_temp_output : (Core_models.Result.Result
       Rust_primitives.Hax.Tuple0
@@ -1665,13 +1656,10 @@ end Core_models.Fmt
 
 namespace Core_models.Option
 
-def Impl.ok_or
-  (T : Type) (E : Type) (self : (Option T))
-  (err : E)
-  : RustM (Core_models.Result.Result T E)
-  := do
+def Impl.ok_or (T : Type) (E : Type) (self : (Option T)) (err : E) :
+    RustM (Core_models.Result.Result T E) := do
   match self with
-    | (Option.Some v) => (pure (Core_models.Result.Result.Ok v))
+    | (Option.Some  v) => (pure (Core_models.Result.Result.Ok v))
     | (Option.None ) => (pure (Core_models.Result.Result.Err err))
 
 end Core_models.Option
@@ -1679,15 +1667,14 @@ end Core_models.Option
 
 namespace Core_models.Result
 
-def Impl.unwrap_or
-  (T : Type) (E : Type) (self : (Result T E))
-  (default : T)
-  : RustM T
-  := do
-  match self with | (Result.Ok t) => (pure t) | (Result.Err _) => (pure default)
+def Impl.unwrap_or (T : Type) (E : Type) (self : (Result T E)) (default : T) :
+    RustM T := do
+  match self with
+    | (Result.Ok  t) => (pure t)
+    | (Result.Err  _) => (pure default)
 
 def Impl.is_ok (T : Type) (E : Type) (self : (Result T E)) : RustM Bool := do
-  match self with | (Result.Ok _) => (pure true) | _ => (pure false)
+  match self with | (Result.Ok  _) => (pure true) | _ => (pure false)
 
 end Core_models.Result
 
@@ -1697,14 +1684,16 @@ namespace Core_models.Slice
 opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
 
 opaque Impl.copy_within
-  (T : Type)
-  (R : Type)
-  [Core.Marker.Copy.AssociatedTypes T] [Core.Marker.Copy T ]
-  (s : (RustSlice T))
-  (src : R)
-  (dest : usize)
-  : RustM (RustSlice T)
-
+    (T : Type)
+    (R : Type)
+    [trait_constr_copy_within_associated_type_i0 :
+      Core.Marker.Copy.AssociatedTypes
+      T]
+    [trait_constr_copy_within_i0 : Core.Marker.Copy T ]
+    (s : (RustSlice T))
+    (src : R)
+    (dest : usize) :
+    RustM (RustSlice T) 
 
 end Core_models.Slice
 
@@ -1719,10 +1708,8 @@ end Core_models.Str.Error
 
 namespace Core_models.Str.Converts
 
-opaque from_utf8
-  (s : (RustSlice u8))
-  : RustM (Core_models.Result.Result String Core_models.Str.Error.Utf8Error)
-
+opaque from_utf8 (s : (RustSlice u8)) :
+    RustM (Core_models.Result.Result String Core_models.Str.Error.Utf8Error) 
 
 end Core_models.Str.Converts
 
@@ -1745,14 +1732,11 @@ attribute [reducible] TryInto.AssociatedTypes.Error
 abbrev TryInto.Error :=
   TryInto.AssociatedTypes.Error
 
-class TryInto
-  (Self : Type)
-  (T : Type)
+class TryInto (Self : Type) (T : Type)
   [associatedTypes : outParam (TryInto.AssociatedTypes (Self : Type) (T :
       Type))]
   where
-  try_into (Self T)
-    :
+  try_into (Self) (T) :
     (Self -> RustM (Core_models.Result.Result T associatedTypes.Error))
 
 class TryFrom.AssociatedTypes (Self : Type) (T : Type) where
@@ -1763,14 +1747,11 @@ attribute [reducible] TryFrom.AssociatedTypes.Error
 abbrev TryFrom.Error :=
   TryFrom.AssociatedTypes.Error
 
-class TryFrom
-  (Self : Type)
-  (T : Type)
+class TryFrom (Self : Type) (T : Type)
   [associatedTypes : outParam (TryFrom.AssociatedTypes (Self : Type) (T :
       Type))]
   where
-  try_from (Self T)
-    :
+  try_from (Self) (T) :
     (T -> RustM (Core_models.Result.Result Self associatedTypes.Error))
 
 end Core_models.Convert
@@ -1786,8 +1767,7 @@ attribute [reducible] IntoIterator.AssociatedTypes.IntoIter
 abbrev IntoIterator.IntoIter :=
   IntoIterator.AssociatedTypes.IntoIter
 
-class IntoIterator
-  (Self : Type)
+class IntoIterator (Self : Type)
   [associatedTypes : outParam (IntoIterator.AssociatedTypes (Self : Type))]
   where
   into_iter (Self) : (Self -> RustM associatedTypes.IntoIter)
@@ -1805,12 +1785,10 @@ attribute [reducible] Add.AssociatedTypes.Output
 abbrev Add.Output :=
   Add.AssociatedTypes.Output
 
-class Add
-  (Self : Type)
-  (Rhs : Type)
+class Add (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Add.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  add (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  add (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Sub.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1820,12 +1798,10 @@ attribute [reducible] Sub.AssociatedTypes.Output
 abbrev Sub.Output :=
   Sub.AssociatedTypes.Output
 
-class Sub
-  (Self : Type)
-  (Rhs : Type)
+class Sub (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Sub.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  sub (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  sub (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Mul.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1835,12 +1811,10 @@ attribute [reducible] Mul.AssociatedTypes.Output
 abbrev Mul.Output :=
   Mul.AssociatedTypes.Output
 
-class Mul
-  (Self : Type)
-  (Rhs : Type)
+class Mul (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Mul.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  mul (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  mul (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Div.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1850,12 +1824,10 @@ attribute [reducible] Div.AssociatedTypes.Output
 abbrev Div.Output :=
   Div.AssociatedTypes.Output
 
-class Div
-  (Self : Type)
-  (Rhs : Type)
+class Div (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Div.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  div (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  div (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Neg.AssociatedTypes (Self : Type) where
   Output : Type
@@ -1865,8 +1837,8 @@ attribute [reducible] Neg.AssociatedTypes.Output
 abbrev Neg.Output :=
   Neg.AssociatedTypes.Output
 
-class Neg
-  (Self : Type) [associatedTypes : outParam (Neg.AssociatedTypes (Self : Type))]
+class Neg (Self : Type)
+  [associatedTypes : outParam (Neg.AssociatedTypes (Self : Type))]
   where
   neg (Self) : (Self -> RustM associatedTypes.Output)
 
@@ -1878,12 +1850,10 @@ attribute [reducible] Rem.AssociatedTypes.Output
 abbrev Rem.Output :=
   Rem.AssociatedTypes.Output
 
-class Rem
-  (Self : Type)
-  (Rhs : Type)
+class Rem (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Rem.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  rem (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  rem (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 end Core_models.Ops.Arith
 
@@ -1898,12 +1868,10 @@ attribute [reducible] Shr.AssociatedTypes.Output
 abbrev Shr.Output :=
   Shr.AssociatedTypes.Output
 
-class Shr
-  (Self : Type)
-  (Rhs : Type)
+class Shr (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Shr.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  shr (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  shr (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class Shl.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1913,12 +1881,10 @@ attribute [reducible] Shl.AssociatedTypes.Output
 abbrev Shl.Output :=
   Shl.AssociatedTypes.Output
 
-class Shl
-  (Self : Type)
-  (Rhs : Type)
+class Shl (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (Shl.AssociatedTypes (Self : Type) (Rhs : Type))]
   where
-  shl (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  shl (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class BitXor.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1928,13 +1894,11 @@ attribute [reducible] BitXor.AssociatedTypes.Output
 abbrev BitXor.Output :=
   BitXor.AssociatedTypes.Output
 
-class BitXor
-  (Self : Type)
-  (Rhs : Type)
+class BitXor (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (BitXor.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  bitxor (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  bitxor (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 class BitAnd.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
@@ -1944,13 +1908,11 @@ attribute [reducible] BitAnd.AssociatedTypes.Output
 abbrev BitAnd.Output :=
   BitAnd.AssociatedTypes.Output
 
-class BitAnd
-  (Self : Type)
-  (Rhs : Type)
+class BitAnd (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (BitAnd.AssociatedTypes (Self : Type) (Rhs :
       Type))]
   where
-  bitand (Self Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+  bitand (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 end Core_models.Ops.Bit
 
@@ -1965,13 +1927,11 @@ attribute [reducible] Index.AssociatedTypes.Output
 abbrev Index.Output :=
   Index.AssociatedTypes.Output
 
-class Index
-  (Self : Type)
-  (Idx : Type)
+class Index (Self : Type) (Idx : Type)
   [associatedTypes : outParam (Index.AssociatedTypes (Self : Type) (Idx :
       Type))]
   where
-  index (Self Idx) : (Self -> Idx -> RustM associatedTypes.Output)
+  index (Self) (Idx) : (Self -> Idx -> RustM associatedTypes.Output)
 
 end Core_models.Ops.Index
 
@@ -1986,13 +1946,11 @@ attribute [reducible] FnOnce.AssociatedTypes.Output
 abbrev FnOnce.Output :=
   FnOnce.AssociatedTypes.Output
 
-class FnOnce
-  (Self : Type)
-  (Args : Type)
+class FnOnce (Self : Type) (Args : Type)
   [associatedTypes : outParam (FnOnce.AssociatedTypes (Self : Type) (Args :
       Type))]
   where
-  call_once (Self Args) : (Self -> Args -> RustM associatedTypes.Output)
+  call_once (Self) (Args) : (Self -> Args -> RustM associatedTypes.Output)
 
 end Core_models.Ops.Function
 
@@ -2013,14 +1971,13 @@ abbrev Try.Output :=
 abbrev Try.Residual :=
   Try.AssociatedTypes.Residual
 
-class Try
-  (Self : Type) [associatedTypes : outParam (Try.AssociatedTypes (Self : Type))]
+class Try (Self : Type)
+  [associatedTypes : outParam (Try.AssociatedTypes (Self : Type))]
   where
   from_output (Self) : (associatedTypes.Output -> RustM Self)
-  branch (Self)
-    :
-    (Self
-    -> RustM (Core_models.Ops.Control_flow.ControlFlow
+  branch (Self) :
+    (Self ->
+    RustM (Core_models.Ops.Control_flow.ControlFlow
       associatedTypes.Residual
       associatedTypes.Output))
 
@@ -2037,14 +1994,11 @@ attribute [reducible] SliceIndex.AssociatedTypes.Output
 abbrev SliceIndex.Output :=
   SliceIndex.AssociatedTypes.Output
 
-class SliceIndex
-  (Self : Type)
-  (T : Type)
+class SliceIndex (Self : Type) (T : Type)
   [associatedTypes : outParam (SliceIndex.AssociatedTypes (Self : Type) (T :
       Type))]
   where
-  get (Self T)
-    :
+  get (Self) (T) :
     (Self -> T -> RustM (Core_models.Option.Option associatedTypes.Output))
 
 end Core_models.Slice
@@ -2060,12 +2014,10 @@ attribute [reducible] FromStr.AssociatedTypes.Err
 abbrev FromStr.Err :=
   FromStr.AssociatedTypes.Err
 
-class FromStr
-  (Self : Type)
+class FromStr (Self : Type)
   [associatedTypes : outParam (FromStr.AssociatedTypes (Self : Type))]
   where
-  from_str (Self)
-    :
+  from_str (Self) :
     (String -> RustM (Core_models.Result.Result Self associatedTypes.Err))
 
 end Core_models.Str.Traits
@@ -2074,25 +2026,38 @@ end Core_models.Str.Traits
 namespace Core_models.Convert
 
 @[reducible] instance Impl_1.AssociatedTypes
-  (T : Type) (U : Type) [From.AssociatedTypes U T] [From U T ] :
+  (T : Type)
+  (U : Type)
+  [trait_constr_Impl_1_associated_type_i0 : From.AssociatedTypes U T]
+  [trait_constr_Impl_1_i0 : From U T ] :
   TryFrom.AssociatedTypes U T
   where
   Error := Infallible
 
-instance Impl_1 (T : Type) (U : Type) [From.AssociatedTypes U T] [From U T ] :
+instance Impl_1
+  (T : Type)
+  (U : Type)
+  [trait_constr_Impl_1_associated_type_i0 : From.AssociatedTypes U T]
+  [trait_constr_Impl_1_i0 : From U T ] :
   TryFrom U T
   where
   try_from := fun (x : T) => do
     (pure (Core_models.Result.Result.Ok (← (From._from U T x))))
 
 @[reducible] instance Impl_2.AssociatedTypes
-  (T : Type) (U : Type) [TryFrom.AssociatedTypes U T] [TryFrom U T ] :
+  (T : Type)
+  (U : Type)
+  [trait_constr_Impl_2_associated_type_i0 : TryFrom.AssociatedTypes U T]
+  [trait_constr_Impl_2_i0 : TryFrom U T ] :
   TryInto.AssociatedTypes T U
   where
   Error := (TryFrom.Error U T)
 
 instance Impl_2
-  (T : Type) (U : Type) [TryFrom.AssociatedTypes U T] [TryFrom U T ] :
+  (T : Type)
+  (U : Type)
+  [trait_constr_Impl_2_associated_type_i0 : TryFrom.AssociatedTypes U T]
+  [trait_constr_Impl_2_i0 : TryFrom U T ] :
   TryInto T U
   where
   try_into := fun (self : T) => do (TryFrom.try_from U T self)
@@ -2104,14 +2069,14 @@ namespace Core_models.Iter.Traits.Collect
 
 class FromIterator.AssociatedTypes (Self : Type) (A : Type) where
 
-class FromIterator
-  (Self : Type)
-  (A : Type)
+class FromIterator (Self : Type) (A : Type)
   [associatedTypes : outParam (FromIterator.AssociatedTypes (Self : Type) (A :
       Type))]
   where
-  from_iter (Self A)
-    (T : Type) [IntoIterator.AssociatedTypes T] [IntoIterator T ] :
+  from_iter (Self) (A)
+    (T : Type)
+    [trait_constr_from_iter_associated_type_i1 : IntoIterator.AssociatedTypes T]
+    [trait_constr_from_iter_i1 : IntoIterator T ] :
     (T -> RustM Self)
 
 end Core_models.Iter.Traits.Collect
@@ -2128,7 +2093,9 @@ instance Impl_2 (Arg : Type) (Out : Type) : FnOnce (Arg -> RustM Out) Arg where
   call_once := fun (self : (Arg -> RustM Out)) (arg : Arg) => do (self arg)
 
 @[reducible] instance Impl.AssociatedTypes
-  (Arg1 : Type) (Arg2 : Type) (Out : Type) :
+  (Arg1 : Type)
+  (Arg2 : Type)
+  (Out : Type) :
   FnOnce.AssociatedTypes
   (Arg1 -> Arg2 -> RustM Out)
   (Rust_primitives.Hax.Tuple2 Arg1 Arg2)
@@ -2141,14 +2108,16 @@ instance Impl (Arg1 : Type) (Arg2 : Type) (Out : Type) :
   call_once :=
     fun
       (self : (Arg1 -> Arg2 -> RustM Out))
-      (arg : (Rust_primitives.Hax.Tuple2 Arg1 Arg2))
-      => do
+      (arg : (Rust_primitives.Hax.Tuple2 Arg1 Arg2)) => do
     (self
       (Rust_primitives.Hax.Tuple2._0 arg)
       (Rust_primitives.Hax.Tuple2._1 arg))
 
 @[reducible] instance Impl_1.AssociatedTypes
-  (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
+  (Arg1 : Type)
+  (Arg2 : Type)
+  (Arg3 : Type)
+  (Out : Type) :
   FnOnce.AssociatedTypes
   (Arg1 -> Arg2 -> Arg3 -> RustM Out)
   (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3)
@@ -2163,8 +2132,7 @@ instance Impl_1 (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
   call_once :=
     fun
       (self : (Arg1 -> Arg2 -> Arg3 -> RustM Out))
-      (arg : (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3))
-      => do
+      (arg : (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3)) => do
     (self
       (Rust_primitives.Hax.Tuple3._0 arg)
       (Rust_primitives.Hax.Tuple3._1 arg)
@@ -2176,219 +2144,238 @@ end Core_models.Ops.Function
 namespace Core_models.Option
 
 def Impl.is_some_and
-  (T : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := Bool})]
-  (self : (Option T))
-  (f : F)
-  : RustM Bool
-  := do
+    (T : Type)
+    (F : Type)
+    [trait_constr_is_some_and_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_is_some_and_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := Bool})]
+    (self : (Option T))
+    (f : F) :
+    RustM Bool := do
   match self with
     | (Option.None ) => (pure false)
-    | (Option.Some x) => (Core_models.Ops.Function.FnOnce.call_once F T f x)
+    | (Option.Some  x) => (Core_models.Ops.Function.FnOnce.call_once F T f x)
 
 def Impl.is_none_or
-  (T : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := Bool})]
-  (self : (Option T))
-  (f : F)
-  : RustM Bool
-  := do
+    (T : Type)
+    (F : Type)
+    [trait_constr_is_none_or_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_is_none_or_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := Bool})]
+    (self : (Option T))
+    (f : F) :
+    RustM Bool := do
   match self with
     | (Option.None ) => (pure true)
-    | (Option.Some x) => (Core_models.Ops.Function.FnOnce.call_once F T f x)
+    | (Option.Some  x) => (Core_models.Ops.Function.FnOnce.call_once F T f x)
 
 def Impl.unwrap_or_else
-  (T : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F Rust_primitives.Hax.Tuple0]
-  [Core_models.Ops.Function.FnOnce
-    F
-    Rust_primitives.Hax.Tuple0
-    (associatedTypes := {
-      show
-        Core_models.Ops.Function.FnOnce.AssociatedTypes
-        F
-        Rust_primitives.Hax.Tuple0
-      by infer_instance
-      with Output := T})]
-  (self : (Option T))
-  (f : F)
-  : RustM T
-  := do
-  match self with
-    | (Option.Some x) => (pure x)
-    | (Option.None )
-      =>
-        (Core_models.Ops.Function.FnOnce.call_once
+    (T : Type)
+    (F : Type)
+    [trait_constr_unwrap_or_else_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      Rust_primitives.Hax.Tuple0]
+    [trait_constr_unwrap_or_else_i0 : Core_models.Ops.Function.FnOnce
+      F
+      Rust_primitives.Hax.Tuple0
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
           F
-          Rust_primitives.Hax.Tuple0 f Rust_primitives.Hax.Tuple0.mk)
+          Rust_primitives.Hax.Tuple0
+        by infer_instance
+        with Output := T})]
+    (self : (Option T))
+    (f : F) :
+    RustM T := do
+  match self with
+    | (Option.Some  x) => (pure x)
+    | (Option.None ) =>
+      (Core_models.Ops.Function.FnOnce.call_once
+        F
+        Rust_primitives.Hax.Tuple0 f Rust_primitives.Hax.Tuple0.mk)
 
 def Impl.map
-  (T : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  (self : (Option T))
-  (f : F)
-  : RustM (Option U)
-  := do
+    (T : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_map_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (self : (Option T))
+    (f : F) :
+    RustM (Option U) := do
   match self with
-    | (Option.Some x)
-      =>
-        (pure (Option.Some
-          (← (Core_models.Ops.Function.FnOnce.call_once F T f x))))
+    | (Option.Some  x) =>
+      (pure (Option.Some
+        (← (Core_models.Ops.Function.FnOnce.call_once F T f x))))
     | (Option.None ) => (pure Option.None)
 
 def Impl.map_or
-  (T : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  (self : (Option T))
-  (default : U)
-  (f : F)
-  : RustM U
-  := do
+    (T : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_map_or_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_or_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (self : (Option T))
+    (default : U)
+    (f : F) :
+    RustM U := do
   match self with
-    | (Option.Some t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Option.Some  t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
     | (Option.None ) => (pure default)
 
 def Impl.map_or_else
-  (T : Type)
-  (U : Type)
-  (D : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes D Rust_primitives.Hax.Tuple0]
-  [Core_models.Ops.Function.FnOnce
-    D
-    Rust_primitives.Hax.Tuple0
-    (associatedTypes := {
-      show
-        Core_models.Ops.Function.FnOnce.AssociatedTypes
-        D
-        Rust_primitives.Hax.Tuple0
-      by infer_instance
-      with Output := U})]
-  (self : (Option T))
-  (default : D)
-  (f : F)
-  : RustM U
-  := do
-  match self with
-    | (Option.Some t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
-    | (Option.None )
-      =>
-        (Core_models.Ops.Function.FnOnce.call_once
+    (T : Type)
+    (U : Type)
+    (D : Type)
+    (F : Type)
+    [trait_constr_map_or_else_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_or_else_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    [trait_constr_map_or_else_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      D
+      Rust_primitives.Hax.Tuple0]
+    [trait_constr_map_or_else_i1 : Core_models.Ops.Function.FnOnce
+      D
+      Rust_primitives.Hax.Tuple0
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
           D
-          Rust_primitives.Hax.Tuple0 default Rust_primitives.Hax.Tuple0.mk)
+          Rust_primitives.Hax.Tuple0
+        by infer_instance
+        with Output := U})]
+    (self : (Option T))
+    (default : D)
+    (f : F) :
+    RustM U := do
+  match self with
+    | (Option.Some  t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Option.None ) =>
+      (Core_models.Ops.Function.FnOnce.call_once
+        D
+        Rust_primitives.Hax.Tuple0 default Rust_primitives.Hax.Tuple0.mk)
 
 def Impl.map_or_default
-  (T : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  [Core_models.Default.Default.AssociatedTypes U]
-  [Core_models.Default.Default U ]
-  (self : (Option T))
-  (f : F)
-  : RustM U
-  := do
+    (T : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_map_or_default_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_or_default_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    [trait_constr_map_or_default_associated_type_i1 :
+      Core_models.Default.Default.AssociatedTypes
+      U]
+    [trait_constr_map_or_default_i1 : Core_models.Default.Default U ]
+    (self : (Option T))
+    (f : F) :
+    RustM U := do
   match self with
-    | (Option.Some t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
-    | (Option.None )
-      => (Core_models.Default.Default.default U Rust_primitives.Hax.Tuple0.mk)
+    | (Option.Some  t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Option.None ) =>
+      (Core_models.Default.Default.default U Rust_primitives.Hax.Tuple0.mk)
 
 def Impl.ok_or_else
-  (T : Type)
-  (E : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F Rust_primitives.Hax.Tuple0]
-  [Core_models.Ops.Function.FnOnce
-    F
-    Rust_primitives.Hax.Tuple0
-    (associatedTypes := {
-      show
-        Core_models.Ops.Function.FnOnce.AssociatedTypes
-        F
-        Rust_primitives.Hax.Tuple0
-      by infer_instance
-      with Output := E})]
-  (self : (Option T))
-  (err : F)
-  : RustM (Core_models.Result.Result T E)
-  := do
+    (T : Type)
+    (E : Type)
+    (F : Type)
+    [trait_constr_ok_or_else_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      Rust_primitives.Hax.Tuple0]
+    [trait_constr_ok_or_else_i0 : Core_models.Ops.Function.FnOnce
+      F
+      Rust_primitives.Hax.Tuple0
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          Rust_primitives.Hax.Tuple0
+        by infer_instance
+        with Output := E})]
+    (self : (Option T))
+    (err : F) :
+    RustM (Core_models.Result.Result T E) := do
   match self with
-    | (Option.Some v) => (pure (Core_models.Result.Result.Ok v))
-    | (Option.None )
-      =>
-        (pure (Core_models.Result.Result.Err
-          (← (Core_models.Ops.Function.FnOnce.call_once
-            F
-            Rust_primitives.Hax.Tuple0 err Rust_primitives.Hax.Tuple0.mk))))
+    | (Option.Some  v) => (pure (Core_models.Result.Result.Ok v))
+    | (Option.None ) =>
+      (pure (Core_models.Result.Result.Err
+        (← (Core_models.Ops.Function.FnOnce.call_once
+          F
+          Rust_primitives.Hax.Tuple0 err Rust_primitives.Hax.Tuple0.mk))))
 
 def Impl.and_then
-  (T : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := (Option U)})]
-  (self : (Option T))
-  (f : F)
-  : RustM (Option U)
-  := do
+    (T : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_and_then_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_and_then_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := (Option U)})]
+    (self : (Option T))
+    (f : F) :
+    RustM (Option U) := do
   match self with
-    | (Option.Some x) => (Core_models.Ops.Function.FnOnce.call_once F T f x)
+    | (Option.Some  x) => (Core_models.Ops.Function.FnOnce.call_once F T f x)
     | (Option.None ) => (pure Option.None)
 
 end Core_models.Option
@@ -2397,127 +2384,138 @@ end Core_models.Option
 namespace Core_models.Result
 
 def Impl.map
-  (T : Type)
-  (E : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  (self : (Result T E))
-  (op : F)
-  : RustM (Result U E)
-  := do
+    (T : Type)
+    (E : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_map_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (self : (Result T E))
+    (op : F) :
+    RustM (Result U E) := do
   match self with
-    | (Result.Ok t)
-      =>
-        (pure (Result.Ok
-          (← (Core_models.Ops.Function.FnOnce.call_once F T op t))))
-    | (Result.Err e) => (pure (Result.Err e))
+    | (Result.Ok  t) =>
+      (pure (Result.Ok
+        (← (Core_models.Ops.Function.FnOnce.call_once F T op t))))
+    | (Result.Err  e) => (pure (Result.Err e))
 
 def Impl.map_or
-  (T : Type)
-  (E : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  (self : (Result T E))
-  (default : U)
-  (f : F)
-  : RustM U
-  := do
+    (T : Type)
+    (E : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_map_or_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_or_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (self : (Result T E))
+    (default : U)
+    (f : F) :
+    RustM U := do
   match self with
-    | (Result.Ok t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
-    | (Result.Err _e) => (pure default)
+    | (Result.Ok  t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Result.Err  _e) => (pure default)
 
 def Impl.map_or_else
-  (T : Type)
-  (E : Type)
-  (U : Type)
-  (D : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := U})]
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes D E]
-  [Core_models.Ops.Function.FnOnce
-    D
-    E
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes D E
-      by infer_instance
-      with Output := U})]
-  (self : (Result T E))
-  (default : D)
-  (f : F)
-  : RustM U
-  := do
+    (T : Type)
+    (E : Type)
+    (U : Type)
+    (D : Type)
+    (F : Type)
+    [trait_constr_map_or_else_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_or_else_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    [trait_constr_map_or_else_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      D
+      E]
+    [trait_constr_map_or_else_i1 : Core_models.Ops.Function.FnOnce
+      D
+      E
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes D E
+        by infer_instance
+        with Output := U})]
+    (self : (Result T E))
+    (default : D)
+    (f : F) :
+    RustM U := do
   match self with
-    | (Result.Ok t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
-    | (Result.Err e)
-      => (Core_models.Ops.Function.FnOnce.call_once D E default e)
+    | (Result.Ok  t) => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Result.Err  e) =>
+      (Core_models.Ops.Function.FnOnce.call_once D E default e)
 
 def Impl.map_err
-  (T : Type)
-  (E : Type)
-  (F : Type)
-  (O : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes O E]
-  [Core_models.Ops.Function.FnOnce
-    O
-    E
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes O E
-      by infer_instance
-      with Output := F})]
-  (self : (Result T E))
-  (op : O)
-  : RustM (Result T F)
-  := do
+    (T : Type)
+    (E : Type)
+    (F : Type)
+    (O : Type)
+    [trait_constr_map_err_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      O
+      E]
+    [trait_constr_map_err_i0 : Core_models.Ops.Function.FnOnce
+      O
+      E
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes O E
+        by infer_instance
+        with Output := F})]
+    (self : (Result T E))
+    (op : O) :
+    RustM (Result T F) := do
   match self with
-    | (Result.Ok t) => (pure (Result.Ok t))
-    | (Result.Err e)
-      =>
-        (pure (Result.Err
-          (← (Core_models.Ops.Function.FnOnce.call_once O E op e))))
+    | (Result.Ok  t) => (pure (Result.Ok t))
+    | (Result.Err  e) =>
+      (pure (Result.Err
+        (← (Core_models.Ops.Function.FnOnce.call_once O E op e))))
 
 def Impl.and_then
-  (T : Type)
-  (E : Type)
-  (U : Type)
-  (F : Type)
-  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
-  [Core_models.Ops.Function.FnOnce
-    F
-    T
-    (associatedTypes := {
-      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
-      by infer_instance
-      with Output := (Result U E)})]
-  (self : (Result T E))
-  (op : F)
-  : RustM (Result U E)
-  := do
+    (T : Type)
+    (E : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_and_then_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_and_then_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := (Result U E)})]
+    (self : (Result T E))
+    (op : F) :
+    RustM (Result U E) := do
   match self with
-    | (Result.Ok t) => (Core_models.Ops.Function.FnOnce.call_once F T op t)
-    | (Result.Err e) => (pure (Result.Err e))
+    | (Result.Ok  t) => (Core_models.Ops.Function.FnOnce.call_once F T op t)
+    | (Result.Err  e) => (pure (Result.Err e))
 
 end Core_models.Result
 
@@ -2525,13 +2523,15 @@ end Core_models.Result
 namespace Core_models.Slice
 
 def Impl.get
-  (T : Type)
-  (I : Type)
-  [SliceIndex.AssociatedTypes I (RustSlice T)] [SliceIndex I (RustSlice T) ]
-  (s : (RustSlice T))
-  (index : I)
-  : RustM (Core_models.Option.Option (SliceIndex.Output I (RustSlice T)))
-  := do
+    (T : Type)
+    (I : Type)
+    [trait_constr_get_associated_type_i0 : SliceIndex.AssociatedTypes
+      I
+      (RustSlice T)]
+    [trait_constr_get_i0 : SliceIndex I (RustSlice T) ]
+    (s : (RustSlice T))
+    (index : I) :
+    RustM (Core_models.Option.Option (SliceIndex.Output I (RustSlice T))) := do
   (SliceIndex.get I (RustSlice T) index s)
 
 end Core_models.Slice
