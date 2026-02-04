@@ -378,6 +378,13 @@ class Default (Self : Type)
 end Core_models.Default
 
 
+namespace Core_models.F32
+
+opaque Impl.abs (x : f64) : RustM f64 
+
+end Core_models.F32
+
+
 namespace Core_models.Fmt
 
 structure Error where
@@ -2459,6 +2466,24 @@ class Try (Self : Type)
 end Core_models.Ops.Try_trait
 
 
+namespace Core_models.Ops.Deref
+
+class Deref.AssociatedTypes (Self : Type) where
+  Target : Type
+
+attribute [reducible] Deref.AssociatedTypes.Target
+
+abbrev Deref.Target :=
+  Deref.AssociatedTypes.Target
+
+class Deref (Self : Type)
+  [associatedTypes : outParam (Deref.AssociatedTypes (Self : Type))]
+  where
+  deref (Self) : (Self -> RustM associatedTypes.Target)
+
+end Core_models.Ops.Deref
+
+
 namespace Core_models.Slice
 
 class SliceIndex.AssociatedTypes (Self : Type) (T : Type) where
@@ -3322,6 +3347,19 @@ instance Impl_1 (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
       (Rust_primitives.Hax.Tuple3._2 arg))
 
 end Core_models.Ops.Function
+
+
+namespace Core_models.Ops.Deref
+
+@[reducible] instance Impl.AssociatedTypes (T : Type) :
+  Deref.AssociatedTypes T
+  where
+  Target := T
+
+instance Impl (T : Type) : Deref T where
+  deref := fun (self : T) => do (pure self)
+
+end Core_models.Ops.Deref
 
 
 namespace Core_models.Option

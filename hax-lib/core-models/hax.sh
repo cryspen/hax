@@ -35,9 +35,6 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::num::**::MIN"
     LEAN_FILTERS+=" -core_models::num::**::MAX"
     LEAN_FILTERS+=" -core_models::num::**::BITS"
-    LEAN_FILTERS+=" -core_models::ops::deref::**"
-    # LEAN_FILTERS+=" -core_models::ops::range::**"
-    LEAN_FILTERS+=" -core_models::f32::**::abs"
     
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
