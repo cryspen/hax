@@ -700,14 +700,10 @@ const _: () = {
                             .group()
                             .nest(INDENT),
                             line!(),
-                            docs![
-                                name,
-                                self.generics(generics, &self.render_last(name)),
-                                params
-                            ]
-                            .parens()
-                            .group()
-                            .nest(INDENT)
+                            docs![name, zip_left!(line!(), &generics.params), params]
+                                .parens()
+                                .group()
+                                .nest(INDENT)
                         ]
                         .group()
                         .nest(INDENT),
