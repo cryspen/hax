@@ -584,8 +584,10 @@ const _: () = {
                             .map(|p| {
                                 if let ImplExprKind::LocalBound { .. } = &*p.impl_.kind {
                                     docs![p]
+                                } else if let ImplExprKind::Parent { .. } = &*p.impl_.kind {
+                                    emit_error!(issue 1923, "Unsupported equality constraints on associated types of parent trait")
                                 } else {
-                                    emit_error!(issue 1710, "Unsupported variant of associated type projection")
+                                    emit_error!(issue 1924, "Unsupported variant of associated type projection")
                                 }
                             })
                             .collect::<Vec<_>>();
