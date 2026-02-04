@@ -620,6 +620,8 @@ structure S where
 
 @[instance] opaque Impl : T S := by constructor <;> exact Inhabited.default
 
+opaque OpaqueStruct  : Type
+
 end Lean_tests.Opaque
 
 

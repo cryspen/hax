@@ -39,7 +39,7 @@ report() {
     pr_data=$(
         gh pr list $repo --state merged --limit 1000 \
             --json number,title,url,author,mergedAt \
-            --jq "map(select(.mergedAt >= \"$start\" and .mergedAt <= \"$end\")) | .[] | {number, title, url, author}" | jq -s
+            --jq "map(select(.mergedAt >= \"$start\" and .mergedAt <= \"$end\" and .author.login != \"app/dependabot\")) | .[] | {number, title, url, author}" | jq -s
     )
 
     echo "In $(date -d "$year-$month-01" +"%B"), we successfully merged **$(echo "$pr_data" | jq -r 'length') pull requests**!"
@@ -62,6 +62,7 @@ authors_and_handles() {
     sort -u <<AUTHORS | sed '/^[[:space:]]*$/d'
 maxime:maximebuyse
 clement:clementblaudeau
+alex:abentkamp
 AUTHORS
 }
 authors() {
