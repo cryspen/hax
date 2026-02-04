@@ -1,5 +1,6 @@
 #![allow(non_camel_case_types, unused_variables)]
 
+use crate::result::Result;
 use pastey::paste;
 
 pub mod error;

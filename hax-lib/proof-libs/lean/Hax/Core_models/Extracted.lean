@@ -720,6 +720,9 @@ def Impl_1.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
 def Impl_1.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u8 x y)
 
+def Impl_1.pow (x : u8) (exp : u32) : RustM u8 := do
+  (Rust_primitives.Arithmetic.pow_u8 x exp)
+
 opaque Impl_1.rotate_right (x : u8) (n : u32) : RustM u8 
 
 opaque Impl_1.rotate_left (x : u8) (n : u32) : RustM u8 
@@ -751,6 +754,9 @@ def Impl_3.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
 
 def Impl_3.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u16 x y)
+
+def Impl_3.pow (x : u16) (exp : u32) : RustM u16 := do
+  (Rust_primitives.Arithmetic.pow_u16 x exp)
 
 opaque Impl_3.rotate_right (x : u16) (n : u32) : RustM u16 
 
@@ -784,6 +790,9 @@ def Impl_5.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
 def Impl_5.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u32 x y)
 
+def Impl_5.pow (x : u32) (exp : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.pow_u32 x exp)
+
 opaque Impl_5.rotate_right (x : u32) (n : u32) : RustM u32 
 
 opaque Impl_5.rotate_left (x : u32) (n : u32) : RustM u32 
@@ -815,6 +824,9 @@ def Impl_7.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
 
 def Impl_7.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u64 x y)
+
+def Impl_7.pow (x : u64) (exp : u32) : RustM u64 := do
+  (Rust_primitives.Arithmetic.pow_u64 x exp)
 
 opaque Impl_7.rotate_right (x : u64) (n : u32) : RustM u64 
 
@@ -848,6 +860,9 @@ def Impl_9.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
 def Impl_9.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
   (Rust_primitives.Arithmetic.wrapping_mul_u128 x y)
 
+def Impl_9.pow (x : u128) (exp : u32) : RustM u128 := do
+  (Rust_primitives.Arithmetic.pow_u128 x exp)
+
 opaque Impl_9.rotate_right (x : u128) (n : u32) : RustM u128 
 
 opaque Impl_9.rotate_left (x : u128) (n : u32) : RustM u128 
@@ -879,6 +894,9 @@ def Impl_11.wrapping_sub (x : usize) (y : usize) : RustM usize := do
 
 def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
   (Rust_primitives.Arithmetic.wrapping_mul_usize x y)
+
+def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
+  (Rust_primitives.Arithmetic.pow_usize x exp)
 
 opaque Impl_11.rotate_right (x : usize) (n : u32) : RustM usize 
 
@@ -912,6 +930,9 @@ def Impl_13.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
 def Impl_13.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
   (Rust_primitives.Arithmetic.wrapping_mul_i8 x y)
 
+def Impl_13.pow (x : i8) (exp : u32) : RustM i8 := do
+  (Rust_primitives.Arithmetic.pow_i8 x exp)
+
 opaque Impl_13.rotate_right (x : i8) (n : u32) : RustM i8 
 
 opaque Impl_13.rotate_left (x : i8) (n : u32) : RustM i8 
@@ -943,6 +964,9 @@ def Impl_15.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
 
 def Impl_15.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
   (Rust_primitives.Arithmetic.wrapping_mul_i16 x y)
+
+def Impl_15.pow (x : i16) (exp : u32) : RustM i16 := do
+  (Rust_primitives.Arithmetic.pow_i16 x exp)
 
 opaque Impl_15.rotate_right (x : i16) (n : u32) : RustM i16 
 
@@ -976,6 +1000,9 @@ def Impl_17.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
 def Impl_17.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
   (Rust_primitives.Arithmetic.wrapping_mul_i32 x y)
 
+def Impl_17.pow (x : i32) (exp : u32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.pow_i32 x exp)
+
 opaque Impl_17.rotate_right (x : i32) (n : u32) : RustM i32 
 
 opaque Impl_17.rotate_left (x : i32) (n : u32) : RustM i32 
@@ -1007,6 +1034,9 @@ def Impl_19.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
 
 def Impl_19.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
   (Rust_primitives.Arithmetic.wrapping_mul_i64 x y)
+
+def Impl_19.pow (x : i64) (exp : u32) : RustM i64 := do
+  (Rust_primitives.Arithmetic.pow_i64 x exp)
 
 opaque Impl_19.rotate_right (x : i64) (n : u32) : RustM i64 
 
@@ -1040,6 +1070,9 @@ def Impl_21.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
 def Impl_21.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
   (Rust_primitives.Arithmetic.wrapping_mul_i128 x y)
 
+def Impl_21.pow (x : i128) (exp : u32) : RustM i128 := do
+  (Rust_primitives.Arithmetic.pow_i128 x exp)
+
 opaque Impl_21.rotate_right (x : i128) (n : u32) : RustM i128 
 
 opaque Impl_21.rotate_left (x : i128) (n : u32) : RustM i128 
@@ -1071,6 +1104,9 @@ def Impl_23.wrapping_sub (x : isize) (y : isize) : RustM isize := do
 
 def Impl_23.wrapping_mul (x : isize) (y : isize) : RustM isize := do
   (Rust_primitives.Arithmetic.wrapping_mul_isize x y)
+
+def Impl_23.pow (x : isize) (exp : u32) : RustM isize := do
+  (Rust_primitives.Arithmetic.pow_isize x exp)
 
 opaque Impl_23.rotate_right (x : isize) (n : u32) : RustM isize 
 
@@ -1856,6 +1892,47 @@ def Impl_11.write_fmt (f : Formatter) (args : Arguments) :
 end Core_models.Fmt
 
 
+namespace Core_models.Num
+
+opaque Impl_1.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u8 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_3.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u16 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_5.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u32 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_7.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u64 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_9.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u128 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_11.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result usize Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_13.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i8 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_15.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i16 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_17.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i32 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_19.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i64 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_21.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i128 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_23.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result isize Core_models.Num.Error.ParseIntError) 
+
+end Core_models.Num
+
+
 namespace Core_models.Option
 
 def Impl.ok_or (T : Type) (E : Type) (self : (Option T)) (err : E) :
@@ -1887,7 +1964,50 @@ def Impl.ok (T : Type) (E : Type) (self : (Result T E)) :
 end Core_models.Result
 
 
+namespace Core_models.Slice.Iter
+
+structure Chunks (T : Type) where
+  cs : usize
+  elements : (RustSlice T)
+
+def Impl.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
+    RustM (Chunks T) := do
+  (pure (Chunks.mk (cs := cs) (elements := elements)))
+
+structure ChunksExact (T : Type) where
+  cs : usize
+  elements : (RustSlice T)
+
+def Impl_1.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
+    RustM (ChunksExact T) := do
+  (pure (ChunksExact.mk (cs := cs) (elements := elements)))
+
+structure Iter (T : Type) where
+  _0 : (Rust_primitives.Sequence.Seq T)
+
+end Core_models.Slice.Iter
+
+
 namespace Core_models.Slice
+
+def Impl.len (T : Type) (s : (RustSlice T)) : RustM usize := do
+  (Rust_primitives.Slice.slice_length T s)
+
+def Impl.chunks (T : Type) (s : (RustSlice T)) (cs : usize) :
+    RustM (Core_models.Slice.Iter.Chunks T) := do
+  (Core_models.Slice.Iter.Impl.new T cs s)
+
+def Impl.iter (T : Type) (s : (RustSlice T)) :
+    RustM (Core_models.Slice.Iter.Iter T) := do
+  (pure (Core_models.Slice.Iter.Iter.mk
+    (← (Rust_primitives.Sequence.seq_from_slice T s))))
+
+def Impl.chunks_exact (T : Type) (s : (RustSlice T)) (cs : usize) :
+    RustM (Core_models.Slice.Iter.ChunksExact T) := do
+  (Core_models.Slice.Iter.Impl_1.new T cs s)
+
+def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
+  (Rust_primitives.Hax.Machine_int.eq (← (Impl.len T s)) (0 : usize))
 
 opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
 
@@ -1902,6 +2022,113 @@ opaque Impl.copy_within
     (src : R)
     (dest : usize) :
     RustM (RustSlice T) 
+
+opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
+    RustM (Core_models.Result.Result usize usize) 
+
+def Impl.copy_from_slice
+    (T : Type)
+    [trait_constr_copy_from_slice_associated_type_i0 :
+      Core_models.Marker.Copy.AssociatedTypes
+      T]
+    [trait_constr_copy_from_slice_i0 : Core_models.Marker.Copy T ]
+    (s : (RustSlice T))
+    (src : (RustSlice T)) :
+    RustM (RustSlice T) := do
+  let ⟨tmp0, out⟩ ← (Rust_primitives.Mem.replace (RustSlice T) s src);
+  let s : (RustSlice T) := tmp0;
+  let _ := out;
+  (pure s)
+
+@[spec]
+def
+      Impl.copy_from_slice.spec
+      (T : Type)
+      [trait_constr_copy_from_slice_associated_type_i0 :
+        Core_models.Marker.Copy.AssociatedTypes
+        T]
+      [trait_constr_copy_from_slice_i0 : Core_models.Marker.Copy T ]
+      (s : (RustSlice T))
+      (src : (RustSlice T)) :
+    Spec
+      (requires := do
+        (Rust_primitives.Hax.Machine_int.eq
+          (← (Impl.len T s))
+          (← (Impl.len T src))))
+      (ensures := fun _ => pure True)
+      (Impl.copy_from_slice
+        (T : Type)
+        (s : (RustSlice T))
+        (src : (RustSlice T))) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl.copy_from_slice] <;> try grind
+}
+
+def Impl.clone_from_slice
+    (T : Type)
+    [trait_constr_clone_from_slice_associated_type_i0 :
+      Core_models.Clone.Clone.AssociatedTypes
+      T]
+    [trait_constr_clone_from_slice_i0 : Core_models.Clone.Clone T ]
+    (s : (RustSlice T))
+    (src : (RustSlice T)) :
+    RustM (RustSlice T) := do
+  let ⟨tmp0, out⟩ ← (Rust_primitives.Mem.replace (RustSlice T) s src);
+  let s : (RustSlice T) := tmp0;
+  let _ := out;
+  (pure s)
+
+@[spec]
+def
+      Impl.clone_from_slice.spec
+      (T : Type)
+      [trait_constr_clone_from_slice_associated_type_i0 :
+        Core_models.Clone.Clone.AssociatedTypes
+        T]
+      [trait_constr_clone_from_slice_i0 : Core_models.Clone.Clone T ]
+      (s : (RustSlice T))
+      (src : (RustSlice T)) :
+    Spec
+      (requires := do
+        (Rust_primitives.Hax.Machine_int.eq
+          (← (Impl.len T s))
+          (← (Impl.len T src))))
+      (ensures := fun _ => pure True)
+      (Impl.clone_from_slice
+        (T : Type)
+        (s : (RustSlice T))
+        (src : (RustSlice T))) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl.clone_from_slice] <;> try grind
+}
+
+def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
+    RustM (Rust_primitives.Hax.Tuple2 (RustSlice T) (RustSlice T)) := do
+  (Rust_primitives.Slice.slice_split_at T s mid)
+
+@[spec]
+def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
+    Spec
+      (requires := do
+        (Rust_primitives.Hax.Machine_int.le mid (← (Impl.len T s))))
+      (ensures := fun _ => pure True)
+      (Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize)) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl.split_at] <;> try grind
+}
+
+def Impl.split_at_checked (T : Type) (s : (RustSlice T)) (mid : usize) :
+    RustM
+    (Core_models.Option.Option
+      (Rust_primitives.Hax.Tuple2 (RustSlice T) (RustSlice T)))
+    := do
+  if (← (Rust_primitives.Hax.Machine_int.le mid (← (Impl.len T s)))) then
+    (pure (Core_models.Option.Option.Some (← (Impl.split_at T s mid))))
+  else
+    (pure Core_models.Option.Option.None)
 
 end Core_models.Slice
 
@@ -3456,6 +3683,112 @@ def Impl.and_then
     | (Result.Err  e) => (pure (Result.Err e))
 
 end Core_models.Result
+
+
+namespace Core_models.Slice.Iter
+
+@[reducible] instance Impl_2.AssociatedTypes (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Iter T)
+  where
+  Item := T
+
+instance Impl_2 (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator (Iter T)
+  where
+  next := fun (self : (Iter T)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if
+      (← (Rust_primitives.Hax.Machine_int.eq
+        (← (Rust_primitives.Sequence.seq_len T (Iter._0 self)))
+        (0 : usize))) then
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None))
+      else
+        let res : T ← (Rust_primitives.Sequence.seq_first T (Iter._0 self));
+        let self : (Iter T) :=
+          {self
+          with _0 := (← (Rust_primitives.Sequence.seq_slice T
+            (Iter._0 self)
+            (1 : usize)
+            (← (Rust_primitives.Sequence.seq_len T (Iter._0 self)))))};
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          (Core_models.Option.Option.Some res)));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+@[reducible] instance Impl_3.AssociatedTypes (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Chunks T)
+  where
+  Item := (RustSlice T)
+
+instance Impl_3 (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator (Chunks T)
+  where
+  next := fun (self : (Chunks T)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if
+      (← (Rust_primitives.Hax.Machine_int.eq
+        (← (Rust_primitives.Slice.slice_length T (Chunks.elements self)))
+        (0 : usize))) then
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None))
+      else
+        if
+        (← (Rust_primitives.Hax.Machine_int.lt
+          (← (Rust_primitives.Slice.slice_length T (Chunks.elements self)))
+          (Chunks.cs self))) then
+          let res : (RustSlice T) := (Chunks.elements self);
+          let self : (Chunks T) :=
+            {self
+            with elements := (← (Rust_primitives.Slice.slice_slice T
+              (Chunks.elements self)
+              (0 : usize)
+              (0 : usize)))};
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            (Core_models.Option.Option.Some res)))
+        else
+          let ⟨res, new_elements⟩ ←
+            (Rust_primitives.Slice.slice_split_at T
+              (Chunks.elements self)
+              (Chunks.cs self));
+          let self : (Chunks T) := {self with elements := new_elements};
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            (Core_models.Option.Option.Some res)));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+@[reducible] instance Impl_4.AssociatedTypes (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (ChunksExact T)
+  where
+  Item := (RustSlice T)
+
+instance Impl_4 (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator (ChunksExact T)
+  where
+  next := fun (self : (ChunksExact T)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if
+      (← (Rust_primitives.Hax.Machine_int.lt
+        (← (Rust_primitives.Slice.slice_length T (ChunksExact.elements self)))
+        (ChunksExact.cs self))) then
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None))
+      else
+        let ⟨res, new_elements⟩ ←
+          (Rust_primitives.Slice.slice_split_at T
+            (ChunksExact.elements self)
+            (ChunksExact.cs self));
+        let self : (ChunksExact T) := {self with elements := new_elements};
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          (Core_models.Option.Option.Some res)));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Slice.Iter
 
 
 namespace Core_models.Slice

@@ -7,6 +7,7 @@ import Hax.Rust_primitives.Hax_lib
 import Hax.Rust_primitives.Index
 import Hax.Rust_primitives.Logical_op
 import Hax.Rust_primitives.Loop
+import Hax.Rust_primitives.Mem
 import Hax.Rust_primitives.Never
 import Hax.Rust_primitives.Num
 import Hax.Rust_primitives.Range
