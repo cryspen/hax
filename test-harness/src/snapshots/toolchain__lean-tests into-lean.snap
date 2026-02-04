@@ -125,23 +125,23 @@ namespace Lean_tests.Casts
 def casting_edge_cases (_dummy : Bool) : RustM Bool := do
   let case1 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (256 : u16)))
+      (← (Rust_primitives.Hax.cast_op (256 : u16)) : u8)
       (0 : u8));
   let case2 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (-1 : i16)))
+      (← (Rust_primitives.Hax.cast_op (-1 : i16)) : u8)
       (255 : u8));
   let case3 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (-1 : i8)))
+      (← (Rust_primitives.Hax.cast_op (-1 : i8)) : i16)
       (-1 : i16));
   let case4 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (128 : u8)))
+      (← (Rust_primitives.Hax.cast_op (128 : u8)) : i8)
       (-128 : i8));
   let case5 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (4294967295 : u32)))
+      (← (Rust_primitives.Hax.cast_op (4294967295 : u32)) : i32)
       (-1 : i32));
   ((← ((← ((← (case1 &&? case2)) &&? case3)) &&? case4)) &&? case5)
 
