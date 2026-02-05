@@ -82,14 +82,6 @@ static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
     )
 });
 
-fn uppercase_first(s: &str) -> String {
-    let mut c = s.chars();
-    match c.next() {
-        None => String::new(),
-        Some(first) => first.to_uppercase().collect::<String>() + c.as_str(),
-    }
-}
-
 impl RenderView for LeanPrinter {
     fn separator(&self) -> &str {
         "."
@@ -108,13 +100,7 @@ impl RenderView for LeanPrinter {
     fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         // Returning None indicates that the default rendering should be used
         (match chunk.kind() {
-            AnyKind::Mod => {
-                let mut chunks = default::render_path_segment(self, chunk);
-                for c in &mut chunks {
-                    *c = uppercase_first(c);
-                }
-                Some(chunks)
-            }
+            AnyKind::Mod => Some(default::render_path_segment(self, chunk)),
             AnyKind::Constructor(ConstructorKind::Constructor { ty })
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
@@ -187,7 +173,7 @@ impl Backend for LeanBackend {
 
     fn module_path(&self, module: &Module) -> Utf8PathBuf {
         let krate = module.ident.krate();
-        Utf8PathBuf::from(uppercase_first(krate)).with_extension("lean")
+        Utf8PathBuf::from(krate).with_extension("lean")
     }
 
     fn phases(&self) -> Vec<Box<dyn Phase>> {
