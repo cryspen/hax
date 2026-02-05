@@ -515,6 +515,38 @@ def test (_ : Rust_primitives.Hax.Tuple0) :
 end Lean_tests.Monadic
 
 
+namespace Lean_tests.Monadic.Trait_constants
+
+class Foo.AssociatedTypes (Self : Type) where
+
+class Foo (Self : Type)
+  [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
+  where
+  F (Self) : u32
+
+class Bar.AssociatedTypes (Self : Type) where
+
+class Bar (Self : Type)
+  [associatedTypes : outParam (Bar.AssociatedTypes (Self : Type))]
+  where
+  B (Self) : u32
+
+structure Baz where
+  -- no fields
+
+@[reducible] instance Impl.AssociatedTypes : Foo.AssociatedTypes Baz where
+
+instance Impl : Foo Baz where
+  F := (1 : u32)
+
+@[reducible] instance Impl_1.AssociatedTypes : Bar.AssociatedTypes Baz where
+
+instance Impl_1 : Bar Baz where
+  B := RustM.of_isOk (do ((Foo.F Baz) -? (1 : u32))) (by rfl)
+
+end Lean_tests.Monadic.Trait_constants
+
+
 namespace Lean_tests.Nested_control_flow
 
 def nested_control_flow (_ : Rust_primitives.Hax.Tuple0) :

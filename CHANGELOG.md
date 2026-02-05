@@ -25,6 +25,7 @@ Changes to the Lean backend:
  - Fix support for associated constants in trait impls (#1906)
  - Gather definitions in namespaces, shortening names (#1901)
  - Add support for associated types with constraints and inheritance (#1909)
+ - Fix bug with monadic wrapping of trait constants (#1929)
 
 Miscellaneous:
 
