@@ -433,6 +433,11 @@ const _: () = {
                 // Pure values are displayed directly. Note that constructors, while pure, may
                 // contain sub-expressions that are not, so they must be wrapped in a do-block
                 docs![expr]
+            } else if let ExprKind::App { args, .. } = expr.kind()
+                && args.is_empty()
+            {
+                // Constants are pure values
+                docs![expr]
             } else {
                 // All other expressions are wrapped in a do-block, and extracted out of the monad
                 docs![
@@ -1688,7 +1693,9 @@ set_option linter.unusedVariables false
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => {
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body })
+                    if generics.params.is_empty() =>
+                {
                     docs![
                         name,
                         softline!(),
@@ -1697,6 +1704,22 @@ set_option linter.unusedVariables false
                         self.monad_extract_simplify(body)
                     ]
                 }
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => docs![
+                    docs![
+                        name,
+                        softline!(),
+                        ":=",
+                        line!(),
+                        docs!["fun", line!(), generics, line!(), "=>",]
+                            .group()
+                            .nest(INDENT)
+                    ]
+                    .group(),
+                    line!(),
+                    self.monad_extract_simplify(body)
+                ]
+                .group()
+                .nest(INDENT),
                 ImplItemKind::Error(err) => docs!(err),
             }
         }

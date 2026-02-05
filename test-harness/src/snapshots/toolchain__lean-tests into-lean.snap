@@ -273,13 +273,8 @@ instance Lean_tests.Constants.Const_parameters.Impl (N_TRAIT : usize) :
   (Lean_tests.Constants.Const_parameters.S (N_TRAIT))
   (N_TRAIT)
   where
-  f :=
-    fun
-      (N_FIELD : usize) (self :
-      (Lean_tests.Constants.Const_parameters.S (N_TRAIT)))
-      => do
-    (Lean_tests.Constants.Const_parameters.Impl.f_hoisted (N_TRAIT) (N_FIELD)
-      self)
+  f := fun (N_FIELD : usize)  =>
+    (Lean_tests.Constants.Const_parameters.Impl.f_hoisted (N_TRAIT) (N_FIELD))
 
 def Lean_tests.Constants.Const_parameters.test2
   (N2 : usize)
@@ -929,13 +924,8 @@ def Lean_tests.Traits.Basic.Impl.f2_hoisted
 instance Lean_tests.Traits.Basic.Impl :
   Lean_tests.Traits.Basic.T1 Lean_tests.Traits.Basic.S
   where
-  f1 := fun (self : Lean_tests.Traits.Basic.S) => do
-    (Lean_tests.Traits.Basic.Impl.f1_hoisted self)
-  f2 :=
-    fun
-      (self : Lean_tests.Traits.Basic.S) (other : Lean_tests.Traits.Basic.S) =>
-      do
-    (Lean_tests.Traits.Basic.Impl.f2_hoisted self other)
+  f1 := (Lean_tests.Traits.Basic.Impl.f1_hoisted)
+  f2 := (Lean_tests.Traits.Basic.Impl.f2_hoisted)
 
 def Lean_tests.Traits.Basic.f
   (T : Type)
@@ -1005,8 +995,7 @@ def Lean_tests.Traits.Bounds.Impl.f1_hoisted
 instance Lean_tests.Traits.Bounds.Impl :
   Lean_tests.Traits.Bounds.T1 Lean_tests.Traits.Bounds.S1
   where
-  f1 := fun (self : Lean_tests.Traits.Bounds.S1) => do
-    (Lean_tests.Traits.Bounds.Impl.f1_hoisted self)
+  f1 := (Lean_tests.Traits.Bounds.Impl.f1_hoisted)
 
 structure Lean_tests.Traits.Bounds.S2 where
 
@@ -1024,8 +1013,7 @@ def Lean_tests.Traits.Bounds.Impl_1.f2_hoisted
 instance Lean_tests.Traits.Bounds.Impl_1 :
   Lean_tests.Traits.Bounds.T2 Lean_tests.Traits.Bounds.S2
   where
-  f2 := fun (self : Lean_tests.Traits.Bounds.S2) => do
-    (Lean_tests.Traits.Bounds.Impl_1.f2_hoisted self)
+  f2 := (Lean_tests.Traits.Bounds.Impl_1.f2_hoisted)
 
 def Lean_tests.Traits.Bounds.Impl_2.f_test_hoisted
   (self : Lean_tests.Traits.Bounds.S2)
@@ -1047,11 +1035,7 @@ instance Lean_tests.Traits.Bounds.Impl_2 :
   Lean_tests.Traits.Bounds.S2
   Lean_tests.Traits.Bounds.S1
   where
-  f_test :=
-    fun
-      (self : Lean_tests.Traits.Bounds.S2) (x : Lean_tests.Traits.Bounds.S1) =>
-      do
-    (Lean_tests.Traits.Bounds.Impl_2.f_test_hoisted self x)
+  f_test := (Lean_tests.Traits.Bounds.Impl_2.f_test_hoisted)
 
 def Lean_tests.Traits.Bounds.test
   (x1 : Lean_tests.Traits.Bounds.S1)
@@ -1163,8 +1147,7 @@ def Lean_tests.Traits.Overlapping_methods.Impl.f_hoisted
 instance Lean_tests.Traits.Overlapping_methods.Impl :
   Lean_tests.Traits.Overlapping_methods.T1 u32
   where
-  f := fun (self : u32) => do
-    (Lean_tests.Traits.Overlapping_methods.Impl.f_hoisted self)
+  f := (Lean_tests.Traits.Overlapping_methods.Impl.f_hoisted)
 
 def Lean_tests.Traits.Overlapping_methods.Impl_1.f_hoisted
   (self : u32)
@@ -1181,8 +1164,7 @@ def Lean_tests.Traits.Overlapping_methods.Impl_1.f_hoisted
 instance Lean_tests.Traits.Overlapping_methods.Impl_1 :
   Lean_tests.Traits.Overlapping_methods.T2 u32
   where
-  f := fun (self : u32) => do
-    (Lean_tests.Traits.Overlapping_methods.Impl_1.f_hoisted self)
+  f := (Lean_tests.Traits.Overlapping_methods.Impl_1.f_hoisted)
 
 def Lean_tests.Traits.Overlapping_methods.Impl_2.f_hoisted
   (self : u32)
@@ -1199,8 +1181,7 @@ def Lean_tests.Traits.Overlapping_methods.Impl_2.f_hoisted
 instance Lean_tests.Traits.Overlapping_methods.Impl_2 :
   Lean_tests.Traits.Overlapping_methods.T3 u32
   where
-  f := fun (self : u32) => do
-    (Lean_tests.Traits.Overlapping_methods.Impl_2.f_hoisted self)
+  f := (Lean_tests.Traits.Overlapping_methods.Impl_2.f_hoisted)
 
 def Lean_tests.Traits.Overlapping_methods.test
   (_ : Rust_primitives.Hax.Tuple0)
@@ -1301,8 +1282,7 @@ def Lean_tests.Traits.Inheritance.Impl.f1_hoisted
 instance Lean_tests.Traits.Inheritance.Impl :
   Lean_tests.Traits.Inheritance.T1 Lean_tests.Traits.Inheritance.S
   where
-  f1 := fun (self : Lean_tests.Traits.Inheritance.S) => do
-    (Lean_tests.Traits.Inheritance.Impl.f1_hoisted self)
+  f1 := (Lean_tests.Traits.Inheritance.Impl.f1_hoisted)
 
 def Lean_tests.Traits.Inheritance.Impl_1.f2_hoisted
   (self : Lean_tests.Traits.Inheritance.S)
@@ -1318,8 +1298,7 @@ def Lean_tests.Traits.Inheritance.Impl_1.f2_hoisted
 instance Lean_tests.Traits.Inheritance.Impl_1 :
   Lean_tests.Traits.Inheritance.T2 Lean_tests.Traits.Inheritance.S
   where
-  f2 := fun (self : Lean_tests.Traits.Inheritance.S) => do
-    (Lean_tests.Traits.Inheritance.Impl_1.f2_hoisted self)
+  f2 := (Lean_tests.Traits.Inheritance.Impl_1.f2_hoisted)
 
 def Lean_tests.Traits.Inheritance.Impl_2.f3_hoisted
   (self : Lean_tests.Traits.Inheritance.S)
@@ -1335,8 +1314,7 @@ def Lean_tests.Traits.Inheritance.Impl_2.f3_hoisted
 instance Lean_tests.Traits.Inheritance.Impl_2 :
   Lean_tests.Traits.Inheritance.T3 Lean_tests.Traits.Inheritance.S
   where
-  f3 := fun (self : Lean_tests.Traits.Inheritance.S) => do
-    (Lean_tests.Traits.Inheritance.Impl_2.f3_hoisted self)
+  f3 := (Lean_tests.Traits.Inheritance.Impl_2.f3_hoisted)
 
 def Lean_tests.Traits.Inheritance.Impl_3.f1_hoisted
   (self : Lean_tests.Traits.Inheritance.S)
@@ -1352,8 +1330,7 @@ def Lean_tests.Traits.Inheritance.Impl_3.f1_hoisted
 instance Lean_tests.Traits.Inheritance.Impl_3 :
   Lean_tests.Traits.Inheritance.Tp1 Lean_tests.Traits.Inheritance.S
   where
-  f1 := fun (self : Lean_tests.Traits.Inheritance.S) => do
-    (Lean_tests.Traits.Inheritance.Impl_3.f1_hoisted self)
+  f1 := (Lean_tests.Traits.Inheritance.Impl_3.f1_hoisted)
 
 def Lean_tests.Traits.Inheritance.Impl_4.fp2_hoisted
   (self : Lean_tests.Traits.Inheritance.S)
@@ -1376,8 +1353,7 @@ def Lean_tests.Traits.Inheritance.Impl_4.fp2_hoisted
 instance Lean_tests.Traits.Inheritance.Impl_4 :
   Lean_tests.Traits.Inheritance.Tp2 Lean_tests.Traits.Inheritance.S
   where
-  fp2 := fun (self : Lean_tests.Traits.Inheritance.S) => do
-    (Lean_tests.Traits.Inheritance.Impl_4.fp2_hoisted self)
+  fp2 := (Lean_tests.Traits.Inheritance.Impl_4.fp2_hoisted)
 
 def Lean_tests.Traits.Inheritance.test
   (_ : Rust_primitives.Hax.Tuple0)
@@ -1409,8 +1385,7 @@ def Lean_tests.Traits.Default.Impl.dft_hoisted
 instance Lean_tests.Traits.Default.Impl :
   Lean_tests.Traits.Default.Easy usize
   where
-  dft := fun (self : usize) => do
-    (Lean_tests.Traits.Default.Impl.dft_hoisted self)
+  dft := (Lean_tests.Traits.Default.Impl.dft_hoisted)
 
 @[reducible] instance Lean_tests.Traits.Default.Impl_1.AssociatedTypes :
   Lean_tests.Traits.Default.Easy.AssociatedTypes u32
@@ -1464,10 +1439,8 @@ def Lean_tests.Traits.Default.Impl_2.f2_hoisted
 instance Lean_tests.Traits.Default.Impl_2 :
   Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S usize)
   where
-  f1 := fun (self : (Lean_tests.Traits.Default.S usize)) => do
-    (Lean_tests.Traits.Default.Impl_2.f1_hoisted self)
-  f2 := fun (self : (Lean_tests.Traits.Default.S usize)) => do
-    (Lean_tests.Traits.Default.Impl_2.f2_hoisted self)
+  f1 := (Lean_tests.Traits.Default.Impl_2.f1_hoisted)
+  f2 := (Lean_tests.Traits.Default.Impl_2.f2_hoisted)
 
 def Lean_tests.Traits.Default.Impl_3.f1_hoisted
   (self : (Lean_tests.Traits.Default.S Bool))
@@ -1492,10 +1465,8 @@ def Lean_tests.Traits.Default.Impl_3.f2_hoisted
 instance Lean_tests.Traits.Default.Impl_3 :
   Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S Bool)
   where
-  f1 := fun (self : (Lean_tests.Traits.Default.S Bool)) => do
-    (Lean_tests.Traits.Default.Impl_3.f1_hoisted self)
-  f2 := fun (self : (Lean_tests.Traits.Default.S Bool)) => do
-    (Lean_tests.Traits.Default.Impl_3.f2_hoisted self)
+  f1 := (Lean_tests.Traits.Default.Impl_3.f1_hoisted)
+  f2 := (Lean_tests.Traits.Default.Impl_3.f2_hoisted)
 
 def Lean_tests.Traits.Default.Impl_4.f1_hoisted
   (self : (Lean_tests.Traits.Default.S Alloc.String.String))
@@ -1511,8 +1482,7 @@ def Lean_tests.Traits.Default.Impl_4.f1_hoisted
 instance Lean_tests.Traits.Default.Impl_4 :
   Lean_tests.Traits.Default.T1 (Lean_tests.Traits.Default.S Alloc.String.String)
   where
-  f1 := fun (self : (Lean_tests.Traits.Default.S Alloc.String.String)) => do
-    (Lean_tests.Traits.Default.Impl_4.f1_hoisted self)
+  f1 := (Lean_tests.Traits.Default.Impl_4.f1_hoisted)
 
 class Lean_tests.Traits.Trait_level_args.T1.AssociatedTypes (Self : Type) (A :
   Type) (B : Type) where
@@ -1563,12 +1533,12 @@ def Lean_tests.Traits.Trait_level_args.Impl.f3_hoisted
 instance Lean_tests.Traits.Trait_level_args.Impl :
   Lean_tests.Traits.Trait_level_args.T1 usize u32 u64
   where
-  f1 := fun (C : Type) (D : Type) (self : usize) => do
-    (Lean_tests.Traits.Trait_level_args.Impl.f1_hoisted C D self)
-  f2 := fun (C : Type) (D : Type) (self : usize) (x : u32) => do
-    (Lean_tests.Traits.Trait_level_args.Impl.f2_hoisted C D self x)
-  f3 := fun (C : Type) (D : Type) (self : usize) (x : u32) (y : u64) => do
-    (Lean_tests.Traits.Trait_level_args.Impl.f3_hoisted C D self x y)
+  f1 := fun (C : Type) (D : Type)  =>
+    (Lean_tests.Traits.Trait_level_args.Impl.f1_hoisted C D)
+  f2 := fun (C : Type) (D : Type)  =>
+    (Lean_tests.Traits.Trait_level_args.Impl.f2_hoisted C D)
+  f3 := fun (C : Type) (D : Type)  =>
+    (Lean_tests.Traits.Trait_level_args.Impl.f3_hoisted C D)
 
 def Lean_tests.Traits.Trait_level_args.test
   (A : Type)
@@ -1638,12 +1608,7 @@ instance Lean_tests.Traits.Trait_with_constraints.Impl
   :
   Lean_tests.Traits.Trait_with_constraints.T2 A
   where
-  func :=
-    fun
-      [Lean_tests.Traits.Trait_with_constraints.T1.AssociatedTypes A]
-      [Lean_tests.Traits.Trait_with_constraints.T1 A ]
-      (self : A) => do
-    (Lean_tests.Traits.Trait_with_constraints.Impl.func_hoisted A self)
+  func := (Lean_tests.Traits.Trait_with_constraints.Impl.func_hoisted A)
 
 class Lean_tests.Traits.Associated_constant.Foo.AssociatedTypes (Self : Type)
   where
@@ -1674,12 +1639,8 @@ instance Lean_tests.Traits.Associated_constant.Impl :
   Lean_tests.Traits.Associated_constant.Foo
   Lean_tests.Traits.Associated_constant.Bar
   where
-  f := RustM.of_isOk
-    (do (Lean_tests.Traits.Associated_constant.Impl.f_hoisted))
-    (by rfl)
-  x := RustM.of_isOk
-    (do (Lean_tests.Traits.Associated_constant.Impl.x_hoisted))
-    (by rfl)
+  f := (Lean_tests.Traits.Associated_constant.Impl.f_hoisted)
+  x := (Lean_tests.Traits.Associated_constant.Impl.x_hoisted)
 
 class Lean_tests.Traits.Methods_hoisting.T0.AssociatedTypes (Self : Type) where
 
@@ -1954,8 +1915,7 @@ def Lean_tests.Associated_types.Basic.first_plus_1
 instance Lean_tests.Associated_types.Basic.Impl :
   Lean_tests.Associated_types.Basic.Iterable Bool
   where
-  first := fun (self : Bool) => do
-    (Lean_tests.Associated_types.Basic.Impl.first_hoisted self)
+  first := (Lean_tests.Associated_types.Basic.Impl.first_hoisted)
 
 def Lean_tests.Associated_types.Basic.a
   (_ : Rust_primitives.Hax.Tuple0)
@@ -1993,12 +1953,10 @@ instance Lean_tests.Associated_types.Multiple_associated_types.Impl :
   Lean_tests.Associated_types.Multiple_associated_types.Pair
   (Rust_primitives.Hax.Tuple2 i32 Bool)
   where
-  first := fun (self : (Rust_primitives.Hax.Tuple2 i32 Bool)) => do
-    (Lean_tests.Associated_types.Multiple_associated_types.Impl.first_hoisted
-      self)
-  second := fun (self : (Rust_primitives.Hax.Tuple2 i32 Bool)) => do
-    (Lean_tests.Associated_types.Multiple_associated_types.Impl.second_hoisted
-      self)
+  first :=
+  (Lean_tests.Associated_types.Multiple_associated_types.Impl.first_hoisted)
+  second :=
+  (Lean_tests.Associated_types.Multiple_associated_types.Impl.second_hoisted)
 
 def Lean_tests.Associated_types.Multiple_associated_types.b
   (_ : Rust_primitives.Hax.Tuple0)
@@ -2069,8 +2027,7 @@ def Lean_tests.Enums.enums
 instance Lean_tests.Traits.Associated_types.Impl :
   Lean_tests.Traits.Associated_types.T1 Lean_tests.Traits.Associated_types.S
   where
-  f := fun (self : Lean_tests.Traits.Associated_types.S) (x : i32) => do
-    (Lean_tests.Traits.Associated_types.Impl.f_hoisted self x)
+  f := (Lean_tests.Traits.Associated_types.Impl.f_hoisted)
 
 @[reducible] instance Lean_tests.Traits.Methods_hoisting.Impl.AssociatedTypes
   (U : Type)
@@ -2094,13 +2051,12 @@ instance Lean_tests.Traits.Methods_hoisting.Impl
       (C : u8)
       [Lean_tests.Traits.Methods_hoisting.T0.AssociatedTypes T]
       [Lean_tests.Traits.Methods_hoisting.T0 T ]
-      (x : T) (y : U) => do
-    (Lean_tests.Traits.Methods_hoisting.Impl.f_hoisted U T (C) x y)
-  g := fun (T : Type) (x : T) => do
-    (Lean_tests.Traits.Methods_hoisting.Impl.g_hoisted U T x)
-  AC := RustM.of_isOk
-    (do (Lean_tests.Traits.Methods_hoisting.Impl.AC_hoisted U))
-    (by rfl)
+      
+      =>
+    (Lean_tests.Traits.Methods_hoisting.Impl.f_hoisted U T (C))
+  g := fun (T : Type)  =>
+    (Lean_tests.Traits.Methods_hoisting.Impl.g_hoisted U T)
+  AC := (Lean_tests.Traits.Methods_hoisting.Impl.AC_hoisted U)
 
 class Lean_tests.Traits.Associated_types.T2.AssociatedTypes (Self : Type) where
   T : Type
@@ -2127,9 +2083,4 @@ class Lean_tests.Traits.Associated_types.T2
 instance Lean_tests.Traits.Associated_types.Impl_1 :
   Lean_tests.Traits.Associated_types.T2 Lean_tests.Traits.Associated_types.S
   where
-  f :=
-    fun
-      (self : Lean_tests.Traits.Associated_types.S)
-      (x : Lean_tests.Traits.Associated_types.S)
-      => do
-    (Lean_tests.Traits.Associated_types.Impl_1.f_hoisted self x)'''
+  f := (Lean_tests.Traits.Associated_types.Impl_1.f_hoisted)'''
