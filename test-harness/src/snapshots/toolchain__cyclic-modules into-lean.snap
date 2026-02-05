@@ -26,7 +26,7 @@ exit = 0
 diagnostics = []
 
 [stdout.files]
-"Cyclic_modules.lean" = '''
+"cyclic_modules.lean" = '''
 
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
@@ -41,103 +41,103 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 
-namespace Cyclic_modules.Typ_b
+namespace cyclic_modules.typ_b
 
 inductive T1 : Type
 | T1 : T1
 
-end Cyclic_modules.Typ_b
+end cyclic_modules.typ_b
 
 
-namespace Cyclic_modules.Typ_a
+namespace cyclic_modules.typ_a
 
 inductive T : Type
-| T : Cyclic_modules.Typ_b.T1 -> T
+| T : cyclic_modules.typ_b.T1 -> T
 
-end Cyclic_modules.Typ_a
+end cyclic_modules.typ_a
 
 
-namespace Cyclic_modules.Typ_b
+namespace cyclic_modules.typ_b
 
 def T1 (x : T1) : RustM isize := do
   match x with | (T1.T1 ) => (pure (0 : isize))
 
 inductive T2 : Type
-| T2 : Cyclic_modules.Typ_a.T -> T2
+| T2 : cyclic_modules.typ_a.T -> T2
 
-end Cyclic_modules.Typ_b
-
-
-namespace Cyclic_modules
-
-def f (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules
+end cyclic_modules.typ_b
 
 
-namespace Cyclic_modules.B
+namespace cyclic_modules
 
-def g (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.f Rust_primitives.Hax.Tuple0.mk)
+def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.B
-
-
-namespace Cyclic_modules.C
-
-def i (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.C
+end cyclic_modules
 
 
-namespace Cyclic_modules
+namespace cyclic_modules.b
 
-def h (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  let _ ← (Cyclic_modules.B.g Rust_primitives.Hax.Tuple0.mk);
-  (Cyclic_modules.C.i Rust_primitives.Hax.Tuple0.mk)
+def g (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.f rust_primitives.hax.Tuple0.mk)
 
-def h2 (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.C.i Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules
+end cyclic_modules.b
 
 
-namespace Cyclic_modules.D
+namespace cyclic_modules.c
 
-def d1 (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
+def i (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.D
-
-
-namespace Cyclic_modules.E
-
-def e1 (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.D.d1 Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.E
+end cyclic_modules.c
 
 
-namespace Cyclic_modules.De
+namespace cyclic_modules
 
-def de1 (_ : Rust_primitives.Hax.Tuple0) :
-    RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.E.e1 Rust_primitives.Hax.Tuple0.mk)
+def h (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  let _ ← (cyclic_modules.b.g rust_primitives.hax.Tuple0.mk);
+  (cyclic_modules.c.i rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.De
+def h2 (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.c.i rust_primitives.hax.Tuple0.mk)
 
-
-namespace Cyclic_modules.D
-
-def d2 (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.De.de1 Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.D
+end cyclic_modules
 
 
-namespace Cyclic_modules.Rec
+namespace cyclic_modules.d
+
+def d1 (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.d
+
+
+namespace cyclic_modules.e
+
+def e1 (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.d.d1 rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.e
+
+
+namespace cyclic_modules.de
+
+def de1 (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.e.e1 rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.de
+
+
+namespace cyclic_modules.d
+
+def d2 (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.de.de1 rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.d
+
+
+namespace cyclic_modules.rec
 
 inductive T : Type
 | t1 : T
@@ -146,215 +146,215 @@ inductive T : Type
 def T (x : T) : RustM isize := do
   match x with | (T.t1 ) => (pure (0 : isize)) | (T.t2 ) => (pure (1 : isize))
 
-end Cyclic_modules.Rec
+end cyclic_modules.rec
 
 
-namespace Cyclic_modules.M2
+namespace cyclic_modules.m2
 
-def d (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
+def d (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
 
-def c (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
+def c (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.M2
-
-
-namespace Cyclic_modules.M1
-
-def a (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.M2.c Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.M1
+end cyclic_modules.m2
 
 
-namespace Cyclic_modules.M2
+namespace cyclic_modules.m1
 
-def b (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  let _ ← (Cyclic_modules.M1.a Rust_primitives.Hax.Tuple0.mk);
-  (d Rust_primitives.Hax.Tuple0.mk)
+def a (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.m2.c rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.M2
-
-
-namespace Cyclic_modules.Disjoint_cycle_a
-
-def g (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.Disjoint_cycle_a
+end cyclic_modules.m1
 
 
-namespace Cyclic_modules.Disjoint_cycle_b
+namespace cyclic_modules.m2
 
-def h (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
+def b (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  let _ ← (cyclic_modules.m1.a rust_primitives.hax.Tuple0.mk);
+  (d rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.Disjoint_cycle_b
-
-
-namespace Cyclic_modules.Disjoint_cycle_a
-
-def f (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.Disjoint_cycle_b.h Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.Disjoint_cycle_a
+end cyclic_modules.m2
 
 
-namespace Cyclic_modules.Disjoint_cycle_b
+namespace cyclic_modules.disjoint_cycle_a
 
-def i (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.Disjoint_cycle_a.g Rust_primitives.Hax.Tuple0.mk)
+def g (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.Disjoint_cycle_b
+end cyclic_modules.disjoint_cycle_a
 
 
-namespace Cyclic_modules.Variant_constructor_a
+namespace cyclic_modules.disjoint_cycle_b
+
+def h (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.disjoint_cycle_b
+
+
+namespace cyclic_modules.disjoint_cycle_a
+
+def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.disjoint_cycle_b.h rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.disjoint_cycle_a
+
+
+namespace cyclic_modules.disjoint_cycle_b
+
+def i (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.disjoint_cycle_a.g rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.disjoint_cycle_b
+
+
+namespace cyclic_modules.variant_constructor_a
 
 inductive Context : Type
 | A : i32 -> Context
 | B : i32 -> Context
 
-def Impl.test (x : (Core_models.Option.Option i32)) :
-    RustM (Core_models.Option.Option Context) := do
-  (Core_models.Option.Impl.map i32 Context (i32 -> RustM Context) x Context.A)
+def Impl.test (x : (core_models.option.Option i32)) :
+    RustM (core_models.option.Option Context) := do
+  (core_models.option.Impl.map i32 Context (i32 -> RustM Context) x Context.A)
 
-end Cyclic_modules.Variant_constructor_a
-
-
-namespace Cyclic_modules.Variant_constructor_b
-
-def h (_ : Rust_primitives.Hax.Tuple0) :
-    RustM Cyclic_modules.Variant_constructor_a.Context := do
-  (pure (Cyclic_modules.Variant_constructor_a.Context.A (1 : i32)))
-
-end Cyclic_modules.Variant_constructor_b
+end cyclic_modules.variant_constructor_a
 
 
-namespace Cyclic_modules.Variant_constructor_a
+namespace cyclic_modules.variant_constructor_b
 
-def f (_ : Rust_primitives.Hax.Tuple0) : RustM Context := do
-  (Cyclic_modules.Variant_constructor_b.h Rust_primitives.Hax.Tuple0.mk)
+def h (_ : rust_primitives.hax.Tuple0) :
+    RustM cyclic_modules.variant_constructor_a.Context := do
+  (pure (cyclic_modules.variant_constructor_a.Context.A (1 : i32)))
 
-end Cyclic_modules.Variant_constructor_a
+end cyclic_modules.variant_constructor_b
 
 
-namespace Cyclic_modules.Issue_1823.First_example.A
+namespace cyclic_modules.variant_constructor_a
+
+def f (_ : rust_primitives.hax.Tuple0) : RustM Context := do
+  (cyclic_modules.variant_constructor_b.h rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.variant_constructor_a
+
+
+namespace cyclic_modules.issue_1823.first_example.a
 
 structure A where
   -- no fields
 
-end Cyclic_modules.Issue_1823.First_example.A
+end cyclic_modules.issue_1823.first_example.a
 
 
-namespace Cyclic_modules.Issue_1823.First_example.B
+namespace cyclic_modules.issue_1823.first_example.b
 
 structure B where
   -- no fields
 
-end Cyclic_modules.Issue_1823.First_example.B
+end cyclic_modules.issue_1823.first_example.b
 
 
-namespace Cyclic_modules.Issue_1823.First_example.A
+namespace cyclic_modules.issue_1823.first_example.a
 
 def Impl.mkb (self : A) :
-    RustM Cyclic_modules.Issue_1823.First_example.B.B := do
-  (pure Cyclic_modules.Issue_1823.First_example.B.B.mk)
+    RustM cyclic_modules.issue_1823.first_example.b.B := do
+  (pure cyclic_modules.issue_1823.first_example.b.B.mk)
 
-end Cyclic_modules.Issue_1823.First_example.A
+end cyclic_modules.issue_1823.first_example.a
 
 
-namespace Cyclic_modules.Issue_1823.First_example.B
+namespace cyclic_modules.issue_1823.first_example.b
 
 def Impl.mka (self : B) :
-    RustM Cyclic_modules.Issue_1823.First_example.A.A := do
-  (pure Cyclic_modules.Issue_1823.First_example.A.A.mk)
+    RustM cyclic_modules.issue_1823.first_example.a.A := do
+  (pure cyclic_modules.issue_1823.first_example.a.A.mk)
 
-end Cyclic_modules.Issue_1823.First_example.B
-
-
-namespace Cyclic_modules.Issue_1823.Second_example.A
-
-def a (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.Issue_1823.Second_example.A
+end cyclic_modules.issue_1823.first_example.b
 
 
-namespace Cyclic_modules.Issue_1823.Second_example.B
+namespace cyclic_modules.issue_1823.second_example.a
 
-def call_a (_ : Rust_primitives.Hax.Tuple0) :
-    RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.Issue_1823.Second_example.A.a Rust_primitives.Hax.Tuple0.mk)
+def a (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
 
-def b (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (pure Rust_primitives.Hax.Tuple0.mk)
-
-end Cyclic_modules.Issue_1823.Second_example.B
+end cyclic_modules.issue_1823.second_example.a
 
 
-namespace Cyclic_modules.Issue_1823.Second_example.A
+namespace cyclic_modules.issue_1823.second_example.b
 
-def call_b (_ : Rust_primitives.Hax.Tuple0) :
-    RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.Issue_1823.Second_example.B.b Rust_primitives.Hax.Tuple0.mk)
+def call_a (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.issue_1823.second_example.a.a rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.Issue_1823.Second_example.A
+def b (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.issue_1823.second_example.b
 
 
-namespace Cyclic_modules.Typ_b
+namespace cyclic_modules.issue_1823.second_example.a
+
+def call_b (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.issue_1823.second_example.b.b rust_primitives.hax.Tuple0.mk)
+
+end cyclic_modules.issue_1823.second_example.a
+
+
+namespace cyclic_modules.typ_b
 
 inductive T2Rec : Type
-| T2 : Cyclic_modules.Typ_a.TRec -> T2Rec
+| T2 : cyclic_modules.typ_a.TRec -> T2Rec
 
 inductive T1Rec : Type
 | T1 : T2Rec -> T1Rec
 
-end Cyclic_modules.Typ_b
+end cyclic_modules.typ_b
 
 
-namespace Cyclic_modules.Typ_a
+namespace cyclic_modules.typ_a
 
 inductive TRec : Type
-| T : Cyclic_modules.Typ_b.T1Rec -> TRec
+| T : cyclic_modules.typ_b.T1Rec -> TRec
 | Empty : TRec
 
-end Cyclic_modules.Typ_a
+end cyclic_modules.typ_a
 
 
-namespace Cyclic_modules.Rec
+namespace cyclic_modules.rec
 
 def hf (x : T) : RustM T := do
   match x with | (T.t1 ) => (hf T.t2) | (T.t2 ) => (pure x)
 
-end Cyclic_modules.Rec
+end cyclic_modules.rec
 
 
-namespace Cyclic_modules.Rec2_same_name
+namespace cyclic_modules.rec2_same_name
 
 def f (x : i32) : RustM i32 := do
-  if (← (Rust_primitives.Hax.Machine_int.gt x (0 : i32))) then
-    (Cyclic_modules.Rec1_same_name.f (← (x -? (1 : i32))))
+  if (← (rust_primitives.hax.machine_int.gt x (0 : i32))) then
+    (cyclic_modules.rec1_same_name.f (← (x -? (1 : i32))))
   else
     (pure (0 : i32))
 
-end Cyclic_modules.Rec2_same_name
+end cyclic_modules.rec2_same_name
 
 
-namespace Cyclic_modules.Rec1_same_name
+namespace cyclic_modules.rec1_same_name
 
-def f (x : i32) : RustM i32 := do (Cyclic_modules.Rec2_same_name.f x)
+def f (x : i32) : RustM i32 := do (cyclic_modules.rec2_same_name.f x)
 
-end Cyclic_modules.Rec1_same_name
+end cyclic_modules.rec1_same_name
 
 
-namespace Cyclic_modules.Late_skip_b
+namespace cyclic_modules.late_skip_b
 
-def f (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.Late_skip_a.f Rust_primitives.Hax.Tuple0.mk)
+def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.late_skip_a.f rust_primitives.hax.Tuple0.mk)
 
 @[spec]
-def f.spec (_ : Rust_primitives.Hax.Tuple0) :
+def f.spec (_ : rust_primitives.hax.Tuple0) :
     Spec (requires := do (pure true)) (ensures := fun _ => pure True) (f ⟨⟩) :=
 {
   pureRequires := by constructor; mvcgen <;> try grind
@@ -362,51 +362,51 @@ def f.spec (_ : Rust_primitives.Hax.Tuple0) :
   contract := by mvcgen[f] <;> try grind
 }
 
-end Cyclic_modules.Late_skip_b
+end cyclic_modules.late_skip_b
 
 
-namespace Cyclic_modules.Late_skip_a
+namespace cyclic_modules.late_skip_a
 
-def f (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
-  (Cyclic_modules.Late_skip_b.f Rust_primitives.Hax.Tuple0.mk)
+def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
+  (cyclic_modules.late_skip_b.f rust_primitives.hax.Tuple0.mk)
 
-end Cyclic_modules.Late_skip_a
+end cyclic_modules.late_skip_a
 
 
-namespace Cyclic_modules.Enums_b
+namespace cyclic_modules.enums_b
 
 inductive U : Type
 | A : U
 | B : U
-| C : (Alloc.Vec.Vec Cyclic_modules.Enums_a.T Alloc.Alloc.Global) -> U
+| C : (alloc.vec.Vec cyclic_modules.enums_a.T alloc.alloc.Global) -> U
 
 inductive T : Type
 | A : T
 | B : T
-| C : (Alloc.Vec.Vec Cyclic_modules.Enums_a.T Alloc.Alloc.Global) -> T
+| C : (alloc.vec.Vec cyclic_modules.enums_a.T alloc.alloc.Global) -> T
 
-end Cyclic_modules.Enums_b
+end cyclic_modules.enums_b
 
 
-namespace Cyclic_modules.Enums_a
+namespace cyclic_modules.enums_a
 
 inductive T : Type
 | A : T
 | B : T
-| C : (Alloc.Vec.Vec Cyclic_modules.Enums_b.U Alloc.Alloc.Global) -> T
-| D : (Alloc.Vec.Vec Cyclic_modules.Enums_b.T Alloc.Alloc.Global) -> T
+| C : (alloc.vec.Vec cyclic_modules.enums_b.U alloc.alloc.Global) -> T
+| D : (alloc.vec.Vec cyclic_modules.enums_b.T alloc.alloc.Global) -> T
 
-end Cyclic_modules.Enums_a
-
-
-namespace Cyclic_modules.Enums_b
-
-def f (_ : Rust_primitives.Hax.Tuple0) : RustM T := do (pure T.A)
-
-end Cyclic_modules.Enums_b
+end cyclic_modules.enums_a
 
 
-namespace Cyclic_modules.Rec
+namespace cyclic_modules.enums_b
+
+def f (_ : rust_primitives.hax.Tuple0) : RustM T := do (pure T.A)
+
+end cyclic_modules.enums_b
+
+
+namespace cyclic_modules.rec
 
 def g2 (x : T) : RustM T := do
   match x with | (T.t1 ) => (g1 x) | (T.t2 ) => (hf x)
@@ -414,6 +414,6 @@ def g2 (x : T) : RustM T := do
 def g1 (x : T) : RustM T := do
   match x with | (T.t1 ) => (g2 x) | (T.t2 ) => (pure T.t1)
 
-end Cyclic_modules.Rec
+end cyclic_modules.rec
 
 '''

@@ -100,7 +100,6 @@ impl RenderView for LeanPrinter {
     fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         // Returning None indicates that the default rendering should be used
         (match chunk.kind() {
-            AnyKind::Mod => Some(default::render_path_segment(self, chunk)),
             AnyKind::Constructor(ConstructorKind::Constructor { ty })
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
