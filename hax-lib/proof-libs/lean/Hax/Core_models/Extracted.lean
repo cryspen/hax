@@ -12,6 +12,26 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 
+namespace Core_models.Array
+
+structure TryFromSliceError where
+  -- no fields
+
+def Impl_23.as_slice (T : Type) (N : usize) (s : (RustArray T N)) :
+    RustM (RustSlice T) := do
+  (Rust_primitives.Slice.array_as_slice T (N) s)
+
+end Core_models.Array
+
+
+namespace Core_models.Array.Iter
+
+structure IntoIter (T : Type) (N : usize) where
+  _0 : (Rust_primitives.Sequence.Seq T)
+
+end Core_models.Array.Iter
+
+
 namespace Core_models.Borrow
 
 class Borrow.AssociatedTypes (Self : Type) (Borrowed : Type) where
@@ -358,6 +378,13 @@ class Default (Self : Type)
 end Core_models.Default
 
 
+namespace Core_models.F32
+
+opaque Impl.abs (x : f64) : RustM f64 
+
+end Core_models.F32
+
+
 namespace Core_models.Fmt
 
 structure Error where
@@ -374,8 +401,7 @@ end Core_models.Fmt
 
 namespace Core_models.Fmt.Rt
 
-inductive ArgumentType : Type
-
+opaque ArgumentType : Type
 
 structure Argument where
   ty : ArgumentType
@@ -476,6 +502,63 @@ def must_use.spec (T : Type) (value : T) :
 }
 
 end Core_models.Hint
+
+
+namespace Core_models.Iter.Adapters.Enumerate
+
+structure Enumerate (I : Type) where
+  iter : I
+  count : usize
+
+def Impl.new (I : Type) (iter : I) : RustM (Enumerate I) := do
+  (pure (Enumerate.mk (iter := iter) (count := (0 : usize))))
+
+end Core_models.Iter.Adapters.Enumerate
+
+
+namespace Core_models.Iter.Adapters.Step_by
+
+structure StepBy (I : Type) where
+  iter : I
+  step : usize
+
+def Impl.new (I : Type) (iter : I) (step : usize) : RustM (StepBy I) := do
+  (pure (StepBy.mk (iter := iter) (step := step)))
+
+end Core_models.Iter.Adapters.Step_by
+
+
+namespace Core_models.Iter.Adapters.Map
+
+structure Map (I : Type) (F : Type) where
+  iter : I
+  f : F
+
+def Impl.new (I : Type) (F : Type) (iter : I) (f : F) : RustM (Map I F) := do
+  (pure (Map.mk (iter := iter) (f := f)))
+
+end Core_models.Iter.Adapters.Map
+
+
+namespace Core_models.Iter.Adapters.Take
+
+structure Take (I : Type) where
+  iter : I
+  n : usize
+
+def Impl.new (I : Type) (iter : I) (n : usize) : RustM (Take I) := do
+  (pure (Take.mk (iter := iter) (n := n)))
+
+end Core_models.Iter.Adapters.Take
+
+
+namespace Core_models.Iter.Adapters.Zip
+
+structure Zip (I1 : Type) (I2 : Type) where
+  it1 : I1
+  it2 : I2
+
+end Core_models.Iter.Adapters.Zip
 
 
 namespace Core_models.Marker
@@ -590,6 +673,14 @@ opaque replace (T : Type) (dest : T) (src : T) :
 
 opaque drop (T : Type) (_x : T) : RustM Rust_primitives.Hax.Tuple0 
 
+def copy
+    (T : Type)
+    [trait_constr_copy_associated_type_i0 : Core.Marker.Copy.AssociatedTypes T]
+    [trait_constr_copy_i0 : Core.Marker.Copy T ]
+    (x : T) :
+    RustM T := do
+  (pure x)
+
 opaque take (T : Type) (x : T) : RustM (Rust_primitives.Hax.Tuple2 T T) 
 
 opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
@@ -627,280 +718,280 @@ end Core_models.Num.Error
 
 namespace Core_models.Num
 
-opaque Impl_1.rotate_right (x : u8) (n : u32) : RustM u8 
+def Impl_6.wrapping_add (x : u8) (y : u8) : RustM u8 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u8 x y)
 
-opaque Impl_1.rotate_left (x : u8) (n : u32) : RustM u8 
+def Impl_6.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u8 x y)
 
-opaque Impl_1.leading_zeros (x : u8) : RustM u32 
+def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u8 x y)
 
-opaque Impl_1.ilog2 (x : u8) : RustM u32 
+def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
+  (Rust_primitives.Arithmetic.pow_u8 x exp)
 
-opaque Impl_1.from_be_bytes (bytes : (RustArray u8 1)) : RustM u8 
+opaque Impl_6.leading_zeros (x : u8) : RustM u32 
 
-opaque Impl_1.from_le_bytes (bytes : (RustArray u8 1)) : RustM u8 
+opaque Impl_6.ilog2 (x : u8) : RustM u32 
 
-opaque Impl_1.to_be_bytes (bytes : u8) : RustM (RustArray u8 1) 
+def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u16 x y)
 
-opaque Impl_1.to_le_bytes (bytes : u8) : RustM (RustArray u8 1) 
+def Impl_7.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u16 x y)
 
-@[reducible] instance Impl.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u8
-  where
+def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u16 x y)
 
-instance Impl : Core_models.Default.Default u8 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
+def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
+  (Rust_primitives.Arithmetic.pow_u16 x exp)
 
-opaque Impl_3.rotate_right (x : u16) (n : u32) : RustM u16 
+opaque Impl_7.leading_zeros (x : u16) : RustM u32 
 
-opaque Impl_3.rotate_left (x : u16) (n : u32) : RustM u16 
+opaque Impl_7.ilog2 (x : u16) : RustM u32 
 
-opaque Impl_3.leading_zeros (x : u16) : RustM u32 
+def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u32 x y)
 
-opaque Impl_3.ilog2 (x : u16) : RustM u32 
+def Impl_8.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u32 x y)
 
-opaque Impl_3.from_be_bytes (bytes : (RustArray u8 2)) : RustM u16 
+def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u32 x y)
 
-opaque Impl_3.from_le_bytes (bytes : (RustArray u8 2)) : RustM u16 
+def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
+  (Rust_primitives.Arithmetic.pow_u32 x exp)
 
-opaque Impl_3.to_be_bytes (bytes : u16) : RustM (RustArray u8 2) 
+opaque Impl_8.leading_zeros (x : u32) : RustM u32 
 
-opaque Impl_3.to_le_bytes (bytes : u16) : RustM (RustArray u8 2) 
+opaque Impl_8.ilog2 (x : u32) : RustM u32 
 
-@[reducible] instance Impl_2.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u16
-  where
+def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u64 x y)
 
-instance Impl_2 : Core_models.Default.Default u16 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
+def Impl_9.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u64 x y)
 
-opaque Impl_5.rotate_right (x : u32) (n : u32) : RustM u32 
+def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u64 x y)
 
-opaque Impl_5.rotate_left (x : u32) (n : u32) : RustM u32 
+def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
+  (Rust_primitives.Arithmetic.pow_u64 x exp)
 
-opaque Impl_5.leading_zeros (x : u32) : RustM u32 
+opaque Impl_9.leading_zeros (x : u64) : RustM u32 
 
-opaque Impl_5.ilog2 (x : u32) : RustM u32 
+opaque Impl_9.ilog2 (x : u64) : RustM u32 
 
-opaque Impl_5.from_be_bytes (bytes : (RustArray u8 4)) : RustM u32 
+def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
+  (Rust_primitives.Arithmetic.wrapping_add_u128 x y)
 
-opaque Impl_5.from_le_bytes (bytes : (RustArray u8 4)) : RustM u32 
+def Impl_10.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_u128 x y)
 
-opaque Impl_5.to_be_bytes (bytes : u32) : RustM (RustArray u8 4) 
+def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_u128 x y)
 
-opaque Impl_5.to_le_bytes (bytes : u32) : RustM (RustArray u8 4) 
+def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
+  (Rust_primitives.Arithmetic.pow_u128 x exp)
 
-@[reducible] instance Impl_4.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u32
-  where
+opaque Impl_10.leading_zeros (x : u128) : RustM u32 
 
-instance Impl_4 : Core_models.Default.Default u32 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
+opaque Impl_10.ilog2 (x : u128) : RustM u32 
 
-opaque Impl_7.rotate_right (x : u64) (n : u32) : RustM u64 
+def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
+  (Rust_primitives.Arithmetic.wrapping_add_usize x y)
 
-opaque Impl_7.rotate_left (x : u64) (n : u32) : RustM u64 
+def Impl_11.wrapping_sub (x : usize) (y : usize) : RustM usize := do
+  (Rust_primitives.Arithmetic.wrapping_sub_usize x y)
 
-opaque Impl_7.leading_zeros (x : u64) : RustM u32 
+def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
+  (Rust_primitives.Arithmetic.wrapping_mul_usize x y)
 
-opaque Impl_7.ilog2 (x : u64) : RustM u32 
-
-opaque Impl_7.from_be_bytes (bytes : (RustArray u8 8)) : RustM u64 
-
-opaque Impl_7.from_le_bytes (bytes : (RustArray u8 8)) : RustM u64 
-
-opaque Impl_7.to_be_bytes (bytes : u64) : RustM (RustArray u8 8) 
-
-opaque Impl_7.to_le_bytes (bytes : u64) : RustM (RustArray u8 8) 
-
-@[reducible] instance Impl_6.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u64
-  where
-
-instance Impl_6 : Core_models.Default.Default u64 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
-
-opaque Impl_9.rotate_right (x : u128) (n : u32) : RustM u128 
-
-opaque Impl_9.rotate_left (x : u128) (n : u32) : RustM u128 
-
-opaque Impl_9.leading_zeros (x : u128) : RustM u32 
-
-opaque Impl_9.ilog2 (x : u128) : RustM u32 
-
-opaque Impl_9.from_be_bytes (bytes : (RustArray u8 16)) : RustM u128 
-
-opaque Impl_9.from_le_bytes (bytes : (RustArray u8 16)) : RustM u128 
-
-opaque Impl_9.to_be_bytes (bytes : u128) : RustM (RustArray u8 16) 
-
-opaque Impl_9.to_le_bytes (bytes : u128) : RustM (RustArray u8 16) 
-
-@[reducible] instance Impl_8.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes u128
-  where
-
-instance Impl_8 : Core_models.Default.Default u128 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
-
-opaque Impl_11.rotate_right (x : usize) (n : u32) : RustM usize 
-
-opaque Impl_11.rotate_left (x : usize) (n : u32) : RustM usize 
+def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
+  (Rust_primitives.Arithmetic.pow_usize x exp)
 
 opaque Impl_11.leading_zeros (x : usize) : RustM u32 
 
 opaque Impl_11.ilog2 (x : usize) : RustM u32 
 
-opaque Impl_11.from_be_bytes (bytes : (RustArray u8 8)) : RustM usize 
+def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i8 x y)
 
-opaque Impl_11.from_le_bytes (bytes : (RustArray u8 8)) : RustM usize 
+def Impl_12.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i8 x y)
 
-opaque Impl_11.to_be_bytes (bytes : usize) : RustM (RustArray u8 8) 
+def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i8 x y)
 
-opaque Impl_11.to_le_bytes (bytes : usize) : RustM (RustArray u8 8) 
+def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
+  (Rust_primitives.Arithmetic.pow_i8 x exp)
 
-@[reducible] instance Impl_10.AssociatedTypes :
+opaque Impl_12.leading_zeros (x : i8) : RustM u32 
+
+opaque Impl_12.ilog2 (x : i8) : RustM u32 
+
+def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i16 x y)
+
+def Impl_13.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i16 x y)
+
+def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i16 x y)
+
+def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
+  (Rust_primitives.Arithmetic.pow_i16 x exp)
+
+opaque Impl_13.leading_zeros (x : i16) : RustM u32 
+
+opaque Impl_13.ilog2 (x : i16) : RustM u32 
+
+def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i32 x y)
+
+def Impl_14.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i32 x y)
+
+def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i32 x y)
+
+def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
+  (Rust_primitives.Arithmetic.pow_i32 x exp)
+
+opaque Impl_14.leading_zeros (x : i32) : RustM u32 
+
+opaque Impl_14.ilog2 (x : i32) : RustM u32 
+
+def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i64 x y)
+
+def Impl_15.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i64 x y)
+
+def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i64 x y)
+
+def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
+  (Rust_primitives.Arithmetic.pow_i64 x exp)
+
+opaque Impl_15.leading_zeros (x : i64) : RustM u32 
+
+opaque Impl_15.ilog2 (x : i64) : RustM u32 
+
+def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_add_i128 x y)
+
+def Impl_16.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_sub_i128 x y)
+
+def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
+  (Rust_primitives.Arithmetic.wrapping_mul_i128 x y)
+
+def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
+  (Rust_primitives.Arithmetic.pow_i128 x exp)
+
+opaque Impl_16.leading_zeros (x : i128) : RustM u32 
+
+opaque Impl_16.ilog2 (x : i128) : RustM u32 
+
+def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_add_isize x y)
+
+def Impl_17.wrapping_sub (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_sub_isize x y)
+
+def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
+  (Rust_primitives.Arithmetic.wrapping_mul_isize x y)
+
+def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
+  (Rust_primitives.Arithmetic.pow_isize x exp)
+
+opaque Impl_17.leading_zeros (x : isize) : RustM u32 
+
+opaque Impl_17.ilog2 (x : isize) : RustM u32 
+
+@[reducible] instance Impl_18.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u8
+  where
+
+instance Impl_18 : Core_models.Default.Default u8 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
+
+@[reducible] instance Impl_19.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u16
+  where
+
+instance Impl_19 : Core_models.Default.Default u16 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
+
+@[reducible] instance Impl_20.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u32
+  where
+
+instance Impl_20 : Core_models.Default.Default u32 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
+
+@[reducible] instance Impl_21.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u64
+  where
+
+instance Impl_21 : Core_models.Default.Default u64 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
+
+@[reducible] instance Impl_22.AssociatedTypes :
+  Core_models.Default.Default.AssociatedTypes u128
+  where
+
+instance Impl_22 : Core_models.Default.Default u128 where
+  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
+
+@[reducible] instance Impl_23.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes usize
   where
 
-instance Impl_10 : Core_models.Default.Default usize where
+instance Impl_23 : Core_models.Default.Default usize where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : usize))
 
-opaque Impl_13.rotate_right (x : i8) (n : u32) : RustM i8 
-
-opaque Impl_13.rotate_left (x : i8) (n : u32) : RustM i8 
-
-opaque Impl_13.leading_zeros (x : i8) : RustM u32 
-
-opaque Impl_13.ilog2 (x : i8) : RustM u32 
-
-opaque Impl_13.from_be_bytes (bytes : (RustArray u8 1)) : RustM i8 
-
-opaque Impl_13.from_le_bytes (bytes : (RustArray u8 1)) : RustM i8 
-
-opaque Impl_13.to_be_bytes (bytes : i8) : RustM (RustArray u8 1) 
-
-opaque Impl_13.to_le_bytes (bytes : i8) : RustM (RustArray u8 1) 
-
-@[reducible] instance Impl_12.AssociatedTypes :
+@[reducible] instance Impl_24.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i8
   where
 
-instance Impl_12 : Core_models.Default.Default i8 where
+instance Impl_24 : Core_models.Default.Default i8 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i8))
 
-opaque Impl_15.rotate_right (x : i16) (n : u32) : RustM i16 
-
-opaque Impl_15.rotate_left (x : i16) (n : u32) : RustM i16 
-
-opaque Impl_15.leading_zeros (x : i16) : RustM u32 
-
-opaque Impl_15.ilog2 (x : i16) : RustM u32 
-
-opaque Impl_15.from_be_bytes (bytes : (RustArray u8 2)) : RustM i16 
-
-opaque Impl_15.from_le_bytes (bytes : (RustArray u8 2)) : RustM i16 
-
-opaque Impl_15.to_be_bytes (bytes : i16) : RustM (RustArray u8 2) 
-
-opaque Impl_15.to_le_bytes (bytes : i16) : RustM (RustArray u8 2) 
-
-@[reducible] instance Impl_14.AssociatedTypes :
+@[reducible] instance Impl_25.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i16
   where
 
-instance Impl_14 : Core_models.Default.Default i16 where
+instance Impl_25 : Core_models.Default.Default i16 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i16))
 
-opaque Impl_17.rotate_right (x : i32) (n : u32) : RustM i32 
-
-opaque Impl_17.rotate_left (x : i32) (n : u32) : RustM i32 
-
-opaque Impl_17.leading_zeros (x : i32) : RustM u32 
-
-opaque Impl_17.ilog2 (x : i32) : RustM u32 
-
-opaque Impl_17.from_be_bytes (bytes : (RustArray u8 4)) : RustM i32 
-
-opaque Impl_17.from_le_bytes (bytes : (RustArray u8 4)) : RustM i32 
-
-opaque Impl_17.to_be_bytes (bytes : i32) : RustM (RustArray u8 4) 
-
-opaque Impl_17.to_le_bytes (bytes : i32) : RustM (RustArray u8 4) 
-
-@[reducible] instance Impl_16.AssociatedTypes :
+@[reducible] instance Impl_26.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i32
   where
 
-instance Impl_16 : Core_models.Default.Default i32 where
+instance Impl_26 : Core_models.Default.Default i32 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i32))
 
-opaque Impl_19.rotate_right (x : i64) (n : u32) : RustM i64 
-
-opaque Impl_19.rotate_left (x : i64) (n : u32) : RustM i64 
-
-opaque Impl_19.leading_zeros (x : i64) : RustM u32 
-
-opaque Impl_19.ilog2 (x : i64) : RustM u32 
-
-opaque Impl_19.from_be_bytes (bytes : (RustArray u8 8)) : RustM i64 
-
-opaque Impl_19.from_le_bytes (bytes : (RustArray u8 8)) : RustM i64 
-
-opaque Impl_19.to_be_bytes (bytes : i64) : RustM (RustArray u8 8) 
-
-opaque Impl_19.to_le_bytes (bytes : i64) : RustM (RustArray u8 8) 
-
-@[reducible] instance Impl_18.AssociatedTypes :
+@[reducible] instance Impl_27.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i64
   where
 
-instance Impl_18 : Core_models.Default.Default i64 where
+instance Impl_27 : Core_models.Default.Default i64 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i64))
 
-opaque Impl_21.rotate_right (x : i128) (n : u32) : RustM i128 
-
-opaque Impl_21.rotate_left (x : i128) (n : u32) : RustM i128 
-
-opaque Impl_21.leading_zeros (x : i128) : RustM u32 
-
-opaque Impl_21.ilog2 (x : i128) : RustM u32 
-
-opaque Impl_21.from_be_bytes (bytes : (RustArray u8 16)) : RustM i128 
-
-opaque Impl_21.from_le_bytes (bytes : (RustArray u8 16)) : RustM i128 
-
-opaque Impl_21.to_be_bytes (bytes : i128) : RustM (RustArray u8 16) 
-
-opaque Impl_21.to_le_bytes (bytes : i128) : RustM (RustArray u8 16) 
-
-@[reducible] instance Impl_20.AssociatedTypes :
+@[reducible] instance Impl_28.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i128
   where
 
-instance Impl_20 : Core_models.Default.Default i128 where
+instance Impl_28 : Core_models.Default.Default i128 where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i128))
 
-opaque Impl_23.rotate_right (x : isize) (n : u32) : RustM isize 
-
-opaque Impl_23.rotate_left (x : isize) (n : u32) : RustM isize 
-
-opaque Impl_23.leading_zeros (x : isize) : RustM u32 
-
-opaque Impl_23.ilog2 (x : isize) : RustM u32 
-
-opaque Impl_23.from_be_bytes (bytes : (RustArray u8 8)) : RustM isize 
-
-opaque Impl_23.from_le_bytes (bytes : (RustArray u8 8)) : RustM isize 
-
-opaque Impl_23.to_be_bytes (bytes : isize) : RustM (RustArray u8 8) 
-
-opaque Impl_23.to_le_bytes (bytes : isize) : RustM (RustArray u8 8) 
-
-@[reducible] instance Impl_22.AssociatedTypes :
+@[reducible] instance Impl_29.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes isize
   where
 
-instance Impl_22 : Core_models.Default.Default isize where
+instance Impl_29 : Core_models.Default.Default isize where
   default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : isize))
 
 end Core_models.Num
@@ -983,6 +1074,24 @@ class Drop (Self : Type)
   drop (Self) : (Self -> RustM Self)
 
 end Core_models.Ops.Drop
+
+
+namespace Core_models.Ops.Range
+
+structure RangeTo (T : Type) where
+  _end : T
+
+structure RangeFrom (T : Type) where
+  start : T
+
+structure Range (T : Type) where
+  start : T
+  _end : T
+
+structure RangeFull where
+  -- no fields
+
+end Core_models.Ops.Range
 
 
 namespace Core_models.Option
@@ -1468,6 +1577,16 @@ instance Impl_53 : Ord isize where
 end Core_models.Cmp
 
 
+namespace Core_models.Iter.Adapters.Flat_map
+
+structure FlatMap (I : Type) (U : Type) (F : Type) where
+  it : I
+  f : F
+  current : (Core_models.Option.Option U)
+
+end Core_models.Iter.Adapters.Flat_map
+
+
 namespace Core_models.Option
 
 def Impl.as_ref (T : Type) (self : (Option T)) : RustM (Option T) := do
@@ -1654,6 +1773,47 @@ def Impl_11.write_fmt (f : Formatter) (args : Arguments) :
 end Core_models.Fmt
 
 
+namespace Core_models.Num
+
+opaque Impl_6.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u8 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_7.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u16 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_8.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u32 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_9.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u64 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_10.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result u128 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_11.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result usize Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_12.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i8 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_13.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i16 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_14.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i32 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_15.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i64 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_16.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result i128 Core_models.Num.Error.ParseIntError) 
+
+opaque Impl_17.from_str_radix (src : String) (radix : u32) :
+    RustM (Core_models.Result.Result isize Core_models.Num.Error.ParseIntError) 
+
+end Core_models.Num
+
+
 namespace Core_models.Option
 
 def Impl.ok_or (T : Type) (E : Type) (self : (Option T)) (err : E) :
@@ -1676,10 +1836,59 @@ def Impl.unwrap_or (T : Type) (E : Type) (self : (Result T E)) (default : T) :
 def Impl.is_ok (T : Type) (E : Type) (self : (Result T E)) : RustM Bool := do
   match self with | (Result.Ok  _) => (pure true) | _ => (pure false)
 
+def Impl.ok (T : Type) (E : Type) (self : (Result T E)) :
+    RustM (Core_models.Option.Option T) := do
+  match self with
+    | (Result.Ok  x) => (pure (Core_models.Option.Option.Some x))
+    | (Result.Err  _) => (pure Core_models.Option.Option.None)
+
 end Core_models.Result
 
 
+namespace Core_models.Slice.Iter
+
+structure Chunks (T : Type) where
+  cs : usize
+  elements : (RustSlice T)
+
+def Impl.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
+    RustM (Chunks T) := do
+  (pure (Chunks.mk (cs := cs) (elements := elements)))
+
+structure ChunksExact (T : Type) where
+  cs : usize
+  elements : (RustSlice T)
+
+def Impl_1.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
+    RustM (ChunksExact T) := do
+  (pure (ChunksExact.mk (cs := cs) (elements := elements)))
+
+structure Iter (T : Type) where
+  _0 : (Rust_primitives.Sequence.Seq T)
+
+end Core_models.Slice.Iter
+
+
 namespace Core_models.Slice
+
+def Impl.len (T : Type) (s : (RustSlice T)) : RustM usize := do
+  (Rust_primitives.Slice.slice_length T s)
+
+def Impl.chunks (T : Type) (s : (RustSlice T)) (cs : usize) :
+    RustM (Core_models.Slice.Iter.Chunks T) := do
+  (Core_models.Slice.Iter.Impl.new T cs s)
+
+def Impl.iter (T : Type) (s : (RustSlice T)) :
+    RustM (Core_models.Slice.Iter.Iter T) := do
+  (pure (Core_models.Slice.Iter.Iter.mk
+    (← (Rust_primitives.Sequence.seq_from_slice T s))))
+
+def Impl.chunks_exact (T : Type) (s : (RustSlice T)) (cs : usize) :
+    RustM (Core_models.Slice.Iter.ChunksExact T) := do
+  (Core_models.Slice.Iter.Impl_1.new T cs s)
+
+def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
+  (Rust_primitives.Hax.Machine_int.eq (← (Impl.len T s)) (0 : usize))
 
 opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
 
@@ -1694,6 +1903,113 @@ opaque Impl.copy_within
     (src : R)
     (dest : usize) :
     RustM (RustSlice T) 
+
+opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
+    RustM (Core_models.Result.Result usize usize) 
+
+def Impl.copy_from_slice
+    (T : Type)
+    [trait_constr_copy_from_slice_associated_type_i0 :
+      Core_models.Marker.Copy.AssociatedTypes
+      T]
+    [trait_constr_copy_from_slice_i0 : Core_models.Marker.Copy T ]
+    (s : (RustSlice T))
+    (src : (RustSlice T)) :
+    RustM (RustSlice T) := do
+  let ⟨tmp0, out⟩ ← (Rust_primitives.Mem.replace (RustSlice T) s src);
+  let s : (RustSlice T) := tmp0;
+  let _ := out;
+  (pure s)
+
+@[spec]
+def
+      Impl.copy_from_slice.spec
+      (T : Type)
+      [trait_constr_copy_from_slice_associated_type_i0 :
+        Core_models.Marker.Copy.AssociatedTypes
+        T]
+      [trait_constr_copy_from_slice_i0 : Core_models.Marker.Copy T ]
+      (s : (RustSlice T))
+      (src : (RustSlice T)) :
+    Spec
+      (requires := do
+        (Rust_primitives.Hax.Machine_int.eq
+          (← (Impl.len T s))
+          (← (Impl.len T src))))
+      (ensures := fun _ => pure True)
+      (Impl.copy_from_slice
+        (T : Type)
+        (s : (RustSlice T))
+        (src : (RustSlice T))) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl.copy_from_slice] <;> try grind
+}
+
+def Impl.clone_from_slice
+    (T : Type)
+    [trait_constr_clone_from_slice_associated_type_i0 :
+      Core_models.Clone.Clone.AssociatedTypes
+      T]
+    [trait_constr_clone_from_slice_i0 : Core_models.Clone.Clone T ]
+    (s : (RustSlice T))
+    (src : (RustSlice T)) :
+    RustM (RustSlice T) := do
+  let ⟨tmp0, out⟩ ← (Rust_primitives.Mem.replace (RustSlice T) s src);
+  let s : (RustSlice T) := tmp0;
+  let _ := out;
+  (pure s)
+
+@[spec]
+def
+      Impl.clone_from_slice.spec
+      (T : Type)
+      [trait_constr_clone_from_slice_associated_type_i0 :
+        Core_models.Clone.Clone.AssociatedTypes
+        T]
+      [trait_constr_clone_from_slice_i0 : Core_models.Clone.Clone T ]
+      (s : (RustSlice T))
+      (src : (RustSlice T)) :
+    Spec
+      (requires := do
+        (Rust_primitives.Hax.Machine_int.eq
+          (← (Impl.len T s))
+          (← (Impl.len T src))))
+      (ensures := fun _ => pure True)
+      (Impl.clone_from_slice
+        (T : Type)
+        (s : (RustSlice T))
+        (src : (RustSlice T))) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl.clone_from_slice] <;> try grind
+}
+
+def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
+    RustM (Rust_primitives.Hax.Tuple2 (RustSlice T) (RustSlice T)) := do
+  (Rust_primitives.Slice.slice_split_at T s mid)
+
+@[spec]
+def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
+    Spec
+      (requires := do
+        (Rust_primitives.Hax.Machine_int.le mid (← (Impl.len T s))))
+      (ensures := fun _ => pure True)
+      (Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize)) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl.split_at] <;> try grind
+}
+
+def Impl.split_at_checked (T : Type) (s : (RustSlice T)) (mid : usize) :
+    RustM
+    (Core_models.Option.Option
+      (Rust_primitives.Hax.Tuple2 (RustSlice T) (RustSlice T)))
+    := do
+  if (← (Rust_primitives.Hax.Machine_int.le mid (← (Impl.len T s)))) then
+    (pure (Core_models.Option.Option.Some (← (Impl.split_at T s mid))))
+  else
+    (pure Core_models.Option.Option.None)
 
 end Core_models.Slice
 
@@ -1755,6 +2071,28 @@ class TryFrom (Self : Type) (T : Type)
     (T -> RustM (Core_models.Result.Result Self associatedTypes.Error))
 
 end Core_models.Convert
+
+
+namespace Core_models.Iter.Traits.Iterator
+
+class Iterator.AssociatedTypes (Self : Type) where
+  Item : Type
+
+attribute [reducible] Iterator.AssociatedTypes.Item
+
+abbrev Iterator.Item :=
+  Iterator.AssociatedTypes.Item
+
+class Iterator (Self : Type)
+  [associatedTypes : outParam (Iterator.AssociatedTypes (Self : Type))]
+  where
+  next (Self) :
+    (Self ->
+    RustM (Rust_primitives.Hax.Tuple2
+      Self
+      (Core_models.Option.Option associatedTypes.Item)))
+
+end Core_models.Iter.Traits.Iterator
 
 
 namespace Core_models.Iter.Traits.Collect
@@ -1984,6 +2322,24 @@ class Try (Self : Type)
 end Core_models.Ops.Try_trait
 
 
+namespace Core_models.Ops.Deref
+
+class Deref.AssociatedTypes (Self : Type) where
+  Target : Type
+
+attribute [reducible] Deref.AssociatedTypes.Target
+
+abbrev Deref.Target :=
+  Deref.AssociatedTypes.Target
+
+class Deref (Self : Type)
+  [associatedTypes : outParam (Deref.AssociatedTypes (Self : Type))]
+  where
+  deref (Self) : (Self -> RustM associatedTypes.Target)
+
+end Core_models.Ops.Deref
+
+
 namespace Core_models.Slice
 
 class SliceIndex.AssociatedTypes (Self : Type) (T : Type) where
@@ -2021,6 +2377,51 @@ class FromStr (Self : Type)
     (String -> RustM (Core_models.Result.Result Self associatedTypes.Err))
 
 end Core_models.Str.Traits
+
+
+namespace Core_models.Array
+
+def Impl_23.map
+    (T : Type)
+    (N : usize)
+    (F : Type)
+    (U : Type)
+    [trait_constr_map_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_i0 : Core_models.Ops.Function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (s : (RustArray T N))
+    (f : (T -> RustM U)) :
+    RustM (RustArray U N) := do
+  (Rust_primitives.Slice.array_map T U (N) (T -> RustM U) s f)
+
+def from_fn
+    (T : Type)
+    (N : usize)
+    (F : Type)
+    [trait_constr_from_fn_associated_type_i0 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      usize]
+    [trait_constr_from_fn_i0 : Core_models.Ops.Function.FnOnce
+      F
+      usize
+      (associatedTypes := {
+        show Core_models.Ops.Function.FnOnce.AssociatedTypes F usize
+        by infer_instance
+        with Output := T})]
+    (f : (usize -> RustM T)) :
+    RustM (RustArray T N) := do
+  (Rust_primitives.Slice.array_from_fn T (N) (usize -> RustM T) f)
+
+end Core_models.Array
 
 
 namespace Core_models.Convert
@@ -2065,6 +2466,27 @@ instance Impl_2
 end Core_models.Convert
 
 
+namespace Core_models.Iter.Traits.Iterator
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_1_i0 : Iterator I ] :
+  Core_models.Iter.Traits.Collect.IntoIterator.AssociatedTypes I
+  where
+  IntoIter := I
+
+instance Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_1_i0 : Iterator I ] :
+  Core_models.Iter.Traits.Collect.IntoIterator I
+  where
+  into_iter := fun (self : I) => do (pure self)
+
+end Core_models.Iter.Traits.Iterator
+
+
 namespace Core_models.Iter.Traits.Collect
 
 class FromIterator.AssociatedTypes (Self : Type) (A : Type) where
@@ -2082,7 +2504,649 @@ class FromIterator (Self : Type) (A : Type)
 end Core_models.Iter.Traits.Collect
 
 
+namespace Core_models.Iter.Adapters.Enumerate
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Enumerate I)
+  where
+  Item := (Rust_primitives.Hax.Tuple2
+    usize
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I))
+
+instance Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Enumerate I)
+  where
+  next := fun (self : (Enumerate I)) => do
+    let ⟨tmp0, out⟩ ←
+      (Core_models.Iter.Traits.Iterator.Iterator.next I (Enumerate.iter self));
+    let self : (Enumerate I) := {self with iter := tmp0};
+    let ⟨self, hax_temp_output⟩ ←
+      match out with
+        | (Core_models.Option.Option.Some  a) =>
+          let i : usize := (Enumerate.count self);
+          let _ ←
+            (Hax_lib.assume
+              (← (Hax_lib.Prop.Constructors.from_bool
+                (← (Rust_primitives.Hax.Machine_int.lt
+                  (Enumerate.count self)
+                  Core.Num.Impl_11.MAX)))));
+          let self : (Enumerate I) :=
+            {self with count := (← ((Enumerate.count self) +? (1 : usize)))};
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            (Core_models.Option.Option.Some
+              (Rust_primitives.Hax.Tuple2.mk i a))))
+        | (Core_models.Option.Option.None ) =>
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            Core_models.Option.Option.None));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Iter.Adapters.Enumerate
+
+
+namespace Core_models.Iter.Adapters.Step_by
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (StepBy I) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator (StepBy I) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Step_by
+
+
+namespace Core_models.Iter.Adapters.Map
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  (O : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := O})] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Map I F)
+  where
+  Item := O
+
+instance Impl_1
+  (I : Type)
+  (O : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := O})] :
+  Core_models.Iter.Traits.Iterator.Iterator (Map I F)
+  where
+  next := fun (self : (Map I F)) => do
+    let ⟨tmp0, out⟩ ←
+      (Core_models.Iter.Traits.Iterator.Iterator.next I (Map.iter self));
+    let self : (Map I F) := {self with iter := tmp0};
+    let hax_temp_output : (Core_models.Option.Option O) ←
+      match out with
+        | (Core_models.Option.Option.Some  v) =>
+          (pure (Core_models.Option.Option.Some
+            (← (Core_models.Ops.Function.FnOnce.call_once
+              F
+              (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+              (Map.f self)
+              v))))
+        | (Core_models.Option.Option.None ) =>
+          (pure Core_models.Option.Option.None);
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Iter.Adapters.Map
+
+
+namespace Core_models.Iter.Adapters.Take
+
+@[reducible] instance Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Take I)
+  where
+  Item := (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+
+instance Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Take I)
+  where
+  next := fun (self : (Take I)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if (← (Rust_primitives.Hax.Machine_int.ne (Take.n self) (0 : usize))) then
+        let self : (Take I) :=
+          {self with n := (← ((Take.n self) -? (1 : usize)))};
+        let ⟨tmp0, out⟩ ←
+          (Core_models.Iter.Traits.Iterator.Iterator.next I (Take.iter self));
+        let self : (Take I) := {self with iter := tmp0};
+        (pure (Rust_primitives.Hax.Tuple2.mk self out))
+      else
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Iter.Adapters.Take
+
+
+namespace Core_models.Iter.Adapters.Flat_map
+
+def Impl.new
+    (I : Type)
+    (U : Type)
+    (F : Type)
+    [trait_constr_new_associated_type_i0 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I]
+    [trait_constr_new_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+    [trait_constr_new_associated_type_i1 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      U]
+    [trait_constr_new_i1 : Core_models.Iter.Traits.Iterator.Iterator U ]
+    [trait_constr_new_associated_type_i2 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+    [trait_constr_new_i2 : Core_models.Ops.Function.FnOnce
+      F
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+        by infer_instance
+        with Output := U})]
+    (it : I)
+    (f : F) :
+    RustM (FlatMap I U F) := do
+  (pure (FlatMap.mk
+    (it := it)
+    (f := f)
+    (current := Core_models.Option.Option.None)))
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I : Type)
+  (U : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    U]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator U ]
+  [trait_constr_Impl_1_associated_type_i2 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i2 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := U})] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (FlatMap I U F) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I : Type)
+  (U : Type)
+  (F : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    U]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator U ]
+  [trait_constr_Impl_1_associated_type_i2 :
+    Core_models.Ops.Function.FnOnce.AssociatedTypes
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i2 : Core_models.Ops.Function.FnOnce
+    F
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    (associatedTypes := {
+      show
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      by infer_instance
+      with Output := U})] :
+  Core_models.Iter.Traits.Iterator.Iterator (FlatMap I U F) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Flat_map
+
+
+namespace Core_models.Iter.Adapters.Flatten
+
+structure Flatten
+  (I : Type)
+  [trait_constr_Flatten_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Flatten_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Flatten_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Flatten_i1 : Core_models.Iter.Traits.Iterator.Iterator
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    ]
+  where
+  it : I
+  current : (Core_models.Option.Option
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I))
+
+end Core_models.Iter.Adapters.Flatten
+
+
+namespace Core_models.Iter.Traits.Iterator
+
+class IteratorMethods.AssociatedTypes (Self : Type) where
+  [trait_constr_IteratorMethods_i0 : Iterator.AssociatedTypes Self]
+
+attribute [instance]
+  IteratorMethods.AssociatedTypes.trait_constr_IteratorMethods_i0
+
+class IteratorMethods (Self : Type)
+  [associatedTypes : outParam (IteratorMethods.AssociatedTypes (Self : Type))]
+  where
+  [trait_constr_IteratorMethods_i0 : Iterator Self]
+  fold (Self)
+    (B : Type)
+    (F : Type)
+    [trait_constr_fold_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Rust_primitives.Hax.Tuple2 B (Iterator.Item Self))]
+    [trait_constr_fold_i1 : Core_models.Ops.Function.FnOnce
+      F
+      (Rust_primitives.Hax.Tuple2 B (Iterator.Item Self))
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Rust_primitives.Hax.Tuple2 B (Iterator.Item Self))
+        by infer_instance
+        with Output := B})] :
+    (Self -> B -> F -> RustM B)
+  enumerate (Self) :
+    (Self -> RustM (Core_models.Iter.Adapters.Enumerate.Enumerate Self))
+  step_by (Self) :
+    (Self -> usize -> RustM (Core_models.Iter.Adapters.Step_by.StepBy Self))
+  map (Self)
+    (O : Type)
+    (F : Type)
+    [trait_constr_map_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Iterator.Item Self)]
+    [trait_constr_map_i1 : Core_models.Ops.Function.FnOnce
+      F
+      (Iterator.Item Self)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Iterator.Item Self)
+        by infer_instance
+        with Output := O})] :
+    (Self -> F -> RustM (Core_models.Iter.Adapters.Map.Map Self F))
+  all (Self)
+    (F : Type)
+    [trait_constr_all_associated_type_i1 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Iterator.Item Self)]
+    [trait_constr_all_i1 : Core_models.Ops.Function.FnOnce
+      F
+      (Iterator.Item Self)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Iterator.Item Self)
+        by infer_instance
+        with Output := Bool})] :
+    (Self -> F -> RustM Bool)
+  take (Self) :
+    (Self -> usize -> RustM (Core_models.Iter.Adapters.Take.Take Self))
+  flat_map (Self)
+    (U : Type)
+    (F : Type)
+    [trait_constr_flat_map_associated_type_i1 : Iterator.AssociatedTypes U]
+    [trait_constr_flat_map_i1 : Iterator U ]
+    [trait_constr_flat_map_associated_type_i2 :
+      Core_models.Ops.Function.FnOnce.AssociatedTypes
+      F
+      (Iterator.Item Self)]
+    [trait_constr_flat_map_i2 : Core_models.Ops.Function.FnOnce
+      F
+      (Iterator.Item Self)
+      (associatedTypes := {
+        show
+          Core_models.Ops.Function.FnOnce.AssociatedTypes
+          F
+          (Iterator.Item Self)
+        by infer_instance
+        with Output := U})] :
+    (Self -> F -> RustM (Core_models.Iter.Adapters.Flat_map.FlatMap Self U F))
+  flatten (Self)
+    [trait_constr_flatten_associated_type_i1 : Iterator.AssociatedTypes
+      (Iterator.Item Self)]
+    [trait_constr_flatten_i1 : Iterator (Iterator.Item Self) ] :
+    (Self -> RustM (Core_models.Iter.Adapters.Flatten.Flatten Self))
+  zip (Self)
+    (I2 : Type)
+    [trait_constr_zip_associated_type_i1 : Iterator.AssociatedTypes I2]
+    [trait_constr_zip_i1 : Iterator I2 ] :
+    (Self -> I2 -> RustM (Core_models.Iter.Adapters.Zip.Zip Self I2))
+
+attribute [instance] IteratorMethods.trait_constr_IteratorMethods_i0
+
+end Core_models.Iter.Traits.Iterator
+
+
+namespace Core_models.Iter.Adapters.Flatten
+
+def Impl.new
+    (I : Type)
+    [trait_constr_new_associated_type_i0 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I]
+    [trait_constr_new_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+    [trait_constr_new_associated_type_i1 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+    [trait_constr_new_i1 : Core_models.Iter.Traits.Iterator.Iterator
+      (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+      ]
+    (it : I) :
+    RustM (Flatten I) := do
+  (pure (Flatten.mk (it := it) (current := Core_models.Option.Option.None)))
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Flatten I) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator
+    (Core_models.Iter.Traits.Iterator.Iterator.Item I)
+    ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Flatten I) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Flatten
+
+
+namespace Core_models.Iter.Adapters.Zip
+
+def Impl.new
+    (I1 : Type)
+    (I2 : Type)
+    [trait_constr_new_associated_type_i0 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I1]
+    [trait_constr_new_i0 : Core_models.Iter.Traits.Iterator.Iterator I1 ]
+    [trait_constr_new_associated_type_i1 :
+      Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+      I2]
+    [trait_constr_new_i1 : Core_models.Iter.Traits.Iterator.Iterator I2 ]
+    (it1 : I1)
+    (it2 : I2) :
+    RustM (Zip I1 I2) := do
+  (pure (Zip.mk (it1 := it1) (it2 := it2)))
+
+end Core_models.Iter.Adapters.Zip
+
+
+namespace Core_models.Iter.Traits.Iterator
+
+@[reducible] instance Impl.AssociatedTypes
+  (I : Type)
+  [trait_constr_Impl_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_i0 : Iterator I ] :
+  IteratorMethods.AssociatedTypes I
+  where
+
+instance Impl
+  (I : Type)
+  [trait_constr_Impl_associated_type_i0 : Iterator.AssociatedTypes I]
+  [trait_constr_Impl_i0 : Iterator I ] :
+  IteratorMethods I
+  where
+  fold :=
+    fun
+      (B : Type)
+      (F : Type)
+      [trait_constr_fold_associated_type_i1 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Rust_primitives.Hax.Tuple2 B (Iterator.Item I))]
+      [trait_constr_fold_i1 : Core_models.Ops.Function.FnOnce
+        F
+        (Rust_primitives.Hax.Tuple2 B (Iterator.Item I))
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Rust_primitives.Hax.Tuple2 B (Iterator.Item I))
+          by infer_instance
+          with Output := B})] (self : I) (init : B) (f : F) => do
+    (pure init)
+  enumerate := fun (self : I) => do
+    (Core_models.Iter.Adapters.Enumerate.Impl.new I self)
+  step_by := fun (self : I) (step : usize) => do
+    (Core_models.Iter.Adapters.Step_by.Impl.new I self step)
+  map :=
+    fun
+      (O : Type)
+      (F : Type)
+      [trait_constr_map_associated_type_i1 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Iterator.Item I)]
+      [trait_constr_map_i1 : Core_models.Ops.Function.FnOnce
+        F
+        (Iterator.Item I)
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Iterator.Item I)
+          by infer_instance
+          with Output := O})] (self : I) (f : F) => do
+    (Core_models.Iter.Adapters.Map.Impl.new I F self f)
+  all :=
+    fun
+      (F : Type)
+      [trait_constr_all_associated_type_i1 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Iterator.Item I)]
+      [trait_constr_all_i1 : Core_models.Ops.Function.FnOnce
+        F
+        (Iterator.Item I)
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Iterator.Item I)
+          by infer_instance
+          with Output := Bool})] (self : I) (f : F) => do
+    (pure true)
+  take := fun (self : I) (n : usize) => do
+    (Core_models.Iter.Adapters.Take.Impl.new I self n)
+  flat_map :=
+    fun
+      (U : Type)
+      (F : Type)
+      [trait_constr_flat_map_associated_type_i1 : Iterator.AssociatedTypes U]
+      [trait_constr_flat_map_i1 : Iterator U ]
+      [trait_constr_flat_map_associated_type_i2 :
+        Core_models.Ops.Function.FnOnce.AssociatedTypes
+        F
+        (Iterator.Item I)]
+      [trait_constr_flat_map_i2 : Core_models.Ops.Function.FnOnce
+        F
+        (Iterator.Item I)
+        (associatedTypes := {
+          show
+            Core_models.Ops.Function.FnOnce.AssociatedTypes
+            F
+            (Iterator.Item I)
+          by infer_instance
+          with Output := U})] (self : I) (f : F) => do
+    (Core_models.Iter.Adapters.Flat_map.Impl.new I U F self f)
+  flatten :=
+    fun
+      [trait_constr_flatten_associated_type_i1 : Iterator.AssociatedTypes
+        (Iterator.Item I)]
+      [trait_constr_flatten_i1 : Iterator (Iterator.Item I) ] (self : I) => do
+    (Core_models.Iter.Adapters.Flatten.Impl.new I self)
+  zip :=
+    fun
+      (I2 : Type)
+      [trait_constr_zip_associated_type_i1 : Iterator.AssociatedTypes I2]
+      [trait_constr_zip_i1 : Iterator I2 ] (self : I) (it2 : I2) => do
+    (Core_models.Iter.Adapters.Zip.Impl.new I I2 self it2)
+
+end Core_models.Iter.Traits.Iterator
+
+
+namespace Core_models.Iter.Adapters.Zip
+
+@[instance] opaque Impl_1.AssociatedTypes
+  (I1 : Type)
+  (I2 : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I1]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I1 ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I2]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator I2 ] :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Zip I1 I2) :=
+  by constructor <;> exact Inhabited.default
+
+@[instance] opaque Impl_1
+  (I1 : Type)
+  (I2 : Type)
+  [trait_constr_Impl_1_associated_type_i0 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I1]
+  [trait_constr_Impl_1_i0 : Core_models.Iter.Traits.Iterator.Iterator I1 ]
+  [trait_constr_Impl_1_associated_type_i1 :
+    Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes
+    I2]
+  [trait_constr_Impl_1_i1 : Core_models.Iter.Traits.Iterator.Iterator I2 ] :
+  Core_models.Iter.Traits.Iterator.Iterator (Zip I1 I2) :=
+  by constructor <;> exact Inhabited.default
+
+end Core_models.Iter.Adapters.Zip
+
+
 namespace Core_models.Ops.Function
+
+class Fn.AssociatedTypes (Self : Type) (Args : Type) where
+  [trait_constr_Fn_i0 : FnOnce.AssociatedTypes Self Args]
+
+attribute [instance] Fn.AssociatedTypes.trait_constr_Fn_i0
+
+class Fn (Self : Type) (Args : Type)
+  [associatedTypes : outParam (Fn.AssociatedTypes (Self : Type) (Args : Type))]
+  where
+  [trait_constr_Fn_i0 : FnOnce Self Args]
+  call (Self) (Args) : (Self -> Args -> RustM (FnOnce.Output Self Args))
+
+attribute [instance] Fn.trait_constr_Fn_i0
 
 @[reducible] instance Impl_2.AssociatedTypes (Arg : Type) (Out : Type) :
   FnOnce.AssociatedTypes (Arg -> RustM Out) Arg
@@ -2139,6 +3203,19 @@ instance Impl_1 (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
       (Rust_primitives.Hax.Tuple3._2 arg))
 
 end Core_models.Ops.Function
+
+
+namespace Core_models.Ops.Deref
+
+@[reducible] instance Impl.AssociatedTypes (T : Type) :
+  Deref.AssociatedTypes T
+  where
+  Target := T
+
+instance Impl (T : Type) : Deref T where
+  deref := fun (self : T) => do (pure self)
+
+end Core_models.Ops.Deref
 
 
 namespace Core_models.Option
@@ -2518,6 +3595,112 @@ def Impl.and_then
     | (Result.Err  e) => (pure (Result.Err e))
 
 end Core_models.Result
+
+
+namespace Core_models.Slice.Iter
+
+@[reducible] instance Impl_2.AssociatedTypes (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Iter T)
+  where
+  Item := T
+
+instance Impl_2 (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator (Iter T)
+  where
+  next := fun (self : (Iter T)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if
+      (← (Rust_primitives.Hax.Machine_int.eq
+        (← (Rust_primitives.Sequence.seq_len T (Iter._0 self)))
+        (0 : usize))) then
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None))
+      else
+        let res : T ← (Rust_primitives.Sequence.seq_first T (Iter._0 self));
+        let self : (Iter T) :=
+          {self
+          with _0 := (← (Rust_primitives.Sequence.seq_slice T
+            (Iter._0 self)
+            (1 : usize)
+            (← (Rust_primitives.Sequence.seq_len T (Iter._0 self)))))};
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          (Core_models.Option.Option.Some res)));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+@[reducible] instance Impl_3.AssociatedTypes (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (Chunks T)
+  where
+  Item := (RustSlice T)
+
+instance Impl_3 (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator (Chunks T)
+  where
+  next := fun (self : (Chunks T)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if
+      (← (Rust_primitives.Hax.Machine_int.eq
+        (← (Rust_primitives.Slice.slice_length T (Chunks.elements self)))
+        (0 : usize))) then
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None))
+      else
+        if
+        (← (Rust_primitives.Hax.Machine_int.lt
+          (← (Rust_primitives.Slice.slice_length T (Chunks.elements self)))
+          (Chunks.cs self))) then
+          let res : (RustSlice T) := (Chunks.elements self);
+          let self : (Chunks T) :=
+            {self
+            with elements := (← (Rust_primitives.Slice.slice_slice T
+              (Chunks.elements self)
+              (0 : usize)
+              (0 : usize)))};
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            (Core_models.Option.Option.Some res)))
+        else
+          let ⟨res, new_elements⟩ ←
+            (Rust_primitives.Slice.slice_split_at T
+              (Chunks.elements self)
+              (Chunks.cs self));
+          let self : (Chunks T) := {self with elements := new_elements};
+          (pure (Rust_primitives.Hax.Tuple2.mk
+            self
+            (Core_models.Option.Option.Some res)));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+@[reducible] instance Impl_4.AssociatedTypes (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator.AssociatedTypes (ChunksExact T)
+  where
+  Item := (RustSlice T)
+
+instance Impl_4 (T : Type) :
+  Core_models.Iter.Traits.Iterator.Iterator (ChunksExact T)
+  where
+  next := fun (self : (ChunksExact T)) => do
+    let ⟨self, hax_temp_output⟩ ←
+      if
+      (← (Rust_primitives.Hax.Machine_int.lt
+        (← (Rust_primitives.Slice.slice_length T (ChunksExact.elements self)))
+        (ChunksExact.cs self))) then
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          Core_models.Option.Option.None))
+      else
+        let ⟨res, new_elements⟩ ←
+          (Rust_primitives.Slice.slice_split_at T
+            (ChunksExact.elements self)
+            (ChunksExact.cs self));
+        let self : (ChunksExact T) := {self with elements := new_elements};
+        (pure (Rust_primitives.Hax.Tuple2.mk
+          self
+          (Core_models.Option.Option.Some res)));
+    (pure (Rust_primitives.Hax.Tuple2.mk self hax_temp_output))
+
+end Core_models.Slice.Iter
 
 
 namespace Core_models.Slice

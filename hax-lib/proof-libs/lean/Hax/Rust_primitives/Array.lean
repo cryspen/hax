@@ -18,10 +18,6 @@ section RustArray
 
 abbrev RustArray := Vector
 
-
-inductive Core_models.Array.TryFromSliceError where
-  | array.TryFromSliceError
-
 def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
   (a: Vector α n) (i:Nat) (v:α) : RustM (Vector α n) :=
   if h: i < a.size then

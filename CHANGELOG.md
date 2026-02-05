@@ -18,6 +18,7 @@ Changes to hax-lib:
  - Lean lib: specs for negation (#1891)
  - Lean lib: Add casting for all integer type pairs (#1837)
  - Lean lib: bump lean to v4.28.0-rc1 (#1900)
+ - Lean lib: Extract more core models (#1919)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
