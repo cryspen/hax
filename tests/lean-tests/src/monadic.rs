@@ -23,3 +23,24 @@ fn test() {
         3 + y - 4;
     };
 }
+
+mod trait_constants {
+    // https://github.com/cryspen/hax/issues/1928
+    trait Foo {
+        const F : u32;
+    }
+
+    trait Bar {
+        const B : u32;
+    }
+
+    struct Baz;
+
+    impl Foo for Baz {
+        const F : u32 = 1;
+    }                                                                                                                                      
+                                                                                                                                        
+    impl Bar for Baz {
+        const B : u32 = Self::F - 1;
+    }
+}
