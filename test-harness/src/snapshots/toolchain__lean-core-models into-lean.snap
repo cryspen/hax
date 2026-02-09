@@ -44,6 +44,12 @@ set_option linter.unusedVariables false
 structure Lean_core_models.Default.Structs.S where
   f1 : usize
 
+def Lean_core_models.Default.Structs.Impl.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Lean_core_models.Default.Structs.S
+  := do
+  (pure (Lean_core_models.Default.Structs.S.mk (f1 := (0 : usize))))
+
 @[reducible] instance Lean_core_models.Default.Structs.Impl.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes Lean_core_models.Default.Structs.S
   where
@@ -51,8 +57,7 @@ structure Lean_core_models.Default.Structs.S where
 instance Lean_core_models.Default.Structs.Impl :
   Core_models.Default.Default Lean_core_models.Default.Structs.S
   where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
-    (pure (Lean_core_models.Default.Structs.S.mk (f1 := (0 : usize))))
+  default := (Lean_core_models.Default.Structs.Impl.default_hoisted)
 
 def Lean_core_models.Default.Structs.test
   (_ : Rust_primitives.Hax.Tuple0)
@@ -65,6 +70,16 @@ inductive Lean_core_models.Default.Enums.E (T : Type) : Type
 | C1 : u32 -> Lean_core_models.Default.Enums.E (T : Type) 
 | C2 : T -> Lean_core_models.Default.Enums.E (T : Type) 
 
+
+def Lean_core_models.Default.Enums.Impl.default_hoisted
+  (T : Type)
+  [Core_models.Default.Default.AssociatedTypes T]
+  [Core_models.Default.Default T ]
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM (Lean_core_models.Default.Enums.E T)
+  := do
+  (pure (Lean_core_models.Default.Enums.E.C2
+    (← (Core_models.Default.Default.default T Rust_primitives.Hax.Tuple0.mk))))
 
 @[reducible] instance Lean_core_models.Default.Enums.Impl.AssociatedTypes
   (T : Type)
@@ -82,10 +97,7 @@ instance Lean_core_models.Default.Enums.Impl
   :
   Core_models.Default.Default (Lean_core_models.Default.Enums.E T)
   where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
-    (pure (Lean_core_models.Default.Enums.E.C2
-      (← (Core_models.Default.Default.default
-        T Rust_primitives.Hax.Tuple0.mk))))
+  default := (Lean_core_models.Default.Enums.Impl.default_hoisted T)
 
 def Lean_core_models.Function.test
   (_ : Rust_primitives.Hax.Tuple0)
@@ -119,6 +131,12 @@ inductive Lean_core_models.Option.E : Type
 | C : u32 -> Lean_core_models.Option.E
 
 
+def Lean_core_models.Option.Impl.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM Lean_core_models.Option.S
+  := do
+  (pure (Lean_core_models.Option.S.mk (f1 := (42 : u32))))
+
 @[reducible] instance Lean_core_models.Option.Impl.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes Lean_core_models.Option.S
   where
@@ -126,8 +144,7 @@ inductive Lean_core_models.Option.E : Type
 instance Lean_core_models.Option.Impl :
   Core_models.Default.Default Lean_core_models.Option.S
   where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
-    (pure (Lean_core_models.Option.S.mk (f1 := (42 : u32))))
+  default := (Lean_core_models.Option.Impl.default_hoisted)
 
 def Lean_core_models.Option.test
   (_ : Rust_primitives.Hax.Tuple0)

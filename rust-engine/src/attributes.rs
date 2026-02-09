@@ -226,7 +226,7 @@ fn extract_expr<'a>(
                 context.clone(),
                 "Expected an function",
             ))
-            .into_expr(item.span(), Ty::prop(), vec![]),
+            .promote(Ty::prop(), item.span()),
             vec![],
         );
     };
