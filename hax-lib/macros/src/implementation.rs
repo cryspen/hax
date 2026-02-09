@@ -833,6 +833,31 @@ pub fn lean_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
     quote! {#attr #item}.into()
 }
 
+/// This macro inserts a verbatim Lean proof showing that the `requires`-condition is panic-free.
+/// The proof is inserted into the `pureRequires` field of the Lean spec.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn lean_pure_requires_proof(
+    payload: pm::TokenStream,
+    item: pm::TokenStream,
+) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let payload = parse_macro_input!(payload as LitStr).value();
+    let attr = AttrPayload::PureRequiresProof(payload);
+    quote! {#attr #item}.into()
+}
+
+/// This macro inserts a verbatim Lean proof showing that the `ensures`-condition is panic-free.
+/// The proof is inserted into the `pureEnsures` field of the Lean spec.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let payload = parse_macro_input!(payload as LitStr).value();
+    let attr = AttrPayload::PureEnsuresProof(payload);
+    quote! {#attr #item}.into()
+}
+
 macro_rules! make_quoting_item_proc_macro {
     ($backend:ident, $macro_name:ident, $position:expr, $cfg_name:ident) => {
         #[doc = concat!("This macro inlines verbatim ", stringify!($backend)," code before a Rust item.")]
