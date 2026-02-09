@@ -1,6 +1,6 @@
 pub trait Inject {
     type Model;
-    fn inject(self) -> Self::Model;
+    fn inject(&self) -> Self::Model;
 }
 
 impl<Args, Out, F: Fn(Args) -> Out> crate::ops::function::FnOnce<Args> for F {
@@ -10,13 +10,21 @@ impl<Args, Out, F: Fn(Args) -> Out> crate::ops::function::FnOnce<Args> for F {
     }
 }
 
+impl <T: Inject> Inject for &T {
+    type Model = T::Model;
+
+    fn inject(&self) -> Self::Model {
+        (*self).inject()
+    }
+}
+
 macro_rules! inject_as_self {
     ($($t:ty)*) => {
         $(
             impl Inject for $t {
                 type Model = $t;
-                fn inject(self) -> $t {
-                    self
+                fn inject(&self) -> $t {
+                    *self
                 }
             }
         )*

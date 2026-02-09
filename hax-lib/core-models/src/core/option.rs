@@ -183,7 +183,7 @@ mod tests {
 
     impl<T: Inject> Inject for Option<T> {
         type Model = super::Option<T::Model>;
-        fn inject(self) -> Self::Model {
+        fn inject(&self) -> Self::Model {
             match self {
                 Some(v) => super::Option::Some(v.inject()),
                 None => super::Option::None,
@@ -218,7 +218,7 @@ mod tests {
 
         #[test]
         fn test_as_ref(x in any::<Option<u8>>()) {
-            prop_assert!(x.clone().inject().as_ref().map(|v: &u8| *v) == x.as_ref().map(|v| *v).inject());
+            prop_assert!(x.clone().inject().as_ref().map(|v: &u8| *v) == x.as_ref().inject());
         }
 
         #[test]
@@ -300,10 +300,16 @@ mod tests {
 
         #[test]
         fn test_take(x in any::<Option<u8>>()) {
-            let (taken, remaining) = x.clone().inject().take();
-            // The model's take returns (None, self) - so taken is None, remaining is self
-            prop_assert!(taken == super::Option::None);
-            prop_assert!(remaining == x.inject());
+            // std::option::Option::take takes &mut self and returns Option<T>,
+            // leaving None in place. Our model returns (remaining, taken).
+            let mut std_opt = x.clone();
+            let taken_std = std_opt.take();
+            let remaining_std = std_opt;
+
+            let (remaining_model, taken_model) = x.inject().take();
+
+            prop_assert!(remaining_model == remaining_std.inject());
+            prop_assert!(taken_model == taken_std.inject());
         }
     }
 }

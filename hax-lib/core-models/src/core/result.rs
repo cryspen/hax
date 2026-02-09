@@ -50,6 +50,7 @@ impl<T, E> Result<T, E> {
     }
 
     /// See [`std::result::Result::as_mut`]
+    #[hax_lib::exclude]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
             Ok(ref mut t) => Ok(t),
@@ -282,7 +283,7 @@ mod tests {
 
     impl<T: Inject, E: Inject> Inject for Result<T, E> {
         type Model = super::Result<T::Model, E::Model>;
-        fn inject(self) -> Self::Model {
+        fn inject(&self) -> Self::Model {
             match self {
                 Ok(v) => super::Result::Ok(v.inject()),
                 Err(e) => super::Result::Err(e.inject()),
@@ -320,11 +321,7 @@ mod tests {
             // Test that as_ref preserves the structure and allows access to the value
             let model = x.clone().inject();
             let model_ref = model.as_ref();
-            match (&x, model_ref) {
-                (Ok(v), super::Result::Ok(mv)) => prop_assert!(*v == *mv),
-                (Err(e), super::Result::Err(me)) => prop_assert!(*e == *me),
-                _ => prop_assert!(false, "as_ref changed variant"),
-            }
+            prop_assert!(x.clone().inject().as_ref() == x.as_ref().inject().as_ref())
         }
 
         #[test]
@@ -444,25 +441,13 @@ mod tests {
         }
 
         #[test]
-        fn test_transpose(inner in any::<Option<u8>>(), err in any::<u8>(), is_ok in any::<bool>()) {
-            let x: Result<Option<u8>, u8> = if is_ok { Ok(inner) } else { Err(err) };
-            let model_x: super::Result<crate::option::Option<u8>, u8> = if is_ok {
-                super::Result::Ok(inner.inject())
-            } else {
-                super::Result::Err(err)
-            };
-            prop_assert!(model_x.transpose() == x.transpose().inject());
+        fn test_transpose(x in any::<Result<Option<u8>, u8>>()) {
+            prop_assert!(x.inject().transpose() == x.transpose().inject());
         }
 
         #[test]
-        fn test_flatten(inner in any::<Result<u8, u8>>(), err in any::<u8>(), is_ok in any::<bool>()) {
-            let x: Result<Result<u8, u8>, u8> = if is_ok { Ok(inner.clone()) } else { Err(err) };
-            let model_x: super::Result<super::Result<u8, u8>, u8> = if is_ok {
-                super::Result::Ok(inner.inject())
-            } else {
-                super::Result::Err(err)
-            };
-            prop_assert!(model_x.flatten() == x.flatten().inject());
+        fn test_flatten(x in any::<Result<Result<u8, u8>, u8>>(), is_ok in any::<bool>()) {
+            prop_assert!(x.inject().flatten() == x.flatten().inject());
         }
     }
 }
