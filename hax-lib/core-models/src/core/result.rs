@@ -1,8 +1,8 @@
-/// See <https://doc.rust-lang.org/std/result/enum.Result.html>
+/// See [`std::result::Result`]
 pub enum Result<T, E> {
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#variant.Ok>
+    /// See [`std::result::Result::Ok`]
     Ok(T),
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#variant.Err>
+    /// See [`std::result::Result::Err`]
     Err(E),
 }
 
@@ -14,33 +14,25 @@ use self::Result::*;
 
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
-    // ===== Querying the contained values =====
-
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.is_ok>
+    /// See [`std::result::Result::is_ok`]
     pub fn is_ok(&self) -> bool {
         matches!(*self, Ok(_))
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.is_ok_and>
+    /// See [`std::result::Result::is_ok_and`]
     pub fn is_ok_and<F: FnOnce<T, Output = bool>>(self, f: F) -> bool {
         match self {
             Ok(t) => f.call_once(t),
             Err(_) => false,
         }
     }
-    pub fn unwrap_or(self, default: T) -> T {
-        match self {
-            Ok(t) => t,
-            Err(_) => default,
-        }
-    }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.is_err>
+    /// See [`std::result::Result::is_err`]
     pub fn is_err(&self) -> bool {
         !self.is_ok()
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.is_err_and>
+    /// See [`std::result::Result::is_err_and`]
     pub fn is_err_and<F: FnOnce<E, Output = bool>>(self, f: F) -> bool {
         match self {
             Ok(_) => false,
@@ -48,9 +40,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    // ===== Adapters for working with references =====
-
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.as_ref>
+    /// See [`std::result::Result::as_ref`]
     pub const fn as_ref(&self) -> Result<&T, &E> {
         match *self {
             Ok(ref t) => Ok(t),
@@ -58,7 +48,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.as_mut>
+    /// See [`std::result::Result::as_mut`]
     pub fn as_mut(&mut self) -> Result<&mut T, &mut E> {
         match *self {
             Ok(ref mut t) => Ok(t),
@@ -66,9 +56,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    // ===== Extracting contained values =====
-
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.expect>
+    /// See [`std::result::Result::expect`]
     #[hax_lib::requires(self.is_ok())]
     pub fn expect(self, _msg: &str) -> T {
         match self {
@@ -77,7 +65,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap>
+    /// See [`std::result::Result::unwrap`]
     #[hax_lib::requires(self.is_ok())]
     pub fn unwrap(self) -> T {
         match self {
@@ -86,7 +74,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.expect_err>
+    /// See [`std::result::Result::expect_err`]
     #[hax_lib::requires(self.is_err())]
     pub fn expect_err(self, _msg: &str) -> E {
         match self {
@@ -95,7 +83,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_err>
+    /// See [`std::result::Result::unwrap_err`]
     #[hax_lib::requires(self.is_err())]
     pub fn unwrap_err(self) -> E {
         match self {
@@ -104,7 +92,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or>
+    /// See [`std::result::Result::unwrap_or`]
     pub fn unwrap_or(self, default: T) -> T {
         match self {
             Ok(t) => t,
@@ -112,7 +100,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_else>
+    /// See [`std::result::Result::unwrap_or_else`]
     pub fn unwrap_or_else<F: FnOnce<E, Output = T>>(self, op: F) -> T {
         match self {
             Ok(t) => t,
@@ -120,7 +108,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.unwrap_or_default>
+    /// See [`std::result::Result::unwrap_or_default`]
     pub fn unwrap_or_default(self) -> T
     where
         T: Default,
@@ -131,9 +119,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    // ===== Transforming contained values =====
-
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.map>
+    /// See [`std::result::Result::map`]
     pub fn map<U, F>(self, op: F) -> Result<U, E>
     where
         F: FnOnce<T, Output = U>,
@@ -144,7 +130,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.map_or>
+    /// See [`std::result::Result::map_or`]
     pub fn map_or<U, F>(self, default: U, f: F) -> U
     where
         F: FnOnce<T, Output = U>,
@@ -155,7 +141,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.map_or_else>
+    /// See [`std::result::Result::map_or_else`]
     pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
     where
         F: FnOnce<T, Output = U>,
@@ -167,7 +153,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.map_or_default>
+    /// See [`std::result::Result::map_or_default`]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce<T, Output = U>,
@@ -179,7 +165,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.map_err>
+    /// See [`std::result::Result::map_err`]
     pub fn map_err<F, O>(self, op: O) -> Result<T, F>
     where
         O: FnOnce<E, Output = F>,
@@ -190,7 +176,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.inspect>
+    /// See [`std::result::Result::inspect`]
     pub fn inspect<F: for<'a> FnOnce<&'a T, Output = ()>>(self, f: F) -> Result<T, E> {
         if let Ok(ref t) = self {
             f.call_once(t);
@@ -198,7 +184,7 @@ impl<T, E> Result<T, E> {
         self
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.inspect_err>
+    /// See [`std::result::Result::inspect_err`]
     pub fn inspect_err<F: for<'a> FnOnce<&'a E, Output = ()>>(self, f: F) -> Result<T, E> {
         if let Err(ref e) = self {
             f.call_once(e);
@@ -206,9 +192,7 @@ impl<T, E> Result<T, E> {
         self
     }
 
-    // ===== Converting to Option =====
-
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.ok>
+    /// See [`std::result::Result::ok`]
     pub fn ok(self) -> Option<T> {
         match self {
             Ok(x) => Option::Some(x),
@@ -216,7 +200,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.err>
+    /// See [`std::result::Result::err`]
     pub fn err(self) -> Option<E> {
         match self {
             Ok(_) => Option::None,
@@ -224,9 +208,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    // ===== Boolean operations =====
-
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.and>
+    /// See [`std::result::Result::and`]
     pub fn and<U>(self, res: Result<U, E>) -> Result<U, E> {
         match self {
             Ok(_) => res,
@@ -234,7 +216,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.and_then>
+    /// See [`std::result::Result::and_then`]
     pub fn and_then<U, F>(self, op: F) -> Result<U, E>
     where
         F: FnOnce<T, Output = Result<U, E>>,
@@ -245,7 +227,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.or>
+    /// See [`std::result::Result::or`]
     pub fn or<F>(self, res: Result<T, F>) -> Result<T, F> {
         match self {
             Ok(t) => Ok(t),
@@ -253,7 +235,7 @@ impl<T, E> Result<T, E> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.or_else>
+    /// See [`std::result::Result::or_else`]
     pub fn or_else<F, O: FnOnce<E, Output = Result<T, F>>>(self, op: O) -> Result<T, F> {
         match self {
             Ok(t) => Ok(t),
@@ -263,7 +245,7 @@ impl<T, E> Result<T, E> {
 }
 
 impl<T: Clone, E> Result<T, E> {
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.cloned>
+    /// See [`std::result::Result::cloned`]
     pub fn cloned(self) -> Result<T, E> {
         match self {
             Ok(t) => Ok(t.clone()),
@@ -273,7 +255,7 @@ impl<T: Clone, E> Result<T, E> {
 }
 
 impl<T, E> Result<Option<T>, E> {
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.transpose>
+    /// See [`std::result::Result::transpose`]
     pub fn transpose(self) -> Option<Result<T, E>> {
         match self {
             Ok(Option::Some(t)) => Option::Some(Ok(t)),
@@ -284,7 +266,7 @@ impl<T, E> Result<Option<T>, E> {
 }
 
 impl<T, E> Result<Result<T, E>, E> {
-    /// See <https://doc.rust-lang.org/std/result/enum.Result.html#method.flatten>
+    /// See [`std::result::Result::flatten`]
     pub fn flatten(self) -> Result<T, E> {
         match self {
             Ok(inner) => inner,
@@ -302,8 +284,6 @@ mod tests {
     use proptest::prelude::*;
 
     proptest! {
-        // ===== Querying the contained values =====
-
         #[test]
         fn test_is_ok(x in any::<Result<u8, u8>>()) {
             prop_assert!(x.clone().inject().is_ok() == x.is_ok());
@@ -326,8 +306,6 @@ mod tests {
             prop_assert!(x.clone().inject().is_err_and(f) == x.is_err_and(f));
         }
 
-        // ===== Adapters for working with references =====
-
         #[test]
         fn test_as_ref(x in any::<Result<u8, u8>>()) {
             // Test that as_ref preserves the structure and allows access to the value
@@ -339,8 +317,6 @@ mod tests {
                 _ => prop_assert!(false, "as_ref changed variant"),
             }
         }
-
-        // ===== Extracting contained values =====
 
         #[test]
         fn test_expect(v in any::<u8>()) {
@@ -386,8 +362,6 @@ mod tests {
             prop_assert!(x.clone().inject().unwrap_or_default() == x.unwrap_or_default());
         }
 
-        // ===== Transforming contained values =====
-
         #[test]
         fn test_map(x in any::<Result<u8, u8>>(), a in any::<[u8; 256]>()) {
             let f = |v: u8| a[v as usize];
@@ -420,8 +394,6 @@ mod tests {
             prop_assert!(x.clone().inject().map_err(f) == x.map_err(f).inject());
         }
 
-        // ===== Converting to Option =====
-
         #[test]
         fn test_ok(x in any::<Result<u8, u8>>()) {
             prop_assert!(x.clone().inject().ok() == x.ok().inject());
@@ -431,8 +403,6 @@ mod tests {
         fn test_err(x in any::<Result<u8, u8>>()) {
             prop_assert!(x.clone().inject().err() == x.err().inject());
         }
-
-        // ===== Boolean operations =====
 
         #[test]
         fn test_and(x in any::<Result<u8, u8>>(), y in any::<Result<u8, u8>>()) {
@@ -458,15 +428,11 @@ mod tests {
             prop_assert!(x.clone().inject().or_else(f_model) == x.or_else(f_std).inject());
         }
 
-        // ===== Cloned =====
-
         #[test]
         fn test_cloned(x in any::<Result<u8, u8>>()) {
             // In our model, clone is identity, so cloned should be equivalent to identity
             prop_assert!(x.clone().inject().cloned() == x.clone().inject());
         }
-
-        // ===== Transpose =====
 
         #[test]
         fn test_transpose(inner in any::<Option<u8>>(), err in any::<u8>(), is_ok in any::<bool>()) {
@@ -478,8 +444,6 @@ mod tests {
             };
             prop_assert!(model_x.transpose() == x.transpose().inject());
         }
-
-        // ===== Flatten =====
 
         #[test]
         fn test_flatten(inner in any::<Result<u8, u8>>(), err in any::<u8>(), is_ok in any::<bool>()) {

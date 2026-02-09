@@ -1,9 +1,9 @@
-/// See <https://doc.rust-lang.org/std/option/enum.Option.html>
+/// See [`std::option::Option`]
 #[cfg_attr(test, derive(PartialEq))]
 pub enum Option<T> {
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#variant.Some>
+    /// See [`std::option::Option::Some`]
     Some(T),
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#variant.None>
+    /// See [`std::option::Option::None`]
     None,
 }
 
@@ -15,13 +15,13 @@ use self::Option::*;
 
 #[hax_lib::attributes]
 impl<T> Option<T> {
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.is_some>
+    /// See [`std::option::Option::is_some`]
     #[hax_lib::ensures(|res| hax_lib::Prop::implies(res.into(), fstar!("Option_Some? self")))]
     pub fn is_some(&self) -> bool {
         matches!(*self, Some(_))
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.is_some_and>
+    /// See [`std::option::Option::is_some_and`]
     pub fn is_some_and<F: FnOnce<T, Output = bool>>(self, f: F) -> bool {
         match self {
             None => false,
@@ -29,12 +29,12 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.is_none>
+    /// See [`std::option::Option::is_none`]
     pub fn is_none(&self) -> bool {
         self.is_some() == false
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.is_none_or>
+    /// See [`std::option::Option::is_none_or`]
     pub fn is_none_or<F: FnOnce<T, Output = bool>>(self, f: F) -> bool {
         match self {
             None => true,
@@ -42,7 +42,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.as_ref>
+    /// See [`std::option::Option::as_ref`]
     pub const fn as_ref(&self) -> Option<&T> {
         match *self {
             Some(ref x) => Some(x),
@@ -50,7 +50,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.expect>
+    /// See [`std::option::Option::expect`]
     #[hax_lib::requires(self.is_some())]
     pub fn expect(self, _msg: &str) -> T {
         match self {
@@ -59,7 +59,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap>
+    /// See [`std::option::Option::unwrap`]
     #[hax_lib::requires(self.is_some())]
     pub fn unwrap(self) -> T {
         match self {
@@ -68,7 +68,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or>
+    /// See [`std::option::Option::unwrap_or`]
     pub fn unwrap_or(self, default: T) -> T {
         match self {
             Some(x) => x,
@@ -76,7 +76,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_else>
+    /// See [`std::option::Option::unwrap_or_else`]
     pub fn unwrap_or_else<F: FnOnce<(), Output = T>>(self, f: F) -> T {
         match self {
             Some(x) => x,
@@ -84,7 +84,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.unwrap_or_default>
+    /// See [`std::option::Option::unwrap_or_default`]
     pub fn unwrap_or_default(self) -> T
     where
         T: Default,
@@ -95,7 +95,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.map>
+    /// See [`std::option::Option::map`]
     pub fn map<U, F>(self, f: F) -> Option<U>
     where
         F: FnOnce<T, Output = U>,
@@ -106,7 +106,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.map_or>
+    /// See [`std::option::Option::map_or`]
     pub fn map_or<U, F>(self, default: U, f: F) -> U
     where
         F: FnOnce<T, Output = U>,
@@ -117,7 +117,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.map_or_else>
+    /// See [`std::option::Option::map_or_else`]
     pub fn map_or_else<U, D, F>(self, default: D, f: F) -> U
     where
         F: FnOnce<T, Output = U>,
@@ -129,7 +129,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.map_or_default>
+    /// See [`std::option::Option::map_or_default`]
     pub fn map_or_default<U, F>(self, f: F) -> U
     where
         F: FnOnce<T, Output = U>,
@@ -141,7 +141,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.ok_or>
+    /// See [`std::option::Option::ok_or`]
     pub fn ok_or<E>(self, err: E) -> Result<T, E> {
         match self {
             Some(v) => Ok(v),
@@ -149,7 +149,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.ok_or_else>
+    /// See [`std::option::Option::ok_or_else`]
     pub fn ok_or_else<E, F: FnOnce<(), Output = E>>(self, err: F) -> Result<T, E> {
         match self {
             Some(v) => Ok(v),
@@ -157,7 +157,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.and_then>
+    /// See [`std::option::Option::and_then`]
     pub fn and_then<U, F>(self, f: F) -> Option<U>
     where
         F: FnOnce<T, Output = Option<U>>,
@@ -168,7 +168,7 @@ impl<T> Option<T> {
         }
     }
 
-    /// See <https://doc.rust-lang.org/std/option/enum.Option.html#method.take>
+    /// See [`std::option::Option::take`]
     ///
     /// Note: The interface in Rust is wrong, but is good after extraction.
     /// We cannot make a useful model with the right interface so we lose the executability.
