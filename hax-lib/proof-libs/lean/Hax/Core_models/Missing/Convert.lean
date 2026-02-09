@@ -17,7 +17,7 @@ instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) where
      if h: a.size = n then
        Core_models.Result.Result.Ok (a.toVector.cast h)
      else
-       .Err Core_models.Array.TryFromSliceError.array.TryFromSliceError
+       .Err Core_models.Array.TryFromSliceError.mk
      )
 
 @[spec]
