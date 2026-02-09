@@ -374,8 +374,7 @@ end Core_models.Fmt
 
 namespace Core_models.Fmt.Rt
 
-inductive ArgumentType : Type
-
+opaque ArgumentType  : Type
 
 structure Argument where
   ty : ArgumentType
@@ -554,7 +553,6 @@ instance Impl_3
   where
 
 structure PhantomData (T : Type) where
-  _0 : T
 
 end Core_models.Marker
 
