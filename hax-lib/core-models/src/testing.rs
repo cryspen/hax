@@ -4,7 +4,7 @@ pub trait Inject {
 }
 
 impl<Args, Out, F: Fn(Args) -> Out> crate::ops::function::FnOnce<Args> for F {
-    type Output = Out; 
+    type Output = Out;
     fn call_once(&self, args: Args) -> Out {
         self(args)
     }

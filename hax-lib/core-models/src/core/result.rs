@@ -1,4 +1,5 @@
 /// See [`std::result::Result`]
+#[cfg_attr(test, derive(PartialEq))]
 pub enum Result<T, E> {
     /// See [`std::result::Result::Ok`]
     Ok(T),
@@ -6,11 +7,11 @@ pub enum Result<T, E> {
     Err(E),
 }
 
+use self::Result::*;
 use super::clone::Clone;
 use super::default::Default;
 use super::ops::function::*;
 use super::option::Option;
-use self::Result::*;
 
 #[hax_lib::attributes]
 impl<T, E> Result<T, E> {
@@ -277,9 +278,17 @@ impl<T, E> Result<Result<T, E>, E> {
 
 #[cfg(test)]
 mod tests {
-    // Note: Inject impls for std Result/Option -> model Result/Option
-    // and PartialEq for model Result are defined in option.rs tests
     use crate::testing::Inject;
+
+    impl<T: Inject, E: Inject> Inject for Result<T, E> {
+        type Model = super::Result<T::Model, E::Model>;
+        fn inject(self) -> Self::Model {
+            match self {
+                Ok(v) => super::Result::Ok(v.inject()),
+                Err(e) => super::Result::Err(e.inject()),
+            }
+        }
+    }
 
     use proptest::prelude::*;
 

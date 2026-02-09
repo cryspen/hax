@@ -7,11 +7,11 @@ pub enum Option<T> {
     None,
 }
 
+use self::Option::*;
 use super::default::Default;
 use super::ops::function::*;
 use super::result::Result::*;
 use super::result::*;
-use self::Option::*;
 
 #[hax_lib::attributes]
 impl<T> Option<T> {
@@ -180,33 +180,13 @@ impl<T> Option<T> {
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
-    impl <T: Inject> Inject for Option<T> {
+
+    impl<T: Inject> Inject for Option<T> {
         type Model = super::Option<T::Model>;
         fn inject(self) -> Self::Model {
             match self {
                 Some(v) => super::Option::Some(v.inject()),
-                None => super::Option::None
-            }
-        }
-    }
-
-    impl <T: Inject, E: Inject> Inject for Result<T, E> {
-        type Model = crate::result::Result<T::Model, E::Model>;
-        fn inject(self) -> Self::Model {
-            match self {
-                Ok(v) => crate::result::Result::Ok(v.inject()),
-                Err(e) => crate::result::Result::Err(e.inject()),
-            }
-        }
-    }
-
-    #[cfg(test)]
-    impl<T: PartialEq, E: PartialEq> PartialEq for crate::result::Result<T, E> {
-        fn eq(&self, other: &Self) -> bool {
-            match (self, other) {
-                (crate::result::Result::Ok(a), crate::result::Result::Ok(b)) => a == b,
-                (crate::result::Result::Err(a), crate::result::Result::Err(b)) => a == b,
-                _ => false,
+                None => super::Option::None,
             }
         }
     }
