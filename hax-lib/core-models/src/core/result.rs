@@ -246,6 +246,7 @@ impl<T, E> Result<T, E> {
     }
 }
 
+#[hax_lib::attributes]
 impl<T: Clone, E> Result<T, E> {
     /// See [`std::result::Result::cloned`]
     pub fn cloned(self) -> Result<T, E> {
@@ -256,6 +257,7 @@ impl<T: Clone, E> Result<T, E> {
     }
 }
 
+#[hax_lib::attributes]
 impl<T, E> Result<Option<T>, E> {
     /// See [`std::result::Result::transpose`]
     pub fn transpose(self) -> Option<Result<T, E>> {
@@ -267,6 +269,7 @@ impl<T, E> Result<Option<T>, E> {
     }
 }
 
+#[hax_lib::attributes]
 impl<T, E> Result<Result<T, E>, E> {
     /// See [`std::result::Result::flatten`]
     pub fn flatten(self) -> Result<T, E> {

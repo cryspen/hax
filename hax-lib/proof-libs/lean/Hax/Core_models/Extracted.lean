@@ -2932,7 +2932,7 @@ def Core_models.Option.Impl.ok_or
       => (pure (Core_models.Result.Result.Err err))
 
 --  See [`std::result::Result::is_ok`]
-def Core_models.Result.Impl_3.is_ok
+def Core_models.Result.Impl.is_ok
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   : RustM Bool
   := do
@@ -2941,14 +2941,14 @@ def Core_models.Result.Impl_3.is_ok
     | _ => (pure false)
 
 --  See [`std::result::Result::is_err`]
-def Core_models.Result.Impl_3.is_err
+def Core_models.Result.Impl.is_err
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   : RustM Bool
   := do
-  (Core.Ops.Bit.Not.not (← (Core_models.Result.Impl_3.is_ok T E self)))
+  (Core.Ops.Bit.Not.not (← (Core_models.Result.Impl.is_ok T E self)))
 
 --  See [`std::result::Result::as_ref`]
-def Core_models.Result.Impl_3.as_ref
+def Core_models.Result.Impl.as_ref
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   : RustM (Core_models.Result.Result T E)
   := do
@@ -2959,7 +2959,7 @@ def Core_models.Result.Impl_3.as_ref
       => (pure (Core_models.Result.Result.Err e))
 
 --  See [`std::result::Result::unwrap_or`]
-def Core_models.Result.Impl_3.unwrap_or
+def Core_models.Result.Impl.unwrap_or
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   (default : T)
   : RustM T
@@ -2969,7 +2969,7 @@ def Core_models.Result.Impl_3.unwrap_or
     | (Core_models.Result.Result.Err _) => (pure default)
 
 --  See [`std::result::Result::unwrap_or_default`]
-def Core_models.Result.Impl_3.unwrap_or_default
+def Core_models.Result.Impl.unwrap_or_default
   (T : Type)
   (E : Type)
   [Core_models.Default.Default.AssociatedTypes T]
@@ -2983,7 +2983,7 @@ def Core_models.Result.Impl_3.unwrap_or_default
       => (Core_models.Default.Default.default T Rust_primitives.Hax.Tuple0.mk)
 
 --  See [`std::result::Result::err`]
-def Core_models.Result.Impl_3.err
+def Core_models.Result.Impl.err
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   : RustM (Core_models.Option.Option E)
   := do
@@ -2993,7 +2993,7 @@ def Core_models.Result.Impl_3.err
       => (pure (Core_models.Option.Option.Some e))
 
 --  See [`std::result::Result::and`]
-def Core_models.Result.Impl_3.and
+def Core_models.Result.Impl.and
   (T : Type) (E : Type) (U : Type) (self : (Core_models.Result.Result T E))
   (res : (Core_models.Result.Result U E))
   : RustM (Core_models.Result.Result U E)
@@ -3004,7 +3004,7 @@ def Core_models.Result.Impl_3.and
       => (pure (Core_models.Result.Result.Err e))
 
 --  See [`std::result::Result::or`]
-def Core_models.Result.Impl_3.or
+def Core_models.Result.Impl.or
   (T : Type) (E : Type) (F : Type) (self : (Core_models.Result.Result T E))
   (res : (Core_models.Result.Result T F))
   : RustM (Core_models.Result.Result T F)
@@ -3015,7 +3015,7 @@ def Core_models.Result.Impl_3.or
     | (Core_models.Result.Result.Err _) => (pure res)
 
 --  See [`std::result::Result::expect_err`]
-def Core_models.Result.Impl_3.expect_err
+def Core_models.Result.Impl.expect_err
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   (_msg : String)
   : RustM E
@@ -3027,24 +3027,24 @@ def Core_models.Result.Impl_3.expect_err
 
 @[spec]
 def
-      Core_models.Result.Impl_3.expect_err.spec
+      Core_models.Result.Impl.expect_err.spec
       (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
       (_msg : String)
        :
     Spec
-      (requires := do (Core_models.Result.Impl_3.is_err T E self))
+      (requires := do (Core_models.Result.Impl.is_err T E self))
       (ensures := fun _ => pure True)
-      (Core_models.Result.Impl_3.expect_err
+      (Core_models.Result.Impl.expect_err
         (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
         (_msg : String)
         ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Core_models.Result.Impl_3.expect_err] <;> try grind
+  contract := by mvcgen[Core_models.Result.Impl.expect_err] <;> try grind
 }
 
 --  See [`std::result::Result::unwrap_err`]
-def Core_models.Result.Impl_3.unwrap_err
+def Core_models.Result.Impl.unwrap_err
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   : RustM E
   := do
@@ -3055,22 +3055,22 @@ def Core_models.Result.Impl_3.unwrap_err
 
 @[spec]
 def
-      Core_models.Result.Impl_3.unwrap_err.spec
+      Core_models.Result.Impl.unwrap_err.spec
       (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
        :
     Spec
-      (requires := do (Core_models.Result.Impl_3.is_err T E self))
+      (requires := do (Core_models.Result.Impl.is_err T E self))
       (ensures := fun _ => pure True)
-      (Core_models.Result.Impl_3.unwrap_err
+      (Core_models.Result.Impl.unwrap_err
         (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
         ) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Core_models.Result.Impl_3.unwrap_err] <;> try grind
+  contract := by mvcgen[Core_models.Result.Impl.unwrap_err] <;> try grind
 }
 
 --  See [`std::result::Result::cloned`]
-def Core_models.Result.Impl.cloned
+def Core_models.Result.Impl_1.cloned
   (T : Type)
   (E : Type)
   [Core_models.Clone.Clone.AssociatedTypes T] [Core_models.Clone.Clone T ]
@@ -3086,7 +3086,7 @@ def Core_models.Result.Impl.cloned
       => (pure (Core_models.Result.Result.Err e))
 
 --  See [`std::result::Result::transpose`]
-def Core_models.Result.Impl_1.transpose
+def Core_models.Result.Impl_2.transpose
   (T : Type) (E : Type) (self :
   (Core_models.Result.Result (Core_models.Option.Option T) E))
   : RustM (Core_models.Option.Option (Core_models.Result.Result T E))
@@ -3103,7 +3103,7 @@ def Core_models.Result.Impl_1.transpose
           (Core_models.Result.Result.Err e)))
 
 --  See [`std::result::Result::flatten`]
-def Core_models.Result.Impl_2.flatten
+def Core_models.Result.Impl_3.flatten
   (T : Type) (E : Type) (self :
   (Core_models.Result.Result (Core_models.Result.Result T E) E))
   : RustM (Core_models.Result.Result T E)
@@ -3797,7 +3797,7 @@ def Core_models.Option.Impl.and_then
     | (Core_models.Option.Option.None ) => (pure Core_models.Option.Option.None)
 
 --  See [`std::result::Result::is_ok_and`]
-def Core_models.Result.Impl_3.is_ok_and
+def Core_models.Result.Impl.is_ok_and
   (T : Type)
   (E : Type)
   (F : Type)
@@ -3819,7 +3819,7 @@ def Core_models.Result.Impl_3.is_ok_and
     | (Core_models.Result.Result.Err _) => (pure false)
 
 --  See [`std::result::Result::is_err_and`]
-def Core_models.Result.Impl_3.is_err_and
+def Core_models.Result.Impl.is_err_and
   (T : Type)
   (E : Type)
   (F : Type)
@@ -3841,7 +3841,7 @@ def Core_models.Result.Impl_3.is_err_and
       => (Core_models.Ops.Function.FnOnce.call_once F E f e)
 
 --  See [`std::result::Result::unwrap_or_else`]
-def Core_models.Result.Impl_3.unwrap_or_else
+def Core_models.Result.Impl.unwrap_or_else
   (T : Type)
   (E : Type)
   (F : Type)
@@ -3863,7 +3863,7 @@ def Core_models.Result.Impl_3.unwrap_or_else
       => (Core_models.Ops.Function.FnOnce.call_once F E op e)
 
 --  See [`std::result::Result::map`]
-def Core_models.Result.Impl_3.map
+def Core_models.Result.Impl.map
   (T : Type)
   (E : Type)
   (U : Type)
@@ -3889,7 +3889,7 @@ def Core_models.Result.Impl_3.map
       => (pure (Core_models.Result.Result.Err e))
 
 --  See [`std::result::Result::map_or`]
-def Core_models.Result.Impl_3.map_or
+def Core_models.Result.Impl.map_or
   (T : Type)
   (E : Type)
   (U : Type)
@@ -3913,7 +3913,7 @@ def Core_models.Result.Impl_3.map_or
     | (Core_models.Result.Result.Err _) => (pure default)
 
 --  See [`std::result::Result::map_or_else`]
-def Core_models.Result.Impl_3.map_or_else
+def Core_models.Result.Impl.map_or_else
   (T : Type)
   (E : Type)
   (U : Type)
@@ -3947,7 +3947,7 @@ def Core_models.Result.Impl_3.map_or_else
       => (Core_models.Ops.Function.FnOnce.call_once D E default e)
 
 --  See [`std::result::Result::map_or_default`]
-def Core_models.Result.Impl_3.map_or_default
+def Core_models.Result.Impl.map_or_default
   (T : Type)
   (E : Type)
   (U : Type)
@@ -3973,7 +3973,7 @@ def Core_models.Result.Impl_3.map_or_default
       => (Core_models.Default.Default.default U Rust_primitives.Hax.Tuple0.mk)
 
 --  See [`std::result::Result::map_err`]
-def Core_models.Result.Impl_3.map_err
+def Core_models.Result.Impl.map_err
   (T : Type)
   (E : Type)
   (F : Type)
@@ -3999,7 +3999,7 @@ def Core_models.Result.Impl_3.map_err
           (← (Core_models.Ops.Function.FnOnce.call_once O E op e))))
 
 --  See [`std::result::Result::inspect`]
-def Core_models.Result.Impl_3.inspect
+def Core_models.Result.Impl.inspect
   (T : Type)
   (E : Type)
   (F : Type)
@@ -4025,7 +4025,7 @@ def Core_models.Result.Impl_3.inspect
   (pure self)
 
 --  See [`std::result::Result::inspect_err`]
-def Core_models.Result.Impl_3.inspect_err
+def Core_models.Result.Impl.inspect_err
   (T : Type)
   (E : Type)
   (F : Type)
@@ -4051,7 +4051,7 @@ def Core_models.Result.Impl_3.inspect_err
   (pure self)
 
 --  See [`std::result::Result::and_then`]
-def Core_models.Result.Impl_3.and_then
+def Core_models.Result.Impl.and_then
   (T : Type)
   (E : Type)
   (U : Type)
@@ -4075,7 +4075,7 @@ def Core_models.Result.Impl_3.and_then
       => (pure (Core_models.Result.Result.Err e))
 
 --  See [`std::result::Result::or_else`]
-def Core_models.Result.Impl_3.or_else
+def Core_models.Result.Impl.or_else
   (T : Type)
   (E : Type)
   (F : Type)

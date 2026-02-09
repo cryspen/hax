@@ -225,13 +225,13 @@ let impl__ok_or_else
     t_Result v_T v_E
 
 /// See [`std::result::Result::is_ok`]
-let impl_3__is_ok (#v_T #v_E: Type0) (self: t_Result v_T v_E) : bool =
+let impl__is_ok (#v_T #v_E: Type0) (self: t_Result v_T v_E) : bool =
   match self <: t_Result v_T v_E with
   | Result_Ok _ -> true
   | _ -> false
 
 /// See [`std::result::Result::is_ok_and`]
-let impl_3__is_ok_and
+let impl__is_ok_and
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == bool})
@@ -244,11 +244,11 @@ let impl_3__is_ok_and
   | Result_Err _ -> false
 
 /// See [`std::result::Result::is_err`]
-let impl_3__is_err (#v_T #v_E: Type0) (self: t_Result v_T v_E) : bool =
-  ~.(impl_3__is_ok #v_T #v_E self <: bool)
+let impl__is_err (#v_T #v_E: Type0) (self: t_Result v_T v_E) : bool =
+  ~.(impl__is_ok #v_T #v_E self <: bool)
 
 /// See [`std::result::Result::is_err_and`]
-let impl_3__is_err_and
+let impl__is_err_and
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_E)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == bool})
@@ -261,19 +261,19 @@ let impl_3__is_err_and
     Core_models.Ops.Function.f_call_once #v_F #v_E #FStar.Tactics.Typeclasses.solve f e
 
 /// See [`std::result::Result::as_ref`]
-let impl_3__as_ref (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Result v_T v_E =
+let impl__as_ref__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Result v_T v_E =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> Result_Ok t <: t_Result v_T v_E
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
 
 /// See [`std::result::Result::unwrap_or`]
-let impl_3__unwrap_or (#v_T #v_E: Type0) (self: t_Result v_T v_E) (v_default: v_T) : v_T =
+let impl__unwrap_or__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) (v_default: v_T) : v_T =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> t
   | Result_Err _ -> v_default
 
 /// See [`std::result::Result::unwrap_or_else`]
-let impl_3__unwrap_or_else
+let impl__unwrap_or_else__from__result
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_E)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == v_T})
@@ -286,7 +286,7 @@ let impl_3__unwrap_or_else
     Core_models.Ops.Function.f_call_once #v_F #v_E #FStar.Tactics.Typeclasses.solve op e
 
 /// See [`std::result::Result::unwrap_or_default`]
-let impl_3__unwrap_or_default
+let impl__unwrap_or_default__from__result
       (#v_T #v_E: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Default.t_Default v_T)
       (self: t_Result v_T v_E)
@@ -296,7 +296,7 @@ let impl_3__unwrap_or_default
   | Result_Err _ -> Core_models.Default.f_default #v_T #FStar.Tactics.Typeclasses.solve ()
 
 /// See [`std::result::Result::map`]
-let impl_3__map
+let impl__map__from__result
       (#v_T #v_E #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
@@ -311,7 +311,7 @@ let impl_3__map
   | Result_Err e -> Result_Err e <: t_Result v_U v_E
 
 /// See [`std::result::Result::map_or`]
-let impl_3__map_or
+let impl__map_or__from__result
       (#v_T #v_E #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == v_U})
@@ -325,7 +325,7 @@ let impl_3__map_or
   | Result_Err _ -> v_default
 
 /// See [`std::result::Result::map_or_else`]
-let impl_3__map_or_else
+let impl__map_or_else__from__result
       (#v_T #v_E #v_U #v_D #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Ops.Function.t_FnOnce v_D v_E)
@@ -342,7 +342,7 @@ let impl_3__map_or_else
     Core_models.Ops.Function.f_call_once #v_D #v_E #FStar.Tactics.Typeclasses.solve v_default e
 
 /// See [`std::result::Result::map_or_default`]
-let impl_3__map_or_default
+let impl__map_or_default__from__result
       (#v_T #v_E #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i1: Core_models.Default.t_Default v_U)
@@ -356,7 +356,7 @@ let impl_3__map_or_default
   | Result_Err _ -> Core_models.Default.f_default #v_U #FStar.Tactics.Typeclasses.solve ()
 
 /// See [`std::result::Result::map_err`]
-let impl_3__map_err
+let impl__map_err
       (#v_T #v_E #v_F #v_O: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_O v_E)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == v_F})
@@ -372,7 +372,7 @@ let impl_3__map_err
     t_Result v_T v_F
 
 /// See [`std::result::Result::inspect`]
-let impl_3__inspect
+let impl__inspect
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == Prims.unit})
@@ -391,7 +391,7 @@ let impl_3__inspect
   self
 
 /// See [`std::result::Result::inspect_err`]
-let impl_3__inspect_err
+let impl__inspect_err
       (#v_T #v_E #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_E)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == Prims.unit})
@@ -410,26 +410,26 @@ let impl_3__inspect_err
   self
 
 /// See [`std::result::Result::ok`]
-let impl_3__ok (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Option v_T =
+let impl__ok (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Option v_T =
   match self <: t_Result v_T v_E with
   | Result_Ok x -> Option_Some x <: t_Option v_T
   | Result_Err _ -> Option_None <: t_Option v_T
 
 /// See [`std::result::Result::err`]
-let impl_3__err (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Option v_E =
+let impl__err (#v_T #v_E: Type0) (self: t_Result v_T v_E) : t_Option v_E =
   match self <: t_Result v_T v_E with
   | Result_Ok _ -> Option_None <: t_Option v_E
   | Result_Err e -> Option_Some e <: t_Option v_E
 
 /// See [`std::result::Result::and`]
-let impl_3__and (#v_T #v_E #v_U: Type0) (self: t_Result v_T v_E) (res: t_Result v_U v_E)
+let impl__and (#v_T #v_E #v_U: Type0) (self: t_Result v_T v_E) (res: t_Result v_U v_E)
     : t_Result v_U v_E =
   match self <: t_Result v_T v_E with
   | Result_Ok _ -> res
   | Result_Err e -> Result_Err e <: t_Result v_U v_E
 
 /// See [`std::result::Result::and_then`]
-let impl_3__and_then
+let impl__and_then__from__result
       (#v_T #v_E #v_U #v_F: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_F v_T)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Result v_U v_E})
@@ -442,14 +442,14 @@ let impl_3__and_then
   | Result_Err e -> Result_Err e <: t_Result v_U v_E
 
 /// See [`std::result::Result::or`]
-let impl_3__or (#v_T #v_E #v_F: Type0) (self: t_Result v_T v_E) (res: t_Result v_T v_F)
+let impl__or (#v_T #v_E #v_F: Type0) (self: t_Result v_T v_E) (res: t_Result v_T v_F)
     : t_Result v_T v_F =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> Result_Ok t <: t_Result v_T v_F
   | Result_Err _ -> res
 
 /// See [`std::result::Result::or_else`]
-let impl_3__or_else
+let impl__or_else
       (#v_T #v_E #v_F #v_O: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Ops.Function.t_FnOnce v_O v_E)
       (#_: unit{i0.Core_models.Ops.Function.f_Output == t_Result v_T v_F})
@@ -462,35 +462,35 @@ let impl_3__or_else
     Core_models.Ops.Function.f_call_once #v_O #v_E #FStar.Tactics.Typeclasses.solve op e
 
 /// See [`std::result::Result::expect`]
-let impl_3__expect (#v_T #v_E: Type0) (self: t_Result v_T v_E) (e_msg: string)
-    : Prims.Pure v_T (requires impl_3__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
+let impl__expect__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E) (e_msg: string)
+    : Prims.Pure v_T (requires impl__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> t
   | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
 
 /// See [`std::result::Result::unwrap`]
-let impl_3__unwrap (#v_T #v_E: Type0) (self: t_Result v_T v_E)
-    : Prims.Pure v_T (requires impl_3__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
+let impl__unwrap__from__result (#v_T #v_E: Type0) (self: t_Result v_T v_E)
+    : Prims.Pure v_T (requires impl__is_ok #v_T #v_E self) (fun _ -> Prims.l_True) =
   match self <: t_Result v_T v_E with
   | Result_Ok t -> t
   | Result_Err _ -> Core_models.Panicking.Internal.panic #v_T ()
 
 /// See [`std::result::Result::expect_err`]
-let impl_3__expect_err (#v_T #v_E: Type0) (self: t_Result v_T v_E) (e_msg: string)
-    : Prims.Pure v_E (requires impl_3__is_err #v_T #v_E self) (fun _ -> Prims.l_True) =
+let impl__expect_err (#v_T #v_E: Type0) (self: t_Result v_T v_E) (e_msg: string)
+    : Prims.Pure v_E (requires impl__is_err #v_T #v_E self) (fun _ -> Prims.l_True) =
   match self <: t_Result v_T v_E with
   | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
   | Result_Err e -> e
 
 /// See [`std::result::Result::unwrap_err`]
-let impl_3__unwrap_err (#v_T #v_E: Type0) (self: t_Result v_T v_E)
-    : Prims.Pure v_E (requires impl_3__is_err #v_T #v_E self) (fun _ -> Prims.l_True) =
+let impl__unwrap_err (#v_T #v_E: Type0) (self: t_Result v_T v_E)
+    : Prims.Pure v_E (requires impl__is_err #v_T #v_E self) (fun _ -> Prims.l_True) =
   match self <: t_Result v_T v_E with
   | Result_Ok _ -> Core_models.Panicking.Internal.panic #v_E ()
   | Result_Err e -> e
 
 /// See [`std::result::Result::cloned`]
-let impl__cloned
+let impl_1__cloned
       (#v_T #v_E: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
       (self: t_Result v_T v_E)
@@ -503,7 +503,7 @@ let impl__cloned
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
 
 /// See [`std::result::Result::transpose`]
-let impl_1__transpose (#v_T #v_E: Type0) (self: t_Result (t_Option v_T) v_E)
+let impl_2__transpose (#v_T #v_E: Type0) (self: t_Result (t_Option v_T) v_E)
     : t_Option (t_Result v_T v_E) =
   match self <: t_Result (t_Option v_T) v_E with
   | Result_Ok (Option_Some t) ->
@@ -512,7 +512,7 @@ let impl_1__transpose (#v_T #v_E: Type0) (self: t_Result (t_Option v_T) v_E)
   | Result_Err e -> Option_Some (Result_Err e <: t_Result v_T v_E) <: t_Option (t_Result v_T v_E)
 
 /// See [`std::result::Result::flatten`]
-let impl_2__flatten (#v_T #v_E: Type0) (self: t_Result (t_Result v_T v_E) v_E) : t_Result v_T v_E =
+let impl_3__flatten (#v_T #v_E: Type0) (self: t_Result (t_Result v_T v_E) v_E) : t_Result v_T v_E =
   match self <: t_Result (t_Result v_T v_E) v_E with
   | Result_Ok inner -> inner
   | Result_Err e -> Result_Err e <: t_Result v_T v_E
