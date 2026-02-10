@@ -516,7 +516,7 @@ impl From<ConcreteId> for GlobalId {
 impl ConcreteId {
     /// Renders a view of the concrete identifier.
     fn view(&self) -> view::View {
-        self.def_id.clone().into()
+        view::View::from(self.def_id.clone()).with_suffix(self.suffix.clone())
     }
 
     /// Gets the closest module only parent identifier, that is, the closest
