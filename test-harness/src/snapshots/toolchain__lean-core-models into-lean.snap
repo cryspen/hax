@@ -227,6 +227,32 @@ def test (_ : Rust_primitives.Hax.Tuple0) :
 end Lean_core_models.Option
 
 
+namespace Lean_core_models.Phantom
+
+class Foo.AssociatedTypes (Self : Type) where
+
+class Foo (Self : Type)
+  [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
+  where
+
+structure Bar
+  (F : Type)
+  [trait_constr_Bar_associated_type_i0 : Foo.AssociatedTypes F]
+  [trait_constr_Bar_i0 : Foo F ]
+  where
+  _phantom : (Core_models.Marker.PhantomData F)
+
+def Impl.new
+    (F : Type)
+    [trait_constr_new_associated_type_i0 : Foo.AssociatedTypes F]
+    [trait_constr_new_i0 : Foo F ]
+    (_ : Rust_primitives.Hax.Tuple0) :
+    RustM (Bar F) := do
+  (pure (Bar.mk (_phantom := Core_models.Marker.PhantomData.mk)))
+
+end Lean_core_models.Phantom
+
+
 namespace Lean_core_models.Result
 
 inductive E1 : Type

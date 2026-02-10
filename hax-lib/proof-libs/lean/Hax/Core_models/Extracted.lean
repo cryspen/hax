@@ -637,7 +637,6 @@ instance Impl_3
   where
 
 structure PhantomData (T : Type) where
-  _0 : T
 
 end Core_models.Marker
 
