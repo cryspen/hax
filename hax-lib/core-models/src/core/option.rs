@@ -1,5 +1,5 @@
 /// See [`std::option::Option`]
-#[cfg_attr(test, derive(PartialEq))]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub enum Option<T> {
     /// See [`std::option::Option::Some`]
     Some(T),
@@ -180,17 +180,6 @@ impl<T> Option<T> {
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
-
-    impl<T: Inject> Inject for Option<T> {
-        type Model = super::Option<T::Model>;
-        fn inject(&self) -> Self::Model {
-            match self {
-                Some(v) => super::Option::Some(v.inject()),
-                None => super::Option::None,
-            }
-        }
-    }
-
     use proptest::prelude::*;
 
     proptest! {

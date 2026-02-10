@@ -15,6 +15,7 @@ where
 pub trait Eq: PartialEq<Self> {}
 
 /// See [`std::cmp::Ordering`]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub enum Ordering {
     /// See [`std::cmp::Ordering::Less`]
     Less = -1,
@@ -197,3 +198,67 @@ macro_rules! int_impls {
 }
 
 int_impls! { u8 i8 u16 i16 u32 i32 u64 i64 u128 i128 usize isize }
+
+#[cfg(test)]
+mod tests {
+    use super::{Ord, PartialEq, PartialOrd};
+    use crate::testing::Inject;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_max(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(super::max(x.inject(), y.inject()).inject(), std::cmp::max(x, y));
+        }
+
+        #[test]
+        fn test_min(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(super::min(x.inject(), y.inject()).inject(), std::cmp::min(x, y));
+        }
+
+        #[test]
+        fn test_reverse_partial_cmp(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::Reverse(x.inject()).partial_cmp(&super::Reverse(y.inject())),
+                std::cmp::Reverse(x).partial_cmp(&std::cmp::Reverse(y)).inject()
+            );
+        }
+
+        #[test]
+        fn test_reverse_eq(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::Reverse(x.inject()).eq(&super::Reverse(y.inject())),
+                std::cmp::Reverse(x).eq(&std::cmp::Reverse(y))
+            );
+        }
+
+        #[test]
+        fn test_reverse_cmp(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::Reverse(x.inject()).cmp(&super::Reverse(y.inject())),
+                std::cmp::Reverse(x).cmp(&std::cmp::Reverse(y)).inject()
+            );
+        }
+
+        #[test]
+        fn test_int_partial_cmp(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                <u8 as PartialOrd<u8>>::partial_cmp(&x.inject(), &y.inject()),
+                std::cmp::PartialOrd::partial_cmp(&x, &y).inject()
+            );
+        }
+
+        #[test]
+        fn test_int_cmp(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                <u8 as Ord>::cmp(&x.inject(), &y.inject()),
+                std::cmp::Ord::cmp(&x, &y).inject()
+            );
+        }
+
+        #[test]
+        fn test_int_eq(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(<u8 as PartialEq<u8>>::eq(&x.inject(), &y.inject()), std::cmp::PartialEq::eq(&x, &y));
+        }
+    }
+}

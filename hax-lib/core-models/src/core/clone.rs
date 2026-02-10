@@ -21,3 +21,17 @@ impl<T> Clone for T {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::testing::Inject;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_clone(x in any::<u8>()) {
+            let model = x.inject();
+            prop_assert_eq!(model.clone(), model);
+        }
+    }
+}

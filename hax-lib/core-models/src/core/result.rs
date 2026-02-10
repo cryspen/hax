@@ -1,5 +1,5 @@
 /// See [`std::result::Result`]
-#[cfg_attr(test, derive(PartialEq))]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub enum Result<T, E> {
     /// See [`std::result::Result::Ok`]
     Ok(T),
@@ -283,17 +283,6 @@ impl<T, E> Result<Result<T, E>, E> {
 #[cfg(test)]
 mod tests {
     use crate::testing::Inject;
-
-    impl<T: Inject, E: Inject> Inject for Result<T, E> {
-        type Model = super::Result<T::Model, E::Model>;
-        fn inject(&self) -> Self::Model {
-            match self {
-                Ok(v) => super::Result::Ok(v.inject()),
-                Err(e) => super::Result::Err(e.inject()),
-            }
-        }
-    }
-
     use proptest::prelude::*;
 
     proptest! {

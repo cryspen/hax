@@ -150,3 +150,109 @@ int_try_from! {
     i16 i32 i32 i32   i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize isize,
     i8  i8  i16 isize i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32   i64,
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::testing::Inject;
+    use pastey::paste;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_from_identity(x in any::<u8>()) {
+            prop_assert_eq!(<u8 as super::From<u8>>::from(x.inject()), x);
+        }
+
+        #[test]
+        fn test_into_identity(x in any::<u8>()) {
+            prop_assert_eq!(super::Into::<u8>::into(x.inject()), x);
+        }
+
+        #[test]
+        fn test_as_ref_identity(x in any::<u8>()) {
+            prop_assert_eq!(super::AsRef::as_ref(x.inject()), x);
+        }
+    }
+
+    macro_rules! int_from_test {
+            (
+                $($From_t: ident)*,
+                $($To_t: ident)*,
+            ) => {
+                paste!{
+                    $(
+                        proptest! {
+                            #[test]
+                            fn [<test_from_$From_t _to_ $To_t>](x in any::<$From_t>()) {
+                                prop_assert_eq!(<$To_t as super::From<$From_t>>::from(x.inject()), x.into());
+                            }
+                        }
+                    )*
+                }
+            }
+        }
+
+    macro_rules! int_try_from_test {
+            (
+                $($From_t: ident)*,
+                $($To_t: ident)*,
+            ) => {
+                paste!{
+                    $(
+                        proptest!{
+                            #[test]
+                            fn [<test_try_from_$From_t _to_ $To_t>](x in any::<u16>()) {
+                                prop_assert_eq!(
+                                    <u8 as super::TryFrom<u16>>::try_from(x.inject()),
+                                    u8::try_from(x).inject()
+                                );
+                            }
+                        }
+                    )*
+                }
+            }
+        }
+
+    int_from_test! {
+        u8  u8  u16 u8  u16 u32 u8   u16  u32  u64  u8    u16,
+        u16 u32 u32 u64 u64 u64 u128 u128 u128 u128 usize usize,
+    }
+
+    int_from_test! {
+        i8  i8  i16 i8  i16 i32 i8   i16  i32  i64  i8    i16,
+        i16 i32 i32 i64 i64 i64 i128 i128 i128 i128 isize isize,
+    }
+
+    int_try_from_test! {
+        u16 u32 u32 u32   u64 u64 u64 u64   u128 u128 u128 u128 u128  usize usize usize usize usize,
+        u8  u8  u16 usize u8  u16 u32 usize u8   u16  u32  u64  usize u8    u16   u32   u64   u128,
+    }
+
+    int_try_from_test! {
+        i16 i32 i32 i32   i64 i64 i64 i64   i128 i128 i128 i128 i128  isize isize isize isize isize,
+        i8  i8  i16 isize i8  i16 i32 isize i8   i16  i32  i64  isize i8    i16   i32   i64   i128,
+    }
+
+    // Commented out: TryFrom<&[T]> for [T; N] uses array_from_fn which is unimplemented
+    // proptest! {
+    //     #[test]
+    //     fn test_try_from_slice_to_array_success(slice in prop::collection::vec(any::<u8>(), 4..=4)) {
+    //         let result = <[u8; 4] as super::TryFrom<&[u8]>>::try_from(&slice[..]);
+    //         let expected = <[u8; 4]>::try_from(&slice[..]);
+    //         match (result, expected) {
+    //             (super::Result::Ok(v), Ok(e)) => prop_assert_eq!(v.inject(), e.inject()),
+    //             (super::Result::Err(_), Err(_)) => {},
+    //             _ => return Err(TestCaseError::fail("Mismatch")),
+    //         }
+    //     }
+    //
+    //     #[test]
+    //     fn test_try_from_slice_to_array_length_mismatch(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+    //         let len = slice.len();
+    //         if len != 4 {
+    //             let result = <[u8; 4] as super::TryFrom<&[u8]>>::try_from(&slice[..]);
+    //             prop_assert!(matches!(result, super::Result::Err(_)));
+    //         }
+    //     }
+    // }
+}

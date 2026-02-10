@@ -491,3 +491,155 @@ impl_default_for_int!(
     core::primitive::i128,
     core::primitive::isize
 );
+
+#[cfg(test)]
+mod tests {
+    use crate::testing::Inject;
+    use pastey::paste;
+    use proptest::prelude::*;
+
+    macro_rules! int_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_ $t _wrapping_add>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::wrapping_add(x.inject(), y.inject()), x.wrapping_add(y));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _saturating_add>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::saturating_add(x.inject(), y.inject()), x.saturating_add(y));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _overflowing_add>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::overflowing_add(x.inject(), y.inject()), x.overflowing_add(y));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _checked_add>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::checked_add(x.inject(), y.inject()), x.checked_add(y).inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _wrapping_sub>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::wrapping_sub(x.inject(), y.inject()), x.wrapping_sub(y));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _wrapping_mul>](x in any::<$t>(), y in any::<$t>()) {
+                            prop_assert_eq!(super::$t::wrapping_mul(x.inject(), y.inject()), x.wrapping_mul(y));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _count_ones>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::count_ones(x.inject()), x.count_ones());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _leading_zeros>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::leading_zeros(x.inject()), x.leading_zeros());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _rem_euclid>](x in any::<$t>(), y in any::<$t>()) {
+                            if y != 0 {
+                                prop_assert_eq!(super::$t::rem_euclid(x.inject(), y.inject()), x.rem_euclid(y));
+                            }
+                        }
+                    }
+                    #[test]
+                    fn [<test_ $t _min>]() {
+                        assert_eq!(super::$t::MIN, $t::MIN)
+                    }
+                    #[test]
+                    fn [<test_ $t _max>]() {
+                        assert_eq!(super::$t::MAX, $t::MAX)
+                    }
+                    #[test]
+                    fn [<test_ $t _bits>]() {
+                        assert_eq!(super::$t::BITS, $t::BITS)
+                    }
+                )*
+            }
+        }
+    }
+
+    macro_rules! uint_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_ $t _rotate_right>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                            prop_assert_eq!(super::$t::rotate_right(x.inject(), n), x.rotate_right(n));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _rotate_left>](x in any::<$t>(), n in 0u32..$t::BITS) {
+                            prop_assert_eq!(super::$t::rotate_left(x.inject(), n), x.rotate_left(n));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _from_be_bytes>](bytes in any::<[u8; $t::BITS as usize / 8]>()) {
+                            prop_assert_eq!(super::$t::from_be_bytes(bytes.inject()), $t::from_be_bytes(bytes));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _from_le_bytes>](bytes in any::<[u8; $t::BITS as usize / 8]>()) {
+                            prop_assert_eq!(super::$t::from_le_bytes(bytes.inject()), $t::from_le_bytes(bytes));
+                        }
+
+                        #[test]
+                        fn [<test_ $t _to_be_bytes>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::to_be_bytes(x.inject()), x.to_be_bytes().inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _to_le_bytes>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::to_le_bytes(x.inject()), x.to_le_bytes().inject());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _pow>](x in any::<$t>(), exp in 0u32..=2) {
+                            if x <= 2 {
+                                prop_assert_eq!(super::$t::pow(x.inject(), exp), x.pow(exp));
+                            }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _ilog2>](x in any::<$t>()) {
+                            if x > 0 {
+                                prop_assert_eq!(super::$t::ilog2(x.inject()), x.ilog2());
+                            }
+                        }
+                    }
+                )*
+            }
+        }
+    }
+
+    macro_rules! iint_abs_test {
+        ($($t:ty)*) => {
+            paste! {
+                $(
+                    proptest! {
+                        #[test]
+                        fn [<test_ $t _abs>](x in any::<$t>()) {
+                            if x != $t::MIN {
+                                prop_assert_eq!(super::$t::abs(x.inject()), x.abs());
+                            }
+                        }
+                    }
+                )*
+            }
+        }
+    }
+
+    // Apply macros to all integer types
+    int_test! { u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize }
+    uint_test! { u8 u16 u32 u64 u128 usize }
+    iint_abs_test! { i8 i16 i32 i64 i128 isize }
+}

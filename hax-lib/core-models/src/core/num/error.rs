@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 
 /// See [`std::num::TryFromIntError`]
+#[cfg_attr(test, derive(PartialEq, Debug))]
 pub struct TryFromIntError(pub(crate) ());
 
 /// See [`std::num::ParseIntError`]
