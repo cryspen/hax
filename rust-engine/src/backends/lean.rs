@@ -4,7 +4,6 @@
 //! Pretty::Doc type, which can in turn be exported to string (or, eventually,
 //! source maps).
 
-use hax_lib_macros_types::AttrPayload;
 use std::collections::HashSet;
 use std::sync::LazyLock;
 
@@ -14,7 +13,9 @@ use crate::{
         identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
         span::Span,
     },
-    attributes::hax_attributes,
+    attributes::{
+        hax_proof_attributes, hax_pure_ensures_proof_attributes, hax_pure_requires_proof_attributes,
+    },
     names::rust_primitives::hax::{
         cast_op,
         explicit_monadic::{lift, pure},
@@ -664,14 +665,19 @@ const _: () = {
             if spec.precondition.is_none() && spec.postcondition.is_none() {
                 nil!()
             } else {
-                let proofs: Vec<&String> = hax_attributes(&item.meta.attributes)
-                    .flat_map(|attr| match attr {
-                        AttrPayload::Proof(proof) => Some(proof),
-                        _ => None,
-                    })
-                    .collect();
+                let proofs: Vec<&String> = hax_proof_attributes(&item.meta.attributes).collect();
                 if proofs.len() > 1 {
                     emit_error!("Only one proof attribute per item is allowed.");
+                }
+                let pure_requires_proofs: Vec<&String> =
+                    hax_pure_requires_proof_attributes(&item.meta.attributes).collect();
+                if pure_requires_proofs.len() > 1 {
+                    emit_error!("Only one lean_pure_requires_proof attribute per item is allowed.");
+                }
+                let pure_ensures_proofs: Vec<&String> =
+                    hax_pure_ensures_proof_attributes(&item.meta.attributes).collect();
+                if pure_ensures_proofs.len() > 1 {
+                    emit_error!("Only one lean_pure_ensures_proof attribute per item is allowed.");
                 }
                 docs![
                     hardline!(),
@@ -744,9 +750,20 @@ const _: () = {
                     softline!(),
                     docs![
                         hardline!(),
-                        "pureRequires := by constructor; mvcgen <;> try grind",
+                        if pure_requires_proofs.is_empty() {
+                            docs!["pureRequires := by constructor; mvcgen <;> try grind"]
+                        } else {
+                            docs![
+                                "pureRequires := ",
+                                intersperse!(pure_requires_proofs, nil!())
+                            ]
+                        },
                         hardline!(),
-                        "pureEnsures := by constructor; intros; mvcgen <;> try grind",
+                        if pure_ensures_proofs.is_empty() {
+                            docs!["pureEnsures := by constructor; intros; mvcgen <;> try grind"]
+                        } else {
+                            docs!["pureEnsures := ", intersperse!(pure_ensures_proofs, nil!())]
+                        },
                         hardline!(),
                         docs![
                             "contract :=",

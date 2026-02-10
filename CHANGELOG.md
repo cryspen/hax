@@ -28,6 +28,7 @@ Changes to the Lean backend:
  - Add support for associated types with constraints and inheritance (#1909)
  - Fix bug with monadic wrapping of trait constants (#1929)
  - Add type annotation for cast_op (#1925)
+ - Add attributes for pureEnsures/pureRequires (#1931)
  - Extract correct `PhantomData` structure (#1932)
 
 Miscellaneous:

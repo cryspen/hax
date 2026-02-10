@@ -31,3 +31,9 @@ mod issue_1852 {
         pub fn func(self) {}
     }
 }
+
+#[hax_lib::requires(true)]
+#[hax_lib::ensures(|r| true)]
+#[hax_lib::lean::pure_requires_proof("⟨True, by mvcgen⟩")]
+#[hax_lib::lean::pure_ensures_proof("⟨fun _ => True, by intros; mvcgen⟩")]
+fn custom_pure_proofs(x: u8) {}
