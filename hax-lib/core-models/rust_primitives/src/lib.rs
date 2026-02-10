@@ -2,21 +2,21 @@
 
 pub mod slice {
     pub fn slice_length<T>(s: &[T]) -> usize {
-        unimplemented!("This is a stub that is implemented in each backend")
+        s.len()
     }
     #[hax_lib::requires(mid <= slice_length(s))]
     pub fn slice_split_at<T>(s: &[T], mid: usize) -> (&[T], &[T]) {
-        unimplemented!("This is a stub that is implemented in each backend")
+        s.split_at(mid)
     }
     pub fn slice_contains<T>(s: &[T], v: T) -> bool {
         unimplemented!("This is a stub that is implemented in each backend")
     }
     #[hax_lib::requires(i < slice_length(s))]
     pub fn slice_index<T>(s: &[T], i: usize) -> &T {
-        unimplemented!("This is a stub that is implemented in each backend")
+        &s[i]
     }
     pub fn slice_slice<T>(s: &[T], b: usize, e: usize) -> &[T] {
-        unimplemented!("This is a stub that is implemented in each backend")
+        &s[b..e]
     }
     // In the following two functions, F is actually a function type.
     // Not constraining that here allows to call it with closures,
@@ -29,20 +29,20 @@ pub mod slice {
         unimplemented!("This is a stub that is implemented in each backend")
     }
     pub fn array_as_slice<T, const N: usize>(s: &[T; N]) -> &[T] {
-        unimplemented!("This is a stub that is implemented in each backend")
+        &s[..]
     }
     pub fn array_slice<T, const N: usize>(a: &[T; N], b: usize, e: usize) -> &[T] {
-        unimplemented!("This is a stub that is implemented in each backend")
+        &a[b..e]
     }
     pub fn array_index<T, const N: usize>(a: &[T; N], i: usize) -> &T {
-        unimplemented!("This is a stub that is implemented in each backend")
+        &a[i]
     }
 }
 
 pub mod sequence {
     pub struct Seq<T>(Option<T>);
     pub fn seq_empty<T>() -> Seq<T> {
-        unimplemented!("This is a stub that is implemented in each backend")
+        Seq(None)
     }
     pub fn seq_from_slice<T>(_s: &[T]) -> Seq<T> {
         unimplemented!("This is a stub that is implemented in each backend")
@@ -80,17 +80,29 @@ pub mod sequence {
 }
 
 pub mod string {
+    use std::sync::OnceLock;
+
+    static STRING_ARENA: OnceLock<std::sync::Mutex<Vec<String>>> = OnceLock::new();
+
+    fn leak_string(s: String) -> &'static str {
+        let arena = STRING_ARENA.get_or_init(|| std::sync::Mutex::new(Vec::new()));
+        let mut arena = arena.lock().unwrap();
+        arena.push(s);
+        // SAFETY: The string is stored in the arena and will live for the program's lifetime
+        unsafe { std::mem::transmute(arena.last().unwrap().as_str()) }
+    }
+
     pub fn str_concat(s1: &'static str, s2: &'static str) -> &'static str {
-        unimplemented!("This is a stub that is implemented in each backend")
+        leak_string(format!("{}{}", s1, s2))
     }
     pub fn str_of_char(c: char) -> &'static str {
-        unimplemented!("This is a stub that is implemented in each backend")
+        leak_string(c.to_string())
     }
     pub fn str_sub(s: &'static str, b: usize, e: usize) -> &'static str {
-        unimplemented!("This is a stub that is implemented in each backend")
+        leak_string(s.chars().skip(b).take(e - b).collect())
     }
     pub fn str_index(s: &'static str, i: usize) -> char {
-        unimplemented!("This is a stub that is implemented in each backend")
+        s.chars().nth(i).unwrap()
     }
 }
 
@@ -114,10 +126,10 @@ pub mod arithmetic {
         ) => {
             paste!{
                 $(pub fn [<$op _ $t>](x: $t, y: $t) -> $t {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.$op(y)
                 })*
                 $(pub fn [<$ov_op _ $t>](x: $t, y: $t) -> ($t, bool) {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.$ov_op(y)
                 })*
             }
         };
@@ -141,34 +153,34 @@ pub mod arithmetic {
             paste! {
                 $(
                 pub fn [<pow_ $Self>](x: $Self, exp: u32) -> $Self {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.pow(exp)
                 }
                 pub fn [<count_ones_ $Self>](x: $Self) -> u32 {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.count_ones()
                 }
                 pub fn [<rotate_right_ $Self>](x: $Self, n: u32) -> $Self {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.rotate_right(n)
                 }
                 pub fn [<rotate_left_ $Self>](x: $Self, n: u32) -> $Self {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.rotate_left(n)
                 }
                 pub fn [<leading_zeros_ $Self>](x: $Self) -> u32 {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.leading_zeros()
                 }
                 pub fn [<ilog2_ $Self>](x: $Self) -> u32 {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.ilog2()
                 }
                 pub fn [<from_be_bytes_ $Self>](bytes: [u8; $Bytes]) -> $Self {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    $Self::from_be_bytes(bytes)
                 }
                 pub fn [<from_le_bytes_ $Self>](bytes: [u8; $Bytes]) -> $Self {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    $Self::from_le_bytes(bytes)
                 }
                 pub fn [<to_be_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    bytes.to_be_bytes()
                 }
                 pub fn [<to_le_bytes_ $Self>](bytes: $Self) -> [u8; $Bytes] {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    bytes.to_le_bytes()
                 })*
             }
         }
@@ -179,7 +191,7 @@ pub mod arithmetic {
             paste! {
                 $(
                     pub fn [<abs_ $Self>](x: $Self) -> $Self {
-                    unimplemented!("This is a stub that is implemented in each backend")
+                    x.abs()
                 }
                 )*
             }
