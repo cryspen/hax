@@ -2,6 +2,7 @@
 // and its clone.
 // We need to consume self, instead of taking a reference, otherwise Rust would
 // not allow returning an owned Self. This is the same after going through hax.
+/// See [`std::clone::Clone`]
 #[hax_lib::fstar::replace(
     "class t_Clone self = {
   f_clone_pre: self -> Type0;
@@ -10,6 +11,7 @@
 }"
 )]
 pub trait Clone {
+    /// See [`std::clone::Clone::clone`]
     fn clone(self) -> Self;
 }
 

@@ -8,6 +8,7 @@ pub mod iter {
     use crate::option::Option;
     use rust_primitives::{sequence::*, slice::*};
 
+    /// See [`std::slice::Chunks`]
     pub struct Chunks<'a, T> {
         cs: usize,
         elements: &'a [T],
@@ -17,6 +18,7 @@ pub mod iter {
             Chunks { cs, elements }
         }
     }
+    /// See [`std::slice::ChunksExact`]
     pub struct ChunksExact<'a, T> {
         cs: usize,
         elements: &'a [T],
@@ -26,6 +28,7 @@ pub mod iter {
             ChunksExact { cs, elements }
         }
     }
+    /// See [`std::slice::Iter`]
     pub struct Iter<T>(pub Seq<T>);
 
     impl<T> crate::iter::traits::iterator::Iterator for Iter<T> {
@@ -74,18 +77,23 @@ pub mod iter {
 
 #[hax_lib::attributes]
 impl<T> Slice<T> {
+    /// See [`std::slice::len`]
     fn len(s: &[T]) -> usize {
         rust_primitives::slice::slice_length(s)
     }
+    /// See [`std::slice::chunks`]
     fn chunks<'a>(s: &'a [T], cs: usize) -> iter::Chunks<'a, T> {
         iter::Chunks::new(cs, s)
     }
+    /// See [`std::slice::iter`]
     fn iter(s: &[T]) -> iter::Iter<T> {
         iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
+    /// See [`std::slice::chunks_exact`]
     fn chunks_exact<'a>(s: &'a [T], cs: usize) -> iter::ChunksExact<'a, T> {
         iter::ChunksExact::new(cs, s)
     }
+    /// See [`std::slice::copy_from_slice`]
     #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn copy_from_slice(s: &mut [T], src: &[T])
     where
@@ -93,6 +101,7 @@ impl<T> Slice<T> {
     {
         rust_primitives::mem::replace(s, src);
     }
+    /// See [`std::slice::clone_from_slice`]
     #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn clone_from_slice(s: &mut [T], src: &[T])
     where
@@ -100,10 +109,12 @@ impl<T> Slice<T> {
     {
         rust_primitives::mem::replace(s, src);
     }
+    /// See [`std::slice::split_at`]
     #[hax_lib::requires(mid <= Slice::len(s))]
     fn split_at(s: &[T], mid: usize) -> (&[T], &[T]) {
         rust_primitives::slice::slice_split_at(s, mid)
     }
+    /// See [`std::slice::split_at_checked`]
     fn split_at_checked(s: &[T], mid: usize) -> Option<(&[T], &[T])> {
         if mid <= Slice::len(s) {
             Option::Some(Self::split_at(s, mid))
@@ -111,13 +122,16 @@ impl<T> Slice<T> {
             Option::None
         }
     }
+    /// See [`std::slice::is_empty`]
     fn is_empty(s: &[T]) -> bool {
         Self::len(s) == 0
     }
+    /// See [`std::slice::contains`]
     #[hax_lib::opaque]
     fn contains(s: &[T], v: T) -> bool {
         rust_primitives::slice::slice_contains(s, v)
     }
+    /// See [`std::slice::copy_within`]
     #[hax_lib::opaque]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
@@ -125,10 +139,12 @@ impl<T> Slice<T> {
     {
         todo!()
     }
+    /// See [`std::slice::binary_search`]
     #[hax_lib::opaque]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize> /* where T: super::ops::Ord */ {
         todo!()
     }
+    /// See [`std::slice::get`]
     fn get<I: SliceIndex<[T]>>(s: &[T], index: I) -> Option<&<I as SliceIndex<[T]>>::Output> {
         index.get(s)
     }
@@ -145,6 +161,7 @@ impl<T> crate::iter::traits::collect::IntoIterator for &[T] {
 use crate::option::Option;
 use rust_primitives::slice::*;
 
+/// See [`std::slice::SliceIndex`]
 #[hax_lib::attributes]
 pub trait SliceIndex<T: ?Sized> {
     type Output: ?Sized;

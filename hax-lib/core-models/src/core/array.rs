@@ -1,5 +1,6 @@
 use rust_primitives::{sequence::*, slice::*};
 
+/// See [`std::array::TryFromSliceError`]
 pub struct TryFromSliceError;
 
 // Dummy type to allow impls
@@ -32,17 +33,20 @@ impl<T> Dummy<T, 0> {}
 impl<T> Dummy<T, 0> {}
 
 impl<T, const N: usize> Dummy<T, N> {
+    /// See [`std::array::map`]
     pub fn map<F: crate::ops::function::FnOnce<T, Output = U>, U>(
         s: [T; N],
         f: fn(T) -> U, // We cannot use type `F` because it is incompatible with `array_map`
     ) -> [U; N] {
         array_map(s, f)
     }
+    /// See [`std::array::as_slice`]
     pub fn as_slice(s: &[T; N]) -> &[T] {
         array_as_slice(s)
     }
 }
 
+/// See [`std::array::from_fn`]
 pub fn from_fn<T, const N: usize, F: crate::ops::function::FnOnce<usize, Output = T>>(
     f: fn(usize) -> T, // We cannot use type `F` because it is incompatible with `array_from_fn`
 ) -> [T; N] {

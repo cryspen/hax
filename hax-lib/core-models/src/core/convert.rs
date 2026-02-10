@@ -1,27 +1,35 @@
 use super::result::Result;
 
+/// See [`std::convert::TryInto`]
 #[hax_lib::attributes]
 trait TryInto<T> {
     type Error;
+    /// See [`std::convert::TryInto::try_into`]
     #[hax_lib::requires(true)]
     fn try_into(self) -> Result<T, Self::Error>;
 }
 
+/// See [`std::convert::Into`]
 #[hax_lib::attributes]
 trait Into<T> {
+    /// See [`std::convert::Into::into`]
     #[hax_lib::requires(true)]
     fn into(self) -> T;
 }
 
+/// See [`std::convert::From`]
 #[hax_lib::attributes]
 trait From<T> {
+    /// See [`std::convert::From::from`]
     #[hax_lib::requires(true)]
     fn from(x: T) -> Self;
 }
 
+/// See [`std::convert::TryFrom`]
 #[hax_lib::attributes]
 trait TryFrom<T>: Sized {
     type Error;
+    /// See [`std::convert::TryFrom::try_from`]
     #[hax_lib::requires(true)]
     fn try_from(x: T) -> Result<Self, Self::Error>;
 }
@@ -32,6 +40,7 @@ impl<T, U: From<T>> Into<U> for T {
     }
 }
 
+/// See [`std::convert::Infallible`]
 pub struct Infallible;
 
 impl<T, U: From<T>> TryFrom<T> for U {
@@ -69,8 +78,10 @@ impl<T> From<T> for T {
     }
 }
 
+/// See [`std::convert::AsRef`]
 #[hax_lib::attributes]
 trait AsRef<T> {
+    /// See [`std::convert::AsRef::as_ref`]
     #[hax_lib::requires(true)]
     fn as_ref(self) -> T;
 }

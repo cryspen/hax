@@ -1,8 +1,10 @@
 //! Error types for conversion to integral types.
 #![allow(unused_variables)]
 
+/// See [`std::num::TryFromIntError`]
 pub struct TryFromIntError(pub(crate) ());
 
+/// See [`std::num::ParseIntError`]
 pub struct ParseIntError {
     pub(super) kind: IntErrorKind,
 }
@@ -17,4 +19,5 @@ pub struct ParseIntError {
     Zero,
 } */
 
+/// See [`std::num::IntErrorKind`]
 pub struct IntErrorKind;

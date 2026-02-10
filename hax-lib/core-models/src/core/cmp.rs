@@ -1,27 +1,36 @@
 use crate::option::Option;
 
+/// See [`std::cmp::PartialEq`]
 #[hax_lib::attributes]
 pub trait PartialEq<Rhs>
 where
     Rhs: ?Sized,
 {
+    /// See [`std::cmp::PartialEq::eq`]
     #[hax_lib::requires(true)]
     fn eq(&self, other: &Rhs) -> bool;
 }
 
+/// See [`std::cmp::Eq`]
 pub trait Eq: PartialEq<Self> {}
 
+/// See [`std::cmp::Ordering`]
 pub enum Ordering {
+    /// See [`std::cmp::Ordering::Less`]
     Less = -1,
+    /// See [`std::cmp::Ordering::Equal`]
     Equal = 0,
+    /// See [`std::cmp::Ordering::Greater`]
     Greater = 1,
 }
 
+/// See [`std::cmp::PartialOrd`]
 #[hax_lib::attributes]
 pub trait PartialOrd<Rhs>: PartialEq<Rhs>
 where
     Rhs: ?Sized,
 {
+    /// See [`std::cmp::PartialOrd::partial_cmp`]
     #[hax_lib::requires(true)]
     fn partial_cmp(&self, other: &Rhs) -> Option<Ordering>;
 }
@@ -94,12 +103,15 @@ impl<T: PartialOrd<T>> PartialOrdDefaults<T> for T {
     }
 }
 
+/// See [`std::cmp::Ord`]
 #[hax_lib::attributes]
 pub trait Ord: Eq + PartialOrd<Self> {
+    /// See [`std::cmp::Ord::cmp`]
     #[hax_lib::requires(true)]
     fn cmp(&self, other: &Self) -> Ordering;
 }
 
+/// See [`std::cmp::max`]
 pub fn max<T: Ord>(v1: T, v2: T) -> T {
     match v1.cmp(&v2) {
         Ordering::Greater => v1,
@@ -107,6 +119,7 @@ pub fn max<T: Ord>(v1: T, v2: T) -> T {
     }
 }
 
+/// See [`std::cmp::min`]
 pub fn min<T: Ord>(v1: T, v2: T) -> T {
     match v1.cmp(&v2) {
         Ordering::Greater => v2,
@@ -114,6 +127,7 @@ pub fn min<T: Ord>(v1: T, v2: T) -> T {
     }
 }
 
+/// See [`std::cmp::Reverse`]
 pub struct Reverse<T>(pub T);
 
 impl<T: PartialOrd<T>> PartialOrd<Reverse<T>> for Reverse<T> {

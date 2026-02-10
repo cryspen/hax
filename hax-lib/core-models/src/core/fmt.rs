@@ -1,19 +1,27 @@
 #![allow(unused_variables)]
 
+/// See [`std::fmt::Error`]
 pub struct Error;
 
+/// See [`std::fmt::Result`]
 pub type Result = super::result::Result<(), Error>;
 
+/// See [`std::fmt::Formatter`]
 pub struct Formatter;
 
+/// See [`std::fmt::Display`]
 pub trait Display {
+    /// See [`std::fmt::Display::fmt`]
     fn fmt(&self, f: &mut Formatter) -> Result;
 }
 
+/// See [`std::fmt::Debug`]
 pub trait Debug {
+    /// See [`std::fmt::Debug::fmt`]
     fn dbg_fmt(&self, f: &mut Formatter) -> Result;
 }
 
+/// See [`std::fmt::Arguments`]
 pub struct Arguments<'a>(&'a ());
 
 impl<T> Debug for T {
