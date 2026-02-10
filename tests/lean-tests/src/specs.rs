@@ -11,6 +11,11 @@ fn test_proof(x: u8) -> u8 {
     x
 }
 
+/// Test function without arguments
+/// https://github.com/cryspen/hax/issues/1856
+#[hax_lib::ensures(|_| true)]
+fn fn_without_args() {}
+
 /// The Lean backend used to produce `self_` instead of `self` in annotations in
 /// impl blocks. See https://github.com/cryspen/hax/issues/1852.
 mod issue_1852 {

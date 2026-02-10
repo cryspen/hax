@@ -696,6 +696,23 @@ def test_proof.spec (x : u8) :
   contract := by unfold Lean_tests.Specs.test_proof; hax_bv_decide
 }
 
+--  Test function without arguments
+--  https://github.com/cryspen/hax/issues/1856
+def fn_without_args (_ : Rust_primitives.Hax.Tuple0) :
+    RustM Rust_primitives.Hax.Tuple0 := do
+  (pure Rust_primitives.Hax.Tuple0.mk)
+
+@[spec]
+def fn_without_args.spec (_ : Rust_primitives.Hax.Tuple0) :
+    Spec
+      (requires := do pure True)
+      (ensures := fun _ => do (pure true))
+      (fn_without_args ⟨⟩) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[fn_without_args] <;> try grind
+}
+
 end Lean_tests.Specs
 
 
