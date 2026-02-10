@@ -10,10 +10,15 @@ use std::sync::LazyLock;
 
 use super::prelude::*;
 use crate::{
-    ast::identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
-    ast::span::Span,
+    ast::{
+        identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
+        span::Span,
+    },
     attributes::hax_attributes,
-    names::rust_primitives::hax::explicit_monadic::{lift, pure},
+    names::rust_primitives::hax::{
+        cast_op,
+        explicit_monadic::{lift, pure},
+    },
     phase::*,
 };
 use camino::Utf8PathBuf;
@@ -28,6 +33,7 @@ mod binops {
 
 const LIFT: GlobalId = lift;
 const PURE: GlobalId = pure;
+const CAST_OP: GlobalId = cast_op;
 
 /// The Lean printer
 #[setup_printer_struct]
@@ -700,14 +706,10 @@ const _: () = {
                             .group()
                             .nest(INDENT),
                             line!(),
-                            docs![
-                                name,
-                                self.generics(generics, &self.render_last(name)),
-                                params
-                            ]
-                            .parens()
-                            .group()
-                            .nest(INDENT)
+                            docs![name, zip_left!(line!(), &generics.params), params]
+                                .parens()
+                                .group()
+                                .nest(INDENT)
                         ]
                         .group()
                         .nest(INDENT),
@@ -855,6 +857,19 @@ const _: () = {
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
                             docs![reflow!("pure "), arg].parens()
                         }
+                        ([arg], [], ExprKind::GlobalId(CAST_OP)) => docs![
+                            // Add type annotation for `cast_op`:
+                            docs![head, line!(), arg],
+                            softline!(),
+                            ":",
+                            line!(),
+                            "RustM",
+                            softline!(),
+                            ty
+                        ]
+                        .parens()
+                        .group()
+                        .nest(INDENT),
                         ([arg], [], ExprKind::GlobalId(binops::neg)) => {
                             docs!["-?", softline!(), arg].parens()
                         }
@@ -1370,8 +1385,7 @@ const _: () = {
                         docs![
                             reflow!("opaque "),
                             name,
-                            line!(),
-                            generics,
+                            self.generics(generics, &self.render_last(name)),
                             softline!(),
                             ":",
                             line!(),

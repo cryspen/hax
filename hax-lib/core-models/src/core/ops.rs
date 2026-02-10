@@ -193,6 +193,7 @@ pub mod range {
         ($($int_type: ident)*) => {
             use crate::option::Option;
             $(
+                #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
                 impl crate::iter::traits::iterator::Iterator for Range<$int_type> {
                     type Item = $int_type;
                     fn next(&mut self) -> Option<$int_type> {

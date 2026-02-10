@@ -95,7 +95,7 @@ pub mod string {
 }
 
 pub mod mem {
-    pub fn replace<T: ?Sized>(src: &mut T, dst: &T) {
+    pub fn replace<'a, T: ?Sized>(dest: &'a mut T, src: &'a T) -> &'a T {
         unimplemented!("This is a stub that is implemented in each backend")
     }
 }

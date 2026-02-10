@@ -125,23 +125,23 @@ namespace Lean_tests.Casts
 def casting_edge_cases (_dummy : Bool) : RustM Bool := do
   let case1 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (256 : u16)))
+      (← (Rust_primitives.Hax.cast_op (256 : u16) : RustM u8))
       (0 : u8));
   let case2 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (-1 : i16)))
+      (← (Rust_primitives.Hax.cast_op (-1 : i16) : RustM u8))
       (255 : u8));
   let case3 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (-1 : i8)))
+      (← (Rust_primitives.Hax.cast_op (-1 : i8) : RustM i16))
       (-1 : i16));
   let case4 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (128 : u8)))
+      (← (Rust_primitives.Hax.cast_op (128 : u8) : RustM i8))
       (-128 : i8));
   let case5 : Bool ←
     (Rust_primitives.Hax.Machine_int.eq
-      (← (Rust_primitives.Hax.cast_op (4294967295 : u32)))
+      (← (Rust_primitives.Hax.cast_op (4294967295 : u32) : RustM i32))
       (-1 : i32));
   ((← ((← ((← (case1 &&? case2)) &&? case3)) &&? case4)) &&? case5)
 
@@ -156,6 +156,17 @@ def casting_edge_cases.spec (_dummy : Bool) :
   contract :=
     by mvcgen [Lean_tests.Casts.casting_edge_cases]; simp_all [Int16.toUInt8]
 }
+
+--  https://github.com/cryspen/hax/issues/1912
+def shift_after_cast (x : u16) (n : u8) : RustM u32 := do
+  ((← (Rust_primitives.Hax.cast_op x : RustM u32))
+    <<<? (← (Rust_primitives.Hax.cast_op n : RustM u32)))
+
+--  https://github.com/cryspen/hax/issues/1911
+def add_after_cast (a : u8) (b : u8) (c : u8) : RustM u16 := do
+  ((← ((← (Rust_primitives.Hax.cast_op a : RustM u16))
+      +? (← (Rust_primitives.Hax.cast_op b : RustM u16))))
+    +? (← (Rust_primitives.Hax.cast_op c : RustM u16)))
 
 end Lean_tests.Casts
 
@@ -652,7 +663,7 @@ structure S where
 
 @[instance] opaque Impl : T S := by constructor <;> exact Inhabited.default
 
-opaque OpaqueStruct  : Type
+opaque OpaqueStruct : Type
 
 end Lean_tests.Opaque
 
