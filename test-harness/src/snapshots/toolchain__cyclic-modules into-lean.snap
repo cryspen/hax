@@ -355,10 +355,8 @@ def f (_ : Rust_primitives.Hax.Tuple0) : RustM Rust_primitives.Hax.Tuple0 := do
 
 @[spec]
 def f.spec (_ : Rust_primitives.Hax.Tuple0) :
-    Spec
-      (requires := do (pure true))
-      (ensures := fun _ => pure True)
-      (f (_ : Rust_primitives.Hax.Tuple0)) := {
+    Spec (requires := do (pure true)) (ensures := fun _ => pure True) (f ⟨⟩) :=
+{
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
   contract := by mvcgen[f] <;> try grind

@@ -412,6 +412,25 @@ const _: () = {
             zip_left!(line!(), params)
         }
 
+        /// Print parameters as function arguments
+        fn params_as_args<A: 'static + Clone>(&self, params: &[Param]) -> DocBuilder<A> {
+            zip_left!(
+                line!(),
+                params.iter().map(|param| {
+                    let Ty(ty_kind) = &param.ty;
+                    // We need to print arguments of type `Tuple0` as `⟨⟩` instead of `_`
+                    // https://github.com/cryspen/hax/issues/1856
+                    if let TyKind::App { head, .. } = **ty_kind
+                        && let Some(global_id::TupleId::Type { length: 0 }) = head.expect_tuple()
+                    {
+                        docs!["⟨⟩"]
+                    } else {
+                        docs![param]
+                    }
+                })
+            )
+        }
+
         /// Renders expressions with an explicit ascription `(e : RustM ty)`. Used for the body of closure, for
         /// numeric literals, etc.
         fn expr_typed_result<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
@@ -706,10 +725,14 @@ const _: () = {
                             .group()
                             .nest(INDENT),
                             line!(),
-                            docs![name, zip_left!(line!(), &generics.params), params]
-                                .parens()
-                                .group()
-                                .nest(INDENT)
+                            docs![
+                                name,
+                                zip_left!(line!(), &generics.params),
+                                self.params_as_args(params)
+                            ]
+                            .parens()
+                            .group()
+                            .nest(INDENT)
                         ]
                         .group()
                         .nest(INDENT),
