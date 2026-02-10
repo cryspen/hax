@@ -18,7 +18,7 @@ section RustArray
 
 abbrev RustArray := Vector
 
-def rust_primitives.hax.Monomorphized_update_at.update_at_usize {α n}
+def rust_primitives.hax.monomorphized_update_at.update_at_usize {α n}
   (a: Vector α n) (i:Nat) (v:α) : RustM (Vector α n) :=
   if h: i < a.size then
     pure ( Vector.set a i v )
@@ -26,12 +26,12 @@ def rust_primitives.hax.Monomorphized_update_at.update_at_usize {α n}
     .fail (.arrayOutOfBounds)
 
 @[spec]
-theorem rust_primitives.hax.Monomorphized_update_at.update_at_usize.spec
+theorem rust_primitives.hax.monomorphized_update_at.update_at_usize.spec
   {α n} (a: Vector α n) (i:Nat) (v:α) (h: i < a.size) :
   ⦃ ⌜ True ⌝ ⦄
-  (rust_primitives.hax.Monomorphized_update_at.update_at_usize a i v)
+  (rust_primitives.hax.monomorphized_update_at.update_at_usize a i v)
   ⦃ ⇓ r => ⌜ r = Vector.set a i v ⌝ ⦄ := by
-  mvcgen [rust_primitives.hax.Monomorphized_update_at.update_at_usize]
+  mvcgen [rust_primitives.hax.monomorphized_update_at.update_at_usize]
 
 
 @[spec]

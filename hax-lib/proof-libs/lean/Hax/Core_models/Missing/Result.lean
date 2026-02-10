@@ -5,7 +5,7 @@ open rust_primitives.hax
 open Core.Ops
 open Std.Do
 
-namespace core_models.Result
+namespace core_models.result
 
 def Impl.unwrap
   (T : Type) (E : Type) (self : (Result T E))
@@ -14,7 +14,7 @@ def Impl.unwrap
   match self with
     | (Result.Ok t) => (pure t)
     | (Result.Err _)
-      => (core_models.Panicking.Internal.panic T rust_primitives.hax.Tuple0.mk)
+      => (core_models.panicking.internal.panic T rust_primitives.hax.Tuple0.mk)
 
 @[spec]
 theorem Impl.unwrap.spec {α β} (x: Result α β) v :
@@ -26,4 +26,4 @@ theorem Impl.unwrap.spec {α β} (x: Result α β) v :
   intros
   mvcgen [Impl.unwrap] <;> try grind
 
-end core_models.Result
+end core_models.result

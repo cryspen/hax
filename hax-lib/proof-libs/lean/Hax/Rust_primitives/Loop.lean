@@ -18,7 +18,7 @@ open Lean
 def rust_primitives.hax.while_loop {β : Type}
     (inv: β → RustM Prop)
     (cond: β → RustM Bool)
-    (termination : β -> RustM hax_lib.Int.Int)
+    (termination : β -> RustM hax_lib.int.Int)
     (init : β)
     (body : β -> RustM β)
     (pureInv:
@@ -36,7 +36,7 @@ def rust_primitives.hax.while_loop {β : Type}
 theorem rust_primitives.hax.while_loop.spec {β : Type}
     (inv: β → RustM Prop)
     (cond: β → RustM Bool)
-    (termination: β → RustM hax_lib.Int.Int)
+    (termination: β → RustM hax_lib.int.Int)
     (init : β)
     (body : β -> RustM β)
     (pureInv: {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ r = (i b) ⌝⦄})

@@ -9,7 +9,7 @@ open Std.Do
 namespace core_models.convert
 
 @[reducible] instance {α : Type} {n : Nat} : TryInto.AssociatedTypes (RustSlice α) (RustArray α n) where
-  Error := core_models.Array.TryFromSliceError
+  Error := core_models.array.TryFromSliceError
 
 instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) where
   try_into a :=
@@ -17,7 +17,7 @@ instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) where
      if h: a.size = n then
        core_models.result.Result.Ok (a.toVector.cast h)
      else
-       .Err core_models.Array.TryFromSliceError.mk
+       .Err core_models.array.TryFromSliceError.mk
      )
 
 @[spec]

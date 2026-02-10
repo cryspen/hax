@@ -154,7 +154,7 @@ def casting_edge_cases.spec (_dummy : Bool) :
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
   contract :=
-    by mvcgen [Lean_tests.Casts.casting_edge_cases]; simp_all [Int16.toUInt8]
+    by mvcgen [lean_tests.casts.casting_edge_cases]; simp_all [Int16.toUInt8]
 }
 
 --  https://github.com/cryspen/hax/issues/1912
@@ -693,7 +693,7 @@ def test_proof.spec (x : u8) :
       (test_proof (x : u8)) := {
   pureRequires := by constructor; mvcgen <;> try grind
   pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by unfold Lean_tests.Specs.test_proof; hax_bv_decide
+  contract := by unfold lean_tests.specs.test_proof; hax_bv_decide
 }
 
 --  Test function without arguments

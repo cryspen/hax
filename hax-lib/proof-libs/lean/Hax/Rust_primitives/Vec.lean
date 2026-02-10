@@ -18,19 +18,19 @@ abbrev RustVector := Array
 
 def alloc.alloc.Global : Type := Unit
 
-abbrev alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
+abbrev alloc.vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
 
-def alloc.Vec.Impl.new (α: Type) (_:Tuple0) : RustM (alloc.Vec.Vec α alloc.alloc.Global) :=
+def alloc.vec.Impl.new (α: Type) (_:Tuple0) : RustM (alloc.vec.Vec α alloc.alloc.Global) :=
   pure ((List.nil).toArray)
 
-def alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: alloc.Vec.Vec α alloc.alloc.Global) : RustM usize :=
+def alloc.vec.Impl_1.len (α: Type) (_Allocator: Type) (x: alloc.vec.Vec α alloc.alloc.Global) : RustM usize :=
   pure x.size
 
-def alloc.Vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: alloc.Vec.Vec α alloc.alloc.Global) (y: Array α)
-  : RustM (alloc.Vec.Vec α alloc.alloc.Global):=
+def alloc.vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: alloc.vec.Vec α alloc.alloc.Global) (y: Array α)
+  : RustM (alloc.vec.Vec α alloc.alloc.Global):=
   pure (x.append y)
 
-def alloc.Slice.Impl.to_vec α (a:  Array α) : RustM (alloc.Vec.Vec α alloc.alloc.Global) :=
+def alloc.slice.Impl.to_vec α (a:  Array α) : RustM (alloc.vec.Vec α alloc.alloc.Global) :=
   pure a
 
 -- For
