@@ -44,14 +44,10 @@ function extract_lean() {
     
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
-
-    # from now on the generated file is lowercase:
     OUT="proofs/lean/extraction/core_models.lean"
 
     sed -i 's/import Hax/import Hax.MissingCore/g' "$OUT"
-    sed -i 's/import Hax.MissingCore.MissingCore/import Hax.MissingCore/g' "$OUT"
-    sed -i 's/def Ordering /def Ordering_ /g' "$OUT" # Issue #1646 (may need revision later)
-    sed -i 's/core_models.Convert.From.from/core_models.Convert.From._from/g' "$OUT" # Issue #1853 (if still applicable)
+    sed -i 's/def Ordering /def Ordering_ /g' "$OUT" # Issue #1646
 
     cp "$OUT" ../proof-libs/lean/Hax/Core_models/Extracted.lean
 }
