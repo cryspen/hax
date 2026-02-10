@@ -2,22 +2,22 @@
 import Hax.Core_models.Extracted
 
 set_option mvcgen.warning false
-open Rust_primitives.Hax
+open rust_primitives.hax
 open Core.Ops
 open Std.Do
 
-namespace Core_models.Convert
+namespace core_models.convert
 
 @[reducible] instance {α : Type} {n : Nat} : TryInto.AssociatedTypes (RustSlice α) (RustArray α n) where
-  Error := Core_models.Array.TryFromSliceError
+  Error := core_models.Array.TryFromSliceError
 
 instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) where
   try_into a :=
    pure (
      if h: a.size = n then
-       Core_models.Result.Result.Ok (a.toVector.cast h)
+       core_models.result.Result.Ok (a.toVector.cast h)
      else
-       .Err Core_models.Array.TryFromSliceError.mk
+       .Err core_models.Array.TryFromSliceError.mk
      )
 
 @[spec]
@@ -30,4 +30,4 @@ theorem TryInto.try_into.spec {α : Type} {n: Nat} (a: RustSlice α) :
   mvcgen [TryInto.try_into]
   grind
 
-end Core_models.Convert
+end core_models.convert

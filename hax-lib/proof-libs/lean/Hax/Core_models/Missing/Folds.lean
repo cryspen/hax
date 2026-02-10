@@ -13,9 +13,9 @@ Hax represents for-loops as folds over a range
 -/
 section Fold
 
-open Core_models.Ops.Control_flow
+open core_models.Ops.Control_flow
 
-class Rust_primitives.Hax.Folds {int_type: Type} where
+class rust_primitives.hax.Folds {int_type: Type} where
   fold_range {α : Type}
     (s e : int_type)
     (inv : α -> int_type -> RustM Bool)
@@ -34,7 +34,7 @@ instance : Coe Nat Nat where
   coe x := x
 
 @[simp]
-instance {α} [Coe α Nat] [Coe Nat α]: @Rust_primitives.Hax.Folds α where
+instance {α} [Coe α Nat] [Coe Nat α]: @rust_primitives.hax.Folds α where
   fold_range s e inv init body := do
     let mut acc := init
     for i in [s:e] do
@@ -58,7 +58,7 @@ produces a result that also satisfies the invariant.
 
 -/
 @[spec]
-theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
+theorem rust_primitives.hax.Folds.fold_range_spec {α}
   (s e : Nat)
   (inv : α -> Nat -> RustM Bool)
   (init: α)
@@ -73,7 +73,7 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
     (body acc i)
     ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
   ⦃ ⌜ True ⌝ ⦄
-  (Rust_primitives.Hax.Folds.fold_range s e inv init body)
+  (rust_primitives.hax.Folds.fold_range s e inv init body)
   ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
   intro h_inv_s h_le h_body
@@ -96,7 +96,7 @@ theorem Rust_primitives.Hax.Folds.fold_range_spec {α}
     omega
 
 @[spec]
-theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
+theorem rust_primitives.hax.Folds.usize.fold_range_spec {α}
   (s e : usize)
   (inv : α -> usize -> RustM Bool)
   (init: α)
@@ -111,7 +111,7 @@ theorem Rust_primitives.Hax.Folds.usize.fold_range_spec {α}
     (body acc i)
     ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
   ⦃ ⌜ True ⌝ ⦄
-  (Rust_primitives.Hax.Folds.fold_range s e inv init body)
+  (rust_primitives.hax.Folds.fold_range s e inv init body)
   ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
 := by
   intro h_inv_s h_le h_body

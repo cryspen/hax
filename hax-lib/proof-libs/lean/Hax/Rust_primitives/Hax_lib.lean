@@ -1,9 +1,9 @@
 import Hax.Rust_primitives.Tuple
 import Hax.Rust_primitives.RustM
 
-open Rust_primitives.Hax
+open rust_primitives.hax
 
-namespace Hax_lib
+namespace hax_lib
 
 abbrev assert (b:Bool) : RustM Tuple0 :=
   if b then pure ⟨ ⟩
@@ -11,10 +11,10 @@ abbrev assert (b:Bool) : RustM Tuple0 :=
 
 abbrev assume : Prop -> RustM Tuple0 := fun _ => pure ⟨ ⟩
 
-abbrev Prop.Constructors.from_bool (b : Bool) : Prop := (b = true)
+abbrev prop.constructors.from_bool (b : Bool) : Prop := (b = true)
 
-abbrev Prop.Impl.from_bool (b : Bool) : Prop := (b = true)
+abbrev prop.Impl.from_bool (b : Bool) : Prop := (b = true)
 
-abbrev Prop.Constructors.implies (a b : Prop) : Prop := a → b
+abbrev prop.constructors.implies (a b : Prop) : Prop := a → b
 
-end Hax_lib
+end hax_lib

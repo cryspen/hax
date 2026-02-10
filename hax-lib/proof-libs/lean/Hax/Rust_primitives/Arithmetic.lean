@@ -11,7 +11,7 @@ macro "declare_arith_ops" s:(&"signed" <|> &"unsigned") typeName:ident suffix:id
   let ident (kind: String) := mkIdent (kind ++ "_" ++ suffix.getId.toString).toName
 
   let mut cmds ← Syntax.getArgs <$> `(
-    namespace Rust_primitives.Arithmetic
+    namespace rust_primitives.Arithmetic
 
     @[spec]
     def $(ident "wrapping_add") (x : $typeName) (y : $typeName) : RustM $typeName :=
@@ -42,7 +42,7 @@ macro "declare_arith_ops" s:(&"signed" <|> &"unsigned") typeName:ident suffix:id
     )
 
   cmds := cmds.push $ ← `(
-    end Rust_primitives.Arithmetic
+    end rust_primitives.Arithmetic
   )
   return ⟨mkNullNode cmds⟩
 

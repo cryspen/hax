@@ -2,7 +2,7 @@ import Hax.Rust_primitives.RustM
 import Hax.Rust_primitives.Tuple
 import Hax.Rust_primitives.Num
 
-open Rust_primitives.Hax
+open rust_primitives.hax
 
 /-
 
@@ -16,21 +16,21 @@ section RustVectors
 abbrev RustSlice := Array
 abbrev RustVector := Array
 
-def Alloc.Alloc.Global : Type := Unit
+def alloc.alloc.Global : Type := Unit
 
-abbrev Alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
+abbrev alloc.Vec.Vec (α: Type) (_Allocator:Type) : Type := Array α
 
-def Alloc.Vec.Impl.new (α: Type) (_:Tuple0) : RustM (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
+def alloc.Vec.Impl.new (α: Type) (_:Tuple0) : RustM (alloc.Vec.Vec α alloc.alloc.Global) :=
   pure ((List.nil).toArray)
 
-def Alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) : RustM usize :=
+def alloc.Vec.Impl_1.len (α: Type) (_Allocator: Type) (x: alloc.Vec.Vec α alloc.alloc.Global) : RustM usize :=
   pure x.size
 
-def Alloc.Vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: Alloc.Vec.Vec α Alloc.Alloc.Global) (y: Array α)
-  : RustM (Alloc.Vec.Vec α Alloc.Alloc.Global):=
+def alloc.Vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: alloc.Vec.Vec α alloc.alloc.Global) (y: Array α)
+  : RustM (alloc.Vec.Vec α alloc.alloc.Global):=
   pure (x.append y)
 
-def Alloc.Slice.Impl.to_vec α (a:  Array α) : RustM (Alloc.Vec.Vec α Alloc.Alloc.Global) :=
+def alloc.Slice.Impl.to_vec α (a:  Array α) : RustM (alloc.Vec.Vec α alloc.alloc.Global) :=
   pure a
 
 -- For

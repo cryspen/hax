@@ -1,2 +1,2 @@
 
-abbrev Alloc.Boxed.Box (T _Allocator : Type) := T
+abbrev alloc.Boxed.Box (T _Allocator : Type) := T
