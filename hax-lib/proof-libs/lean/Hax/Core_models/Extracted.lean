@@ -31,12 +31,15 @@ class Core_models.Clone.Clone
   where
   clone (Self) : (Self -> RustM Self)
 
+def Core_models.Clone.Impl.clone_hoisted (T : Type) (self : T) : RustM T := do
+  (pure self)
+
 @[reducible] instance Core_models.Clone.Impl.AssociatedTypes (T : Type) :
   Core_models.Clone.Clone.AssociatedTypes T
   where
 
 instance Core_models.Clone.Impl (T : Type) : Core_models.Clone.Clone T where
-  clone := fun (self : T) => do (pure self)
+  clone := (Core_models.Clone.Impl.clone_hoisted T)
 
 class Core_models.Cmp.PartialEq.AssociatedTypes (Self : Type) (Rhs : Type) where
 
@@ -93,6 +96,16 @@ class Core_models.Cmp.Neq
   where
   neq (Self Rhs) : (Self -> Rhs -> RustM Bool)
 
+def Core_models.Cmp.Impl.neq_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialEq.AssociatedTypes T T]
+  [Core_models.Cmp.PartialEq T T ]
+  (self : T)
+  (y : T)
+  : RustM Bool
+  := do
+  (Core.Cmp.PartialEq.eq (← (Core_models.Cmp.PartialEq.eq T T self y)) false)
+
 @[reducible] instance Core_models.Cmp.Impl.AssociatedTypes
   (T : Type)
   [Core_models.Cmp.PartialEq.AssociatedTypes T T]
@@ -108,11 +121,22 @@ instance Core_models.Cmp.Impl
   :
   Core_models.Cmp.Neq T T
   where
-  neq := fun (self : T) (y : T) => do
-    (Core.Cmp.PartialEq.eq (← (Core_models.Cmp.PartialEq.eq T T self y)) false)
+  neq := (Core_models.Cmp.Impl.neq_hoisted T)
 
 structure Core_models.Cmp.Reverse (T : Type) where
   _0 : T
+
+def Core_models.Cmp.Impl_3.eq_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialEq.AssociatedTypes T T]
+  [Core_models.Cmp.PartialEq T T ]
+  (self : (Core_models.Cmp.Reverse T))
+  (other : (Core_models.Cmp.Reverse T))
+  : RustM Bool
+  := do
+  (Core_models.Cmp.PartialEq.eq
+    T
+    T (Core_models.Cmp.Reverse._0 other) (Core_models.Cmp.Reverse._0 self))
 
 @[reducible] instance Core_models.Cmp.Impl_3.AssociatedTypes
   (T : Type)
@@ -133,14 +157,7 @@ instance Core_models.Cmp.Impl_3
   (Core_models.Cmp.Reverse T)
   (Core_models.Cmp.Reverse T)
   where
-  eq :=
-    fun
-      (self : (Core_models.Cmp.Reverse T))
-      (other : (Core_models.Cmp.Reverse T))
-      => do
-    (Core_models.Cmp.PartialEq.eq
-      T
-      T (Core_models.Cmp.Reverse._0 other) (Core_models.Cmp.Reverse._0 self))
+  eq := (Core_models.Cmp.Impl_3.eq_hoisted T)
 
 @[reducible] instance Core_models.Cmp.Impl_4.AssociatedTypes
   (T : Type) [Core_models.Cmp.Eq.AssociatedTypes T] [Core_models.Cmp.Eq T ] :
@@ -151,174 +168,6 @@ instance Core_models.Cmp.Impl_4
   (T : Type) [Core_models.Cmp.Eq.AssociatedTypes T] [Core_models.Cmp.Eq T ] :
   Core_models.Cmp.Eq (Core_models.Cmp.Reverse T)
   where
-
-@[reducible] instance Core_models.Cmp.Impl_6.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes u8 u8
-  where
-
-instance Core_models.Cmp.Impl_6 : Core_models.Cmp.PartialEq u8 u8 where
-  eq := fun (self : u8) (other : u8) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_7.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes u8
-  where
-
-instance Core_models.Cmp.Impl_7 : Core_models.Cmp.Eq u8 where
-
-@[reducible] instance Core_models.Cmp.Impl_8.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes i8 i8
-  where
-
-instance Core_models.Cmp.Impl_8 : Core_models.Cmp.PartialEq i8 i8 where
-  eq := fun (self : i8) (other : i8) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_9.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes i8
-  where
-
-instance Core_models.Cmp.Impl_9 : Core_models.Cmp.Eq i8 where
-
-@[reducible] instance Core_models.Cmp.Impl_10.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes u16 u16
-  where
-
-instance Core_models.Cmp.Impl_10 : Core_models.Cmp.PartialEq u16 u16 where
-  eq := fun (self : u16) (other : u16) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_11.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes u16
-  where
-
-instance Core_models.Cmp.Impl_11 : Core_models.Cmp.Eq u16 where
-
-@[reducible] instance Core_models.Cmp.Impl_12.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes i16 i16
-  where
-
-instance Core_models.Cmp.Impl_12 : Core_models.Cmp.PartialEq i16 i16 where
-  eq := fun (self : i16) (other : i16) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_13.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes i16
-  where
-
-instance Core_models.Cmp.Impl_13 : Core_models.Cmp.Eq i16 where
-
-@[reducible] instance Core_models.Cmp.Impl_14.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes u32 u32
-  where
-
-instance Core_models.Cmp.Impl_14 : Core_models.Cmp.PartialEq u32 u32 where
-  eq := fun (self : u32) (other : u32) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_15.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes u32
-  where
-
-instance Core_models.Cmp.Impl_15 : Core_models.Cmp.Eq u32 where
-
-@[reducible] instance Core_models.Cmp.Impl_16.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes i32 i32
-  where
-
-instance Core_models.Cmp.Impl_16 : Core_models.Cmp.PartialEq i32 i32 where
-  eq := fun (self : i32) (other : i32) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_17.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes i32
-  where
-
-instance Core_models.Cmp.Impl_17 : Core_models.Cmp.Eq i32 where
-
-@[reducible] instance Core_models.Cmp.Impl_18.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes u64 u64
-  where
-
-instance Core_models.Cmp.Impl_18 : Core_models.Cmp.PartialEq u64 u64 where
-  eq := fun (self : u64) (other : u64) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_19.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes u64
-  where
-
-instance Core_models.Cmp.Impl_19 : Core_models.Cmp.Eq u64 where
-
-@[reducible] instance Core_models.Cmp.Impl_20.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes i64 i64
-  where
-
-instance Core_models.Cmp.Impl_20 : Core_models.Cmp.PartialEq i64 i64 where
-  eq := fun (self : i64) (other : i64) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_21.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes i64
-  where
-
-instance Core_models.Cmp.Impl_21 : Core_models.Cmp.Eq i64 where
-
-@[reducible] instance Core_models.Cmp.Impl_22.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes u128 u128
-  where
-
-instance Core_models.Cmp.Impl_22 : Core_models.Cmp.PartialEq u128 u128 where
-  eq := fun (self : u128) (other : u128) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_23.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes u128
-  where
-
-instance Core_models.Cmp.Impl_23 : Core_models.Cmp.Eq u128 where
-
-@[reducible] instance Core_models.Cmp.Impl_24.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes i128 i128
-  where
-
-instance Core_models.Cmp.Impl_24 : Core_models.Cmp.PartialEq i128 i128 where
-  eq := fun (self : i128) (other : i128) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_25.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes i128
-  where
-
-instance Core_models.Cmp.Impl_25 : Core_models.Cmp.Eq i128 where
-
-@[reducible] instance Core_models.Cmp.Impl_26.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes usize usize
-  where
-
-instance Core_models.Cmp.Impl_26 : Core_models.Cmp.PartialEq usize usize where
-  eq := fun (self : usize) (other : usize) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_27.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes usize
-  where
-
-instance Core_models.Cmp.Impl_27 : Core_models.Cmp.Eq usize where
-
-@[reducible] instance Core_models.Cmp.Impl_28.AssociatedTypes :
-  Core_models.Cmp.PartialEq.AssociatedTypes isize isize
-  where
-
-instance Core_models.Cmp.Impl_28 : Core_models.Cmp.PartialEq isize isize where
-  eq := fun (self : isize) (other : isize) => do
-    (Rust_primitives.Hax.Machine_int.eq self other)
-
-@[reducible] instance Core_models.Cmp.Impl_29.AssociatedTypes :
-  Core_models.Cmp.Eq.AssociatedTypes isize
-  where
-
-instance Core_models.Cmp.Impl_29 : Core_models.Cmp.Eq isize where
 
 class Core_models.Convert.Into.AssociatedTypes (Self : Type) (T : Type) where
 
@@ -340,6 +189,15 @@ class Core_models.Convert.From
   where
   _from (Self T) : (T -> RustM Self)
 
+def Core_models.Convert.Impl.into_hoisted
+  (T : Type)
+  (U : Type)
+  [Core_models.Convert.From.AssociatedTypes U T] [Core_models.Convert.From U T ]
+  (self : T)
+  : RustM U
+  := do
+  (Core_models.Convert.From._from U T self)
+
 @[reducible] instance Core_models.Convert.Impl.AssociatedTypes
   (T : Type)
   (U : Type)
@@ -355,10 +213,13 @@ instance Core_models.Convert.Impl
   :
   Core_models.Convert.Into T U
   where
-  into := fun (self : T) => do (Core_models.Convert.From._from U T self)
+  into := (Core_models.Convert.Impl.into_hoisted T U)
 
 structure Core_models.Convert.Infallible where
 
+
+def Core_models.Convert.Impl_3.from_hoisted (T : Type) (x : T) : RustM T := do
+  (pure x)
 
 @[reducible] instance Core_models.Convert.Impl_3.AssociatedTypes (T : Type) :
   Core_models.Convert.From.AssociatedTypes T T
@@ -367,7 +228,7 @@ structure Core_models.Convert.Infallible where
 instance Core_models.Convert.Impl_3 (T : Type) :
   Core_models.Convert.From T T
   where
-  _from := fun (x : T) => do (pure x)
+  _from := (Core_models.Convert.Impl_3.from_hoisted T)
 
 class Core_models.Convert.AsRef.AssociatedTypes (Self : Type) (T : Type) where
 
@@ -379,6 +240,12 @@ class Core_models.Convert.AsRef
   where
   as_ref (Self T) : (Self -> RustM T)
 
+def Core_models.Convert.Impl_4.as_ref_hoisted
+  (T : Type) (self : T)
+  : RustM T
+  := do
+  (pure self)
+
 @[reducible] instance Core_models.Convert.Impl_4.AssociatedTypes (T : Type) :
   Core_models.Convert.AsRef.AssociatedTypes T T
   where
@@ -386,7 +253,7 @@ class Core_models.Convert.AsRef
 instance Core_models.Convert.Impl_4 (T : Type) :
   Core_models.Convert.AsRef T T
   where
-  as_ref := fun (self : T) => do (pure self)
+  as_ref := (Core_models.Convert.Impl_4.as_ref_hoisted T)
 
 class Core_models.Default.Default.AssociatedTypes (Self : Type) where
 
@@ -724,12 +591,18 @@ opaque Core_models.Num.Impl_1.to_be_bytes (bytes : u8) : RustM (RustArray u8 1)
 
 opaque Core_models.Num.Impl_1.to_le_bytes (bytes : u8) : RustM (RustArray u8 1) 
 
+def Core_models.Num.Impl.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM u8
+  := do
+  (pure (0 : u8))
+
 @[reducible] instance Core_models.Num.Impl.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes u8
   where
 
 instance Core_models.Num.Impl : Core_models.Default.Default u8 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u8))
+  default := (Core_models.Num.Impl.default_hoisted)
 
 opaque Core_models.Num.Impl_3.rotate_right (x : u16) (n : u32) : RustM u16 
 
@@ -759,12 +632,18 @@ opaque Core_models.Num.Impl_3.to_le_bytes
   : RustM (RustArray u8 2)
 
 
+def Core_models.Num.Impl_2.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM u16
+  := do
+  (pure (0 : u16))
+
 @[reducible] instance Core_models.Num.Impl_2.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes u16
   where
 
 instance Core_models.Num.Impl_2 : Core_models.Default.Default u16 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u16))
+  default := (Core_models.Num.Impl_2.default_hoisted)
 
 opaque Core_models.Num.Impl_5.rotate_right (x : u32) (n : u32) : RustM u32 
 
@@ -794,12 +673,18 @@ opaque Core_models.Num.Impl_5.to_le_bytes
   : RustM (RustArray u8 4)
 
 
+def Core_models.Num.Impl_4.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM u32
+  := do
+  (pure (0 : u32))
+
 @[reducible] instance Core_models.Num.Impl_4.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes u32
   where
 
 instance Core_models.Num.Impl_4 : Core_models.Default.Default u32 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u32))
+  default := (Core_models.Num.Impl_4.default_hoisted)
 
 opaque Core_models.Num.Impl_7.rotate_right (x : u64) (n : u32) : RustM u64 
 
@@ -829,12 +714,18 @@ opaque Core_models.Num.Impl_7.to_le_bytes
   : RustM (RustArray u8 8)
 
 
+def Core_models.Num.Impl_6.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM u64
+  := do
+  (pure (0 : u64))
+
 @[reducible] instance Core_models.Num.Impl_6.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes u64
   where
 
 instance Core_models.Num.Impl_6 : Core_models.Default.Default u64 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u64))
+  default := (Core_models.Num.Impl_6.default_hoisted)
 
 opaque Core_models.Num.Impl_9.rotate_right (x : u128) (n : u32) : RustM u128 
 
@@ -864,12 +755,18 @@ opaque Core_models.Num.Impl_9.to_le_bytes
   : RustM (RustArray u8 16)
 
 
+def Core_models.Num.Impl_8.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM u128
+  := do
+  (pure (0 : u128))
+
 @[reducible] instance Core_models.Num.Impl_8.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes u128
   where
 
 instance Core_models.Num.Impl_8 : Core_models.Default.Default u128 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : u128))
+  default := (Core_models.Num.Impl_8.default_hoisted)
 
 opaque Core_models.Num.Impl_11.rotate_right (x : usize) (n : u32) : RustM usize 
 
@@ -899,12 +796,18 @@ opaque Core_models.Num.Impl_11.to_le_bytes
   : RustM (RustArray u8 8)
 
 
+def Core_models.Num.Impl_10.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM usize
+  := do
+  (pure (0 : usize))
+
 @[reducible] instance Core_models.Num.Impl_10.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes usize
   where
 
 instance Core_models.Num.Impl_10 : Core_models.Default.Default usize where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : usize))
+  default := (Core_models.Num.Impl_10.default_hoisted)
 
 opaque Core_models.Num.Impl_13.rotate_right (x : i8) (n : u32) : RustM i8 
 
@@ -934,12 +837,18 @@ opaque Core_models.Num.Impl_13.to_le_bytes
   : RustM (RustArray u8 1)
 
 
+def Core_models.Num.Impl_12.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM i8
+  := do
+  (pure (0 : i8))
+
 @[reducible] instance Core_models.Num.Impl_12.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i8
   where
 
 instance Core_models.Num.Impl_12 : Core_models.Default.Default i8 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i8))
+  default := (Core_models.Num.Impl_12.default_hoisted)
 
 opaque Core_models.Num.Impl_15.rotate_right (x : i16) (n : u32) : RustM i16 
 
@@ -969,12 +878,18 @@ opaque Core_models.Num.Impl_15.to_le_bytes
   : RustM (RustArray u8 2)
 
 
+def Core_models.Num.Impl_14.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM i16
+  := do
+  (pure (0 : i16))
+
 @[reducible] instance Core_models.Num.Impl_14.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i16
   where
 
 instance Core_models.Num.Impl_14 : Core_models.Default.Default i16 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i16))
+  default := (Core_models.Num.Impl_14.default_hoisted)
 
 opaque Core_models.Num.Impl_17.rotate_right (x : i32) (n : u32) : RustM i32 
 
@@ -1004,12 +919,18 @@ opaque Core_models.Num.Impl_17.to_le_bytes
   : RustM (RustArray u8 4)
 
 
+def Core_models.Num.Impl_16.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM i32
+  := do
+  (pure (0 : i32))
+
 @[reducible] instance Core_models.Num.Impl_16.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i32
   where
 
 instance Core_models.Num.Impl_16 : Core_models.Default.Default i32 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i32))
+  default := (Core_models.Num.Impl_16.default_hoisted)
 
 opaque Core_models.Num.Impl_19.rotate_right (x : i64) (n : u32) : RustM i64 
 
@@ -1039,12 +960,18 @@ opaque Core_models.Num.Impl_19.to_le_bytes
   : RustM (RustArray u8 8)
 
 
+def Core_models.Num.Impl_18.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM i64
+  := do
+  (pure (0 : i64))
+
 @[reducible] instance Core_models.Num.Impl_18.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i64
   where
 
 instance Core_models.Num.Impl_18 : Core_models.Default.Default i64 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i64))
+  default := (Core_models.Num.Impl_18.default_hoisted)
 
 opaque Core_models.Num.Impl_21.rotate_right (x : i128) (n : u32) : RustM i128 
 
@@ -1074,12 +1001,18 @@ opaque Core_models.Num.Impl_21.to_le_bytes
   : RustM (RustArray u8 16)
 
 
+def Core_models.Num.Impl_20.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM i128
+  := do
+  (pure (0 : i128))
+
 @[reducible] instance Core_models.Num.Impl_20.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes i128
   where
 
 instance Core_models.Num.Impl_20 : Core_models.Default.Default i128 where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : i128))
+  default := (Core_models.Num.Impl_20.default_hoisted)
 
 opaque Core_models.Num.Impl_23.rotate_right (x : isize) (n : u32) : RustM isize 
 
@@ -1109,12 +1042,18 @@ opaque Core_models.Num.Impl_23.to_le_bytes
   : RustM (RustArray u8 8)
 
 
+def Core_models.Num.Impl_22.default_hoisted
+  (_ : Rust_primitives.Hax.Tuple0)
+  : RustM isize
+  := do
+  (pure (0 : isize))
+
 @[reducible] instance Core_models.Num.Impl_22.AssociatedTypes :
   Core_models.Default.Default.AssociatedTypes isize
   where
 
 instance Core_models.Num.Impl_22 : Core_models.Default.Default isize where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do (pure (0 : isize))
+  default := (Core_models.Num.Impl_22.default_hoisted)
 
 class Core_models.Ops.Arith.AddAssign.AssociatedTypes (Self : Type) (Rhs : Type)
   where
@@ -1177,6 +1116,31 @@ inductive Core_models.Ops.Control_flow.ControlFlow (B : Type) (C : Type) : Type
 | Break : B -> Core_models.Ops.Control_flow.ControlFlow (B : Type) (C : Type) 
 
 
+def Core_models.Ops.Function.Impl_2.call_once_hoisted
+  (Arg : Type) (Out : Type) (self : (Arg -> RustM Out))
+  (arg : Arg)
+  : RustM Out
+  := do
+  (self arg)
+
+def Core_models.Ops.Function.Impl.call_once_hoisted
+  (Arg1 : Type) (Arg2 : Type) (Out : Type) (self : (Arg1 -> Arg2 -> RustM Out))
+  (arg : (Rust_primitives.Hax.Tuple2 Arg1 Arg2))
+  : RustM Out
+  := do
+  (self (Rust_primitives.Hax.Tuple2._0 arg) (Rust_primitives.Hax.Tuple2._1 arg))
+
+def Core_models.Ops.Function.Impl_1.call_once_hoisted
+  (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) (self :
+  (Arg1 -> Arg2 -> Arg3 -> RustM Out))
+  (arg : (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3))
+  : RustM Out
+  := do
+  (self
+    (Rust_primitives.Hax.Tuple3._0 arg)
+    (Rust_primitives.Hax.Tuple3._1 arg)
+    (Rust_primitives.Hax.Tuple3._2 arg))
+
 class Core_models.Ops.Try_trait.FromResidual.AssociatedTypes (Self : Type) (R :
   Type) where
 
@@ -1198,9 +1162,12 @@ class Core_models.Ops.Drop.Drop
   where
   drop (Self) : (Self -> RustM Self)
 
+--  See [`std::option::Option`]
 inductive Core_models.Option.Option (T : Type) : Type
-| Some : T -> Core_models.Option.Option (T : Type) 
-| None : Core_models.Option.Option (T : Type) 
+| --  See [`std::option::Option::Some`]
+    Some : T -> Core_models.Option.Option (T : Type) 
+| --  See [`std::option::Option::None`]
+    None : Core_models.Option.Option (T : Type) 
 
 
 class Core_models.Cmp.PartialOrd.AssociatedTypes (Self : Type) (Rhs : Type)
@@ -1257,6 +1224,68 @@ class Core_models.Cmp.PartialOrdDefaults
     :
     (Self -> Rhs -> RustM Bool)
 
+def Core_models.Cmp.Impl_1.lt_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  (self : T)
+  (y : T)
+  : RustM Bool
+  := do
+  match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
+    | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Less ))
+      => (pure true)
+    | _ => (pure false)
+
+def Core_models.Cmp.Impl_1.le_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  (self : T)
+  (y : T)
+  : RustM Bool
+  := do
+  match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
+    | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Less )) |
+      (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Equal ))
+      => (pure true)
+    | _ => (pure false)
+
+def Core_models.Cmp.Impl_1.gt_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  (self : T)
+  (y : T)
+  : RustM Bool
+  := do
+  match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
+    | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Greater ))
+      => (pure true)
+    | _ => (pure false)
+
+def Core_models.Cmp.Impl_1.ge_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  (self : T)
+  (y : T)
+  : RustM Bool
+  := do
+  match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
+    | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Greater )) |
+      (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Equal ))
+      => (pure true)
+    | _ => (pure false)
+
 @[reducible] instance Core_models.Cmp.Impl_1.AssociatedTypes
   (T : Type)
   [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
@@ -1272,44 +1301,10 @@ instance Core_models.Cmp.Impl_1
   :
   Core_models.Cmp.PartialOrdDefaults T T
   where
-  lt :=
-    fun
-      [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
-      [Core_models.Cmp.PartialOrd T T ]
-      (self : T) (y : T) => do
-    match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Less ))
-        => (pure true)
-      | _ => (pure false)
-  le :=
-    fun
-      [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
-      [Core_models.Cmp.PartialOrd T T ]
-      (self : T) (y : T) => do
-    match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Less )) |
-        (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Equal ))
-        => (pure true)
-      | _ => (pure false)
-  gt :=
-    fun
-      [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
-      [Core_models.Cmp.PartialOrd T T ]
-      (self : T) (y : T) => do
-    match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Greater ))
-        => (pure true)
-      | _ => (pure false)
-  ge :=
-    fun
-      [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
-      [Core_models.Cmp.PartialOrd T T ]
-      (self : T) (y : T) => do
-    match (← (Core_models.Cmp.PartialOrd.partial_cmp T T self y)) with
-      | (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Greater )) |
-        (Core_models.Option.Option.Some (Core_models.Cmp.Ordering.Equal ))
-        => (pure true)
-      | _ => (pure false)
+  lt := (Core_models.Cmp.Impl_1.lt_hoisted T)
+  le := (Core_models.Cmp.Impl_1.le_hoisted T)
+  gt := (Core_models.Cmp.Impl_1.gt_hoisted T)
+  ge := (Core_models.Cmp.Impl_1.ge_hoisted T)
 
 class Core_models.Cmp.Ord.AssociatedTypes (Self : Type) where
   [trait_constr_Ord_i0 : Core_models.Cmp.Eq.AssociatedTypes Self]
@@ -1354,6 +1349,18 @@ def Core_models.Cmp.min
     | (Core_models.Cmp.Ordering.Greater ) => (pure v2)
     | _ => (pure v1)
 
+def Core_models.Cmp.Impl_2.partial_cmp_hoisted
+  (T : Type)
+  [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
+  [Core_models.Cmp.PartialOrd T T ]
+  (self : (Core_models.Cmp.Reverse T))
+  (other : (Core_models.Cmp.Reverse T))
+  : RustM (Core_models.Option.Option Core_models.Cmp.Ordering)
+  := do
+  (Core_models.Cmp.PartialOrd.partial_cmp
+    T
+    T (Core_models.Cmp.Reverse._0 other) (Core_models.Cmp.Reverse._0 self))
+
 @[reducible] instance Core_models.Cmp.Impl_2.AssociatedTypes
   (T : Type)
   [Core_models.Cmp.PartialOrd.AssociatedTypes T T]
@@ -1373,14 +1380,17 @@ instance Core_models.Cmp.Impl_2
   (Core_models.Cmp.Reverse T)
   (Core_models.Cmp.Reverse T)
   where
-  partial_cmp :=
-    fun
-      (self : (Core_models.Cmp.Reverse T))
-      (other : (Core_models.Cmp.Reverse T))
-      => do
-    (Core_models.Cmp.PartialOrd.partial_cmp
-      T
-      T (Core_models.Cmp.Reverse._0 other) (Core_models.Cmp.Reverse._0 self))
+  partial_cmp := (Core_models.Cmp.Impl_2.partial_cmp_hoisted T)
+
+def Core_models.Cmp.Impl_5.cmp_hoisted
+  (T : Type)
+  [Core_models.Cmp.Ord.AssociatedTypes T] [Core_models.Cmp.Ord T ]
+  (self : (Core_models.Cmp.Reverse T))
+  (other : (Core_models.Cmp.Reverse T))
+  : RustM Core_models.Cmp.Ordering
+  := do
+  (Core_models.Cmp.Ord.cmp
+    T (Core_models.Cmp.Reverse._0 other) (Core_models.Cmp.Reverse._0 self))
 
 @[reducible] instance Core_models.Cmp.Impl_5.AssociatedTypes
   (T : Type) [Core_models.Cmp.Ord.AssociatedTypes T] [Core_models.Cmp.Ord T ] :
@@ -1391,350 +1401,9 @@ instance Core_models.Cmp.Impl_5
   (T : Type) [Core_models.Cmp.Ord.AssociatedTypes T] [Core_models.Cmp.Ord T ] :
   Core_models.Cmp.Ord (Core_models.Cmp.Reverse T)
   where
-  cmp :=
-    fun
-      (self : (Core_models.Cmp.Reverse T))
-      (other : (Core_models.Cmp.Reverse T))
-      => do
-    (Core_models.Cmp.Ord.cmp
-      T (Core_models.Cmp.Reverse._0 other) (Core_models.Cmp.Reverse._0 self))
+  cmp := (Core_models.Cmp.Impl_5.cmp_hoisted T)
 
-@[reducible] instance Core_models.Cmp.Impl_30.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes u8 u8
-  where
-
-instance Core_models.Cmp.Impl_30 : Core_models.Cmp.PartialOrd u8 u8 where
-  partial_cmp := fun (self : u8) (other : u8) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_31.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes u8
-  where
-
-instance Core_models.Cmp.Impl_31 : Core_models.Cmp.Ord u8 where
-  cmp := fun (self : u8) (other : u8) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_32.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes i8 i8
-  where
-
-instance Core_models.Cmp.Impl_32 : Core_models.Cmp.PartialOrd i8 i8 where
-  partial_cmp := fun (self : i8) (other : i8) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_33.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes i8
-  where
-
-instance Core_models.Cmp.Impl_33 : Core_models.Cmp.Ord i8 where
-  cmp := fun (self : i8) (other : i8) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_34.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes u16 u16
-  where
-
-instance Core_models.Cmp.Impl_34 : Core_models.Cmp.PartialOrd u16 u16 where
-  partial_cmp := fun (self : u16) (other : u16) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_35.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes u16
-  where
-
-instance Core_models.Cmp.Impl_35 : Core_models.Cmp.Ord u16 where
-  cmp := fun (self : u16) (other : u16) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_36.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes i16 i16
-  where
-
-instance Core_models.Cmp.Impl_36 : Core_models.Cmp.PartialOrd i16 i16 where
-  partial_cmp := fun (self : i16) (other : i16) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_37.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes i16
-  where
-
-instance Core_models.Cmp.Impl_37 : Core_models.Cmp.Ord i16 where
-  cmp := fun (self : i16) (other : i16) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_38.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes u32 u32
-  where
-
-instance Core_models.Cmp.Impl_38 : Core_models.Cmp.PartialOrd u32 u32 where
-  partial_cmp := fun (self : u32) (other : u32) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_39.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes u32
-  where
-
-instance Core_models.Cmp.Impl_39 : Core_models.Cmp.Ord u32 where
-  cmp := fun (self : u32) (other : u32) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_40.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes i32 i32
-  where
-
-instance Core_models.Cmp.Impl_40 : Core_models.Cmp.PartialOrd i32 i32 where
-  partial_cmp := fun (self : i32) (other : i32) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_41.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes i32
-  where
-
-instance Core_models.Cmp.Impl_41 : Core_models.Cmp.Ord i32 where
-  cmp := fun (self : i32) (other : i32) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_42.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes u64 u64
-  where
-
-instance Core_models.Cmp.Impl_42 : Core_models.Cmp.PartialOrd u64 u64 where
-  partial_cmp := fun (self : u64) (other : u64) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_43.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes u64
-  where
-
-instance Core_models.Cmp.Impl_43 : Core_models.Cmp.Ord u64 where
-  cmp := fun (self : u64) (other : u64) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_44.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes i64 i64
-  where
-
-instance Core_models.Cmp.Impl_44 : Core_models.Cmp.PartialOrd i64 i64 where
-  partial_cmp := fun (self : i64) (other : i64) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_45.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes i64
-  where
-
-instance Core_models.Cmp.Impl_45 : Core_models.Cmp.Ord i64 where
-  cmp := fun (self : i64) (other : i64) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_46.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes u128 u128
-  where
-
-instance Core_models.Cmp.Impl_46 : Core_models.Cmp.PartialOrd u128 u128 where
-  partial_cmp := fun (self : u128) (other : u128) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_47.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes u128
-  where
-
-instance Core_models.Cmp.Impl_47 : Core_models.Cmp.Ord u128 where
-  cmp := fun (self : u128) (other : u128) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_48.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes i128 i128
-  where
-
-instance Core_models.Cmp.Impl_48 : Core_models.Cmp.PartialOrd i128 i128 where
-  partial_cmp := fun (self : i128) (other : i128) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_49.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes i128
-  where
-
-instance Core_models.Cmp.Impl_49 : Core_models.Cmp.Ord i128 where
-  cmp := fun (self : i128) (other : i128) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_50.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes usize usize
-  where
-
-instance Core_models.Cmp.Impl_50 : Core_models.Cmp.PartialOrd usize usize where
-  partial_cmp := fun (self : usize) (other : usize) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_51.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes usize
-  where
-
-instance Core_models.Cmp.Impl_51 : Core_models.Cmp.Ord usize where
-  cmp := fun (self : usize) (other : usize) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
-@[reducible] instance Core_models.Cmp.Impl_52.AssociatedTypes :
-  Core_models.Cmp.PartialOrd.AssociatedTypes isize isize
-  where
-
-instance Core_models.Cmp.Impl_52 : Core_models.Cmp.PartialOrd isize isize where
-  partial_cmp := fun (self : isize) (other : isize) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Less))
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Greater))
-      else
-        (pure (Core_models.Option.Option.Some Core_models.Cmp.Ordering.Equal))
-
-@[reducible] instance Core_models.Cmp.Impl_53.AssociatedTypes :
-  Core_models.Cmp.Ord.AssociatedTypes isize
-  where
-
-instance Core_models.Cmp.Impl_53 : Core_models.Cmp.Ord isize where
-  cmp := fun (self : isize) (other : isize) => do
-    if (← (Rust_primitives.Hax.Machine_int.lt self other)) then
-      (pure Core_models.Cmp.Ordering.Less)
-    else
-      if (← (Rust_primitives.Hax.Machine_int.gt self other)) then
-        (pure Core_models.Cmp.Ordering.Greater)
-      else
-        (pure Core_models.Cmp.Ordering.Equal)
-
+--  See [`std::option::Option::as_ref`]
 def Core_models.Option.Impl.as_ref
   (T : Type) (self : (Core_models.Option.Option T))
   : RustM (Core_models.Option.Option T)
@@ -1744,6 +1413,7 @@ def Core_models.Option.Impl.as_ref
       => (pure (Core_models.Option.Option.Some x))
     | (Core_models.Option.Option.None ) => (pure Core_models.Option.Option.None)
 
+--  See [`std::option::Option::unwrap_or`]
 def Core_models.Option.Impl.unwrap_or
   (T : Type) (self : (Core_models.Option.Option T))
   (default : T)
@@ -1753,6 +1423,7 @@ def Core_models.Option.Impl.unwrap_or
     | (Core_models.Option.Option.Some x) => (pure x)
     | (Core_models.Option.Option.None ) => (pure default)
 
+--  See [`std::option::Option::unwrap_or_default`]
 def Core_models.Option.Impl.unwrap_or_default
   (T : Type)
   [Core_models.Default.Default.AssociatedTypes T]
@@ -1765,6 +1436,10 @@ def Core_models.Option.Impl.unwrap_or_default
     | (Core_models.Option.Option.None )
       => (Core_models.Default.Default.default T Rust_primitives.Hax.Tuple0.mk)
 
+--  See [`std::option::Option::take`]
+-- 
+--  Note: The interface in Rust is wrong, but is good after extraction.
+--  We cannot make a useful model with the right interface so we lose the executability.
 def Core_models.Option.Impl.take
   (T : Type) (self : (Core_models.Option.Option T))
   : RustM
@@ -1774,6 +1449,7 @@ def Core_models.Option.Impl.take
   := do
   (pure (Rust_primitives.Hax.Tuple2.mk Core_models.Option.Option.None self))
 
+--  See [`std::option::Option::is_some`]
 def Core_models.Option.Impl.is_some
   (T : Type) (self : (Core_models.Option.Option T))
   : RustM Bool
@@ -1802,6 +1478,7 @@ def
   contract := by mvcgen[Core_models.Option.Impl.is_some] <;> try grind
 }
 
+--  See [`std::option::Option::is_none`]
 def Core_models.Option.Impl.is_none
   (T : Type) (self : (Core_models.Option.Option T))
   : RustM Bool
@@ -1828,6 +1505,16 @@ opaque Core_models.Panicking.Internal.panic
   : RustM T
 
 
+def Core_models.Hash.Impl.hash_hoisted
+  (T : Type)
+  (H : Type)
+  [Core_models.Hash.Hasher.AssociatedTypes H] [Core_models.Hash.Hasher H ]
+  (self : T)
+  (h : H)
+  : RustM H
+  := do
+  (Core_models.Panicking.Internal.panic H Rust_primitives.Hax.Tuple0.mk)
+
 @[reducible] instance Core_models.Hash.Impl.AssociatedTypes (T : Type) :
   Core_models.Hash.Hash.AssociatedTypes T
   where
@@ -1837,13 +1524,27 @@ instance Core_models.Hash.Impl (T : Type) : Core_models.Hash.Hash T where
     fun
       (H : Type)
       [Core_models.Hash.Hasher.AssociatedTypes H] [Core_models.Hash.Hasher H ]
-      (self : T) (h : H) => do
-    (Core_models.Panicking.Internal.panic H Rust_primitives.Hax.Tuple0.mk)
+      
+      =>
+    (Core_models.Hash.Impl.hash_hoisted T H)
 
+--  See [`std::result::Result`]
 inductive Core_models.Result.Result (T : Type) (E : Type) : Type
-| Ok : T -> Core_models.Result.Result (T : Type) (E : Type) 
-| Err : E -> Core_models.Result.Result (T : Type) (E : Type) 
+| --  See [`std::result::Result::Ok`]
+    Ok : T -> Core_models.Result.Result (T : Type) (E : Type) 
+| --  See [`std::result::Result::Err`]
+    Err : E -> Core_models.Result.Result (T : Type) (E : Type) 
 
+
+def Core_models.Convert.Impl_1.try_from_hoisted
+  (T : Type)
+  (U : Type)
+  [Core_models.Convert.From.AssociatedTypes U T] [Core_models.Convert.From U T ]
+  (x : T)
+  : RustM (Core_models.Result.Result U Core_models.Convert.Infallible)
+  := do
+  (pure (Core_models.Result.Result.Ok
+    (← (Core_models.Convert.From._from U T x))))
 
 abbrev Core_models.Fmt.Result
   : Type :=
@@ -1905,18 +1606,29 @@ attribute [instance] Core_models.Error.Error.trait_constr_Error_i0
 
 attribute [instance] Core_models.Error.Error.trait_constr_Error_i1
 
+def Core_models.Fmt.Impl.dbg_fmt_hoisted
+  (T : Type) (self : T)
+  (f : Core_models.Fmt.Formatter)
+  : RustM
+  (Rust_primitives.Hax.Tuple2
+    Core_models.Fmt.Formatter
+    (Core_models.Result.Result
+      Rust_primitives.Hax.Tuple0
+      Core_models.Fmt.Error))
+  := do
+  let
+    hax_temp_output : (Core_models.Result.Result
+      Rust_primitives.Hax.Tuple0
+      Core_models.Fmt.Error) :=
+    (Core_models.Result.Result.Ok Rust_primitives.Hax.Tuple0.mk);
+  (pure (Rust_primitives.Hax.Tuple2.mk f hax_temp_output))
+
 @[reducible] instance Core_models.Fmt.Impl.AssociatedTypes (T : Type) :
   Core_models.Fmt.Debug.AssociatedTypes T
   where
 
 instance Core_models.Fmt.Impl (T : Type) : Core_models.Fmt.Debug T where
-  dbg_fmt := fun (self : T) (f : Core_models.Fmt.Formatter) => do
-    let
-      hax_temp_output : (Core_models.Result.Result
-        Rust_primitives.Hax.Tuple0
-        Core_models.Fmt.Error) :=
-      (Core_models.Result.Result.Ok Rust_primitives.Hax.Tuple0.mk);
-    (pure (Rust_primitives.Hax.Tuple2.mk f hax_temp_output))
+  dbg_fmt := (Core_models.Fmt.Impl.dbg_fmt_hoisted T)
 
 def Core_models.Fmt.Impl_11.write_fmt
   (f : Core_models.Fmt.Formatter)
@@ -1935,6 +1647,7 @@ def Core_models.Fmt.Impl_11.write_fmt
     (Core_models.Result.Result.Ok Rust_primitives.Hax.Tuple0.mk);
   (pure (Rust_primitives.Hax.Tuple2.mk f hax_temp_output))
 
+--  See [`std::option::Option::ok_or`]
 def Core_models.Option.Impl.ok_or
   (T : Type) (E : Type) (self : (Core_models.Option.Option T))
   (err : E)
@@ -1946,6 +1659,27 @@ def Core_models.Option.Impl.ok_or
     | (Core_models.Option.Option.None )
       => (pure (Core_models.Result.Result.Err err))
 
+--  See [`std::result::Result::is_ok`]
+def Core_models.Result.Impl.is_ok
+  (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
+  : RustM Bool
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok _) => (pure true)
+    | _ => (pure false)
+
+--  See [`std::result::Result::as_ref`]
+def Core_models.Result.Impl.as_ref
+  (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
+  : RustM (Core_models.Result.Result T E)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t)
+      => (pure (Core_models.Result.Result.Ok t))
+    | (Core_models.Result.Result.Err e)
+      => (pure (Core_models.Result.Result.Err e))
+
+--  See [`std::result::Result::unwrap_or`]
 def Core_models.Result.Impl.unwrap_or
   (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
   (default : T)
@@ -1955,13 +1689,95 @@ def Core_models.Result.Impl.unwrap_or
     | (Core_models.Result.Result.Ok t) => (pure t)
     | (Core_models.Result.Result.Err _) => (pure default)
 
-def Core_models.Result.Impl.is_ok
-  (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
-  : RustM Bool
+--  See [`std::result::Result::unwrap_or_default`]
+def Core_models.Result.Impl.unwrap_or_default
+  (T : Type)
+  (E : Type)
+  [Core_models.Default.Default.AssociatedTypes T]
+  [Core_models.Default.Default T ]
+  (self : (Core_models.Result.Result T E))
+  : RustM T
   := do
   match self with
-    | (Core_models.Result.Result.Ok _) => (pure true)
-    | _ => (pure false)
+    | (Core_models.Result.Result.Ok t) => (pure t)
+    | (Core_models.Result.Result.Err _)
+      => (Core_models.Default.Default.default T Rust_primitives.Hax.Tuple0.mk)
+
+--  See [`std::result::Result::err`]
+def Core_models.Result.Impl.err
+  (T : Type) (E : Type) (self : (Core_models.Result.Result T E))
+  : RustM (Core_models.Option.Option E)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok _) => (pure Core_models.Option.Option.None)
+    | (Core_models.Result.Result.Err e)
+      => (pure (Core_models.Option.Option.Some e))
+
+--  See [`std::result::Result::and`]
+def Core_models.Result.Impl.and
+  (T : Type) (E : Type) (U : Type) (self : (Core_models.Result.Result T E))
+  (res : (Core_models.Result.Result U E))
+  : RustM (Core_models.Result.Result U E)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok _) => (pure res)
+    | (Core_models.Result.Result.Err e)
+      => (pure (Core_models.Result.Result.Err e))
+
+--  See [`std::result::Result::or`]
+def Core_models.Result.Impl.or
+  (T : Type) (E : Type) (F : Type) (self : (Core_models.Result.Result T E))
+  (res : (Core_models.Result.Result T F))
+  : RustM (Core_models.Result.Result T F)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t)
+      => (pure (Core_models.Result.Result.Ok t))
+    | (Core_models.Result.Result.Err _) => (pure res)
+
+--  See [`std::result::Result::cloned`]
+def Core_models.Result.Impl_1.cloned
+  (T : Type)
+  (E : Type)
+  [Core_models.Clone.Clone.AssociatedTypes T] [Core_models.Clone.Clone T ]
+  (self : (Core_models.Result.Result T E))
+  : RustM (Core_models.Result.Result T E)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t)
+      =>
+        (pure (Core_models.Result.Result.Ok
+          (← (Core_models.Clone.Clone.clone T t))))
+    | (Core_models.Result.Result.Err e)
+      => (pure (Core_models.Result.Result.Err e))
+
+--  See [`std::result::Result::transpose`]
+def Core_models.Result.Impl_2.transpose
+  (T : Type) (E : Type) (self :
+  (Core_models.Result.Result (Core_models.Option.Option T) E))
+  : RustM (Core_models.Option.Option (Core_models.Result.Result T E))
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok (Core_models.Option.Option.Some t))
+      =>
+        (pure (Core_models.Option.Option.Some (Core_models.Result.Result.Ok t)))
+    | (Core_models.Result.Result.Ok (Core_models.Option.Option.None ))
+      => (pure Core_models.Option.Option.None)
+    | (Core_models.Result.Result.Err e)
+      =>
+        (pure (Core_models.Option.Option.Some
+          (Core_models.Result.Result.Err e)))
+
+--  See [`std::result::Result::flatten`]
+def Core_models.Result.Impl_3.flatten
+  (T : Type) (E : Type) (self :
+  (Core_models.Result.Result (Core_models.Result.Result T E) E))
+  : RustM (Core_models.Result.Result T E)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok inner) => (pure inner)
+    | (Core_models.Result.Result.Err e)
+      => (pure (Core_models.Result.Result.Err e))
 
 opaque Core_models.Slice.Impl.contains
   (T : Type) (s : (RustSlice T))
@@ -2318,9 +2134,17 @@ instance Core_models.Convert.Impl_1
   :
   Core_models.Convert.TryFrom U T
   where
-  try_from := fun (x : T) => do
-    (pure (Core_models.Result.Result.Ok
-      (← (Core_models.Convert.From._from U T x))))
+  try_from := (Core_models.Convert.Impl_1.try_from_hoisted T U)
+
+def Core_models.Convert.Impl_2.try_into_hoisted
+  (T : Type)
+  (U : Type)
+  [Core_models.Convert.TryFrom.AssociatedTypes U T]
+  [Core_models.Convert.TryFrom U T ]
+  (self : T)
+  : RustM (Core_models.Result.Result U (Core_models.Convert.TryFrom.Error U T))
+  := do
+  (Core_models.Convert.TryFrom.try_from U T self)
 
 @[reducible] instance Core_models.Convert.Impl_2.AssociatedTypes
   (T : Type)
@@ -2340,8 +2164,7 @@ instance Core_models.Convert.Impl_2
   :
   Core_models.Convert.TryInto T U
   where
-  try_into := fun (self : T) => do
-    (Core_models.Convert.TryFrom.try_from U T self)
+  try_into := (Core_models.Convert.Impl_2.try_into_hoisted T U)
 
 class Core_models.Iter.Traits.Collect.FromIterator.AssociatedTypes (Self : Type)
   (A : Type) where
@@ -2369,7 +2192,7 @@ class Core_models.Iter.Traits.Collect.FromIterator
 instance Core_models.Ops.Function.Impl_2 (Arg : Type) (Out : Type) :
   Core_models.Ops.Function.FnOnce (Arg -> RustM Out) Arg
   where
-  call_once := fun (self : (Arg -> RustM Out)) (arg : Arg) => do (self arg)
+  call_once := (Core_models.Ops.Function.Impl_2.call_once_hoisted Arg Out)
 
 @[reducible] instance Core_models.Ops.Function.Impl.AssociatedTypes
   (Arg1 : Type) (Arg2 : Type) (Out : Type) :
@@ -2385,14 +2208,7 @@ instance Core_models.Ops.Function.Impl
   (Arg1 -> Arg2 -> RustM Out)
   (Rust_primitives.Hax.Tuple2 Arg1 Arg2)
   where
-  call_once :=
-    fun
-      (self : (Arg1 -> Arg2 -> RustM Out))
-      (arg : (Rust_primitives.Hax.Tuple2 Arg1 Arg2))
-      => do
-    (self
-      (Rust_primitives.Hax.Tuple2._0 arg)
-      (Rust_primitives.Hax.Tuple2._1 arg))
+  call_once := (Core_models.Ops.Function.Impl.call_once_hoisted Arg1 Arg2 Out)
 
 @[reducible] instance Core_models.Ops.Function.Impl_1.AssociatedTypes
   (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
@@ -2408,16 +2224,13 @@ instance Core_models.Ops.Function.Impl_1
   (Arg1 -> Arg2 -> Arg3 -> RustM Out)
   (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3)
   where
-  call_once :=
-    fun
-      (self : (Arg1 -> Arg2 -> Arg3 -> RustM Out))
-      (arg : (Rust_primitives.Hax.Tuple3 Arg1 Arg2 Arg3))
-      => do
-    (self
-      (Rust_primitives.Hax.Tuple3._0 arg)
-      (Rust_primitives.Hax.Tuple3._1 arg)
-      (Rust_primitives.Hax.Tuple3._2 arg))
+  call_once := (Core_models.Ops.Function.Impl_1.call_once_hoisted
+    Arg1
+    Arg2
+    Arg3
+    Out)
 
+--  See [`std::option::Option::is_some_and`]
 def Core_models.Option.Impl.is_some_and
   (T : Type)
   (F : Type)
@@ -2438,6 +2251,7 @@ def Core_models.Option.Impl.is_some_and
     | (Core_models.Option.Option.Some x)
       => (Core_models.Ops.Function.FnOnce.call_once F T f x)
 
+--  See [`std::option::Option::is_none_or`]
 def Core_models.Option.Impl.is_none_or
   (T : Type)
   (F : Type)
@@ -2458,6 +2272,7 @@ def Core_models.Option.Impl.is_none_or
     | (Core_models.Option.Option.Some x)
       => (Core_models.Ops.Function.FnOnce.call_once F T f x)
 
+--  See [`std::option::Option::unwrap_or_else`]
 def Core_models.Option.Impl.unwrap_or_else
   (T : Type)
   (F : Type)
@@ -2484,6 +2299,7 @@ def Core_models.Option.Impl.unwrap_or_else
           F
           Rust_primitives.Hax.Tuple0 f Rust_primitives.Hax.Tuple0.mk)
 
+--  See [`std::option::Option::map`]
 def Core_models.Option.Impl.map
   (T : Type)
   (U : Type)
@@ -2507,6 +2323,7 @@ def Core_models.Option.Impl.map
           (← (Core_models.Ops.Function.FnOnce.call_once F T f x))))
     | (Core_models.Option.Option.None ) => (pure Core_models.Option.Option.None)
 
+--  See [`std::option::Option::map_or`]
 def Core_models.Option.Impl.map_or
   (T : Type)
   (U : Type)
@@ -2529,6 +2346,7 @@ def Core_models.Option.Impl.map_or
       => (Core_models.Ops.Function.FnOnce.call_once F T f t)
     | (Core_models.Option.Option.None ) => (pure default)
 
+--  See [`std::option::Option::map_or_else`]
 def Core_models.Option.Impl.map_or_else
   (T : Type)
   (U : Type)
@@ -2567,6 +2385,7 @@ def Core_models.Option.Impl.map_or_else
           D
           Rust_primitives.Hax.Tuple0 default Rust_primitives.Hax.Tuple0.mk)
 
+--  See [`std::option::Option::map_or_default`]
 def Core_models.Option.Impl.map_or_default
   (T : Type)
   (U : Type)
@@ -2591,6 +2410,7 @@ def Core_models.Option.Impl.map_or_default
     | (Core_models.Option.Option.None )
       => (Core_models.Default.Default.default U Rust_primitives.Hax.Tuple0.mk)
 
+--  See [`std::option::Option::ok_or_else`]
 def Core_models.Option.Impl.ok_or_else
   (T : Type)
   (E : Type)
@@ -2620,6 +2440,7 @@ def Core_models.Option.Impl.ok_or_else
             F
             Rust_primitives.Hax.Tuple0 err Rust_primitives.Hax.Tuple0.mk))))
 
+--  See [`std::option::Option::and_then`]
 def Core_models.Option.Impl.and_then
   (T : Type)
   (U : Type)
@@ -2641,6 +2462,73 @@ def Core_models.Option.Impl.and_then
       => (Core_models.Ops.Function.FnOnce.call_once F T f x)
     | (Core_models.Option.Option.None ) => (pure Core_models.Option.Option.None)
 
+--  See [`std::result::Result::is_ok_and`]
+def Core_models.Result.Impl.is_ok_and
+  (T : Type)
+  (E : Type)
+  (F : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
+  [Core_models.Ops.Function.FnOnce
+    F
+    T
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+      by infer_instance
+      with Output := Bool})]
+  (self : (Core_models.Result.Result T E))
+  (f : F)
+  : RustM Bool
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t)
+      => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Core_models.Result.Result.Err _) => (pure false)
+
+--  See [`std::result::Result::is_err_and`]
+def Core_models.Result.Impl.is_err_and
+  (T : Type)
+  (E : Type)
+  (F : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes F E]
+  [Core_models.Ops.Function.FnOnce
+    F
+    E
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes F E
+      by infer_instance
+      with Output := Bool})]
+  (self : (Core_models.Result.Result T E))
+  (f : F)
+  : RustM Bool
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok _) => (pure false)
+    | (Core_models.Result.Result.Err e)
+      => (Core_models.Ops.Function.FnOnce.call_once F E f e)
+
+--  See [`std::result::Result::unwrap_or_else`]
+def Core_models.Result.Impl.unwrap_or_else
+  (T : Type)
+  (E : Type)
+  (F : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes F E]
+  [Core_models.Ops.Function.FnOnce
+    F
+    E
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes F E
+      by infer_instance
+      with Output := T})]
+  (self : (Core_models.Result.Result T E))
+  (op : F)
+  : RustM T
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t) => (pure t)
+    | (Core_models.Result.Result.Err e)
+      => (Core_models.Ops.Function.FnOnce.call_once F E op e)
+
+--  See [`std::result::Result::map`]
 def Core_models.Result.Impl.map
   (T : Type)
   (E : Type)
@@ -2666,6 +2554,7 @@ def Core_models.Result.Impl.map
     | (Core_models.Result.Result.Err e)
       => (pure (Core_models.Result.Result.Err e))
 
+--  See [`std::result::Result::map_or`]
 def Core_models.Result.Impl.map_or
   (T : Type)
   (E : Type)
@@ -2687,8 +2576,9 @@ def Core_models.Result.Impl.map_or
   match self with
     | (Core_models.Result.Result.Ok t)
       => (Core_models.Ops.Function.FnOnce.call_once F T f t)
-    | (Core_models.Result.Result.Err _e) => (pure default)
+    | (Core_models.Result.Result.Err _) => (pure default)
 
+--  See [`std::result::Result::map_or_else`]
 def Core_models.Result.Impl.map_or_else
   (T : Type)
   (E : Type)
@@ -2722,6 +2612,33 @@ def Core_models.Result.Impl.map_or_else
     | (Core_models.Result.Result.Err e)
       => (Core_models.Ops.Function.FnOnce.call_once D E default e)
 
+--  See [`std::result::Result::map_or_default`]
+def Core_models.Result.Impl.map_or_default
+  (T : Type)
+  (E : Type)
+  (U : Type)
+  (F : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
+  [Core_models.Ops.Function.FnOnce
+    F
+    T
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+      by infer_instance
+      with Output := U})]
+  [Core_models.Default.Default.AssociatedTypes U]
+  [Core_models.Default.Default U ]
+  (self : (Core_models.Result.Result T E))
+  (f : F)
+  : RustM U
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t)
+      => (Core_models.Ops.Function.FnOnce.call_once F T f t)
+    | (Core_models.Result.Result.Err _)
+      => (Core_models.Default.Default.default U Rust_primitives.Hax.Tuple0.mk)
+
+--  See [`std::result::Result::map_err`]
 def Core_models.Result.Impl.map_err
   (T : Type)
   (E : Type)
@@ -2747,6 +2664,59 @@ def Core_models.Result.Impl.map_err
         (pure (Core_models.Result.Result.Err
           (← (Core_models.Ops.Function.FnOnce.call_once O E op e))))
 
+--  See [`std::result::Result::inspect`]
+def Core_models.Result.Impl.inspect
+  (T : Type)
+  (E : Type)
+  (F : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes F T]
+  [Core_models.Ops.Function.FnOnce
+    F
+    T
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes F T
+      by infer_instance
+      with Output := Rust_primitives.Hax.Tuple0})]
+  (self : (Core_models.Result.Result T E))
+  (f : F)
+  : RustM (Core_models.Result.Result T E)
+  := do
+  let _ ←
+    match self with
+      | (Core_models.Result.Result.Ok t)
+        =>
+          let _ ← (Core_models.Ops.Function.FnOnce.call_once F T f t);
+          (pure Rust_primitives.Hax.Tuple0.mk)
+      | _ => (pure Rust_primitives.Hax.Tuple0.mk);
+  (pure self)
+
+--  See [`std::result::Result::inspect_err`]
+def Core_models.Result.Impl.inspect_err
+  (T : Type)
+  (E : Type)
+  (F : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes F E]
+  [Core_models.Ops.Function.FnOnce
+    F
+    E
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes F E
+      by infer_instance
+      with Output := Rust_primitives.Hax.Tuple0})]
+  (self : (Core_models.Result.Result T E))
+  (f : F)
+  : RustM (Core_models.Result.Result T E)
+  := do
+  let _ ←
+    match self with
+      | (Core_models.Result.Result.Err e)
+        =>
+          let _ ← (Core_models.Ops.Function.FnOnce.call_once F E f e);
+          (pure Rust_primitives.Hax.Tuple0.mk)
+      | _ => (pure Rust_primitives.Hax.Tuple0.mk);
+  (pure self)
+
+--  See [`std::result::Result::and_then`]
 def Core_models.Result.Impl.and_then
   (T : Type)
   (E : Type)
@@ -2769,6 +2739,30 @@ def Core_models.Result.Impl.and_then
       => (Core_models.Ops.Function.FnOnce.call_once F T op t)
     | (Core_models.Result.Result.Err e)
       => (pure (Core_models.Result.Result.Err e))
+
+--  See [`std::result::Result::or_else`]
+def Core_models.Result.Impl.or_else
+  (T : Type)
+  (E : Type)
+  (F : Type)
+  (O : Type)
+  [Core_models.Ops.Function.FnOnce.AssociatedTypes O E]
+  [Core_models.Ops.Function.FnOnce
+    O
+    E
+    (associatedTypes := {
+      show Core_models.Ops.Function.FnOnce.AssociatedTypes O E
+      by infer_instance
+      with Output := (Core_models.Result.Result T F)})]
+  (self : (Core_models.Result.Result T E))
+  (op : O)
+  : RustM (Core_models.Result.Result T F)
+  := do
+  match self with
+    | (Core_models.Result.Result.Ok t)
+      => (pure (Core_models.Result.Result.Ok t))
+    | (Core_models.Result.Result.Err e)
+      => (Core_models.Ops.Function.FnOnce.call_once O E op e)
 
 def Core_models.Slice.Impl.get
   (T : Type)

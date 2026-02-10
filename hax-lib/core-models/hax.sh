@@ -20,6 +20,9 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::result::**::ok" # Issue #1823
     LEAN_FILTERS+=" -core_models::result::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
+    LEAN_FILTERS+=" -core_models::result::**::is_err"
+    LEAN_FILTERS+=" -core_models::result::**::unwrap_err"
+    LEAN_FILTERS+=" -core_models::result::**::expect_err"
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::iter::traits::iterator::**" # Issue #1710

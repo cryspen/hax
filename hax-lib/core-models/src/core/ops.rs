@@ -113,6 +113,7 @@ pub mod function {
 
     /* These instances provide implementations of the F* type classes corresponding to Fn traits for anonymous functions.
     This ensures that passing a closure where something implementing Fn works when translated to F* */
+    #[cfg(not(test))]
     #[hax_lib::fstar::after(
         "unfold instance fnonce_arrow_binder t u
   : t_FnOnce (_:t -> u) t = {
