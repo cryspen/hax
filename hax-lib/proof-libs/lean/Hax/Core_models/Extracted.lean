@@ -14,9 +14,11 @@ set_option linter.unusedVariables false
 
 namespace core_models.array
 
+--  See [`std::array::TryFromSliceError`]
 structure TryFromSliceError where
   -- no fields
 
+--  See [`std::array::as_slice`]
 def Impl_23.as_slice (T : Type) (N : usize) (s : (RustArray T N)) :
     RustM (RustSlice T) := do
   (rust_primitives.slice.array_as_slice T (N) s)
@@ -34,6 +36,7 @@ end core_models.array.iter
 
 namespace core_models.borrow
 
+--  See [`std::borrow::Borrow`]
 class Borrow.AssociatedTypes (Self : Type) (Borrowed : Type) where
 
 class Borrow (Self : Type) (Borrowed : Type)
@@ -47,6 +50,7 @@ end core_models.borrow
 
 namespace core_models.clone
 
+--  See [`std::clone::Clone`]
 class Clone.AssociatedTypes (Self : Type) where
 
 class Clone (Self : Type)
@@ -68,6 +72,7 @@ end core_models.clone
 
 namespace core_models.cmp
 
+--  See [`std::cmp::PartialEq`]
 class PartialEq.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 class PartialEq (Self : Type) (Rhs : Type)
@@ -76,6 +81,7 @@ class PartialEq (Self : Type) (Rhs : Type)
   where
   eq (Self) (Rhs) : (Self -> Rhs -> RustM Bool)
 
+--  See [`std::cmp::Eq`]
 class Eq.AssociatedTypes (Self : Type) where
   [trait_constr_Eq_i0 : PartialEq.AssociatedTypes Self Self]
 
@@ -88,10 +94,14 @@ class Eq (Self : Type)
 
 attribute [instance] Eq.trait_constr_Eq_i0
 
+--  See [`std::cmp::Ordering`]
 inductive Ordering : Type
-| Less : Ordering
-| Equal : Ordering
-| Greater : Ordering
+| --  See [`std::cmp::Ordering::Less`]
+    Less : Ordering
+| --  See [`std::cmp::Ordering::Equal`]
+    Equal : Ordering
+| --  See [`std::cmp::Ordering::Greater`]
+    Greater : Ordering
 
 def Ordering.Less.AnonConst : isize := (-1 : isize)
 
@@ -138,6 +148,7 @@ instance Impl
   where
   neq := (Impl.neq_hoisted T)
 
+--  See [`std::cmp::Reverse`]
 structure Reverse (T : Type) where
   _0 : T
 
@@ -184,6 +195,7 @@ end core_models.cmp
 
 namespace core_models.convert
 
+--  See [`std::convert::Into`]
 class Into.AssociatedTypes (Self : Type) (T : Type) where
 
 class Into (Self : Type) (T : Type)
@@ -191,6 +203,7 @@ class Into (Self : Type) (T : Type)
   where
   into (Self) (T) : (Self -> RustM T)
 
+--  See [`std::convert::From`]
 class From.AssociatedTypes (Self : Type) (T : Type) where
 
 class From (Self : Type) (T : Type)
@@ -224,6 +237,7 @@ instance Impl
   where
   into := (Impl.into_hoisted T U)
 
+--  See [`std::convert::Infallible`]
 structure Infallible where
   -- no fields
 
@@ -236,6 +250,7 @@ def Impl_3.from_hoisted (T : Type) (x : T) : RustM T := do (pure x)
 instance Impl_3 (T : Type) : From T T where
   _from := (Impl_3.from_hoisted T)
 
+--  See [`std::convert::AsRef`]
 class AsRef.AssociatedTypes (Self : Type) (T : Type) where
 
 class AsRef (Self : Type) (T : Type)
@@ -257,6 +272,7 @@ end core_models.convert
 
 namespace core_models.default
 
+--  See [`std::default::Default`]
 class Default.AssociatedTypes (Self : Type) where
 
 class Default (Self : Type)
@@ -269,6 +285,7 @@ end core_models.default
 
 namespace core_models.f32
 
+--  See [`std::primitive::f32::abs`]
 opaque Impl.abs (x : f64) : RustM f64 
 
 end core_models.f32
@@ -276,12 +293,15 @@ end core_models.f32
 
 namespace core_models.fmt
 
+--  See [`std::fmt::Error`]
 structure Error where
   -- no fields
 
+--  See [`std::fmt::Formatter`]
 structure Formatter where
   -- no fields
 
+--  See [`std::fmt::Arguments`]
 structure Arguments where
   _0 : rust_primitives.hax.Tuple0
 
@@ -342,12 +362,14 @@ end core_models.fmt.rt
 
 namespace core_models.hash
 
+--  See [`std::hash::Hasher`]
 class Hasher.AssociatedTypes (Self : Type) where
 
 class Hasher (Self : Type)
   [associatedTypes : outParam (Hasher.AssociatedTypes (Self : Type))]
   where
 
+--  See [`std::hash::Hash`]
 class Hash.AssociatedTypes (Self : Type) where
 
 class Hash (Self : Type)
@@ -364,6 +386,7 @@ end core_models.hash
 
 namespace core_models.hint
 
+--  See [`std::hint::black_box`]
 def black_box (T : Type) (dummy : T) : RustM T := do (pure dummy)
 
 @[spec]
@@ -377,6 +400,7 @@ def black_box.spec (T : Type) (dummy : T) :
   contract := by mvcgen[black_box] <;> try grind
 }
 
+--  See [`std::hint::must_use`]
 def must_use (T : Type) (value : T) : RustM T := do (pure value)
 
 @[spec]
@@ -395,6 +419,7 @@ end core_models.hint
 
 namespace core_models.iter.adapters.enumerate
 
+--  See [`std::iter::Enumerate`]
 structure Enumerate (I : Type) where
   iter : I
   count : usize
@@ -407,6 +432,7 @@ end core_models.iter.adapters.enumerate
 
 namespace core_models.iter.adapters.step_by
 
+--  See [`std::iter::StepBy`]
 structure StepBy (I : Type) where
   iter : I
   step : usize
@@ -419,6 +445,7 @@ end core_models.iter.adapters.step_by
 
 namespace core_models.iter.adapters.map
 
+--  See [`std::iter::Map`]
 structure Map (I : Type) (F : Type) where
   iter : I
   f : F
@@ -431,6 +458,7 @@ end core_models.iter.adapters.map
 
 namespace core_models.iter.adapters.take
 
+--  See [`std::iter::Take`]
 structure Take (I : Type) where
   iter : I
   n : usize
@@ -443,6 +471,7 @@ end core_models.iter.adapters.take
 
 namespace core_models.iter.adapters.zip
 
+--  See [`std::iter::Zip`]
 structure Zip (I1 : Type) (I2 : Type) where
   it1 : I1
   it2 : I2
@@ -452,6 +481,7 @@ end core_models.iter.adapters.zip
 
 namespace core_models.marker
 
+--  See [`std::marker::Copy`]
 class Copy.AssociatedTypes (Self : Type) where
   [trait_constr_Copy_i0 : core_models.clone.Clone.AssociatedTypes Self]
 
@@ -464,24 +494,28 @@ class Copy (Self : Type)
 
 attribute [instance] Copy.trait_constr_Copy_i0
 
+--  See [`std::marker::Send`]
 class Send.AssociatedTypes (Self : Type) where
 
 class Send (Self : Type)
   [associatedTypes : outParam (Send.AssociatedTypes (Self : Type))]
   where
 
+--  See [`std::marker::Sync`]
 class Sync.AssociatedTypes (Self : Type) where
 
 class Sync (Self : Type)
   [associatedTypes : outParam (Sync.AssociatedTypes (Self : Type))]
   where
 
+--  See [`std::marker::Sized`]
 class Sized.AssociatedTypes (Self : Type) where
 
 class Sized (Self : Type)
   [associatedTypes : outParam (Sized.AssociatedTypes (Self : Type))]
   where
 
+--  See [`std::marker::StructuralPartialEq`]
 class StructuralPartialEq.AssociatedTypes (Self : Type) where
 
 class StructuralPartialEq (Self : Type)
@@ -532,35 +566,50 @@ end core_models.marker
 
 namespace core_models.mem
 
+--  See [`std::mem::forget`]
 opaque forget (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0 
 
+--  See [`std::mem::forget_unsized`]
 opaque forget_unsized (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0 
 
+--  See [`std::mem::size_of`]
 opaque size_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
 
+--  See [`std::mem::size_of_val`]
 opaque size_of_val (T : Type) (val : T) : RustM usize 
 
+--  See [`std::mem::min_align_of`]
 opaque min_align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
 
+--  See [`std::mem::min_align_of_val`]
 opaque min_align_of_val (T : Type) (val : T) : RustM usize 
 
+--  See [`std::mem::align_of`]
 opaque align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
 
+--  See [`std::mem::align_of_val`]
 opaque align_of_val (T : Type) (val : T) : RustM usize 
 
+--  See [`std::mem::align_of_val_raw`]
 opaque align_of_val_raw (T : Type) (val : T) : RustM usize 
 
+--  See [`std::mem::needs_drop`]
 opaque needs_drop (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM Bool 
 
+--  See [`std::mem::uninitialized`]
 opaque uninitialized (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
 
+--  See [`std::mem::swap`]
 opaque swap (T : Type) (x : T) (y : T) : RustM (rust_primitives.hax.Tuple2 T T) 
 
+--  See [`std::mem::replace`]
 opaque replace (T : Type) (dest : T) (src : T) :
     RustM (rust_primitives.hax.Tuple2 T T) 
 
+--  See [`std::mem::drop`]
 opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0 
 
+--  See [`std::ptr::read`]
 def copy
     (T : Type)
     [trait_constr_copy_associated_type_i0 :
@@ -571,14 +620,19 @@ def copy
     RustM T := do
   (rust_primitives.mem.copy T x)
 
+--  See [`std::mem::take`]
 opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T) 
 
+--  See [`std::mem::transmute_copy`]
 opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
 
+--  See [`std::mem::variant_count`]
 opaque variant_count (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
 
+--  See [`std::mem::zeroed`]
 opaque zeroed (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
 
+--  See [`std::mem::transmute`]
 opaque transmute (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
 
 end core_models.mem
@@ -594,12 +648,15 @@ end core_models.mem.manually_drop
 
 namespace core_models.num.error
 
+--  See [`std::num::TryFromIntError`]
 structure TryFromIntError where
   _0 : rust_primitives.hax.Tuple0
 
+--  See [`std::num::IntErrorKind`]
 structure IntErrorKind where
   -- no fields
 
+--  See [`std::num::ParseIntError`]
 structure ParseIntError where
   kind : IntErrorKind
 
@@ -608,196 +665,262 @@ end core_models.num.error
 
 namespace core_models.num
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 def Impl_6.wrapping_add (x : u8) (y : u8) : RustM u8 := do
   (rust_primitives.arithmetic.wrapping_add_u8 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_6.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
   (rust_primitives.arithmetic.wrapping_sub_u8 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
   (rust_primitives.arithmetic.wrapping_mul_u8 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
   (rust_primitives.arithmetic.pow_u8 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_6.leading_zeros (x : u8) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_6.ilog2 (x : u8) : RustM u32 
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
   (rust_primitives.arithmetic.wrapping_add_u16 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_7.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
   (rust_primitives.arithmetic.wrapping_sub_u16 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
   (rust_primitives.arithmetic.wrapping_mul_u16 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
   (rust_primitives.arithmetic.pow_u16 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_7.leading_zeros (x : u16) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_7.ilog2 (x : u16) : RustM u32 
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
   (rust_primitives.arithmetic.wrapping_add_u32 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_8.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
   (rust_primitives.arithmetic.wrapping_sub_u32 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
   (rust_primitives.arithmetic.wrapping_mul_u32 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
   (rust_primitives.arithmetic.pow_u32 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_8.leading_zeros (x : u32) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_8.ilog2 (x : u32) : RustM u32 
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
   (rust_primitives.arithmetic.wrapping_add_u64 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_9.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
   (rust_primitives.arithmetic.wrapping_sub_u64 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
   (rust_primitives.arithmetic.wrapping_mul_u64 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
   (rust_primitives.arithmetic.pow_u64 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_9.leading_zeros (x : u64) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_9.ilog2 (x : u64) : RustM u32 
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
   (rust_primitives.arithmetic.wrapping_add_u128 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_10.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
   (rust_primitives.arithmetic.wrapping_sub_u128 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
   (rust_primitives.arithmetic.wrapping_mul_u128 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
   (rust_primitives.arithmetic.pow_u128 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_10.leading_zeros (x : u128) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_10.ilog2 (x : u128) : RustM u32 
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
 def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
   (rust_primitives.arithmetic.wrapping_add_usize x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_11.wrapping_sub (x : usize) (y : usize) : RustM usize := do
   (rust_primitives.arithmetic.wrapping_sub_usize x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
   (rust_primitives.arithmetic.wrapping_mul_usize x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
   (rust_primitives.arithmetic.pow_usize x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_11.leading_zeros (x : usize) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_11.ilog2 (x : usize) : RustM u32 
 
 def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
   (rust_primitives.arithmetic.wrapping_add_i8 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_12.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
   (rust_primitives.arithmetic.wrapping_sub_i8 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
   (rust_primitives.arithmetic.wrapping_mul_i8 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
   (rust_primitives.arithmetic.pow_i8 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_12.leading_zeros (x : i8) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_12.ilog2 (x : i8) : RustM u32 
 
 def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
   (rust_primitives.arithmetic.wrapping_add_i16 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_13.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
   (rust_primitives.arithmetic.wrapping_sub_i16 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
   (rust_primitives.arithmetic.wrapping_mul_i16 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
   (rust_primitives.arithmetic.pow_i16 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_13.leading_zeros (x : i16) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_13.ilog2 (x : i16) : RustM u32 
 
 def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
   (rust_primitives.arithmetic.wrapping_add_i32 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_14.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
   (rust_primitives.arithmetic.wrapping_sub_i32 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
   (rust_primitives.arithmetic.wrapping_mul_i32 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
   (rust_primitives.arithmetic.pow_i32 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_14.leading_zeros (x : i32) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_14.ilog2 (x : i32) : RustM u32 
 
 def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
   (rust_primitives.arithmetic.wrapping_add_i64 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_15.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
   (rust_primitives.arithmetic.wrapping_sub_i64 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
   (rust_primitives.arithmetic.wrapping_mul_i64 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
   (rust_primitives.arithmetic.pow_i64 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_15.leading_zeros (x : i64) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_15.ilog2 (x : i64) : RustM u32 
 
 def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
   (rust_primitives.arithmetic.wrapping_add_i128 x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_16.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
   (rust_primitives.arithmetic.wrapping_sub_i128 x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
   (rust_primitives.arithmetic.wrapping_mul_i128 x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
   (rust_primitives.arithmetic.pow_i128 x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_16.leading_zeros (x : i128) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_16.ilog2 (x : i128) : RustM u32 
 
 def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
   (rust_primitives.arithmetic.wrapping_add_isize x y)
 
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
 def Impl_17.wrapping_sub (x : isize) (y : isize) : RustM isize := do
   (rust_primitives.arithmetic.wrapping_sub_isize x y)
 
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
 def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
   (rust_primitives.arithmetic.wrapping_mul_isize x y)
 
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
 def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
   (rust_primitives.arithmetic.pow_isize x exp)
 
+--  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_17.leading_zeros (x : isize) : RustM u32 
 
+--  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_17.ilog2 (x : isize) : RustM u32 
 
 def Impl_18.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
@@ -925,6 +1048,7 @@ end core_models.num
 
 namespace core_models.ops.arith
 
+--  See [`std::ops::AddAssign`]
 class AddAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 class AddAssign (Self : Type) (Rhs : Type)
@@ -933,6 +1057,7 @@ class AddAssign (Self : Type) (Rhs : Type)
   where
   add_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
+--  See [`std::ops::SubAssign`]
 class SubAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 class SubAssign (Self : Type) (Rhs : Type)
@@ -941,6 +1066,7 @@ class SubAssign (Self : Type) (Rhs : Type)
   where
   sub_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
+--  See [`std::ops::MulAssign`]
 class MulAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 class MulAssign (Self : Type) (Rhs : Type)
@@ -949,6 +1075,7 @@ class MulAssign (Self : Type) (Rhs : Type)
   where
   mul_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
+--  See [`std::ops::DivAssign`]
 class DivAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 class DivAssign (Self : Type) (Rhs : Type)
@@ -957,6 +1084,7 @@ class DivAssign (Self : Type) (Rhs : Type)
   where
   div_assign (Self) (Rhs) : (Self -> Rhs -> RustM Self)
 
+--  See [`std::ops::RemAssign`]
 class RemAssign.AssociatedTypes (Self : Type) (Rhs : Type) where
 
 class RemAssign (Self : Type) (Rhs : Type)
@@ -970,9 +1098,12 @@ end core_models.ops.arith
 
 namespace core_models.ops.control_flow
 
+--  See [`std::ops::ControlFlow`]
 inductive ControlFlow (B : Type) (C : Type) : Type
-| Continue : C -> ControlFlow (B : Type) (C : Type)
-| Break : B -> ControlFlow (B : Type) (C : Type)
+| --  See [`std::ops::ControlFlow::Continue`]
+    Continue : C -> ControlFlow (B : Type) (C : Type)
+| --  See [`std::ops::ControlFlow::Break`]
+    Break : B -> ControlFlow (B : Type) (C : Type)
 
 end core_models.ops.control_flow
 
@@ -1009,6 +1140,7 @@ end core_models.ops.function
 
 namespace core_models.ops.try_trait
 
+--  See [`std::ops::FromResidual`]
 class FromResidual.AssociatedTypes (Self : Type) (R : Type) where
 
 class FromResidual (Self : Type) (R : Type)
@@ -1029,6 +1161,7 @@ end core_models.ops.deref
 
 namespace core_models.ops.drop
 
+--  See [`std::ops::Drop`]
 class Drop.AssociatedTypes (Self : Type) where
 
 class Drop (Self : Type)
@@ -1041,16 +1174,20 @@ end core_models.ops.drop
 
 namespace core_models.ops.range
 
+--  See [`std::ops::RangeTo`]
 structure RangeTo (T : Type) where
   _end : T
 
+--  See [`std::ops::RangeFrom`]
 structure RangeFrom (T : Type) where
   start : T
 
+--  See [`std::ops::Range`]
 structure Range (T : Type) where
   start : T
   _end : T
 
+--  See [`std::ops::RangeFull`]
 structure RangeFull where
   -- no fields
 
@@ -1071,6 +1208,7 @@ end core_models.option
 
 namespace core_models.cmp
 
+--  See [`std::cmp::PartialOrd`]
 class PartialOrd.AssociatedTypes (Self : Type) (Rhs : Type) where
   [trait_constr_PartialOrd_i0 : PartialEq.AssociatedTypes Self Rhs]
 
@@ -1199,6 +1337,7 @@ instance Impl_1
   gt := (Impl_1.gt_hoisted T)
   ge := (Impl_1.ge_hoisted T)
 
+--  See [`std::cmp::Ord`]
 class Ord.AssociatedTypes (Self : Type) where
   [trait_constr_Ord_i0 : Eq.AssociatedTypes Self]
   [trait_constr_Ord_i1 : PartialOrd.AssociatedTypes Self Self]
@@ -1218,6 +1357,7 @@ attribute [instance] Ord.trait_constr_Ord_i0
 
 attribute [instance] Ord.trait_constr_Ord_i1
 
+--  See [`std::cmp::max`]
 def max
     (T : Type)
     [trait_constr_max_associated_type_i0 : Ord.AssociatedTypes T]
@@ -1229,6 +1369,7 @@ def max
     | (Ordering.Greater ) => (pure v1)
     | _ => (pure v2)
 
+--  See [`std::cmp::min`]
 def min
     (T : Type)
     [trait_constr_min_associated_type_i0 : Ord.AssociatedTypes T]
@@ -1296,6 +1437,7 @@ end core_models.cmp
 
 namespace core_models.iter.adapters.flat_map
 
+--  See [`std::iter::FlatMap`]
 structure FlatMap (I : Type) (U : Type) (F : Type) where
   it : I
   f : F
@@ -1445,10 +1587,12 @@ end core_models.convert
 
 namespace core_models.fmt
 
+--  See [`std::fmt::Result`]
 abbrev Result :
   Type :=
   (core_models.result.Result rust_primitives.hax.Tuple0 Error)
 
+--  See [`std::fmt::Display`]
 class Display.AssociatedTypes (Self : Type) where
 
 class Display (Self : Type)
@@ -1461,6 +1605,7 @@ class Display (Self : Type)
       Formatter
       (core_models.result.Result rust_primitives.hax.Tuple0 Error)))
 
+--  See [`std::fmt::Debug`]
 class Debug.AssociatedTypes (Self : Type) where
 
 class Debug (Self : Type)
@@ -1478,6 +1623,7 @@ end core_models.fmt
 
 namespace core_models.error
 
+--  See [`std::error::Error`]
 class Error.AssociatedTypes (Self : Type) where
   [trait_constr_Error_i0 : core_models.fmt.Display.AssociatedTypes Self]
   [trait_constr_Error_i1 : core_models.fmt.Debug.AssociatedTypes Self]
@@ -1539,39 +1685,51 @@ end core_models.fmt
 
 namespace core_models.num
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_6.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result u8 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_7.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result u16 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_8.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result u32 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_9.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result u64 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_10.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result u128 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_11.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result usize core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_12.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result i8 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_13.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result i16 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_14.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result i32 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_15.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result i64 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_16.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result i128 core_models.num.error.ParseIntError) 
 
+--  See [`std::primitive::u8::from_str_radix`] (and similar for other integer types)
 opaque Impl_17.from_str_radix (src : String) (radix : u32) :
     RustM (core_models.result.Result isize core_models.num.error.ParseIntError) 
 
@@ -1695,6 +1853,7 @@ end core_models.result
 
 namespace core_models.slice.iter
 
+--  See [`std::slice::Chunks`]
 structure Chunks (T : Type) where
   cs : usize
   elements : (RustSlice T)
@@ -1703,6 +1862,7 @@ def Impl.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
     RustM (Chunks T) := do
   (pure (Chunks.mk (cs := cs) (elements := elements)))
 
+--  See [`std::slice::ChunksExact`]
 structure ChunksExact (T : Type) where
   cs : usize
   elements : (RustSlice T)
@@ -1711,6 +1871,7 @@ def Impl_1.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
     RustM (ChunksExact T) := do
   (pure (ChunksExact.mk (cs := cs) (elements := elements)))
 
+--  See [`std::slice::Iter`]
 structure Iter (T : Type) where
   _0 : (rust_primitives.sequence.Seq T)
 
@@ -1803,27 +1964,34 @@ end core_models.slice.iter
 
 namespace core_models.slice
 
+--  See [`std::slice::len`]
 def Impl.len (T : Type) (s : (RustSlice T)) : RustM usize := do
   (rust_primitives.slice.slice_length T s)
 
+--  See [`std::slice::chunks`]
 def Impl.chunks (T : Type) (s : (RustSlice T)) (cs : usize) :
     RustM (core_models.slice.iter.Chunks T) := do
   (core_models.slice.iter.Impl.new T cs s)
 
+--  See [`std::slice::iter`]
 def Impl.iter (T : Type) (s : (RustSlice T)) :
     RustM (core_models.slice.iter.Iter T) := do
   (pure (core_models.slice.iter.Iter.mk
     (← (rust_primitives.sequence.seq_from_slice T s))))
 
+--  See [`std::slice::chunks_exact`]
 def Impl.chunks_exact (T : Type) (s : (RustSlice T)) (cs : usize) :
     RustM (core_models.slice.iter.ChunksExact T) := do
   (core_models.slice.iter.Impl_1.new T cs s)
 
+--  See [`std::slice::is_empty`]
 def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
   (rust_primitives.hax.machine_int.eq (← (Impl.len T s)) (0 : usize))
 
+--  See [`std::slice::contains`]
 opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
 
+--  See [`std::slice::copy_within`]
 opaque Impl.copy_within
     (T : Type)
     (R : Type)
@@ -1836,9 +2004,11 @@ opaque Impl.copy_within
     (dest : usize) :
     RustM (RustSlice T) 
 
+--  See [`std::slice::binary_search`]
 opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
     RustM (core_models.result.Result usize usize) 
 
+--  See [`std::slice::copy_from_slice`]
 def Impl.copy_from_slice
     (T : Type)
     [trait_constr_copy_from_slice_associated_type_i0 :
@@ -1878,6 +2048,7 @@ def
   contract := by mvcgen[Impl.copy_from_slice] <;> try grind
 }
 
+--  See [`std::slice::clone_from_slice`]
 def Impl.clone_from_slice
     (T : Type)
     [trait_constr_clone_from_slice_associated_type_i0 :
@@ -1917,6 +2088,7 @@ def
   contract := by mvcgen[Impl.clone_from_slice] <;> try grind
 }
 
+--  See [`std::slice::split_at`]
 def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
     RustM (rust_primitives.hax.Tuple2 (RustSlice T) (RustSlice T)) := do
   (rust_primitives.slice.slice_split_at T s mid)
@@ -1933,6 +2105,7 @@ def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
   contract := by mvcgen[Impl.split_at] <;> try grind
 }
 
+--  See [`std::slice::split_at_checked`]
 def Impl.split_at_checked (T : Type) (s : (RustSlice T)) (mid : usize) :
     RustM
     (core_models.option.Option
@@ -1948,6 +2121,7 @@ end core_models.slice
 
 namespace core_models.str.error
 
+--  See [`std::str::Utf8Error`]
 structure Utf8Error where
   -- no fields
 
@@ -1972,6 +2146,7 @@ end core_models.str.iter
 
 namespace core_models.convert
 
+--  See [`std::convert::TryInto`]
 class TryInto.AssociatedTypes (Self : Type) (T : Type) where
   Error : Type
 
@@ -1987,6 +2162,7 @@ class TryInto (Self : Type) (T : Type)
   try_into (Self) (T) :
     (Self -> RustM (core_models.result.Result T associatedTypes.Error))
 
+--  See [`std::convert::TryFrom`]
 class TryFrom.AssociatedTypes (Self : Type) (T : Type) where
   Error : Type
 
@@ -2007,6 +2183,7 @@ end core_models.convert
 
 namespace core_models.iter.traits.iterator
 
+--  See [`std::iter::Iterator`]
 class Iterator.AssociatedTypes (Self : Type) where
   Item : Type
 
@@ -2029,6 +2206,7 @@ end core_models.iter.traits.iterator
 
 namespace core_models.iter.traits.collect
 
+--  See [`std::iter::IntoIterator`]
 class IntoIterator.AssociatedTypes (Self : Type) where
   IntoIter : Type
 
@@ -2047,6 +2225,7 @@ end core_models.iter.traits.collect
 
 namespace core_models.ops.arith
 
+--  See [`std::ops::Add`]
 class Add.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2060,6 +2239,7 @@ class Add (Self : Type) (Rhs : Type)
   where
   add (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::Sub`]
 class Sub.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2073,6 +2253,7 @@ class Sub (Self : Type) (Rhs : Type)
   where
   sub (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::Mul`]
 class Mul.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2086,6 +2267,7 @@ class Mul (Self : Type) (Rhs : Type)
   where
   mul (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::Div`]
 class Div.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2099,6 +2281,7 @@ class Div (Self : Type) (Rhs : Type)
   where
   div (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::Neg`]
 class Neg.AssociatedTypes (Self : Type) where
   Output : Type
 
@@ -2112,6 +2295,7 @@ class Neg (Self : Type)
   where
   neg (Self) : (Self -> RustM associatedTypes.Output)
 
+--  See [`std::ops::Rem`]
 class Rem.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2130,6 +2314,7 @@ end core_models.ops.arith
 
 namespace core_models.ops.bit
 
+--  See [`std::ops::Shr`]
 class Shr.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2143,6 +2328,7 @@ class Shr (Self : Type) (Rhs : Type)
   where
   shr (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::Shl`]
 class Shl.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2156,6 +2342,7 @@ class Shl (Self : Type) (Rhs : Type)
   where
   shl (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::BitXor`]
 class BitXor.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2170,6 +2357,7 @@ class BitXor (Self : Type) (Rhs : Type)
   where
   bitxor (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
+--  See [`std::ops::BitAnd`]
 class BitAnd.AssociatedTypes (Self : Type) (Rhs : Type) where
   Output : Type
 
@@ -2189,6 +2377,7 @@ end core_models.ops.bit
 
 namespace core_models.ops.index
 
+--  See [`std::ops::Index`]
 class Index.AssociatedTypes (Self : Type) (Idx : Type) where
   Output : Type
 
@@ -2208,6 +2397,7 @@ end core_models.ops.index
 
 namespace core_models.ops.function
 
+--  See [`std::ops::FnOnce`]
 class FnOnce.AssociatedTypes (Self : Type) (Args : Type) where
   Output : Type
 
@@ -2227,6 +2417,7 @@ end core_models.ops.function
 
 namespace core_models.ops.try_trait
 
+--  See [`std::ops::Try`]
 class Try.AssociatedTypes (Self : Type) where
   Output : Type
   Residual : Type
@@ -2256,6 +2447,7 @@ end core_models.ops.try_trait
 
 namespace core_models.ops.deref
 
+--  See [`std::ops::Deref`]
 class Deref.AssociatedTypes (Self : Type) where
   Target : Type
 
@@ -2274,6 +2466,7 @@ end core_models.ops.deref
 
 namespace core_models.slice
 
+--  See [`std::slice::SliceIndex`]
 class SliceIndex.AssociatedTypes (Self : Type) (T : Type) where
   Output : Type
 
@@ -2313,6 +2506,7 @@ end core_models.str.traits
 
 namespace core_models.array
 
+--  See [`std::array::map`]
 def Impl_23.map
     (T : Type)
     (N : usize)
@@ -2334,6 +2528,7 @@ def Impl_23.map
     RustM (RustArray U N) := do
   (rust_primitives.slice.array_map T U (N) (T -> RustM U) s f)
 
+--  See [`std::array::from_fn`]
 def from_fn
     (T : Type)
     (N : usize)
@@ -2539,6 +2734,7 @@ end core_models.iter.traits.iterator
 
 namespace core_models.iter.traits.collect
 
+--  See [`std::iter::FromIterator`]
 class FromIterator.AssociatedTypes (Self : Type) (A : Type) where
 
 class FromIterator (Self : Type) (A : Type)
@@ -2935,6 +3131,7 @@ end core_models.iter.adapters.flat_map
 
 namespace core_models.iter.adapters.flatten
 
+--  See [`std::iter::Flatten`]
 structure Flatten
   (I : Type)
   [trait_constr_Flatten_associated_type_i0 :
@@ -3319,6 +3516,7 @@ end core_models.iter.adapters.zip
 
 namespace core_models.ops.function
 
+--  See [`std::ops::Fn`]
 class Fn.AssociatedTypes (Self : Type) (Args : Type) where
   [trait_constr_Fn_i0 : FnOnce.AssociatedTypes Self Args]
 
@@ -3995,6 +4193,7 @@ end core_models.slice.iter
 
 namespace core_models.slice
 
+--  See [`std::slice::get`]
 def Impl.get
     (T : Type)
     (I : Type)

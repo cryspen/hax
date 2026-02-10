@@ -3,6 +3,7 @@ module Core_models.Slice.Iter
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::slice::Chunks`]
 type t_Chunks (v_T: Type0) = {
   f_cs:usize;
   f_elements:t_Slice v_T
@@ -11,6 +12,7 @@ type t_Chunks (v_T: Type0) = {
 let impl__new (#v_T: Type0) (cs: usize) (elements: t_Slice v_T) : t_Chunks v_T =
   { f_cs = cs; f_elements = elements } <: t_Chunks v_T
 
+/// See [`std::slice::ChunksExact`]
 type t_ChunksExact (v_T: Type0) = {
   f_cs:usize;
   f_elements:t_Slice v_T
@@ -19,6 +21,7 @@ type t_ChunksExact (v_T: Type0) = {
 let impl_1__new (#v_T: Type0) (cs: usize) (elements: t_Slice v_T) : t_ChunksExact v_T =
   { f_cs = cs; f_elements = elements } <: t_ChunksExact v_T
 
+/// See [`std::slice::Iter`]
 type t_Iter (v_T: Type0) = | Iter : Rust_primitives.Sequence.t_Seq v_T -> t_Iter v_T
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
