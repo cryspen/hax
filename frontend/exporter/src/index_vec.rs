@@ -7,15 +7,18 @@ pub struct IndexVec<I: 'static, T: 'static> {
     _marker: std::marker::PhantomData<fn(_: &I)>,
 }
 
+impl<I, T: Sized> IndexVec<I, T> {
+    pub fn into_iter(self) -> impl DoubleEndedIterator<Item = T> + ExactSizeIterator {
+        self.raw.into_iter()
+    }
+}
+
 #[cfg(feature = "rustc")]
 impl<I: rustc_index::Idx, T: Sized> IndexVec<I, T> {
     pub fn into_iter_enumerated(
         self,
     ) -> impl DoubleEndedIterator<Item = (I, T)> + ExactSizeIterator {
         rustc_index::IndexVec::from_raw(self.raw).into_iter_enumerated()
-    }
-    pub fn into_iter(self) -> impl DoubleEndedIterator<Item = T> + ExactSizeIterator {
-        self.raw.into_iter()
     }
 }
 

@@ -122,7 +122,9 @@ mod module {
         tcx.thir_body_safe(did).as_ref().unwrap_or_else(msg).clone()
     }
 
-    pub trait IsBody: Sized + std::fmt::Debug + Clone + 'static {
+    pub trait IsBody:
+        Sized + std::fmt::Debug + Clone + std::any::Any + Send + Sync + 'static
+    {
         fn body<'tcx, S: UnderOwnerState<'tcx>>(
             s: &S,
             did: RDefId,
@@ -193,10 +195,13 @@ mod module {
                 instantiate: Option<ty::GenericArgsRef<'tcx>>,
             ) -> Option<Self> {
                 let did = did.as_local()?;
+                // The following returns `None` if did refers to something that has no body (avoids a crash in the call to `thir_body`)
+                s.base().tcx.hir_maybe_body_owned_by(did)?;
                 let (thir, expr) = get_thir(did, s);
                 assert!(instantiate.is_none(), "monomorphized thir isn't supported");
-                let s = &s.with_owner_id(did.to_def_id());
-                Some(if *CORE_EXTRACTION_MODE {
+                let s = &s.with_owner_id(did.to_def_id()).with_thir(thir.clone());
+                let params = thir.params.raw.sinto(s);
+                let expr = if *CORE_EXTRACTION_MODE {
                     let expr = &thir.exprs[expr];
                     Decorated {
                         contents: Box::new(ExprKind::Tuple { fields: vec![] }),
@@ -207,7 +212,8 @@ mod module {
                     }
                 } else {
                     expr.sinto(&s.with_thir(thir))
-                })
+                };
+                Some(Self { expr, params })
             }
         }
 

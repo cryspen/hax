@@ -47,13 +47,15 @@ namespace lean_core_models.default.structs
 structure S where
   f1 : usize
 
+def Impl.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM S := do
+  (pure (S.mk (f1 := (0 : usize))))
+
 @[reducible] instance Impl.AssociatedTypes :
   core_models.default.Default.AssociatedTypes S
   where
 
 instance Impl : core_models.default.Default S where
-  default := fun (_ : rust_primitives.hax.Tuple0) => do
-    (pure (S.mk (f1 := (0 : usize))))
+  default := (Impl.default_hoisted)
 
 def test (_ : rust_primitives.hax.Tuple0) : RustM S := do
   (core_models.default.Default.default S rust_primitives.hax.Tuple0.mk)
@@ -66,6 +68,17 @@ namespace lean_core_models.default.enums
 inductive E (T : Type) : Type
 | C1 : u32 -> E (T : Type)
 | C2 : T -> E (T : Type)
+
+def Impl.default_hoisted
+    (T : Type)
+    [trait_constr_default_hoisted_associated_type_i0 :
+      core_models.default.Default.AssociatedTypes
+      T]
+    [trait_constr_default_hoisted_i0 : core_models.default.Default T ]
+    (_ : rust_primitives.hax.Tuple0) :
+    RustM (E T) := do
+  (pure (E.C2
+    (← (core_models.default.Default.default T rust_primitives.hax.Tuple0.mk))))
 
 @[reducible] instance Impl.AssociatedTypes
   (T : Type)
@@ -84,10 +97,7 @@ instance Impl
   [trait_constr_Impl_i0 : core_models.default.Default T ] :
   core_models.default.Default (E T)
   where
-  default := fun (_ : rust_primitives.hax.Tuple0) => do
-    (pure (E.C2
-      (← (core_models.default.Default.default
-        T rust_primitives.hax.Tuple0.mk))))
+  default := (Impl.default_hoisted T)
 
 end lean_core_models.default.enums
 
@@ -127,13 +137,15 @@ structure S where
 inductive E : Type
 | C : u32 -> E
 
+def Impl.default_hoisted (_ : rust_primitives.hax.Tuple0) : RustM S := do
+  (pure (S.mk (f1 := (42 : u32))))
+
 @[reducible] instance Impl.AssociatedTypes :
   core_models.default.Default.AssociatedTypes S
   where
 
 instance Impl : core_models.default.Default S where
-  default := fun (_ : rust_primitives.hax.Tuple0) => do
-    (pure (S.mk (f1 := (42 : u32))))
+  default := (Impl.default_hoisted)
 
 def test (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

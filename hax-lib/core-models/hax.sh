@@ -18,6 +18,9 @@ function extract_lean() {
     LEAN_FILTERS=""
     LEAN_FILTERS+=" -core_models::result::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
+    LEAN_FILTERS+=" -core_models::result::**::is_err"
+    LEAN_FILTERS+=" -core_models::result::**::unwrap_err"
+    LEAN_FILTERS+=" -core_models::result::**::expect_err"
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::num::**::saturating_add"
@@ -42,6 +45,7 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::num::**::rotate_left"
     LEAN_FILTERS+=" -core_models::num::**::rotate_right"
     
+  
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     OUT="proofs/lean/extraction/core_models.lean"

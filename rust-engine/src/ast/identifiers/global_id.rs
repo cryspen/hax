@@ -54,12 +54,48 @@ struct DefIdInner {
     kind: DefKind,
 }
 
+impl From<hax_frontend_exporter::DefId> for DefIdInner {
+    fn from(value: hax_frontend_exporter::DefId) -> Self {
+        Self {
+            krate: value.krate.clone(),
+            path: value.path.clone(),
+            parent: value
+                .parent
+                .clone()
+                .map(|def_id| DefIdInner::from(def_id).intern()),
+            kind: value.kind.clone(),
+        }
+    }
+}
+
 impl DefIdInner {
     /// Change the krate field of `self` and propagate the change into all parents.
     fn rename_krate(&self, name: &str) -> Self {
         let mut def_id = self.clone();
         def_id.krate = name.into();
         def_id.parent = def_id.parent.map(|parent: DefId| parent.rename_krate(name));
+        def_id
+    }
+
+    /// Rename assoc fn ident from its name under the trait definition to its name under a specific impl
+    fn rename_method_as_hoisted(&self, trait_: DefId, impl_: DefId) -> Self {
+        let mut new_id = self.clone();
+        if self.parent.is_some_and(|p| p == trait_) {
+            new_id.parent = Some(impl_);
+            new_id.path = impl_.path.clone();
+            new_id.path.push(self.path.last().unwrap().clone());
+        }
+        new_id
+    }
+
+    /// Transform the last chunk of the path
+    fn map_last(&self, f: impl Fn(&mut String)) -> Self {
+        let mut def_id = self.clone();
+        if let Some(def_path_item) = def_id.path.last_mut()
+            && let DefPathItem::TypeNs(s) | DefPathItem::ValueNs(s) = &mut def_path_item.data
+        {
+            f(s)
+        }
         def_id
     }
 
@@ -147,11 +183,6 @@ impl ExplicitDefId {
         std::iter::successors(Some(self.clone()), |id| id.parent())
     }
 
-    /// Change the krate name to `name`.
-    fn rename_krate(&mut self, name: &str) {
-        self.def_id = self.def_id.rename_krate(name);
-    }
-
     /// Helper to get a `GlobalIdInner` out of an `ExplicitDefId`.
     fn into_global_id_inner(self) -> GlobalIdInner {
         GlobalIdInner::Concrete(ConcreteId {
@@ -179,14 +210,14 @@ impl FreshModule {
         self.clone().into()
     }
 
-    /// Change the krate name in all hints.
-    fn rename_krate(&self, name: &str) -> Self {
+    /// Apply `f` to all hints.
+    fn map_def_id(&self, f: impl Fn(&DefIdInner) -> DefIdInner) -> Self {
         let hints = self
             .hints
             .iter()
             .map(|hint| {
                 let mut hint = hint.clone();
-                hint.rename_krate(name);
+                hint.def_id = f(hint.def_id.get()).intern();
                 hint
             })
             .collect();
@@ -368,6 +399,35 @@ impl TupleId {
 pub struct GlobalId(Interned<GlobalIdInner>);
 
 impl GlobalId {
+    /// Import a def_id from the frontend
+    pub fn from_frontend(id: hax_frontend_exporter::DefId, is_value: bool) -> Self {
+        let mut def_id: DefIdInner = id.into();
+        use hax_frontend_exporter::DefKind as DK;
+
+        let mut popped_ctor = false;
+        if let Some(last) = def_id.path.last()
+            && matches!(&last.data, DefPathItem::Ctor)
+        {
+            def_id.path.pop();
+            popped_ctor = true;
+            if let Some(parent) = def_id.parent.as_ref() {
+                def_id.parent = parent.parent;
+            }
+        }
+
+        let is_constructor = is_value
+            && (matches!(&def_id.kind, DK::Variant | DK::Union | DK::Struct) || popped_ctor);
+        let inner = GlobalIdInner::Concrete(ConcreteId {
+            def_id: ExplicitDefId {
+                is_constructor,
+                def_id: def_id.intern(),
+            },
+            moved: None,
+            suffix: None,
+        });
+        Self(inner.intern())
+    }
+
     /// Extracts the Crate info
     pub fn krate(self) -> &'static str {
         match self.0.get() {
@@ -445,22 +505,53 @@ impl GlobalId {
         }
     }
 
-    /// Change the krate name (the first element of the `GlobalId`) to `name`.
-    pub fn rename_krate(self, name: &str) -> Self {
+    /// Internal utility to apply a transformation at the def_id level
+    fn map_def_id(self, f: impl Fn(&DefIdInner) -> DefIdInner) -> Self {
         match self.0.get() {
-            GlobalIdInner::FreshModule(fresh_module) => {
-                Self(GlobalIdInner::FreshModule(fresh_module.rename_krate(name)).intern())
-            }
             GlobalIdInner::Concrete(concrete_id) => {
                 let mut concrete_id = concrete_id.clone();
-                concrete_id.rename_krate(name);
+                concrete_id.def_id.def_id = f(concrete_id.def_id.def_id.get()).intern();
                 Self(GlobalIdInner::Concrete(concrete_id).intern())
+            }
+            GlobalIdInner::FreshModule(fresh_module) => {
+                Self(GlobalIdInner::FreshModule(fresh_module.map_def_id(f)).intern())
             }
             GlobalIdInner::Tuple(tuple_id) => {
                 let mut concrete_id = tuple_id.as_concreteid().clone();
-                concrete_id.rename_krate(name);
+                concrete_id.def_id.def_id = f(concrete_id.def_id.def_id.get()).intern();
                 Self(GlobalIdInner::Concrete(concrete_id).intern())
             }
+        }
+    }
+
+    /// Change the krate name (the first element of the `GlobalId`) to `name`.
+    pub fn rename_krate(self, name: &str) -> Self {
+        self.map_def_id(|def_id| def_id.rename_krate(name))
+    }
+
+    /// Rename assoc fn ident from its name under the trait definition to its name under a specific impl
+    pub fn rename_method_as_hoisted(self, trait_: GlobalId, impl_: GlobalId) -> Self {
+        let trait_ = ConcreteId::from_global_id(trait_).def_id.def_id;
+        let impl_ = ConcreteId::from_global_id(impl_).def_id.def_id;
+        self.map_def_id(|def_id| def_id.rename_method_as_hoisted(trait_, impl_))
+    }
+
+    /// Apply a function to the last chunk of the path
+    pub fn map_last<F: Fn(&mut String)>(self, f: &F) -> Self {
+        self.map_def_id(|def_id| def_id.map_last(f))
+    }
+
+    /// Add a suffix to a GlobalId
+    pub fn with_suffix(self, suffix: ReservedSuffix) -> Self {
+        match self.0.get() {
+            GlobalIdInner::Concrete(concrete_id) => Self(
+                GlobalIdInner::Concrete(ConcreteId {
+                    suffix: Some(suffix),
+                    ..concrete_id.clone()
+                })
+                .intern(),
+            ),
+            GlobalIdInner::Tuple(_) | GlobalIdInner::FreshModule(_) => self,
         }
     }
 }
@@ -536,8 +627,28 @@ impl ConcreteId {
         }
     }
 
-    fn rename_krate(&mut self, name: &str) {
-        self.def_id.rename_krate(name);
+    /// Get a static reference to a `ConcreteId` out of a `GlobalId`.
+    /// When a tuple is encountered, the tuple is rendered into a proper Rust name.
+    /// This function is memoized, so that we don't recompute Rust names for tuples all the time.
+    fn from_global_id(value: GlobalId) -> &'static ConcreteId {
+        thread_local! {
+            static MEMO: LazyCell<RefCell<HashMap<GlobalId, &'static ConcreteId>>> =
+                LazyCell::new(|| RefCell::new(HashMap::new()));
+        }
+
+        MEMO.with(|memo| {
+            let mut memo = memo.borrow_mut();
+            let reference: &'static ConcreteId =
+                memo.entry(value).or_insert_with(|| match value.0.get() {
+                    GlobalIdInner::Concrete(concrete_id) => concrete_id,
+                    GlobalIdInner::Tuple(tuple_id) => match GlobalId::from(*tuple_id).0.get() {
+                        GlobalIdInner::Concrete(concrete_id) => concrete_id,
+                        _ => unreachable!(),
+                    },
+                    GlobalIdInner::FreshModule(_) => unreachable!(),
+                });
+            reference
+        })
     }
 
     fn to_debug_string(&self) -> String {

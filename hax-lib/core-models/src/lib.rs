@@ -25,7 +25,7 @@
 //! By providing a readable, well-specified version of `core`'s behavior, it serves as a foundation for
 //! proof assistants and other verification tools.
 
-#![allow(dead_code)]
+#![allow(dead_code, unused)]
 
 #[path = "core/array.rs"]
 pub mod array;
@@ -69,3 +69,6 @@ pub mod result;
 pub mod slice;
 #[path = "core/str.rs"]
 pub mod str;
+
+#[cfg(test)]
+pub mod testing;

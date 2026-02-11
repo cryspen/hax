@@ -105,7 +105,8 @@ impl Kind {
             Kind::ExpectedMutRef => Some(420),
             Kind::NonTrivialAndMutFnInput => Some(1405),
             Kind::AttributeRejected { .. } => None,
-            Kind::FStarParseError { .. } => todo!(),
+            Kind::FStarParseError { .. } => None,
+            Kind::OcamlEngineErrorPayload { .. } => None,
         }
     }
 }
@@ -180,6 +181,9 @@ pub enum Kind {
         fstar_snippet: String,
         details: String,
     } = 13,
+
+    /// Internal encoding
+    OcamlEngineErrorPayload(String) = 9999,
 }
 
 impl Kind {

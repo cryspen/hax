@@ -5,7 +5,7 @@
 //! source maps).
 
 use std::collections::HashSet;
-use std::sync::LazyLock;
+use std::sync::OnceLock;
 
 use super::prelude::*;
 use crate::{
@@ -61,28 +61,36 @@ set_option linter.unusedVariables false
 
 ";
 
-static RESERVED_KEYWORDS: LazyLock<HashSet<String>> = LazyLock::new(|| {
-    HashSet::from_iter(
-        [
-            // reserved for Lean:
-            "end",
-            "def",
-            "abbrev",
-            "theorem",
-            "example",
-            "inductive",
-            "structure",
-            "from",
-            // reserved for hax encoding:
-            "associatedTypes",
-            "AssociatedTypes",
-        ]
-        .iter()
-        .map(|s| s.to_string()),
-    )
-});
-
 impl RenderView for LeanPrinter {
+    fn reserved_keywords() -> &'static HashSet<String> {
+        static SET: OnceLock<HashSet<String>> = OnceLock::new();
+        SET.get_or_init(|| {
+            [
+                // reserved for Lean:
+                "end",
+                "def",
+                "abbrev",
+                "theorem",
+                "example",
+                "inductive",
+                "structure",
+                "from",
+                // reserved for hax encoding:
+                "associatedTypes",
+                "AssociatedTypes",
+            ]
+            .into_iter()
+            .map(|s| s.to_string())
+            .collect()
+        })
+    }
+
+    fn should_escape(id: &str) -> bool {
+        Self::is_reserved_keyword(id)
+            || id.starts_with(|c: char| c.is_ascii_digit())
+            || id.starts_with("trait_constr_")
+    }
+
     fn separator(&self) -> &str {
         "."
     }
@@ -104,10 +112,7 @@ impl RenderView for LeanPrinter {
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
                 Some(vec![
-                    self.escape(
-                        self.render_path_segment_payload(chunk.payload())
-                            .to_string(),
-                    ),
+                    Self::escape(&self.render_path_segment_payload(chunk.payload())),
                     "mk".to_string(),
                 ])
             }
@@ -117,14 +122,8 @@ impl RenderView for LeanPrinter {
                 {
                     chunk.parent().map(|parent| {
                         vec![
-                            self.escape(
-                                self.render_path_segment_payload(parent.payload())
-                                    .to_string(),
-                            ),
-                            self.escape(
-                                self.render_path_segment_payload(chunk.payload())
-                                    .to_string(),
-                            ),
+                            Self::escape(&self.render_path_segment_payload(parent.payload())),
+                            Self::escape(&self.render_path_segment_payload(chunk.payload())),
                         ]
                     })
                 }
@@ -132,12 +131,7 @@ impl RenderView for LeanPrinter {
             },
             _ => None,
         })
-        .unwrap_or(
-            default::render_path_segment(self, chunk)
-                .into_iter()
-                .map(|s| self.escape(s))
-                .collect(),
-        )
+        .unwrap_or(default::render_path_segment(self, chunk))
     }
 }
 
@@ -173,10 +167,6 @@ impl Backend for LeanBackend {
     fn module_path(&self, module: &Module) -> Utf8PathBuf {
         let krate = module.ident.krate();
         Utf8PathBuf::from(krate).with_extension("lean")
-    }
-
-    fn phases(&self) -> Vec<Box<dyn Phase>> {
-        vec![Box::new(FilterUnprintableItems), Box::new(ExplicitMonadic)]
     }
 
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
@@ -222,6 +212,44 @@ impl Backend for LeanBackend {
             sourcemap: None,
         }]
     }
+
+    fn phases(&self) -> Vec<PhaseKind> {
+        use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
+        vec![
+            RejectRawOrMutPointer.into(),
+            RewriteLocalSelf.into(),
+            TransformHaxLibInline.into(),
+            Specialize.into(),
+            DropSizedTrait.into(),
+            SimplifyQuestionMarks.into(),
+            AndMutDefsite.into(),
+            ReconstructAsserts.into(),
+            ReconstructForLoops.into(),
+            ReconstructWhileLoops.into(),
+            DirectAndMut.into(),
+            RejectArbitraryLhs.into(),
+            DropBlocks.into(),
+            DropMatchGuards.into(),
+            DropReferences.into(),
+            TrivializeAssignLhs.into(),
+            HoistSideEffects.into(),
+            HoistDisjunctivePatterns.into(),
+            SimplifyMatchReturn.into(),
+            LocalMutation.into(),
+            RewriteControlFlow.into(),
+            DropReturnBreakContinue.into(),
+            FunctionalizeLoops.into(),
+            RejectQuestionMark.into(),
+            TraitsSpecs.into(),
+            SimplifyHoisting.into(),
+            NewtypeAsRefinement.into(),
+            ReorderFields.into(),
+            HoistAssociatedFns,
+            SortItems.into(),
+            FilterUnprintableItems,
+            ExplicitMonadic,
+        ]
+    }
 }
 
 impl LeanPrinter {
@@ -242,23 +270,6 @@ impl LeanPrinter {
             *id
         };
         self.render_string(&id.view())
-    }
-
-    /// Escapes local identifiers (prefixing reserved keywords with an underscore).
-    /// TODO: This should be treated directly in the name rendering engine, see
-    /// https://github.com/cryspen/hax/issues/1630
-    pub fn escape(&self, id: String) -> String {
-        let id = id.replace([' ', '<', '>'], "_");
-        if id.is_empty() {
-            "_ERROR_EMPTY_ID_".to_string()
-        } else if RESERVED_KEYWORDS.contains(&id)
-            || id.starts_with("trait_constr_")
-            || id.starts_with(|c: char| c.is_ascii_digit())
-        {
-            format!("_{id}")
-        } else {
-            id
-        }
     }
 
     /// Renders the last, most local part of an id. Used for named arguments of constructors.
@@ -490,6 +501,11 @@ const _: () = {
                 // Pure values are displayed directly. Note that constructors, while pure, may
                 // contain sub-expressions that are not, so they must be wrapped in a do-block
                 docs![expr]
+            } else if let ExprKind::App { args, .. } = expr.kind()
+                && args.is_empty()
+            {
+                // Constants are pure values
+                docs![expr]
             } else {
                 // All other expressions are wrapped in a do-block, and extracted out of the monad
                 docs![
@@ -574,6 +590,7 @@ const _: () = {
                     TraitItemKind::Resugared(_) => {
                         unreachable!("This backend has no resugaring for trait items")
                     }
+                    TraitItemKind::Error(e) => docs![e],
                 }]
             }
         }
@@ -1056,7 +1073,7 @@ const _: () = {
                 ]
                 .group(),
 
-                ExprKind::Borrow { .. } | ExprKind::Deref(_) => {
+                ExprKind::Borrow { .. } => {
                     unreachable_by_invariant!(Drop_references)
                 }
                 ExprKind::AddressOf { .. } => unreachable_by_invariant!(Reject_raw_or_mut_pointer),
@@ -1263,7 +1280,7 @@ const _: () = {
 
         fn local_id(&self, local_id: &LocalId) -> DocBuilder<A> {
             // TODO: should be done by name rendering, see https://github.com/cryspen/hax/issues/1630
-            docs![self.escape(local_id.0.to_string())]
+            docs![Self::escape(&local_id.0)]
         }
 
         fn spanned_ty(&self, spanned_ty: &SpannedTy) -> DocBuilder<A> {
@@ -1391,11 +1408,7 @@ const _: () = {
                 ]
                 .nest(INDENT)
                 .group(),
-                ItemKind::Use {
-                    path: _,
-                    is_external: _,
-                    rename: _,
-                } => nil!(),
+                ItemKind::RustModule | ItemKind::Use { .. } => nil!(),
                 ItemKind::Quote { quote, origin: _ } => docs![quote],
                 ItemKind::NotImplementedYet => {
                     emit_error!(issue 1706, "Item unsupported by the Hax engine (unimplemented yet)")
@@ -1499,6 +1512,7 @@ const _: () = {
                     name,
                     generics,
                     items,
+                    safety: _,
                 } => {
                     let generic_types = generics.type_constraints().collect::<Vec<_>>();
                     if generic_types.len() < generics.constraints.len() {
@@ -1686,10 +1700,9 @@ const _: () = {
                 ItemKind::Impl {
                     generics,
                     self_ty: _,
-                    of_trait: (trait_, args),
+                    of_trait: TraitGoal { trait_, args },
                     items,
                     parent_bounds: _,
-                    safety: _,
                 } => {
                     let opaque = item.is_opaque();
                     docs![
@@ -1860,7 +1873,9 @@ const _: () = {
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => {
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body })
+                    if generics.params.is_empty() =>
+                {
                     docs![
                         name,
                         softline!(),
@@ -1869,6 +1884,23 @@ const _: () = {
                         self.monad_extract_simplify(body)
                     ]
                 }
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => docs![
+                    docs![
+                        name,
+                        softline!(),
+                        ":=",
+                        line!(),
+                        docs!["fun", line!(), generics, line!(), "=>",]
+                            .group()
+                            .nest(INDENT)
+                    ]
+                    .group(),
+                    line!(),
+                    self.monad_extract_simplify(body)
+                ]
+                .group()
+                .nest(INDENT),
+                ImplItemKind::Error(err) => docs!(err),
             }
         }
 
@@ -1932,7 +1964,7 @@ const _: () = {
         }
 
         fn symbol(&self, symbol: &Symbol) -> DocBuilder<A> {
-            docs![self.escape(symbol.to_string())]
+            docs![Self::escape(symbol)]
         }
 
         fn metadata(

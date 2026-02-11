@@ -188,12 +188,15 @@ impl DefId {
         if let ForeignMod = &self.kind {
             // These kind causes `def_span` to panic.
             rustc_span::DUMMY_SP
-        } else if let Some(ldid) = def_id.as_local()
-            && let hir_id = tcx.local_def_id_to_hir_id(ldid)
-            && matches!(tcx.hir_node(hir_id), rustc_hir::Node::Synthetic)
-        {
-            // Synthetic items (those we create ourselves) make `def_span` panic.
-            rustc_span::DUMMY_SP
+        } else if let Some(ldid) = def_id.as_local() {
+            let hir_id = tcx.local_def_id_to_hir_id(ldid);
+            if matches!(tcx.hir_node(hir_id), rustc_hir::Node::Synthetic) {
+                // Synthetic items (those we create ourselves) make `def_span` panic.
+                rustc_span::DUMMY_SP
+            } else {
+                // Unlike `tcx.def_span`, `tcx.hir_span_with_body` returns the full span of the item, not only of its header
+                tcx.hir_span_with_body(hir_id)
+            }
         } else {
             tcx.def_span(def_id)
         }
@@ -323,6 +326,8 @@ pub enum FullDefKind<Body> {
         /// `dyn Trait<Args.., Ty = <Self as Trait>::Ty..>` for this trait. This is `Some` iff this
         /// trait is dyn-compatible.
         dyn_self: Option<Ty>,
+        /// Whether it's a `unsafe trait`, or just a `trait`.
+        safety: Safety,
     },
     /// Trait alias: `trait IntIterator = Iterator<Item = i32>;`
     TraitAlias {
@@ -432,7 +437,7 @@ pub enum FullDefKind<Body> {
 
     // Crates and modules
     ExternCrate,
-    Use,
+    Use(Option<(UsePath, UseKind)>),
     Mod {
         items: Vec<(Option<Ident>, DefId)>,
     },
@@ -643,6 +648,7 @@ where
                     AssocItem::sfrom_instantiated(s, assoc, item_args)
                 })
                 .collect::<Vec<_>>(),
+            safety: tcx.trait_def(def_id).safety.sinto(s),
         },
         RDefKind::TraitAlias { .. } => FullDefKind::TraitAlias {
             param_env: get_param_env(s, args),
@@ -869,7 +875,16 @@ where
             body: get_body(s, args),
         },
         RDefKind::ExternCrate => FullDefKind::ExternCrate,
-        RDefKind::Use => FullDefKind::Use,
+        RDefKind::Use => FullDefKind::Use(
+            if let Some(ldid) = def_id.as_local()
+                && let rustc_hir::Node::Item(item) = tcx.hir_node_by_def_id(ldid)
+                && let rustc_hir::ItemKind::Use(use_path, use_kind) = item.kind
+            {
+                Some((use_path.sinto(s), use_kind.sinto(s)))
+            } else {
+                None
+            },
+        ),
         RDefKind::Mod { .. } => FullDefKind::Mod {
             items: get_mod_children(tcx, def_id).sinto(s),
         },
@@ -1113,6 +1128,19 @@ impl<Body> FullDef<Body> {
             }
         }
         children
+    }
+
+    /// Gives the list of DefIds for associated items when self is a container
+    pub fn associated_def_ids(&self) -> Vec<DefId> {
+        match self.kind() {
+            FullDefKind::InherentImpl { items, .. } | FullDefKind::Trait { items, .. } => {
+                items.iter().map(|item| item.def_id.clone()).collect()
+            }
+            FullDefKind::TraitImpl { items, .. } => {
+                items.iter().map(|item| item.def_id().clone()).collect()
+            }
+            _ => vec![],
+        }
     }
 }
 

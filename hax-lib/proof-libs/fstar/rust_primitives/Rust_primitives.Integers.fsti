@@ -429,9 +429,6 @@ unfold
 let ( &. ) #t = logand #t
 
 unfold
-let ( ~. ) #t = lognot #t
-
-unfold
 let (/!) #t = div #t
 
 unfold
@@ -454,6 +451,18 @@ let (>.) #t = gt #t
 
 unfold
 let (>=.) #t = gte #t
+
+class negation_tc self = {
+  ( ~. ): self -> self;
+}
+
+instance negation_for_integers #t: negation_tc (int_t t) = {
+  ( ~. ) = fun x -> lognot x
+}
+
+instance negation_for_bool: negation_tc bool = {
+  ( ~. ) = not
+}
 
 type bit = n: nat {n < 2}
 

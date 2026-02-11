@@ -17,6 +17,7 @@ extern crate rustc_feature;
 extern crate rustc_hashes;
 extern crate rustc_hir;
 extern crate rustc_hir_analysis;
+extern crate rustc_hir_id;
 extern crate rustc_index;
 extern crate rustc_interface;
 extern crate rustc_middle;
@@ -125,6 +126,7 @@ fn main() {
     let mut callbacks: Box<dyn Callbacks + Send> = if translate_package {
         Box::new(exporter::ExtractionCallbacks {
             body_kinds: options.body_kinds.clone(),
+            experimental_full_def: options.experimental_full_def,
         })
     } else {
         struct CallbacksNoop;

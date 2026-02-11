@@ -337,3 +337,25 @@ mod associated_constant {
         const x: u8 = 1 + 1;
     }
 }
+
+mod methods_hoisting {
+    trait T1<U> : Sized {
+        type A;
+        fn f<T: T0, const C: u8>(x: T, y: U) -> (T, U, Self, Self::A, u16);
+        fn g<T>(x: T) -> T;
+        const AC: u16;
+    }
+
+    trait T0 {}
+
+    impl<U: T0> T1<U> for u8 {
+        type A = u64;
+        fn f<T: T0, const C: u8>(x: T, y: U) -> (T, U, u8, Self::A, u16) {
+            (<Self as T1<U>>::g(x), y, 2u8 + C, 3u64, <Self as T1<U>>::AC)
+        }
+        fn g<T>(x: T) -> T {
+            x
+        }
+        const AC: u16 = 5u16;
+    }
+}

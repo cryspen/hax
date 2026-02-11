@@ -174,7 +174,7 @@ impl LinkedItemGraph {
     pub fn fn_like_linked_expressions(
         &self,
         item: &impl HasMetadata,
-        self_id: Option<identifiers::LocalId>,
+        self_id: Option<LocalId>,
     ) -> FnLikeAssocatedExpressions {
         let assoc_items = self.linked_items(item);
         let get = |role| {
@@ -241,7 +241,7 @@ impl LinkedItemGraph {
 fn extract_expr<'a>(
     context: &Context,
     item: &'a Item,
-    self_id: Option<identifiers::LocalId>,
+    self_id: Option<LocalId>,
 ) -> (Expr, Vec<&'a Param>) {
     let ItemKind::Fn { body, params, .. } = item.kind() else {
         return (
@@ -250,7 +250,7 @@ fn extract_expr<'a>(
                 context.clone(),
                 "Expected an function",
             ))
-            .into_expr(item.span(), Ty::prop(), vec![]),
+            .promote(Ty::prop(), item.span()),
             vec![],
         );
     };

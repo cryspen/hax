@@ -98,6 +98,9 @@ pub mod mem {
     pub fn replace<'a, T: ?Sized>(dest: &'a mut T, src: &'a T) -> &'a T {
         unimplemented!("This is a stub that is implemented in each backend")
     }
+    pub fn copy<T>(x: &T) -> T {
+        unimplemented!("This is a stub that is implemented in each backend")
+    }
 }
 
 pub mod arithmetic {

@@ -30,14 +30,12 @@ pub struct DiagnosticInfo {
 impl DiagnosticInfo {
     /// Emits the diagnostic information.
     pub fn emit(&self) {
-        crate::hax_io::write(&hax_types::engine_api::protocol::FromEngine::Diagnostic(
-            hax_types::diagnostics::Diagnostics {
-                kind: self.kind.clone(),
-                span: self.span.data.clone(),
-                context: format!("{}", self.context),
-                owner_id: None,
-            },
-        ))
+        crate::hax_io::report_diagnostic(hax_types::diagnostics::Diagnostics {
+            kind: self.kind.clone(),
+            span: self.span.as_frontend_spans().to_vec(),
+            context: format!("{}", self.context),
+            owner_id: None,
+        })
     }
 }
 
@@ -72,6 +70,8 @@ pub enum Context {
     Printer(String),
     /// Error in an engine phase
     Phase(String),
+    /// Debugger
+    Debugger,
     /// Unknown
     Unknown,
 }
@@ -83,6 +83,7 @@ impl std::fmt::Display for Context {
             Context::NameView => write!(f, "Name rendering"),
             Context::Printer(p) => write!(f, "{p} Printer"),
             Context::Phase(p) => write!(f, "Engine phase ({p})"),
+            Context::Debugger => write!(f, "Debugger"),
             Context::Unknown => write!(f, "Unknown"),
         }
     }
