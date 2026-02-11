@@ -13,6 +13,7 @@ const LEAN_EXTRA: &str = r"
 pub use hax_lib_macros::lean_proof as proof;
 pub use hax_lib_macros::lean_pure_requires_proof as pure_requires_proof;
 pub use hax_lib_macros::lean_pure_ensures_proof as pure_ensures_proof;
+pub use hax_lib_macros::lean_proof_method as proof_method;
 ";
 
 fn main() {

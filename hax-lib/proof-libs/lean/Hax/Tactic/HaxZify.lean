@@ -1,5 +1,5 @@
 import Lean
-import Hax.Core_models
+import Hax.Rust_primitives.USize64
 
 open Lean Elab Tactic Meta
 

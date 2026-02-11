@@ -14,7 +14,8 @@ use crate::{
         span::Span,
     },
     attributes::{
-        hax_proof_attributes, hax_pure_ensures_proof_attributes, hax_pure_requires_proof_attributes,
+        hax_proof_attributes, hax_proof_method_attributes, hax_pure_ensures_proof_attributes,
+        hax_pure_requires_proof_attributes,
     },
     names::rust_primitives::hax::{
         cast_op,
@@ -645,127 +646,127 @@ const _: () = {
             generics: &Generics,
             params: &Vec<Param>,
         ) -> DocBuilder<A> {
-            let spec = HasLinkedItemGraph::linked_item_graph(self)
-                .fn_like_linked_expressions(item, item.self_id());
-            if spec.precondition.is_none() && spec.postcondition.is_none() {
+            let linked_items = HasLinkedItemGraph::linked_item_graph(self);
+            let spec = linked_items.fn_like_linked_expressions(item, item.self_id());
+            if !linked_items.has_spec(item) {
                 nil!()
             } else {
-                let proofs: Vec<&String> = hax_proof_attributes(&item.meta.attributes).collect();
-                if proofs.len() > 1 {
-                    emit_error!("Only one proof attribute per item is allowed.");
-                }
-                let pure_requires_proofs: Vec<&String> =
-                    hax_pure_requires_proof_attributes(&item.meta.attributes).collect();
-                if pure_requires_proofs.len() > 1 {
-                    emit_error!("Only one lean_pure_requires_proof attribute per item is allowed.");
-                }
-                let pure_ensures_proofs: Vec<&String> =
-                    hax_pure_ensures_proof_attributes(&item.meta.attributes).collect();
-                if pure_ensures_proofs.len() > 1 {
-                    emit_error!("Only one lean_pure_ensures_proof attribute per item is allowed.");
-                }
-                docs![
-                    hardline!(),
-                    hardline!(),
-                    "@[spec]",
-                    hardline!(),
-                    docs![
-                        docs![
-                            "def",
-                            line!(),
+                match hax_proof_attributes(item) {
+                    Err(message) => emit_error!("{message}"),
+                    Ok(proof_attributes) => {
+                        let proof_method =
+                            proof_attributes.proof_method.unwrap_or("bv_decide".into());
+                        let pure_requires_proof = proof_attributes
+                            .pure_requires_proof
+                            .unwrap_or(format!("by hax_construct_pure <;> {proof_method}"));
+                        let pure_ensures_proof = proof_attributes
+                            .pure_ensures_proof
+                            .unwrap_or(format!("by hax_construct_pure <;> {proof_method}"));
+                        let proof = proof_attributes.proof.map(|s| docs![s]).unwrap_or(docs![
+                            "by hax_mvcgen [",
                             name,
-                            ".spec",
-                            self.generics(generics, &self.render_last(name)),
-                            params,
-                            softline!(),
-                            ":"
-                        ]
-                        .group()
-                        .nest(INDENT),
-                        line!(),
-                        docs![
-                            "Spec",
-                            line!(),
+                            "] <;> ",
+                            proof_method.clone()
+                        ]);
+                        let specset = if proof_method == "bv_decide" {
+                            "bv"
+                        } else if proof_method == "grind" {
+                            "int"
+                        } else {
+                            emit_error!("Unknown proof method: {proof_method}")
+                        };
+                        {
                             docs![
-                                "requires",
-                                softline!(),
-                                ":= do",
-                                line!(),
-                                spec.precondition.map_or(reflow!("pure True"), |p| docs![p])
-                            ]
-                            .parens()
-                            .group()
-                            .nest(INDENT),
-                            line!(),
-                            docs![
-                                "ensures := ",
-                                spec.postcondition
-                                    .map_or(reflow!("fun _ => pure True"), |p| docs![
-                                        "fun",
+                                hardline!(),
+                                hardline!(),
+                                docs!["set_option hax_mvcgen.specset \"", specset, "\" in"],
+                                hardline!(),
+                                "@[spec]",
+                                hardline!(),
+                                docs![
+                                    docs![
+                                        "def",
                                         line!(),
-                                        p.result_binder,
+                                        name,
+                                        ".spec",
+                                        self.generics(generics, &self.render_last(name)),
+                                        params,
                                         softline!(),
-                                        "=> do",
-                                        line!(),
-                                        p.body,
+                                        ":"
                                     ]
                                     .group()
-                                    .nest(INDENT)),
+                                    .nest(INDENT),
+                                    line!(),
+                                    docs![
+                                        "Spec",
+                                        line!(),
+                                        docs![
+                                            "requires",
+                                            softline!(),
+                                            ":= do",
+                                            line!(),
+                                            spec.precondition
+                                                .map_or(reflow!("pure True"), |p| docs![p])
+                                        ]
+                                        .parens()
+                                        .group()
+                                        .nest(INDENT),
+                                        line!(),
+                                        docs![
+                                            "ensures := ",
+                                            spec.postcondition.map_or(
+                                                reflow!("fun _ => pure True"),
+                                                |p| docs![
+                                                    "fun",
+                                                    line!(),
+                                                    p.result_binder,
+                                                    softline!(),
+                                                    "=> do",
+                                                    line!(),
+                                                    p.body,
+                                                ]
+                                                .group()
+                                                .nest(INDENT)
+                                            ),
+                                        ]
+                                        .parens()
+                                        .group()
+                                        .nest(INDENT),
+                                        line!(),
+                                        docs![
+                                            name,
+                                            zip_left!(line!(), &generics.params),
+                                            self.params_as_args(params)
+                                        ]
+                                        .parens()
+                                        .group()
+                                        .nest(INDENT)
+                                    ]
+                                    .group()
+                                    .nest(INDENT),
+                                    softline!(),
+                                    ":=",
+                                ]
+                                .group()
+                                .nest(2 * INDENT),
+                                softline!(),
+                                docs![
+                                    hardline!(),
+                                    docs!["pureRequires :=", softline!(), pure_requires_proof],
+                                    hardline!(),
+                                    docs!["pureEnsures :=", softline!(), pure_ensures_proof],
+                                    hardline!(),
+                                    docs!["contract :=", softline!(), proof]
+                                        .group()
+                                        .nest(INDENT),
+                                    hardline!(),
+                                ]
+                                .nest(INDENT)
+                                .braces(),
                             ]
-                            .parens()
-                            .group()
-                            .nest(INDENT),
-                            line!(),
-                            docs![
-                                name,
-                                zip_left!(line!(), &generics.params),
-                                self.params_as_args(params)
-                            ]
-                            .parens()
-                            .group()
-                            .nest(INDENT)
-                        ]
-                        .group()
-                        .nest(INDENT),
-                        softline!(),
-                        ":=",
-                    ]
-                    .group()
-                    .nest(2 * INDENT),
-                    softline!(),
-                    docs![
-                        hardline!(),
-                        if pure_requires_proofs.is_empty() {
-                            docs!["pureRequires := by constructor; mvcgen <;> try grind"]
-                        } else {
-                            docs![
-                                "pureRequires := ",
-                                intersperse!(pure_requires_proofs, nil!())
-                            ]
-                        },
-                        hardline!(),
-                        if pure_ensures_proofs.is_empty() {
-                            docs!["pureEnsures := by constructor; intros; mvcgen <;> try grind"]
-                        } else {
-                            docs!["pureEnsures := ", intersperse!(pure_ensures_proofs, nil!())]
-                        },
-                        hardline!(),
-                        docs![
-                            "contract :=",
-                            line!(),
-                            if proofs.is_empty() {
-                                docs!["by mvcgen[", name, "] <;> try grind"]
-                            } else {
-                                docs![intersperse!(proofs, nil!())]
-                            }
-                        ]
-                        .group()
-                        .nest(INDENT),
-                        hardline!(),
-                    ]
-                    .nest(INDENT)
-                    .braces(),
-                ]
+                        }
+                    }
+                }
             }
         }
     }
@@ -1341,7 +1342,14 @@ const _: () = {
                     safety: _,
                 } => {
                     let opaque = item.is_opaque();
+                    let linked_items = HasLinkedItemGraph::linked_item_graph(self);
                     docs![
+                        if opaque || linked_items.has_spec(item) {
+                            nil!()
+                        } else {
+                            // Function should be unfolded by `mvcgen`
+                            docs!["@[spec]", hardline!()]
+                        },
                         docs![
                             docs![
                                 docs![
