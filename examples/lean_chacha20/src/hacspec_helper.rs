@@ -1,5 +1,6 @@
 use super::State;
 
+#[hax_lib::lean::before("set_option hax_mvcgen.specset \"int\"")]
 #[hax_lib::lean::after(
     "
 @[spec]
@@ -9,7 +10,7 @@ theorem lean_chacha20.hacspec_helper.to_le_u32s_3.spec bytes :
   (lean_chacha20.hacspec_helper.to_le_u32s_3 bytes)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_3] <;> try grind
+  hax_mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_3] <;> try grind
 "
 )]
 pub(super) fn to_le_u32s_3(bytes: &[u8]) -> [u32; 3] {
@@ -31,7 +32,7 @@ theorem lean_chacha20.hacspec_helper.to_le_u32s_8_spec (bytes : (Array u8)) :
   ( lean_chacha20.hacspec_helper.to_le_u32s_8 bytes )
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_8] <;> try grind
+  hax_mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_8] <;> try grind
 "
 )]
 pub(super) fn to_le_u32s_8(bytes: &[u8]) -> [u32; 8] {
@@ -52,7 +53,7 @@ theorem lean_chacha20.hacspec_helper.to_le_u32s_16_spec bytes :
   (lean_chacha20.hacspec_helper.to_le_u32s_16 bytes)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intro
-  mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_16] <;> try grind
+  hax_mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_16] <;> try grind
 "
 )]
 pub(super) fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
@@ -73,7 +74,7 @@ theorem lean_chacha20.hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 
   (lean_chacha20.hacspec_helper.u32s_to_le_bytes state)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [lean_chacha20.hacspec_helper.u32s_to_le_bytes, core_models.num.Impl_8.to_le_bytes]
+  hax_mvcgen [lean_chacha20.hacspec_helper.u32s_to_le_bytes, core_models.num.Impl_8.to_le_bytes]
     <;> try grind
 "
 )]
@@ -97,7 +98,7 @@ theorem lean_chacha20.hacspec_helper.xor_state_spec (state other: (Vector u32 16
   (lean_chacha20.hacspec_helper.xor_state state other)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [lean_chacha20.hacspec_helper.xor_state, core_models.num.Impl_8.to_le_bytes]
+  hax_mvcgen [lean_chacha20.hacspec_helper.xor_state, core_models.num.Impl_8.to_le_bytes]
     <;> try grind
 "
 )]
@@ -116,7 +117,7 @@ theorem lean_chacha20.hacspec_helper.add_state_spec (state : (Vector u32 16)) (o
   (lean_chacha20.hacspec_helper.add_state state other)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   have := USize.le_size
-  mvcgen [lean_chacha20.hacspec_helper.add_state]
+  hax_mvcgen [lean_chacha20.hacspec_helper.add_state]
   <;> simp [Vector.size] at *
   <;> apply (USize.lt_ofNat_iff _).mp
   <;> omega
@@ -139,7 +140,7 @@ theorem lean_chacha20.hacspec_helper.update_array_spec (a: (Vector u8 64)) (v: A
   (lean_chacha20.hacspec_helper.update_array a v)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
   intros
-  mvcgen [lean_chacha20.hacspec_helper.update_array, hax_lib.assert]
+  hax_mvcgen [lean_chacha20.hacspec_helper.update_array, hax_lib.assert]
     <;> try grind
 "
 )]

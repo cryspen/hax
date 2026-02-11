@@ -1,5 +1,6 @@
 import Hax.Rust_primitives.USize64
 import Hax.Tactic.Init
+import Hax.Tactic.SpecSet
 import Hax.Rust_primitives.RustM
 open Std.Do
 open Std.Tactic
@@ -98,22 +99,22 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
   are also provided -/
 namespace rust_primitives.hax.machine_int
 
-@[simp, hax_bv_decide]
+@[simp, specset bv, hax_bv_decide]
 def eq {α} (x y: α) [BEq α] : RustM Bool := pure (x == y)
 
-@[simp, hax_bv_decide]
+@[simp, specset bv, hax_bv_decide]
 def ne {α} (x y: α) [BEq α] : RustM Bool := pure (x != y)
 
-@[simp, hax_bv_decide]
+@[simp, specset bv, hax_bv_decide]
 def lt {α} (x y: α) [(LT α)] [Decidable (x < y)] : RustM Bool := pure (x < y)
 
-@[simp, hax_bv_decide]
+@[simp, specset bv, hax_bv_decide]
 def le {α} (x y: α) [(LE α)] [Decidable (x ≤ y)] : RustM Bool := pure (x ≤ y)
 
-@[simp, hax_bv_decide]
+@[simp, specset bv, hax_bv_decide]
 def gt {α} (x y: α) [(LT α)] [Decidable (x > y)] : RustM Bool := pure (x > y)
 
-@[simp, hax_bv_decide]
+@[simp, specset bv, hax_bv_decide]
 def ge {α} (x y: α) [(LE α)] [Decidable (x ≥ y)] : RustM Bool := pure (x ≥ y)
 
 open Lean in
@@ -129,27 +130,27 @@ macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident wi
     return ← `(
       namespace $typeName
 
-      @[spec]
+      @[specset int]
       def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toInt == y.toInt) ⌝ ⦄ := by
         mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
 
-      @[spec]
+      @[specset int]
       def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toInt != y.toInt) ⌝ ⦄ := by
         mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
 
-      @[spec]
+      @[specset int]
       def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt < y.toInt) ⌝ ⦄ := by
         mvcgen [lt]; simp [x.lt_iff_toInt_lt]
 
-      @[spec]
+      @[specset int]
       def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≤ y.toInt) ⌝ ⦄ := by
         mvcgen [le]; simp [x.le_iff_toInt_le]
 
-      @[spec]
+      @[specset int]
       def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt > y.toInt ) ⌝ ⦄ := by
         mvcgen [gt]; simp [y.lt_iff_toInt_lt]
 
-      @[spec]
+      @[specset int]
       def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≥ y.toInt) ⌝ ⦄ := by
         mvcgen [ge]; simp [y.le_iff_toInt_le]
 
@@ -158,27 +159,27 @@ macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident wi
   else return ← `(
       namespace $typeName
 
-      @[spec]
+      @[specset int]
       def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toNat == y.toNat) ⌝ ⦄ := by
         mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
 
-      @[spec]
+      @[specset int]
       def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toNat != y.toNat) ⌝ ⦄ := by
         mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
 
-      @[spec]
+      @[specset int]
       def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat < y.toNat) ⌝ ⦄ := by
         mvcgen [lt]
 
-      @[spec]
+      @[specset int]
       def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≤ y.toNat) ⌝ ⦄ := by
         mvcgen [le]
 
-      @[spec]
+      @[specset int]
       def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat > y.toNat ) ⌝ ⦄ := by
         mvcgen [gt]
 
-      @[spec]
+      @[specset int]
       def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≥ y.toNat) ⌝ ⦄ := by
         mvcgen [ge]
 
@@ -198,7 +199,7 @@ declare_comparison_specs unsigned USize64 64
 
 end rust_primitives.hax.machine_int
 
-@[simp, spec, hax_bv_decide]
+@[simp, spec, specset bv, hax_bv_decide]
 def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
 
 abbrev core.cmp.PartialEq.eq {α} [BEq α] (a b : α) := BEq.beq a b
@@ -246,7 +247,7 @@ infixl:70 " %? "   => rust_primitives.ops.arith.Rem.rem
 infixl:70 " /? "   => rust_primitives.ops.arith.Div.div
 prefix:75 "-?"   => rust_primitives.ops.arith.Neg.neg
 
-attribute [hax_bv_decide]
+attribute [specset bv, hax_bv_decide]
   rust_primitives.ops.arith.Add.add
   rust_primitives.ops.arith.Sub.sub
   rust_primitives.ops.arith.Mul.mul

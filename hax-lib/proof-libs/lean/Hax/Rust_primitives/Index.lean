@@ -1,5 +1,6 @@
 import Hax.Rust_primitives.RustM
 import Hax.Rust_primitives.Num
+import Hax.Tactic.SpecSet
 
 open Error
 open Std.Do
