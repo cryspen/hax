@@ -20,6 +20,7 @@ Changes to hax-lib:
  - Lean lib: bump lean to v4.28.0-rc1 (#1900)
  - Lean lib: Extract more core models (#1919)
  - Lean lib: Separate symbolic and bit-blasting specs (#1933)
+ - Lean lib: Communicate user-generated specs to mvcgen (#1937)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
