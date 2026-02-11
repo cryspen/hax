@@ -33,6 +33,30 @@ pub fn hax_attributes(attrs: &Attributes) -> impl Iterator<Item = &AttrPayload> 
     })
 }
 
+/// Get an iterator over proof attributes.
+pub fn hax_proof_attributes(attrs: &Attributes) -> impl Iterator<Item = &String> {
+    hax_attributes(attrs).flat_map(|attr| match attr {
+        AttrPayload::Proof(proof) => Some(proof),
+        _ => None,
+    })
+}
+
+/// Get an iterator over pure_requires_proof attributes.
+pub fn hax_pure_requires_proof_attributes(attrs: &Attributes) -> impl Iterator<Item = &String> {
+    hax_attributes(attrs).flat_map(|attr| match attr {
+        AttrPayload::PureRequiresProof(proof) => Some(proof),
+        _ => None,
+    })
+}
+
+/// Get an iterator over pure_ensures_proof attributes.
+pub fn hax_pure_ensures_proof_attributes(attrs: &Attributes) -> impl Iterator<Item = &String> {
+    hax_attributes(attrs).flat_map(|attr| match attr {
+        AttrPayload::PureEnsuresProof(proof) => Some(proof),
+        _ => None,
+    })
+}
+
 fn uuid(context: Context, item: &Item) -> Option<ItemUid> {
     let mut uuids = hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
         AttrPayload::Uid(item_uid) => Some(item_uid),

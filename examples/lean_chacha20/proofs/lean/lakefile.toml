@@ -1,10 +1,10 @@
-name = "Lean_chacha20"
+name = "lean_chacha20"
 version = "0.1.0"
-defaultTargets = ["Lean_chacha20"]
+defaultTargets = ["lean_chacha20"]
 
 [[lean_lib]]
-name = "Lean_chacha20"
-roots = ["extraction.Lean_chacha20"]
+name = "lean_chacha20"
+roots = ["extraction.lean_chacha20"]
 
 [[require]]
 name = "Hax"

@@ -1,3 +1,3 @@
 
 abbrev string_indirection : Type := String
-abbrev Alloc.String.String : Type := string_indirection
+abbrev alloc.string.String : Type := string_indirection

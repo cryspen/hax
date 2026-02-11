@@ -23,7 +23,8 @@ fn loop2() -> u32 {
     x
 }
 
-#[hax_lib::ensures(|r| true)]
+#[hax_lib::ensures(|r| r == 0)]
+#[hax_lib::lean::pure_ensures_proof("by hax_construct_pure <;> grind")]
 fn while_loop1(s: u32) -> u32 {
     let mut x: u32 = s;
     while x > 0 {

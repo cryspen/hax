@@ -45,6 +45,6 @@ instance : Cast String String where
   cast x := pure x
 
 @[simp, spec, hax_bv_decide]
-def Rust_primitives.Hax.cast_op {α β} [c: Cast α β] (x:α) : (RustM β) := c.cast x
+def rust_primitives.hax.cast_op {α β} [c: Cast α β] (x:α) : (RustM β) := c.cast x
 
 end Cast

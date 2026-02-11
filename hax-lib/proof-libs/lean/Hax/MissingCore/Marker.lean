@@ -1,12 +1,12 @@
 import Hax.MissingCore.Clone
 
-class Core.Marker.Copy.AssociatedTypes (Self : Type) where
+class core.marker.Copy.AssociatedTypes (Self : Type) where
 
-class Core.Marker.Copy
+class core.marker.Copy
   (Self : Type)
-  [associatedTypes : outParam (Core.Marker.Copy.AssociatedTypes (Self :
+  [associatedTypes : outParam (core.marker.Copy.AssociatedTypes (Self :
       Type))]
   where
-  [trait_constr : Core.Clone.Clone Self]
+  [trait_constr : core.clone.Clone Self]
 
-attribute [instance] Core.Marker.Copy.trait_constr
+attribute [instance] core.marker.Copy.trait_constr

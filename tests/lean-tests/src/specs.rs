@@ -6,10 +6,15 @@ fn test(x: u8) -> u8 {
 
 #[hax_lib::requires(x > 0)]
 #[hax_lib::ensures(|r| r == x)]
-#[hax_lib::lean::proof("by unfold Lean_tests.Specs.test_proof; hax_bv_decide")]
+#[hax_lib::lean::proof("by unfold lean_tests.specs.test_proof; hax_bv_decide")]
 fn test_proof(x: u8) -> u8 {
     x
 }
+
+/// Test function without arguments
+/// https://github.com/cryspen/hax/issues/1856
+#[hax_lib::ensures(|_| true)]
+fn fn_without_args() {}
 
 /// The Lean backend used to produce `self_` instead of `self` in annotations in
 /// impl blocks. See https://github.com/cryspen/hax/issues/1852.
@@ -26,3 +31,9 @@ mod issue_1852 {
         pub fn func(self) {}
     }
 }
+
+#[hax_lib::requires(true)]
+#[hax_lib::ensures(|r| true)]
+#[hax_lib::lean::pure_requires_proof("⟨True, by mvcgen⟩")]
+#[hax_lib::lean::pure_ensures_proof("⟨fun _ => True, by intros; mvcgen⟩")]
+fn custom_pure_proofs(x: u8) {}

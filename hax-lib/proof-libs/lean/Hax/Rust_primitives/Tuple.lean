@@ -5,7 +5,7 @@
 
 -/
 
-namespace Rust_primitives.Hax
+namespace rust_primitives.hax
 
 structure Tuple0 where
 
@@ -84,4 +84,4 @@ structure Tuple10 (α0 α1 α2 α3 α4 α5 α6 α7 α8 α9: Type) where
   _8 : α8
   _9 : α9
 
-end Rust_primitives.Hax
+end rust_primitives.hax

@@ -54,7 +54,9 @@ let impl__copy_from_slice
     : Prims.Pure (t_Slice v_T)
       (requires (impl__len #v_T s <: usize) =. (impl__len #v_T src <: usize))
       (fun _ -> Prims.l_True) =
-  let s:t_Slice v_T = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
+  let (tmp0: t_Slice v_T), (out: t_Slice v_T) = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
+  let s:t_Slice v_T = tmp0 in
+  let _:t_Slice v_T = out in
   s
 
 let impl__clone_from_slice
@@ -64,7 +66,9 @@ let impl__clone_from_slice
     : Prims.Pure (t_Slice v_T)
       (requires (impl__len #v_T s <: usize) =. (impl__len #v_T src <: usize))
       (fun _ -> Prims.l_True) =
-  let s:t_Slice v_T = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
+  let (tmp0: t_Slice v_T), (out: t_Slice v_T) = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
+  let s:t_Slice v_T = tmp0 in
+  let _:t_Slice v_T = out in
   s
 
 let impl__split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize)

@@ -112,6 +112,10 @@ and dglobal_ident ?(skip_projector : bool = false)
       | Types.Field { length; field } ->
           let res = `TupleField (Int.of_string field, Int.of_string length) in
           if skip_projector then res else `Projector res)
+  | Types.FreshModule _ ->
+      broken_invariant
+        ("dglobal_ident: got a [`FreshModule _]: "
+        ^ [%show: A.global_id_inner] gi)
 
 and dlocal_ident (Newtypelocal_id (Newtypesymbol li) : A.local_id) :
     B.local_ident =

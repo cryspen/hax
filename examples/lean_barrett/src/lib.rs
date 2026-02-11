@@ -45,16 +45,16 @@ fn barret_reduce_postcondition(value: FieldElement, result: FieldElement) -> boo
 set_option maxHeartbeats 1000000 in
 -- quite computation intensive
 theorem barrett_spec (value: i32) :
-  ⦃ ⌜ Lean_barrett.barrett_reduce_precondition (value) = pure true ⌝ ⦄
-  Lean_barrett.barrett_reduce value
-  ⦃ ⇓ r => ⌜ Lean_barrett.barret_reduce_postcondition value r = pure true⌝ ⦄
+  ⦃ ⌜ lean_barrett.barrett_reduce_precondition (value) = pure true ⌝ ⦄
+  lean_barrett.barrett_reduce value
+  ⦃ ⇓ r => ⌜ lean_barrett.barret_reduce_postcondition value r = pure true⌝ ⦄
 := by
   -- Unfold all auxiliary functions:
   unfold
-    Lean_barrett.barrett_reduce Lean_barrett.barrett_reduce_precondition
-    Lean_barrett.barret_reduce_postcondition
-    Lean_barrett.FIELD_MODULUS Lean_barrett.BARRETT_R
-    Lean_barrett.BARRETT_MULTIPLIER Lean_barrett.BARRETT_SHIFT at *
+    lean_barrett.barrett_reduce lean_barrett.barrett_reduce_precondition
+    lean_barrett.barret_reduce_postcondition
+    lean_barrett.FIELD_MODULUS lean_barrett.BARRETT_R
+    lean_barrett.BARRETT_MULTIPLIER lean_barrett.BARRETT_SHIFT at *
   -- Invoke bit blasting:
   hax_bv_decide (timeout := 90)
 "

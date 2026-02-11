@@ -2,7 +2,7 @@ use hax_lib::*;
 
 /// Returns true if all casting edge cases behave as expected.
 #[ensures(|result| result)]
-#[lean::proof("by mvcgen [Lean_tests.Casts.casting_edge_cases]; simp_all [Int16.toUInt8]")]
+#[lean::proof("by mvcgen [lean_tests.casts.casting_edge_cases]; simp_all [Int16.toUInt8]")]
 pub fn casting_edge_cases(_dummy: bool) -> bool {
     // 1. Truncation: u16 to u8 (256 -> 0)
     // 256 is 0x0100. Truncating to lower 8 bits gives 0x00.
@@ -25,4 +25,14 @@ pub fn casting_edge_cases(_dummy: bool) -> bool {
     let case5 = (0xFFFFFFFFu32 as i32) == -1;
 
     case1 && case2 && case3 && case4 && case5
+}
+
+/// https://github.com/cryspen/hax/issues/1912
+pub fn shift_after_cast(x: u16, n: u8) -> u32 {
+    (x as u32) << (n as u32)
+}
+
+/// https://github.com/cryspen/hax/issues/1911
+pub fn add_after_cast(a: u8, b: u8, c: u8) -> u16 {
+    (a as u16) + (b as u16) + (c as u16)
 }

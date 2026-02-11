@@ -1,3 +1,5 @@
+use crate::result::Result;
+
 // Dummy type to allow impls
 #[hax_lib::exclude]
 struct Slice<T>(T);
@@ -84,33 +86,33 @@ impl<T> Slice<T> {
     fn chunks_exact<'a>(s: &'a [T], cs: usize) -> iter::ChunksExact<'a, T> {
         iter::ChunksExact::new(cs, s)
     }
-    #[hax_lib::requires(s.len() == src.len())]
+    #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn copy_from_slice(s: &mut [T], src: &[T])
     where
         T: crate::marker::Copy,
     {
         rust_primitives::mem::replace(s, src);
     }
-    #[hax_lib::requires(s.len() == src.len())]
+    #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn clone_from_slice(s: &mut [T], src: &[T])
     where
         T: crate::clone::Clone,
     {
         rust_primitives::mem::replace(s, src);
     }
-    #[hax_lib::requires(mid <= s.len())]
+    #[hax_lib::requires(mid <= Slice::len(s))]
     fn split_at(s: &[T], mid: usize) -> (&[T], &[T]) {
         rust_primitives::slice::slice_split_at(s, mid)
     }
     fn split_at_checked(s: &[T], mid: usize) -> Option<(&[T], &[T])> {
-        if mid <= s.len() {
+        if mid <= Slice::len(s) {
             Option::Some(Self::split_at(s, mid))
         } else {
             Option::None
         }
     }
     fn is_empty(s: &[T]) -> bool {
-        s.len() == 0
+        Self::len(s) == 0
     }
     #[hax_lib::opaque]
     fn contains(s: &[T], v: T) -> bool {

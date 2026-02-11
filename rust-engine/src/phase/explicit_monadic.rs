@@ -157,6 +157,9 @@ impl ExplicitMonadicVisitor {
                 {
                     // Constructors for structures and enums are values
                     Some(MonadicStatus::Value)
+                } else if args.is_empty() {
+                    // Constants are values
+                    Some(MonadicStatus::Value)
                 } else {
                     // Other function calls are computations
                     Some(MonadicStatus::Computation)
