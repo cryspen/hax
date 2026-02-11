@@ -30,6 +30,7 @@ Changes to the Lean backend:
  - Add type annotation for cast_op (#1925)
  - Add attributes for pureEnsures/pureRequires (#1931)
  - Extract correct `PhantomData` structure (#1932)
+ - Standardize generated Lean naming to lowercase namespaces (#1914)
 
 Miscellaneous:
 

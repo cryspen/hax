@@ -378,10 +378,10 @@ def while_loop1 (s : u32) : RustM u32 := do
 def while_loop1.spec (s : u32) :
     Spec
       (requires := do pure True)
-      (ensures := fun r => do (pure true))
+      (ensures := fun r => do (rust_primitives.hax.machine_int.eq r (0 : u32)))
       (while_loop1 (s : u32)) := {
   pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  pureEnsures := by hax_construct_pure <;> grind
   contract := by mvcgen[while_loop1] <;> try grind
 }
 
@@ -738,6 +738,25 @@ def Impl.func.spec (self : T) :
 }
 
 end lean_tests.specs.issue_1852
+
+
+namespace lean_tests.specs
+
+def custom_pure_proofs (x : u8) : RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def custom_pure_proofs.spec (x : u8) :
+    Spec
+      (requires := do (pure true))
+      (ensures := fun r => do (pure true))
+      (custom_pure_proofs (x : u8)) := {
+  pureRequires := ⟨True, by mvcgen⟩
+  pureEnsures := ⟨fun _ => True, by intros; mvcgen⟩
+  contract := by mvcgen[custom_pure_proofs] <;> try grind
+}
+
+end lean_tests.specs
 
 
 namespace lean_tests.structs
