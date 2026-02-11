@@ -1,6 +1,6 @@
 import Hax.Core_models.Extracted
 
-open Core_models.Ops.Range
+open core_models.ops.range
 open Std.Do
 
 set_option mvcgen.warning false

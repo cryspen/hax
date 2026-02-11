@@ -1,6 +1,6 @@
-namespace Rust_primitives.Hax
+namespace rust_primitives.hax
 
   abbrev Never : Type := Empty
   abbrev never_to_any.{u} {α : Sort u} : Never → α := Empty.elim
 
-end Rust_primitives.Hax
+end rust_primitives.hax

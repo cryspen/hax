@@ -18,7 +18,7 @@ section RustArray
 
 abbrev RustArray := Vector
 
-def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
+def rust_primitives.hax.monomorphized_update_at.update_at_usize {α n}
   (a: Vector α n) (i:Nat) (v:α) : RustM (Vector α n) :=
   if h: i < a.size then
     pure ( Vector.set a i v )
@@ -26,23 +26,23 @@ def Rust_primitives.Hax.Monomorphized_update_at.update_at_usize {α n}
     .fail (.arrayOutOfBounds)
 
 @[spec]
-theorem Rust_primitives.Hax.Monomorphized_update_at.update_at_usize.spec
+theorem rust_primitives.hax.monomorphized_update_at.update_at_usize.spec
   {α n} (a: Vector α n) (i:Nat) (v:α) (h: i < a.size) :
   ⦃ ⌜ True ⌝ ⦄
-  (Rust_primitives.Hax.Monomorphized_update_at.update_at_usize a i v)
+  (rust_primitives.hax.monomorphized_update_at.update_at_usize a i v)
   ⦃ ⇓ r => ⌜ r = Vector.set a i v ⌝ ⦄ := by
-  mvcgen [Rust_primitives.Hax.Monomorphized_update_at.update_at_usize]
+  mvcgen [rust_primitives.hax.monomorphized_update_at.update_at_usize]
 
 
 @[spec]
-def Rust_primitives.Hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : RustM (Vector α n) :=
+def rust_primitives.hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : RustM (Vector α n) :=
   if i < n then
     pure ( Vector.setIfInBounds m i v)
   else
     .fail (.arrayOutOfBounds)
 
 @[spec]
-def Rust_primitives.Hax.repeat
+def rust_primitives.hax.repeat
   {α int_type: Type}
   {n: Nat} [ToNat int_type]
   (v:α) (size:int_type) : RustM (Vector α n)
@@ -53,7 +53,7 @@ def Rust_primitives.Hax.repeat
     .fail Error.arrayOutOfBounds
 
 @[spec]
-def Rust_primitives.unsize {α n} (a: Vector α n) : RustM (Array α) :=
+def rust_primitives.unsize {α n} (a: Vector α n) : RustM (Array α) :=
   pure (a.toArray)
 
 end RustArray

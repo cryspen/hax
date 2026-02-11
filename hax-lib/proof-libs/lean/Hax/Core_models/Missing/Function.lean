@@ -2,10 +2,10 @@
 import Hax.Core_models.Extracted
 
 set_option mvcgen.warning false
-open Rust_primitives.Hax
+open rust_primitives.hax
 open Core.Ops
 open Std.Do
-namespace Core_models.Ops.Function
+namespace core_models.ops.function
 
 instance {α β} : FnOnce.AssociatedTypes (α → RustM β) α where
   Output := β
@@ -46,4 +46,4 @@ instance {α β γ} [FnOnce.AssociatedTypes (α → β → RustM γ) (Tuple2 α 
     Fn (α → β → RustM γ) (Tuple2 α β) where
   call f x := FnOnce.call_once _ _ f x
 
-end Core_models.Ops.Function
+end core_models.ops.function

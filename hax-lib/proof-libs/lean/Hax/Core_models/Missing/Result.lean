@@ -1,12 +1,11 @@
-
 import Hax.Core_models.Extracted
 
 set_option mvcgen.warning false
-open Rust_primitives.Hax
+open rust_primitives.hax
 open Core.Ops
 open Std.Do
 
-namespace Core_models.Result
+namespace core_models.result
 
 def Impl.unwrap
   (T : Type) (E : Type) (self : (Result T E))
@@ -15,7 +14,7 @@ def Impl.unwrap
   match self with
     | (Result.Ok t) => (pure t)
     | (Result.Err _)
-      => (Core_models.Panicking.Internal.panic T Rust_primitives.Hax.Tuple0.mk)
+      => (core_models.panicking.internal.panic T rust_primitives.hax.Tuple0.mk)
 
 @[spec]
 theorem Impl.unwrap.spec {α β} (x: Result α β) v :
@@ -27,4 +26,4 @@ theorem Impl.unwrap.spec {α β} (x: Result α β) v :
   intros
   mvcgen [Impl.unwrap] <;> try grind
 
-end Core_models.Result
+end core_models.result

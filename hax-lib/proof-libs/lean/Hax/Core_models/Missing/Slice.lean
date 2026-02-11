@@ -1,3 +1,3 @@
 import Hax.Core_models.Extracted
 
-attribute [spec] Core_models.Slice.Impl.len
+attribute [spec] core_models.slice.Impl.len

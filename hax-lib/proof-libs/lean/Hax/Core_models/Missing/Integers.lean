@@ -25,8 +25,8 @@ macro "declare_Hax_convert_from_instances" : command => do
 
       cmds := cmds.push $ ← `(
         @[reducible]
-        instance : Core_models.Convert.From.AssociatedTypes $ty1Ident $ty2Ident where
-        instance : Core_models.Convert.From $ty1Ident $ty2Ident where
+        instance : core_models.convert.From.AssociatedTypes $ty1Ident $ty2Ident where
+        instance : core_models.convert.From $ty1Ident $ty2Ident where
           _from := fun x => x.$toTy1
       )
   return ⟨mkNullNode cmds⟩
@@ -34,9 +34,9 @@ macro "declare_Hax_convert_from_instances" : command => do
 declare_Hax_convert_from_instances
 
 attribute [hax_bv_decide]
-  Core_models.Convert.From._from
+  core_models.convert.From._from
 
-namespace Core_models.Num.Impl_8
+namespace core_models.num.Impl_8
 
 @[spec]
 def rotate_left (x: u32) (n: Nat) : RustM u32 :=
@@ -58,7 +58,7 @@ def to_le_bytes (x:u32) : RustM (Vector u8 4) :=
     (x >>> 24 % 256).toUInt8,
   ]
 
-end Core_models.Num.Impl_8
+end core_models.num.Impl_8
 
 
-attribute [spec] Core_models.Num.Impl_8.wrapping_add
+attribute [spec] core_models.num.Impl_8.wrapping_add

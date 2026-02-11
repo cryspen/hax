@@ -27,7 +27,7 @@ stderr = 'Finished `dev` profile [unoptimized + debuginfo] target(s) in XXs'
 diagnostics = []
 
 [stdout.files]
-"Lean_core_models.lean" = '''
+"lean_core_models.lean" = '''
 
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
@@ -42,26 +42,26 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 
-namespace Lean_core_models.Default.Structs
+namespace lean_core_models.default.structs
 
 structure S where
   f1 : usize
 
 @[reducible] instance Impl.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes S
+  core_models.default.Default.AssociatedTypes S
   where
 
-instance Impl : Core_models.Default.Default S where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
+instance Impl : core_models.default.Default S where
+  default := fun (_ : rust_primitives.hax.Tuple0) => do
     (pure (S.mk (f1 := (0 : usize))))
 
-def test (_ : Rust_primitives.Hax.Tuple0) : RustM S := do
-  (Core_models.Default.Default.default S Rust_primitives.Hax.Tuple0.mk)
+def test (_ : rust_primitives.hax.Tuple0) : RustM S := do
+  (core_models.default.Default.default S rust_primitives.hax.Tuple0.mk)
 
-end Lean_core_models.Default.Structs
+end lean_core_models.default.structs
 
 
-namespace Lean_core_models.Default.Enums
+namespace lean_core_models.default.enums
 
 inductive E (T : Type) : Type
 | C1 : u32 -> E (T : Type)
@@ -70,56 +70,56 @@ inductive E (T : Type) : Type
 @[reducible] instance Impl.AssociatedTypes
   (T : Type)
   [trait_constr_Impl_associated_type_i0 :
-    Core_models.Default.Default.AssociatedTypes
+    core_models.default.Default.AssociatedTypes
     T]
-  [trait_constr_Impl_i0 : Core_models.Default.Default T ] :
-  Core_models.Default.Default.AssociatedTypes (E T)
+  [trait_constr_Impl_i0 : core_models.default.Default T ] :
+  core_models.default.Default.AssociatedTypes (E T)
   where
 
 instance Impl
   (T : Type)
   [trait_constr_Impl_associated_type_i0 :
-    Core_models.Default.Default.AssociatedTypes
+    core_models.default.Default.AssociatedTypes
     T]
-  [trait_constr_Impl_i0 : Core_models.Default.Default T ] :
-  Core_models.Default.Default (E T)
+  [trait_constr_Impl_i0 : core_models.default.Default T ] :
+  core_models.default.Default (E T)
   where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
+  default := fun (_ : rust_primitives.hax.Tuple0) => do
     (pure (E.C2
-      (← (Core_models.Default.Default.default
-        T Rust_primitives.Hax.Tuple0.mk))))
+      (← (core_models.default.Default.default
+        T rust_primitives.hax.Tuple0.mk))))
 
-end Lean_core_models.Default.Enums
+end lean_core_models.default.enums
 
 
-namespace Lean_core_models.Function
+namespace lean_core_models.function
 
-def test (_ : Rust_primitives.Hax.Tuple0) : RustM u32 := do
+def test (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let f_1 : (u32 -> RustM u32) := (fun _ => (do (pure (9 : u32)) : RustM u32));
   let f_2 : (u32 -> u32 -> RustM u32) := (fun x y => (do (x +? y) : RustM u32));
-  let f_2_tuple : ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32) :=
+  let f_2_tuple : ((rust_primitives.hax.Tuple2 u32 u32) -> RustM u32) :=
     (fun ⟨x, y⟩ => (do (x +? y) : RustM u32));
-  ((← ((← (Core_models.Ops.Function.Fn.call
+  ((← ((← (core_models.ops.function.Fn.call
         (u32 -> RustM u32)
-        (Rust_primitives.Hax.Tuple1 u32)
+        (rust_primitives.hax.Tuple1 u32)
         f_1
-        (Rust_primitives.Hax.Tuple1.mk (0 : u32))))
-      +? (← (Core_models.Ops.Function.Fn.call
+        (rust_primitives.hax.Tuple1.mk (0 : u32))))
+      +? (← (core_models.ops.function.Fn.call
         (u32 -> u32 -> RustM u32)
-        (Rust_primitives.Hax.Tuple2 u32 u32)
+        (rust_primitives.hax.Tuple2 u32 u32)
         f_2
-        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
-    +? (← (Core_models.Ops.Function.Fn.call
-      ((Rust_primitives.Hax.Tuple2 u32 u32) -> RustM u32)
-      (Rust_primitives.Hax.Tuple1 (Rust_primitives.Hax.Tuple2 u32 u32))
+        (rust_primitives.hax.Tuple2.mk (1 : u32) (2 : u32))))))
+    +? (← (core_models.ops.function.Fn.call
+      ((rust_primitives.hax.Tuple2 u32 u32) -> RustM u32)
+      (rust_primitives.hax.Tuple1 (rust_primitives.hax.Tuple2 u32 u32))
       f_2_tuple
-      (Rust_primitives.Hax.Tuple1.mk
-        (Rust_primitives.Hax.Tuple2.mk (1 : u32) (2 : u32))))))
+      (rust_primitives.hax.Tuple1.mk
+        (rust_primitives.hax.Tuple2.mk (1 : u32) (2 : u32))))))
 
-end Lean_core_models.Function
+end lean_core_models.function
 
 
-namespace Lean_core_models.Option
+namespace lean_core_models.option
 
 structure S where
   f1 : u32
@@ -128,106 +128,106 @@ inductive E : Type
 | C : u32 -> E
 
 @[reducible] instance Impl.AssociatedTypes :
-  Core_models.Default.Default.AssociatedTypes S
+  core_models.default.Default.AssociatedTypes S
   where
 
-instance Impl : Core_models.Default.Default S where
-  default := fun (_ : Rust_primitives.Hax.Tuple0) => do
+instance Impl : core_models.default.Default S where
+  default := fun (_ : rust_primitives.hax.Tuple0) => do
     (pure (S.mk (f1 := (42 : u32))))
 
-def test (_ : Rust_primitives.Hax.Tuple0) :
-    RustM Rust_primitives.Hax.Tuple0 := do
-  let o1 : (Core_models.Option.Option i32) :=
-    (Core_models.Option.Option.Some (4 : i32));
-  let o2 : (Core_models.Option.Option i32) := Core_models.Option.Option.None;
+def test (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  let o1 : (core_models.option.Option i32) :=
+    (core_models.option.Option.Some (4 : i32));
+  let o2 : (core_models.option.Option i32) := core_models.option.Option.None;
   let o3 : Bool ←
-    (Core_models.Option.Impl.is_some_and i32 (i32 -> RustM Bool)
-      (← (Core_models.Clone.Clone.clone (Core_models.Option.Option i32) o1))
+    (core_models.option.Impl.is_some_and i32 (i32 -> RustM Bool)
+      (← (core_models.clone.Clone.clone (core_models.option.Option i32) o1))
       (fun x =>
-        (do (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : RustM Bool)));
+        (do (rust_primitives.hax.machine_int.eq x (0 : i32)) : RustM Bool)));
   let o3 : Bool ←
-    (Core_models.Option.Impl.is_none_or i32 (i32 -> RustM Bool)
-      (← (Core_models.Clone.Clone.clone (Core_models.Option.Option i32) o1))
+    (core_models.option.Impl.is_none_or i32 (i32 -> RustM Bool)
+      (← (core_models.clone.Clone.clone (core_models.option.Option i32) o1))
       (fun x =>
-        (do (Rust_primitives.Hax.Machine_int.eq x (0 : i32)) : RustM Bool)));
+        (do (rust_primitives.hax.machine_int.eq x (0 : i32)) : RustM Bool)));
   let o4 : i32 ←
-    (Core_models.Option.Impl.unwrap i32
-      (Core_models.Option.Option.Some (0 : i32)));
+    (core_models.option.Impl.unwrap i32
+      (core_models.option.Option.Some (0 : i32)));
   let o5 : i32 ←
-    (Core_models.Option.Impl.unwrap_or i32
-      (Core_models.Option.Option.Some (0 : i32))
+    (core_models.option.Impl.unwrap_or i32
+      (core_models.option.Option.Some (0 : i32))
       (9 : i32));
   let o6 : i32 ←
-    (Core_models.Option.Impl.unwrap_or_else
+    (core_models.option.Impl.unwrap_or_else
       i32
-      (Rust_primitives.Hax.Tuple0 -> RustM i32)
-      (Core_models.Option.Option.Some (0 : i32))
+      (rust_primitives.hax.Tuple0 -> RustM i32)
+      (core_models.option.Option.Some (0 : i32))
       (fun _ => (do (pure (9 : i32)) : RustM i32)));
   let o7 : S ←
-    (Core_models.Option.Impl.unwrap_or_default S
-      Core_models.Option.Option.None);
-  let o8 : (Core_models.Option.Option i32) ←
-    (Core_models.Option.Impl.map i32 i32 (i32 -> RustM i32)
-      (Core_models.Option.Option.Some (0 : i32))
+    (core_models.option.Impl.unwrap_or_default S
+      core_models.option.Option.None);
+  let o8 : (core_models.option.Option i32) ←
+    (core_models.option.Impl.map i32 i32 (i32 -> RustM i32)
+      (core_models.option.Option.Some (0 : i32))
       (fun x => (do (x +? (1 : i32)) : RustM i32)));
   let o9 : i32 ←
-    (Core_models.Option.Impl.map_or i32 i32 (i32 -> RustM i32)
-      (Core_models.Option.Option.Some (1 : i32))
+    (core_models.option.Impl.map_or i32 i32 (i32 -> RustM i32)
+      (core_models.option.Option.Some (1 : i32))
       (9 : i32)
       (fun x => (do (x +? (1 : i32)) : RustM i32)));
   let o10 : i32 ←
-    (Core_models.Option.Impl.map_or_else
+    (core_models.option.Impl.map_or_else
       i32
       i32
-      (Rust_primitives.Hax.Tuple0 -> RustM i32)
+      (rust_primitives.hax.Tuple0 -> RustM i32)
       (i32 -> RustM i32)
-      (Core_models.Option.Option.Some (2 : i32))
+      (core_models.option.Option.Some (2 : i32))
       (fun _ => (do (pure (9 : i32)) : RustM i32))
       (fun x => (do (x +? (1 : i32)) : RustM i32)));
-  let o11 : (Core_models.Result.Result i32 E) ←
-    (Core_models.Option.Impl.ok_or i32 E
-      (Core_models.Option.Option.Some (3 : i32))
+  let o11 : (core_models.result.Result i32 E) ←
+    (core_models.option.Impl.ok_or i32 E
+      (core_models.option.Option.Some (3 : i32))
       (E.C (0 : u32)));
-  let o12 : (Core_models.Result.Result i32 E) ←
-    (Core_models.Option.Impl.ok_or_else
+  let o12 : (core_models.result.Result i32 E) ←
+    (core_models.option.Impl.ok_or_else
       i32
       E
-      (Rust_primitives.Hax.Tuple0 -> RustM E)
-      (Core_models.Option.Option.Some (1 : i32))
+      (rust_primitives.hax.Tuple0 -> RustM E)
+      (core_models.option.Option.Some (1 : i32))
       (fun _ => (do (pure (E.C (1 : u32))) : RustM E)));
-  let o13 : (Core_models.Option.Option u32) ←
-    (Core_models.Option.Impl.and_then
+  let o13 : (core_models.option.Option u32) ←
+    (core_models.option.Impl.and_then
       u32
       u32
-      (u32 -> RustM (Core_models.Option.Option u32))
-      Core_models.Option.Option.None
+      (u32 -> RustM (core_models.option.Option u32))
+      core_models.option.Option.None
       (fun x =>
         (do
-        (pure (Core_models.Option.Option.Some x)) :
-        RustM (Core_models.Option.Option u32))));
+        (pure (core_models.option.Option.Some x)) :
+        RustM (core_models.option.Option u32))));
   let ⟨_, out⟩ ←
-    (Core_models.Option.Impl.take S
-      (Core_models.Option.Option.Some (S.mk (f1 := (9 : u32)))));
-  let o14 : (Core_models.Option.Option S) := out;
+    (core_models.option.Impl.take S
+      (core_models.option.Option.Some (S.mk (f1 := (9 : u32)))));
+  let o14 : (core_models.option.Option S) := out;
   let o15 : Bool ←
-    (Core_models.Option.Impl.is_some i32
-      (Core_models.Option.Option.Some (1 : i32)));
+    (core_models.option.Impl.is_some i32
+      (core_models.option.Option.Some (1 : i32)));
   let o16 : Bool ←
-    (Core_models.Option.Impl.is_none i32
-      (Core_models.Option.Option.Some (2 : i32)));
+    (core_models.option.Impl.is_none i32
+      (core_models.option.Option.Some (2 : i32)));
   let o17 : i32 ←
-    (Core_models.Option.Impl.expect i32
-      (Core_models.Option.Option.Some (3 : i32))
+    (core_models.option.Impl.expect i32
+      (core_models.option.Option.Some (3 : i32))
       "Should be Some");
   let o18 : i32 ←
-    (Core_models.Option.Impl.unwrap i32
-      (Core_models.Option.Option.Some (4 : i32)));
-  (pure Rust_primitives.Hax.Tuple0.mk)
+    (core_models.option.Impl.unwrap i32
+      (core_models.option.Option.Some (4 : i32)));
+  (pure rust_primitives.hax.Tuple0.mk)
 
-end Lean_core_models.Option
+end lean_core_models.option
 
 
-namespace Lean_core_models.Phantom
+namespace lean_core_models.phantom
 
 class Foo.AssociatedTypes (Self : Type) where
 
@@ -240,109 +240,109 @@ structure Bar
   [trait_constr_Bar_associated_type_i0 : Foo.AssociatedTypes F]
   [trait_constr_Bar_i0 : Foo F ]
   where
-  _phantom : (Core_models.Marker.PhantomData F)
+  _phantom : (core_models.marker.PhantomData F)
 
 def Impl.new
     (F : Type)
     [trait_constr_new_associated_type_i0 : Foo.AssociatedTypes F]
     [trait_constr_new_i0 : Foo F ]
-    (_ : Rust_primitives.Hax.Tuple0) :
+    (_ : rust_primitives.hax.Tuple0) :
     RustM (Bar F) := do
-  (pure (Bar.mk (_phantom := Core_models.Marker.PhantomData.mk)))
+  (pure (Bar.mk (_phantom := core_models.marker.PhantomData.mk)))
 
-end Lean_core_models.Phantom
+end lean_core_models.phantom
 
 
-namespace Lean_core_models.Result
+namespace lean_core_models.result
 
 inductive E1 : Type
 | C1 : E1
 | C2 : u32 -> E1
 
 @[instance] opaque Impl.AssociatedTypes :
-  Core_models.Clone.Clone.AssociatedTypes E1 :=
+  core_models.clone.Clone.AssociatedTypes E1 :=
   by constructor <;> exact Inhabited.default
 
 @[instance] opaque Impl :
-  Core_models.Clone.Clone E1 :=
+  core_models.clone.Clone E1 :=
   by constructor <;> exact Inhabited.default
 
 inductive E2 : Type
 | C1 : E2
 | C2 : u32 -> E2
 
-def tests (_ : Rust_primitives.Hax.Tuple0) :
-    RustM (Core_models.Result.Result u32 E1) := do
-  let v1 : (Core_models.Result.Result u32 E1) :=
-    (Core_models.Result.Result.Ok (1 : u32));
-  let v2 : (Core_models.Result.Result u32 E1) :=
-    (Core_models.Result.Result.Err E1.C1);
+def tests (_ : rust_primitives.hax.Tuple0) :
+    RustM (core_models.result.Result u32 E1) := do
+  let v1 : (core_models.result.Result u32 E1) :=
+    (core_models.result.Result.Ok (1 : u32));
+  let v2 : (core_models.result.Result u32 E1) :=
+    (core_models.result.Result.Err E1.C1);
   let f : (u32 -> RustM u32) := (fun x => (do (x +? (1 : u32)) : RustM u32));
-  let v5 : (Core_models.Result.Result i32 E1) ←
-    (Core_models.Result.Impl.map i32 E1 i32 (i32 -> RustM i32)
-      (Core_models.Result.Result.Ok (1 : i32))
+  let v5 : (core_models.result.Result i32 E1) ←
+    (core_models.result.Impl.map i32 E1 i32 (i32 -> RustM i32)
+      (core_models.result.Result.Ok (1 : i32))
       (fun v => (do (v +? (1 : i32)) : RustM i32)));
   let v6 : u32 ←
-    (Core_models.Result.Impl.map_or u32 E1 u32 (u32 -> RustM u32)
-      (Core_models.Result.Result.Ok (1 : u32))
+    (core_models.result.Impl.map_or u32 E1 u32 (u32 -> RustM u32)
+      (core_models.result.Result.Ok (1 : u32))
       (9 : u32)
       f);
   let v7 : u32 ←
-    (Core_models.Result.Impl.map_or_else
+    (core_models.result.Impl.map_or_else
       u32
       E1
       u32
       (E1 -> RustM u32)
       (u32 -> RustM u32)
-      (Core_models.Result.Result.Ok (1 : u32))
+      (core_models.result.Result.Ok (1 : u32))
       (fun _ => (do (pure (10 : u32)) : RustM u32))
       f);
-  let v8 : (Core_models.Result.Result i32 E2) ←
-    (Core_models.Result.Impl.map_err i32 E1 E2 (E1 -> RustM E2)
-      (Core_models.Result.Result.Ok (0 : i32))
+  let v8 : (core_models.result.Result i32 E2) ←
+    (core_models.result.Impl.map_err i32 E1 E2 (E1 -> RustM E2)
+      (core_models.result.Result.Ok (0 : i32))
       (fun e =>
         (do
         match e with
           | (E1.C1 ) => (pure E2.C1)
           | (E1.C2  x) => (pure (E2.C2 (← (x +? (1 : u32))))) :
         RustM E2)));
-  let v9 : Bool ← (Core_models.Result.Impl.is_ok u32 E1 v1);
-  let v10 : Bool ← (Core_models.Result.Impl.is_err u32 E1 v1);
-  let v11 : (Core_models.Result.Result u32 E1) ←
-    (Core_models.Result.Impl.and_then
+  let v9 : Bool ← (core_models.result.Impl.is_ok u32 E1 v1);
+  let v10 : Bool ← (core_models.result.Impl.is_err u32 E1 v1);
+  let v11 : (core_models.result.Result u32 E1) ←
+    (core_models.result.Impl.and_then
       u32
       E1
       u32
-      (u32 -> RustM (Core_models.Result.Result u32 E1))
-      (← (Core_models.Clone.Clone.clone (Core_models.Result.Result u32 E1) v1))
+      (u32 -> RustM (core_models.result.Result u32 E1))
+      (← (core_models.clone.Clone.clone (core_models.result.Result u32 E1) v1))
       (fun x =>
         (do
-        (pure (Core_models.Result.Result.Ok (← (x +? (1 : u32))))) :
-        RustM (Core_models.Result.Result u32 E1))));
+        (pure (core_models.result.Result.Ok (← (x +? (1 : u32))))) :
+        RustM (core_models.result.Result u32 E1))));
   let v12 : u32 ←
-    (Core_models.Result.Impl.unwrap u32 u32
-      (← (Core_models.Clone.Clone.clone
-        (Core_models.Result.Result u32 u32)
-        (Core_models.Result.Result.Ok (0 : u32)))));
+    (core_models.result.Impl.unwrap u32 u32
+      (← (core_models.clone.Clone.clone
+        (core_models.result.Result u32 u32)
+        (core_models.result.Result.Ok (0 : u32)))));
   let v13 : u32 ←
-    (Core_models.Result.Impl.expect u32 u32
-      (← (Core_models.Clone.Clone.clone
-        (Core_models.Result.Result u32 u32)
-        (Core_models.Result.Result.Ok (0 : u32))))
+    (core_models.result.Impl.expect u32 u32
+      (← (core_models.clone.Clone.clone
+        (core_models.result.Result u32 u32)
+        (core_models.result.Result.Ok (0 : u32))))
       "Should be Ok");
   match
-    (← (Core_models.Result.Impl.map u32 E1 u32 (u32 -> RustM u32) v1 f))
+    (← (core_models.result.Impl.map u32 E1 u32 (u32 -> RustM u32) v1 f))
   with
-    | (Core_models.Result.Result.Ok  hoist2) =>
+    | (core_models.result.Result.Ok  hoist2) =>
       match v2 with
-        | (Core_models.Result.Result.Ok  hoist1) =>
+        | (core_models.result.Result.Ok  hoist1) =>
           let v3 : u32 ← (hoist2 +? hoist1);
-          (pure (Core_models.Result.Result.Ok v3))
-        | (Core_models.Result.Result.Err  err) =>
-          (pure (Core_models.Result.Result.Err err))
-    | (Core_models.Result.Result.Err  err) =>
-      (pure (Core_models.Result.Result.Err err))
+          (pure (core_models.result.Result.Ok v3))
+        | (core_models.result.Result.Err  err) =>
+          (pure (core_models.result.Result.Err err))
+    | (core_models.result.Result.Err  err) =>
+      (pure (core_models.result.Result.Err err))
 
-end Lean_core_models.Result
+end lean_core_models.result
 
 '''
