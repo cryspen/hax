@@ -766,12 +766,15 @@ impl PathSegment {
 
 mod view_encapsulation {
     //! Encapsulation module to scope [`View`]'s invariants
-    use crate::ast::{identifiers::global_id::FreshModule, span::Span};
+    use crate::ast::{
+        identifiers::global_id::{FreshModule, ReservedSuffix},
+        span::Span,
+    };
 
     use super::*;
     /// A view for an [`ExplicitDefId`], materialized as a list of typed
     /// [`PathSegment`]s ordered from the crate root/module towards the item.
-    pub struct View(Vec<PathSegment>);
+    pub struct View(Vec<PathSegment>, Option<ReservedSuffix>);
 
     impl View {
         /// Returns the full list of segments (non-empty).
@@ -818,6 +821,17 @@ mod view_encapsulation {
                 .last()
                 .expect("Broken invariant, a name has at least a crate")
         }
+
+        /// Get the optional suffix of this view
+        pub fn suffix(&self) -> &Option<ReservedSuffix> {
+            &self.1
+        }
+
+        /// Add a suffix to a view
+        pub fn with_suffix(mut self, suffix: Option<ReservedSuffix>) -> Self {
+            self.1 = suffix;
+            self
+        }
     }
 
     impl From<ExplicitDefId> for View {
@@ -829,7 +843,7 @@ mod view_encapsulation {
                 std::iter::from_fn(|| PathSegment::from_iterator(&mut it)).collect::<Vec<_>>();
             inner.reverse();
             debug_assert!(!inner.is_empty()); // invariant: non-empty
-            Self(inner)
+            Self(inner, None)
         }
     }
 

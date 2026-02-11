@@ -59,7 +59,7 @@ end cyclic_modules.typ_a
 
 namespace cyclic_modules.typ_b
 
-def T1 (x : T1) : RustM isize := do
+def T1_cast_to_repr (x : T1) : RustM isize := do
   match x with | (T1.T1 ) => (pure (0 : isize))
 
 inductive T2 : Type
@@ -143,7 +143,7 @@ inductive T : Type
 | t1 : T
 | t2 : T
 
-def T (x : T) : RustM isize := do
+def T_cast_to_repr (x : T) : RustM isize := do
   match x with | (T.t1 ) => (pure (0 : isize)) | (T.t2 ) => (pure (1 : isize))
 
 end cyclic_modules.rec

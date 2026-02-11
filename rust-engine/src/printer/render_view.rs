@@ -8,8 +8,9 @@
 //! The [`RenderView`] trait allows for customization.
 
 use crate::{
-    ast::identifiers::global_id::view::{
-        PathSegment, PathSegmentPayload, UnnamedPathSegmentPayload, View,
+    ast::identifiers::global_id::{
+        ReservedSuffix,
+        view::{PathSegment, PathSegmentPayload, UnnamedPathSegmentPayload, View},
     },
     symbol::Symbol,
 };
@@ -79,6 +80,11 @@ pub trait RenderView: Sized {
         default::render_path_segment(self, seg)
     }
 
+    /// Renders the optional suffix
+    fn render_suffix(&self, suffix: &ReservedSuffix) -> String {
+        default::render_suffix(suffix)
+    }
+
     /// Renders just the module path (crate + modules) of a [`View`], as a list of atoms.
     ///
     /// This is a convenience wrapper around [`render`](Self::render) that returns only
@@ -103,9 +109,15 @@ pub trait RenderView: Sized {
         let (module_path, relative_path) = view.split_at_module();
         let module_path = self.relativize_module_path(module_path);
         let path_segment = |seg| self.render_path_segment(seg);
+        let mut path: Vec<String> = relative_path.iter().flat_map(path_segment).collect();
+        if let Some(last) = path.last_mut()
+            && let Some(suffix) = view.suffix()
+        {
+            last.push_str(&self.render_suffix(suffix));
+        }
         Rendered {
             module: module_path.iter().flat_map(path_segment).collect(),
-            path: relative_path.iter().flat_map(path_segment).collect(),
+            path,
         }
     }
 
@@ -193,6 +205,16 @@ pub mod default {
             .collect();
         strings.reverse();
         strings
+    }
+
+    /// Default suffix rendering
+    pub fn render_suffix(suffix: &ReservedSuffix) -> String {
+        match suffix {
+            ReservedSuffix::Pre => "_pre",
+            ReservedSuffix::Post => "_post",
+            ReservedSuffix::Cast => "_cast_to_repr",
+        }
+        .to_owned()
     }
 }
 
