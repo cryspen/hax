@@ -1,0 +1,182 @@
+
+-- Experimental lean backend for Hax
+-- The Hax prelude library can be found in hax/proof-libs/lean
+import Hax
+import Std.Tactic.Do
+import Std.Do.Triple
+import Std.Tactic.Do.Syntax
+open Std.Do
+open Std.Tactic
+
+set_option mvcgen.warning false
+set_option linter.unusedVariables false
+
+
+namespace new_tests.legacy__cli__interface_only__lib
+
+--  This item contains unsafe blocks and raw references, two features
+--  not supported by hax. Thanks to the `-i` flag and the `+:`
+--  modifier, `f` is still extractable as an interface.
+-- 
+--  Expressions within type are still extracted, as well as pre- and
+--  post-conditions.
+--  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): lean(HAX0008, HAX0008, HAX0008, HAX0008)
+def f (x : u8) : RustM (RustArray u8 4) := do (pure sorry)
+
+@[spec]
+def f.spec (x : u8) :
+    Spec
+      (requires := do (rust_primitives.hax.machine_int.lt x (254 : u8)))
+      (ensures := fun
+          r => do
+          (rust_primitives.hax.machine_int.gt
+            (← (core_models.ops.index.Index.index r (0 : usize)))
+            x))
+      (f (x : u8)) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[f] <;> try grind
+}
+
+structure Bar where
+  -- no fields
+
+def Impl.from_hoisted sorry : RustM Bar := do (pure Bar.mk)
+
+--  Non-inherent implementations are extracted, their bodies are not
+--  dropped. This might be a bit surprising: see
+--  https://github.com/hacspec/hax/issues/616.
+@[reducible] instance Impl.AssociatedTypes :
+  core_models.convert.From.AssociatedTypes Bar rust_primitives.hax.Tuple0
+  where
+
+instance Impl : core_models.convert.From Bar rust_primitives.hax.Tuple0 where
+  _from := (Impl.from_hoisted)
+
+def Impl_1._from._from (_ : u8) : RustM Bar := do (pure Bar.mk)
+
+def Impl_1.from_hoisted (x : u8) : RustM Bar := do (Impl_1._from._from x)
+
+--  If you need to drop the body of a method, please hoist it:
+@[reducible] instance Impl_1.AssociatedTypes :
+  core_models.convert.From.AssociatedTypes Bar u8
+  where
+
+instance Impl_1 : core_models.convert.From Bar u8 where
+  _from := (Impl_1.from_hoisted)
+
+structure Holder (T : Type) where
+  value : (alloc.vec.Vec T alloc.alloc.Global)
+
+def Impl_2.from_hoisted (T : Type) sorry : RustM (Holder T) := do
+  (pure (Holder.mk
+    (value := (← (alloc.vec.Impl.new T rust_primitives.hax.Tuple0.mk)))))
+
+@[reducible] instance Impl_2.AssociatedTypes (T : Type) :
+  core_models.convert.From.AssociatedTypes (Holder T) rust_primitives.hax.Tuple0
+  where
+
+instance Impl_2 (T : Type) :
+  core_models.convert.From (Holder T) rust_primitives.hax.Tuple0
+  where
+  _from := (Impl_2.from_hoisted T)
+
+structure Param (SIZE : usize) where
+  value : (RustArray u8 SIZE)
+
+def Impl_3.from_hoisted (SIZE : usize) sorry : RustM (Param (SIZE)) := do
+  (pure (Param.mk (value := (← (rust_primitives.hax.repeat (0 : u8) SIZE)))))
+
+@[reducible] instance Impl_3.AssociatedTypes (SIZE : usize) :
+  core_models.convert.From.AssociatedTypes
+  (Param (SIZE))
+  rust_primitives.hax.Tuple0
+  where
+
+instance Impl_3 (SIZE : usize) :
+  core_models.convert.From (Param (SIZE)) rust_primitives.hax.Tuple0
+  where
+  _from := (Impl_3.from_hoisted (SIZE))
+
+def f_generic (X : usize) (U : Type) (_x : U) : RustM (Param (X)) := do
+  (pure (Param.mk (value := (← (rust_primitives.hax.repeat (0 : u8) X)))))
+
+class T.AssociatedTypes (Self : Type) where
+  Assoc : Type
+
+attribute [reducible] T.AssociatedTypes.Assoc
+
+abbrev T.Assoc :=
+  T.AssociatedTypes.Assoc
+
+class T (Self : Type)
+  [associatedTypes : outParam (T.AssociatedTypes (Self : Type))]
+  where
+  d (Self) : (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0)
+
+def Impl_4.d_hoisted (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
+
+--  Impls with associated types are not erased
+@[reducible] instance Impl_4.AssociatedTypes : T.AssociatedTypes u8 where
+  Assoc := u8
+
+instance Impl_4 : T u8 where
+  d := (Impl_4.d_hoisted)
+
+class T2.AssociatedTypes (Self : Type) where
+
+class T2 (Self : Type)
+  [associatedTypes : outParam (T2.AssociatedTypes (Self : Type))]
+  where
+  d (Self) : (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0)
+
+def Impl_5.d_hoisted (_ : rust_primitives.hax.Tuple0) :
+    RustM rust_primitives.hax.Tuple0 := do
+  (pure rust_primitives.hax.Tuple0.mk)
+
+@[spec]
+def Impl_5.d_hoisted.spec (_ : rust_primitives.hax.Tuple0) :
+    Spec
+      (requires := do (pure false))
+      (ensures := fun _ => pure True)
+      (Impl_5.d_hoisted ⟨⟩) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[Impl_5.d_hoisted] <;> try grind
+}
+
+--  Items can be forced to be transparent
+@[reducible] instance Impl_5.AssociatedTypes : T2.AssociatedTypes u8 where
+
+instance Impl_5 : T2 u8 where
+  d := (Impl_5.d_hoisted)
+
+def padlen (b : (RustSlice u8)) (n : usize) : RustM usize := do
+  if
+  (← ((← (rust_primitives.hax.machine_int.gt n (0 : usize)))
+    &&? (← (rust_primitives.hax.machine_int.eq
+      (← b[(← (n -? (1 : usize)))]_?)
+      (0 : u8))))) then
+    ((1 : usize) +? (← (padlen b (← (n -? (1 : usize))))))
+  else
+    (pure (0 : usize))
+
+@[spec]
+def padlen.spec (b : (RustSlice u8)) (n : usize) :
+    Spec
+      (requires := do
+        (rust_primitives.hax.machine_int.ge
+          (← (core_models.slice.Impl.len u8 b))
+          n))
+      (ensures := fun out => do (rust_primitives.hax.machine_int.le out n))
+      (padlen (b : (RustSlice u8)) (n : usize)) := {
+  pureRequires := by constructor; mvcgen <;> try grind
+  pureEnsures := by constructor; intros; mvcgen <;> try grind
+  contract := by mvcgen[padlen] <;> try grind
+}
+
+end new_tests.legacy__cli__interface_only__lib
+

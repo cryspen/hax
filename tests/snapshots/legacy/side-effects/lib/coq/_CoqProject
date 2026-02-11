@@ -1,0 +1,10 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+New_tests_Legacy__side_effects__lib_Nested_return.v
+New_tests_Legacy__side_effects__lib_Issue_1300_.v
+New_tests_Legacy__side_effects__lib_Issue_1299_.v
+New_tests_Legacy__side_effects__lib_Issue_1089_.v
+New_tests_Legacy__side_effects__lib_Issue_1083_.v
+New_tests_Legacy__side_effects__lib.v
