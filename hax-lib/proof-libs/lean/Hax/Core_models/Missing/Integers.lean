@@ -33,7 +33,7 @@ macro "declare_Hax_convert_from_instances" : command => do
 
 declare_Hax_convert_from_instances
 
-attribute [hax_bv_decide]
+attribute [specset bv, hax_bv_decide]
   core_models.convert.From._from
 
 namespace core_models.num.Impl_8

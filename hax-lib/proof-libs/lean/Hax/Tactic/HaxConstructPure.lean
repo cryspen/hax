@@ -1,4 +1,5 @@
 import Hax.Tactic.HaxZify
+import Hax.Tactic.HaxMvcgen
 import Qq
 
 open Lean Elab Tactic Meta Qq Std.Do
@@ -68,7 +69,7 @@ syntax (name := hax_construct_pure) "hax_construct_pure" (" => " tacticSeq)? : t
 def elabHaxConstructPure : Tactic := fun stx => do
   let tac ← match stx with
   | `(tactic| hax_construct_pure => $tac:tacticSeq) => pure tac
-  | `(tactic| hax_construct_pure) => `(tacticSeq| mvcgen)
+  | `(tactic| hax_construct_pure) => `(tacticSeq| hax_mvcgen -trivial)
   | _ => throwUnsupportedSyntax
 
   let goal ← getMainGoal

@@ -16,7 +16,7 @@ def Core.Convert.From._from (β α) [Coe α (RustM β)] (x:α) : (RustM β) := x
 class Cast (α β: Type) where
   cast : α → RustM β
 
-attribute [hax_bv_decide] Cast.cast
+attribute [specset bv, hax_bv_decide] Cast.cast
 
 -- Macro to generate Cast instances for all integer type pairs.
 open Lean in

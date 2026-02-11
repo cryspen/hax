@@ -10,6 +10,7 @@ type ChaChaKey = [u8; 32];
 
 type StateIdx = hax_bounded_integers::BoundedUsize<0, 15>;
 
+#[hax_lib::lean::before("set_option hax_mvcgen.specset \"int\"")]
 #[hax_lib::lean::after(
     "
 @[spec]
@@ -24,7 +25,7 @@ theorem lean_chacha20.chacha20_line_spec
   ⦃ ⌜ True ⌝ ⦄
   (lean_chacha20.chacha20_line a b d s m )
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
-  := by intros; mvcgen [lean_chacha20.chacha20_line] <;> omega
+  := by intros; hax_mvcgen [lean_chacha20.chacha20_line] <;> omega
 "
 )]
 fn chacha20_line(a: StateIdx, b: StateIdx, d: StateIdx, s: u32, m: State) -> State {
@@ -48,7 +49,7 @@ theorem lean_chacha20.chacha20_quarter_round_spec a b c d state:
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
 := by
   intros
-  mvcgen [lean_chacha20.chacha20_quarter_round,
+  hax_mvcgen [lean_chacha20.chacha20_quarter_round,
           lean_chacha20.chacha20_line,
           RustM.ofOption, ]
   <;> try omega
@@ -186,7 +187,7 @@ theorem lean_chacha20.chacha20_encrypt_block_spec (st0 : (Vector u32 16)) (ctr :
   ( lean_chacha20.chacha20_encrypt_block st0 ctr plain)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
   := by
-  mvcgen [chacha20_encrypt_block,
+  hax_mvcgen [chacha20_encrypt_block,
           chacha20_core,
           chacha20_rounds,
           chacha20_double_round]
@@ -211,7 +212,7 @@ theorem lean_chacha20.chacha20_encrypt_last_spec (st0 : (Vector u32 16)) (ctr : 
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
 := by
   intros
-  mvcgen [lean_chacha20.chacha20_encrypt_last,
+  hax_mvcgen [lean_chacha20.chacha20_encrypt_last,
           lean_chacha20.chacha20_key_block,
           lean_chacha20.chacha20_init,
           lean_chacha20.chacha20_core,
@@ -237,7 +238,7 @@ theorem lean_chacha20.chacha20_update_spec (st0 : (Vector u32 16)) (m : (Array u
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄ :=
 by
   intros
-  mvcgen [lean_chacha20.chacha20_update,
+  hax_mvcgen [lean_chacha20.chacha20_update,
       alloc.slice.Impl.to_vec,
       core_models.result.Impl.unwrap.spec,
       alloc.vec.Impl.new,
@@ -275,7 +276,7 @@ theorem lean_chacha20.chacha20_spec
   ⦃⌜True⌝⦄
   (lean_chacha20.chacha20 m key iv ctr)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
-:= by intros ; mvcgen [lean_chacha20.chacha20, chacha20_init] <;> simp at *
+:= by intros ; hax_mvcgen [lean_chacha20.chacha20, chacha20_init] <;> simp at *
 "
 )]
 pub fn chacha20(m: &[u8], key: &ChaChaKey, iv: &ChaChaIV, ctr: u32) -> Vec<u8> {

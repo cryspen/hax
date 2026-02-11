@@ -1,4 +1,5 @@
 import Hax.Core_models.Extracted
+import Hax.Tactic.SpecSet
 open Std.Do
 
 set_option mvcgen.warning false
@@ -95,7 +96,7 @@ theorem rust_primitives.hax.folds.fold_range_spec {α}
     suffices (s + (e - s)) = e by (rw [← this]; assumption)
     omega
 
-@[spec]
+@[specset int]
 theorem rust_primitives.hax.folds.usize.fold_range_spec {α}
   (s e : usize)
   (inv : α -> usize -> RustM Bool)

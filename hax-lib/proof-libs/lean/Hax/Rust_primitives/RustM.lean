@@ -1,4 +1,5 @@
 import Hax.Tactic.Init
+import Hax.Tactic.SpecSet
 import Hax.MissingLean.Init.While
 import Std.Tactic.Do
 
@@ -62,7 +63,7 @@ def isOk {α : Type} (x: RustM α) : Bool := match x with
 | .ok _ => true
 | _ => false
 
-@[reducible, hax_bv_decide]
+@[reducible, specset bv, hax_bv_decide]
 def of_isOk {α : Type} (x: RustM α) (h: RustM.isOk x): α :=
   match x with
   | .ok v => v
