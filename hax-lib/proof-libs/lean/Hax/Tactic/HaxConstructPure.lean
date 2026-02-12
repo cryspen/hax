@@ -59,8 +59,8 @@ where
 ```
  { p // ⦃⌜ ... ⌝⦄ ... ⦃⇓ r => ⌜r = p⌝⦄ }
 ```
-Under the hood, it will use `mvcgen` to generate verification conditions for the given Hoare
-triple and then generate a suitable value for `p`. The default call to `mvcgen` can be replaced
+Under the hood, it will use `hax_mvcgen` to generate verification conditions for the given Hoare
+triple and then generate a suitable value for `p`. The default call to `hax_mvcgen` can be replaced
 via the syntax `hax_construct_pure => custom_tactics`.
  -/
 syntax (name := hax_construct_pure) "hax_construct_pure" (" => " tacticSeq)? : tactic
@@ -69,7 +69,7 @@ syntax (name := hax_construct_pure) "hax_construct_pure" (" => " tacticSeq)? : t
 def elabHaxConstructPure : Tactic := fun stx => do
   let tac ← match stx with
   | `(tactic| hax_construct_pure => $tac:tacticSeq) => pure tac
-  | `(tactic| hax_construct_pure) => `(tacticSeq| hax_mvcgen -trivial)
+  | `(tactic| hax_construct_pure) => `(tacticSeq| hax_mvcgen -trivial <;> intros)
   | _ => throwUnsupportedSyntax
 
   let goal ← getMainGoal

@@ -17,6 +17,7 @@ namespace core_models.array
 structure TryFromSliceError where
   -- no fields
 
+@[spec]
 def Impl_23.as_slice (T : Type) (N : usize) (s : (RustArray T N)) :
     RustM (RustSlice T) := do
   (rust_primitives.slice.array_as_slice T (N) s)
@@ -97,7 +98,8 @@ def Ordering.Equal.AnonConst : isize := (0 : isize)
 
 def Ordering.Greater.AnonConst : isize := (1 : isize)
 
-def Ordering_ (x : Ordering) : RustM isize := do
+@[spec]
+def Ordering_cast_to_repr (x : Ordering) : RustM isize := do
   match x with
     | (Ordering.Less ) => (pure Ordering.Less.AnonConst)
     | (Ordering.Equal ) => (pure Ordering.Equal.AnonConst)
@@ -424,6 +426,7 @@ opaque Impl_1.new_v1 (T : Type) (U : Type) (V : Type) (W : Type)
     (t : W) :
     RustM core_models.fmt.Arguments 
 
+@[spec]
 def Impl_1.none (_ : rust_primitives.hax.Tuple0) :
     RustM (RustArray Argument 0) := do
   (pure #v[])
@@ -477,28 +480,30 @@ namespace core_models.hint
 
 def black_box (T : Type) (dummy : T) : RustM T := do (pure dummy)
 
+set_option hax_mvcgen.specset "bv" in
 @[spec]
 def black_box.spec (T : Type) (dummy : T) :
     Spec
       (requires := do pure True)
       (ensures := fun res => do (hax_lib.prop.Impl.from_bool true))
       (black_box (T : Type) (dummy : T)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[black_box] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [black_box] <;> bv_decide
 }
 
 def must_use (T : Type) (value : T) : RustM T := do (pure value)
 
+set_option hax_mvcgen.specset "bv" in
 @[spec]
 def must_use.spec (T : Type) (value : T) :
     Spec
       (requires := do pure True)
       (ensures := fun res => do (hax_lib.prop.Impl.from_bool true))
       (must_use (T : Type) (value : T)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[must_use] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [must_use] <;> bv_decide
 }
 
 end core_models.hint
@@ -510,6 +515,7 @@ structure Enumerate (I : Type) where
   iter : I
   count : usize
 
+@[spec]
 def Impl.new (I : Type) (iter : I) : RustM (Enumerate I) := do
   (pure (Enumerate.mk (iter := iter) (count := (0 : usize))))
 
@@ -522,6 +528,7 @@ structure StepBy (I : Type) where
   iter : I
   step : usize
 
+@[spec]
 def Impl.new (I : Type) (iter : I) (step : usize) : RustM (StepBy I) := do
   (pure (StepBy.mk (iter := iter) (step := step)))
 
@@ -534,6 +541,7 @@ structure Map (I : Type) (F : Type) where
   iter : I
   f : F
 
+@[spec]
 def Impl.new (I : Type) (F : Type) (iter : I) (f : F) : RustM (Map I F) := do
   (pure (Map.mk (iter := iter) (f := f)))
 
@@ -546,6 +554,7 @@ structure Take (I : Type) where
   iter : I
   n : usize
 
+@[spec]
 def Impl.new (I : Type) (iter : I) (n : usize) : RustM (Take I) := do
   (pure (Take.mk (iter := iter) (n := n)))
 
@@ -672,6 +681,7 @@ opaque replace (T : Type) (dest : T) (src : T) :
 
 opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0 
 
+@[spec]
 def copy
     (T : Type)
     [trait_constr_copy_associated_type_i0 : core.marker.Copy.AssociatedTypes T]
@@ -717,15 +727,19 @@ end core_models.num.error
 
 namespace core_models.num
 
+@[spec]
 def Impl_6.wrapping_add (x : u8) (y : u8) : RustM u8 := do
   (rust_primitives.arithmetic.wrapping_add_u8 x y)
 
+@[spec]
 def Impl_6.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
   (rust_primitives.arithmetic.wrapping_sub_u8 x y)
 
+@[spec]
 def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
   (rust_primitives.arithmetic.wrapping_mul_u8 x y)
 
+@[spec]
 def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
   (rust_primitives.arithmetic.pow_u8 x exp)
 
@@ -733,15 +747,19 @@ opaque Impl_6.leading_zeros (x : u8) : RustM u32
 
 opaque Impl_6.ilog2 (x : u8) : RustM u32 
 
+@[spec]
 def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
   (rust_primitives.arithmetic.wrapping_add_u16 x y)
 
+@[spec]
 def Impl_7.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
   (rust_primitives.arithmetic.wrapping_sub_u16 x y)
 
+@[spec]
 def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
   (rust_primitives.arithmetic.wrapping_mul_u16 x y)
 
+@[spec]
 def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
   (rust_primitives.arithmetic.pow_u16 x exp)
 
@@ -749,15 +767,19 @@ opaque Impl_7.leading_zeros (x : u16) : RustM u32
 
 opaque Impl_7.ilog2 (x : u16) : RustM u32 
 
+@[spec]
 def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
   (rust_primitives.arithmetic.wrapping_add_u32 x y)
 
+@[spec]
 def Impl_8.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
   (rust_primitives.arithmetic.wrapping_sub_u32 x y)
 
+@[spec]
 def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
   (rust_primitives.arithmetic.wrapping_mul_u32 x y)
 
+@[spec]
 def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
   (rust_primitives.arithmetic.pow_u32 x exp)
 
@@ -765,15 +787,19 @@ opaque Impl_8.leading_zeros (x : u32) : RustM u32
 
 opaque Impl_8.ilog2 (x : u32) : RustM u32 
 
+@[spec]
 def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
   (rust_primitives.arithmetic.wrapping_add_u64 x y)
 
+@[spec]
 def Impl_9.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
   (rust_primitives.arithmetic.wrapping_sub_u64 x y)
 
+@[spec]
 def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
   (rust_primitives.arithmetic.wrapping_mul_u64 x y)
 
+@[spec]
 def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
   (rust_primitives.arithmetic.pow_u64 x exp)
 
@@ -781,15 +807,19 @@ opaque Impl_9.leading_zeros (x : u64) : RustM u32
 
 opaque Impl_9.ilog2 (x : u64) : RustM u32 
 
+@[spec]
 def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
   (rust_primitives.arithmetic.wrapping_add_u128 x y)
 
+@[spec]
 def Impl_10.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
   (rust_primitives.arithmetic.wrapping_sub_u128 x y)
 
+@[spec]
 def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
   (rust_primitives.arithmetic.wrapping_mul_u128 x y)
 
+@[spec]
 def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
   (rust_primitives.arithmetic.pow_u128 x exp)
 
@@ -797,15 +827,19 @@ opaque Impl_10.leading_zeros (x : u128) : RustM u32
 
 opaque Impl_10.ilog2 (x : u128) : RustM u32 
 
+@[spec]
 def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
   (rust_primitives.arithmetic.wrapping_add_usize x y)
 
+@[spec]
 def Impl_11.wrapping_sub (x : usize) (y : usize) : RustM usize := do
   (rust_primitives.arithmetic.wrapping_sub_usize x y)
 
+@[spec]
 def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
   (rust_primitives.arithmetic.wrapping_mul_usize x y)
 
+@[spec]
 def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
   (rust_primitives.arithmetic.pow_usize x exp)
 
@@ -813,15 +847,19 @@ opaque Impl_11.leading_zeros (x : usize) : RustM u32
 
 opaque Impl_11.ilog2 (x : usize) : RustM u32 
 
+@[spec]
 def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
   (rust_primitives.arithmetic.wrapping_add_i8 x y)
 
+@[spec]
 def Impl_12.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
   (rust_primitives.arithmetic.wrapping_sub_i8 x y)
 
+@[spec]
 def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
   (rust_primitives.arithmetic.wrapping_mul_i8 x y)
 
+@[spec]
 def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
   (rust_primitives.arithmetic.pow_i8 x exp)
 
@@ -829,15 +867,19 @@ opaque Impl_12.leading_zeros (x : i8) : RustM u32
 
 opaque Impl_12.ilog2 (x : i8) : RustM u32 
 
+@[spec]
 def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
   (rust_primitives.arithmetic.wrapping_add_i16 x y)
 
+@[spec]
 def Impl_13.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
   (rust_primitives.arithmetic.wrapping_sub_i16 x y)
 
+@[spec]
 def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
   (rust_primitives.arithmetic.wrapping_mul_i16 x y)
 
+@[spec]
 def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
   (rust_primitives.arithmetic.pow_i16 x exp)
 
@@ -845,15 +887,19 @@ opaque Impl_13.leading_zeros (x : i16) : RustM u32
 
 opaque Impl_13.ilog2 (x : i16) : RustM u32 
 
+@[spec]
 def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
   (rust_primitives.arithmetic.wrapping_add_i32 x y)
 
+@[spec]
 def Impl_14.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
   (rust_primitives.arithmetic.wrapping_sub_i32 x y)
 
+@[spec]
 def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
   (rust_primitives.arithmetic.wrapping_mul_i32 x y)
 
+@[spec]
 def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
   (rust_primitives.arithmetic.pow_i32 x exp)
 
@@ -861,15 +907,19 @@ opaque Impl_14.leading_zeros (x : i32) : RustM u32
 
 opaque Impl_14.ilog2 (x : i32) : RustM u32 
 
+@[spec]
 def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
   (rust_primitives.arithmetic.wrapping_add_i64 x y)
 
+@[spec]
 def Impl_15.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
   (rust_primitives.arithmetic.wrapping_sub_i64 x y)
 
+@[spec]
 def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
   (rust_primitives.arithmetic.wrapping_mul_i64 x y)
 
+@[spec]
 def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
   (rust_primitives.arithmetic.pow_i64 x exp)
 
@@ -877,15 +927,19 @@ opaque Impl_15.leading_zeros (x : i64) : RustM u32
 
 opaque Impl_15.ilog2 (x : i64) : RustM u32 
 
+@[spec]
 def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
   (rust_primitives.arithmetic.wrapping_add_i128 x y)
 
+@[spec]
 def Impl_16.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
   (rust_primitives.arithmetic.wrapping_sub_i128 x y)
 
+@[spec]
 def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
   (rust_primitives.arithmetic.wrapping_mul_i128 x y)
 
+@[spec]
 def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
   (rust_primitives.arithmetic.pow_i128 x exp)
 
@@ -893,15 +947,19 @@ opaque Impl_16.leading_zeros (x : i128) : RustM u32
 
 opaque Impl_16.ilog2 (x : i128) : RustM u32 
 
+@[spec]
 def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
   (rust_primitives.arithmetic.wrapping_add_isize x y)
 
+@[spec]
 def Impl_17.wrapping_sub (x : isize) (y : isize) : RustM isize := do
   (rust_primitives.arithmetic.wrapping_sub_isize x y)
 
+@[spec]
 def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
   (rust_primitives.arithmetic.wrapping_mul_isize x y)
 
+@[spec]
 def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
   (rust_primitives.arithmetic.pow_isize x exp)
 
@@ -1207,6 +1265,7 @@ attribute [instance] Ord.trait_constr_Ord_i0
 
 attribute [instance] Ord.trait_constr_Ord_i1
 
+@[spec]
 def max
     (T : Type)
     [trait_constr_max_associated_type_i0 : Ord.AssociatedTypes T]
@@ -1218,6 +1277,7 @@ def max
     | (Ordering.Greater ) => (pure v1)
     | _ => (pure v2)
 
+@[spec]
 def min
     (T : Type)
     [trait_constr_min_associated_type_i0 : Ord.AssociatedTypes T]
@@ -1588,16 +1648,19 @@ end core_models.iter.adapters.flat_map
 
 namespace core_models.option
 
+@[spec]
 def Impl.as_ref (T : Type) (self : (Option T)) : RustM (Option T) := do
   match self with
     | (Option.Some  x) => (pure (Option.Some x))
     | (Option.None ) => (pure Option.None)
 
+@[spec]
 def Impl.unwrap_or (T : Type) (self : (Option T)) (default : T) : RustM T := do
   match self with
     | (Option.Some  x) => (pure x)
     | (Option.None ) => (pure default)
 
+@[spec]
 def Impl.unwrap_or_default
     (T : Type)
     [trait_constr_unwrap_or_default_associated_type_i0 :
@@ -1611,6 +1674,7 @@ def Impl.unwrap_or_default
     | (Option.None ) =>
       (core_models.default.Default.default T rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.take (T : Type) (self : (Option T)) :
     RustM (rust_primitives.hax.Tuple2 (Option T) (Option T)) := do
   (pure (rust_primitives.hax.Tuple2.mk Option.None self))
@@ -1618,6 +1682,7 @@ def Impl.take (T : Type) (self : (Option T)) :
 def Impl.is_some (T : Type) (self : (Option T)) : RustM Bool := do
   match self with | (Option.Some  _) => (pure true) | _ => (pure false)
 
+set_option hax_mvcgen.specset "bv" in
 @[spec]
 def Impl.is_some.spec (T : Type) (self : (Option T)) :
     Spec
@@ -1628,11 +1693,12 @@ def Impl.is_some.spec (T : Type) (self : (Option T)) :
             (← (hax_lib.prop.constructors.from_bool res))
             (← (hax_lib.prop.Impl.from_bool true))))
       (Impl.is_some (T : Type) (self : (Option T))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.is_some] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.is_some] <;> bv_decide
 }
 
+@[spec]
 def Impl.is_none (T : Type) (self : (Option T)) : RustM Bool := do
   (core.cmp.PartialEq.eq (← (Impl.is_some T self)) false)
 
@@ -1756,6 +1822,7 @@ instance Impl (T : Type) : Debug T where
       (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk);
     (pure (rust_primitives.hax.Tuple2.mk f hax_temp_output))
 
+@[spec]
 def Impl_11.write_fmt (f : Formatter) (args : Arguments) :
     RustM
     (rust_primitives.hax.Tuple2
@@ -1815,6 +1882,7 @@ end core_models.num
 
 namespace core_models.option
 
+@[spec]
 def Impl.ok_or (T : Type) (E : Type) (self : (Option T)) (err : E) :
     RustM (core_models.result.Result T E) := do
   match self with
@@ -1826,15 +1894,18 @@ end core_models.option
 
 namespace core_models.result
 
+@[spec]
 def Impl.unwrap_or (T : Type) (E : Type) (self : (Result T E)) (default : T) :
     RustM T := do
   match self with
     | (Result.Ok  t) => (pure t)
     | (Result.Err  _) => (pure default)
 
+@[spec]
 def Impl.is_ok (T : Type) (E : Type) (self : (Result T E)) : RustM Bool := do
   match self with | (Result.Ok  _) => (pure true) | _ => (pure false)
 
+@[spec]
 def Impl.ok (T : Type) (E : Type) (self : (Result T E)) :
     RustM (core_models.option.Option T) := do
   match self with
@@ -1850,6 +1921,7 @@ structure Chunks (T : Type) where
   cs : usize
   elements : (RustSlice T)
 
+@[spec]
 def Impl.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
     RustM (Chunks T) := do
   (pure (Chunks.mk (cs := cs) (elements := elements)))
@@ -1858,6 +1930,7 @@ structure ChunksExact (T : Type) where
   cs : usize
   elements : (RustSlice T)
 
+@[spec]
 def Impl_1.new (T : Type) (cs : usize) (elements : (RustSlice T)) :
     RustM (ChunksExact T) := do
   (pure (ChunksExact.mk (cs := cs) (elements := elements)))
@@ -1870,22 +1943,27 @@ end core_models.slice.iter
 
 namespace core_models.slice
 
+@[spec]
 def Impl.len (T : Type) (s : (RustSlice T)) : RustM usize := do
   (rust_primitives.slice.slice_length T s)
 
+@[spec]
 def Impl.chunks (T : Type) (s : (RustSlice T)) (cs : usize) :
     RustM (core_models.slice.iter.Chunks T) := do
   (core_models.slice.iter.Impl.new T cs s)
 
+@[spec]
 def Impl.iter (T : Type) (s : (RustSlice T)) :
     RustM (core_models.slice.iter.Iter T) := do
   (pure (core_models.slice.iter.Iter.mk
     (← (rust_primitives.sequence.seq_from_slice T s))))
 
+@[spec]
 def Impl.chunks_exact (T : Type) (s : (RustSlice T)) (cs : usize) :
     RustM (core_models.slice.iter.ChunksExact T) := do
   (core_models.slice.iter.Impl_1.new T cs s)
 
+@[spec]
 def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
   (rust_primitives.hax.machine_int.eq (← (Impl.len T s)) (0 : usize))
 
@@ -1920,6 +1998,7 @@ def Impl.copy_from_slice
   let _ := out;
   (pure s)
 
+set_option hax_mvcgen.specset "bv" in
 @[spec]
 def
       Impl.copy_from_slice.spec
@@ -1940,9 +2019,9 @@ def
         (T : Type)
         (s : (RustSlice T))
         (src : (RustSlice T))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.copy_from_slice] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.copy_from_slice] <;> bv_decide
 }
 
 def Impl.clone_from_slice
@@ -1959,6 +2038,7 @@ def Impl.clone_from_slice
   let _ := out;
   (pure s)
 
+set_option hax_mvcgen.specset "bv" in
 @[spec]
 def
       Impl.clone_from_slice.spec
@@ -1979,15 +2059,16 @@ def
         (T : Type)
         (s : (RustSlice T))
         (src : (RustSlice T))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.clone_from_slice] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.clone_from_slice] <;> bv_decide
 }
 
 def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
     RustM (rust_primitives.hax.Tuple2 (RustSlice T) (RustSlice T)) := do
   (rust_primitives.slice.slice_split_at T s mid)
 
+set_option hax_mvcgen.specset "bv" in
 @[spec]
 def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
     Spec
@@ -1995,11 +2076,12 @@ def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
         (rust_primitives.hax.machine_int.le mid (← (Impl.len T s))))
       (ensures := fun _ => pure True)
       (Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize)) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.split_at] <;> try grind
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.split_at] <;> bv_decide
 }
 
+@[spec]
 def Impl.split_at_checked (T : Type) (s : (RustSlice T)) (mid : usize) :
     RustM
     (core_models.option.Option
@@ -2380,6 +2462,7 @@ end core_models.str.traits
 
 namespace core_models.array
 
+@[spec]
 def Impl_23.map
     (T : Type)
     (N : usize)
@@ -2401,6 +2484,7 @@ def Impl_23.map
     RustM (RustArray U N) := do
   (rust_primitives.slice.array_map T U (N) (T -> RustM U) s f)
 
+@[spec]
 def from_fn
     (T : Type)
     (N : usize)
@@ -2689,6 +2773,7 @@ end core_models.iter.adapters.take
 
 namespace core_models.iter.adapters.flat_map
 
+@[spec]
 def Impl.new
     (I : Type)
     (U : Type)
@@ -2915,6 +3000,7 @@ end core_models.iter.traits.iterator
 
 namespace core_models.iter.adapters.flatten
 
+@[spec]
 def Impl.new
     (I : Type)
     [trait_constr_new_associated_type_i0 :
@@ -2966,6 +3052,7 @@ end core_models.iter.adapters.flatten
 
 namespace core_models.iter.adapters.zip
 
+@[spec]
 def Impl.new
     (I1 : Type)
     (I2 : Type)
@@ -3219,6 +3306,7 @@ end core_models.ops.deref
 
 namespace core_models.option
 
+@[spec]
 def Impl.is_some_and
     (T : Type)
     (F : Type)
@@ -3240,6 +3328,7 @@ def Impl.is_some_and
     | (Option.None ) => (pure false)
     | (Option.Some  x) => (core_models.ops.function.FnOnce.call_once F T f x)
 
+@[spec]
 def Impl.is_none_or
     (T : Type)
     (F : Type)
@@ -3261,6 +3350,7 @@ def Impl.is_none_or
     | (Option.None ) => (pure true)
     | (Option.Some  x) => (core_models.ops.function.FnOnce.call_once F T f x)
 
+@[spec]
 def Impl.unwrap_or_else
     (T : Type)
     (F : Type)
@@ -3288,6 +3378,7 @@ def Impl.unwrap_or_else
         F
         rust_primitives.hax.Tuple0 f rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.map
     (T : Type)
     (U : Type)
@@ -3312,6 +3403,7 @@ def Impl.map
         (← (core_models.ops.function.FnOnce.call_once F T f x))))
     | (Option.None ) => (pure Option.None)
 
+@[spec]
 def Impl.map_or
     (T : Type)
     (U : Type)
@@ -3335,6 +3427,7 @@ def Impl.map_or
     | (Option.Some  t) => (core_models.ops.function.FnOnce.call_once F T f t)
     | (Option.None ) => (pure default)
 
+@[spec]
 def Impl.map_or_else
     (T : Type)
     (U : Type)
@@ -3376,6 +3469,7 @@ def Impl.map_or_else
         D
         rust_primitives.hax.Tuple0 default rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.map_or_default
     (T : Type)
     (U : Type)
@@ -3403,6 +3497,7 @@ def Impl.map_or_default
     | (Option.None ) =>
       (core_models.default.Default.default U rust_primitives.hax.Tuple0.mk)
 
+@[spec]
 def Impl.ok_or_else
     (T : Type)
     (E : Type)
@@ -3432,6 +3527,7 @@ def Impl.ok_or_else
           F
           rust_primitives.hax.Tuple0 err rust_primitives.hax.Tuple0.mk))))
 
+@[spec]
 def Impl.and_then
     (T : Type)
     (U : Type)
@@ -3459,6 +3555,7 @@ end core_models.option
 
 namespace core_models.result
 
+@[spec]
 def Impl.map
     (T : Type)
     (E : Type)
@@ -3484,6 +3581,7 @@ def Impl.map
         (← (core_models.ops.function.FnOnce.call_once F T op t))))
     | (Result.Err  e) => (pure (Result.Err e))
 
+@[spec]
 def Impl.map_or
     (T : Type)
     (E : Type)
@@ -3508,6 +3606,7 @@ def Impl.map_or
     | (Result.Ok  t) => (core_models.ops.function.FnOnce.call_once F T f t)
     | (Result.Err  _e) => (pure default)
 
+@[spec]
 def Impl.map_or_else
     (T : Type)
     (E : Type)
@@ -3545,6 +3644,7 @@ def Impl.map_or_else
     | (Result.Err  e) =>
       (core_models.ops.function.FnOnce.call_once D E default e)
 
+@[spec]
 def Impl.map_err
     (T : Type)
     (E : Type)
@@ -3570,6 +3670,7 @@ def Impl.map_err
       (pure (Result.Err
         (← (core_models.ops.function.FnOnce.call_once O E op e))))
 
+@[spec]
 def Impl.and_then
     (T : Type)
     (E : Type)
@@ -3704,6 +3805,7 @@ end core_models.slice.iter
 
 namespace core_models.slice
 
+@[spec]
 def Impl.get
     (T : Type)
     (I : Type)

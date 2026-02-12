@@ -46,7 +46,7 @@ fn closure() -> i32 {
     res1 + res2
 }
 
-#[hax_lib::lean::before("@[spec]")]
+#[hax_lib::lean::before("example : Nat := 42")]
 fn test_before_verbatime_single_line(x: u8) -> u8 {
     42
 }

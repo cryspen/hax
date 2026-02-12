@@ -2,7 +2,6 @@ use hax_lib::*;
 
 /// Returns true if all casting edge cases behave as expected.
 #[ensures(|result| result)]
-#[lean::proof("by mvcgen [lean_tests.casts.casting_edge_cases]; simp_all [Int16.toUInt8]")]
 pub fn casting_edge_cases(_dummy: bool) -> bool {
     // 1. Truncation: u16 to u8 (256 -> 0)
     // 256 is 0x0100. Truncating to lower 8 bits gives 0x00.

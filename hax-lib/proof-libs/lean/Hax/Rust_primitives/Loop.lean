@@ -1,6 +1,7 @@
 import Hax.Rust_primitives.RustM
 import Hax.Rust_primitives.Num
 import Hax.MissingLean.Std.Do.Triple.SpecLemmas
+import Hax.Tactic.HaxConstructPure
 
 open Std.Do
 
@@ -23,13 +24,13 @@ def rust_primitives.hax.while_loop {β : Type}
     (body : β -> RustM β)
     (pureInv:
         {i : β -> Prop // ∀ b, ⦃⌜ True ⌝⦄ inv b ⦃⇓ r => ⌜ r = (i b) ⌝⦄} := by
-      constructor; intro; mvcgen)
+      set_option hax_mvcgen.specset "int" in hax_construct_pure <;> grind)
     (_pureTermination :
         {t : β -> Nat // ∀ b, ⦃⌜ True ⌝⦄ termination b ⦃⇓ r => ⌜ r = Int.ofNat (t b) ⌝⦄} := by
-      constructor; intro; mvcgen)
+      set_option hax_mvcgen.specset "int" in hax_construct_pure <;> grind)
     (pureCond :
         {c : β -> Bool // ∀ b, ⦃⌜ pureInv.val b ⌝⦄ cond b ⦃⇓ r => ⌜ r = c b ⌝⦄} := by
-      constructor; intro; mvcgen) : RustM β :=
+      set_option hax_mvcgen.specset "int" in hax_construct_pure <;> grind) : RustM β :=
   Loop.MonoLoopCombinator.while_loop Loop.mk pureCond.val init body
 
 @[spec]

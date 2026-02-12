@@ -136,6 +136,7 @@ pub enum AttrPayload {
     Proof(String),
     PureRequiresProof(String),
     PureEnsuresProof(String),
+    ProofMethod(String),
     ProtocolMessages,
     PVConstructor,
     PVHandwritten,
