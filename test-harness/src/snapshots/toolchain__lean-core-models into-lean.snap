@@ -55,6 +55,7 @@ instance Impl : core_models.default.Default S where
   default := fun (_ : rust_primitives.hax.Tuple0) => do
     (pure (S.mk (f1 := (0 : usize))))
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) : RustM S := do
   (core_models.default.Default.default S rust_primitives.hax.Tuple0.mk)
 
@@ -94,6 +95,7 @@ end lean_core_models.default.enums
 
 namespace lean_core_models.function
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let f_1 : (u32 -> RustM u32) := (fun _ => (do (pure (9 : u32)) : RustM u32));
   let f_2 : (u32 -> u32 -> RustM u32) := (fun x y => (do (x +? y) : RustM u32));
@@ -135,6 +137,7 @@ instance Impl : core_models.default.Default S where
   default := fun (_ : rust_primitives.hax.Tuple0) => do
     (pure (S.mk (f1 := (42 : u32))))
 
+@[spec]
 def test (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let o1 : (core_models.option.Option i32) :=
@@ -242,6 +245,7 @@ structure Bar
   where
   _phantom : (core_models.marker.PhantomData F)
 
+@[spec]
 def Impl.new
     (F : Type)
     [trait_constr_new_associated_type_i0 : Foo.AssociatedTypes F]
@@ -271,6 +275,7 @@ inductive E2 : Type
 | C1 : E2
 | C2 : u32 -> E2
 
+@[spec]
 def tests (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result u32 E1) := do
   let v1 : (core_models.result.Result u32 E1) :=
