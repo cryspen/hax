@@ -145,4 +145,84 @@ theorem rust_primitives.hax.folds.usize.fold_range_spec {α}
     . rw [h_pre, List.length_range', ← h_x, USize64.ofNat_add, USize64.ofNat_toNat, USize64.add_assoc]
       intro; assumption
 
+
+open Lean in
+set_option hygiene false in
+macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
+  let tyDot (n : Name) := mkIdent (typeName.getId ++ n)
+  let tySimp (n : Name) := .mk
+    (Syntax.node .none ``Lean.Parser.Tactic.simpLemma #[mkNullNode, mkNullNode, tyDot n])
+  let tyRw (n : Name) := .mk
+    (Syntax.node .none ``Lean.Parser.Tactic.rwRule #[mkNullNode, tyDot n])
+  `(
+    @[specset int]
+    theorem $(mkIdent (`rust_primitives.hax.folds.usize.fold_range_spec ++ typeName.getId)) {α}
+      (s e : $typeName)
+      (inv : α -> $typeName -> RustM Bool)
+      (init: α)
+      (body : α -> $typeName -> RustM α) :
+      s.toNat ≤ e.toNat →
+      inv init s = pure true →
+      (∀ (acc:α) (i:$typeName),
+        s.toNat ≤ i.toNat →
+        i.toNat < e.toNat →
+        inv acc i = pure true →
+        ⦃ ⌜ True ⌝ ⦄
+        (body acc i)
+        ⦃ ⇓ res => ⌜ inv res (i+1) = pure true ⌝ ⦄) →
+      ⦃ ⌜ True ⌝ ⦄
+      (rust_primitives.hax.folds.fold_range s e inv init body)
+      ⦃ ⇓ r => ⌜ inv r e = pure true ⌝ ⦄
+    := by
+      intro h_inv_s h_le h_body
+      have : s.toNat < $(tyDot `size) := by apply $(tyDot `toNat_lt_size)
+      have : e.toNat < $(tyDot `size) := by apply $(tyDot `toNat_lt_size)
+      mvcgen [Spec.forIn_list, fold_range]
+      case inv1 =>
+        simp [Coe.coe]
+        exact (⇓ (⟨ suff, _, _ ⟩ , acc ) => ⌜ inv acc (s + ($(tyDot `ofNat) suff.length)) = pure true ⌝ )
+      case vc2.pre | vc4.post.except =>
+        simp [Coe.coe, $(tySimp `ofNat)] at * <;> try assumption
+      case vc3.post.success =>
+        simp at *
+        suffices (s + $(tyDot `ofNat) ($(tyDot `toNat) e - $(tyDot `toNat) s)) = e by rwa [← this]
+        rw [$(tyRw `ofNat_sub),
+          $(tyRw `ofNat_toNat),
+          $(tyRw `ofNat_toNat)]
+        <;> try assumption
+        rw (occs := [2])[← $(tyDot `sub_add_cancel) (b := s) (a := e)]
+        rw [$(tyRw `add_comm)]
+      case vc1.step _ x _ h_list _ h =>
+        intros
+        simp [Coe.coe] at h_list h
+        have ⟨k ,⟨ h_k, h_pre, h_suff⟩⟩ := List.range'_eq_append_iff.mp h_list
+        let h_suff := Eq.symm h_suff
+        let ⟨ h_x ,_ , h_suff⟩ := List.range'_eq_cons_iff.mp h_suff
+        unfold $(tyDot `size) at *
+        mstart ; mspec h_body <;> simp [Coe.coe] at *
+        . rw [← h_x, Nat.mod_eq_of_lt] <;> grind
+        . rw [← h_x, Nat.mod_eq_of_lt] <;> grind [Nat.add_sub_cancel']
+        . rw [← h_x, $(tyRw `ofNat_add),
+            $(tyRw `ofNat_toNat)]
+          rwa [h_pre, List.length_range'] at h
+        . rw [h_pre, List.length_range', ← h_x,
+            $(tyRw `ofNat_add),
+            $(tyRw `ofNat_toNat),
+            $(tyRw `add_assoc)]
+          intro; assumption
+  )
+
+declare_fold_specs unsigned UInt32 32
+
+declare_fold_specs unsigned UInt8 8
+declare_fold_specs unsigned UInt16 16
+declare_fold_specs unsigned UInt32 32
+declare_fold_specs unsigned UInt64 64
+declare_fold_specs unsigned USize64 64
+declare_fold_specs signed Int8 8
+declare_fold_specs signed Int16 16
+declare_fold_specs signed Int32 32
+declare_fold_specs signed Int64 64
+declare_fold_specs signed ISize System.Platform.numBits
+
 end Fold
