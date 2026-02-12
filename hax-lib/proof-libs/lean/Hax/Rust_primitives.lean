@@ -3,6 +3,7 @@ import Hax.Rust_primitives.Array
 import Hax.Rust_primitives.Boxed
 import Hax.Rust_primitives.BVDecide
 import Hax.Rust_primitives.Cast
+import Hax.Rust_primitives.Hax
 import Hax.Rust_primitives.Hax_lib
 import Hax.Rust_primitives.Index
 import Hax.Rust_primitives.Logical_op

@@ -1,5 +1,5 @@
 import Hax.Rust_primitives.RustM
-import Hax.Rust_primitives.Num
+import Hax.Rust_primitives.Hax_lib
 import Hax.MissingLean.Std.Do.Triple.SpecLemmas
 import Hax.Tactic.HaxConstructPure
 

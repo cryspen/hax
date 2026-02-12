@@ -23,6 +23,13 @@ fn square(x: u8) -> u8 {
     x * x
 }
 
+#[hax_lib::requires(hax_lib::forall(|i:u8| hax_lib::implies(i < 20, x > i)))]
+#[hax_lib::ensures(|r| !hax_lib::exists(|i:u8| !hax_lib::implies(i < 20, r > i)))]
+#[hax_lib::lean::proof_method::grind]
+fn forall_and_exists(x: u8) -> u8 {
+    x
+}
+
 /// Test function without arguments
 /// https://github.com/cryspen/hax/issues/1856
 #[hax_lib::ensures(|_| true)]
