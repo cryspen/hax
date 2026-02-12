@@ -561,12 +561,20 @@ const _: () = {
                             zip_left!(line!(), params).group(),
                             softline!(),
                             ":",
-                            docs!["RustM", softline!(), body.ty, softline!(), reflow!(":= do")]
-                                .group(),
+                            if params.is_empty() {
+                                docs![body.ty, softline!(), reflow!(":=")]
+                            } else {
+                                docs!["RustM", softline!(), body.ty, softline!(), reflow!(":= do")]
+                                    .group()
+                            }
                         ]
                         .group(),
                         line!(),
-                        body,
+                        if params.is_empty() {
+                            self.monad_extract_simplify(body)
+                        } else {
+                            docs![body]
+                        },
                     ]
                     .group()
                     .nest(INDENT),
