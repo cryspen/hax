@@ -1435,6 +1435,7 @@ class Baz (Self : Type)
   where
   One (Self) :u32 := (1 : u32)
 
+@[spec]
 def foo
     (F : Type)
     [trait_constr_foo_associated_type_i0 : Baz.AssociatedTypes F]
