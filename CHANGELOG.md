@@ -32,6 +32,7 @@ Changes to the Lean backend:
  - Add attributes for pureEnsures/pureRequires (#1931)
  - Extract correct `PhantomData` structure (#1932)
  - Standardize generated Lean naming to lowercase namespaces (#1914)
+ - Fix associated constants with default values (#1941)
 
 Miscellaneous:
 
