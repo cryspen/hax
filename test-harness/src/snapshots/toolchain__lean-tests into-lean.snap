@@ -149,7 +149,7 @@ def casting_edge_cases (_dummy : Bool) : RustM Bool := do
   ((← ((← ((← (case1 &&? case2)) &&? case3)) &&? case4)) &&? case5)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def casting_edge_cases.spec (_dummy : Bool) :
     Spec
       (requires := do pure True)
@@ -393,7 +393,7 @@ def while_loop1 (s : u32) : RustM u32 := do
   (pure x)
 
 set_option hax_mvcgen.specset "int" in
-@[spec]
+@[hax_spec]
 def while_loop1.spec (s : u32) :
     Spec
       (requires := do pure True)
@@ -700,7 +700,7 @@ namespace lean_tests.specs
 def test (x : u8) : RustM u8 := do (pure x)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def test.spec (x : u8) :
     Spec
       (requires := do (rust_primitives.hax.machine_int.gt x (0 : u8)))
@@ -711,10 +711,24 @@ def test.spec (x : u8) :
   contract := by hax_mvcgen [test] <;> bv_decide
 }
 
+def use_previous_result (x : u8) : RustM u8 := do (test x)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def use_previous_result.spec (x : u8) :
+    Spec
+      (requires := do (rust_primitives.hax.machine_int.gt x (0 : u8)))
+      (ensures := fun r => do (rust_primitives.hax.machine_int.eq r x))
+      (use_previous_result (x : u8)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [use_previous_result] <;> bv_decide
+}
+
 def test_proof (x : u8) : RustM u8 := do (pure x)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def test_proof.spec (x : u8) :
     Spec
       (requires := do (rust_primitives.hax.machine_int.gt x (0 : u8)))
@@ -728,7 +742,7 @@ def test_proof.spec (x : u8) :
 def square (x : u8) : RustM u8 := do (x *? x)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def square.spec (x : u8) :
     Spec
       (requires := do (rust_primitives.hax.machine_int.lt x (16 : u8)))
@@ -746,7 +760,7 @@ def fn_without_args (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def fn_without_args.spec (_ : rust_primitives.hax.Tuple0) :
     Spec
       (requires := do pure True)
@@ -772,7 +786,7 @@ def Impl.func (self : T) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def Impl.func.spec (self : T) :
     Spec
       (requires := do (Impl.test self))
@@ -792,7 +806,7 @@ def custom_pure_proofs (x : u8) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def custom_pure_proofs.spec (x : u8) :
     Spec
       (requires := do (pure true))
