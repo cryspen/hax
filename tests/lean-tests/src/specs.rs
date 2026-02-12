@@ -11,6 +11,12 @@ fn test_proof(x: u8) -> u8 {
     x
 }
 
+#[hax_lib::requires(x < 16)]
+#[hax_lib::ensures(|res| res >= x)]
+fn square(x: u8) -> u8 {
+    x * x
+}
+
 /// Test function without arguments
 /// https://github.com/cryspen/hax/issues/1856
 #[hax_lib::ensures(|_| true)]

@@ -33,27 +33,47 @@ pub fn hax_attributes(attrs: &Attributes) -> impl Iterator<Item = &AttrPayload> 
     })
 }
 
-/// Get an iterator over proof attributes.
-pub fn hax_proof_attributes(attrs: &Attributes) -> impl Iterator<Item = &String> {
-    hax_attributes(attrs).flat_map(|attr| match attr {
-        AttrPayload::Proof(proof) => Some(proof),
+/// Get proof attributes attached to the item
+pub fn hax_proof_attributes(item: &Item) -> Result<ProofAttributes, String> {
+    let mut proofs = hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
+        AttrPayload::Proof(proof) => Some(proof.clone()),
         _ => None,
-    })
-}
-
-/// Get an iterator over pure_requires_proof attributes.
-pub fn hax_pure_requires_proof_attributes(attrs: &Attributes) -> impl Iterator<Item = &String> {
-    hax_attributes(attrs).flat_map(|attr| match attr {
-        AttrPayload::PureRequiresProof(proof) => Some(proof),
+    });
+    let proof = proofs.next();
+    if proofs.next().is_some() {
+        return Err("At most one `proof` attribute per item is allowed.".into());
+    }
+    let mut pure_requires_proofs =
+        hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
+            AttrPayload::PureRequiresProof(proof) => Some(proof.clone()),
+            _ => None,
+        });
+    let pure_requires_proof = pure_requires_proofs.next();
+    if pure_requires_proofs.next().is_some() {
+        return Err("At most one `pure_requires_proof` attribute per item is allowed.".into());
+    }
+    let mut pure_ensures_proofs =
+        hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
+            AttrPayload::PureEnsuresProof(proof) => Some(proof.clone()),
+            _ => None,
+        });
+    let pure_ensures_proof = pure_ensures_proofs.next();
+    if pure_ensures_proofs.next().is_some() {
+        return Err("At most one `pure_ensures_proof` attribute per item is allowed.".into());
+    }
+    let mut proof_methods = hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
+        AttrPayload::ProofMethod(proof) => Some(proof.clone()),
         _ => None,
-    })
-}
-
-/// Get an iterator over pure_ensures_proof attributes.
-pub fn hax_pure_ensures_proof_attributes(attrs: &Attributes) -> impl Iterator<Item = &String> {
-    hax_attributes(attrs).flat_map(|attr| match attr {
-        AttrPayload::PureEnsuresProof(proof) => Some(proof),
-        _ => None,
+    });
+    let proof_method = proof_methods.next();
+    if proof_methods.next().is_some() {
+        return Err("At most one `proof_method` attribute per item is allowed.".into());
+    }
+    Ok(ProofAttributes {
+        proof,
+        pure_requires_proof,
+        pure_ensures_proof,
+        proof_method,
     })
 }
 
@@ -236,6 +256,12 @@ impl LinkedItemGraph {
             postcondition,
         }
     }
+
+    /// Is there a specification that we should prove for this item?
+    pub fn has_spec(&self, item: &Item) -> bool {
+        let spec = self.fn_like_linked_expressions(item, item.self_id());
+        spec.precondition.is_some() || spec.postcondition.is_some()
+    }
 }
 
 fn extract_expr<'a>(
@@ -288,8 +314,20 @@ pub struct Postcondition {
 pub struct FnLikeAssocatedExpressions {
     /// A decreases clause, see [`hax_lib::decreases`]
     pub decreases: Option<Expr>,
-    /// A decreases clause, see [`hax_lib::decreases`]
+    /// A precondition, see [`hax_lib::requires`]
     pub precondition: Option<Expr>,
-    /// A decreases clause, see [`hax_lib::decreases`]
+    /// A postcondition, see [`hax_lib::ensures`]
     pub postcondition: Option<Postcondition>,
+}
+
+/// The various linked expressions one can usually find on a (linked or not) function.
+pub struct ProofAttributes {
+    /// A custom proof, see [`hax_lib::lean::proof`]
+    pub proof: Option<String>,
+    /// A proof that the precondition is pure, see [`hax_lib::lean::pure_requires_proof`]
+    pub pure_requires_proof: Option<String>,
+    /// A proof that the postcondition is pure, see [`hax_lib::lean::pure_ensures_proof`]
+    pub pure_ensures_proof: Option<String>,
+    /// A proof method, see [`hax_lib::lean::proof_method`]
+    pub proof_method: Option<String>,
 }

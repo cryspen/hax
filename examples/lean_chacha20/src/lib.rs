@@ -191,8 +191,7 @@ theorem lean_chacha20.chacha20_encrypt_block_spec (st0 : (Vector u32 16)) (ctr :
           chacha20_core,
           chacha20_rounds,
           chacha20_double_round]
-  <;> simp [Vector.size_toArray, Vector.size] at *
-  <;> try omega
+  <;> try grind
 "
 )]
 pub fn chacha20_encrypt_block(st0: State, ctr: u32, plain: &Block) -> Block {
@@ -216,7 +215,8 @@ theorem lean_chacha20.chacha20_encrypt_last_spec (st0 : (Vector u32 16)) (ctr : 
           lean_chacha20.chacha20_key_block,
           lean_chacha20.chacha20_init,
           lean_chacha20.chacha20_core,
-          alloc.slice.Impl.to_vec,]
+          alloc.slice.Impl.to_vec,
+          hax_lib.assert]
   <;> grind
 "
 )]
@@ -243,8 +243,7 @@ by
       core_models.result.Impl.unwrap.spec,
       alloc.vec.Impl.new,
       alloc.vec.Impl_1.len,
-      ]
-    <;> simp_all [Nat.lt_div_iff_mul_lt]
+      hax_lib.assert]
     <;> grind
 "
 )]
@@ -276,7 +275,14 @@ theorem lean_chacha20.chacha20_spec
   ⦃⌜True⌝⦄
   (lean_chacha20.chacha20 m key iv ctr)
   ⦃ ⇓ _ => ⌜ True ⌝ ⦄
-:= by intros ; hax_mvcgen [lean_chacha20.chacha20, chacha20_init] <;> simp at *
+:= by 
+  intros
+  hax_mvcgen [lean_chacha20.chacha20, 
+    chacha20_init, 
+    alloc.vec.Impl.new, 
+    alloc.vec.Impl_1.len, 
+    hax_lib.assert]
+  <;> try grind
 "
 )]
 pub fn chacha20(m: &[u8], key: &ChaChaKey, iv: &ChaChaIV, ctr: u32) -> Vec<u8> {
