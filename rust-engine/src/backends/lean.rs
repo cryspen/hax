@@ -21,6 +21,7 @@ use crate::{
     phase::*,
 };
 use camino::Utf8PathBuf;
+use hax_lib_macros_types::ProofMethod;
 use hax_types::engine_api::File;
 
 mod binops {
@@ -659,27 +660,22 @@ const _: () = {
                 match hax_proof_attributes(item) {
                     Err(message) => emit_error!("{message}"),
                     Ok(proof_attributes) => {
-                        let proof_method =
-                            proof_attributes.proof_method.unwrap_or("bv_decide".into());
+                        let (tactic, specset) = match proof_attributes.proof_method {
+                            Some(ProofMethod::Grind) => ("grind", "int"),
+                            Some(ProofMethod::BvDecide) | None => ("bv_decide", "bv"),
+                        };
                         let pure_requires_proof = proof_attributes
                             .pure_requires_proof
-                            .unwrap_or(format!("by hax_construct_pure <;> {proof_method}"));
+                            .unwrap_or(format!("by hax_construct_pure <;> {tactic}"));
                         let pure_ensures_proof = proof_attributes
                             .pure_ensures_proof
-                            .unwrap_or(format!("by hax_construct_pure <;> {proof_method}"));
+                            .unwrap_or(format!("by hax_construct_pure <;> {tactic}"));
                         let proof = proof_attributes.proof.map(|s| docs![s]).unwrap_or(docs![
                             "by hax_mvcgen [",
                             name,
                             "] <;> ",
-                            proof_method.clone()
+                            tactic
                         ]);
-                        let specset = if proof_method == "bv_decide" {
-                            "bv"
-                        } else if proof_method == "grind" {
-                            "int"
-                        } else {
-                            emit_error!("Unknown proof method: {proof_method}")
-                        };
                         {
                             docs![
                                 hardline!(),

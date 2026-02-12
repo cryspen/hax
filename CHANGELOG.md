@@ -35,6 +35,7 @@ Changes to the Lean backend:
  - Standardize generated Lean naming to lowercase namespaces (#1914)
  - Fix associated constants with default values (#1941)
  - New default proof for the Lean backend & proof method attribute (#1938)
+ - Prettier proof_mode annotations (#1943)
 
 Miscellaneous:
 
