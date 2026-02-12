@@ -686,7 +686,7 @@ const _: () = {
                                 hardline!(),
                                 docs!["set_option hax_mvcgen.specset \"", specset, "\" in"],
                                 hardline!(),
-                                "@[spec]",
+                                "@[hax_spec]",
                                 hardline!(),
                                 docs![
                                     docs![

@@ -2,6 +2,7 @@
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax.MissingCore
+import Hax.Tactic.HaxSpec
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
@@ -481,7 +482,7 @@ namespace core_models.hint
 def black_box (T : Type) (dummy : T) : RustM T := do (pure dummy)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def black_box.spec (T : Type) (dummy : T) :
     Spec
       (requires := do pure True)
@@ -495,7 +496,7 @@ def black_box.spec (T : Type) (dummy : T) :
 def must_use (T : Type) (value : T) : RustM T := do (pure value)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def must_use.spec (T : Type) (value : T) :
     Spec
       (requires := do pure True)
@@ -1683,7 +1684,7 @@ def Impl.is_some (T : Type) (self : (Option T)) : RustM Bool := do
   match self with | (Option.Some  _) => (pure true) | _ => (pure false)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def Impl.is_some.spec (T : Type) (self : (Option T)) :
     Spec
       (requires := do pure True)
@@ -1999,7 +2000,7 @@ def Impl.copy_from_slice
   (pure s)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def
       Impl.copy_from_slice.spec
       (T : Type)
@@ -2039,7 +2040,7 @@ def Impl.clone_from_slice
   (pure s)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def
       Impl.clone_from_slice.spec
       (T : Type)
@@ -2069,7 +2070,7 @@ def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
   (rust_primitives.slice.slice_split_at T s mid)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
     Spec
       (requires := do

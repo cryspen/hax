@@ -385,7 +385,7 @@ def f (_ : rust_primitives.hax.Tuple0) : RustM rust_primitives.hax.Tuple0 := do
   (cyclic_modules.late_skip_a.f rust_primitives.hax.Tuple0.mk)
 
 set_option hax_mvcgen.specset "bv" in
-@[spec]
+@[hax_spec]
 def f.spec (_ : rust_primitives.hax.Tuple0) :
     Spec (requires := do (pure true)) (ensures := fun _ => pure True) (f ⟨⟩) :=
 {
