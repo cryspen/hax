@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 
 use hax_lib_macros_types::{AssociationRole, AttrPayload, ItemUid};
-use itertools::Itertools;
 
 use crate::ast::diagnostics::{Context, DiagnosticInfo, DiagnosticInfoKind};
 

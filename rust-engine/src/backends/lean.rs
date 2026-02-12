@@ -13,10 +13,7 @@ use crate::{
         identifiers::global_id::view::{ConstructorKind, PathSegment, TypeDefKind},
         span::Span,
     },
-    attributes::{
-        hax_proof_attributes, hax_proof_method_attributes, hax_pure_ensures_proof_attributes,
-        hax_pure_requires_proof_attributes,
-    },
+    attributes::hax_proof_attributes,
     names::rust_primitives::hax::{
         cast_op,
         explicit_monadic::{lift, pure},
