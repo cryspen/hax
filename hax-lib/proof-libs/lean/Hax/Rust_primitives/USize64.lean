@@ -242,9 +242,6 @@ theorem USize64.ofNat_sub {a b : Nat} (hab : b ≤ a) : USize64.ofNat (a - b) = 
 theorem USize64.le_ofNat_iff {n : USize64} {m : Nat} (h : m < size) : n ≤ ofNat m ↔ n.toNat ≤ m := by
   rw [le_iff_toNat_le, toNat_ofNat_of_lt' h]
 
-theorem USize64.ofNat_eq_of_toNat_eq {a : Nat} {b : USize64} (h : b.toNat = a) : ofNat a = b := by
-  subst_vars; exact USize64.ofNat_toNat
-
 /-!
 ## Grind's ToInt
 
@@ -426,3 +423,30 @@ dsimproc [seval] isValue ((OfNat.ofNat _ : USize64)) := fun e => do
   return .done e
 
 end USize64
+
+/-
+## Lemmas from `Init.SizeOfLemmas`:
+-/
+
+@[simp] protected theorem USize64.sizeOf (a : USize64) : sizeOf a = a.toNat + 3 := by
+  cases a; simp +arith [USize64.toNat, BitVec.toNat, -BitVec.val_toFin]
+
+/-
+## Lemmas from `MissingLean`:
+-/
+
+theorem USize64.ofNat_eq_of_toNat_eq {a : Nat} {b : USize64} (h : b.toNat = a) : ofNat a = b := by
+  subst_vars; exact USize64.ofNat_toNat
+
+theorem USize64.sub_add_eq {a b c : USize64} : a - (b + c) = a - b - c := by grind
+
+theorem USize64.sub_succ_lt_self (a b : USize64) (h : a < b) :
+    (b - (a + 1)).toNat < (b - a).toNat := by
+  rw [sub_add_eq]
+  rw [USize64.toNat_sub_of_le]
+  try simp only [USize.toNat_one]
+  apply Nat.sub_one_lt_of_lt
+  · change (0 : USize64).toNat < (b - a).toNat
+    rw [← lt_iff_toNat_lt]
+    grind
+  · grind

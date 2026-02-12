@@ -56,6 +56,8 @@ def gt {α} (x y: α) [LT α] [Decidable (x > y)] : RustM Bool := pure (x > y)
 @[simp, specset bv, hax_bv_decide]
 def ge {α} (x y: α) [LE α] [Decidable (x ≥ y)] : RustM Bool := pure (x ≥ y)
 
+attribute [specset bv] bne
+
 @[spec] def bitand {α} (x y: α) [AndOp α] : RustM α := pure (x &&& y)
 @[spec] def bitor  {α} (x y: α) [OrOp α]  : RustM α := pure (x ||| y)
 @[spec] def bitxor {α} (x y: α) [XorOp α] : RustM α := pure (x ^^^ y)
