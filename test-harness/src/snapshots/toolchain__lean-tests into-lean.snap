@@ -1372,6 +1372,21 @@ instance Impl : Foo Bar where
   f := true
   x := RustM.of_isOk (do ((1 : u8) +? (1 : u8))) (by rfl)
 
+class Baz.AssociatedTypes (Self : Type) where
+
+class Baz (Self : Type)
+  [associatedTypes : outParam (Baz.AssociatedTypes (Self : Type))]
+  where
+  One (Self) :u32 := (1 : u32)
+
+def foo
+    (F : Type)
+    [trait_constr_foo_associated_type_i0 : Baz.AssociatedTypes F]
+    [trait_constr_foo_i0 : Baz F ]
+    (n : u32) :
+    RustM u32 := do
+  (n +? (Baz.One F))
+
 end lean_tests.traits.associated_constant
 
 

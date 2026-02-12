@@ -336,4 +336,13 @@ mod associated_constant {
         const f: bool = true;
         const x: u8 = 1 + 1;
     }
+
+    // https://github.com/cryspen/hax/issues/1940
+    trait Baz {
+        const One : u32 = 1;
+    }
+
+    fn foo<F: Baz> (n : u32) -> u32 {
+        n + F::One
+    }
 }
