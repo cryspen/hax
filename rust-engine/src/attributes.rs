@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use hax_lib_macros_types::{AssociationRole, AttrPayload, ItemUid};
+use hax_lib_macros_types::{AssociationRole, AttrPayload, ItemUid, ProofMethod};
 
 use crate::ast::diagnostics::{Context, DiagnosticInfo, DiagnosticInfoKind};
 
@@ -62,7 +62,7 @@ pub fn hax_proof_attributes(item: &Item) -> Result<ProofAttributes, String> {
         return Err("At most one `pure_ensures_proof` attribute per item is allowed.".into());
     }
     let mut proof_methods = hax_attributes(&item.meta.attributes).flat_map(|attr| match attr {
-        AttrPayload::ProofMethod(proof) => Some(proof.clone()),
+        AttrPayload::ProofMethod(method) => Some(*method),
         _ => None,
     });
     let proof_method = proof_methods.next();
@@ -329,5 +329,5 @@ pub struct ProofAttributes {
     /// A proof that the postcondition is pure, see [`hax_lib::lean::pure_ensures_proof`]
     pub pure_ensures_proof: Option<String>,
     /// A proof method, see [`hax_lib::lean::proof_method`]
-    pub proof_method: Option<String>,
+    pub proof_method: Option<ProofMethod>,
 }

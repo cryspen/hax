@@ -104,6 +104,15 @@ pub struct ItemQuote {
     pub fstar_options: Option<ItemQuoteFStarOpts>,
 }
 
+/// The proof method to use for verification condition generation and discharge.
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Hash, Eq, PartialEq, Ord, PartialOrd)]
+#[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
+#[serde(rename = "HaProofMethod")]
+pub enum ProofMethod {
+    BvDecide,
+    Grind,
+}
+
 /// Hax only understands one attribute: `#[hax::json(PAYLOAD)]` where
 /// `PAYLOAD` is a JSON serialization of an inhabitant of
 /// `AttrPayload`.
@@ -136,7 +145,7 @@ pub enum AttrPayload {
     Proof(String),
     PureRequiresProof(String),
     PureEnsuresProof(String),
-    ProofMethod(String),
+    ProofMethod(ProofMethod),
     ProtocolMessages,
     PVConstructor,
     PVHandwritten,

@@ -33,6 +33,7 @@ Changes to the Lean backend:
  - Extract correct `PhantomData` structure (#1932)
  - Standardize generated Lean naming to lowercase namespaces (#1914)
  - New default proof for the Lean backend & proof method attribute (#1938)
+ - Prettier proof_mode annotations (#1943)
 
 Miscellaneous:
 

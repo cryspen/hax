@@ -858,14 +858,24 @@ pub fn lean_pure_ensures_proof(payload: pm::TokenStream, item: pm::TokenStream) 
     quote! {#attr #item}.into()
 }
 
-/// This macro selects a proof method. This will influence the set of spec used for
-/// verification condition generation as well as the Lean tactic to discharge them.
+/// Use the proof method `grind`. This influences the tactic and spec set used by Lean.
 #[proc_macro_error]
 #[proc_macro_attribute]
-pub fn lean_proof_method(payload: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+pub fn lean_proof_method_grind(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
     let item: ItemFn = parse_macro_input!(item);
-    let payload = parse_macro_input!(payload as LitStr).value();
-    let attr = AttrPayload::ProofMethod(payload);
+    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::Grind);
+    quote! {#attr #item}.into()
+}
+
+/// Use the proof method `bv_decide`. This influences the tactic and spec set used by Lean.
+#[proc_macro_error]
+#[proc_macro_attribute]
+pub fn lean_proof_method_bv_decide(
+    _attr: pm::TokenStream,
+    item: pm::TokenStream,
+) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    let attr = AttrPayload::ProofMethod(hax_lib_macros_types::ProofMethod::BvDecide);
     quote! {#attr #item}.into()
 }
 
