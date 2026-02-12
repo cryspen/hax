@@ -753,6 +753,41 @@ def square.spec (x : u8) :
   contract := by hax_mvcgen [square] <;> bv_decide
 }
 
+def forall_and_exists (x : u8) : RustM u8 := do (pure x)
+
+set_option hax_mvcgen.specset "int" in
+@[hax_spec]
+def forall_and_exists.spec (x : u8) :
+    Spec
+      (requires := do
+        (hax_lib.prop.constructors.forall
+          (fun i =>
+            (do
+            (hax_lib.prop.constructors.implies
+              (← (hax_lib.prop.constructors.from_bool
+                (← (rust_primitives.hax.machine_int.lt i (20 : u8)))))
+              (← (hax_lib.prop.constructors.from_bool
+                (← (rust_primitives.hax.machine_int.gt x i))))) :
+            RustM hax_lib.prop.Prop))))
+      (ensures := fun
+          r => do
+          (hax_lib.prop.constructors.not
+            (← (hax_lib.prop.constructors.exists
+              (fun i =>
+                (do
+                (hax_lib.prop.constructors.not
+                  (← (hax_lib.prop.constructors.implies
+                    (← (hax_lib.prop.constructors.from_bool
+                      (← (rust_primitives.hax.machine_int.lt i (20 : u8)))))
+                    (← (hax_lib.prop.constructors.from_bool
+                      (← (rust_primitives.hax.machine_int.gt r i))))))) :
+                RustM hax_lib.prop.Prop))))))
+      (forall_and_exists (x : u8)) := {
+  pureRequires := by hax_construct_pure <;> grind
+  pureEnsures := by hax_construct_pure <;> grind
+  contract := by hax_mvcgen [forall_and_exists] <;> grind
+}
+
 --  Test function without arguments
 --  https://github.com/cryspen/hax/issues/1856
 def fn_without_args (_ : rust_primitives.hax.Tuple0) :
