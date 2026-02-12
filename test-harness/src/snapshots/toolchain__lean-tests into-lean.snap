@@ -1659,6 +1659,19 @@ inductive MyList (T : Type) : Type
 end lean_tests.enums
 
 
+namespace lean_tests.recursion
+
+@[spec]
+def factorial (n : u32) : RustM u32 := do
+  if (← (rust_primitives.hax.machine_int.eq n (0 : u32))) then
+    (pure (1 : u32))
+  else
+    (n *? (← (factorial (← (n -? (1 : u32))))))
+partial_fixpoint
+
+end lean_tests.recursion
+
+
 namespace lean_tests.traits.associated_types
 
 class T1.AssociatedTypes (Self : Type) where

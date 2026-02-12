@@ -29,6 +29,20 @@ pub enum ResugaredItemKind {
         /// Note: constant supporting generics is a nightly feature (generic_const_items).
         generics: Generics,
     },
+    /// A recursive function definition. Detected by checking whether the function
+    /// body contains a reference to its own name.
+    RecursiveFn {
+        /// The identifier of the function.
+        name: GlobalId,
+        /// The generic arguments and constraints of the function.
+        generics: Generics,
+        /// The body of the function.
+        body: Expr,
+        /// The parameters of the function.
+        params: Vec<Param>,
+        /// The safety of the function.
+        safety: SafetyKind,
+    },
 }
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
