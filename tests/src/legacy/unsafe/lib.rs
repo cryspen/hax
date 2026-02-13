@@ -1,4 +1,5 @@
 //! @off: proverif
+//! @fail(tc): fstar(72)
 
 #![allow(dead_code)]
 

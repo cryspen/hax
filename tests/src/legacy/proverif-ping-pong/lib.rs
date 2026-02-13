@@ -1,3 +1,5 @@
+//! @fail(tc): fstar(72)
+
 mod a;
 mod b;
 

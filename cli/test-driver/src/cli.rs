@@ -2,6 +2,7 @@
 
 use anyhow::{Result, bail};
 use clap::Parser;
+use hax_types::cli_options::BackendName;
 use std::{
     env::current_dir,
     fs::create_dir_all,
@@ -28,6 +29,12 @@ pub struct Cli {
     /// This can be useful when adding a new backend to hax.
     #[clap(long)]
     promote_directives: bool,
+    /// Run tests only for the specified backend.
+    #[clap(long, short)]
+    backend: Option<BackendName>,
+    /// Only run tests whose name contains the given string.
+    #[clap(long, short)]
+    matching: Option<String>,
 }
 
 impl Cli {
@@ -54,6 +61,14 @@ impl Cli {
 
     pub fn promote_directives(&self) -> bool {
         self.promote_directives
+    }
+
+    pub fn backend(&self) -> Option<BackendName> {
+        self.backend
+    }
+
+    pub fn matching(&self) -> Option<&str> {
+        self.matching.as_deref()
     }
 
     /// Acquires a permit from the shared semaphore that limits concurrency.

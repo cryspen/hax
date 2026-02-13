@@ -1,3 +1,5 @@
+//! @fail(tc): fstar(72)
+
 mod recognized_loops {
 /// @fail(extraction): proverif(HAX0008)
     fn range() {

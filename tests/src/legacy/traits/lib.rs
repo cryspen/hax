@@ -1,3 +1,5 @@
+//! @fail(tc): fstar(72)
+
 #![allow(dead_code)]
 
 pub trait SuperTrait: Clone {

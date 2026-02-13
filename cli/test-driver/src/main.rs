@@ -64,14 +64,19 @@ impl BackendTestContext {
     /// Executes the full backend workflow for a single test module.
     async fn run(self) -> Result<()> {
         let _permit = self.options.semaphore_permit_for_test().await?;
+        let test = self.test.module_name.to_string();
         let out_dir = self
             .backend
-            .job_kind(BackendJobKind::CargoHaxInto {
-                test: self.test.module_name.to_string(),
-            })
+            .job_kind(BackendJobKind::CargoHaxInto { test: test.clone() })
             .run(async |job| self.run_inner(job).await)
             .await?;
         self.move_to_snapshots_directory(&out_dir).await?;
+        if self.needs_verification().await {
+            self.backend
+                .job_kind(BackendJobKind::Verification { test })
+                .run(async |job| self.run_verification(job).await)
+                .await?;
+        }
         Ok(())
     }
 
@@ -97,11 +102,12 @@ impl BackendTestContext {
         &self,
         job: JobKind,
         exit_status: i32,
-        unexpected_diagnostics: Diagnostics,
+        unexpected_diagnostics: Option<Diagnostics>,
         missing_expected_diagnostics: Vec<(DefId, ErrorCode)>,
     ) -> Result<()> {
         let unexpected_diagnostics = unexpected_diagnostics
             .iter()
+            .flat_map(|d| d.iter())
             .flat_map(OutMsg::render)
             .collect::<Vec<_>>();
 
@@ -133,11 +139,8 @@ impl BackendTestContext {
         }
     }
 
-    /// Move the given output extraction directory to the canonical path the snapshots belongs to.
-    async fn move_to_snapshots_directory(&self, out_dir: &Path) -> Result<()> {
-        static DIRS: LazyLock<Mutex<HashSet<PathBuf>>> =
-            LazyLock::new(|| Mutex::new(HashSet::new()));
-
+    /// Path to snapshots directory
+    async fn path_to_snapshots(&self) -> Result<PathBuf> {
         let relative_path_to_test = self
             .test
             .module_path
@@ -148,12 +151,20 @@ impl BackendTestContext {
                 .file_stem()
                 .context("internal error, test module has no `*.rs` extension?")?,
         );
-        let path_to_snapshots = self
+        Ok(self
             .options
             .tests_crate_dir()
             .join("snapshots")
             .join(relative_path_to_test)
-            .join(self.backend.to_string());
+            .join(self.backend.to_string()))
+    }
+
+    /// Move the given output extraction directory to the canonical path the snapshots belongs to.
+    async fn move_to_snapshots_directory(&self, out_dir: &Path) -> Result<()> {
+        static DIRS: LazyLock<Mutex<HashSet<PathBuf>>> =
+            LazyLock::new(|| Mutex::new(HashSet::new()));
+
+        let path_to_snapshots = self.path_to_snapshots().await?;
 
         if !DIRS.lock().unwrap().insert(path_to_snapshots.clone()) {
             panic!(
@@ -210,11 +221,40 @@ impl BackendTestContext {
         self.report_results(
             job,
             engine_out.error_code,
-            unexpected_diagnostics,
+            Some(unexpected_diagnostics),
             missing_expected_diagnostics,
         )
         .await?;
         Ok(out_dir)
+    }
+
+    /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
+    /// and verification is not expected to fail
+    async fn needs_verification(&self) -> bool {
+        match self.backend {
+            BackendName::Fstar | BackendName::Lean => self
+                .test
+                .expected_diagnostics(self.backend, FailureKind::Typecheck)
+                .is_empty(),
+            _ => false,
+        }
+    }
+
+    /// Runs backend verification
+    async fn run_verification(&self, job: JobKind) -> Result<()> {
+        let dir = self.path_to_snapshots().await?;
+        let output = match self.backend {
+            BackendName::Fstar => run_fstar(true, dir).await?,
+            BackendName::Lean => run_lean(dir).await?,
+            _ => unreachable!(),
+        };
+        if output.error_code != 0 {
+            job.report_message(output.stderr);
+            bail!("Type-checking failed")
+        }
+        self.report_results(job, output.error_code, None, Vec::new())
+            .await?;
+        Ok(())
     }
 }
 
@@ -277,9 +317,13 @@ async fn main() -> Result<()> {
         )
     })?;
 
-    let backends: Vec<_> = BackendName::iter()
-        .filter(|backend| !DISABLED_BACKENDS.contains(backend))
-        .collect();
+    let backends: Vec<_> = if let Some(backend) = options.backend() {
+        vec![backend]
+    } else {
+        BackendName::iter()
+            .filter(|backend| !DISABLED_BACKENDS.contains(backend))
+            .collect()
+    };
 
     let cache_dir = options.cache_dir();
     tokio::fs::create_dir_all(&cache_dir)
@@ -303,13 +347,30 @@ async fn main() -> Result<()> {
                 tests: tests
                     .iter()
                     .filter(|test| !test.off().contains(&backend))
+                    .filter(|test| {
+                        options
+                            .matching()
+                            .map_or(true, |m| test.module_name.contains(m))
+                    })
                     .cloned()
                     .collect(),
                 options: options.clone(),
                 backend,
             };
+            let verification_count = context
+                .tests
+                .iter()
+                .filter(|test| {
+                    matches!(backend, BackendName::Fstar | BackendName::Lean)
+                        && test
+                            .expected_diagnostics(backend, FailureKind::Typecheck)
+                            .is_empty()
+                })
+                .count();
             backend
-                .job_kind(BackendJobKind::NumberBackendJobs(context.tests.len()))
+                .job_kind(BackendJobKind::NumberBackendJobs(
+                    context.tests.len() + verification_count,
+                ))
                 .report_no_message();
             tokio::spawn(context.run()).await
         })
