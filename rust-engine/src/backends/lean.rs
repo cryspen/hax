@@ -862,20 +862,6 @@ const _: () = {
                     bounds_impls: _,
                     trait_,
                 } => {
-                    let bin_ops = [
-                        binops::add,
-                        binops::sub,
-                        binops::mul,
-                        binops::div,
-                        binops::rem,
-                        binops::shr,
-                        binops::shl,
-                        binops::bitand,
-                        binops::bitxor,
-                        binops::logical_op_and,
-                        binops::logical_op_or,
-                        binops::Index::index,
-                    ];
                     match (&args[..], &generic_args[..], head.kind()) {
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
@@ -902,7 +888,25 @@ const _: () = {
                                 .nest(INDENT)
                                 .group()
                         }
-                        ([lhs, rhs], [], ExprKind::GlobalId(op)) if bin_ops.contains(op) => {
+                        // TODO: Replace this match pattern with an `if let` guard when the feature stabilizes
+                        // Tracking PR: https://github.com/rust-lang/rust/pull/141295
+                        (
+                            [lhs, rhs],
+                            [],
+                            ExprKind::GlobalId(
+                                op @ (binops::add
+                                | binops::sub
+                                | binops::mul
+                                | binops::div
+                                | binops::rem
+                                | binops::shr
+                                | binops::shl
+                                | binops::bitand
+                                | binops::bitxor
+                                | binops::logical_op_and
+                                | binops::logical_op_or),
+                            ),
+                        ) => {
                             let symbol = match *op {
                                 binops::add => "+?",
                                 binops::sub => "-?",
