@@ -144,20 +144,6 @@ impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
         vec![
             Box::new(RecursiveFunctions),
-            Box::new(BinOp::new(&[
-                binops::add,
-                binops::sub,
-                binops::mul,
-                binops::rem,
-                binops::div,
-                binops::shr,
-                binops::shl,
-                binops::bitand,
-                binops::bitxor,
-                binops::logical_op_and,
-                binops::logical_op_or,
-                binops::Index::index,
-            ])),
             Box::new(FunctionsToConstants),
             Box::new(LetPure),
         ]
@@ -901,6 +887,49 @@ const _: () = {
                         ([arg], [], ExprKind::GlobalId(binops::neg)) => {
                             docs!["-?", softline!(), arg].parens()
                         }
+                        ([lhs, rhs], [], ExprKind::GlobalId(binops::Index::index)) => {
+                            docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
+                                .nest(INDENT)
+                                .group()
+                        }
+                        // TODO: Replace this match pattern with an `if let` guard when the feature stabilizes
+                        // Tracking PR: https://github.com/rust-lang/rust/pull/141295
+                        (
+                            [lhs, rhs],
+                            [],
+                            ExprKind::GlobalId(
+                                op @ (binops::add
+                                | binops::sub
+                                | binops::mul
+                                | binops::div
+                                | binops::rem
+                                | binops::shr
+                                | binops::shl
+                                | binops::bitand
+                                | binops::bitxor
+                                | binops::logical_op_and
+                                | binops::logical_op_or),
+                            ),
+                        ) => {
+                            let symbol = match *op {
+                                binops::add => "+?",
+                                binops::sub => "-?",
+                                binops::mul => "*?",
+                                binops::div => "/?",
+                                binops::rem => "%?",
+                                binops::shr => ">>>?",
+                                binops::shl => "<<<?",
+                                binops::bitand => "&&&?",
+                                binops::bitxor => "^^^?",
+                                binops::logical_op_and => "&&?",
+                                binops::logical_op_or => "||?",
+                                _ => unreachable!(),
+                            };
+                            docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
+                                .group()
+                                .nest(INDENT)
+                                .parens()
+                        }
                         _ => {
                             // Fallback for any application
                             docs![
@@ -1015,33 +1044,6 @@ const _: () = {
                 .group()
                 .nest(INDENT),
 
-                ExprKind::Resugared(ResugaredExprKind::BinOp { op, lhs, rhs, .. }) => {
-                    // TODO : refactor this, moving this code directly in the `App` node (see
-                    // https://github.com/cryspen/hax/issues/1705)
-                    if *op == binops::Index::index {
-                        return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
-                            .nest(INDENT)
-                            .group();
-                    }
-                    let symbol = match *op {
-                        binops::add => "+?",
-                        binops::sub => "-?",
-                        binops::mul => "*?",
-                        binops::div => "/?",
-                        binops::rem => "%?",
-                        binops::shr => ">>>?",
-                        binops::shl => "<<<?",
-                        binops::bitand => "&&&?",
-                        binops::bitxor => "^^^?",
-                        binops::logical_op_and => "&&?",
-                        binops::logical_op_or => "||?",
-                        _ => unreachable!(),
-                    };
-                    docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
-                        .group()
-                        .nest(INDENT)
-                        .parens()
-                }
                 ExprKind::Resugared(ResugaredExprKind::Tuple { .. }) => {
                     unreachable!("This printer doesn't use the tuple resugaring")
                 }
