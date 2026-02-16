@@ -131,3 +131,59 @@ impl Resugaring for LetPure {
         "let_pure".to_string()
     }
 }
+
+/// Recursive function detection. Identifies functions whose body contains a
+/// reference to their own name and resugars them to [`ResugaredItemKind::RecursiveFn`].
+#[derive(Copy, Clone, Default)]
+pub struct RecursiveFunctions;
+
+/// Helper visitor that checks whether an expression tree contains a reference
+/// to a specific [`GlobalId`].
+struct SelfReferenceChecker {
+    target: GlobalId,
+    found: bool,
+}
+
+impl AstVisitor for SelfReferenceChecker {
+    fn enter_expr_kind(&mut self, kind: &ExprKind) {
+        if let ExprKind::GlobalId(id) = kind
+            && *id == self.target
+        {
+            self.found = true;
+        }
+    }
+}
+
+impl AstVisitorMut for RecursiveFunctions {
+    fn visit_item_kind(&mut self, item_kind: &mut ItemKind) {
+        if let ItemKind::Fn {
+            name,
+            generics,
+            body,
+            params,
+            safety,
+        } = &*item_kind
+        {
+            let mut checker = SelfReferenceChecker {
+                target: *name,
+                found: false,
+            };
+            checker.visit_expr(body);
+            if checker.found {
+                *item_kind = ItemKind::Resugared(ResugaredItemKind::RecursiveFn {
+                    name: *name,
+                    generics: generics.clone(),
+                    body: body.clone(),
+                    params: params.clone(),
+                    safety: safety.clone(),
+                });
+            }
+        }
+    }
+}
+
+impl Resugaring for RecursiveFunctions {
+    fn name(&self) -> String {
+        "recursive-functions".to_string()
+    }
+}

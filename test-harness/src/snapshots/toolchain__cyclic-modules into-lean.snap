@@ -355,6 +355,7 @@ namespace cyclic_modules.rec
 @[spec]
 def hf (x : T) : RustM T := do
   match x with | (T.t1 ) => (hf T.t2) | (T.t2 ) => (pure x)
+partial_fixpoint
 
 end cyclic_modules.rec
 

@@ -655,6 +655,9 @@ const _: () = {
                         ";"
                     ]
                 }
+                ResugaredItemKind::RecursiveFn { .. } => {
+                    unreachable!("The Rust backend does not use the RecursiveFn resugaring")
+                }
             }
         }
         fn item_kind(&self, item_kind: &ItemKind) -> DocBuilder<A> {

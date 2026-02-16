@@ -38,6 +38,7 @@ Changes to the Lean backend:
  - Fix associated constants with default values (#1941)
  - New default proof for the Lean backend & proof method attribute (#1938)
  - Prettier proof_mode annotations (#1943)
+ - Detect recursive functions and mark them partial_fixpoint (#1946)
 
 Miscellaneous:
 

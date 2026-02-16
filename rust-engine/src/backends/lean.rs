@@ -142,7 +142,11 @@ impl RenderView for LeanPrinter {
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(FunctionsToConstants), Box::new(LetPure)]
+        vec![
+            Box::new(RecursiveFunctions),
+            Box::new(FunctionsToConstants),
+            Box::new(LetPure),
+        ]
     }
 }
 
@@ -1818,6 +1822,27 @@ const _: () = {
                     ]
                     .group()
                     .nest(INDENT),
+                    ResugaredItemKind::RecursiveFn {
+                        name,
+                        generics,
+                        body,
+                        params,
+                        safety,
+                    } => {
+                        // Render the item with an appended `partial_fixpoint`:
+                        let item = Item {
+                            ident: item.ident,
+                            kind: ItemKind::Fn {
+                                name: *name,
+                                generics: generics.clone(),
+                                body: body.clone(),
+                                params: params.clone(),
+                                safety: safety.clone(),
+                            },
+                            meta: item.meta.clone(),
+                        };
+                        return docs![item, hardline!(), "partial_fixpoint"];
+                    }
                 },
                 ItemKind::Alias { .. } => {
                     // aliases are introduced when creating bundles. Those should not appear in
