@@ -848,10 +848,10 @@ const _: () = {
                 } => {
                     if let Some(else_branch) = else_ {
                         docs![
-                            docs!["if", line!(), condition, reflow!(" then")].group(),
+                            docs!["if", line!(), condition, reflow!(" then do")].group(),
                             docs![line!(), then].nest(INDENT),
                             line!(),
-                            "else",
+                            reflow!("else do"),
                             docs![line!(), else_branch].nest(INDENT)
                         ]
                         .group()
@@ -1085,6 +1085,8 @@ const _: () = {
                     &arm.pat,
                     softline!(),
                     "=>",
+                    softline!(),
+                    "do",
                     line!(),
                     &arm.body
                 ]
