@@ -862,6 +862,20 @@ const _: () = {
                     bounds_impls: _,
                     trait_,
                 } => {
+                    let bin_ops = [
+                        binops::add,
+                        binops::sub,
+                        binops::mul,
+                        binops::div,
+                        binops::rem,
+                        binops::shr,
+                        binops::shl,
+                        binops::bitand,
+                        binops::bitxor,
+                        binops::logical_op_and,
+                        binops::logical_op_or,
+                        binops::Index::index,
+                    ];
                     match (&args[..], &generic_args[..], head.kind()) {
                         ([arg], [], ExprKind::GlobalId(LIFT)) => docs![reflow!("← "), arg].parens(),
                         ([arg], [], ExprKind::GlobalId(PURE)) => {
@@ -882,6 +896,31 @@ const _: () = {
                         .nest(INDENT),
                         ([arg], [], ExprKind::GlobalId(binops::neg)) => {
                             docs!["-?", softline!(), arg].parens()
+                        }
+                        ([lhs, rhs], [], ExprKind::GlobalId(op)) if bin_ops.contains(op) => {
+                            if *op == binops::Index::index {
+                                return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
+                                    .nest(INDENT)
+                                    .group();
+                            }
+                            let symbol = match *op {
+                                binops::add => "+?",
+                                binops::sub => "-?",
+                                binops::mul => "*?",
+                                binops::div => "/?",
+                                binops::rem => "%?",
+                                binops::shr => ">>>?",
+                                binops::shl => "<<<?",
+                                binops::bitand => "&&&?",
+                                binops::bitxor => "^^^?",
+                                binops::logical_op_and => "&&?",
+                                binops::logical_op_or => "||?",
+                                _ => unreachable!(),
+                            };
+                            docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
+                                .group()
+                                .nest(INDENT)
+                                .parens()
                         }
                         _ => {
                             // Fallback for any application
