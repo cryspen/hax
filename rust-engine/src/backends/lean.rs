@@ -997,33 +997,6 @@ const _: () = {
                 .group()
                 .nest(INDENT),
 
-                ExprKind::Resugared(ResugaredExprKind::BinOp { op, lhs, rhs, .. }) => {
-                    // TODO : refactor this, moving this code directly in the `App` node (see
-                    // https://github.com/cryspen/hax/issues/1705)
-                    if *op == binops::Index::index {
-                        return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
-                            .nest(INDENT)
-                            .group();
-                    }
-                    let symbol = match *op {
-                        binops::add => "+?",
-                        binops::sub => "-?",
-                        binops::mul => "*?",
-                        binops::div => "/?",
-                        binops::rem => "%?",
-                        binops::shr => ">>>?",
-                        binops::shl => "<<<?",
-                        binops::bitand => "&&&?",
-                        binops::bitxor => "^^^?",
-                        binops::logical_op_and => "&&?",
-                        binops::logical_op_or => "||?",
-                        _ => unreachable!(),
-                    };
-                    docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]
-                        .group()
-                        .nest(INDENT)
-                        .parens()
-                }
                 ExprKind::Resugared(ResugaredExprKind::Tuple { .. }) => {
                     unreachable!("This printer doesn't use the tuple resugaring")
                 }
