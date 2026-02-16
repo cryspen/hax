@@ -9,7 +9,6 @@ use crate::ast::resugared::*;
 use crate::ast::visitors::*;
 use crate::ast::*;
 use crate::printer::*;
-use std::collections::HashSet;
 
 /// Transforms [`ItemKind::Fn`] of arity zero into [`ResugaredItemKind::Constant`].
 /// Rust `const` items are encoded by the `ImportThir` phase of the hax engine as function of arity zero.
