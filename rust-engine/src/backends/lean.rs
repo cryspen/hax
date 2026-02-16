@@ -142,24 +142,7 @@ impl RenderView for LeanPrinter {
 
 impl Printer for LeanPrinter {
     fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(BinOp::new(&[
-                binops::add,
-                binops::sub,
-                binops::mul,
-                binops::rem,
-                binops::div,
-                binops::shr,
-                binops::shl,
-                binops::bitand,
-                binops::bitxor,
-                binops::logical_op_and,
-                binops::logical_op_or,
-                binops::Index::index,
-            ])),
-            Box::new(FunctionsToConstants),
-            Box::new(LetPure),
-        ]
+        vec![Box::new(FunctionsToConstants), Box::new(LetPure)]
     }
 }
 
