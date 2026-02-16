@@ -897,12 +897,12 @@ const _: () = {
                         ([arg], [], ExprKind::GlobalId(binops::neg)) => {
                             docs!["-?", softline!(), arg].parens()
                         }
+                        ([lhs, rhs], [], ExprKind::GlobalId(binops::Index::index)) => {
+                            docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
+                                .nest(INDENT)
+                                .group()
+                        }
                         ([lhs, rhs], [], ExprKind::GlobalId(op)) if bin_ops.contains(op) => {
-                            if *op == binops::Index::index {
-                                return docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
-                                    .nest(INDENT)
-                                    .group();
-                            }
                             let symbol = match *op {
                                 binops::add => "+?",
                                 binops::sub => "-?",
