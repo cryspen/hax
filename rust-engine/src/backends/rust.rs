@@ -590,7 +590,6 @@ const _: () = {
         }
         fn resugared_expr_kind(&self, resugared_expr_kind: &ResugaredExprKind) -> DocBuilder<A> {
             match resugared_expr_kind {
-                ResugaredExprKind::BinOp { .. } => unreachable!("BinOp resugaring not active"),
                 ResugaredExprKind::Tuple(values) => print_tuple!(values),
                 ResugaredExprKind::LetPure { .. } => unreachable!("LetPure resugaring not active"),
             }
