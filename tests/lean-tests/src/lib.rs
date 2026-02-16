@@ -14,6 +14,7 @@ pub mod matching;
 pub mod monadic;
 pub mod nested_control_flow;
 pub mod opaque;
+pub mod recursion;
 pub mod specs;
 pub mod structs;
 pub mod traits;
