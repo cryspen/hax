@@ -43,17 +43,15 @@ deriving Repr, BEq, DecidableEq, Inhabited
 
 namespace RustM
 
-@[simp, hax_bv_decide]
+@[hax_bv_decide, reducible, simp]
 instance instPure: Pure RustM where
   pure x := .ok x
 
-@[simp]
 def bind {α β : Type} (x: RustM α) (f: α -> RustM β) := match x with
   | .ok v => f v
   | .fail e => .fail e
   | .div => .div
 
-@[simp]
 def ofOption {α} (x:Option α) (e: Error) : RustM α := match x with
   | .some v => pure v
   | .none => .fail e
@@ -71,65 +69,51 @@ def of_isOk {α : Type} (x: RustM α) (h: RustM.isOk x): α :=
 @[simp, spec]
 def ok_of_isOk {α : Type} (v : α) (h: isOk (ok v)): (ok v).of_isOk h = v := by rfl
 
-@[simp, hax_bv_decide]
+@[hax_bv_decide]
 instance instMonad : Monad RustM where
   pure := pure
   bind := RustM.bind
 
-@[simp]
 instance instLawfulMonad : LawfulMonad RustM where
   id_map x := by
-    dsimp [id, Functor.map]
+    dsimp [id, Functor.map, RustM.bind, instPure]
     cases x;
     all_goals grind
   map_const := by
     intros α β
     dsimp [Functor.map, Functor.mapConst]
   seqLeft_eq x y := by
-    dsimp [Functor.map, SeqLeft.seqLeft, Seq.seq]
+    dsimp [Functor.map, SeqLeft.seqLeft, Seq.seq, pure, bind]
     cases x ; all_goals cases y
     all_goals try simp
   seqRight_eq x y := by
-    dsimp [Functor.map, SeqRight.seqRight, Seq.seq]
+    dsimp [Functor.map, SeqRight.seqRight, Seq.seq, pure, bind]
     cases x ; all_goals cases y
     all_goals try simp
   pure_seq g x := by
-    dsimp [Functor.map, Seq.seq, pure]
+    dsimp [Functor.map, Seq.seq, pure, bind]
   bind_pure_comp f x := by
-    dsimp [Functor.map]
+    dsimp [Functor.map, pure, bind, instMonad]
   bind_map f x := by
-    dsimp [Functor.map, bind, pure, Seq.seq]
+    dsimp [Functor.map, bind, pure, Seq.seq, instMonad]
   pure_bind x f := by
-    dsimp [pure, bind, pure]
+    dsimp [pure, bind, instMonad]
   bind_assoc x f g := by
-    dsimp [pure, bind]
+    dsimp [pure, bind, instMonad]
     cases x; all_goals simp
 
-@[simp]
 instance instWP : WP RustM (.except Error .pure) where
   wp x := match x with
   | .ok v => wp (Pure.pure v : Except Error _)
   | .fail e => wp (throw e : Except Error _)
   | .div => PredTrans.const ⌜False⌝
 
-@[simp]
 instance instWPMonad : WPMonad RustM (.except Error .pure) where
   wp_pure := by intros; ext Q; simp [wp, PredTrans.pure, Pure.pure, Except.pure, Id.run]
   wp_bind x f := by
-    simp only [instWP]
+    simp only [instWP, instMonad, bind]
     ext Q
     cases x <;> simp [PredTrans.bind, PredTrans.const, Bind.bind]
-
-@[default_instance]
-instance instCoe {α} : Coe α (RustM α) where
-  coe x := pure x
-
-@[simp, spec, default_instance]
-instance {α} : Coe (RustM (RustM α)) (RustM α) where
-  coe x := match x with
-  | .ok y => y
-  | .fail e => .fail e
-  | .div => .div
 
 section Order
 

@@ -98,7 +98,7 @@ infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
 @[simp, spec, specset bv, hax_bv_decide]
 def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
 
-abbrev core.cmp.PartialEq.eq {α} [BEq α] (a b : α) := BEq.beq a b
+abbrev core.cmp.PartialEq.eq {α} [BEq α] (a b : α) : RustM Bool := pure (BEq.beq a b)
 
 set_option linter.unusedVariables false in
 /-- Hax-generated bounded integers -/

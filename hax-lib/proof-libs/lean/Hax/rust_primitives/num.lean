@@ -28,7 +28,7 @@ def from_le_bytes (x : Vector u8 4) : u32 :=
 
 @[simp, spec]
 def to_le_bytes (x : u32) : RustM (Vector u8 4) :=
-  #v[
+  pure #v[
     (x % 256).toUInt8,
     (x >>> 8 % 256).toUInt8,
     (x >>> 16 % 256).toUInt8,

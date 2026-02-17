@@ -17,16 +17,16 @@ macro "declare_Hax_float_ops" typeName:ident : command =>
       Output := $typeName
 
     instance : core_models.ops.arith.Add $typeName $typeName where
-      add := fun x y => x + y
+      add := fun x y => pure (x + y)
 
     instance : core_models.ops.arith.Sub $typeName $typeName where
-      sub := fun x y => x - y
+      sub := fun x y => pure (x - y)
 
     instance : core_models.ops.arith.Mul $typeName $typeName where
-      mul := fun x y => x * y
+      mul := fun x y => pure (x * y)
 
     instance : core_models.ops.arith.Div $typeName $typeName where
-      div := fun x y => x / y
+      div := fun x y => pure (x / y)
 
     end $typeName
   )

@@ -10,15 +10,15 @@ def rotate_left (x: u32) (n: Nat) : RustM u32 :=
   pure (UInt32.ofBitVec (BitVec.rotateLeft x.toBitVec n))
 
 @[spec]
-def from_le_bytes (x: Vector u8 4) : u32 :=
-  x[0].toUInt32
+def from_le_bytes (x: Vector u8 4) : RustM u32 :=
+  pure (x[0].toUInt32
   + (x[1].toUInt32 <<< 8)
   + (x[2].toUInt32 <<< 16)
-  + (x[3].toUInt32 <<< 24)
+  + (x[3].toUInt32 <<< 24))
 
 @[spec]
 def to_le_bytes (x:u32) : RustM (Vector u8 4) :=
-  #v[
+  pure #v[
     (x % 256).toUInt8,
     (x >>> 8 % 256).toUInt8,
     (x >>> 16 % 256).toUInt8,

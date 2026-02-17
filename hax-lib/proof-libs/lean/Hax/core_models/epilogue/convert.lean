@@ -59,7 +59,7 @@ macro "declare_Hax_convert_from_instances" : command => do
         @[reducible]
         instance : core_models.convert.From.AssociatedTypes $ty1Ident $ty2Ident where
         instance : core_models.convert.From $ty1Ident $ty2Ident where
-          _from := fun x => x.$toTy1
+          _from := fun x => pure x.$toTy1
       )
   return ⟨mkNullNode cmds⟩
 
