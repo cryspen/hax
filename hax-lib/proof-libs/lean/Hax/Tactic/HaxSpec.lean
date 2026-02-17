@@ -1,5 +1,5 @@
 import Lean
-import Hax.Rust_primitives.Spec
+import Hax.rust_primitives.Spec
 
 namespace Hax.Tactic.HaxSpec
 
