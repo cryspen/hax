@@ -288,6 +288,13 @@ path = "{hax_path}"
             hax_path = hax_lib_path.display()
         );
         std::fs::write(&lakefile_path, lakefile)?;
+
+        // Copy the lean-toolchain from the proof library so that elan
+        // picks the matching Lean version.
+        let toolchain_src = hax_lib_path.join("lean-toolchain");
+        if toolchain_src.exists() {
+            std::fs::copy(&toolchain_src, dir.join("lean-toolchain"))?;
+        }
     }
 
     let mut command = tokio::process::Command::new("lake");
