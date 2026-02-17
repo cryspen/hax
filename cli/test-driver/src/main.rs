@@ -249,6 +249,21 @@ impl BackendTestContext {
             _ => unreachable!(),
         };
         if output.error_code != 0 {
+            if self.options.promote_directives() {
+                use crate::promote_directives::*;
+                let kind = LineKind::Directive {
+                    directive: directives::Directive::Item(directives::ItemDirective::Failure {
+                        kind: FailureKind::Typecheck,
+                        backends: std::iter::once((
+                            self.backend,
+                            vec![ErrorCode::new(output.error_code.to_string())],
+                        ))
+                        .collect(),
+                    }),
+                    bang: true,
+                };
+                push_line(&self.test.module_path, Line { line: 0, kind })?;
+            }
             job.report_message(output.stderr);
             bail!("Type-checking failed")
         }
