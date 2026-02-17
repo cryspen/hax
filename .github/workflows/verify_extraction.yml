@@ -28,7 +28,7 @@ jobs:
 
     - name: Verify F* tests
       run: |
-        nix develop .#ci-examples --command just test -b fstar
+        nix develop .#ci-examples --command just test -b fstar -j 1
 
     - name: Verify Lean tests
       run: |
