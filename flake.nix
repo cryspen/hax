@@ -235,6 +235,7 @@
               packages.fstar
               packages.proverif
               pkgs.jq
+              pkgs.just
               pkgs.elan
             ];
           };
