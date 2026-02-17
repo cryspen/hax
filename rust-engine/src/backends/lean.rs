@@ -25,6 +25,8 @@ use hax_lib_macros_types::ProofMethod;
 use hax_types::engine_api::File;
 
 mod binops {
+    pub use crate::names::core::cmp::PartialEq;
+    pub use crate::names::core::ops::bit::*;
     pub use crate::names::core::ops::index::*;
     pub use crate::names::rust_primitives::arithmetic::neg;
     pub use crate::names::rust_primitives::hax::machine_int::*;
