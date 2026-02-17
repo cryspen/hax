@@ -29,29 +29,20 @@ jobs:
         nix profile install .#rustc
         nix profile install .
 
-    - name: Ensure readme coherency
+    - name: Verify F* tests
       run: |
-        nix build .#check-readme-coherency -L
+        nix develop .#ci-examples --command just test -b fstar
 
-    - name: Test the toolchain
+    - name: Verify Lean tests
       run: |
-        nix build .#check-toolchain -L
+        nix develop .#ci-examples --command just test -b lean
 
     - name: Try to extract Rust By Examples
       run: |
         nix build .#rust-by-example-hax-extraction -L
 
-    - name: Checkout specifications
-      uses: actions/checkout@v4
-      with:
-        repository: 'hacspec/specs'
-        path: specs
-
-    - name: Push to Cachix
-      if: ${{ github.event_name == 'workflow_dispatch'  || github.event_name == 'merge_group'  }}
-      env:
-        CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+    - name: Test the examples
       run: |
-        nix build .# .#fstar --json \
-          | jq -r '.[].outputs | to_entries[].value' \
-          | cachix push hax
+        cd examples
+        nix develop ..#ci-examples --command make clean
+        nix develop ..#ci-examples --command make
