@@ -886,8 +886,20 @@ const _: () = {
                         .parens()
                         .group()
                         .nest(INDENT),
-                        ([arg], [], ExprKind::GlobalId(binops::neg)) => {
-                            docs!["-?", softline!(), arg].parens()
+                        // TODO: Replace this match pattern with an `if let` guard when the feature stabilizes
+                        // Tracking PR: https://github.com/rust-lang/rust/pull/141295
+                        (
+                            [arg],
+                            [],
+                            ExprKind::GlobalId(op @ (binops::neg | binops::not | binops::Not::not)),
+                        ) => {
+                            let symbol = match *op {
+                                binops::neg => "-?",
+                                binops::not => "~?",
+                                binops::Not::not => "!?",
+                                _ => unreachable!(),
+                            };
+                            docs![symbol, softline!(), arg].parens()
                         }
                         ([lhs, rhs], [], ExprKind::GlobalId(binops::Index::index)) => {
                             docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
