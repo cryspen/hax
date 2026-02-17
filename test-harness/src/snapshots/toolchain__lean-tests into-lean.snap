@@ -713,7 +713,7 @@ end lean_tests.nested_control_flow
 namespace lean_tests.opaque
 
 opaque an_opaque_fn (_ : rust_primitives.hax.Tuple0) :
-    RustM rust_primitives.hax.Tuple0 
+    RustM rust_primitives.hax.Tuple0
 
 class T.AssociatedTypes (Self : Type) where
   A : Type

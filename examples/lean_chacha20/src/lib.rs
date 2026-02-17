@@ -52,7 +52,7 @@ theorem lean_chacha20.chacha20_quarter_round_spec a b c d state:
   hax_mvcgen [lean_chacha20.chacha20_quarter_round,
           lean_chacha20.chacha20_line,
           RustM.ofOption, ]
-  <;> try omega
+  <;> try grind
 "
 )]
 pub fn chacha20_quarter_round(

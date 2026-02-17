@@ -1372,8 +1372,11 @@ const _: () = {
                                     "RustM",
                                     line!(),
                                     &body.ty,
-                                    line!(),
-                                    if opaque { nil!() } else { docs![":= do"] }
+                                    if opaque {
+                                        nil!()
+                                    } else {
+                                        docs![line!(), ":= do"]
+                                    }
                                 ]
                                 .group(),
                             ]

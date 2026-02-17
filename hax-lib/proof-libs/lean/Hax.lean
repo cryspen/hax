@@ -19,10 +19,10 @@ limitations under the License. -/
 import Hax.MissingLean
 
 /- Implementation of Rust primitives in Lean -/
-import Hax.Rust_primitives
+import Hax.rust_primitives
 
 /- Core Models, extracted from our model written in Rust -/
-import Hax.Core_models
+import Hax.core_models
 
 /- Tactics -/
 import Hax.Tactic
