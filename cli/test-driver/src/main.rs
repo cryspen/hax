@@ -229,8 +229,11 @@ impl BackendTestContext {
     }
 
     /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
-    /// and verification is not expected to fail
+    /// verification is not expected to fail, and `--no-verify` was not passed.
     async fn needs_verification(&self) -> bool {
+        if self.options.no_verify() {
+            return false;
+        }
         match self.backend {
             BackendName::Fstar | BackendName::Lean => self
                 .test
@@ -372,16 +375,20 @@ async fn main() -> Result<()> {
                 options: options.clone(),
                 backend,
             };
-            let verification_count = context
-                .tests
-                .iter()
-                .filter(|test| {
-                    matches!(backend, BackendName::Fstar | BackendName::Lean)
-                        && test
-                            .expected_diagnostics(backend, FailureKind::Typecheck)
-                            .is_empty()
-                })
-                .count();
+            let verification_count = if options.no_verify() {
+                0
+            } else {
+                context
+                    .tests
+                    .iter()
+                    .filter(|test| {
+                        matches!(backend, BackendName::Fstar | BackendName::Lean)
+                            && test
+                                .expected_diagnostics(backend, FailureKind::Typecheck)
+                                .is_empty()
+                    })
+                    .count()
+            };
             backend
                 .job_kind(BackendJobKind::NumberBackendJobs(
                     context.tests.len() + verification_count,

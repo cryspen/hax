@@ -1,4 +1,5 @@
 //! @fail(tc): lean(1), fstar(2)
+//! @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008)
 #![feature(coverage_attribute)]
 //@ edition: 2021
 //@ compile-flags: -Zcoverage-options=branch
@@ -22,7 +23,6 @@ enum Enum {
     D(u32),
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn match_arms(value: Enum) {
     no_merge!();
 
@@ -36,7 +36,6 @@ fn match_arms(value: Enum) {
     consume(0);
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn or_patterns(value: Enum) {
     no_merge!();
 
@@ -48,7 +47,6 @@ fn or_patterns(value: Enum) {
     consume(0);
 }
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 fn guards(value: Enum, cond: bool) {
     no_merge!();
 
@@ -69,11 +67,8 @@ fn consume<T>(x: T) {
 }
 
 #[coverage(off)]
-/// @fail(extraction): proverif(HAX0008)
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 fn main() {
     #[coverage(off)]
-/// @fail(extraction): proverif(HAX0008)
     fn call_everything(e: Enum) {
         match_arms(e);
         or_patterns(e);

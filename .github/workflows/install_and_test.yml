@@ -37,6 +37,14 @@ jobs:
       run: |
         nix build .#check-toolchain -L
 
+    - name: Verify F* tests
+      run: |
+        nix develop .#ci-examples --command just test -b fstar
+
+    - name: Verify Lean tests
+      run: |
+        nix develop .#ci-examples --command just test -b lean
+
     - name: Try to extract Rust By Examples
       run: |
         nix build .#rust-by-example-hax-extraction -L

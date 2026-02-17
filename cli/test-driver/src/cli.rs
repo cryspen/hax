@@ -35,6 +35,9 @@ pub struct Cli {
     /// Only run tests whose name contains the given string.
     #[clap(long, short)]
     matching: Option<String>,
+    /// Skip verification (F* / Lean type-checking) and only run extraction.
+    #[clap(long)]
+    no_verify: bool,
 }
 
 impl Cli {
@@ -69,6 +72,10 @@ impl Cli {
 
     pub fn matching(&self) -> Option<&str> {
         self.matching.as_deref()
+    }
+
+    pub fn no_verify(&self) -> bool {
+        self.no_verify
     }
 
     /// Acquires a permit from the shared semaphore that limits concurrency.
