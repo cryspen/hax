@@ -1,4 +1,4 @@
-name: Install & test
+name: Test backend verification
 
 on:
   pull_request:
@@ -19,9 +19,6 @@ jobs:
         name: hax
         skipPush: true
         extraPullNames: fstar-nix-versions, z3-nix-versions
-
-    - name: Build
-      run: nix build -L
 
     - name: Install the toolchain
       run: |
