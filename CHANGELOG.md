@@ -23,6 +23,7 @@ Changes to hax-lib:
  - Lean lib: Separate symbolic and bit-blasting specs (#1933)
  - Lean lib: Communicate user-generated specs to mvcgen (#1937)
  - Lean lib: Rust primitives for prop (#1942)
+ - Lean lib: For-loops for all unsigned integers (#1951)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)

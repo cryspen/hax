@@ -343,6 +343,7 @@ end lean_tests.ite
 
 namespace lean_tests.loops
 
+--  Simple for-loop
 @[spec]
 def loop1 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let x : u32 := (0 : u32);
@@ -355,6 +356,7 @@ def loop1 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
       (fun x i => (do (x +? i) : RustM u32)));
   (pure x)
 
+--  For-loop with a return
 @[spec]
 def loop2 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let x : u32 := (0 : u32);
@@ -382,6 +384,44 @@ def loop2 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
     | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
     | (core_models.ops.control_flow.ControlFlow.Continue  x) => do (pure x)
 
+--  For-loop with a spec
+def for_loop_with_spec (y : u64) : RustM u64 := do
+  let x : u64 := y;
+  let x : u64 ←
+    (rust_primitives.hax.folds.fold_range
+      (0 : u64)
+      y
+      (fun x i =>
+        (do (rust_primitives.hax.machine_int.gt x (0 : u64)) : RustM Bool))
+      x
+      (fun x i =>
+        (do
+        if
+        (← (rust_primitives.hax.machine_int.eq (← (x %? (5 : u64))) (0 : u64)))
+        then do
+          let x : u64 := (200 : u64);
+          (pure x)
+        else do
+          let x : u64 ← (x %? (5 : u64));
+          (pure x) :
+        RustM u64)));
+  (pure x)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def for_loop_with_spec.spec (y : u64) :
+    Spec
+      (requires := do (rust_primitives.hax.machine_int.gt y (0 : u64)))
+      (ensures := fun
+          res => do
+          (rust_primitives.hax.machine_int.gt res (0 : u64)))
+      (for_loop_with_spec (y : u64)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [for_loop_with_spec] <;> bv_decide
+}
+
+--  while-loop
 def while_loop1 (s : u32) : RustM u32 := do
   let x : u32 := s;
   let x : u32 ←
