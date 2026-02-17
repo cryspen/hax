@@ -920,9 +920,19 @@ const _: () = {
                                 | binops::shr
                                 | binops::shl
                                 | binops::bitand
+                                | binops::BitAnd::bitand
+                                | binops::bitor
+                                | binops::BitOr::bitor
                                 | binops::bitxor
+                                | binops::BitXor::bitxor
                                 | binops::logical_op_and
-                                | binops::logical_op_or),
+                                | binops::logical_op_or
+                                | binops::eq
+                                | binops::PartialEq::eq
+                                | binops::lt
+                                | binops::le
+                                | binops::gt
+                                | binops::ge),
                             ),
                         ) => {
                             let symbol = match *op {
