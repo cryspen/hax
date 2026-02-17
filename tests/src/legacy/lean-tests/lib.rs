@@ -1,3 +1,4 @@
+//! @fail(tc): lean(1)
 //! @off: ssprove, fstar, coq
 #![allow(dead_code)]
 #![allow(unused_variables)]

@@ -1,3 +1,4 @@
+//! @fail(tc): lean(1)
 //! @fail(extraction): lean(HAX0001, HAX0001)
 //! @fail(tc): fstar(72)
 

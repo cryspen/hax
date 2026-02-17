@@ -35,13 +35,13 @@ Record ViaMul_record : Type :=
 #[export]
 Notation "'ViaMul_ViaMul_record'" := Build_ViaMul_record.
 
-Instance t_Operation_294884486 : t_Operation ((t_ViaAdd)) :=
+Instance t_Operation_383807665 : t_Operation ((t_ViaAdd)) :=
   {
     implaabbcc_t_Operation_f_double := fun  (x : t_u8)=>
       f_add (x) (x);
   }.
 
-Instance t_Operation_996022044 : t_Operation ((t_ViaMul)) :=
+Instance t_Operation_313219824 : t_Operation ((t_ViaMul)) :=
   {
     implaabbcc_t_Operation_f_double := fun  (x : t_u8)=>
       f_mul (x) ((2 : t_u8));

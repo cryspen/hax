@@ -1,3 +1,4 @@
+//! @fail(tc): lean(1)
 //! @fail(tc): fstar(72)
 
 mod recognized_loops {

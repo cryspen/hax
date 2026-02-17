@@ -1,3 +1,4 @@
+//! @fail(tc): lean(1)
 #![allow(dead_code)]
 use hax_lib::*;
 
