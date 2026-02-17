@@ -383,7 +383,7 @@ end core_models.default
 
 namespace core_models.f32
 
-opaque Impl.abs (x : f64) : RustM f64 
+opaque Impl.abs (x : f64) : RustM f64
 
 end core_models.f32
 
@@ -409,23 +409,23 @@ opaque ArgumentType : Type
 structure Argument where
   ty : ArgumentType
 
-opaque Impl.new_display (T : Type) (x : T) : RustM Argument 
+opaque Impl.new_display (T : Type) (x : T) : RustM Argument
 
-opaque Impl.new_debug (T : Type) (x : T) : RustM Argument 
+opaque Impl.new_debug (T : Type) (x : T) : RustM Argument
 
-opaque Impl.new_lower_hex (T : Type) (x : T) : RustM Argument 
+opaque Impl.new_lower_hex (T : Type) (x : T) : RustM Argument
 
-opaque Impl_1.new_binary (T : Type) (x : T) : RustM Argument 
+opaque Impl_1.new_binary (T : Type) (x : T) : RustM Argument
 
 opaque Impl_1.new_const (T : Type) (U : Type) (x : T) (y : U) :
-    RustM core_models.fmt.Arguments 
+    RustM core_models.fmt.Arguments
 
 opaque Impl_1.new_v1 (T : Type) (U : Type) (V : Type) (W : Type)
     (x : T)
     (y : U)
     (z : V)
     (t : W) :
-    RustM core_models.fmt.Arguments 
+    RustM core_models.fmt.Arguments
 
 @[spec]
 def Impl_1.none (_ : rust_primitives.hax.Tuple0) :
@@ -436,7 +436,7 @@ opaque Impl_1.new_v1_formatted (T : Type) (U : Type) (V : Type)
     (x : T)
     (y : U)
     (z : V) :
-    RustM core_models.fmt.Arguments 
+    RustM core_models.fmt.Arguments
 
 inductive Count : Type
 | Is : u16 -> Count
@@ -653,34 +653,34 @@ end core_models.marker
 
 namespace core_models.mem
 
-opaque forget (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0 
+opaque forget (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0
 
-opaque forget_unsized (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0 
+opaque forget_unsized (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0
 
-opaque size_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque size_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque size_of_val (T : Type) (val : T) : RustM usize 
+opaque size_of_val (T : Type) (val : T) : RustM usize
 
-opaque min_align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque min_align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque min_align_of_val (T : Type) (val : T) : RustM usize 
+opaque min_align_of_val (T : Type) (val : T) : RustM usize
 
-opaque align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque align_of_val (T : Type) (val : T) : RustM usize 
+opaque align_of_val (T : Type) (val : T) : RustM usize
 
-opaque align_of_val_raw (T : Type) (val : T) : RustM usize 
+opaque align_of_val_raw (T : Type) (val : T) : RustM usize
 
-opaque needs_drop (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM Bool 
+opaque needs_drop (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM Bool
 
-opaque uninitialized (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
+opaque uninitialized (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T
 
-opaque swap (T : Type) (x : T) (y : T) : RustM (rust_primitives.hax.Tuple2 T T) 
+opaque swap (T : Type) (x : T) (y : T) : RustM (rust_primitives.hax.Tuple2 T T)
 
 opaque replace (T : Type) (dest : T) (src : T) :
-    RustM (rust_primitives.hax.Tuple2 T T) 
+    RustM (rust_primitives.hax.Tuple2 T T)
 
-opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0 
+opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0
 
 @[spec]
 def copy
@@ -691,15 +691,15 @@ def copy
     RustM T := do
   (pure x)
 
-opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T) 
+opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T)
 
-opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
+opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst
 
-opaque variant_count (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque variant_count (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque zeroed (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
+opaque zeroed (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T
 
-opaque transmute (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
+opaque transmute (Src : Type) (Dst : Type) (src : Src) : RustM Dst
 
 end core_models.mem
 
@@ -744,9 +744,9 @@ def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
 def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
   (rust_primitives.arithmetic.pow_u8 x exp)
 
-opaque Impl_6.leading_zeros (x : u8) : RustM u32 
+opaque Impl_6.leading_zeros (x : u8) : RustM u32
 
-opaque Impl_6.ilog2 (x : u8) : RustM u32 
+opaque Impl_6.ilog2 (x : u8) : RustM u32
 
 @[spec]
 def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
@@ -764,9 +764,9 @@ def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
 def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
   (rust_primitives.arithmetic.pow_u16 x exp)
 
-opaque Impl_7.leading_zeros (x : u16) : RustM u32 
+opaque Impl_7.leading_zeros (x : u16) : RustM u32
 
-opaque Impl_7.ilog2 (x : u16) : RustM u32 
+opaque Impl_7.ilog2 (x : u16) : RustM u32
 
 @[spec]
 def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
@@ -784,9 +784,9 @@ def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
 def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
   (rust_primitives.arithmetic.pow_u32 x exp)
 
-opaque Impl_8.leading_zeros (x : u32) : RustM u32 
+opaque Impl_8.leading_zeros (x : u32) : RustM u32
 
-opaque Impl_8.ilog2 (x : u32) : RustM u32 
+opaque Impl_8.ilog2 (x : u32) : RustM u32
 
 @[spec]
 def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
@@ -804,9 +804,9 @@ def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
 def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
   (rust_primitives.arithmetic.pow_u64 x exp)
 
-opaque Impl_9.leading_zeros (x : u64) : RustM u32 
+opaque Impl_9.leading_zeros (x : u64) : RustM u32
 
-opaque Impl_9.ilog2 (x : u64) : RustM u32 
+opaque Impl_9.ilog2 (x : u64) : RustM u32
 
 @[spec]
 def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
@@ -824,9 +824,9 @@ def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
 def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
   (rust_primitives.arithmetic.pow_u128 x exp)
 
-opaque Impl_10.leading_zeros (x : u128) : RustM u32 
+opaque Impl_10.leading_zeros (x : u128) : RustM u32
 
-opaque Impl_10.ilog2 (x : u128) : RustM u32 
+opaque Impl_10.ilog2 (x : u128) : RustM u32
 
 @[spec]
 def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
@@ -844,9 +844,9 @@ def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
 def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
   (rust_primitives.arithmetic.pow_usize x exp)
 
-opaque Impl_11.leading_zeros (x : usize) : RustM u32 
+opaque Impl_11.leading_zeros (x : usize) : RustM u32
 
-opaque Impl_11.ilog2 (x : usize) : RustM u32 
+opaque Impl_11.ilog2 (x : usize) : RustM u32
 
 @[spec]
 def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
@@ -864,9 +864,9 @@ def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
 def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
   (rust_primitives.arithmetic.pow_i8 x exp)
 
-opaque Impl_12.leading_zeros (x : i8) : RustM u32 
+opaque Impl_12.leading_zeros (x : i8) : RustM u32
 
-opaque Impl_12.ilog2 (x : i8) : RustM u32 
+opaque Impl_12.ilog2 (x : i8) : RustM u32
 
 @[spec]
 def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
@@ -884,9 +884,9 @@ def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
 def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
   (rust_primitives.arithmetic.pow_i16 x exp)
 
-opaque Impl_13.leading_zeros (x : i16) : RustM u32 
+opaque Impl_13.leading_zeros (x : i16) : RustM u32
 
-opaque Impl_13.ilog2 (x : i16) : RustM u32 
+opaque Impl_13.ilog2 (x : i16) : RustM u32
 
 @[spec]
 def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
@@ -904,9 +904,9 @@ def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
 def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
   (rust_primitives.arithmetic.pow_i32 x exp)
 
-opaque Impl_14.leading_zeros (x : i32) : RustM u32 
+opaque Impl_14.leading_zeros (x : i32) : RustM u32
 
-opaque Impl_14.ilog2 (x : i32) : RustM u32 
+opaque Impl_14.ilog2 (x : i32) : RustM u32
 
 @[spec]
 def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
@@ -924,9 +924,9 @@ def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
 def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
   (rust_primitives.arithmetic.pow_i64 x exp)
 
-opaque Impl_15.leading_zeros (x : i64) : RustM u32 
+opaque Impl_15.leading_zeros (x : i64) : RustM u32
 
-opaque Impl_15.ilog2 (x : i64) : RustM u32 
+opaque Impl_15.ilog2 (x : i64) : RustM u32
 
 @[spec]
 def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
@@ -944,9 +944,9 @@ def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
 def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
   (rust_primitives.arithmetic.pow_i128 x exp)
 
-opaque Impl_16.leading_zeros (x : i128) : RustM u32 
+opaque Impl_16.leading_zeros (x : i128) : RustM u32
 
-opaque Impl_16.ilog2 (x : i128) : RustM u32 
+opaque Impl_16.ilog2 (x : i128) : RustM u32
 
 @[spec]
 def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
@@ -964,9 +964,9 @@ def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
 def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
   (rust_primitives.arithmetic.pow_isize x exp)
 
-opaque Impl_17.leading_zeros (x : isize) : RustM u32 
+opaque Impl_17.leading_zeros (x : isize) : RustM u32
 
-opaque Impl_17.ilog2 (x : isize) : RustM u32 
+opaque Impl_17.ilog2 (x : isize) : RustM u32
 
 @[reducible] instance Impl_18.AssociatedTypes :
   core_models.default.Default.AssociatedTypes u8
@@ -1709,19 +1709,19 @@ end core_models.option
 namespace core_models.panicking
 
 opaque panic_explicit (_ : rust_primitives.hax.Tuple0) :
-    RustM rust_primitives.hax.Never 
+    RustM rust_primitives.hax.Never
 
-opaque panic (_msg : String) : RustM rust_primitives.hax.Never 
+opaque panic (_msg : String) : RustM rust_primitives.hax.Never
 
 opaque panic_fmt (_fmt : core_models.fmt.Arguments) :
-    RustM rust_primitives.hax.Never 
+    RustM rust_primitives.hax.Never
 
 end core_models.panicking
 
 
 namespace core_models.panicking.internal
 
-opaque panic (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
+opaque panic (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T
 
 end core_models.panicking.internal
 
@@ -1843,40 +1843,40 @@ end core_models.fmt
 namespace core_models.num
 
 opaque Impl_6.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u8 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u8 core_models.num.error.ParseIntError)
 
 opaque Impl_7.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u16 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u16 core_models.num.error.ParseIntError)
 
 opaque Impl_8.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u32 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u32 core_models.num.error.ParseIntError)
 
 opaque Impl_9.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u64 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u64 core_models.num.error.ParseIntError)
 
 opaque Impl_10.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u128 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u128 core_models.num.error.ParseIntError)
 
 opaque Impl_11.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result usize core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result usize core_models.num.error.ParseIntError)
 
 opaque Impl_12.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i8 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i8 core_models.num.error.ParseIntError)
 
 opaque Impl_13.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i16 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i16 core_models.num.error.ParseIntError)
 
 opaque Impl_14.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i32 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i32 core_models.num.error.ParseIntError)
 
 opaque Impl_15.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i64 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i64 core_models.num.error.ParseIntError)
 
 opaque Impl_16.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i128 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i128 core_models.num.error.ParseIntError)
 
 opaque Impl_17.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result isize core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result isize core_models.num.error.ParseIntError)
 
 end core_models.num
 
@@ -1968,7 +1968,7 @@ def Impl.chunks_exact (T : Type) (s : (RustSlice T)) (cs : usize) :
 def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
   (rust_primitives.hax.machine_int.eq (← (Impl.len T s)) (0 : usize))
 
-opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
+opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool
 
 opaque Impl.copy_within
     (T : Type)
@@ -1980,10 +1980,10 @@ opaque Impl.copy_within
     (s : (RustSlice T))
     (src : R)
     (dest : usize) :
-    RustM (RustSlice T) 
+    RustM (RustSlice T)
 
 opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
-    RustM (core_models.result.Result usize usize) 
+    RustM (core_models.result.Result usize usize)
 
 def Impl.copy_from_slice
     (T : Type)
@@ -2107,7 +2107,7 @@ end core_models.str.error
 namespace core_models.str.converts
 
 opaque from_utf8 (s : (RustSlice u8)) :
-    RustM (core_models.result.Result String core_models.str.error.Utf8Error) 
+    RustM (core_models.result.Result String core_models.str.error.Utf8Error)
 
 end core_models.str.converts
 
