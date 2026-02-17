@@ -8,10 +8,6 @@ import Hax.Tactic.Init
 -/
 section Cast
 
-/-- Hax-introduced explicit cast. It is partial (returns a `RustM`) -/
-@[simp, spec, hax_bv_decide]
-def Core.Convert.From._from (β α) [Coe α (RustM β)] (x:α) : (RustM β) := x
-
 /-- Rust-supported casts on base types -/
 class Cast (α β: Type) where
   cast : α → RustM β

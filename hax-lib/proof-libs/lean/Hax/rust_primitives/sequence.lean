@@ -14,7 +14,7 @@ def rust_primitives.sequence.seq_first (α : Type) (s : rust_primitives.sequence
 
 def rust_primitives.sequence.seq_slice
   (α : Type) (seq : rust_primitives.sequence.Seq α) (s e : usize) : RustM (rust_primitives.sequence.Seq α) :=
-  if s ≤ e && e ≤ seq.size then
-    pure seq[s:e].toArray
+  if s ≤ e && e ≤ .ofNat seq.size then
+    pure seq[s.toNat:e.toNat].toArray
   else
     .fail .undef

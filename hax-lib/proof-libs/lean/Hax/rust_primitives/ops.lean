@@ -48,49 +48,6 @@ instance : ToNat u16 where
 @[simp, grind]
 instance : ToNat u8 where
   toNat x := x.toNat
-@[simp, grind]
-instance : ToNat Nat where
-  toNat x := x
-
-/-
-  Coercions between integer types
--/
--- TODO : make sure all are necessary, document their use-cases
-@[simp, spec]
-instance : Coe i32 (RustM i64) where
-  coe x := pure (x.toInt64)
-
-@[simp]
-instance : Coe usize Nat where
-  coe x := x.toNat
-
-@[simp]
-instance : Coe Nat u32 where
-  coe n := UInt32.ofNat n
-
-@[simp]
-instance : Coe u32 Nat where
-  coe x := x.toNat
-
-@[simp]
-instance : Coe Nat usize where
-  coe x := USize64.ofNat x
-
-@[simp]
-instance : Coe usize u32 where
-  coe x := x.toUInt32
-
-@[simp]
-instance : Coe usize (RustM u32) where
-  coe x := if x.toNat < UInt32.size then pure (x.toUInt32)
-           else RustM.fail .integerOverflow
-
-@[simp]
-instance {n: Nat} : OfNat (RustM Nat) n where
-  ofNat := pure (n)
-
-instance {α n} [i: OfNat α n] : OfNat (RustM α) n where
-  ofNat := pure (i.ofNat)
 
 infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)

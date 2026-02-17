@@ -8,21 +8,21 @@ open Std.Do
 
 namespace core_models.convert
 
-@[reducible] instance {α : Type} {n : Nat} : TryInto.AssociatedTypes (RustSlice α) (RustArray α n) where
+@[reducible] instance {α : Type} {n : usize} : TryInto.AssociatedTypes (RustSlice α) (RustArray α n) where
   Error := core_models.array.TryFromSliceError
 
-instance {α : Type} {n : Nat} : TryInto (RustSlice α) (RustArray α n) where
+instance {α : Type} {n : usize} : TryInto (RustSlice α) (RustArray α n) where
   try_into a :=
    pure (
-     if h: a.size = n then
+     if h: a.size = n.toNat then
        core_models.result.Result.Ok (a.toVector.cast h)
      else
        .Err core_models.array.TryFromSliceError.mk
      )
 
 @[spec]
-theorem TryInto.try_into.spec {α : Type} {n: Nat} (a: RustSlice α) :
-  (h: a.size = n) →
+theorem TryInto.try_into.spec {α : Type} {n: usize} (a: RustSlice α) :
+  (h: a.size = n.toNat) →
   ⦃ ⌜ True ⌝ ⦄
   (TryInto.try_into (RustSlice α) (RustArray α n) a )
   ⦃ ⇓ r => ⌜ r = .Ok (a.toVector.cast h) ⌝ ⦄ := by

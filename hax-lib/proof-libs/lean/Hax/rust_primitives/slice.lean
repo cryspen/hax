@@ -19,7 +19,7 @@ def rust_primitives.slice.array_map (α : Type) (β : Type) (n : usize) (_ : Typ
 @[spec]
 def rust_primitives.slice.array_from_fn (α : Type) (n : usize) (_ : Type)
     (f : usize -> RustM α) : RustM (RustArray α n) :=
-  (Vector.range n).mapM fun i => f (USize64.ofNat i)
+  (Vector.range n.toNat).mapM fun i => f (USize64.ofNat i)
 
 @[spec]
 def rust_primitives.slice.slice_length (α : Type) (s : RustSlice α) : RustM usize :=
@@ -33,14 +33,14 @@ def rust_primitives.sequence.seq_from_slice (α : Type) (s : RustSlice α) :
 @[spec]
 def rust_primitives.slice.slice_split_at (α : Type) (s : RustSlice α) (mid : usize) :
     RustM (rust_primitives.hax.Tuple2 (RustSlice α) (RustSlice α)) :=
-  if mid <= s.size then
-    pure ⟨s.take mid, s.drop mid⟩
+  if mid <= .ofNat s.size then
+    pure ⟨s.take mid.toNat, s.drop mid.toNat⟩
   else
     .fail .arrayOutOfBounds
 
 def rust_primitives.slice.slice_slice
   (α : Type) (seq : RustSlice α) (s e : usize) : RustM (RustSlice α) :=
-  if s ≤ e && e ≤ seq.size then
-    pure seq[s:e].toArray
+  if s ≤ e && e ≤ .ofNat seq.size then
+    pure seq[s.toNat:e.toNat].toArray
   else
     .fail .undef

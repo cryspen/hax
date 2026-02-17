@@ -19,7 +19,7 @@ def alloc.vec.Impl.new (α: Type) (_:Tuple0) : RustM (alloc.vec.Vec α alloc.all
   pure ((List.nil).toArray)
 
 def alloc.vec.Impl_1.len (α: Type) (_Allocator: Type) (x: alloc.vec.Vec α alloc.alloc.Global) : RustM usize :=
-  pure x.size
+  pure (.ofNat x.size)
 
 def alloc.vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: alloc.vec.Vec α alloc.alloc.Global) (y: Array α)
   : RustM (alloc.vec.Vec α alloc.alloc.Global):=
@@ -27,14 +27,5 @@ def alloc.vec.Impl_2.extend_from_slice α (_Allocator: Type) (x: alloc.vec.Vec �
 
 def alloc.slice.Impl.to_vec α (a:  Array α) : RustM (alloc.vec.Vec α alloc.alloc.Global) :=
   pure a
-
--- For
-instance {α n} : Coe (Array α) (RustM (Vector α n)) where
-  coe x :=
-    if h: x.size = n then by
-      rw [←h]
-      apply pure
-      apply (Array.toVector x)
-    else .fail (.arrayOutOfBounds)
 
 end RustVectors

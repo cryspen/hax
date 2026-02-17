@@ -14,28 +14,28 @@ Rust arrays, are represented as Lean `Vector` (Lean Arrays of known size)
 -/
 section RustArray
 
-abbrev RustArray := Vector
+abbrev RustArray (α : Type) (n : usize) := Vector α n.toNat
 
 def rust_primitives.hax.monomorphized_update_at.update_at_usize {α n}
-  (a: Vector α n) (i:Nat) (v:α) : RustM (Vector α n) :=
-  if h: i < a.size then
-    pure ( Vector.set a i v )
+  (a : Vector α n) (i : usize) (v : α) : RustM (Vector α n) :=
+  if h: i.toNat < a.size then
+    pure ( Vector.set a i.toNat v )
   else
     .fail (.arrayOutOfBounds)
 
 @[spec]
 theorem rust_primitives.hax.monomorphized_update_at.update_at_usize.spec
-  {α n} (a: Vector α n) (i:Nat) (v:α) (h: i < a.size) :
+  {α n} (a: Vector α n) (i:usize) (v:α) (h: i.toNat < a.size) :
   ⦃ ⌜ True ⌝ ⦄
   (rust_primitives.hax.monomorphized_update_at.update_at_usize a i v)
-  ⦃ ⇓ r => ⌜ r = Vector.set a i v ⌝ ⦄ := by
+  ⦃ ⇓ r => ⌜ r = Vector.set a i.toNat v ⌝ ⦄ := by
   mvcgen [rust_primitives.hax.monomorphized_update_at.update_at_usize]
 
 
 @[spec]
-def rust_primitives.hax.update_at {α n} (m : Vector α n) (i : Nat) (v : α) : RustM (Vector α n) :=
-  if i < n then
-    pure ( Vector.setIfInBounds m i v)
+def rust_primitives.hax.update_at {α n} (m : Vector α n) (i : usize) (v : α) : RustM (Vector α n) :=
+  if i.toNat < n then
+    pure ( Vector.setIfInBounds m i.toNat v)
   else
     .fail (.arrayOutOfBounds)
 
