@@ -22,6 +22,7 @@ def not (a :Bool) : RustM Bool := pure (!a)
 
 @[inherit_doc] infixl:35 " &&? " => and
 @[inherit_doc] infixl:30 " ||? " => or
+@[inherit_doc] infixl:30 " ^^? " => xor
 @[inherit_doc] notation:max "!?" b:40 => not b
 
 end rust_primitives.hax.Logical_op
