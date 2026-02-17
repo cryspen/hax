@@ -1,9 +1,11 @@
 import Hax.rust_primitives.RustM
 import Hax.rust_primitives.num
+import Hax.rust_primitives.sequence
 
 open Std.Do
 set_option mvcgen.warning false
 
+attribute [local grind! .] USize64.toNat_lt_size
 
 /-
 
@@ -51,7 +53,7 @@ def rust_primitives.hax.repeat
     .fail Error.arrayOutOfBounds
 
 @[spec]
-def rust_primitives.unsize {α n} (a: Vector α n) : RustM (Array α) :=
-  pure (a.toArray)
+def rust_primitives.unsize {α n} (a: RustArray α n) : RustM (rust_primitives.sequence.Seq α) :=
+  pure ⟨a.toArray, by grind⟩
 
 end RustArray

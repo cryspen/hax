@@ -3,7 +3,6 @@ import Hax.core_models.core_models
 
 set_option mvcgen.warning false
 open rust_primitives.hax
-open Core.Ops
 open Std.Do
 namespace core_models.ops.function
 

@@ -3,7 +3,6 @@ import Hax.core_models.core_models
 
 set_option mvcgen.warning false
 open rust_primitives.hax
-open Core.Ops
 open Std.Do
 
 namespace core_models.convert
@@ -14,18 +13,18 @@ namespace core_models.convert
 instance {α : Type} {n : usize} : TryInto (RustSlice α) (RustArray α n) where
   try_into a :=
    pure (
-     if h: a.size = n.toNat then
-       core_models.result.Result.Ok (a.toVector.cast h)
+     if h: a.val.size = n.toNat then
+       core_models.result.Result.Ok (a.val.toVector.cast h)
      else
        .Err core_models.array.TryFromSliceError.mk
      )
 
 @[spec]
 theorem TryInto.try_into.spec {α : Type} {n: usize} (a: RustSlice α) :
-  (h: a.size = n.toNat) →
+  (h: a.val.size = n.toNat) →
   ⦃ ⌜ True ⌝ ⦄
   (TryInto.try_into (RustSlice α) (RustArray α n) a )
-  ⦃ ⇓ r => ⌜ r = .Ok (a.toVector.cast h) ⌝ ⦄ := by
+  ⦃ ⇓ r => ⌜ r = .Ok (a.val.toVector.cast h) ⌝ ⦄ := by
   intro h
   mvcgen [TryInto.try_into]
   grind
