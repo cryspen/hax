@@ -1,40 +1,51 @@
 pub mod arith {
+    /// See [`std::ops::Add`]
     pub trait Add<Rhs = Self> {
         type Output;
         fn add(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::Sub`]
     pub trait Sub<Rhs = Self> {
         type Output;
         fn sub(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::Mul`]
     pub trait Mul<Rhs = Self> {
         type Output;
         fn mul(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::Div`]
     pub trait Div<Rhs = Self> {
         type Output;
         fn div(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::Neg`]
     pub trait Neg {
         type Output;
         fn neg(self) -> Self::Output;
     }
+    /// See [`std::ops::Rem`]
     pub trait Rem<Rhs = Self> {
         type Output;
         fn rem(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::AddAssign`]
     pub trait AddAssign<Rhs = Self> {
         fn add_assign(&mut self, rhs: Rhs);
     }
+    /// See [`std::ops::SubAssign`]
     pub trait SubAssign<Rhs = Self> {
         fn sub_assign(&mut self, rhs: Rhs);
     }
+    /// See [`std::ops::MulAssign`]
     pub trait MulAssign<Rhs = Self> {
         fn mul_assign(&mut self, rhs: Rhs);
     }
+    /// See [`std::ops::DivAssign`]
     pub trait DivAssign<Rhs = Self> {
         fn div_assign(&mut self, rhs: Rhs);
     }
+    /// See [`std::ops::RemAssign`]
     pub trait RemAssign<Rhs = Self> {
         fn rem_assign(&mut self, rhs: Rhs);
     }
@@ -66,18 +77,22 @@ pub mod arith {
 }
 
 pub mod bit {
+    /// See [`std::ops::Shr`]
     trait Shr<Rhs = Self> {
         type Output;
         fn shr(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::Shl`]
     trait Shl<Rhs = Self> {
         type Output;
         fn shl(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::BitXor`]
     trait BitXor<Rhs = Self> {
         type Output;
         fn bitxor(self, rhs: Rhs) -> Self::Output;
     }
+    /// See [`std::ops::BitAnd`]
     trait BitAnd<Rhs = Self> {
         type Output;
         fn bitand(self, rhs: Rhs) -> Self::Output;
@@ -85,13 +100,17 @@ pub mod bit {
 }
 
 pub mod control_flow {
+    /// See [`std::ops::ControlFlow`]
     pub enum ControlFlow<B, C> {
+        /// See [`std::ops::ControlFlow::Continue`]
         Continue(C),
+        /// See [`std::ops::ControlFlow::Break`]
         Break(B),
     }
 }
 
 pub mod index {
+    /// See [`std::ops::Index`]
     pub trait Index<Idx> {
         type Output: ?Sized;
         fn index(&self, i: Idx) -> &Self::Output;
@@ -99,12 +118,14 @@ pub mod index {
 }
 
 pub mod function {
+    /// See [`std::ops::FnOnce`]
     #[hax_lib::attributes]
     pub trait FnOnce<Args> {
         type Output;
         #[hax_lib::requires(true)]
         fn call_once(&self, args: Args) -> Self::Output;
     }
+    /// See [`std::ops::Fn`]
     #[hax_lib::attributes]
     pub trait Fn<Args>: FnOnce<Args> {
         #[hax_lib::requires(true)]
@@ -144,10 +165,12 @@ pub mod function {
 }
 
 mod try_trait {
+    /// See [`std::ops::FromResidual`]
     trait FromResidual<R> {
         fn from_residual(x: R) -> Self;
     }
 
+    /// See [`std::ops::Try`]
     trait Try {
         type Output;
         type Residual;
@@ -157,6 +180,7 @@ mod try_trait {
 }
 
 mod deref {
+    /// See [`std::ops::Deref`]
     pub trait Deref {
         type Target: ?Sized;
 
@@ -172,22 +196,27 @@ mod deref {
 }
 
 mod drop {
+    /// See [`std::ops::Drop`]
     trait Drop {
         fn drop(&mut self);
     }
 }
 
 pub mod range {
+    /// See [`std::ops::RangeTo`]
     pub struct RangeTo<T> {
         pub end: T,
     }
+    /// See [`std::ops::RangeFrom`]
     pub struct RangeFrom<T> {
         pub start: T,
     }
+    /// See [`std::ops::Range`]
     pub struct Range<T> {
         pub start: T,
         pub end: T,
     }
+    /// See [`std::ops::RangeFull`]
     pub struct RangeFull;
 
     macro_rules! impl_iterator_range_int {

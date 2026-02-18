@@ -3,8 +3,10 @@ module Core_models.Array
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::array::TryFromSliceError`]
 type t_TryFromSliceError = | TryFromSliceError : t_TryFromSliceError
 
+/// See [`std::array::map`]
 let impl_23__map
       (#v_T: Type0)
       (v_N: usize)
@@ -15,9 +17,11 @@ let impl_23__map
       (f: (v_T -> v_U))
     : t_Array v_U v_N = Rust_primitives.Slice.array_map #v_T #v_U v_N #(v_T -> v_U) s f
 
+/// See [`std::array::as_slice`]
 let impl_23__as_slice (#v_T: Type0) (v_N: usize) (s: t_Array v_T v_N) : t_Slice v_T =
   Rust_primitives.Slice.array_as_slice #v_T v_N s
 
+/// See [`std::array::from_fn`]
 let from_fn
       (#v_T: Type0)
       (v_N: usize)
