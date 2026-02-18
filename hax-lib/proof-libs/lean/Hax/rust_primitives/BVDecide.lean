@@ -29,7 +29,7 @@ def RustM.toBVRustM {α} [Inhabited α] : RustM α → BVRustM α
 | fail .undef               => ⟨ false, default, 6 ⟩
 | div                       => ⟨ false, default, 7 ⟩
 
-attribute [hax_bv_decide] Coe.coe
+attribute [hax_bv_decide] Coe.coe bind pure
 
 @[hax_bv_decide] theorem RustM.toBVRustM_ok {α} [Inhabited α] {v : α} :
     (RustM.ok v).toBVRustM = ⟨ true, v, 0 ⟩ := rfl
@@ -81,7 +81,14 @@ theorem RustM.Triple_iff_BitVec {α} [Inhabited α]
     ⦃ ⌜ a ⌝ ⦄ x ⦃ ⇓ r => ⌜ b r ⌝ ⦄ ↔
       (!decide a || (x.toBVRustM.ok && decide (b x.toBVRustM.val))) := by
   cases x using RustM.toBVRustM.match_1 <;>
-    by_cases a <;> simp [Triple, RustM.toBVRustM, Decidable.imp_iff_not_or, instWP]
+    by_cases a
+      <;> simp only [Triple, PredTrans.apply, wp, SPred.entails_nil, SPred.down_pure,
+        Decidable.imp_iff_not_or, toBVRustM, BitVec.ofNat_eq_ofNat, Bool.false_and, Bool.or_false,
+        Bool.not_eq_eq_eq_not, Bool.not_true, decide_eq_false_iff_not, or_iff_left_iff_imp,
+        Bool.true_and, Bool.or_eq_true, Bool.not_eq_eq_eq_not, Bool.not_true,
+        decide_eq_false_iff_not, decide_eq_true_eq]
+      <;> try rfl
+  all_goals exact fun x => False.elim x
 
 /-- This lemma is used to make some variants of `>>>?` accessible for `bv_decide` -/
 @[hax_bv_decide]

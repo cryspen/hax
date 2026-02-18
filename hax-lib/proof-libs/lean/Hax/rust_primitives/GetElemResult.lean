@@ -1,6 +1,7 @@
 import Hax.rust_primitives.RustM
 import Hax.rust_primitives.num
 import Hax.rust_primitives.sequence
+import Hax.rust_primitives.hax.array
 import Hax.Tactic.SpecSet
 
 open Error
@@ -46,9 +47,9 @@ instance usize.instGetElemResultSeq {α} : GetElemResult (Seq α) usize α where
     if h: i.toNat < xs.val.size then pure (xs.val[i])
     else .fail arrayOutOfBounds
 
-instance usize.instGetElemResultVector {α n} : GetElemResult (Vector α n) usize α where
+instance usize.instGetElemResultVector {α n} : GetElemResult (RustArray α n) usize α where
   getElemResult xs i :=
-    if h: i.toNat < n then pure (xs[i.toNat])
+    if h: i.toNat < n.toNat then pure (xs.toVec[i.toNat])
     else .fail arrayOutOfBounds
 
 instance Nat.instGetElemResultSeq {α} : GetElemResult (Seq α) Nat α where
@@ -56,9 +57,9 @@ instance Nat.instGetElemResultSeq {α} : GetElemResult (Seq α) Nat α where
     if h: i < xs.val.size then pure (xs.val[i])
     else .fail arrayOutOfBounds
 
-instance Nat.instGetElemResultVector {α n} : GetElemResult (Vector α n) Nat α where
+instance Nat.instGetElemResultVector {α n} : GetElemResult (RustArray α n) Nat α where
   getElemResult xs i :=
-    if h: i < n then pure (xs[i])
+    if h: i < n.toNat then pure (xs.toVec[i])
     else .fail arrayOutOfBounds
 
 @[spec]
@@ -67,15 +68,15 @@ theorem Nat.getElemSeqResult_spec
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
   ⦃ ⇓ r => ⌜ r = a.val[i] ⌝ ⦄ :=
-  by mvcgen [RustM.ofOption, Nat.instGetElemResultSeq]
+  by mvcgen [RustM.ofOption, Nat.instGetElemResultSeq, getElemResult]
 
 @[spec]
 theorem Nat.getElemVectorResult_spec
-  (α : Type) (n:Nat) (a: Vector α n) (i: Nat) (h : i < n) :
+  (α : Type) (n : usize) (a : RustArray α n) (i: Nat) (h : i < n.toNat) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
-  by mvcgen [Nat.instGetElemResultVector]
+  ⦃ ⇓ r => ⌜ r = a.toVec[i] ⌝ ⦄ :=
+  by mvcgen [Nat.instGetElemResultVector, getElemResult]
 
 @[spec]
 theorem usize.getElemSeqResult_spec
@@ -83,12 +84,12 @@ theorem usize.getElemSeqResult_spec
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
   ⦃ ⇓ r => ⌜ r = a.val[i.toNat] ⌝ ⦄ :=
-  by mvcgen [usize.instGetElemResultSeq]
+  by mvcgen [usize.instGetElemResultSeq, getElemResult]
 
 @[spec]
 theorem usize.getElemVectorResult_spec
-  (α : Type) (n:Nat) (a: Vector α n) (i: usize) (h: i.toNat < n) :
+  (α : Type) (n : usize) (a : RustArray α n) (i : usize) (h : i.toNat < n.toNat) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
-  by mvcgen [usize.instGetElemResultVector]
+  ⦃ ⇓ r => ⌜ r = a.toVec[i.toNat] ⌝ ⦄ :=
+  by mvcgen [usize.instGetElemResultVector, getElemResult]

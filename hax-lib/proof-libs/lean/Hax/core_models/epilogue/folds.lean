@@ -40,6 +40,9 @@ class rust_primitives.hax.folds {int_type: Type} where
       set_option hax_mvcgen.specset "bv" in hax_construct_pure <;> bv_decide) :
     RustM (ControlFlow α_ret α_acc)
 
+attribute [spec] rust_primitives.hax.folds.fold_range
+attribute [spec] rust_primitives.hax.folds.fold_range_return
+
 open Lean in
 set_option hygiene false in
 macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
