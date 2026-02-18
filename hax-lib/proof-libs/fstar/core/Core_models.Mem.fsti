@@ -49,10 +49,6 @@ val replace (#v_T: Type0) (dest src: v_T)
 /// See [`std::mem::drop`]
 val drop (#v_T: Type0) (e_x: v_T) : Prims.Pure Prims.unit Prims.l_True (fun _ -> Prims.l_True)
 
-/// See [`std::ptr::read`]
-val copy (#v_T: Type0) {| i0: Core_models.Marker.t_Copy v_T |} (x: v_T)
-    : Prims.Pure v_T Prims.l_True (fun _ -> Prims.l_True)
-
 /// See [`std::mem::take`]
 val take (#v_T: Type0) (x: v_T) : Prims.Pure (v_T & v_T) Prims.l_True (fun _ -> Prims.l_True)
 

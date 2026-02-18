@@ -29,16 +29,15 @@ pub mod iter {
         }
     }
     /// See [`std::slice::Iter`]
-    pub struct Iter<T>(pub Seq<T>);
+    pub struct Iter<'a, T>(pub Seq<&'a T>);
 
-    impl<T> crate::iter::traits::iterator::Iterator for Iter<T> {
-        type Item = T;
+    impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
+        type Item = &'a T;
         fn next(&mut self) -> Option<Self::Item> {
             if seq_len(&self.0) == 0 {
                 Option::None
             } else {
-                let res = seq_first(&self.0);
-                self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                let res = seq_remove(&mut self.0, 0);
                 Option::Some(res)
             }
         }
@@ -86,7 +85,7 @@ impl<T> Slice<T> {
         iter::Chunks::new(cs, s)
     }
     /// See [`std::slice::iter`]
-    fn iter(s: &[T]) -> iter::Iter<T> {
+    fn iter(s: &[T]) -> iter::Iter<'_, T> {
         iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
     /// See [`std::slice::chunks_exact`]
@@ -97,17 +96,17 @@ impl<T> Slice<T> {
     #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn copy_from_slice(s: &mut [T], src: &[T])
     where
-        T: crate::marker::Copy,
+        T: Copy,
     {
-        rust_primitives::mem::replace(s, src);
+        slice_clone_from_slice(s, src);
     }
     /// See [`std::slice::clone_from_slice`]
     #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn clone_from_slice(s: &mut [T], src: &[T])
     where
-        T: crate::clone::Clone,
+        T: Clone,
     {
-        rust_primitives::mem::replace(s, src);
+        slice_clone_from_slice(s, src);
     }
     /// See [`std::slice::split_at`]
     #[hax_lib::requires(mid <= Slice::len(s))]
@@ -128,7 +127,10 @@ impl<T> Slice<T> {
     }
     /// See [`std::slice::contains`]
     #[hax_lib::opaque]
-    fn contains(s: &[T], v: T) -> bool {
+    fn contains(s: &[T], v: &T) -> bool
+    where
+        T: PartialEq,
+    {
         rust_primitives::slice::slice_contains(s, v)
     }
     /// See [`std::slice::copy_within`]
@@ -152,8 +154,8 @@ impl<T> Slice<T> {
 
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
-impl<T> crate::iter::traits::collect::IntoIterator for &[T] {
-    type IntoIter = iter::Iter<T>;
+impl<'a, T> crate::iter::traits::collect::IntoIterator for &'a [T] {
+    type IntoIter = iter::Iter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
         Slice::iter(self)
     }

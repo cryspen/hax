@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 mod alloc {
     pub struct Global;
 }
@@ -145,7 +147,7 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                 if self.len() == 0 {
                     None
                 } else {
-                    Some(seq_last(&self.0))
+                    Some(seq_remove(&mut self.0, 0))
                 }
             }
         }
@@ -174,14 +176,16 @@ mod slice {
     use rust_primitives::sequence::*;
 
     impl<T> Dummy<T> {
-        fn to_vec(s: &[T]) -> Vec<T, crate::alloc::Global> {
-            Vec(
-                seq_from_slice(s),
-                std::marker::PhantomData::<crate::alloc::Global>,
-            )
+        fn to_vec(s: &[T]) -> Vec<T, crate::alloc::Global>
+        where
+            T: Clone,
+        {
+            let mut seq = seq_empty();
+            seq_extend(&mut seq, s);
+            Vec(seq, std::marker::PhantomData::<crate::alloc::Global>)
         }
-        fn into_vec<A>(s: Box<&[T]>) -> Vec<T, A> {
-            Vec(seq_from_slice(*s), std::marker::PhantomData::<A>)
+        fn into_vec<A>(s: Box<[T]>) -> Vec<T, A> {
+            Vec(seq_from_boxed_slice(s), std::marker::PhantomData::<A>)
         }
         #[hax_lib::opaque]
         fn sort_by<F: Fn(&T, &T) -> core::cmp::Ordering>(s: &mut [T], compare: F) {}
@@ -248,12 +252,12 @@ pub mod vec {
         }
         #[hax_lib::requires(seq_len(&self.0) < usize::MAX)]
         pub fn push(&mut self, x: T) {
-            seq_concat(&mut self.0, &seq_one(x))
+            seq_push(&mut self.0, x)
         }
         pub fn pop(&mut self) -> Option<T> {
-            if seq_len(&self.0) > 0 {
-                let last = seq_last(&self.0);
-                self.0 = seq_slice(&self.0, 0, seq_len(&self.0) - 1);
+            let l = seq_len(&self.0);
+            if l > 0 {
+                let last = seq_remove(&mut self.0, l - 1);
                 Some(last)
             } else {
                 None
@@ -264,11 +268,10 @@ pub mod vec {
         }
         #[hax_lib::requires(index <= seq_len(&self.0) && seq_len(&self.0) < usize::MAX)]
         pub fn insert(&mut self, index: usize, element: T) {
-            let mut left = seq_slice(&self.0, 0, index);
-            let right = seq_slice(&self.0, index, seq_len(&self.0));
-            seq_concat(&mut left, &seq_one(element));
-            seq_concat(&mut left, &right);
-            self.0 = left;
+            let l = seq_len(&self.0);
+            let mut right = seq_drain(&mut self.0, index, l);
+            seq_push(&mut self.0, element);
+            seq_concat(&mut self.0, &mut right);
         }
         pub fn as_slice(&self) -> &[T] {
             seq_to_slice(&self.0)
@@ -277,28 +280,26 @@ pub mod vec {
         pub fn truncate(&mut self, n: usize) {}
         #[hax_lib::opaque]
         pub fn swap_remove(&mut self, n: usize) -> T {
-            seq_last(&self.0)
+            seq_remove(&mut self.0, n)
         }
         #[hax_lib::opaque]
         #[hax_lib::ensures(|_| future(self).len() == new_size)]
         pub fn resize(&mut self, new_size: usize, value: &T) {}
         #[hax_lib::opaque]
         pub fn remove(&mut self, index: usize) -> T {
-            seq_last(&self.0)
+            seq_remove(&mut self.0, index)
         }
         #[hax_lib::opaque]
         pub fn clear(&mut self) {}
         #[hax_lib::requires(self.len().to_int() + other.len().to_int() <= usize::MAX.to_int())]
         pub fn append(&mut self, other: &mut Vec<T, A>) {
-            seq_concat(&mut self.0, &other.0);
+            seq_concat(&mut self.0, &mut other.0);
             other.0 = seq_empty()
         }
         #[hax_lib::opaque]
         pub fn drain<R /* : RangeBounds<usize> */>(&mut self, _range: R) -> drain::Drain<T, A> {
-            drain::Drain(
-                seq_slice(&self.0, 0, self.len()),
-                std::marker::PhantomData::<A>,
-            ) // TODO use range bounds
+            let l = seq_len(&self.0);
+            drain::Drain(seq_drain(&mut self.0, 0, l), std::marker::PhantomData::<A>) // TODO use range bounds
         }
     }
     pub mod drain {
@@ -310,8 +311,7 @@ pub mod vec {
                 if seq_len(&self.0) == 0 {
                     Option::None
                 } else {
-                    let res = seq_first(&self.0);
-                    self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                    let res = seq_remove(&mut self.0, 0);
                     Option::Some(res)
                 }
             }
@@ -319,10 +319,10 @@ pub mod vec {
     }
 
     #[hax_lib::attributes]
-    impl<T, A> Vec<T, A> {
+    impl<T: Clone, A> Vec<T, A> {
         #[hax_lib::requires(seq_len(&s.0).to_int() + other.len().to_int() <= usize::MAX.to_int())]
         fn extend_from_slice(s: &mut Vec<T, A>, other: &[T]) {
-            seq_concat(&mut s.0, &seq_from_slice(other))
+            seq_extend(&mut s.0, other)
         }
     }
 

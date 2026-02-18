@@ -84,11 +84,6 @@ pub fn replace<T>(dest: &mut T, src: T) -> T {
 #[hax_lib::opaque]
 pub fn drop<T>(_x: T) {}
 
-/// See [`std::ptr::read`]
-pub fn copy<T: Copy>(x: &T) -> T {
-    rust_primitives::mem::copy(x)
-}
-
 /// See [`std::mem::take`]
 #[hax_lib::opaque]
 pub unsafe fn take<T>(x: &mut T) -> T {

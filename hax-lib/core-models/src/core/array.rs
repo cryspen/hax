@@ -123,8 +123,7 @@ mod iter {
             if seq_len(&self.0) == 0 {
                 Option::None
             } else {
-                let res = seq_first(&self.0);
-                self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                let res = seq_remove(&mut self.0, 0);
                 Option::Some(res)
             }
         }
