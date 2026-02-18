@@ -33,9 +33,7 @@
 //!
 //!   1. `hax_mvcgen` — generates pure verification conditions from
 //!      the monadic function body using the `bv` specset lemmas.
-//!   2. `simp only [hax_bv_decide]` — normalizes the VCs using
-//!      hax's bit-vector simplification lemmas.
-//!   3. `bv_decide` — Lean's bit-blasting decision procedure
+//!   2. `bv_decide` — Lean's bit-blasting decision procedure
 //!      automatically verifies the remaining BitVec goals.
 //!
 //! The key property verified:
