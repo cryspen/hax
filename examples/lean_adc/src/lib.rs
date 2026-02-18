@@ -109,7 +109,6 @@ theorem adc_u32_spec (a b carry_in : u32) :
         UInt32.toUInt64 sum + (UInt32.toUInt64 carry_out <<< (32 : UInt64)) ⌝ ⦄
 := by
   hax_mvcgen [lean_adc.adc_u32]
-    <;> (try simp only [hax_bv_decide] at *)
     <;> bv_decide (timeout := 90)
 "
 )]
