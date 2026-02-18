@@ -127,25 +127,16 @@ namespace lean_tests.casts
 --  Returns true if all casting edge cases behave as expected.
 def casting_edge_cases (_dummy : Bool) : RustM Bool := do
   let case1 : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (rust_primitives.hax.cast_op (256 : u16) : RustM u8))
-      (0 : u8));
+    ((← (rust_primitives.hax.cast_op (256 : u16) : RustM u8)) ==? (0 : u8));
   let case2 : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (rust_primitives.hax.cast_op (-1 : i16) : RustM u8))
-      (255 : u8));
+    ((← (rust_primitives.hax.cast_op (-1 : i16) : RustM u8)) ==? (255 : u8));
   let case3 : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (rust_primitives.hax.cast_op (-1 : i8) : RustM i16))
-      (-1 : i16));
+    ((← (rust_primitives.hax.cast_op (-1 : i8) : RustM i16)) ==? (-1 : i16));
   let case4 : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (rust_primitives.hax.cast_op (128 : u8) : RustM i8))
-      (-128 : i8));
+    ((← (rust_primitives.hax.cast_op (128 : u8) : RustM i8)) ==? (-128 : i8));
   let case5 : Bool ←
-    (rust_primitives.hax.machine_int.eq
-      (← (rust_primitives.hax.cast_op (4294967295 : u32) : RustM i32))
-      (-1 : i32));
+    ((← (rust_primitives.hax.cast_op (4294967295 : u32) : RustM i32))
+      ==? (-1 : i32));
   ((← ((← ((← (case1 &&? case2)) &&? case3)) &&? case4)) &&? case5)
 
 set_option hax_mvcgen.specset "bv" in
@@ -208,7 +199,7 @@ def C2 : u32 := RustM.of_isOk (do (C1 +? (1 : u32))) (by rfl)
 
 def C3 : u32 :=
   RustM.of_isOk
-    (do if true then do (pure (890 : u32)) else do ((9 : u32) /? (0 : u32)))
+    (do if true then (pure (890 : u32)) else ((9 : u32) /? (0 : u32)))
     (by rfl)
 
 @[spec]
@@ -319,22 +310,19 @@ namespace lean_tests.ite
 
 @[spec]
 def test1 (_ : rust_primitives.hax.Tuple0) : RustM i32 := do
-  let x : i32 ← if true then do (pure (0 : i32)) else do (pure (1 : i32));
-  if false then do (pure (2 : i32)) else do (pure (3 : i32))
+  let x : i32 ← if true then (pure (0 : i32)) else (pure (1 : i32));
+  if false then (pure (2 : i32)) else (pure (3 : i32))
 
 @[spec]
 def test2 (b : Bool) : RustM i32 := do
-  let x : i32 ← if b then do (pure (0 : i32)) else do (pure (9 : i32));
+  let x : i32 ← if b then (pure (0 : i32)) else (pure (9 : i32));
   let y : i32 := (0 : i32);
   let y : i32 ←
-    if true then do
-      ((← (y +? x)) +? (1 : i32))
-    else do
-      ((← (y -? x)) -? (1 : i32));
-  if b then do
+    if true then ((← (y +? x)) +? (1 : i32)) else ((← (y -? x)) -? (1 : i32));
+  if b then
     let z : i32 ← (y +? y);
     ((← (z +? y)) +? x)
-  else do
+  else
     let z : i32 ← (y -? x);
     ((← (z +? y)) +? x)
 
@@ -368,10 +356,10 @@ def loop2 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
       x
       (fun x i =>
         (do
-        if (← (rust_primitives.hax.machine_int.eq i (5 : u32))) then do
+        if (← (i ==? (5 : u32))) then
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break x)))
-        else do
+        else
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (x +? i)))) :
         RustM
@@ -381,8 +369,8 @@ def loop2 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
             (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 u32))
           u32)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  x) => do (pure x)
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  x) => (pure x)
 
 --  For-loop with a spec
 def for_loop_with_spec (y : u64) : RustM u64 := do
@@ -391,17 +379,14 @@ def for_loop_with_spec (y : u64) : RustM u64 := do
     (rust_primitives.hax.folds.fold_range
       (0 : u64)
       y
-      (fun x i =>
-        (do (rust_primitives.hax.machine_int.gt x (0 : u64)) : RustM Bool))
+      (fun x i => (do (x >? (0 : u64)) : RustM Bool))
       x
       (fun x i =>
         (do
-        if
-        (← (rust_primitives.hax.machine_int.eq (← (x %? (5 : u64))) (0 : u64)))
-        then do
+        if (← ((← (x %? (5 : u64))) ==? (0 : u64))) then
           let x : u64 := (200 : u64);
           (pure x)
-        else do
+        else
           let x : u64 ← (x %? (5 : u64));
           (pure x) :
         RustM u64)));
@@ -411,10 +396,8 @@ set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
 def for_loop_with_spec.spec (y : u64) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.gt y (0 : u64)))
-      (ensures := fun
-          res => do
-          (rust_primitives.hax.machine_int.gt res (0 : u64)))
+      (requires := do (y >? (0 : u64)))
+      (ensures := fun res => do (res >? (0 : u64)))
       (for_loop_with_spec (y : u64)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
@@ -427,8 +410,7 @@ def while_loop1 (s : u32) : RustM u32 := do
   let x : u32 ←
     (rust_primitives.hax.while_loop
       (fun x => (do (pure true) : RustM Bool))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.gt x (0 : u32)) : RustM Bool))
+      (fun x => (do (x >? (0 : u32)) : RustM Bool))
       (fun x =>
         (do (rust_primitives.hax.int.from_machine x) : RustM hax_lib.int.Int))
       x
@@ -440,7 +422,7 @@ set_option hax_mvcgen.specset "int" in
 def while_loop1.spec (s : u32) :
     Spec
       (requires := do pure True)
-      (ensures := fun r => do (rust_primitives.hax.machine_int.eq r (0 : u32)))
+      (ensures := fun r => do (r ==? (0 : u32)))
       (while_loop1 (s : u32)) := {
   pureRequires := by hax_construct_pure <;> grind
   pureEnsures := by hax_construct_pure <;> grind
@@ -469,11 +451,11 @@ def loop3 (_ : rust_primitives.hax.Tuple0) :
       x
       (fun x i =>
         (do
-        if (← (rust_primitives.hax.machine_int.eq i (5 : u32))) then do
+        if (← (i ==? (5 : u32))) then
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break
               (core_models.result.Result.Err Error.Foo))))
-        else do
+        else
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (x +? (5 : u32))))) :
         RustM
@@ -483,8 +465,8 @@ def loop3 (_ : rust_primitives.hax.Tuple0) :
             (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 u32))
           u32)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  x) => do
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  x) =>
       (pure (core_models.result.Result.Ok x))
 
 @[spec]
@@ -507,11 +489,11 @@ def loop4 (_ : rust_primitives.hax.Tuple0) :
       e
       (fun e i =>
         (do
-        if (← (rust_primitives.hax.machine_int.gt i (10 : u32))) then do
+        if (← (i >? (10 : u32))) then
           (pure (core_models.ops.control_flow.ControlFlow.Break
             (core_models.ops.control_flow.ControlFlow.Break
               (core_models.result.Result.Err (Error.Bar e)))))
-        else do
+        else
           (pure (core_models.ops.control_flow.ControlFlow.Continue
             (← (e +? i)))) :
         RustM
@@ -523,8 +505,8 @@ def loop4 (_ : rust_primitives.hax.Tuple0) :
             (rust_primitives.hax.Tuple2 rust_primitives.hax.Tuple0 u32))
           u32)))))
   with
-    | (core_models.ops.control_flow.ControlFlow.Break  ret) => do (pure ret)
-    | (core_models.ops.control_flow.ControlFlow.Continue  e) => do
+    | (core_models.ops.control_flow.ControlFlow.Break  ret) => (pure ret)
+    | (core_models.ops.control_flow.ControlFlow.Continue  e) =>
       (pure (core_models.result.Result.Ok (rust_primitives.hax.Tuple2.mk e e)))
 
 end lean_tests.loops.errors
@@ -535,14 +517,12 @@ namespace lean_tests.matching
 @[spec]
 def test_const_matching (x : u32) (c : Char) (s : String) (b : Bool) :
     RustM u32 := do
-  let x : u32 ←
-    match x with | 0 => do (pure (42 : u32)) | _ => do (pure (0 : u32));
-  let c : u32 ←
-    match c with | 'a' => do (pure (42 : u32)) | _ => do (pure (0 : u32));
+  let x : u32 ← match x with | 0 => (pure (42 : u32)) | _ => (pure (0 : u32));
+  let c : u32 ← match c with | 'a' => (pure (42 : u32)) | _ => (pure (0 : u32));
   let s : u32 ←
-    match s with | "Hello" => do (pure (42 : u32)) | _ => do (pure (0 : u32));
+    match s with | "Hello" => (pure (42 : u32)) | _ => (pure (0 : u32));
   let b : u32 ←
-    match b with | true => do (pure (42 : u32)) | false => do (pure (0 : u32));
+    match b with | true => (pure (42 : u32)) | false => (pure (0 : u32));
   ((← ((← (x +? c)) +? s)) +? b)
 
 @[spec]
@@ -550,10 +530,10 @@ def test_binding_subpattern_matching
     (x : (rust_primitives.hax.Tuple2 u8 (rust_primitives.hax.Tuple2 u8 u8))) :
     RustM u8 := do
   match x with
-    | ⟨0, pair@⟨a, b⟩⟩ => do
+    | ⟨0, pair@⟨a, b⟩⟩ =>
       ((← ((← (a +? b)) +? (rust_primitives.hax.Tuple2._0 pair)))
         +? (rust_primitives.hax.Tuple2._1 pair))
-    | _ => do (pure (0 : u8))
+    | _ => (pure (0 : u8))
 
 end lean_tests.matching
 
@@ -572,22 +552,18 @@ def test (_ : rust_primitives.hax.Tuple0) :
   let _ := (S.mk (f := (← ((9 : u32) +? (9 : u32)))));
   let _ := (S.f (S.mk (f := (← ((9 : u32) +? (9 : u32))))));
   let _ ← ((S.f (S.mk (f := (← ((9 : u32) +? (9 : u32)))))) +? (9 : u32));
+  let _ ← if true then ((3 : i32) +? (4 : i32)) else ((3 : i32) -? (4 : i32));
   let _ ←
-    if true then do ((3 : i32) +? (4 : i32)) else do ((3 : i32) -? (4 : i32));
-  let _ ←
-    if
-    (← (rust_primitives.hax.machine_int.eq
-      (← ((9 : i32) +? (9 : i32)))
-      (0 : i32))) then do
+    if (← ((← ((9 : i32) +? (9 : i32))) ==? (0 : i32))) then
       ((3 : i32) +? (4 : i32))
-    else do
+    else
       ((3 : i32) -? (4 : i32));
   let _ ←
-    if true then do
+    if true then
       let x : i32 := (9 : i32);
       let _ ← ((3 : i32) +? x);
       (pure rust_primitives.hax.Tuple0.mk)
-    else do
+    else
       let y : i32 := (19 : i32);
       let _ ← ((← ((3 : i32) +? y)) -? (4 : i32));
       (pure rust_primitives.hax.Tuple0.mk);
@@ -634,12 +610,11 @@ namespace lean_tests.nested_control_flow
 def nested_control_flow (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   let x1 : i32 ←
-    ((1 : i32)
-      +? (← if true then do (pure (0 : i32)) else do (pure (1 : i32))));
+    ((1 : i32) +? (← if true then (pure (0 : i32)) else (pure (1 : i32))));
   let x2 : i32 ←
     ((1 : i32)
       +? (← match (rust_primitives.hax.Tuple2.mk (1 : i32) (2 : i32)) with
-        | _ => do (pure (0 : i32))));
+        | _ => (pure (0 : i32))));
   let x : i32 := (9 : i32);
   let x3 : i32 ← ((1 : i32) +? (← (x +? (1 : i32))));
   (pure rust_primitives.hax.Tuple0.mk)
@@ -647,11 +622,11 @@ def nested_control_flow (_ : rust_primitives.hax.Tuple0) :
 @[spec]
 def explicit_hoisting (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
-  let x1_tmp : i32 ← if true then do (pure (0 : i32)) else do (pure (1 : i32));
+  let x1_tmp : i32 ← if true then (pure (0 : i32)) else (pure (1 : i32));
   let x1 : i32 ← ((1 : i32) +? x1_tmp);
   let x2_tmp : i32 ←
     match (rust_primitives.hax.Tuple2.mk (1 : i32) (2 : i32)) with
-      | _ => do (pure (0 : i32));
+      | _ => (pure (0 : i32));
   let x2 : i32 ← ((1 : i32) +? x2_tmp);
   let x3_tmp_x : i32 := (9 : i32);
   let x3_tmp : i32 ← (x3_tmp_x +? (1 : i32));
@@ -666,38 +641,38 @@ def complex_nesting (_ : rust_primitives.hax.Tuple0) :
       rust_primitives.hax.Tuple0)
     := do
   let x1 : i32 ←
-    if true then do
+    if true then
       let y : i32 ←
-        if false then do
+        if false then
           let z : i32 ←
-            match rust_primitives.hax.Tuple0.mk with | _ => do (pure (9 : i32));
+            match rust_primitives.hax.Tuple0.mk with | _ => (pure (9 : i32));
           let z : i32 ← ((1 : i32) +? z);
           (z +? (1 : i32))
-        else do
+        else
           let z : i32 := (9 : i32);
           let z : i32 ← (z +? (1 : i32));
           (pure z);
       let y : i32 ← (y +? (1 : i32));
       (y +? (1 : i32))
-    else do
+    else
       (pure (0 : i32));
   let x1 : i32 ← (x1 +? (1 : i32));
   let x2 : i32 ←
     match (core_models.option.Option.Some (89 : i32)) with
-      | (core_models.option.Option.Some  a) => do
+      | (core_models.option.Option.Some  a) =>
         let y : i32 ← ((1 : i32) +? a);
         let y : i32 ← (y +? (1 : i32));
-        if (← (rust_primitives.hax.machine_int.eq y (0 : i32))) then do
+        if (← (y ==? (0 : i32))) then
           let z : i32 := (9 : i32);
           let z : i32 ← ((← (z +? y)) +? (1 : i32));
           (pure z)
-        else do
+        else
           (pure (10 : i32))
-      | (core_models.option.Option.None ) => do
+      | (core_models.option.Option.None ) =>
         let y : i32 ←
-          if false then do
+          if false then
             (pure (9 : i32))
-          else do
+          else
             let z : i32 := (9 : i32);
             let z : i32 ← (z +? (1 : i32));
             (z +? (9 : i32));
@@ -713,7 +688,7 @@ end lean_tests.nested_control_flow
 namespace lean_tests.opaque
 
 opaque an_opaque_fn (_ : rust_primitives.hax.Tuple0) :
-    RustM rust_primitives.hax.Tuple0
+    RustM rust_primitives.hax.Tuple0 
 
 class T.AssociatedTypes (Self : Type) where
   A : Type
@@ -750,8 +725,8 @@ set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
 def test.spec (x : u8) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.gt x (0 : u8)))
-      (ensures := fun r => do (rust_primitives.hax.machine_int.eq r x))
+      (requires := do (x >? (0 : u8)))
+      (ensures := fun r => do (r ==? x))
       (test (x : u8)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
@@ -764,8 +739,8 @@ set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
 def use_previous_result.spec (x : u8) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.gt x (0 : u8)))
-      (ensures := fun r => do (rust_primitives.hax.machine_int.eq r x))
+      (requires := do (x >? (0 : u8)))
+      (ensures := fun r => do (r ==? x))
       (use_previous_result (x : u8)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
@@ -778,8 +753,8 @@ set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
 def test_proof.spec (x : u8) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.gt x (0 : u8)))
-      (ensures := fun r => do (rust_primitives.hax.machine_int.eq r x))
+      (requires := do (x >? (0 : u8)))
+      (ensures := fun r => do (r ==? x))
       (test_proof (x : u8)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
@@ -792,8 +767,8 @@ set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
 def square.spec (x : u8) :
     Spec
-      (requires := do (rust_primitives.hax.machine_int.lt x (16 : u8)))
-      (ensures := fun res => do (rust_primitives.hax.machine_int.ge res x))
+      (requires := do (x <? (16 : u8)))
+      (ensures := fun res => do (res >=? x))
       (square (x : u8)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
   pureEnsures := by hax_construct_pure <;> bv_decide
@@ -811,10 +786,8 @@ def forall_and_exists.spec (x : u8) :
           (fun i =>
             (do
             (hax_lib.prop.constructors.implies
-              (← (hax_lib.prop.constructors.from_bool
-                (← (rust_primitives.hax.machine_int.lt i (20 : u8)))))
-              (← (hax_lib.prop.constructors.from_bool
-                (← (rust_primitives.hax.machine_int.gt x i))))) :
+              (← (hax_lib.prop.constructors.from_bool (← (i <? (20 : u8)))))
+              (← (hax_lib.prop.constructors.from_bool (← (x >? i))))) :
             RustM hax_lib.prop.Prop))))
       (ensures := fun
           r => do
@@ -825,9 +798,8 @@ def forall_and_exists.spec (x : u8) :
                 (hax_lib.prop.constructors.not
                   (← (hax_lib.prop.constructors.implies
                     (← (hax_lib.prop.constructors.from_bool
-                      (← (rust_primitives.hax.machine_int.lt i (20 : u8)))))
-                    (← (hax_lib.prop.constructors.from_bool
-                      (← (rust_primitives.hax.machine_int.gt r i))))))) :
+                      (← (i <? (20 : u8)))))
+                    (← (hax_lib.prop.constructors.from_bool (← (r >? i))))))) :
                 RustM hax_lib.prop.Prop))))))
       (forall_and_exists (x : u8)) := {
   pureRequires := by hax_construct_pure <;> grind
@@ -904,17 +876,13 @@ end lean_tests.specs
 
 namespace lean_tests.specs.issue_1945
 
-def mktuple (a : i32) : RustM Bool := do
-  let x : i32 := a;
-  (rust_primitives.hax.machine_int.eq a (0 : i32))
+def mktuple (a : i32) : RustM Bool := do let x : i32 := a; (a ==? (0 : i32))
 
 set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
 def mktuple.spec (a : i32) :
     Spec
-      (requires := do
-        let x : i32 := a;
-        (rust_primitives.hax.machine_int.eq a (0 : i32)))
+      (requires := do let x : i32 ← (pure a); (a ==? (0 : i32)))
       (ensures := fun _ => pure True)
       (mktuple (a : i32)) := {
   pureRequires := by hax_construct_pure <;> bv_decide
@@ -973,15 +941,15 @@ def tuple_structs (_ : rust_primitives.hax.Tuple0) :
   let _ := (T2._0 (T2._1 (T3p._1 t3p)));
   let _ := (T2._0 (T3p._1 t3p));
   let _ := (T2._1 (T3p._1 t3p));
-  let _ ← match t0 with | ⟨⟩ => do (pure rust_primitives.hax.Tuple0.mk);
-  let _ ← match t1 with | ⟨u1⟩ => do (pure rust_primitives.hax.Tuple0.mk);
-  let _ ← match t2 with | ⟨u2, u3⟩ => do (pure rust_primitives.hax.Tuple0.mk);
+  let _ ← match t0 with | ⟨⟩ => (pure rust_primitives.hax.Tuple0.mk);
+  let _ ← match t1 with | ⟨u1⟩ => (pure rust_primitives.hax.Tuple0.mk);
+  let _ ← match t2 with | ⟨u2, u3⟩ => (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
     match t3 with
-      | ⟨⟨⟩, ⟨u1⟩, ⟨u2, u3⟩⟩ => do (pure rust_primitives.hax.Tuple0.mk);
+      | ⟨⟨⟩, ⟨u1⟩, ⟨u2, u3⟩⟩ => (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
     match t3p with
-      | ⟨⟨⟩, ⟨⟨u1⟩, ⟨u2, u3⟩⟩⟩ => do (pure rust_primitives.hax.Tuple0.mk);
+      | ⟨⟨⟩, ⟨⟨u1⟩, ⟨u2, u3⟩⟩⟩ => (pure rust_primitives.hax.Tuple0.mk);
   (pure rust_primitives.hax.Tuple0.mk)
 
 structure S1 where
@@ -1037,17 +1005,17 @@ def normal_structs (_ : rust_primitives.hax.Tuple0) :
       (S3._theorem s3));
   let _ ←
     match s1 with
-      | {f1 := f1, f2 := f2} => do (pure rust_primitives.hax.Tuple0.mk);
+      | {f1 := f1, f2 := f2} => (pure rust_primitives.hax.Tuple0.mk);
   let _ ←
     match s2 with
-      | {f1 := {f1 := f1, f2 := other_name_for_f2}, f2 := f2} => do
+      | {f1 := {f1 := f1, f2 := other_name_for_f2}, f2 := f2} =>
         (pure rust_primitives.hax.Tuple0.mk);
   match s3 with
     | {_end := _end,
        _def := _def,
        _theorem := _theorem,
        _structure := _structure,
-       _inductive := _inductive} => do
+       _inductive := _inductive} =>
       (pure rust_primitives.hax.Tuple0.mk)
 
 end lean_tests.structs
@@ -1065,9 +1033,9 @@ def test_tuples (_ : rust_primitives.hax.Tuple0) :
   let constr : S := (S.mk (f := (42 : i32)));
   let proj : i32 := (S.f constr);
   let ite : (rust_primitives.hax.Tuple2 i32 i32) ←
-    if true then do
+    if true then
       (pure (rust_primitives.hax.Tuple2.mk (1 : i32) (2 : i32)))
-    else do
+    else
       let z : i32 ← ((1 : i32) +? (2 : i32));
       (pure (rust_primitives.hax.Tuple2.mk z z));
   (pure (rust_primitives.hax.Tuple2.mk (1 : i32) (2 : i32)))
@@ -1427,7 +1395,7 @@ instance Impl_2 : T1 (S usize) where
 
 instance Impl_3 : T1 (S Bool) where
   f1 := fun (self : (S Bool)) => do
-    if (S._1 self) then do (pure (S._0 self)) else do (pure (9 : usize))
+    if (S._1 self) then (pure (S._0 self)) else (pure (9 : usize))
   f2 := fun (self : (S Bool)) => do ((S._0 self) +? (1 : usize))
 
 @[reducible] instance Impl_4.AssociatedTypes :
@@ -1733,9 +1701,9 @@ namespace lean_tests.recursion
 
 @[spec]
 def factorial (n : u32) : RustM u32 := do
-  if (← (rust_primitives.hax.machine_int.eq n (0 : u32))) then do
+  if (← (n ==? (0 : u32))) then
     (pure (1 : u32))
-  else do
+  else
     (n *? (← (factorial (← (n -? (1 : u32))))))
 partial_fixpoint
 
@@ -1918,16 +1886,16 @@ def enums (_ : rust_primitives.hax.Tuple0) :
   let cons_2_1 : (MyList usize) :=
     (MyList.Cons (hd := (2 : usize)) (tl := cons_1));
   match e_v1 with
-    | (E.V1 ) => do (pure rust_primitives.hax.Tuple0.mk)
-    | (E.V2 ) => do (pure rust_primitives.hax.Tuple0.mk)
-    | (E.V3  _) => do (pure rust_primitives.hax.Tuple0.mk)
-    | (E.V4  x1 x2 x3) => do
+    | (E.V1 ) => (pure rust_primitives.hax.Tuple0.mk)
+    | (E.V2 ) => (pure rust_primitives.hax.Tuple0.mk)
+    | (E.V3  _) => (pure rust_primitives.hax.Tuple0.mk)
+    | (E.V4  x1 x2 x3) =>
       let y1 : usize ← (x1 +? x2);
       let y2 : usize ← (y1 -? x2);
       let y3 : usize ← (y2 +? x3);
       (pure rust_primitives.hax.Tuple0.mk)
-    | (E.V5  (f1 := f1) (f2 := f2)) => do (pure rust_primitives.hax.Tuple0.mk)
-    | (E.V6  (f1 := f1) (f2 := other_name_for_f2)) => do
+    | (E.V5  (f1 := f1) (f2 := f2)) => (pure rust_primitives.hax.Tuple0.mk)
+    | (E.V6  (f1 := f1) (f2 := other_name_for_f2)) =>
       (pure rust_primitives.hax.Tuple0.mk)
 
 end lean_tests.enums
