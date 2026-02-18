@@ -122,6 +122,89 @@ def func
 end lean_tests.associated_types.multiple_projections
 
 
+namespace lean_tests.binops
+
+@[spec]
+def noop (x : i32) : RustM i32 := do (pure x)
+
+@[spec]
+def neg_int (x : i32) : RustM i32 := do (-? x)
+
+@[spec]
+def not_int (x : i32) : RustM i32 := do (~? x)
+
+@[spec]
+def not_bool (x : Bool) : RustM Bool := do (!? x)
+
+@[spec]
+def index (x : (RustArray i32 1)) : RustM i32 := do x[(0 : usize)]_?
+
+@[spec]
+def add_int (x : i32) (y : i32) : RustM i32 := do (x +? y)
+
+@[spec]
+def sub_int (x : i32) (y : i32) : RustM i32 := do (x -? y)
+
+@[spec]
+def mul_int (x : i32) (y : i32) : RustM i32 := do (x *? y)
+
+@[spec]
+def div_int (x : i32) (y : i32) : RustM i32 := do (x /? y)
+
+@[spec]
+def rem_int (x : i32) (y : i32) : RustM i32 := do (x %? y)
+
+@[spec]
+def shr_int (x : i32) (y : i32) : RustM i32 := do (x >>>? y)
+
+@[spec]
+def shl_int (x : i32) (y : i32) : RustM i32 := do (x <<<? y)
+
+@[spec]
+def bitand_int (x : i32) (y : i32) : RustM i32 := do (x &&&? y)
+
+@[spec]
+def bitand_bool (x : Bool) (y : Bool) : RustM Bool := do (x &&? y)
+
+@[spec]
+def bitor_int (x : i32) (y : i32) : RustM i32 := do (x |||? y)
+
+@[spec]
+def bitor_bool (x : Bool) (y : Bool) : RustM Bool := do (x ||? y)
+
+@[spec]
+def bitxor_int (x : i32) (y : i32) : RustM i32 := do (x ^^^? y)
+
+@[spec]
+def bitxor_bool (x : Bool) (y : Bool) : RustM Bool := do (x ^^? y)
+
+@[spec]
+def logical_op_and (x : Bool) (y : Bool) : RustM Bool := do (x &&? y)
+
+@[spec]
+def logical_op_or (x : Bool) (y : Bool) : RustM Bool := do (x ||? y)
+
+@[spec]
+def eq_int (x : i32) (y : i32) : RustM Bool := do (x ==? y)
+
+@[spec]
+def eq_bool (x : Bool) (y : Bool) : RustM Bool := do (x ==? y)
+
+@[spec]
+def lt_int (x : i32) (y : i32) : RustM Bool := do (x <? y)
+
+@[spec]
+def le_int (x : i32) (y : i32) : RustM Bool := do (x <=? y)
+
+@[spec]
+def gt_int (x : i32) (y : i32) : RustM Bool := do (x >? y)
+
+@[spec]
+def ge_int (x : i32) (y : i32) : RustM Bool := do (x >=? y)
+
+end lean_tests.binops
+
+
 namespace lean_tests.casts
 
 --  Returns true if all casting edge cases behave as expected.
@@ -1610,17 +1693,6 @@ def multiline : Unit := ()
 
 @[spec]
 def test_before_verbatim_multi_line (x : u8) : RustM u8 := do (pure (32 : u8))
-
-@[spec]
-def binop_resugarings (x : u32) : RustM u32 := do
-  let add : u32 ← (x +? (1 : u32));
-  let sub : u32 ← (add -? (2 : u32));
-  let mul : u32 ← (sub *? (3 : u32));
-  let rem : u32 ← (mul %? (4 : u32));
-  let div : u32 ← (rem /? (5 : u32));
-  let rshift : u32 ← (div >>>? x);
-  let lshift : u32 ← (div <<<? x);
-  (pure x)
 
 end lean_tests
 
