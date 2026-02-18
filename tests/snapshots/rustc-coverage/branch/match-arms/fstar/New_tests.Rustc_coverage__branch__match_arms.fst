@@ -30,7 +30,6 @@ let consume (#v_T: Type0) (x: v_T) : Prims.unit =
   let _:v_T = Core_models.Hint.black_box #v_T x in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let match_arms (value: t_Enum) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -55,7 +54,6 @@ let match_arms (value: t_Enum) : Prims.unit =
   let _:Prims.unit = consume #i32 (mk_i32 0) in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let or_patterns (value: t_Enum) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -78,7 +76,6 @@ let or_patterns (value: t_Enum) : Prims.unit =
   let _:Prims.unit = consume #i32 (mk_i32 0) in
   ()
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let guards (value: t_Enum) (cond: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -158,7 +155,6 @@ let guards (value: t_Enum) (cond: bool) : Prims.unit =
   let _:Prims.unit = consume #i32 (mk_i32 0) in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let main__call_everything (e: t_Enum) : (Prims.unit & Prims.unit) =
   let _:Prims.unit = match_arms e in
   let _:Prims.unit = or_patterns e in
@@ -179,8 +175,6 @@ let main__call_everything (e: t_Enum) : (Prims.unit & Prims.unit) =
   <:
   (Prims.unit & Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008)
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let _:Prims.unit = main__call_everything (Enum_A (mk_u32 0) <: t_Enum) in
   let _:Prims.unit =

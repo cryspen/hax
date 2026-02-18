@@ -71,7 +71,7 @@ impl BackendTestContext {
             .run(async |job| self.run_inner(job).await)
             .await?;
         self.move_to_snapshots_directory(&out_dir).await?;
-        if self.needs_verification().await {
+        if self.test.needs_verification(self.backend, &self.options) {
             self.backend
                 .job_kind(BackendJobKind::Verification { test })
                 .run(async |job| self.run_verification(job).await)
@@ -228,21 +228,6 @@ impl BackendTestContext {
         Ok(out_dir)
     }
 
-    /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
-    /// verification is not expected to fail, and `--no-verify` was not passed.
-    async fn needs_verification(&self) -> bool {
-        if self.options.no_verify() {
-            return false;
-        }
-        match self.backend {
-            BackendName::Fstar | BackendName::Lean => self
-                .test
-                .expected_diagnostics(self.backend, FailureKind::Typecheck)
-                .is_empty(),
-            _ => false,
-        }
-    }
-
     /// Runs backend verification
     async fn run_verification(&self, job: JobKind) -> Result<()> {
         let dir = self.path_to_snapshots().await?;
@@ -375,20 +360,11 @@ async fn main() -> Result<()> {
                 options: options.clone(),
                 backend,
             };
-            let verification_count = if options.no_verify() {
-                0
-            } else {
-                context
-                    .tests
-                    .iter()
-                    .filter(|test| {
-                        matches!(backend, BackendName::Fstar | BackendName::Lean)
-                            && test
-                                .expected_diagnostics(backend, FailureKind::Typecheck)
-                                .is_empty()
-                    })
-                    .count()
-            };
+            let verification_count = context
+                .tests
+                .iter()
+                .filter(|test| test.needs_verification(backend, &options))
+                .count();
             backend
                 .job_kind(BackendJobKind::NumberBackendJobs(
                     context.tests.len() + verification_count,

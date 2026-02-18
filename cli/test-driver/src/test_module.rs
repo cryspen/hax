@@ -82,6 +82,20 @@ impl TestModule {
             .copied()
             .collect()
     }
+
+    /// Returns true if verification needs to run for this test, i.e. if the backend supports verification,
+    /// verification is not expected to fail, and `--no-verify` was not passed.
+    pub fn needs_verification(&self, backend: BackendName, options: &crate::cli::Cli) -> bool {
+        if options.no_verify() {
+            return false;
+        }
+        match backend {
+            BackendName::Fstar | BackendName::Lean => self
+                .expected_diagnostics(backend, FailureKind::Typecheck)
+                .is_empty(),
+            _ => false,
+        }
+    }
 }
 
 #[extension_traits::extension(trait ExtIntoIterator)]
