@@ -902,6 +902,29 @@ def custom_pure_proofs.spec (x : u8) :
 end lean_tests.specs
 
 
+namespace lean_tests.specs.issue_1945
+
+def mktuple (a : i32) : RustM Bool := do
+  let x : i32 := a;
+  (rust_primitives.hax.machine_int.eq a (0 : i32))
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def mktuple.spec (a : i32) :
+    Spec
+      (requires := do
+        let x : i32 := a;
+        (rust_primitives.hax.machine_int.eq a (0 : i32)))
+      (ensures := fun _ => pure True)
+      (mktuple (a : i32)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [mktuple] <;> bv_decide
+}
+
+end lean_tests.specs.issue_1945
+
+
 namespace lean_tests.structs
 
 structure T0 where

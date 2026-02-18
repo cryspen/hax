@@ -140,15 +140,7 @@ impl RenderView for LeanPrinter {
     }
 }
 
-impl Printer for LeanPrinter {
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(RecursiveFunctions),
-            Box::new(FunctionsToConstants),
-            Box::new(LetPure),
-        ]
-    }
-}
+impl Printer for LeanPrinter {}
 
 /// The Lean backend
 pub struct LeanBackend;
@@ -161,8 +153,16 @@ impl Backend for LeanBackend {
         Utf8PathBuf::from(krate).with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<Box<dyn Phase>> {
+    fn phases() -> Vec<Box<dyn Phase>> {
         vec![Box::new(FilterUnprintableItems), Box::new(ExplicitMonadic)]
+    }
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![
+            Box::new(RecursiveFunctions),
+            Box::new(FunctionsToConstants),
+            Box::new(LetPure),
+        ]
     }
 
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
