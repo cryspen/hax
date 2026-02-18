@@ -204,7 +204,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeFull {
 impl<T> SliceIndex<[T]> for crate::ops::range::RangeFrom<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
-        if self.start < slice.len() {
+        if self.start <= slice.len() {
             Option::Some(slice_slice(slice, self.start, slice.len()))
         } else {
             Option::None
@@ -228,7 +228,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeTo<usize> {
 impl<T> SliceIndex<[T]> for crate::ops::range::Range<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
-        if self.start < self.end && self.end <= slice.len() {
+        if self.start <= self.end && self.end <= slice.len() {
             Option::Some(slice_slice(slice, self.start, self.end))
         } else {
             Option::None
@@ -284,5 +284,143 @@ impl<T> crate::ops::index::Index<usize> for &[T] {
     #[hax_lib::requires(i < self.len())]
     fn index(&self, i: usize) -> &T {
         rust_primitives::slice::slice_index(self, i)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Slice;
+    use crate::testing::Inject;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_len(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
+            prop_assert_eq!(Slice::len(&slice[..]), slice.len());
+        }
+
+        #[test]
+        fn test_is_empty(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(Slice::is_empty(&slice[..]), slice.is_empty());
+        }
+
+        #[test]
+        fn test_contains(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            prop_assert_eq!(Slice::contains(&slice[..], &v), slice.contains(&v));
+        }
+
+        #[test]
+        fn test_split_at(slice in prop::collection::vec(any::<u8>(), 1..=10)) {
+            let mid = slice.len() / 2;
+            prop_assert_eq!(Slice::split_at(&slice[..], mid), slice.split_at(mid));
+        }
+
+        #[test]
+        fn test_split_at_checked(slice in prop::collection::vec(any::<u8>(), 1..=10), mid in 0usize..15) {
+            prop_assert_eq!(
+                Slice::split_at_checked(&slice[..], mid),
+                slice.split_at_checked(mid).inject()
+            );
+        }
+
+        #[test]
+        fn test_copy_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
+            let mut dest = vec![0u8; src.len()];
+            Slice::copy_from_slice(&mut dest[..], &src[..]);
+            prop_assert_eq!(dest, src);
+        }
+
+        #[test]
+        fn test_clone_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
+            let mut dest = vec![0u8; src.len()];
+            Slice::clone_from_slice(&mut dest[..], &src[..]);
+            prop_assert_eq!(dest, src);
+        }
+
+        #[test]
+        fn test_get_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in any::<usize>()) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], idx).map(|v: &u8| *v),
+                slice.get(idx).copied().inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..10, end in 0usize..10) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::Range { start, end }),
+                slice.get(start..end).inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range_from(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..15) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::RangeFrom { start }),
+                slice.get(start..).inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range_to(slice in prop::collection::vec(any::<u8>(), 1..=10), end in 0usize..15) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::RangeTo { end }),
+                slice.get(..end).inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range_full(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::RangeFull),
+                slice.get(..).inject()
+            );
+        }
+
+        #[test]
+        fn test_index_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, idx),
+                &slice[idx]
+            );
+        }
+
+        #[test]
+        fn test_index_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8) {
+            let end = (start + len).min(8);
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::Range { start, end }),
+                &slice[start..end]
+            );
+        }
+
+        #[test]
+        fn test_index_range_to(slice in prop::collection::vec(any::<u8>(), 8..=8), end in 0usize..=8) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::RangeTo { end }),
+                &slice[..end]
+            );
+        }
+
+        #[test]
+        fn test_index_range_from(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..=8) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::RangeFrom { start }),
+                &slice[start..]
+            );
+        }
+
+        #[test]
+        fn test_index_range_full(slice in prop::collection::vec(any::<u8>(), 8..=8)) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::RangeFull),
+                &slice[..]
+            );
+        }
     }
 }

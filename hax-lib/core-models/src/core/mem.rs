@@ -119,19 +119,3 @@ mod manually_drop {
         value: T,
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::testing::Inject;
-    use proptest::prelude::*;
-
-    // Commented out: rust_primitives::mem::copy is unimplemented (needs Copy trait bound)
-    // proptest! {
-    //     #[test]
-    //     fn test_copy(x in any::<u8>()) {
-    //         let model = x.inject();
-    //         let copied = super::copy(&model);
-    //         prop_assert_eq!(copied, model);
-    //     }
-    // }
-}
