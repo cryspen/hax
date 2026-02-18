@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Changes to the Rust Engine:
  - Remove `BinOp` resugaring (#1950)
+ - Apply resugarings to linked items (pre/post conditions) (#1961)
 
 Changes to the frontend:
 
@@ -23,6 +24,7 @@ Changes to hax-lib:
  - Lean lib: Separate symbolic and bit-blasting specs (#1933)
  - Lean lib: Communicate user-generated specs to mvcgen (#1937)
  - Lean lib: Rust primitives for prop (#1942)
+ - Lean lib: For-loops for all unsigned integers (#1951)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)

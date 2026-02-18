@@ -56,7 +56,12 @@ pub trait Backend {
     ///
     /// Backends can override this to add transformations.
     /// The default is an empty list (no transformations).
-    fn phases(&self) -> Vec<Box<dyn crate::phase::Phase>> {
+    fn phases() -> Vec<Box<dyn crate::phase::Phase>> {
+        vec![]
+    }
+
+    /// A list of resugaring phases.
+    fn resugaring_phases() -> Vec<Box<dyn prelude::Resugaring>> {
         vec![]
     }
 
@@ -106,8 +111,14 @@ pub trait Backend {
 /// modules via [`Backend::items_to_module`], and then uses the backend's printer
 /// to generate source files with paths determined by [`Backend::module_path`].
 pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
-    for phase in backend.phases() {
+    for phase in B::phases() {
         phase.apply(&mut items);
+    }
+
+    for mut resugaring_phase in B::resugaring_phases() {
+        for item in &mut items {
+            resugaring_phase.visit(item)
+        }
     }
 
     let linked_items_graph = Rc::new(LinkedItemGraph::new(

@@ -142,15 +142,7 @@ impl RenderView for LeanPrinter {
     }
 }
 
-impl Printer for LeanPrinter {
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![
-            Box::new(RecursiveFunctions),
-            Box::new(FunctionsToConstants),
-            Box::new(LetPure),
-        ]
-    }
-}
+impl Printer for LeanPrinter {}
 
 /// The Lean backend
 pub struct LeanBackend;
@@ -163,8 +155,16 @@ impl Backend for LeanBackend {
         Utf8PathBuf::from(krate).with_extension("lean")
     }
 
-    fn phases(&self) -> Vec<Box<dyn Phase>> {
+    fn phases() -> Vec<Box<dyn Phase>> {
         vec![Box::new(FilterUnprintableItems), Box::new(ExplicitMonadic)]
+    }
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![
+            Box::new(RecursiveFunctions),
+            Box::new(FunctionsToConstants),
+            Box::new(LetPure),
+        ]
     }
 
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
@@ -850,10 +850,10 @@ const _: () = {
                 } => {
                     if let Some(else_branch) = else_ {
                         docs![
-                            docs!["if", line!(), condition, reflow!(" then")].group(),
+                            docs!["if", line!(), condition, reflow!(" then do")].group(),
                             docs![line!(), then].nest(INDENT),
                             line!(),
-                            "else",
+                            reflow!("else do"),
                             docs![line!(), else_branch].nest(INDENT)
                         ]
                         .group()
@@ -1119,6 +1119,8 @@ const _: () = {
                     &arm.pat,
                     softline!(),
                     "=>",
+                    softline!(),
+                    "do",
                     line!(),
                     &arm.body
                 ]
@@ -1404,8 +1406,11 @@ const _: () = {
                                     "RustM",
                                     line!(),
                                     &body.ty,
-                                    line!(),
-                                    if opaque { nil!() } else { docs![":= do"] }
+                                    if opaque {
+                                        nil!()
+                                    } else {
+                                        docs![line!(), ":= do"]
+                                    }
                                 ]
                                 .group(),
                             ]

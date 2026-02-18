@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-// Simple loop
+/// Simple for-loop
 fn loop1() -> u32 {
     let mut x: u32 = 0;
     for i in 1..10 {
@@ -11,7 +11,7 @@ fn loop1() -> u32 {
     x
 }
 
-// Loop with a return
+/// For-loop with a return
 fn loop2() -> u32 {
     let mut x: u32 = 0;
     for i in 1..10 {
@@ -23,6 +23,23 @@ fn loop2() -> u32 {
     x
 }
 
+/// For-loop with a spec
+#[hax_lib::requires(y > 0)]
+#[hax_lib::ensures(|res| res > 0)]
+fn for_loop_with_spec(y: u64) -> u64 {
+    let mut x: u64 = y;
+    for i in 0..y {
+        hax_lib::loop_invariant!(|i: u64| x > 0);
+        if x % 5 == 0 {
+            x = 200;
+        } else {
+            x = x % 5;
+        }
+    }
+    x
+}
+
+/// while-loop
 #[hax_lib::ensures(|r| r == 0)]
 #[hax_lib::lean::proof_method::grind]
 fn while_loop1(s: u32) -> u32 {
