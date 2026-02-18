@@ -61,7 +61,7 @@ namespace cyclic_modules.typ_b
 
 @[spec]
 def T1_cast_to_repr (x : T1) : RustM isize := do
-  match x with | (T1.T1 ) => do (pure (0 : isize))
+  match x with | (T1.T1 ) => (pure (0 : isize))
 
 inductive T2 : Type
 | T2 : cyclic_modules.typ_a.T -> T2
@@ -155,9 +155,7 @@ inductive T : Type
 
 @[spec]
 def T_cast_to_repr (x : T) : RustM isize := do
-  match x with
-    | (T.t1 ) => do (pure (0 : isize))
-    | (T.t2 ) => do (pure (1 : isize))
+  match x with | (T.t1 ) => (pure (0 : isize)) | (T.t2 ) => (pure (1 : isize))
 
 end cyclic_modules.rec
 
@@ -356,7 +354,7 @@ namespace cyclic_modules.rec
 
 @[spec]
 def hf (x : T) : RustM T := do
-  match x with | (T.t1 ) => do (hf T.t2) | (T.t2 ) => do (pure x)
+  match x with | (T.t1 ) => (hf T.t2) | (T.t2 ) => (pure x)
 partial_fixpoint
 
 end cyclic_modules.rec
@@ -366,9 +364,9 @@ namespace cyclic_modules.rec2_same_name
 
 @[spec]
 def f (x : i32) : RustM i32 := do
-  if (← (rust_primitives.hax.machine_int.gt x (0 : i32))) then do
+  if (← (x >? (0 : i32))) then
     (cyclic_modules.rec1_same_name.f (← (x -? (1 : i32))))
-  else do
+  else
     (pure (0 : i32))
 
 end cyclic_modules.rec2_same_name
@@ -447,11 +445,11 @@ namespace cyclic_modules.rec
 
 @[spec]
 def g2 (x : T) : RustM T := do
-  match x with | (T.t1 ) => do (g1 x) | (T.t2 ) => do (hf x)
+  match x with | (T.t1 ) => (g1 x) | (T.t2 ) => (hf x)
 
 @[spec]
 def g1 (x : T) : RustM T := do
-  match x with | (T.t1 ) => do (g2 x) | (T.t2 ) => do (pure T.t1)
+  match x with | (T.t1 ) => (g2 x) | (T.t2 ) => (pure T.t1)
 
 end cyclic_modules.rec
 
