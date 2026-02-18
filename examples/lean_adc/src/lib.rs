@@ -91,9 +91,7 @@ fn adc_postcondition(a: u32, b: u32, carry_in: u32, sum: u32, carry_out: u32) ->
 /// The proof uses:
 ///   1. `hax_mvcgen` — to generate pure verification conditions
 ///      from the monadic function body.
-///   2. `simp only [hax_bv_decide]` — to normalize with bv specset
-///      lemmas.
-///   3. `bv_decide` — Lean's bit-blasting procedure to
+///   2. `bv_decide` — Lean's bit-blasting procedure to
 ///      automatically verify the remaining BitVec goals.
 #[hax_lib::lean::after(
     // The specification is stated with pure Lean propositions (not through the
