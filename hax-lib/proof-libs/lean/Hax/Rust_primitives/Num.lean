@@ -94,6 +94,13 @@ instance {α n} [i: OfNat α n] : OfNat (RustM α) n where
 
 infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
+infixl:60 " |||? " => fun a b => pure (HOr.hOr a b)
+infixl:80 " <? "   => fun a b => pure (decide (a < b))
+infixl:80 " <=? "  => fun a b => pure (decide (a <= b))
+infixl:80 " >? "   => fun a b => pure (decide (a > b))
+infixl:80 " >=? "  => fun a b => pure (decide (a >= b))
+infixl:80 " ==? "  => fun a b => pure (a == b)
+prefix:75 "~?"     => fun a => pure (~~~a)
 
 @[simp, spec, specset bv, hax_bv_decide]
 def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
