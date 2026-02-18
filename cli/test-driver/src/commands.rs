@@ -255,7 +255,7 @@ pub async fn run_lean(dir: PathBuf) -> Result<BackendOutput> {
     let root_path = std::env::current_dir()?;
 
     let lakefile_path = dir.join("lakefile.toml");
-    if !lakefile_path.exists() {
+    if !lakefile_path.exists() && !dir.join("lakefile.lean").exists() {
         // Find the single .lean file to derive the crate name.
         let crate_name = std::fs::read_dir(&dir)?
             .filter_map(|e| e.ok())
