@@ -79,14 +79,14 @@ class PartialEq (Self : Type) (Rhs : Type)
 class Eq.AssociatedTypes (Self : Type) where
   [trait_constr_Eq_i0 : PartialEq.AssociatedTypes Self Self]
 
-attribute [instance] Eq.AssociatedTypes.trait_constr_Eq_i0
+attribute [instance_reducible, instance] Eq.AssociatedTypes.trait_constr_Eq_i0
 
 class Eq (Self : Type)
   [associatedTypes : outParam (Eq.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Eq_i0 : PartialEq Self Self]
 
-attribute [instance] Eq.trait_constr_Eq_i0
+attribute [instance_reducible, instance] Eq.trait_constr_Eq_i0
 
 inductive Ordering : Type
 | Less : Ordering
@@ -430,7 +430,7 @@ opaque Impl_1.new_v1 (T : Type) (U : Type) (V : Type) (W : Type)
 @[spec]
 def Impl_1.none (_ : rust_primitives.hax.Tuple0) :
     RustM (RustArray Argument 0) := do
-  (pure #v[])
+  (pure (RustArray.ofVec #v[]))
 
 opaque Impl_1.new_v1_formatted (T : Type) (U : Type) (V : Type)
     (x : T)
@@ -576,14 +576,15 @@ namespace core_models.marker
 class Copy.AssociatedTypes (Self : Type) where
   [trait_constr_Copy_i0 : core_models.clone.Clone.AssociatedTypes Self]
 
-attribute [instance] Copy.AssociatedTypes.trait_constr_Copy_i0
+attribute [instance_reducible, instance]
+  Copy.AssociatedTypes.trait_constr_Copy_i0
 
 class Copy (Self : Type)
   [associatedTypes : outParam (Copy.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Copy_i0 : core_models.clone.Clone Self]
 
-attribute [instance] Copy.trait_constr_Copy_i0
+attribute [instance_reducible, instance] Copy.trait_constr_Copy_i0
 
 class Send.AssociatedTypes (Self : Type) where
 
@@ -1166,7 +1167,8 @@ namespace core_models.cmp
 class PartialOrd.AssociatedTypes (Self : Type) (Rhs : Type) where
   [trait_constr_PartialOrd_i0 : PartialEq.AssociatedTypes Self Rhs]
 
-attribute [instance] PartialOrd.AssociatedTypes.trait_constr_PartialOrd_i0
+attribute [instance_reducible, instance]
+  PartialOrd.AssociatedTypes.trait_constr_PartialOrd_i0
 
 class PartialOrd (Self : Type) (Rhs : Type)
   [associatedTypes : outParam (PartialOrd.AssociatedTypes (Self : Type) (Rhs :
@@ -1176,7 +1178,7 @@ class PartialOrd (Self : Type) (Rhs : Type)
   partial_cmp (Self) (Rhs) :
     (Self -> Rhs -> RustM (core_models.option.Option Ordering))
 
-attribute [instance] PartialOrd.trait_constr_PartialOrd_i0
+attribute [instance_reducible, instance] PartialOrd.trait_constr_PartialOrd_i0
 
 class PartialOrdDefaults.AssociatedTypes (Self : Type) (Rhs : Type) where
 
@@ -1251,9 +1253,9 @@ class Ord.AssociatedTypes (Self : Type) where
   [trait_constr_Ord_i0 : Eq.AssociatedTypes Self]
   [trait_constr_Ord_i1 : PartialOrd.AssociatedTypes Self Self]
 
-attribute [instance] Ord.AssociatedTypes.trait_constr_Ord_i0
+attribute [instance_reducible, instance] Ord.AssociatedTypes.trait_constr_Ord_i0
 
-attribute [instance] Ord.AssociatedTypes.trait_constr_Ord_i1
+attribute [instance_reducible, instance] Ord.AssociatedTypes.trait_constr_Ord_i1
 
 class Ord (Self : Type)
   [associatedTypes : outParam (Ord.AssociatedTypes (Self : Type))]
@@ -1262,9 +1264,9 @@ class Ord (Self : Type)
   [trait_constr_Ord_i1 : PartialOrd Self Self]
   cmp (Self) : (Self -> Self -> RustM Ordering)
 
-attribute [instance] Ord.trait_constr_Ord_i0
+attribute [instance_reducible, instance] Ord.trait_constr_Ord_i0
 
-attribute [instance] Ord.trait_constr_Ord_i1
+attribute [instance_reducible, instance] Ord.trait_constr_Ord_i1
 
 @[spec]
 def max
@@ -1791,9 +1793,11 @@ class Error.AssociatedTypes (Self : Type) where
   [trait_constr_Error_i0 : core_models.fmt.Display.AssociatedTypes Self]
   [trait_constr_Error_i1 : core_models.fmt.Debug.AssociatedTypes Self]
 
-attribute [instance] Error.AssociatedTypes.trait_constr_Error_i0
+attribute [instance_reducible, instance]
+  Error.AssociatedTypes.trait_constr_Error_i0
 
-attribute [instance] Error.AssociatedTypes.trait_constr_Error_i1
+attribute [instance_reducible, instance]
+  Error.AssociatedTypes.trait_constr_Error_i1
 
 class Error (Self : Type)
   [associatedTypes : outParam (Error.AssociatedTypes (Self : Type))]
@@ -1801,9 +1805,9 @@ class Error (Self : Type)
   [trait_constr_Error_i0 : core_models.fmt.Display Self]
   [trait_constr_Error_i1 : core_models.fmt.Debug Self]
 
-attribute [instance] Error.trait_constr_Error_i0
+attribute [instance_reducible, instance] Error.trait_constr_Error_i0
 
-attribute [instance] Error.trait_constr_Error_i1
+attribute [instance_reducible, instance] Error.trait_constr_Error_i1
 
 end core_models.error
 
@@ -2898,7 +2902,7 @@ namespace core_models.iter.traits.iterator
 class IteratorMethods.AssociatedTypes (Self : Type) where
   [trait_constr_IteratorMethods_i0 : Iterator.AssociatedTypes Self]
 
-attribute [instance]
+attribute [instance_reducible, instance]
   IteratorMethods.AssociatedTypes.trait_constr_IteratorMethods_i0
 
 class IteratorMethods (Self : Type)
@@ -2995,7 +2999,8 @@ class IteratorMethods (Self : Type)
     [trait_constr_zip_i1 : Iterator I2 ] :
     (Self -> I2 -> RustM (core_models.iter.adapters.zip.Zip Self I2))
 
-attribute [instance] IteratorMethods.trait_constr_IteratorMethods_i0
+attribute [instance_reducible, instance]
+  IteratorMethods.trait_constr_IteratorMethods_i0
 
 end core_models.iter.traits.iterator
 
@@ -3226,7 +3231,7 @@ namespace core_models.ops.function
 class Fn.AssociatedTypes (Self : Type) (Args : Type) where
   [trait_constr_Fn_i0 : FnOnce.AssociatedTypes Self Args]
 
-attribute [instance] Fn.AssociatedTypes.trait_constr_Fn_i0
+attribute [instance_reducible, instance] Fn.AssociatedTypes.trait_constr_Fn_i0
 
 class Fn (Self : Type) (Args : Type)
   [associatedTypes : outParam (Fn.AssociatedTypes (Self : Type) (Args : Type))]
@@ -3234,7 +3239,7 @@ class Fn (Self : Type) (Args : Type)
   [trait_constr_Fn_i0 : FnOnce Self Args]
   call (Self) (Args) : (Self -> Args -> RustM (FnOnce.Output Self Args))
 
-attribute [instance] Fn.trait_constr_Fn_i0
+attribute [instance_reducible, instance] Fn.trait_constr_Fn_i0
 
 @[reducible] instance Impl_2.AssociatedTypes (Arg : Type) (Out : Type) :
   FnOnce.AssociatedTypes (Arg -> RustM Out) Arg

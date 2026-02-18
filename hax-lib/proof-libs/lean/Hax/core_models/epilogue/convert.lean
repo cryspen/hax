@@ -14,7 +14,7 @@ instance {α : Type} {n : usize} : TryInto (RustSlice α) (RustArray α n) where
   try_into a :=
    pure (
      if h: a.val.size = n.toNat then
-       core_models.result.Result.Ok (a.val.toVector.cast h)
+       core_models.result.Result.Ok (.ofVec (a.val.toVector.cast h))
      else
        .Err core_models.array.TryFromSliceError.mk
      )
@@ -24,7 +24,7 @@ theorem TryInto.try_into.spec {α : Type} {n: usize} (a: RustSlice α) :
   (h: a.val.size = n.toNat) →
   ⦃ ⌜ True ⌝ ⦄
   (TryInto.try_into (RustSlice α) (RustArray α n) a )
-  ⦃ ⇓ r => ⌜ r = .Ok (a.val.toVector.cast h) ⌝ ⦄ := by
+  ⦃ ⇓ r => ⌜ r = .Ok (.ofVec (a.val.toVector.cast h)) ⌝ ⦄ := by
   intro h
   mvcgen [TryInto.try_into]
   grind

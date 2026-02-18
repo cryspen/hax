@@ -951,13 +951,14 @@ const _: () = {
                 }
                 ExprKind::Literal(literal) => docs![literal],
                 ExprKind::Array(exprs) => docs![
-                    "#v[",
+                    "RustArray.ofVec #v[",
                     intersperse!(exprs, docs![",", line!()])
                         .nest(INDENT)
                         .group()
                         .align(),
                     "]"
                 ]
+                .parens()
                 .group(),
                 ExprKind::Construct {
                     constructor,
@@ -1561,7 +1562,7 @@ const _: () = {
                         zip_left!(
                             docs![hardline!(), hardline!()],
                             generic_types.iter().map(|impl_ident| docs![
-                                "attribute [instance]",
+                                "attribute [instance_reducible, instance]",
                                 line!(),
                                 name,
                                 ".AssociatedTypes.",
@@ -1689,7 +1690,7 @@ const _: () = {
                         zip_left!(
                             docs![hardline!(), hardline!()],
                             generic_types.iter().map(|impl_ident| docs![
-                                "attribute [instance]",
+                                "attribute [instance_reducible, instance]",
                                 line!(),
                                 name,
                                 ".",

@@ -93,13 +93,13 @@ instance instLawfulMonad : LawfulMonad RustM where
   pure_seq g x := by
     dsimp [Functor.map, Seq.seq, pure, bind]
   bind_pure_comp f x := by
-    dsimp [Functor.map, pure, bind, instMonad]
+    dsimp [Functor.map, pure, bind, instMonad, Bind.bind]
   bind_map f x := by
-    dsimp [Functor.map, bind, pure, Seq.seq, instMonad]
+    dsimp [Functor.map, bind, pure, Seq.seq, instMonad, Bind.bind]
   pure_bind x f := by
-    dsimp [pure, bind, instMonad]
+    dsimp [pure, bind, instMonad, Bind.bind]
   bind_assoc x f g := by
-    dsimp [pure, bind, instMonad]
+    dsimp [pure, bind, instMonad, Bind.bind]
     cases x; all_goals simp
 
 instance instWP : WP RustM (.except Error .pure) where
@@ -109,11 +109,8 @@ instance instWP : WP RustM (.except Error .pure) where
   | .div => PredTrans.const ⌜False⌝
 
 instance instWPMonad : WPMonad RustM (.except Error .pure) where
-  wp_pure := by intros; ext Q; simp [wp, PredTrans.pure, Pure.pure, Except.pure, Id.run]
-  wp_bind x f := by
-    simp only [instWP, instMonad, bind]
-    ext Q
-    cases x <;> simp [PredTrans.bind, PredTrans.const, Bind.bind]
+  wp_pure := by intros; ext Q; rfl
+  wp_bind x f := by ext Q; cases x <;> rfl
 
 section Order
 

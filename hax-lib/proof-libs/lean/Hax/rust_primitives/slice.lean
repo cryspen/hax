@@ -13,17 +13,17 @@ attribute [local grind! .] USize64.toNat_lt_size
 @[spec]
 def rust_primitives.slice.array_as_slice (α : Type) (n : usize) :
     RustArray α n → RustM (RustSlice α) :=
-  fun x => pure ⟨Vector.toArray x, by grind⟩
+  fun x => pure ⟨Vector.toArray x.toVec, by grind⟩
 
 @[spec]
 def rust_primitives.slice.array_map (α : Type) (β : Type) (n : usize) (_ : Type)
-    (a : RustArray α n) (f : α -> RustM β) : RustM (RustArray β n) :=
-  a.mapM f
+    (a : RustArray α n) (f : α -> RustM β) : RustM (RustArray β n) := do
+  pure (.ofVec (← a.toVec.mapM (f ·) ))
 
 @[spec]
 def rust_primitives.slice.array_from_fn (α : Type) (n : usize) (_ : Type)
-    (f : usize -> RustM α) : RustM (RustArray α n) :=
-  (Vector.range n.toNat).mapM fun i => f (USize64.ofNat i)
+    (f : usize -> RustM α) : RustM (RustArray α n) := do
+  pure (.ofVec (← (Vector.range n.toNat).mapM fun i => f (USize64.ofNat i)))
 
 @[spec]
 def rust_primitives.slice.slice_length (α : Type) (s : RustSlice α) : RustM usize :=

@@ -16,7 +16,7 @@ open Lean
   extra arguments to store a termination measure and an invariant, which can be used to verify the
   program. The arguments `pureInv` and `pureTermination` are usually not provided explicitly and
   derived by the default tactic given below. -/
-def rust_primitives.hax.while_loop {β : Type}
+noncomputable def rust_primitives.hax.while_loop {β : Type}
     (inv: β → RustM Prop)
     (cond: β → RustM Bool)
     (termination : β -> RustM hax_lib.int.Int)

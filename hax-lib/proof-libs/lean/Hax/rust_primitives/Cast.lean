@@ -12,7 +12,7 @@ section Cast
 class Cast (α β: Type) where
   cast : α → RustM β
 
-attribute [specset bv, hax_bv_decide] Cast.cast
+attribute [spec, hax_bv_decide] Cast.cast
 
 -- Macro to generate Cast instances for all integer type pairs.
 open Lean in
