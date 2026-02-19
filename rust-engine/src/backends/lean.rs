@@ -892,7 +892,7 @@ const _: () = {
                             [arg],
                             [],
                             ExprKind::GlobalId(op @ (binops::neg | binops::not | binops::Not::not)),
-                        ) => {
+                        ) if arg.ty == Ty::bool() || arg.ty.is_int() => {
                             let symbol = match *op {
                                 binops::neg => "-?",
                                 binops::not => "~?",
@@ -934,7 +934,7 @@ const _: () = {
                                 | binops::gt
                                 | binops::ge),
                             ),
-                        ) => {
+                        ) if (lhs.ty == rhs.ty) && (lhs.ty == Ty::bool() || lhs.ty.is_int()) => {
                             let symbol = match *op {
                                 binops::add => "+?",
                                 binops::sub => "-?",
