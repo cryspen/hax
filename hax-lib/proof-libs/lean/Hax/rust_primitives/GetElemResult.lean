@@ -1,5 +1,6 @@
 import Hax.rust_primitives.RustM
 import Hax.rust_primitives.num
+import Hax.rust_primitives.sequence
 import Hax.Tactic.SpecSet
 
 open Error
@@ -38,18 +39,11 @@ macro_rules | `($x[$i]_?) => `(getElemResult $x $i)
   | `($_ $array $index) => `($array[$index]_?)
   | _ => throw ()
 
-/--
+open rust_primitives.sequence
 
-Until the backend introduces notations, a definition for the explicit name
-`ops.index_index_index` is provided as a proxy
-
--/
-@[simp, spec]
-def Core.Ops.Index.Index.index {α β γ} (a: α) (i:β) [GetElemResult α β γ] : (RustM γ) := a[i]_?
-
-instance usize.instGetElemResultArray {α} : GetElemResult (Array α) usize α where
+instance usize.instGetElemResultSeq {α} : GetElemResult (Seq α) usize α where
   getElemResult xs i :=
-    if h: i.toNat < xs.size then pure (xs[i])
+    if h: i.toNat < xs.val.size then pure (xs.val[i])
     else .fail arrayOutOfBounds
 
 instance usize.instGetElemResultVector {α n} : GetElemResult (Vector α n) usize α where
@@ -57,9 +51,9 @@ instance usize.instGetElemResultVector {α n} : GetElemResult (Vector α n) usiz
     if h: i.toNat < n then pure (xs[i.toNat])
     else .fail arrayOutOfBounds
 
-instance Nat.instGetElemResultArray {α} : GetElemResult (Array α) Nat α where
+instance Nat.instGetElemResultSeq {α} : GetElemResult (Seq α) Nat α where
   getElemResult xs i :=
-    if h: i < xs.size then pure (xs[i])
+    if h: i < xs.val.size then pure (xs.val[i])
     else .fail arrayOutOfBounds
 
 instance Nat.instGetElemResultVector {α n} : GetElemResult (Vector α n) Nat α where
@@ -68,12 +62,12 @@ instance Nat.instGetElemResultVector {α n} : GetElemResult (Vector α n) Nat α
     else .fail arrayOutOfBounds
 
 @[spec]
-theorem Nat.getElemArrayResult_spec
-  (α : Type) (a: Array α) (i: Nat) (h: i < a.size) :
+theorem Nat.getElemSeqResult_spec
+  (α : Type) (a: Seq α) (i: Nat) (h: i < a.val.size) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i] ⌝ ⦄ :=
-  by mvcgen [RustM.ofOption, Nat.instGetElemResultArray]
+  ⦃ ⇓ r => ⌜ r = a.val[i] ⌝ ⦄ :=
+  by mvcgen [RustM.ofOption, Nat.instGetElemResultSeq]
 
 @[spec]
 theorem Nat.getElemVectorResult_spec
@@ -84,12 +78,12 @@ theorem Nat.getElemVectorResult_spec
   by mvcgen [Nat.instGetElemResultVector]
 
 @[spec]
-theorem usize.getElemArrayResult_spec
-  (α : Type) (a: Array α) (i: usize) (h: i.toNat < a.size) :
+theorem usize.getElemSeqResult_spec
+  (α : Type) (a: Seq α) (i: usize) (h: i.toNat < a.val.size) :
   ⦃ ⌜ True ⌝ ⦄
   ( a[i]_? )
-  ⦃ ⇓ r => ⌜ r = a[i.toNat] ⌝ ⦄ :=
-  by mvcgen [usize.instGetElemResultArray]
+  ⦃ ⇓ r => ⌜ r = a.val[i.toNat] ⌝ ⦄ :=
+  by mvcgen [usize.instGetElemResultSeq]
 
 @[spec]
 theorem usize.getElemVectorResult_spec

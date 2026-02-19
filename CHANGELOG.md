@@ -97,6 +97,7 @@ Changes to the Lean backend:
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
+- Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
 
 ## 0.3.5
 

@@ -16,6 +16,7 @@ private def addContractSpec (declName : Name) (attrKind : AttributeKind) : MetaM
     let app := mkAppN (mkConst declName us) xs
     let contractVal := mkProj ``Spec 2 app
     let contractType ← inferType contractVal
+    let contractType ← deltaExpand contractType (· == declName)
     let closedVal ← mkLambdaFVars xs contractVal
     let closedType ← mkForallFVars xs contractType
     let contractDeclName := declName ++ `contract

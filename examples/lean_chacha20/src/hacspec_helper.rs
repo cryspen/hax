@@ -1,18 +1,8 @@
 use super::State;
 
-#[hax_lib::lean::before("set_option hax_mvcgen.specset \"int\"")]
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.to_le_u32s_3.spec bytes :
-  bytes.size = 12 →
-  ⦃ ⌜ True ⌝ ⦄
-  (lean_chacha20.hacspec_helper.to_le_u32s_3 bytes)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  intros
-  hax_mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_3] <;> try grind
-"
-)]
+#[hax_lib::requires(bytes.len() == 12)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn to_le_u32s_3(bytes: &[u8]) -> [u32; 3] {
     // assert_eq!($l, bytes.len() / 4);
     let mut out = [0; 3];
@@ -23,18 +13,9 @@ pub(super) fn to_le_u32s_3(bytes: &[u8]) -> [u32; 3] {
     out
 }
 
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.to_le_u32s_8_spec (bytes : (Array u8)) :
-  bytes.size = 32 →
-  ⦃ ⌜ True ⌝ ⦄
-  ( lean_chacha20.hacspec_helper.to_le_u32s_8 bytes )
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  intros
-  hax_mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_8] <;> try grind
-"
-)]
+#[hax_lib::requires(bytes.len() == 32)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn to_le_u32s_8(bytes: &[u8]) -> [u32; 8] {
     // assert_eq!(8, bytes.len() / 4);
     let mut out = [0; 8];
@@ -44,18 +25,10 @@ pub(super) fn to_le_u32s_8(bytes: &[u8]) -> [u32; 8] {
     }
     out
 }
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.to_le_u32s_16_spec bytes :
-  bytes.size = 64 →
-  ⦃ ⌜ True ⌝ ⦄
-  (lean_chacha20.hacspec_helper.to_le_u32s_16 bytes)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  intro
-  hax_mvcgen [lean_chacha20.hacspec_helper.to_le_u32s_16] <;> try grind
-"
-)]
+
+#[hax_lib::requires(bytes.len() == 64)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
     // assert_eq!(16, bytes.len() / 4);
     let mut out = [0; 16];
@@ -66,18 +39,8 @@ pub(super) fn to_le_u32s_16(bytes: &[u8]) -> [u32; 16] {
     out
 }
 
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.u32s_to_le_bytes_spec (state : (Vector u32 16)) :
-  ⦃ ⌜ True ⌝ ⦄
-  (lean_chacha20.hacspec_helper.u32s_to_le_bytes state)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  intros
-  hax_mvcgen [lean_chacha20.hacspec_helper.u32s_to_le_bytes, core_models.num.Impl_8.to_le_bytes]
-    <;> try grind
-"
-)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
     // <const L: usize>
     let mut out = [0; 64];
@@ -90,18 +53,8 @@ pub(super) fn u32s_to_le_bytes(state: &[u32; 16]) -> [u8; 64] {
     out
 }
 
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.xor_state_spec (state other: (Vector u32 16)) :
-  ⦃ ⌜ True ⌝ ⦄
-  (lean_chacha20.hacspec_helper.xor_state state other)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  intros
-  hax_mvcgen [lean_chacha20.hacspec_helper.xor_state, core_models.num.Impl_8.to_le_bytes]
-    <;> try grind
-"
-)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn xor_state(mut state: State, other: State) -> State {
     for i in 0..16 {
         state[i] = state[i] ^ other[i];
@@ -109,21 +62,8 @@ pub(super) fn xor_state(mut state: State, other: State) -> State {
     state
 }
 
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.add_state_spec (state : (Vector u32 16)) (other : (Vector u32 16)) :
-  ⦃ ⌜ True ⌝ ⦄
-  (lean_chacha20.hacspec_helper.add_state state other)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  have := USize.le_size
-  hax_mvcgen [lean_chacha20.hacspec_helper.add_state]
-  <;> simp [Vector.size] at *
-  <;> apply (USize.lt_ofNat_iff _).mp
-  <;> omega
-  done
-"
-)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn add_state(mut state: State, other: State) -> State {
     for i in 0..16 {
         state[i] = state[i].wrapping_add(other[i]);
@@ -131,19 +71,9 @@ pub(super) fn add_state(mut state: State, other: State) -> State {
     state
 }
 
-#[hax_lib::lean::after(
-    "
-@[spec]
-theorem lean_chacha20.hacspec_helper.update_array_spec (a: (Vector u8 64)) (v: Array u8) :
-  v.size ≤ 64 →
-  ⦃ ⌜ True ⌝ ⦄
-  (lean_chacha20.hacspec_helper.update_array a v)
-  ⦃ ⇓ _ => ⌜ True ⌝ ⦄ := by
-  intros
-  hax_mvcgen [lean_chacha20.hacspec_helper.update_array, hax_lib.assert]
-    <;> try grind
-"
-)]
+#[hax_lib::requires(val.len() <= 64)]
+#[hax_lib::ensures(|_| true)]
+#[hax_lib::lean::proof_method::grind]
 pub(super) fn update_array(mut array: [u8; 64], val: &[u8]) -> [u8; 64] {
     // <const L: usize>
     assert!(64 >= val.len());
