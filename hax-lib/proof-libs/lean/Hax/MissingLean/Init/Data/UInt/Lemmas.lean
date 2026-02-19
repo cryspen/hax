@@ -1,15 +1,10 @@
+import Hax.MissingLean.Init.Data.UInt.Lemmas_UInt128
+
 attribute [grind =_] UInt8.le_ofNat_iff
 attribute [grind =_] UInt16.le_ofNat_iff
 attribute [grind =_] UInt32.le_ofNat_iff
 attribute [grind =_] UInt64.le_ofNat_iff
-
-theorem UInt64.toNat_mul_of_lt {a b : UInt64} (h : a.toNat * b.toNat < 2 ^ 64) :
-    (a * b).toNat = a.toNat * b.toNat := by
-  rw [UInt64.toNat_mul, Nat.mod_eq_of_lt h]
-
-theorem UInt64.toNat_add_of_lt {a b : UInt64} (h : a.toNat + b.toNat < 2 ^ 64) :
-    (a + b).toNat = a.toNat + b.toNat := by
-  rw [UInt64.toNat_add, Nat.mod_eq_of_lt h]
+attribute [grind =_] UInt128.le_ofNat_iff
 
 theorem UInt64.le_self_add {a b : UInt64} (h : a.toNat + b.toNat < 2 ^ 64) :
     a ≤ a + b := by
@@ -56,3 +51,4 @@ additional_uint_lemmas UInt8 8
 additional_uint_lemmas UInt16 16
 additional_uint_lemmas UInt32 32
 additional_uint_lemmas UInt64 64
+additional_uint_lemmas UInt128 128
