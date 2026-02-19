@@ -42,8 +42,6 @@ pub trait Resugaring: for<'a> dyn_compatible::AstVisitorMut<'a> {
 
 /// A printer defines a list of resugaring phases.
 pub trait Printer: Sized + PrettyAst<Span> + Default + HasLinkedItemGraph {
-    /// A list of resugaring phases.
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>>;
     /// The name of the printer
     const NAME: &'static str = <Self as PrettyAst<Span>>::NAME;
 }
@@ -62,15 +60,12 @@ pub struct SourceMap;
 /// Helper trait to print AST fragments.
 pub trait Print<T>: Printer {
     /// Print a single AST fragment using this backend.
-    fn print(&mut self, mut fragment: T) -> (String, SourceMap)
+    fn print(&mut self, fragment: T) -> (String, SourceMap)
     where
         T: ToDocument<Self, Span>,
         // The following node is equivalent to "T is an AST node"
         for<'a> dyn Resugaring: dyn_compatible::AstVisitableMut<'a, T>,
     {
-        for mut reguaring_phase in Self::resugaring_phases() {
-            reguaring_phase.visit(&mut fragment)
-        }
         let doc_builder = fragment.to_document(self).into_doc();
         (doc_builder.deref().pretty(80).to_string(), SourceMap)
     }

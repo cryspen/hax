@@ -14,10 +14,6 @@ pub struct RustPrinter {
 }
 
 impl Printer for RustPrinter {
-    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
-        vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
-    }
-
     const NAME: &str = "Rust";
 }
 
@@ -54,6 +50,10 @@ pub struct RustBackend;
 
 impl Backend for RustBackend {
     type Printer = RustPrinter;
+
+    fn resugaring_phases() -> Vec<Box<dyn Resugaring>> {
+        vec![Box::new(FunctionsToConstants), Box::new(Tuples)]
+    }
 
     fn module_path(&self, module: &Module) -> camino::Utf8PathBuf {
         let printer = RustPrinter::default();

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Changes to the Rust Engine:
  - Remove `BinOp` resugaring (#1950)
+ - Apply resugarings to linked items (pre/post conditions) (#1961)
 
 Changes to the frontend:
 
@@ -95,6 +96,7 @@ Changes to the Lean backend:
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
+- Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
 
 ## 0.3.5
 
