@@ -102,9 +102,9 @@ def Ordering.Greater.AnonConst : isize := (1 : isize)
 @[spec]
 def Ordering_cast_to_repr (x : Ordering) : RustM isize := do
   match x with
-    | (Ordering.Less ) => (pure Ordering.Less.AnonConst)
-    | (Ordering.Equal ) => (pure Ordering.Equal.AnonConst)
-    | (Ordering.Greater ) => (pure Ordering.Greater.AnonConst)
+    | (Ordering.Less ) => do (pure Ordering.Less.AnonConst)
+    | (Ordering.Equal ) => do (pure Ordering.Equal.AnonConst)
+    | (Ordering.Greater ) => do (pure Ordering.Greater.AnonConst)
 
 class Neq.AssociatedTypes (Self : Type) (Rhs : Type) where
 
@@ -370,7 +370,7 @@ end core_models.default
 
 namespace core_models.f32
 
-opaque Impl.abs (x : f64) : RustM f64 
+opaque Impl.abs (x : f64) : RustM f64
 
 end core_models.f32
 
@@ -396,23 +396,23 @@ opaque ArgumentType : Type
 structure Argument where
   ty : ArgumentType
 
-opaque Impl.new_display (T : Type) (x : T) : RustM Argument 
+opaque Impl.new_display (T : Type) (x : T) : RustM Argument
 
-opaque Impl.new_debug (T : Type) (x : T) : RustM Argument 
+opaque Impl.new_debug (T : Type) (x : T) : RustM Argument
 
-opaque Impl.new_lower_hex (T : Type) (x : T) : RustM Argument 
+opaque Impl.new_lower_hex (T : Type) (x : T) : RustM Argument
 
-opaque Impl_1.new_binary (T : Type) (x : T) : RustM Argument 
+opaque Impl_1.new_binary (T : Type) (x : T) : RustM Argument
 
 opaque Impl_1.new_const (T : Type) (U : Type) (x : T) (y : U) :
-    RustM core_models.fmt.Arguments 
+    RustM core_models.fmt.Arguments
 
 opaque Impl_1.new_v1 (T : Type) (U : Type) (V : Type) (W : Type)
     (x : T)
     (y : U)
     (z : V)
     (t : W) :
-    RustM core_models.fmt.Arguments 
+    RustM core_models.fmt.Arguments
 
 @[spec]
 def Impl_1.none (_ : rust_primitives.hax.Tuple0) :
@@ -423,7 +423,7 @@ opaque Impl_1.new_v1_formatted (T : Type) (U : Type) (V : Type)
     (x : T)
     (y : U)
     (z : V) :
-    RustM core_models.fmt.Arguments 
+    RustM core_models.fmt.Arguments
 
 inductive Count : Type
 | Is : u16 -> Count
@@ -640,34 +640,34 @@ end core_models.marker
 
 namespace core_models.mem
 
-opaque forget (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0 
+opaque forget (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0
 
-opaque forget_unsized (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0 
+opaque forget_unsized (T : Type) (t : T) : RustM rust_primitives.hax.Tuple0
 
-opaque size_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque size_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque size_of_val (T : Type) (val : T) : RustM usize 
+opaque size_of_val (T : Type) (val : T) : RustM usize
 
-opaque min_align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque min_align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque min_align_of_val (T : Type) (val : T) : RustM usize 
+opaque min_align_of_val (T : Type) (val : T) : RustM usize
 
-opaque align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque align_of (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque align_of_val (T : Type) (val : T) : RustM usize 
+opaque align_of_val (T : Type) (val : T) : RustM usize
 
-opaque align_of_val_raw (T : Type) (val : T) : RustM usize 
+opaque align_of_val_raw (T : Type) (val : T) : RustM usize
 
-opaque needs_drop (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM Bool 
+opaque needs_drop (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM Bool
 
-opaque uninitialized (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
+opaque uninitialized (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T
 
-opaque swap (T : Type) (x : T) (y : T) : RustM (rust_primitives.hax.Tuple2 T T) 
+opaque swap (T : Type) (x : T) (y : T) : RustM (rust_primitives.hax.Tuple2 T T)
 
 opaque replace (T : Type) (dest : T) (src : T) :
-    RustM (rust_primitives.hax.Tuple2 T T) 
+    RustM (rust_primitives.hax.Tuple2 T T)
 
-opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0 
+opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0
 
 @[spec]
 def copy
@@ -678,15 +678,15 @@ def copy
     RustM T := do
   (pure x)
 
-opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T) 
+opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T)
 
-opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
+opaque transmute_copy (Src : Type) (Dst : Type) (src : Src) : RustM Dst
 
-opaque variant_count (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize 
+opaque variant_count (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM usize
 
-opaque zeroed (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
+opaque zeroed (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T
 
-opaque transmute (Src : Type) (Dst : Type) (src : Src) : RustM Dst 
+opaque transmute (Src : Type) (Dst : Type) (src : Src) : RustM Dst
 
 end core_models.mem
 
@@ -731,9 +731,9 @@ def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
 def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
   (rust_primitives.arithmetic.pow_u8 x exp)
 
-opaque Impl_6.leading_zeros (x : u8) : RustM u32 
+opaque Impl_6.leading_zeros (x : u8) : RustM u32
 
-opaque Impl_6.ilog2 (x : u8) : RustM u32 
+opaque Impl_6.ilog2 (x : u8) : RustM u32
 
 @[spec]
 def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
@@ -751,9 +751,9 @@ def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
 def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
   (rust_primitives.arithmetic.pow_u16 x exp)
 
-opaque Impl_7.leading_zeros (x : u16) : RustM u32 
+opaque Impl_7.leading_zeros (x : u16) : RustM u32
 
-opaque Impl_7.ilog2 (x : u16) : RustM u32 
+opaque Impl_7.ilog2 (x : u16) : RustM u32
 
 @[spec]
 def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
@@ -771,9 +771,9 @@ def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
 def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
   (rust_primitives.arithmetic.pow_u32 x exp)
 
-opaque Impl_8.leading_zeros (x : u32) : RustM u32 
+opaque Impl_8.leading_zeros (x : u32) : RustM u32
 
-opaque Impl_8.ilog2 (x : u32) : RustM u32 
+opaque Impl_8.ilog2 (x : u32) : RustM u32
 
 @[spec]
 def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
@@ -791,9 +791,9 @@ def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
 def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
   (rust_primitives.arithmetic.pow_u64 x exp)
 
-opaque Impl_9.leading_zeros (x : u64) : RustM u32 
+opaque Impl_9.leading_zeros (x : u64) : RustM u32
 
-opaque Impl_9.ilog2 (x : u64) : RustM u32 
+opaque Impl_9.ilog2 (x : u64) : RustM u32
 
 @[spec]
 def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
@@ -811,9 +811,9 @@ def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
 def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
   (rust_primitives.arithmetic.pow_u128 x exp)
 
-opaque Impl_10.leading_zeros (x : u128) : RustM u32 
+opaque Impl_10.leading_zeros (x : u128) : RustM u32
 
-opaque Impl_10.ilog2 (x : u128) : RustM u32 
+opaque Impl_10.ilog2 (x : u128) : RustM u32
 
 @[spec]
 def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
@@ -831,9 +831,9 @@ def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
 def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
   (rust_primitives.arithmetic.pow_usize x exp)
 
-opaque Impl_11.leading_zeros (x : usize) : RustM u32 
+opaque Impl_11.leading_zeros (x : usize) : RustM u32
 
-opaque Impl_11.ilog2 (x : usize) : RustM u32 
+opaque Impl_11.ilog2 (x : usize) : RustM u32
 
 @[spec]
 def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
@@ -851,9 +851,9 @@ def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
 def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
   (rust_primitives.arithmetic.pow_i8 x exp)
 
-opaque Impl_12.leading_zeros (x : i8) : RustM u32 
+opaque Impl_12.leading_zeros (x : i8) : RustM u32
 
-opaque Impl_12.ilog2 (x : i8) : RustM u32 
+opaque Impl_12.ilog2 (x : i8) : RustM u32
 
 @[spec]
 def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
@@ -871,9 +871,9 @@ def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
 def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
   (rust_primitives.arithmetic.pow_i16 x exp)
 
-opaque Impl_13.leading_zeros (x : i16) : RustM u32 
+opaque Impl_13.leading_zeros (x : i16) : RustM u32
 
-opaque Impl_13.ilog2 (x : i16) : RustM u32 
+opaque Impl_13.ilog2 (x : i16) : RustM u32
 
 @[spec]
 def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
@@ -891,9 +891,9 @@ def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
 def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
   (rust_primitives.arithmetic.pow_i32 x exp)
 
-opaque Impl_14.leading_zeros (x : i32) : RustM u32 
+opaque Impl_14.leading_zeros (x : i32) : RustM u32
 
-opaque Impl_14.ilog2 (x : i32) : RustM u32 
+opaque Impl_14.ilog2 (x : i32) : RustM u32
 
 @[spec]
 def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
@@ -911,9 +911,9 @@ def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
 def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
   (rust_primitives.arithmetic.pow_i64 x exp)
 
-opaque Impl_15.leading_zeros (x : i64) : RustM u32 
+opaque Impl_15.leading_zeros (x : i64) : RustM u32
 
-opaque Impl_15.ilog2 (x : i64) : RustM u32 
+opaque Impl_15.ilog2 (x : i64) : RustM u32
 
 @[spec]
 def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
@@ -931,9 +931,9 @@ def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
 def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
   (rust_primitives.arithmetic.pow_i128 x exp)
 
-opaque Impl_16.leading_zeros (x : i128) : RustM u32 
+opaque Impl_16.leading_zeros (x : i128) : RustM u32
 
-opaque Impl_16.ilog2 (x : i128) : RustM u32 
+opaque Impl_16.ilog2 (x : i128) : RustM u32
 
 @[spec]
 def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
@@ -951,9 +951,9 @@ def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
 def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
   (rust_primitives.arithmetic.pow_isize x exp)
 
-opaque Impl_17.leading_zeros (x : isize) : RustM u32 
+opaque Impl_17.leading_zeros (x : isize) : RustM u32
 
-opaque Impl_17.ilog2 (x : isize) : RustM u32 
+opaque Impl_17.ilog2 (x : isize) : RustM u32
 
 @[reducible] instance Impl_18.AssociatedTypes :
   core_models.default.Default.AssociatedTypes u8
@@ -1206,33 +1206,33 @@ instance Impl_1
       [trait_constr_lt_associated_type_i1 : PartialOrd.AssociatedTypes T T]
       [trait_constr_lt_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
-      | (core_models.option.Option.Some  (Ordering.Less )) => (pure true)
-      | _ => (pure false)
+      | (core_models.option.Option.Some  (Ordering.Less )) => do (pure true)
+      | _ => do (pure false)
   le :=
     fun
       [trait_constr_le_associated_type_i1 : PartialOrd.AssociatedTypes T T]
       [trait_constr_le_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
       | (core_models.option.Option.Some  (Ordering.Less )) |
-        (core_models.option.Option.Some  (Ordering.Equal )) =>
+        (core_models.option.Option.Some  (Ordering.Equal )) => do
         (pure true)
-      | _ => (pure false)
+      | _ => do (pure false)
   gt :=
     fun
       [trait_constr_gt_associated_type_i1 : PartialOrd.AssociatedTypes T T]
       [trait_constr_gt_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
-      | (core_models.option.Option.Some  (Ordering.Greater )) => (pure true)
-      | _ => (pure false)
+      | (core_models.option.Option.Some  (Ordering.Greater )) => do (pure true)
+      | _ => do (pure false)
   ge :=
     fun
       [trait_constr_ge_associated_type_i1 : PartialOrd.AssociatedTypes T T]
       [trait_constr_ge_i1 : PartialOrd T T ] (self : T) (y : T) => do
     match (← (PartialOrd.partial_cmp T T self y)) with
       | (core_models.option.Option.Some  (Ordering.Greater )) |
-        (core_models.option.Option.Some  (Ordering.Equal )) =>
+        (core_models.option.Option.Some  (Ordering.Equal )) => do
         (pure true)
-      | _ => (pure false)
+      | _ => do (pure false)
 
 class Ord.AssociatedTypes (Self : Type) where
   [trait_constr_Ord_i0 : Eq.AssociatedTypes Self]
@@ -1262,8 +1262,8 @@ def max
     (v2 : T) :
     RustM T := do
   match (← (Ord.cmp T v1 v2)) with
-    | (Ordering.Greater ) => (pure v1)
-    | _ => (pure v2)
+    | (Ordering.Greater ) => do (pure v1)
+    | _ => do (pure v2)
 
 @[spec]
 def min
@@ -1274,8 +1274,8 @@ def min
     (v2 : T) :
     RustM T := do
   match (← (Ord.cmp T v1 v2)) with
-    | (Ordering.Greater ) => (pure v2)
-    | _ => (pure v1)
+    | (Ordering.Greater ) => do (pure v2)
+    | _ => do (pure v1)
 
 @[reducible] instance Impl_2.AssociatedTypes
   (T : Type)
@@ -1315,24 +1315,24 @@ instance Impl_5
 
 instance Impl_30 : PartialOrd u8 u8 where
   partial_cmp := fun (self : u8) (other : u8) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_31.AssociatedTypes : Ord.AssociatedTypes u8 where
 
 instance Impl_31 : Ord u8 where
   cmp := fun (self : u8) (other : u8) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_32.AssociatedTypes :
@@ -1341,24 +1341,24 @@ instance Impl_31 : Ord u8 where
 
 instance Impl_32 : PartialOrd i8 i8 where
   partial_cmp := fun (self : i8) (other : i8) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_33.AssociatedTypes : Ord.AssociatedTypes i8 where
 
 instance Impl_33 : Ord i8 where
   cmp := fun (self : i8) (other : i8) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_34.AssociatedTypes :
@@ -1367,24 +1367,24 @@ instance Impl_33 : Ord i8 where
 
 instance Impl_34 : PartialOrd u16 u16 where
   partial_cmp := fun (self : u16) (other : u16) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_35.AssociatedTypes : Ord.AssociatedTypes u16 where
 
 instance Impl_35 : Ord u16 where
   cmp := fun (self : u16) (other : u16) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_36.AssociatedTypes :
@@ -1393,24 +1393,24 @@ instance Impl_35 : Ord u16 where
 
 instance Impl_36 : PartialOrd i16 i16 where
   partial_cmp := fun (self : i16) (other : i16) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_37.AssociatedTypes : Ord.AssociatedTypes i16 where
 
 instance Impl_37 : Ord i16 where
   cmp := fun (self : i16) (other : i16) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_38.AssociatedTypes :
@@ -1419,24 +1419,24 @@ instance Impl_37 : Ord i16 where
 
 instance Impl_38 : PartialOrd u32 u32 where
   partial_cmp := fun (self : u32) (other : u32) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_39.AssociatedTypes : Ord.AssociatedTypes u32 where
 
 instance Impl_39 : Ord u32 where
   cmp := fun (self : u32) (other : u32) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_40.AssociatedTypes :
@@ -1445,24 +1445,24 @@ instance Impl_39 : Ord u32 where
 
 instance Impl_40 : PartialOrd i32 i32 where
   partial_cmp := fun (self : i32) (other : i32) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_41.AssociatedTypes : Ord.AssociatedTypes i32 where
 
 instance Impl_41 : Ord i32 where
   cmp := fun (self : i32) (other : i32) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_42.AssociatedTypes :
@@ -1471,24 +1471,24 @@ instance Impl_41 : Ord i32 where
 
 instance Impl_42 : PartialOrd u64 u64 where
   partial_cmp := fun (self : u64) (other : u64) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_43.AssociatedTypes : Ord.AssociatedTypes u64 where
 
 instance Impl_43 : Ord u64 where
   cmp := fun (self : u64) (other : u64) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_44.AssociatedTypes :
@@ -1497,24 +1497,24 @@ instance Impl_43 : Ord u64 where
 
 instance Impl_44 : PartialOrd i64 i64 where
   partial_cmp := fun (self : i64) (other : i64) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_45.AssociatedTypes : Ord.AssociatedTypes i64 where
 
 instance Impl_45 : Ord i64 where
   cmp := fun (self : i64) (other : i64) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_46.AssociatedTypes :
@@ -1523,24 +1523,24 @@ instance Impl_45 : Ord i64 where
 
 instance Impl_46 : PartialOrd u128 u128 where
   partial_cmp := fun (self : u128) (other : u128) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_47.AssociatedTypes : Ord.AssociatedTypes u128 where
 
 instance Impl_47 : Ord u128 where
   cmp := fun (self : u128) (other : u128) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_48.AssociatedTypes :
@@ -1549,24 +1549,24 @@ instance Impl_47 : Ord u128 where
 
 instance Impl_48 : PartialOrd i128 i128 where
   partial_cmp := fun (self : i128) (other : i128) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_49.AssociatedTypes : Ord.AssociatedTypes i128 where
 
 instance Impl_49 : Ord i128 where
   cmp := fun (self : i128) (other : i128) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_50.AssociatedTypes :
@@ -1575,24 +1575,24 @@ instance Impl_49 : Ord i128 where
 
 instance Impl_50 : PartialOrd usize usize where
   partial_cmp := fun (self : usize) (other : usize) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_51.AssociatedTypes : Ord.AssociatedTypes usize where
 
 instance Impl_51 : Ord usize where
   cmp := fun (self : usize) (other : usize) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 @[reducible] instance Impl_52.AssociatedTypes :
@@ -1601,24 +1601,24 @@ instance Impl_51 : Ord usize where
 
 instance Impl_52 : PartialOrd isize isize where
   partial_cmp := fun (self : isize) (other : isize) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure (core_models.option.Option.Some Ordering.Less))
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure (core_models.option.Option.Some Ordering.Greater))
-      else
+      else do
         (pure (core_models.option.Option.Some Ordering.Equal))
 
 @[reducible] instance Impl_53.AssociatedTypes : Ord.AssociatedTypes isize where
 
 instance Impl_53 : Ord isize where
   cmp := fun (self : isize) (other : isize) => do
-    if (← (self <? other)) then
+    if (← (self <? other)) then do
       (pure Ordering.Less)
-    else
-      if (← (self >? other)) then
+    else do
+      if (← (self >? other)) then do
         (pure Ordering.Greater)
-      else
+      else do
         (pure Ordering.Equal)
 
 end core_models.cmp
@@ -1639,14 +1639,14 @@ namespace core_models.option
 @[spec]
 def Impl.as_ref (T : Type) (self : (Option T)) : RustM (Option T) := do
   match self with
-    | (Option.Some  x) => (pure (Option.Some x))
-    | (Option.None ) => (pure Option.None)
+    | (Option.Some  x) => do (pure (Option.Some x))
+    | (Option.None ) => do (pure Option.None)
 
 @[spec]
 def Impl.unwrap_or (T : Type) (self : (Option T)) (default : T) : RustM T := do
   match self with
-    | (Option.Some  x) => (pure x)
-    | (Option.None ) => (pure default)
+    | (Option.Some  x) => do (pure x)
+    | (Option.None ) => do (pure default)
 
 @[spec]
 def Impl.unwrap_or_default
@@ -1658,8 +1658,8 @@ def Impl.unwrap_or_default
     (self : (Option T)) :
     RustM T := do
   match self with
-    | (Option.Some  x) => (pure x)
-    | (Option.None ) =>
+    | (Option.Some  x) => do (pure x)
+    | (Option.None ) => do
       (core_models.default.Default.default T rust_primitives.hax.Tuple0.mk)
 
 @[spec]
@@ -1668,7 +1668,7 @@ def Impl.take (T : Type) (self : (Option T)) :
   (pure (rust_primitives.hax.Tuple2.mk Option.None self))
 
 def Impl.is_some (T : Type) (self : (Option T)) : RustM Bool := do
-  match self with | (Option.Some  _) => (pure true) | _ => (pure false)
+  match self with | (Option.Some  _) => do (pure true) | _ => do (pure false)
 
 set_option hax_mvcgen.specset "bv" in
 @[hax_spec]
@@ -1696,19 +1696,19 @@ end core_models.option
 namespace core_models.panicking
 
 opaque panic_explicit (_ : rust_primitives.hax.Tuple0) :
-    RustM rust_primitives.hax.Never 
+    RustM rust_primitives.hax.Never
 
-opaque panic (_msg : String) : RustM rust_primitives.hax.Never 
+opaque panic (_msg : String) : RustM rust_primitives.hax.Never
 
 opaque panic_fmt (_fmt : core_models.fmt.Arguments) :
-    RustM rust_primitives.hax.Never 
+    RustM rust_primitives.hax.Never
 
 end core_models.panicking
 
 
 namespace core_models.panicking.internal
 
-opaque panic (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T 
+opaque panic (T : Type) (_ : rust_primitives.hax.Tuple0) : RustM T
 
 end core_models.panicking.internal
 
@@ -1830,40 +1830,40 @@ end core_models.fmt
 namespace core_models.num
 
 opaque Impl_6.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u8 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u8 core_models.num.error.ParseIntError)
 
 opaque Impl_7.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u16 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u16 core_models.num.error.ParseIntError)
 
 opaque Impl_8.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u32 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u32 core_models.num.error.ParseIntError)
 
 opaque Impl_9.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u64 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u64 core_models.num.error.ParseIntError)
 
 opaque Impl_10.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result u128 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result u128 core_models.num.error.ParseIntError)
 
 opaque Impl_11.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result usize core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result usize core_models.num.error.ParseIntError)
 
 opaque Impl_12.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i8 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i8 core_models.num.error.ParseIntError)
 
 opaque Impl_13.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i16 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i16 core_models.num.error.ParseIntError)
 
 opaque Impl_14.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i32 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i32 core_models.num.error.ParseIntError)
 
 opaque Impl_15.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i64 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i64 core_models.num.error.ParseIntError)
 
 opaque Impl_16.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result i128 core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result i128 core_models.num.error.ParseIntError)
 
 opaque Impl_17.from_str_radix (src : String) (radix : u32) :
-    RustM (core_models.result.Result isize core_models.num.error.ParseIntError) 
+    RustM (core_models.result.Result isize core_models.num.error.ParseIntError)
 
 end core_models.num
 
@@ -1874,8 +1874,8 @@ namespace core_models.option
 def Impl.ok_or (T : Type) (E : Type) (self : (Option T)) (err : E) :
     RustM (core_models.result.Result T E) := do
   match self with
-    | (Option.Some  v) => (pure (core_models.result.Result.Ok v))
-    | (Option.None ) => (pure (core_models.result.Result.Err err))
+    | (Option.Some  v) => do (pure (core_models.result.Result.Ok v))
+    | (Option.None ) => do (pure (core_models.result.Result.Err err))
 
 end core_models.option
 
@@ -1886,19 +1886,19 @@ namespace core_models.result
 def Impl.unwrap_or (T : Type) (E : Type) (self : (Result T E)) (default : T) :
     RustM T := do
   match self with
-    | (Result.Ok  t) => (pure t)
-    | (Result.Err  _) => (pure default)
+    | (Result.Ok  t) => do (pure t)
+    | (Result.Err  _) => do (pure default)
 
 @[spec]
 def Impl.is_ok (T : Type) (E : Type) (self : (Result T E)) : RustM Bool := do
-  match self with | (Result.Ok  _) => (pure true) | _ => (pure false)
+  match self with | (Result.Ok  _) => do (pure true) | _ => do (pure false)
 
 @[spec]
 def Impl.ok (T : Type) (E : Type) (self : (Result T E)) :
     RustM (core_models.option.Option T) := do
   match self with
-    | (Result.Ok  x) => (pure (core_models.option.Option.Some x))
-    | (Result.Err  _) => (pure core_models.option.Option.None)
+    | (Result.Ok  x) => do (pure (core_models.option.Option.Some x))
+    | (Result.Err  _) => do (pure core_models.option.Option.None)
 
 end core_models.result
 
@@ -1955,7 +1955,7 @@ def Impl.chunks_exact (T : Type) (s : (RustSlice T)) (cs : usize) :
 def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
   ((← (Impl.len T s)) ==? (0 : usize))
 
-opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
+opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool
 
 opaque Impl.copy_within
     (T : Type)
@@ -1967,10 +1967,10 @@ opaque Impl.copy_within
     (s : (RustSlice T))
     (src : R)
     (dest : usize) :
-    RustM (RustSlice T) 
+    RustM (RustSlice T)
 
 opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
-    RustM (core_models.result.Result usize usize) 
+    RustM (core_models.result.Result usize usize)
 
 def Impl.copy_from_slice
     (T : Type)
@@ -2068,9 +2068,9 @@ def Impl.split_at_checked (T : Type) (s : (RustSlice T)) (mid : usize) :
     (core_models.option.Option
       (rust_primitives.hax.Tuple2 (RustSlice T) (RustSlice T)))
     := do
-  if (← (mid <=? (← (Impl.len T s)))) then
+  if (← (mid <=? (← (Impl.len T s)))) then do
     (pure (core_models.option.Option.Some (← (Impl.split_at T s mid))))
-  else
+  else do
     (pure core_models.option.Option.None)
 
 end core_models.slice
@@ -2087,7 +2087,7 @@ end core_models.str.error
 namespace core_models.str.converts
 
 opaque from_utf8 (s : (RustSlice u8)) :
-    RustM (core_models.result.Result String core_models.str.error.Utf8Error) 
+    RustM (core_models.result.Result String core_models.str.error.Utf8Error)
 
 end core_models.str.converts
 
@@ -2596,7 +2596,7 @@ instance Impl_1
     let self : (Enumerate I) := {self with iter := tmp0};
     let ⟨self, hax_temp_output⟩ ←
       match out with
-        | (core_models.option.Option.Some  a) =>
+        | (core_models.option.Option.Some  a) => do
           let i : usize := (Enumerate.count self);
           let _ ←
             (hax_lib.assume
@@ -2608,7 +2608,7 @@ instance Impl_1
             self
             (core_models.option.Option.Some
               (rust_primitives.hax.Tuple2.mk i a))))
-        | (core_models.option.Option.None ) =>
+        | (core_models.option.Option.None ) => do
           (pure (rust_primitives.hax.Tuple2.mk
             self
             core_models.option.Option.None));
@@ -2698,14 +2698,14 @@ instance Impl_1
     let self : (Map I F) := {self with iter := tmp0};
     let hax_temp_output : (core_models.option.Option O) ←
       match out with
-        | (core_models.option.Option.Some  v) =>
+        | (core_models.option.Option.Some  v) => do
           (pure (core_models.option.Option.Some
             (← (core_models.ops.function.FnOnce.call_once
               F
               (core_models.iter.traits.iterator.Iterator.Item I)
               (Map.f self)
               v))))
-        | (core_models.option.Option.None ) =>
+        | (core_models.option.Option.None ) => do
           (pure core_models.option.Option.None);
     (pure (rust_primitives.hax.Tuple2.mk self hax_temp_output))
 
@@ -2734,14 +2734,15 @@ instance Impl_1
   where
   next := fun (self : (Take I)) => do
     let ⟨self, hax_temp_output⟩ ←
-      if (← (rust_primitives.hax.machine_int.ne (Take.n self) (0 : usize))) then
+      if
+      (← (rust_primitives.hax.machine_int.ne (Take.n self) (0 : usize))) then do
         let self : (Take I) :=
           {self with n := (← ((Take.n self) -? (1 : usize)))};
         let ⟨tmp0, out⟩ ←
           (core_models.iter.traits.iterator.Iterator.next I (Take.iter self));
         let self : (Take I) := {self with iter := tmp0};
         (pure (rust_primitives.hax.Tuple2.mk self out))
-      else
+      else do
         (pure (rust_primitives.hax.Tuple2.mk
           self
           core_models.option.Option.None));
@@ -3304,8 +3305,8 @@ def Impl.is_some_and
     (f : F) :
     RustM Bool := do
   match self with
-    | (Option.None ) => (pure false)
-    | (Option.Some  x) => (core_models.ops.function.FnOnce.call_once F T f x)
+    | (Option.None ) => do (pure false)
+    | (Option.Some  x) => do (core_models.ops.function.FnOnce.call_once F T f x)
 
 @[spec]
 def Impl.is_none_or
@@ -3326,8 +3327,8 @@ def Impl.is_none_or
     (f : F) :
     RustM Bool := do
   match self with
-    | (Option.None ) => (pure true)
-    | (Option.Some  x) => (core_models.ops.function.FnOnce.call_once F T f x)
+    | (Option.None ) => do (pure true)
+    | (Option.Some  x) => do (core_models.ops.function.FnOnce.call_once F T f x)
 
 @[spec]
 def Impl.unwrap_or_else
@@ -3351,8 +3352,8 @@ def Impl.unwrap_or_else
     (f : F) :
     RustM T := do
   match self with
-    | (Option.Some  x) => (pure x)
-    | (Option.None ) =>
+    | (Option.Some  x) => do (pure x)
+    | (Option.None ) => do
       (core_models.ops.function.FnOnce.call_once
         F
         rust_primitives.hax.Tuple0 f rust_primitives.hax.Tuple0.mk)
@@ -3377,10 +3378,10 @@ def Impl.map
     (f : F) :
     RustM (Option U) := do
   match self with
-    | (Option.Some  x) =>
+    | (Option.Some  x) => do
       (pure (Option.Some
         (← (core_models.ops.function.FnOnce.call_once F T f x))))
-    | (Option.None ) => (pure Option.None)
+    | (Option.None ) => do (pure Option.None)
 
 @[spec]
 def Impl.map_or
@@ -3403,8 +3404,8 @@ def Impl.map_or
     (f : F) :
     RustM U := do
   match self with
-    | (Option.Some  t) => (core_models.ops.function.FnOnce.call_once F T f t)
-    | (Option.None ) => (pure default)
+    | (Option.Some  t) => do (core_models.ops.function.FnOnce.call_once F T f t)
+    | (Option.None ) => do (pure default)
 
 @[spec]
 def Impl.map_or_else
@@ -3442,8 +3443,8 @@ def Impl.map_or_else
     (f : F) :
     RustM U := do
   match self with
-    | (Option.Some  t) => (core_models.ops.function.FnOnce.call_once F T f t)
-    | (Option.None ) =>
+    | (Option.Some  t) => do (core_models.ops.function.FnOnce.call_once F T f t)
+    | (Option.None ) => do
       (core_models.ops.function.FnOnce.call_once
         D
         rust_primitives.hax.Tuple0 default rust_primitives.hax.Tuple0.mk)
@@ -3472,8 +3473,8 @@ def Impl.map_or_default
     (f : F) :
     RustM U := do
   match self with
-    | (Option.Some  t) => (core_models.ops.function.FnOnce.call_once F T f t)
-    | (Option.None ) =>
+    | (Option.Some  t) => do (core_models.ops.function.FnOnce.call_once F T f t)
+    | (Option.None ) => do
       (core_models.default.Default.default U rust_primitives.hax.Tuple0.mk)
 
 @[spec]
@@ -3499,8 +3500,8 @@ def Impl.ok_or_else
     (err : F) :
     RustM (core_models.result.Result T E) := do
   match self with
-    | (Option.Some  v) => (pure (core_models.result.Result.Ok v))
-    | (Option.None ) =>
+    | (Option.Some  v) => do (pure (core_models.result.Result.Ok v))
+    | (Option.None ) => do
       (pure (core_models.result.Result.Err
         (← (core_models.ops.function.FnOnce.call_once
           F
@@ -3526,8 +3527,8 @@ def Impl.and_then
     (f : F) :
     RustM (Option U) := do
   match self with
-    | (Option.Some  x) => (core_models.ops.function.FnOnce.call_once F T f x)
-    | (Option.None ) => (pure Option.None)
+    | (Option.Some  x) => do (core_models.ops.function.FnOnce.call_once F T f x)
+    | (Option.None ) => do (pure Option.None)
 
 end core_models.option
 
@@ -3555,10 +3556,10 @@ def Impl.map
     (op : F) :
     RustM (Result U E) := do
   match self with
-    | (Result.Ok  t) =>
+    | (Result.Ok  t) => do
       (pure (Result.Ok
         (← (core_models.ops.function.FnOnce.call_once F T op t))))
-    | (Result.Err  e) => (pure (Result.Err e))
+    | (Result.Err  e) => do (pure (Result.Err e))
 
 @[spec]
 def Impl.map_or
@@ -3582,8 +3583,8 @@ def Impl.map_or
     (f : F) :
     RustM U := do
   match self with
-    | (Result.Ok  t) => (core_models.ops.function.FnOnce.call_once F T f t)
-    | (Result.Err  _e) => (pure default)
+    | (Result.Ok  t) => do (core_models.ops.function.FnOnce.call_once F T f t)
+    | (Result.Err  _e) => do (pure default)
 
 @[spec]
 def Impl.map_or_else
@@ -3619,8 +3620,8 @@ def Impl.map_or_else
     (f : F) :
     RustM U := do
   match self with
-    | (Result.Ok  t) => (core_models.ops.function.FnOnce.call_once F T f t)
-    | (Result.Err  e) =>
+    | (Result.Ok  t) => do (core_models.ops.function.FnOnce.call_once F T f t)
+    | (Result.Err  e) => do
       (core_models.ops.function.FnOnce.call_once D E default e)
 
 @[spec]
@@ -3644,8 +3645,8 @@ def Impl.map_err
     (op : O) :
     RustM (Result T F) := do
   match self with
-    | (Result.Ok  t) => (pure (Result.Ok t))
-    | (Result.Err  e) =>
+    | (Result.Ok  t) => do (pure (Result.Ok t))
+    | (Result.Err  e) => do
       (pure (Result.Err
         (← (core_models.ops.function.FnOnce.call_once O E op e))))
 
@@ -3670,8 +3671,8 @@ def Impl.and_then
     (op : F) :
     RustM (Result U E) := do
   match self with
-    | (Result.Ok  t) => (core_models.ops.function.FnOnce.call_once F T op t)
-    | (Result.Err  e) => (pure (Result.Err e))
+    | (Result.Ok  t) => do (core_models.ops.function.FnOnce.call_once F T op t)
+    | (Result.Err  e) => do (pure (Result.Err e))
 
 end core_models.result
 
@@ -3690,11 +3691,11 @@ instance Impl_2 (T : Type) :
     let ⟨self, hax_temp_output⟩ ←
       if
       (← ((← (rust_primitives.sequence.seq_len T (Iter._0 self)))
-        ==? (0 : usize))) then
+        ==? (0 : usize))) then do
         (pure (rust_primitives.hax.Tuple2.mk
           self
           core_models.option.Option.None))
-      else
+      else do
         let res : T ← (rust_primitives.sequence.seq_first T (Iter._0 self));
         let self : (Iter T) :=
           {self
@@ -3719,14 +3720,14 @@ instance Impl_3 (T : Type) :
     let ⟨self, hax_temp_output⟩ ←
       if
       (← ((← (rust_primitives.slice.slice_length T (Chunks.elements self)))
-        ==? (0 : usize))) then
+        ==? (0 : usize))) then do
         (pure (rust_primitives.hax.Tuple2.mk
           self
           core_models.option.Option.None))
-      else
+      else do
         if
         (← ((← (rust_primitives.slice.slice_length T (Chunks.elements self)))
-          <? (Chunks.cs self))) then
+          <? (Chunks.cs self))) then do
           let res : (RustSlice T) := (Chunks.elements self);
           let self : (Chunks T) :=
             {self
@@ -3737,7 +3738,7 @@ instance Impl_3 (T : Type) :
           (pure (rust_primitives.hax.Tuple2.mk
             self
             (core_models.option.Option.Some res)))
-        else
+        else do
           let ⟨res, new_elements⟩ ←
             (rust_primitives.slice.slice_split_at T
               (Chunks.elements self)
@@ -3760,11 +3761,11 @@ instance Impl_4 (T : Type) :
     let ⟨self, hax_temp_output⟩ ←
       if
       (← ((← (rust_primitives.slice.slice_length T (ChunksExact.elements self)))
-        <? (ChunksExact.cs self))) then
+        <? (ChunksExact.cs self))) then do
         (pure (rust_primitives.hax.Tuple2.mk
           self
           core_models.option.Option.None))
-      else
+      else do
         let ⟨res, new_elements⟩ ←
           (rust_primitives.slice.slice_split_at T
             (ChunksExact.elements self)
