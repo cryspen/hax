@@ -43,6 +43,7 @@ pub mod slice {
 }
 
 pub mod sequence {
+    #[derive(PartialEq, Debug)]
     pub struct Seq<T>(Vec<T>);
     pub fn seq_empty<T>() -> Seq<T> {
         Seq(Vec::new())
