@@ -172,7 +172,8 @@ struct
   let rec pliteral_as_const span (e : literal) =
     match e with
     | String s -> F.Const.Const_string (s, F.dummyRange)
-    | Char c -> F.Const.Const_char (Char.to_int c)
+    (* This is wrong for non-ASCII chars: https://github.com/cryspen/hax/issues/1953 *)
+    | Char c -> F.Const.Const_char (Char.to_int (String.get c 0))
     | Int { value; kind = { size; signedness }; negative } ->
         Error.unimplemented
           ~details:

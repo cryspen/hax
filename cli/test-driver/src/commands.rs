@@ -52,6 +52,12 @@ pub struct HaxEngineOutput {
     pub stderr: String,
 }
 
+/// Captures the output of a backend invocation
+pub struct BackendOutput {
+    pub error_code: i32,
+    pub stderr: String,
+}
+
 impl HaxEngineOutput {
     /// Forwards the captured stderr/stdout to the logging infrastructure.
     pub fn report_stderr_and_stdout(&self, job: JobKind) {
@@ -211,6 +217,96 @@ pub async fn hax_engine(
             .code()
             .context("No error code: was the process terminated?")?,
         messages,
+        stderr,
+    })
+}
+
+/// Executes F*
+pub async fn run_fstar(lax: bool, file_path: PathBuf) -> Result<BackendOutput> {
+    let root_path = std::env::current_dir()?;
+    let makefile_path = file_path.join("Makefile");
+    if !makefile_path.exists() {
+        let template_path = root_path.join("templates").join("Makefile.fstar.template");
+        if template_path.exists() {
+            std::fs::copy(template_path, makefile_path)?;
+        }
+    }
+    let mut command = tokio::process::Command::new("make");
+    if lax {
+        command.env("OTHERFLAGS", "--lax");
+    }
+    command.current_dir(file_path);
+    let out = command.output().await?;
+    let stderr = String::from_utf8_lossy(&out.stderr).to_string();
+    let mut error = stderr.lines().rev().take(10).collect::<Vec<_>>();
+    error.reverse();
+
+    Ok(BackendOutput {
+        error_code: out
+            .status
+            .code()
+            .context("No error code: was the process terminated?")?,
+        stderr: error.join("\n"),
+    })
+}
+
+/// Executes Lean
+pub async fn run_lean(dir: PathBuf) -> Result<BackendOutput> {
+    let root_path = std::env::current_dir()?;
+
+    let lakefile_path = dir.join("lakefile.toml");
+    if !lakefile_path.exists() && !dir.join("lakefile.lean").exists() {
+        // Find the single .lean file to derive the crate name.
+        let crate_name = std::fs::read_dir(&dir)?
+            .filter_map(|e| e.ok())
+            .find(|e| e.path().extension().map_or(false, |ext| ext == "lean"))
+            .context("No .lean file found in output directory")?
+            .path()
+            .file_stem()
+            .context("Lean file has no stem")?
+            .to_string_lossy()
+            .to_string();
+
+        // Resolve the local path to the Hax proof library.
+        let hax_lib_path = root_path
+            .join("../hax-lib/proof-libs/lean")
+            .canonicalize()
+            .context("Could not resolve hax proof lib path")?;
+
+        let lakefile = format!(
+            r#"name = "{crate_name}"
+version = "0.1.0"
+defaultTargets = ["{crate_name}"]
+
+[[lean_lib]]
+name = "{crate_name}"
+
+[[require]]
+name = "Hax"
+path = "{hax_path}"
+"#,
+            hax_path = hax_lib_path.display()
+        );
+        std::fs::write(&lakefile_path, lakefile)?;
+
+        // Copy the lean-toolchain from the proof library so that elan
+        // picks the matching Lean version.
+        let toolchain_src = hax_lib_path.join("lean-toolchain");
+        if toolchain_src.exists() {
+            std::fs::copy(&toolchain_src, dir.join("lean-toolchain"))?;
+        }
+    }
+
+    let mut command = tokio::process::Command::new("lake");
+    command.arg("build");
+    command.current_dir(&dir);
+    let out = command.output().await?;
+    let stderr = String::from_utf8_lossy(&out.stderr).to_string();
+    Ok(BackendOutput {
+        error_code: out
+            .status
+            .code()
+            .context("No error code: was the process terminated?")?,
         stderr,
     })
 }

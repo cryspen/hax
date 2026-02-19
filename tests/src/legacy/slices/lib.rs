@@ -1,3 +1,6 @@
+//! @fail(tc): lean(1)
+//! @fail(tc): fstar(72)
+
 #![allow(dead_code)]
 
 // The issue here is probably both, pointer and slice. We first run into the slice.

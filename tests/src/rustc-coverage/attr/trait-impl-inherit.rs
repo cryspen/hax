@@ -1,0 +1,28 @@
+//! @fail(tc): fstar(2)
+//! @fail(tc): lean(1)
+#![feature(coverage_attribute)]
+// Checks that `#[coverage(..)]` in a trait method is not inherited in an
+// implementation.
+//@ edition: 2021
+//@ reference: attributes.coverage.trait-impl-inherit
+
+/// @fail(extraction): ssprove(HAX0008), proverif(HAX0008), fstar(HAX0008), coq(HAX0008)
+trait T {
+    #[coverage(off)]
+    fn f(&self) {
+        println!("default");
+    }
+}
+
+struct S;
+
+impl T for S {
+    fn f(&self) {
+        println!("impl S");
+    }
+}
+
+#[coverage(off)]
+fn main() {
+    S.f();
+}

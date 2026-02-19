@@ -1,4 +1,6 @@
+//! @fail(tc): lean(1)
 //! @off: proverif
+//! @fail(tc): fstar(66)
 
 /// Issue #757
 fn calling_function_pointer() {

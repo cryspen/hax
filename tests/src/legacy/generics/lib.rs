@@ -1,3 +1,6 @@
+//! @fail(tc): lean(1)
+//! @fail(tc): fstar(72)
+
 #![allow(dead_code)]
 
 fn dup<T: Clone>(x: T) -> (T, T) {

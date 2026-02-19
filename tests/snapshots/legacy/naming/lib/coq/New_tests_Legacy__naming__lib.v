@@ -133,11 +133,11 @@ Class t_T1 (v_Self : Type) : Type :=
   }.
 Arguments t_T1 (_).
 
-Instance t_T1_84342720 : t_T1 ((t_Foo)) :=
+Instance t_T1_1015294588 : t_T1 ((t_Foo)) :=
   {
   }.
 
-Instance t_T1_44355219 : t_T1 (((t_Foo*t_u8))) :=
+Instance t_T1_336057689 : t_T1 (((t_Foo*t_u8))) :=
   {
   }.
 
@@ -146,7 +146,7 @@ Class t_T2_for_a (v_Self : Type) : Type :=
   }.
 Arguments t_T2_for_a (_).
 
-Instance t_T2_for_a_497586169 : t_T2_for_a ((t_Arity1 (((t_Foo*t_u8))))) :=
+Instance t_T2_for_a_263510171 : t_T2_for_a ((t_Arity1 (((t_Foo*t_u8))))) :=
   {
   }.
 
@@ -155,7 +155,7 @@ Class t_T3_ee_for_a (v_Self : Type) : Type :=
   }.
 Arguments t_T3_ee_for_a (_).
 
-Instance t_T3_ee_for_a_248716750 : t_T3_ee_for_a ((t_Foo)) :=
+Instance t_T3_ee_for_a_808367145 : t_T3_ee_for_a ((t_Foo)) :=
   {
   }.
 

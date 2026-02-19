@@ -20,7 +20,7 @@ Record CallableViaDeref_record : Type :=
 #[export]
 Notation "'CallableViaDeref_CallableViaDeref_record'" := Build_CallableViaDeref_record.
 
-Instance t_Deref_366975482 : t_Deref ((t_CallableViaDeref)) :=
+Instance t_Deref_521685788 : t_Deref ((t_CallableViaDeref)) :=
   {
     implaabbcc_t_Deref_f_Target := unit -> bool;
     implaabbcc_t_Deref_f_deref := fun  (self : t_CallableViaDeref)=>

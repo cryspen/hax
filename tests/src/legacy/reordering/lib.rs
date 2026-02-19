@@ -1,3 +1,4 @@
+//! @fail(tc): lean(1)
 #![allow(dead_code)]
 
 fn no_dependency_1() {}

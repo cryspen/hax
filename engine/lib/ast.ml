@@ -90,7 +90,7 @@ let show_float_kind = function
 
 type literal =
   | String of string
-  | Char of char
+  | Char of string
   | Int of { value : string; negative : bool; kind : int_kind }
   | Float of { value : string; negative : bool; kind : float_kind }
   | Bool of bool

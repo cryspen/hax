@@ -74,7 +74,7 @@ let
       cp ${../justfile} justfile
 
       mv tests/snapshots tests/old-snapshots
-      just test
+      just test --no-verify
       diff tests/snapshots tests/old-snapshots
     '';
     buildInputs = binaries ++ [ just ];

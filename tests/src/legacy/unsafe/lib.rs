@@ -1,4 +1,6 @@
+//! @fail(tc): lean(1)
 //! @off: proverif
+//! @fail(tc): fstar(72)
 
 #![allow(dead_code)]
 

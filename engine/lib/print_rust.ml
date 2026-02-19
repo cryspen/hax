@@ -78,7 +78,7 @@ module Raw = struct
     @@
     match e with
     | String s -> "\"" ^ String.escaped s ^ "\""
-    | Char c -> "'" ^ Char.to_string c ^ "'"
+    | Char c -> "'" ^ c ^ "'"
     | Int { value; _ } -> value
     | Float { value; kind; negative } ->
         pnegative negative ^ value ^ show_float_kind kind

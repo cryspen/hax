@@ -60,7 +60,7 @@ module Make (F : Features.T) (View : Concrete_ident.RENDER_API) = struct
           (* TODO : escape *)
           fun _ctx -> function
             | String s -> utf8string s |> dquotes
-            | Char c -> char c |> bquotes
+            | Char c -> utf8string c |> bquotes
             | Int { value; negative; _ } ->
                 string value |> precede (if negative then minus else empty)
             | Float { value; kind; negative } ->
