@@ -168,11 +168,13 @@ let impl_1__append (#v_T #v_A: Type0) (self other: t_Vec v_T v_A)
 let impl_2__extend_from_slice
       (#v_T #v_A: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
-      (s: t_Vec v_T v_A)
+      (self: t_Vec v_T v_A)
       (other: t_Slice v_T)
     : Prims.Pure (t_Vec v_T v_A)
       (requires
-        ((Rust_primitives.Hax.Int.from_machine (Rust_primitives.Sequence.seq_len #v_T s._0 <: usize)
+        ((Rust_primitives.Hax.Int.from_machine (Rust_primitives.Sequence.seq_len #v_T self._0
+                <:
+                usize)
             <:
             Hax_lib.Int.t_Int) +
           (Rust_primitives.Hax.Int.from_machine (Core_models.Slice.impl__len #v_T other <: usize)
@@ -182,10 +184,10 @@ let impl_2__extend_from_slice
           Hax_lib.Int.t_Int) <=
         (Rust_primitives.Hax.Int.from_machine Core_models.Num.impl_usize__MAX <: Hax_lib.Int.t_Int))
       (fun _ -> Prims.l_True) =
-  let s:t_Vec v_T v_A =
-    { s with _0 = Rust_primitives.Sequence.seq_extend #v_T s._0 other } <: t_Vec v_T v_A
+  let self:t_Vec v_T v_A =
+    { self with _0 = Rust_primitives.Sequence.seq_extend #v_T self._0 other } <: t_Vec v_T v_A
   in
-  s
+  self
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_3 (#v_T #v_A: Type0) : Core_models.Ops.Index.t_Index (t_Vec v_T v_A) usize =

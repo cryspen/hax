@@ -273,7 +273,7 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize
     f_get
     =
     fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
-      if self.Core_models.Ops.Range.f_start <. (impl__len #v_T slice <: usize)
+      if self.Core_models.Ops.Range.f_start <=. (impl__len #v_T slice <: usize)
       then
         Core_models.Option.Option_Some
         (Rust_primitives.Slice.slice_slice #v_T
@@ -327,7 +327,7 @@ let impl_6 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t
     =
     fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
       if
-        self.Core_models.Ops.Range.f_start <. self.Core_models.Ops.Range.f_end &&
+        self.Core_models.Ops.Range.f_start <=. self.Core_models.Ops.Range.f_end &&
         self.Core_models.Ops.Range.f_end <=. (impl__len #v_T slice <: usize)
       then
         Core_models.Option.Option_Some
