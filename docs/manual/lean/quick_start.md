@@ -38,7 +38,7 @@ rev = "main"
  - <input type="checkbox" class="user-checkable"/> Create `proofs/lean/extraction/lean-toolchain`,
  with the following content:
 ```
-leanprover/lean4:v4.28.0-rc1 
+leanprover/lean4:v4.29.0-rc1 
 ```
 This version should be the same version as in the file `hax-lib/proof-libs/lean/lean-toolchain` of
 your hax installation.

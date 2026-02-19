@@ -120,7 +120,7 @@ def USize64.decLt (a b : USize64) : Decidable (a < b) :=
 def USize64.decLe (a b : USize64) : Decidable (a ≤ b) :=
   inferInstanceAs (Decidable (a.toBitVec ≤ b.toBitVec))
 
-attribute [instance] USize64.decLt USize64.decLe
+attribute [instance_reducible, instance] USize64.decLt USize64.decLe
 
 instance : Max USize64 := maxOfLe
 instance : Min USize64 := minOfLe
@@ -291,22 +291,21 @@ def USize64.natCast : NatCast USize64 where
 def USize64.intCast : IntCast USize64 where
   intCast x := USize64.ofInt x
 
-attribute [local instance] USize64.natCast USize64.intCast
+attribute [local instance_reducible, local instance] USize64.natCast USize64.intCast
 
 theorem USize64.intCast_ofNat (x : Nat) : (OfNat.ofNat (α := Int) x : USize64) = OfNat.ofNat x := by
-    simp only [Int.cast, IntCast.intCast]
+    change USize64.ofInt (OfNat.ofNat x) = OfNat.ofNat x
     rw [USize64.ofInt]
     rw [Int.toNat_emod (Int.zero_le_ofNat x) (by decide)]
     erw [Int.toNat_natCast]
     rw [Int.toNat_pow_of_nonneg (by decide)]
-    simp only [USize64.ofNat, BitVec.ofNat, Nat.reducePow, Int.reduceToNat,
-      Fin.Internal.ofNat_eq_ofNat, Fin.ofNat, Nat.dvd_refl, Nat.mod_mod_of_dvd]
-    rfl
+    simp +instances only [USize64.ofNat, BitVec.ofNat, Fin.Internal.ofNat_eq_ofNat, Fin.ofNat, Int.reduceToNat, Nat.dvd_refl,
+      Nat.mod_mod_of_dvd]
+    try rfl
 
-theorem USize64.intCast_neg (x : Int) : ((-x : Int) : USize64) = - (x : USize64) := by
-  simp only [Int.cast, IntCast.intCast, USize64.ofInt_neg]
+theorem USize64.intCast_neg (x : Int) : ((-x : Int) : USize64) = - (x : USize64) :=
+  USize64.ofInt_neg _
 
-attribute [local instance] USize64.natCast USize64.intCast in
 instance : CommRing USize64 where
   nsmul := ⟨(· * ·)⟩
   zsmul := ⟨(· * ·)⟩

@@ -14,4 +14,4 @@ name = "Hax"
 [[require]]
 name = "Qq"
 git = "https://github.com/leanprover-community/quote4"
-rev = "v4.28.0-rc1"
+rev = "v4.29.0-rc1"

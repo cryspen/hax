@@ -9,4 +9,4 @@ class core.marker.Copy
   where
   [trait_constr : core.clone.Clone Self]
 
-attribute [instance] core.marker.Copy.trait_constr
+attribute [instance_reducible, instance] core.marker.Copy.trait_constr

@@ -22,15 +22,15 @@ instance Range.instGetElemResultArrayUSize64 {α: Type}:
     else
       RustM.fail Error.arrayOutOfBounds
 
-instance Range.instGetElemResultVectorUSize64 {α : Type} {n : Nat} :
+instance Range.instGetElemResultRustArrayUSize64 {α : Type} {n : usize} :
   GetElemResult
-    (Vector α n)
+    (RustArray α n)
     (Range usize)
     (Seq α) where
   getElemResult xs i := match i with
   | ⟨s, e⟩ =>
-    if s ≤ e && e.toNat ≤ n then
-      pure ⟨(xs.extract s.toNat e.toNat).toArray, by grind⟩
+    if s ≤ e && e.toNat ≤ n.toNat then
+      pure ⟨(xs.toVec.extract s.toNat e.toNat).toArray, by grind⟩
     else
       RustM.fail Error.arrayOutOfBounds
 
@@ -44,18 +44,18 @@ theorem Range.getElemArrayUSize64_spec
   ⦃ ⇓ r => ⌜ r = ⟨Array.extract a.val s.toNat e.toNat, by grind⟩ ⌝ ⦄
 := by
   intros
-  mvcgen [Range.instGetElemResultArrayUSize64]
+  mvcgen [Range.instGetElemResultArrayUSize64, getElemResult]
   grind [USize64.le_iff_toNat_le]
 
 @[spec]
 theorem Range.getElemVectorUSize64_spec
-  (α : Type) (n: Nat) (a: Vector α n) (s e: usize) :
+  (α : Type) (n: usize) (a: RustArray α n) (s e: usize) :
   s.toNat ≤ e.toNat →
-  e.toNat ≤ a.size →
+  e.toNat ≤ a.toVec.size →
   ⦃ ⌜ True ⌝ ⦄
   ( a[(Range.mk s e)]_? )
-  ⦃ ⇓ r => ⌜ r = ⟨(Vector.extract a s.toNat e.toNat).toArray, by grind⟩ ⌝ ⦄
+  ⦃ ⇓ r => ⌜ r = ⟨(Vector.extract a.toVec s.toNat e.toNat).toArray, by grind⟩ ⌝ ⦄
 := by
   intros
-  mvcgen [Range.instGetElemResultVectorUSize64]
+  mvcgen [Range.instGetElemResultRustArrayUSize64, getElemResult]
   grind [USize64.le_iff_toNat_le]

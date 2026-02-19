@@ -1149,9 +1149,11 @@ class Test.AssociatedTypes (Self : Type) (T : Type) where
   [trait_constr_Test_i0 : T2.AssociatedTypes Self]
   [trait_constr_Test_i1 : T1.AssociatedTypes T]
 
-attribute [instance] Test.AssociatedTypes.trait_constr_Test_i0
+attribute [instance_reducible, instance]
+  Test.AssociatedTypes.trait_constr_Test_i0
 
-attribute [instance] Test.AssociatedTypes.trait_constr_Test_i1
+attribute [instance_reducible, instance]
+  Test.AssociatedTypes.trait_constr_Test_i1
 
 class Test (Self : Type) (T : Type)
   [associatedTypes : outParam (Test.AssociatedTypes (Self : Type) (T : Type))]
@@ -1160,9 +1162,9 @@ class Test (Self : Type) (T : Type)
   [trait_constr_Test_i1 : T1 T]
   f_test (Self) (T) : (Self -> T -> RustM usize)
 
-attribute [instance] Test.trait_constr_Test_i0
+attribute [instance_reducible, instance] Test.trait_constr_Test_i0
 
-attribute [instance] Test.trait_constr_Test_i1
+attribute [instance_reducible, instance] Test.trait_constr_Test_i1
 
 structure S1 where
   -- no fields
@@ -1299,9 +1301,9 @@ class T3.AssociatedTypes (Self : Type) where
   [trait_constr_T3_i0 : T2.AssociatedTypes Self]
   [trait_constr_T3_i1 : T1.AssociatedTypes Self]
 
-attribute [instance] T3.AssociatedTypes.trait_constr_T3_i0
+attribute [instance_reducible, instance] T3.AssociatedTypes.trait_constr_T3_i0
 
-attribute [instance] T3.AssociatedTypes.trait_constr_T3_i1
+attribute [instance_reducible, instance] T3.AssociatedTypes.trait_constr_T3_i1
 
 class T3 (Self : Type)
   [associatedTypes : outParam (T3.AssociatedTypes (Self : Type))]
@@ -1310,9 +1312,9 @@ class T3 (Self : Type)
   [trait_constr_T3_i1 : T1 Self]
   f3 (Self) : (Self -> RustM usize)
 
-attribute [instance] T3.trait_constr_T3_i0
+attribute [instance_reducible, instance] T3.trait_constr_T3_i0
 
-attribute [instance] T3.trait_constr_T3_i1
+attribute [instance_reducible, instance] T3.trait_constr_T3_i1
 
 class Tp1.AssociatedTypes (Self : Type) where
 
@@ -1325,9 +1327,9 @@ class Tp2.AssociatedTypes (Self : Type) where
   [trait_constr_Tp2_i0 : Tp1.AssociatedTypes Self]
   [trait_constr_Tp2_i1 : T3.AssociatedTypes Self]
 
-attribute [instance] Tp2.AssociatedTypes.trait_constr_Tp2_i0
+attribute [instance_reducible, instance] Tp2.AssociatedTypes.trait_constr_Tp2_i0
 
-attribute [instance] Tp2.AssociatedTypes.trait_constr_Tp2_i1
+attribute [instance_reducible, instance] Tp2.AssociatedTypes.trait_constr_Tp2_i1
 
 class Tp2 (Self : Type)
   [associatedTypes : outParam (Tp2.AssociatedTypes (Self : Type))]
@@ -1336,9 +1338,9 @@ class Tp2 (Self : Type)
   [trait_constr_Tp2_i1 : T3 Self]
   fp2 (Self) : (Self -> RustM usize)
 
-attribute [instance] Tp2.trait_constr_Tp2_i0
+attribute [instance_reducible, instance] Tp2.trait_constr_Tp2_i0
 
-attribute [instance] Tp2.trait_constr_Tp2_i1
+attribute [instance_reducible, instance] Tp2.trait_constr_Tp2_i1
 
 structure S where
   -- no fields
@@ -1944,19 +1946,21 @@ instance Impl : T1 S where
 class Chain2.AssociatedTypes (Self : Type) where
   [trait_constr_Chain2_i0 : Chain1.AssociatedTypes Self]
 
-attribute [instance] Chain2.AssociatedTypes.trait_constr_Chain2_i0
+attribute [instance_reducible, instance]
+  Chain2.AssociatedTypes.trait_constr_Chain2_i0
 
 class Chain2 (Self : Type)
   [associatedTypes : outParam (Chain2.AssociatedTypes (Self : Type))]
   where
   [trait_constr_Chain2_i0 : Chain1 Self]
 
-attribute [instance] Chain2.trait_constr_Chain2_i0
+attribute [instance_reducible, instance] Chain2.trait_constr_Chain2_i0
 
 class Chain3.AssociatedTypes (Self : Type) where
   [trait_constr_Chain3_i0 : Chain2.AssociatedTypes Self]
 
-attribute [instance] Chain3.AssociatedTypes.trait_constr_Chain3_i0
+attribute [instance_reducible, instance]
+  Chain3.AssociatedTypes.trait_constr_Chain3_i0
 
 class Chain3 (Self : Type)
   [associatedTypes : outParam (Chain3.AssociatedTypes (Self : Type))]
@@ -1964,7 +1968,7 @@ class Chain3 (Self : Type)
   [trait_constr_Chain3_i0 : Chain2 Self]
   f (Self) : (rust_primitives.hax.Tuple0 -> RustM (Chain1.A Self))
 
-attribute [instance] Chain3.trait_constr_Chain3_i0
+attribute [instance_reducible, instance] Chain3.trait_constr_Chain3_i0
 
 @[reducible] instance Impl_5.AssociatedTypes : Chain1.AssociatedTypes u8 where
   A := u8
