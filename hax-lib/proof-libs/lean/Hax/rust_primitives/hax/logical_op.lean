@@ -14,6 +14,10 @@ def and (a b: Bool) : RustM Bool := pure (a && b)
 @[simp, spec, hax_bv_decide]
 def or (a b: Bool) : RustM Bool := pure (a || b)
 
+/-- Boolean exclusive disjunction. Cannot panic (always returns .ok )-/
+@[simp, spec, hax_bv_decide]
+def xor (a b: Bool) : RustM Bool := pure (a ^^ b)
+
 /-- Boolean negation. Cannot panic (always returns .ok )-/
 @[simp, spec, hax_bv_decide]
 def not (a :Bool) : RustM Bool := pure (!a)
