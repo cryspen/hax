@@ -1,5 +1,6 @@
 //! Tests known binops
 #![allow(dead_code)]
+#![allow(unused_variables)]
 
 fn noop (x: i32) -> i32 { x }
 
@@ -60,3 +61,29 @@ fn le_int(x : i32, y: i32) -> bool { x <= y }
 fn gt_int(x : i32, y: i32) -> bool { x > y }
 
 fn ge_int(x : i32, y: i32) -> bool { x >= y }
+
+//////////////////////
+// NON BOOL AND INT //
+//////////////////////
+
+// Known binops with non boolean or integer arguments should not be pretty printed
+
+struct S;
+
+impl std::ops::Not for S {
+    type Output = S;
+    fn not(self) -> S {
+        self
+    }
+}
+
+impl std::ops::Add for S {
+    type Output = S;
+    fn add(self, rhs: Self) -> Self::Output {
+        self
+    }
+}
+
+fn not_s(x: S) -> S { !x }
+
+fn add_s(x: S, y: S) -> S { x + y }
