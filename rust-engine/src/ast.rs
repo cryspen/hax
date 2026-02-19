@@ -84,6 +84,24 @@ impl Ty {
     pub fn bool() -> Self {
         Self(Box::new(TyKind::Primitive(PrimitiveTy::Bool)))
     }
+    /// The type `int`
+    pub fn int(size: IntSize, signedness: Signedness) -> Self {
+        Self(Box::new(TyKind::Primitive(PrimitiveTy::Int(IntKind {
+            size,
+            signedness,
+        }))))
+    }
+    /// The `int` check
+    pub fn is_int(&self) -> bool {
+        let Self(b) = self;
+        matches!(
+            &**b,
+            TyKind::Primitive(PrimitiveTy::Int(IntKind {
+                size: _,
+                signedness: _,
+            }))
+        )
+    }
     /// The (hax) type `Prop`
     pub fn prop() -> Self {
         Self(Box::new(TyKind::App {
