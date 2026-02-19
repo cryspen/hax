@@ -306,8 +306,8 @@ def tests (_ : rust_primitives.hax.Tuple0) :
       (fun e =>
         (do
         match e with
-          | (E1.C1 ) => (pure E2.C1)
-          | (E1.C2  x) => (pure (E2.C2 (← (x +? (1 : u32))))) :
+          | (E1.C1 ) => do (pure E2.C1)
+          | (E1.C2  x) => do (pure (E2.C2 (← (x +? (1 : u32))))) :
         RustM E2)));
   let v9 : Bool ← (core_models.result.Impl.is_ok u32 E1 v1);
   let v10 : Bool ← (core_models.result.Impl.is_err u32 E1 v1);
@@ -336,14 +336,14 @@ def tests (_ : rust_primitives.hax.Tuple0) :
   match
     (← (core_models.result.Impl.map u32 E1 u32 (u32 -> RustM u32) v1 f))
   with
-    | (core_models.result.Result.Ok  hoist2) =>
+    | (core_models.result.Result.Ok  hoist2) => do
       match v2 with
-        | (core_models.result.Result.Ok  hoist1) =>
+        | (core_models.result.Result.Ok  hoist1) => do
           let v3 : u32 ← (hoist2 +? hoist1);
           (pure (core_models.result.Result.Ok v3))
-        | (core_models.result.Result.Err  err) =>
+        | (core_models.result.Result.Err  err) => do
           (pure (core_models.result.Result.Err err))
-    | (core_models.result.Result.Err  err) =>
+    | (core_models.result.Result.Err  err) => do
       (pure (core_models.result.Result.Err err))
 
 end lean_core_models.result
