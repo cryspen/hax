@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 mod collections {
     mod hash {
         mod map {
