@@ -934,7 +934,9 @@ const _: () = {
                                 | binops::gt
                                 | binops::ge),
                             ),
-                        ) if (lhs.ty == rhs.ty) && (lhs.ty == Ty::bool() || lhs.ty.is_int()) => {
+                        ) if (lhs.ty == Ty::bool() && rhs.ty == Ty::bool())
+                            || (rhs.ty.is_int() && lhs.ty.is_int()) =>
+                        {
                             let symbol = match *op {
                                 binops::add => "+?",
                                 binops::sub => "-?",
