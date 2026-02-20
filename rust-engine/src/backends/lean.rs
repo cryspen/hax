@@ -25,6 +25,8 @@ use hax_lib_macros_types::ProofMethod;
 use hax_types::engine_api::File;
 
 mod binops {
+    pub use crate::names::core::cmp::PartialEq;
+    pub use crate::names::core::ops::bit::*;
     pub use crate::names::core::ops::index::*;
     pub use crate::names::rust_primitives::arithmetic::neg;
     pub use crate::names::rust_primitives::hax::machine_int::*;
@@ -884,8 +886,20 @@ const _: () = {
                         .parens()
                         .group()
                         .nest(INDENT),
-                        ([arg], [], ExprKind::GlobalId(binops::neg)) => {
-                            docs!["-?", softline!(), arg].parens()
+                        // TODO: Replace this match pattern with an `if let` guard when the feature stabilizes
+                        // Tracking PR: https://github.com/rust-lang/rust/pull/141295
+                        (
+                            [arg],
+                            [],
+                            ExprKind::GlobalId(op @ (binops::neg | binops::not | binops::Not::not)),
+                        ) if arg.ty == Ty::bool() || arg.ty.is_int() => {
+                            let symbol = match *op {
+                                binops::neg => "-?",
+                                binops::not => "~?",
+                                binops::Not::not => "!?",
+                                _ => unreachable!(),
+                            };
+                            docs![symbol, softline!(), arg].parens()
                         }
                         ([lhs, rhs], [], ExprKind::GlobalId(binops::Index::index)) => {
                             docs![lhs, "[", line_!(), rhs, line_!(), "]_?"]
@@ -906,11 +920,23 @@ const _: () = {
                                 | binops::shr
                                 | binops::shl
                                 | binops::bitand
+                                | binops::BitAnd::bitand
+                                | binops::bitor
+                                | binops::BitOr::bitor
                                 | binops::bitxor
+                                | binops::BitXor::bitxor
                                 | binops::logical_op_and
-                                | binops::logical_op_or),
+                                | binops::logical_op_or
+                                | binops::eq
+                                | binops::PartialEq::eq
+                                | binops::lt
+                                | binops::le
+                                | binops::gt
+                                | binops::ge),
                             ),
-                        ) => {
+                        ) if (lhs.ty == Ty::bool() && rhs.ty == Ty::bool())
+                            || (rhs.ty.is_int() && lhs.ty.is_int()) =>
+                        {
                             let symbol = match *op {
                                 binops::add => "+?",
                                 binops::sub => "-?",
@@ -920,9 +946,19 @@ const _: () = {
                                 binops::shr => ">>>?",
                                 binops::shl => "<<<?",
                                 binops::bitand => "&&&?",
+                                binops::BitAnd::bitand => "&&?",
+                                binops::bitor => "|||?",
+                                binops::BitOr::bitor => "||?",
                                 binops::bitxor => "^^^?",
+                                binops::BitXor::bitxor => "^^?",
                                 binops::logical_op_and => "&&?",
                                 binops::logical_op_or => "||?",
+                                binops::eq => "==?",
+                                binops::PartialEq::eq => "==?",
+                                binops::lt => "<?",
+                                binops::le => "<=?",
+                                binops::gt => ">?",
+                                binops::ge => ">=?",
                                 _ => unreachable!(),
                             };
                             docs![lhs, line!(), docs![symbol, softline!(), rhs].group()]

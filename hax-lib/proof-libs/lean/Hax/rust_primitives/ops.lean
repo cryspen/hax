@@ -51,11 +51,13 @@ instance : ToNat u8 where
 
 infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
-
-@[simp, spec, specset bv, hax_bv_decide]
-def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
-
-abbrev core.cmp.PartialEq.eq {α} [BEq α] (a b : α) : RustM Bool := pure (BEq.beq a b)
+infixl:60 " |||? " => fun a b => pure (HOr.hOr a b)
+infixl:80 " <? "   => fun a b => pure (decide (a < b))
+infixl:80 " <=? "  => fun a b => pure (decide (a <= b))
+infixl:80 " >? "   => fun a b => pure (decide (a > b))
+infixl:80 " >=? "  => fun a b => pure (decide (a >= b))
+infixl:80 " ==? "  => fun a b => pure (a == b)
+prefix:75 "~?"     => fun a => pure (~~~a)
 
 set_option linter.unusedVariables false in
 

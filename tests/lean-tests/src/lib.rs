@@ -3,6 +3,7 @@
 
 pub mod array;
 pub mod associated_types;
+pub mod binops;
 pub mod casts;
 pub mod comments;
 pub mod constants;
@@ -60,16 +61,4 @@ def multiline : Unit := ()
 )]
 fn test_before_verbatim_multi_line(x: u8) -> u8 {
     32
-}
-
-// BinOp Resugarings
-fn binop_resugarings(x: u32) -> u32 {
-    let add = x + 1;
-    let sub = add - 2;
-    let mul = sub * 3;
-    let rem = mul % 4;
-    let div = rem / 5;
-    let rshift = div >> x;
-    let lshift = div << x;
-    x
 }
