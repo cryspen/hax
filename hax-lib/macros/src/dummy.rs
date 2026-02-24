@@ -53,6 +53,10 @@ identity_proc_macro_attribute!(
     fstar_smt_pat,
     fstar_postprocess_with,
     lean_proof,
+    lean_pure_requires_proof,
+    lean_pure_ensures_proof,
+    lean_proof_method_grind,
+    lean_proof_method_bv_decide,
 );
 
 #[proc_macro]

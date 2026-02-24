@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Changes to the Rust Engine:
+ - Remove `BinOp` resugaring (#1950)
+ - Apply resugarings to linked items (pre/post conditions) (#1961)
 
 Changes to the frontend:
 
@@ -16,10 +18,30 @@ Changes to cargo-hax:
 Changes to hax-lib:
  - Lean lib: use Rust core models (#1865)
  - Lean lib: specs for negation (#1891)
+ - Lean lib: Add casting for all integer type pairs (#1837)
+ - Lean lib: bump lean to v4.28.0-rc1 (#1900)
+ - Lean lib: Extract more core models (#1919)
+ - Lean lib: Separate symbolic and bit-blasting specs (#1933)
+ - Lean lib: Communicate user-generated specs to mvcgen (#1937)
+ - Lean lib: Rust primitives for prop (#1942)
+ - Lean lib: For-loops for all unsigned integers (#1951)
+ - Lean lib: Upgrade to Lean v4.29.0-rc1 (#1962)
 
 Changes to the Lean backend:
  - Add `hax_zify` and `hax_construct_pure` tactics (#1888)
  - Add support for opaque `impl`s (#1887)
+ - Fix support for associated constants in trait impls (#1906)
+ - Gather definitions in namespaces, shortening names (#1901)
+ - Add support for associated types with constraints and inheritance (#1909)
+ - Fix bug with monadic wrapping of trait constants (#1929)
+ - Add type annotation for cast_op (#1925)
+ - Add attributes for pureEnsures/pureRequires (#1931)
+ - Extract correct `PhantomData` structure (#1932)
+ - Standardize generated Lean naming to lowercase namespaces (#1914)
+ - Fix associated constants with default values (#1941)
+ - New default proof for the Lean backend & proof method attribute (#1938)
+ - Prettier proof_mode annotations (#1943)
+ - Detect recursive functions and mark them partial_fixpoint (#1946)
 
 Miscellaneous:
 
@@ -32,6 +54,7 @@ Changes to the Rust Engine:
    Hax primitives `pure` (to wrap values as monadic computations) and `lift` (to
    lift monadic computations into values) (#1746)
  - Add a mechanism to lookup pre- and post-conditions (#1805)
+ - Add a proper Rust backend (#1898)
 
 Changes to the frontend:
  - Update the pin of rustc (#1765)
@@ -47,6 +70,7 @@ Changes to hax-lib:
  - Lean lib: base specs on mathematical integers (#1829)
  - Lean lib: represent `usize` via a copy of `UInt64` (#1829)
  - Lean lib: Add support for while loops (#1857, #1863)
+ - Core models: integers, arrays, iterators, full replacement of the F* proof-lib (#1898)
 
 Changes to the Lean backend:
  - Support for constants with arbitrary computation (#1738)
@@ -73,6 +97,7 @@ Changes to the Lean backend:
 
 Miscellaneous:
 - Reserve extraction folder for auto-generated files in Lean examples (#1754)
+- Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
 
 ## 0.3.5
 
@@ -90,7 +115,6 @@ Changes to the Rust Engine:
    on functions, impl definitions. The typeclass resolution in the generated code is left implicit
    (relies on Lean). Limited support for associated types. No support for default implementations.
  - Refactor of the printing infrastructure: lowers the boilerplate, get rid of most lifetimes annotation, add proper contextual span support (#1735)
- - Add a proper Rust backend (evit fork: #114)
 
 Changes to the frontend:
 - Add an explicit `Self: Trait` clause to trait methods and consts (#1559)

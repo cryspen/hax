@@ -35,7 +35,7 @@ let impl_4 (#v_T: Type0) : t_From v_T v_T =
   }
 
 class t_AsRef (v_Self: Type0) (v_T: Type0) = {
-  f_as_ref_pre:v_Self -> Type0;
+  f_as_ref_pre:self_: v_Self -> pred: Type0{true ==> pred};
   f_as_ref_post:v_Self -> v_T -> Type0;
   f_as_ref:x0: v_Self -> Prims.Pure v_T (f_as_ref_pre x0) (fun result -> f_as_ref_post x0 result)
 }
@@ -97,15 +97,7 @@ let impl_11: t_From u64 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_12: t_From u64 usize =
-  {
-    f_from_pre = (fun (x: usize) -> true);
-    f_from_post = (fun (x: usize) (out: u64) -> true);
-    f_from = fun (x: usize) -> cast (x <: usize) <: u64
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_13: t_From u128 u8 =
+let impl_12: t_From u128 u8 =
   {
     f_from_pre = (fun (x: u8) -> true);
     f_from_post = (fun (x: u8) (out: u128) -> true);
@@ -113,7 +105,7 @@ let impl_13: t_From u128 u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_14: t_From u128 u16 =
+let impl_13: t_From u128 u16 =
   {
     f_from_pre = (fun (x: u16) -> true);
     f_from_post = (fun (x: u16) (out: u128) -> true);
@@ -121,7 +113,7 @@ let impl_14: t_From u128 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_15: t_From u128 u32 =
+let impl_14: t_From u128 u32 =
   {
     f_from_pre = (fun (x: u32) -> true);
     f_from_post = (fun (x: u32) (out: u128) -> true);
@@ -129,7 +121,7 @@ let impl_15: t_From u128 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_16: t_From u128 u64 =
+let impl_15: t_From u128 u64 =
   {
     f_from_pre = (fun (x: u64) -> true);
     f_from_post = (fun (x: u64) (out: u128) -> true);
@@ -137,7 +129,7 @@ let impl_16: t_From u128 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_17: t_From u128 usize =
+let impl_16: t_From u128 usize =
   {
     f_from_pre = (fun (x: usize) -> true);
     f_from_post = (fun (x: usize) (out: u128) -> true);
@@ -145,7 +137,7 @@ let impl_17: t_From u128 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_18: t_From usize u8 =
+let impl_17: t_From usize u8 =
   {
     f_from_pre = (fun (x: u8) -> true);
     f_from_post = (fun (x: u8) (out: usize) -> true);
@@ -153,7 +145,7 @@ let impl_18: t_From usize u8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_19: t_From usize u16 =
+let impl_18: t_From usize u16 =
   {
     f_from_pre = (fun (x: u16) -> true);
     f_from_post = (fun (x: u16) (out: usize) -> true);
@@ -161,15 +153,7 @@ let impl_19: t_From usize u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_20: t_From usize u32 =
-  {
-    f_from_pre = (fun (x: u32) -> true);
-    f_from_post = (fun (x: u32) (out: usize) -> true);
-    f_from = fun (x: u32) -> cast (x <: u32) <: usize
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_21: t_From i16 i8 =
+let impl_19: t_From i16 i8 =
   {
     f_from_pre = (fun (x: i8) -> true);
     f_from_post = (fun (x: i8) (out: i16) -> true);
@@ -177,7 +161,7 @@ let impl_21: t_From i16 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_22: t_From i32 i8 =
+let impl_20: t_From i32 i8 =
   {
     f_from_pre = (fun (x: i8) -> true);
     f_from_post = (fun (x: i8) (out: i32) -> true);
@@ -185,7 +169,7 @@ let impl_22: t_From i32 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_23: t_From i32 i16 =
+let impl_21: t_From i32 i16 =
   {
     f_from_pre = (fun (x: i16) -> true);
     f_from_post = (fun (x: i16) (out: i32) -> true);
@@ -193,7 +177,7 @@ let impl_23: t_From i32 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_24: t_From i64 i8 =
+let impl_22: t_From i64 i8 =
   {
     f_from_pre = (fun (x: i8) -> true);
     f_from_post = (fun (x: i8) (out: i64) -> true);
@@ -201,7 +185,7 @@ let impl_24: t_From i64 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_25: t_From i64 i16 =
+let impl_23: t_From i64 i16 =
   {
     f_from_pre = (fun (x: i16) -> true);
     f_from_post = (fun (x: i16) (out: i64) -> true);
@@ -209,7 +193,7 @@ let impl_25: t_From i64 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_26: t_From i64 i32 =
+let impl_24: t_From i64 i32 =
   {
     f_from_pre = (fun (x: i32) -> true);
     f_from_post = (fun (x: i32) (out: i64) -> true);
@@ -217,15 +201,7 @@ let impl_26: t_From i64 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_27: t_From i64 isize =
-  {
-    f_from_pre = (fun (x: isize) -> true);
-    f_from_post = (fun (x: isize) (out: i64) -> true);
-    f_from = fun (x: isize) -> cast (x <: isize) <: i64
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_28: t_From i128 i8 =
+let impl_25: t_From i128 i8 =
   {
     f_from_pre = (fun (x: i8) -> true);
     f_from_post = (fun (x: i8) (out: i128) -> true);
@@ -233,7 +209,7 @@ let impl_28: t_From i128 i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_29: t_From i128 i16 =
+let impl_26: t_From i128 i16 =
   {
     f_from_pre = (fun (x: i16) -> true);
     f_from_post = (fun (x: i16) (out: i128) -> true);
@@ -241,7 +217,7 @@ let impl_29: t_From i128 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_30: t_From i128 i32 =
+let impl_27: t_From i128 i32 =
   {
     f_from_pre = (fun (x: i32) -> true);
     f_from_post = (fun (x: i32) (out: i128) -> true);
@@ -249,7 +225,7 @@ let impl_30: t_From i128 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_31: t_From i128 i64 =
+let impl_28: t_From i128 i64 =
   {
     f_from_pre = (fun (x: i64) -> true);
     f_from_post = (fun (x: i64) (out: i128) -> true);
@@ -257,7 +233,7 @@ let impl_31: t_From i128 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_32: t_From i128 isize =
+let impl_29: t_From i128 isize =
   {
     f_from_pre = (fun (x: isize) -> true);
     f_from_post = (fun (x: isize) (out: i128) -> true);
@@ -265,7 +241,7 @@ let impl_32: t_From i128 isize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_33: t_From isize i8 =
+let impl_30: t_From isize i8 =
   {
     f_from_pre = (fun (x: i8) -> true);
     f_from_post = (fun (x: i8) (out: isize) -> true);
@@ -273,19 +249,11 @@ let impl_33: t_From isize i8 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_34: t_From isize i16 =
+let impl_31: t_From isize i16 =
   {
     f_from_pre = (fun (x: i16) -> true);
     f_from_post = (fun (x: i16) (out: isize) -> true);
     f_from = fun (x: i16) -> cast (x <: i16) <: isize
-  }
-
-[@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_35: t_From isize i32 =
-  {
-    f_from_pre = (fun (x: i32) -> true);
-    f_from_post = (fun (x: i32) (out: isize) -> true);
-    f_from = fun (x: i32) -> cast (x <: i32) <: isize
   }
 
 class t_TryInto (v_Self: Type0) (v_T: Type0) = {
@@ -371,7 +339,7 @@ let impl_3 (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_T
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_36: t_TryFrom u8 u16 =
+let impl_32: t_TryFrom u8 u16 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u16) -> true);
@@ -399,7 +367,7 @@ let impl_36: t_TryFrom u8 u16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_37: t_TryFrom u8 u32 =
+let impl_33: t_TryFrom u8 u32 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u32) -> true);
@@ -427,7 +395,7 @@ let impl_37: t_TryFrom u8 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_38: t_TryFrom u16 u32 =
+let impl_34: t_TryFrom u16 u32 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u32) -> true);
@@ -455,7 +423,38 @@ let impl_38: t_TryFrom u16 u32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_39: t_TryFrom u8 u64 =
+let impl_35: t_TryFrom usize u32 =
+  {
+    f_Error = Core_models.Num.Error.t_TryFromIntError;
+    f_try_from_pre = (fun (x: u32) -> true);
+    f_try_from_post
+    =
+    (fun
+        (x: u32)
+        (out: Core_models.Result.t_Result usize Core_models.Num.Error.t_TryFromIntError)
+        ->
+        true);
+    f_try_from
+    =
+    fun (x: u32) ->
+      if
+        x >. (cast (Core_models.Num.impl_usize__MAX <: usize) <: u32) ||
+        x <. (cast (Core_models.Num.impl_usize__MIN <: usize) <: u32)
+      then
+        Core_models.Result.Result_Err
+        (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
+          <:
+          Core_models.Num.Error.t_TryFromIntError)
+        <:
+        Core_models.Result.t_Result usize Core_models.Num.Error.t_TryFromIntError
+      else
+        Core_models.Result.Result_Ok (cast (x <: u32) <: usize)
+        <:
+        Core_models.Result.t_Result usize Core_models.Num.Error.t_TryFromIntError
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_36: t_TryFrom u8 u64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u64) -> true);
@@ -483,7 +482,7 @@ let impl_39: t_TryFrom u8 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_40: t_TryFrom u16 u64 =
+let impl_37: t_TryFrom u16 u64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u64) -> true);
@@ -511,7 +510,7 @@ let impl_40: t_TryFrom u16 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_41: t_TryFrom u32 u64 =
+let impl_38: t_TryFrom u32 u64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u64) -> true);
@@ -539,7 +538,7 @@ let impl_41: t_TryFrom u32 u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_42: t_TryFrom usize u64 =
+let impl_39: t_TryFrom usize u64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u64) -> true);
@@ -570,7 +569,7 @@ let impl_42: t_TryFrom usize u64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_43: t_TryFrom u8 u128 =
+let impl_40: t_TryFrom u8 u128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u128) -> true);
@@ -598,7 +597,7 @@ let impl_43: t_TryFrom u8 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_44: t_TryFrom u16 u128 =
+let impl_41: t_TryFrom u16 u128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u128) -> true);
@@ -626,7 +625,7 @@ let impl_44: t_TryFrom u16 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_45: t_TryFrom u32 u128 =
+let impl_42: t_TryFrom u32 u128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u128) -> true);
@@ -654,7 +653,7 @@ let impl_45: t_TryFrom u32 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_46: t_TryFrom u64 u128 =
+let impl_43: t_TryFrom u64 u128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u128) -> true);
@@ -682,7 +681,7 @@ let impl_46: t_TryFrom u64 u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_47: t_TryFrom usize u128 =
+let impl_44: t_TryFrom usize u128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: u128) -> true);
@@ -713,7 +712,7 @@ let impl_47: t_TryFrom usize u128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_48: t_TryFrom u8 usize =
+let impl_45: t_TryFrom u8 usize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: usize) -> true);
@@ -741,7 +740,7 @@ let impl_48: t_TryFrom u8 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_49: t_TryFrom u16 usize =
+let impl_46: t_TryFrom u16 usize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: usize) -> true);
@@ -772,7 +771,7 @@ let impl_49: t_TryFrom u16 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_50: t_TryFrom u32 usize =
+let impl_47: t_TryFrom u32 usize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: usize) -> true);
@@ -803,7 +802,38 @@ let impl_50: t_TryFrom u32 usize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_51: t_TryFrom i8 i16 =
+let impl_48: t_TryFrom u64 usize =
+  {
+    f_Error = Core_models.Num.Error.t_TryFromIntError;
+    f_try_from_pre = (fun (x: usize) -> true);
+    f_try_from_post
+    =
+    (fun
+        (x: usize)
+        (out: Core_models.Result.t_Result u64 Core_models.Num.Error.t_TryFromIntError)
+        ->
+        true);
+    f_try_from
+    =
+    fun (x: usize) ->
+      if
+        x >. (cast (Core_models.Num.impl_u64__MAX <: u64) <: usize) ||
+        x <. (cast (Core_models.Num.impl_u64__MIN <: u64) <: usize)
+      then
+        Core_models.Result.Result_Err
+        (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
+          <:
+          Core_models.Num.Error.t_TryFromIntError)
+        <:
+        Core_models.Result.t_Result u64 Core_models.Num.Error.t_TryFromIntError
+      else
+        Core_models.Result.Result_Ok (cast (x <: usize) <: u64)
+        <:
+        Core_models.Result.t_Result u64 Core_models.Num.Error.t_TryFromIntError
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_49: t_TryFrom i8 i16 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i16) -> true);
@@ -831,7 +861,7 @@ let impl_51: t_TryFrom i8 i16 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_52: t_TryFrom i8 i32 =
+let impl_50: t_TryFrom i8 i32 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i32) -> true);
@@ -859,7 +889,7 @@ let impl_52: t_TryFrom i8 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_53: t_TryFrom i16 i32 =
+let impl_51: t_TryFrom i16 i32 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i32) -> true);
@@ -887,7 +917,38 @@ let impl_53: t_TryFrom i16 i32 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_54: t_TryFrom i8 i64 =
+let impl_52: t_TryFrom isize i32 =
+  {
+    f_Error = Core_models.Num.Error.t_TryFromIntError;
+    f_try_from_pre = (fun (x: i32) -> true);
+    f_try_from_post
+    =
+    (fun
+        (x: i32)
+        (out: Core_models.Result.t_Result isize Core_models.Num.Error.t_TryFromIntError)
+        ->
+        true);
+    f_try_from
+    =
+    fun (x: i32) ->
+      if
+        x >. (cast (Core_models.Num.impl_isize__MAX <: isize) <: i32) ||
+        x <. (cast (Core_models.Num.impl_isize__MIN <: isize) <: i32)
+      then
+        Core_models.Result.Result_Err
+        (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
+          <:
+          Core_models.Num.Error.t_TryFromIntError)
+        <:
+        Core_models.Result.t_Result isize Core_models.Num.Error.t_TryFromIntError
+      else
+        Core_models.Result.Result_Ok (cast (x <: i32) <: isize)
+        <:
+        Core_models.Result.t_Result isize Core_models.Num.Error.t_TryFromIntError
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_53: t_TryFrom i8 i64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i64) -> true);
@@ -915,7 +976,7 @@ let impl_54: t_TryFrom i8 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_55: t_TryFrom i16 i64 =
+let impl_54: t_TryFrom i16 i64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i64) -> true);
@@ -943,7 +1004,7 @@ let impl_55: t_TryFrom i16 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_56: t_TryFrom i32 i64 =
+let impl_55: t_TryFrom i32 i64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i64) -> true);
@@ -971,7 +1032,7 @@ let impl_56: t_TryFrom i32 i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_57: t_TryFrom isize i64 =
+let impl_56: t_TryFrom isize i64 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i64) -> true);
@@ -1002,7 +1063,7 @@ let impl_57: t_TryFrom isize i64 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_58: t_TryFrom i8 i128 =
+let impl_57: t_TryFrom i8 i128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i128) -> true);
@@ -1030,7 +1091,7 @@ let impl_58: t_TryFrom i8 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_59: t_TryFrom i16 i128 =
+let impl_58: t_TryFrom i16 i128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i128) -> true);
@@ -1058,7 +1119,7 @@ let impl_59: t_TryFrom i16 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_60: t_TryFrom i32 i128 =
+let impl_59: t_TryFrom i32 i128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i128) -> true);
@@ -1086,7 +1147,7 @@ let impl_60: t_TryFrom i32 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_61: t_TryFrom i64 i128 =
+let impl_60: t_TryFrom i64 i128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i128) -> true);
@@ -1114,7 +1175,7 @@ let impl_61: t_TryFrom i64 i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_62: t_TryFrom isize i128 =
+let impl_61: t_TryFrom isize i128 =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: i128) -> true);
@@ -1145,7 +1206,7 @@ let impl_62: t_TryFrom isize i128 =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_63: t_TryFrom i8 isize =
+let impl_62: t_TryFrom i8 isize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: isize) -> true);
@@ -1173,7 +1234,7 @@ let impl_63: t_TryFrom i8 isize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_64: t_TryFrom i16 isize =
+let impl_63: t_TryFrom i16 isize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: isize) -> true);
@@ -1204,7 +1265,7 @@ let impl_64: t_TryFrom i16 isize =
   }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
-let impl_65: t_TryFrom i32 isize =
+let impl_64: t_TryFrom i32 isize =
   {
     f_Error = Core_models.Num.Error.t_TryFromIntError;
     f_try_from_pre = (fun (x: isize) -> true);
@@ -1232,4 +1293,35 @@ let impl_65: t_TryFrom i32 isize =
         Core_models.Result.Result_Ok (cast (x <: isize) <: i32)
         <:
         Core_models.Result.t_Result i32 Core_models.Num.Error.t_TryFromIntError
+  }
+
+[@@ FStar.Tactics.Typeclasses.tcinstance]
+let impl_65: t_TryFrom i64 isize =
+  {
+    f_Error = Core_models.Num.Error.t_TryFromIntError;
+    f_try_from_pre = (fun (x: isize) -> true);
+    f_try_from_post
+    =
+    (fun
+        (x: isize)
+        (out: Core_models.Result.t_Result i64 Core_models.Num.Error.t_TryFromIntError)
+        ->
+        true);
+    f_try_from
+    =
+    fun (x: isize) ->
+      if
+        x >. (cast (Core_models.Num.impl_i64__MAX <: i64) <: isize) ||
+        x <. (cast (Core_models.Num.impl_i64__MIN <: i64) <: isize)
+      then
+        Core_models.Result.Result_Err
+        (Core_models.Num.Error.TryFromIntError (() <: Prims.unit)
+          <:
+          Core_models.Num.Error.t_TryFromIntError)
+        <:
+        Core_models.Result.t_Result i64 Core_models.Num.Error.t_TryFromIntError
+      else
+        Core_models.Result.Result_Ok (cast (x <: isize) <: i64)
+        <:
+        Core_models.Result.t_Result i64 Core_models.Num.Error.t_TryFromIntError
   }

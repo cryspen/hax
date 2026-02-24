@@ -11,6 +11,8 @@ include Core_models.Bundle {Result_Err as Result_Err}
 
 include Core_models.Bundle {impl__unwrap__from__result as impl__unwrap}
 
+include Core_models.Bundle {impl__unwrap_or__from__result as impl__unwrap_or}
+
 include Core_models.Bundle {impl__expect__from__result as impl__expect}
 
 include Core_models.Bundle {impl__map__from__result as impl__map}

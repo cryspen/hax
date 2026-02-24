@@ -29,6 +29,20 @@ pub enum ResugaredItemKind {
         /// Note: constant supporting generics is a nightly feature (generic_const_items).
         generics: Generics,
     },
+    /// A recursive function definition. Detected by checking whether the function
+    /// body contains a reference to its own name.
+    RecursiveFn {
+        /// The identifier of the function.
+        name: GlobalId,
+        /// The generic arguments and constraints of the function.
+        generics: Generics,
+        /// The body of the function.
+        body: Expr,
+        /// The parameters of the function.
+        params: Vec<Param>,
+        /// The safety of the function.
+        safety: SafetyKind,
+    },
 }
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
@@ -36,22 +50,6 @@ pub enum ResugaredItemKind {
 // TODO: drop `clippy::large_enum_variant` when https://github.com/cryspen/hax/issues/1666 is addressed.
 #[allow(clippy::large_enum_variant)]
 pub enum ResugaredExprKind {
-    /// Binary operations (identified by resugaring) of the form `f(e1, e2)`
-    BinOp {
-        /// The identifier of the operation (`f`)
-        op: GlobalId,
-        /// The left-hand side of the operation (`e1`)
-        lhs: Expr,
-        /// The right-hand side of the operation (`e2`)
-        rhs: Expr,
-        /// The generic arguments applied to the function.
-        generic_args: Vec<GenericValue>,
-        /// If the function requires generic bounds to be called, `bounds_impls`
-        /// is a vector of impl. expressions for those bounds.
-        bounds_impls: Vec<ImplExpr>,
-        /// If we apply an associated function, contains the impl. expr used.
-        trait_: Option<(ImplExpr, Vec<GenericValue>)>,
-    },
     /// A tuple constructor.
     ///
     /// # Example:
@@ -87,7 +85,14 @@ pub enum ResugaredTyKind {
 
 /// Resugared variants for impl. items. This represent extra printing-only impl. items, see [`super::ImplItemKind::Resugared`].
 #[derive_group_for_ast]
-pub enum ResugaredImplItemKind {}
+pub enum ResugaredImplItemKind {
+    /// An associated `const` impl item, for example `const NAME: T = body;`.
+    /// The type of the constant is `body.ty`.
+    Constant {
+        /// The body of the constant, for example `body`.
+        body: Expr,
+    },
+}
 
 /// Resugared variants for trait items. This represent extra printing-only trait items, see [`super::TraitItemKind::Resugared`].
 #[derive_group_for_ast]

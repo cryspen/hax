@@ -13,3 +13,6 @@ impl T for S {
     type A = usize;
     fn f() {}
 }
+
+#[hax_lib::opaque]
+struct OpaqueStruct;

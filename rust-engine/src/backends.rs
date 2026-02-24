@@ -62,6 +62,11 @@ pub trait Backend {
         vec![]
     }
 
+    /// A list of resugaring phases.
+    fn resugaring_phases() -> Vec<Box<dyn prelude::Resugaring>> {
+        vec![]
+    }
+
     /// Group a flat list of items into modules.
     fn items_to_module(&self, items: Vec<Item>) -> Vec<Module> {
         let mut modules: HashMap<_, Vec<_>> = HashMap::new();
@@ -78,6 +83,22 @@ pub trait Backend {
                     span: Span::dummy(),
                     attributes: vec![],
                 },
+            })
+            .collect()
+    }
+
+    /// Print a list of modules into files
+    fn modules_to_files(&self, modules: Vec<Module>, mut printer: Self::Printer) -> Vec<File> {
+        modules
+            .into_iter()
+            .map(|module: Module| {
+                let path = self.module_path(&module).into_string();
+                let (contents, _) = printer.print(module);
+                File {
+                    path,
+                    contents,
+                    sourcemap: None,
+                }
             })
             .collect()
     }
@@ -102,6 +123,12 @@ impl<B: Backend> crate::phase::Phase for B {
 /// to generate source files with paths determined by [`Backend::module_path`].
 pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
     crate::phase::Phase::apply(&backend, &mut items);
+
+    for mut resugaring_phase in B::resugaring_phases() {
+        for item in &mut items {
+            resugaring_phase.visit(item)
+        }
+    }
 
     let linked_items_graph = Rc::new(LinkedItemGraph::new(
         &items,
@@ -128,18 +155,8 @@ pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> 
     drop_skip_late_items(&mut items);
 
     let modules = backend.items_to_module(items);
-    modules
-        .into_iter()
-        .map(|module: Module| {
-            let path = backend.module_path(&module).into_string();
-            let (contents, _) = backend.printer(linked_items_graph.clone()).print(module);
-            File {
-                path,
-                contents,
-                sourcemap: None,
-            }
-        })
-        .collect()
+    let printer = backend.printer(linked_items_graph.clone());
+    backend.modules_to_files(modules, printer)
 }
 
 mod prelude {

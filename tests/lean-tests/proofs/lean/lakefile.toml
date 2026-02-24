@@ -1,10 +1,10 @@
-name = "Lean_tests"
+name = "lean_tests"
 version = "0.1.0"
-defaultTargets = ["Lean_tests"]
+defaultTargets = ["lean_tests"]
 
 [[lean_lib]]
-name = "Lean_tests"
-roots = ["extraction.Lean_tests"]
+name = "lean_tests"
+roots = ["extraction.lean_tests"]
 
 [[require]]
 name = "Hax"

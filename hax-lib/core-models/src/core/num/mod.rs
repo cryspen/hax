@@ -1,5 +1,6 @@
 #![allow(non_camel_case_types, unused_variables)]
 
+use crate::result::Result;
 use pastey::paste;
 
 pub mod error;
@@ -121,11 +122,6 @@ macro_rules! uint_impl {
             #[hax_lib::opaque]
             fn to_le_bytes(bytes: $Self) -> [core::primitive::u8; $Bytes] {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
-            }
-        }
-        impl crate::default::Default for $Self {
-            fn default() -> $Self {
-                0
             }
         }
     };
@@ -256,11 +252,6 @@ macro_rules! iint_impl {
                 paste! { [<to_le_bytes_ $Name>](bytes) }
             }
         }
-        impl crate::default::Default for $Self {
-            fn default() -> $Self {
-                0
-            }
-        }
     };
 }
 
@@ -290,6 +281,20 @@ pub struct i64;
 pub struct i128;
 #[hax_lib::exclude]
 pub struct isize;
+
+// Placeholders to get the same impl numbering as in core:
+#[hax_lib::attributes]
+impl i8 {}
+#[hax_lib::attributes]
+impl i16 {}
+#[hax_lib::attributes]
+impl i32 {}
+#[hax_lib::attributes]
+impl i64 {}
+#[hax_lib::attributes]
+impl i128 {}
+#[hax_lib::attributes]
+impl isize {}
 
 uint_impl! {
     core::primitive::u8,
@@ -392,3 +397,31 @@ iint_impl! {
     SIZE_BITS,
     SIZE_BYTES,
 }
+
+macro_rules! impl_default_for_int {
+    ($($t:ty),*) => {
+        $(
+            #[hax_lib::attributes]
+            impl crate::default::Default for $t {
+                fn default() -> $t {
+                    0
+                }
+            }
+        )*
+    };
+}
+
+impl_default_for_int!(
+    core::primitive::u8,
+    core::primitive::u16,
+    core::primitive::u32,
+    core::primitive::u64,
+    core::primitive::u128,
+    core::primitive::usize,
+    core::primitive::i8,
+    core::primitive::i16,
+    core::primitive::i32,
+    core::primitive::i64,
+    core::primitive::i128,
+    core::primitive::isize
+);

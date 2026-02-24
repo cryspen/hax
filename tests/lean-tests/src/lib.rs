@@ -3,6 +3,7 @@
 
 pub mod array;
 pub mod associated_types;
+pub mod casts;
 pub mod comments;
 pub mod constants;
 pub mod enums;
@@ -13,6 +14,7 @@ pub mod matching;
 pub mod monadic;
 pub mod nested_control_flow;
 pub mod opaque;
+pub mod recursion;
 pub mod specs;
 pub mod structs;
 pub mod traits;
@@ -45,7 +47,7 @@ fn closure() -> i32 {
     res1 + res2
 }
 
-#[hax_lib::lean::before("@[spec]")]
+#[hax_lib::lean::before("example : Nat := 42")]
 fn test_before_verbatime_single_line(x: u8) -> u8 {
     42
 }

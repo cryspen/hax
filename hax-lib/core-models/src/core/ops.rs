@@ -36,8 +36,7 @@ pub mod arith {
         fn div_assign(&mut self, rhs: Rhs);
     }
     pub trait RemAssign<Rhs = Self> {
-        type Output;
-        fn rem_assign(self, rhs: Rhs) -> Self::Output;
+        fn rem_assign(&mut self, rhs: Rhs);
     }
 
     macro_rules! int_trait_impls {
@@ -194,6 +193,7 @@ pub mod range {
         ($($int_type: ident)*) => {
             use crate::option::Option;
             $(
+                #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
                 impl crate::iter::traits::iterator::Iterator for Range<$int_type> {
                     type Item = $int_type;
                     fn next(&mut self) -> Option<$int_type> {

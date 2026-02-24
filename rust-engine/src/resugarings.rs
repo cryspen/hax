@@ -9,7 +9,6 @@ use crate::ast::resugared::*;
 use crate::ast::visitors::*;
 use crate::ast::*;
 use crate::printer::*;
-use std::collections::HashSet;
 
 /// Transforms [`ItemKind::Fn`] of arity zero into [`ResugaredItemKind::Constant`].
 /// Rust `const` items are encoded by the `ImportThir` phase of the hax engine as function of arity zero.
@@ -38,66 +37,19 @@ impl AstVisitorMut for FunctionsToConstants {
             generics: generics.clone(),
         });
     }
+    fn enter_impl_item_kind(&mut self, item_kind: &mut ImplItemKind) {
+        if let ImplItemKind::Fn { body, params } = item_kind
+            && params.is_empty()
+        {
+            *item_kind =
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body: body.clone() })
+        }
+    }
 }
 
 impl Resugaring for FunctionsToConstants {
     fn name(&self) -> String {
         "functions-to-constants".to_string()
-    }
-}
-
-/// Binop resugaring. Used to identify expressions of the form `(f e1 e2)` where
-/// `f` is a known identifier.
-pub struct BinOp {
-    /// Stores a set of identifiers that should be resugared as binary
-    /// operations. Usually, those identifiers come from the hax encoding. Each
-    /// backend can select its own set of identifiers Typically, if the backend
-    /// has a special support for addition, `known_ops` will contain
-    /// `hax::machine::int::add`
-    pub known_ops: HashSet<GlobalId>,
-}
-
-impl BinOp {
-    /// Adds a new binary operation from a list of (hax-introduced) names
-    pub fn new(known_ops: &[GlobalId]) -> Self {
-        Self {
-            known_ops: HashSet::from_iter(known_ops.iter().cloned()),
-        }
-    }
-}
-
-impl AstVisitorMut for BinOp {
-    fn enter_expr_kind(&mut self, x: &mut ExprKind) {
-        let ExprKind::App {
-            head,
-            args,
-            generic_args,
-            bounds_impls,
-            trait_,
-        }: &mut ExprKind = x
-        else {
-            return;
-        };
-        let ExprKind::GlobalId(id) = &*head.kind else {
-            return;
-        };
-        let [lhs, rhs] = &args[..] else { return };
-        if self.known_ops.iter().any(|defid| id == defid) {
-            *x = ExprKind::Resugared(ResugaredExprKind::BinOp {
-                op: *id,
-                lhs: lhs.clone(),
-                rhs: rhs.clone(),
-                generic_args: generic_args.clone(),
-                bounds_impls: bounds_impls.clone(),
-                trait_: trait_.clone(),
-            });
-        }
-    }
-}
-
-impl Resugaring for BinOp {
-    fn name(&self) -> String {
-        "binop".to_string()
     }
 }
 
@@ -176,5 +128,61 @@ impl AstVisitorMut for LetPure {
 impl Resugaring for LetPure {
     fn name(&self) -> String {
         "let_pure".to_string()
+    }
+}
+
+/// Recursive function detection. Identifies functions whose body contains a
+/// reference to their own name and resugars them to [`ResugaredItemKind::RecursiveFn`].
+#[derive(Copy, Clone, Default)]
+pub struct RecursiveFunctions;
+
+/// Helper visitor that checks whether an expression tree contains a reference
+/// to a specific [`GlobalId`].
+struct SelfReferenceChecker {
+    target: GlobalId,
+    found: bool,
+}
+
+impl AstVisitor for SelfReferenceChecker {
+    fn enter_expr_kind(&mut self, kind: &ExprKind) {
+        if let ExprKind::GlobalId(id) = kind
+            && *id == self.target
+        {
+            self.found = true;
+        }
+    }
+}
+
+impl AstVisitorMut for RecursiveFunctions {
+    fn visit_item_kind(&mut self, item_kind: &mut ItemKind) {
+        if let ItemKind::Fn {
+            name,
+            generics,
+            body,
+            params,
+            safety,
+        } = &*item_kind
+        {
+            let mut checker = SelfReferenceChecker {
+                target: *name,
+                found: false,
+            };
+            checker.visit_expr(body);
+            if checker.found {
+                *item_kind = ItemKind::Resugared(ResugaredItemKind::RecursiveFn {
+                    name: *name,
+                    generics: generics.clone(),
+                    body: body.clone(),
+                    params: params.clone(),
+                    safety: safety.clone(),
+                });
+            }
+        }
+    }
+}
+
+impl Resugaring for RecursiveFunctions {
+    fn name(&self) -> String {
+        "recursive-functions".to_string()
     }
 }

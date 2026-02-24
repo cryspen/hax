@@ -1,2 +1,2 @@
 
-attribute [grind] Vector.size_toArray
+attribute [grind =] Vector.size_toArray

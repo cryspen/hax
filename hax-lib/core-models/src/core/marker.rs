@@ -13,4 +13,5 @@ impl<T> Sized for T {}
 impl<T: Clone> Copy for T {}
 
 #[hax_lib::fstar::replace("type t_PhantomData (v_T: Type0) = | PhantomData : t_PhantomData v_T")]
+#[hax_lib::lean::replace("structure PhantomData (T : Type) where")]
 struct PhantomData<T>(T);

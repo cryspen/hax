@@ -1,2 +1,2 @@
 
-attribute [grind] Array.size_extract
+attribute [grind =] Array.size_extract

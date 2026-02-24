@@ -23,6 +23,7 @@ pub trait Phase {
 pub mod legacy;
 
 mod explicit_monadic;
+mod filter_unprintable_items;
 mod reject_not_do_lean_dsl;
 
 macro_rules! declare_phase_kind {
@@ -52,4 +53,5 @@ macro_rules! declare_phase_kind {
 declare_phase_kind! {
     ExplicitMonadic = explicit_monadic::ExplicitMonadic,
     RejectNotDoLeanDSL = reject_not_do_lean_dsl::RejectNotDoLeanDSL,
+    FilterUnprintableItems = filter_unprintable_items::FilterUnprintableItems,
 }

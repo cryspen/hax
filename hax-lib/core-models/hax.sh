@@ -16,8 +16,6 @@ function extract_fstar() {
 function extract_lean() {
     go_to "./"
     LEAN_FILTERS=""
-    LEAN_FILTERS+=" -core_models::ops::function::Fn" # Issue #1710
-    LEAN_FILTERS+=" -core_models::result::**::ok" # Issue #1823
     LEAN_FILTERS+=" -core_models::result::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
@@ -72,13 +70,20 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::ops::range::**"
     LEAN_FILTERS+=" -core_models::f32::**::abs"
   
+    LEAN_FILTERS+=" -core_models::num::**::from_be_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::from_le_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::to_be_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::to_le_bytes"
+    LEAN_FILTERS+=" -core_models::num::**::rotate_left"
+    LEAN_FILTERS+=" -core_models::num::**::rotate_right"
+    
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
-    sed -i 's/import Hax/import Hax.Core/g' proofs/lean/extraction/Core_models.lean
-    sed -i 's/def Core_models\.Cmp\.Ordering /def Core_models.Cmp.Ordering_ /g' proofs/lean/extraction/Core_models.lean # Issue #1646
-    sed -i 's/Core_models.Convert.From.from/Core_models.Convert.From._from/g' proofs/lean/extraction/Core_models.lean # Issue #1853
-    
-    cp proofs/lean/extraction/Core_models.lean ../proof-libs/lean/Hax/CoreModels.lean
+    OUT="proofs/lean/extraction/core_models.lean"
+
+    sed -i 's/import Hax/import Hax.core_models.prologue\nimport Hax.Tactic.HaxSpec/g' "$OUT"
+
+    cp "$OUT" ../proof-libs/lean/Hax/core_models/core_models.lean
 }
 
 function init_vars() {

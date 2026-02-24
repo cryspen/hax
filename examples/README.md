@@ -42,9 +42,9 @@ The `<EXAMPLE>/proofs/coq/extraction` folders contain the generated Coq modules.
 
 ## Lean
 
-Two examples are fine-tuned to showcase the Lean backend: `lean_barrett` and
-`lean_chacha20`. For both, the lean extraction can be obtained by running `cargo
-hax into lean`.
+Three examples are fine-tuned to showcase the Lean backend: `lean_barrett`,
+`lean_chacha20`, and `lean_adc`. For all of them, the lean extraction can be
+obtained by running `cargo hax into lean`.
 
 ### Barrett
 
@@ -67,6 +67,26 @@ The proof can be run by doing (requires `lake`):
 
 ```sh
 cd lean_barrett/
+make
+```
+
+### ADC (Addition with Carry)
+
+The *ADC* (addition with carry) example verifies a 32-bit limb addition with
+carry, a fundamental building block in multi-precision (bignum) arithmetic.
+It uses `#[hax_lib::lean::after(...)]` to embed a Lean 4 correctness theorem
+directly after the extracted function definition. The precondition and
+postcondition are expressed as pure Lean propositions in a Hoare triple, and
+the proof is fully automated via `hax_mvcgen` and Lean's `bv_decide`
+bit-blasting procedure.
+
+The verified property states that the 64-bit sum `a + b + carry_in` is correctly
+split into a 32-bit sum and a 1-bit carry output.
+
+The proof can be run by doing (requires `lake`):
+
+```sh
+cd lean_adc/
 make
 ```
 

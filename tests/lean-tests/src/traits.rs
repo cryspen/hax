@@ -114,6 +114,31 @@ mod associated_types {
     //         12
     //     }
     // }
+
+    trait Chain0 {}
+
+    trait Chain1 {
+        type A: Chain0;
+        type B: Chain0;
+    }
+
+    trait Chain2: Chain1 {}
+
+    trait Chain3: Chain2 {
+        fn f() -> Self::A;
+    }
+
+    impl Chain0 for u8 {}
+    impl Chain1 for u8 {
+        type A = u8;
+        type B = u8;
+    }
+    impl Chain2 for u8 {}
+    impl Chain3 for u8 {
+        fn f() -> u8 {
+            0
+        }
+    }
 }
 
 mod overlapping_methods {
@@ -296,5 +321,28 @@ mod trait_with_constraints {
         {
             true
         }
+    }
+}
+
+mod associated_constant {
+    pub trait Foo { 
+        const f: bool;
+        const x: u8;
+    }
+
+    pub struct Bar;
+
+    impl Foo for Bar {
+        const f: bool = true;
+        const x: u8 = 1 + 1;
+    }
+
+    // https://github.com/cryspen/hax/issues/1940
+    trait Baz {
+        const One : u32 = 1;
+    }
+
+    fn foo<F: Baz> (n : u32) -> u32 {
+        n + F::One
     }
 }

@@ -111,6 +111,10 @@ and dglobal_ident ?(skip_projector : bool = false)
       | Types.Constructor { length } -> `TupleCons (Int.of_string length)
       | Types.Field { length; field } ->
           `TupleField (Int.of_string field, Int.of_string length))
+  | Types.FreshModule _ ->
+      broken_invariant
+        ("dglobal_ident: got a [`FreshModule _]: "
+        ^ [%show: A.global_id_inner] gi)
 
 and dlocal_ident (Newtypelocal_id (Newtypesymbol li) : A.local_id) :
     B.local_ident =
