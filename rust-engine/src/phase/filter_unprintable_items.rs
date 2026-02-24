@@ -11,7 +11,10 @@ impl Phase for FilterUnprintableItems {
     fn apply(&self, items: &mut Vec<Item>) {
         items.retain(|item| match &item.kind {
             // Items to remove:
-            ItemKind::Error(_) | ItemKind::NotImplementedYet | ItemKind::Use { .. } => false,
+            ItemKind::Error(_)
+            | ItemKind::NotImplementedYet
+            | ItemKind::Use { .. }
+            | ItemKind::RustModule => false,
             // Items to keep:
             ItemKind::Fn { .. }
             | ItemKind::TyAlias { .. }
@@ -20,8 +23,7 @@ impl Phase for FilterUnprintableItems {
             | ItemKind::Impl { .. }
             | ItemKind::Alias { .. }
             | ItemKind::Resugared(_)
-            | ItemKind::Quote { .. }
-            | ItemKind::RustModule => true,
+            | ItemKind::Quote { .. } => true,
         });
     }
 }

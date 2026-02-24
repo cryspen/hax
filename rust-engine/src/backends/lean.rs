@@ -179,6 +179,7 @@ impl Backend for LeanBackend {
             NewtypeAsRefinement.into(),
             ReorderFields.into(),
             SortItems.into(),
+            FilterUnprintableItems,
             ExplicitMonadic,
         ]
     }
