@@ -21,7 +21,7 @@ impl Phase for FilterUnprintableItems {
             | ItemKind::Alias { .. }
             | ItemKind::Resugared(_)
             | ItemKind::Quote { .. }
-            | ItemKind::RustModule { .. } => true,
+            | ItemKind::RustModule => true,
         });
     }
 }
