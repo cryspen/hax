@@ -92,8 +92,9 @@ let to_def_id { def_id; _ } = def_id
 let is_constructor { is_constructor; _ } = is_constructor
 
 let is_anon_assoc_ty did =
-  [%matches? Some { data = AnonAssocTy _; _ }]
-    (List.last (to_def_id did).path : Types.disambiguated_def_path_item option)
+  [%matches?
+    Some ({ data = AnonAssocTy _; _ } : Types.disambiguated_def_path_item)]
+    (List.last (to_def_id did).path)
 
 (** Stateful store that maps [def_id]s to implementation information (which
     trait is implemented? for which type? under which constraints?) *)
