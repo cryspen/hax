@@ -48,6 +48,9 @@ val is_constructor : t -> bool
     - the kind of [id] is [Variant]. Otherwise, [is_constructor id] returns
       [false]. *)
 
+val is_anon_assoc_ty : t -> bool
+(** Returns true if the ident represents an anonymous associated type. *)
+
 val parent : t -> t option
 (** Looks up the parent of a definition identifier. Note that the parent of the
     identifier of a field is always a constructor.
