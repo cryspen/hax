@@ -151,6 +151,7 @@ impl Backend for LeanBackend {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         vec![
             RejectRawOrMutPointer.into(),
+            RejectImplTypeMethod.into(),
             RewriteLocalSelf.into(),
             TransformHaxLibInline.into(),
             Specialize.into(),
