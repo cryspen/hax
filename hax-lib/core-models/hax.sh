@@ -23,6 +23,8 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::result::**::expect_err"
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
+    LEAN_FILTERS+=" -core_models::slice::**::clone_from_slice"
+    LEAN_FILTERS+=" -core_models::slice::**::copy_from_slice"
     LEAN_FILTERS+=" -core_models::num::**::saturating_add"
     LEAN_FILTERS+=" -core_models::num::**::overflowing_add"
     LEAN_FILTERS+=" -core_models::num::**::saturating_sub"

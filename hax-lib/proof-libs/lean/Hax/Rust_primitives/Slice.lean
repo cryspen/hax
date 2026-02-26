@@ -35,9 +35,18 @@ def rust_primitives.slice.slice_split_at (α : Type) (s : RustSlice α) (mid : u
   else
     .fail .arrayOutOfBounds
 
+@[spec]
 def rust_primitives.slice.slice_slice
   (α : Type) (seq : RustSlice α) (s e : usize) : RustM (RustSlice α) :=
   if s ≤ e && e ≤ seq.size then
     pure seq[s:e].toArray
+  else
+    .fail .undef
+
+@[spec]
+def rust_primitives.slice.slice_clone_from_slice
+  (α : Type) (s : RustSlice α) (src : RustSlice α) : RustM (RustSlice α) :=
+  if s.size == src.size then
+    pure src
   else
     .fail .undef
