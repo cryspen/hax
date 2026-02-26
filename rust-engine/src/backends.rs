@@ -14,6 +14,7 @@
 //!
 //! See [`rust`] for an example implementation.
 
+pub mod fstar;
 pub mod lean;
 pub mod rust;
 
@@ -22,6 +23,7 @@ use std::{collections::HashMap, rc::Rc};
 use crate::{
     ast::{Item, Metadata, Module, span::Span},
     attributes::LinkedItemGraph,
+    phase::legacy::group_consecutive_ocaml_phases,
     printer::{HasLinkedItemGraph, Print, Printer},
 };
 use camino::Utf8PathBuf;
@@ -56,7 +58,7 @@ pub trait Backend {
     ///
     /// Backends can override this to add transformations.
     /// The default is an empty list (no transformations).
-    fn phases() -> Vec<Box<dyn crate::phase::Phase>> {
+    fn phases(&self) -> Vec<crate::phase::PhaseKind> {
         vec![]
     }
 
@@ -105,15 +107,22 @@ pub trait Backend {
     fn module_path(&self, module: &Module) -> Utf8PathBuf;
 }
 
+/// A backend can be interpreted as a phase
+impl<B: Backend> crate::phase::Phase for B {
+    fn apply(&self, items: &mut Vec<Item>) {
+        for phase in group_consecutive_ocaml_phases(self.phases()) {
+            phase.apply(items);
+        }
+    }
+}
+
 /// Apply a backend to a collection of AST items, producing output files.
 ///
 /// This runs all of the backend's [`Backend::phases`], groups the items into
 /// modules via [`Backend::items_to_module`], and then uses the backend's printer
 /// to generate source files with paths determined by [`Backend::module_path`].
 pub fn apply_backend<B: Backend + 'static>(backend: B, mut items: Vec<Item>) -> Vec<File> {
-    for phase in B::phases() {
-        phase.apply(&mut items);
-    }
+    crate::phase::Phase::apply(&backend, &mut items);
 
     for mut resugaring_phase in B::resugaring_phases() {
         for item in &mut items {
@@ -156,12 +165,7 @@ mod prelude {
     //! Importing this prelude saves repetitive `use` lists in per-backend
     //! modules without forcing these names on downstream users.
     pub use super::Backend;
-    pub use crate::ast::{
-        identifiers::{global_id::view::AnyKind, *},
-        literals::*,
-        resugared::*,
-        *,
-    };
+    pub use crate::ast::{identifiers::global_id::view::AnyKind, literals::*, resugared::*, *};
     pub use crate::printer::{
         pretty_ast::{DocBuilder, PrettyAst, ToDocument, install_pretty_helpers},
         render_view::*,

@@ -6,5 +6,5 @@ default:
    lake build)
 
 clean:
-	-rm -f proofs/lean/extraction/lean_barrett.lean
+	-rm -f proofs/lean/extraction/Lean_barrett.lean
 	-cd proofs/lean && lake clean

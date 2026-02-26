@@ -909,6 +909,67 @@ module Make (F : Features.T) = struct
   let string_lit span (s : string) : expr =
     { span; typ = TStr; e = Literal (String s) }
 
+  module HaxFailure = struct
+    module Build = struct
+      let pat span (typ : ty) (msg : string) : pat =
+        let (module M) = M.make span in
+        let constructor =
+          Global_ident.of_name ~value:true Rust_primitives__hax__Failure__Ctor
+        in
+        let pat = M.pat_PConstant ~typ ~lit:(String msg) in
+        let fields = [ { field = constructor; pat } ] in
+        M.pat_PConstruct ~typ ~is_record:false ~is_struct:true ~constructor
+          ~fields
+
+      let expr span (typ : ty) (error : string) (ast : string) =
+        let args = List.map ~f:(string_lit span) [ error; ast ] in
+        call Rust_primitives__hax__failure args span typ
+
+      let ty (payload : string) =
+        let ident =
+          `Concrete
+            (Concrete_ident.of_name ~value:false Rust_primitives__hax__Failure)
+        in
+        let (module M) = M.make (Span.dummy ()) in
+        let payload = M.expr_Literal ~typ:TBool (String payload) in
+        TApp { ident; args = [ GConst payload ] }
+    end
+
+    open struct
+      let destruct_str_lit e =
+        let* l = D.expr_Literal e in
+        match l with String s -> Some s | _ -> None
+    end
+
+    module Destruct = struct
+      let pat (p : pat) : string option =
+        let* p = D.pat_PConstruct p in
+        let*? () =
+          Global_ident.eq_name Rust_primitives__hax__Failure__Ctor p.constructor
+        in
+        let* { pat; _ } = D.list_1 p.fields in
+        let* s = D.pat_PConstant pat in
+        match s.lit with String s -> Some s | _ -> None
+
+      let expr (e : expr) : (string * string) option =
+        let* app = D.expr_App e in
+        let* id = D.expr_GlobalVar app.f in
+        let*? _ = Global_ident.eq_name Rust_primitives__hax__failure id in
+        let* x, y = D.list_2 app.args in
+
+        let* x = destruct_str_lit x in
+        let* y = destruct_str_lit y in
+        Some (x, y)
+
+      let ty (t : ty) : string option =
+        match t with
+        | TApp { ident; args = [ GConst payload ] }
+          when Global_ident.eq_name Rust_primitives__hax__Failure ident ->
+            destruct_str_lit payload
+        | _ -> None
+    end
+  end
+
   let hax_failure_expr' span (typ : ty) (context, kind) (ast : string) =
     let ast =
       (* Remove consecutive withe spaces *)
@@ -921,18 +982,10 @@ module Make (F : Features.T) = struct
       else ast
     in
     let error = Diagnostics.pretty_print_context_kind context kind in
-    let args = List.map ~f:(string_lit span) [ error; ast ] in
-    call Rust_primitives__hax__failure args span typ
+    HaxFailure.Build.expr span typ error ast
 
   let hax_failure_expr span (typ : ty) (context, kind) (expr0 : Ast.Full.expr) =
     hax_failure_expr' span typ (context, kind) (Print_rust.pexpr_str expr0)
-
-  let hax_failure_typ =
-    let ident =
-      `Concrete
-        (Concrete_ident.of_name ~value:false Rust_primitives__hax__failure)
-    in
-    TApp { ident; args = [] }
 
   module LiftToFullAst = struct
     let expr : AST.expr -> Ast.Full.expr = Stdlib.Obj.magic

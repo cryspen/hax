@@ -54,6 +54,20 @@ struct DefIdInner {
     kind: DefKind,
 }
 
+impl From<hax_frontend_exporter::DefId> for DefIdInner {
+    fn from(value: hax_frontend_exporter::DefId) -> Self {
+        Self {
+            krate: value.krate.clone(),
+            path: value.path.clone(),
+            parent: value
+                .parent
+                .clone()
+                .map(|def_id| DefIdInner::from(def_id).intern()),
+            kind: value.kind.clone(),
+        }
+    }
+}
+
 impl DefIdInner {
     /// Change the krate field of `self` and propagate the change into all parents.
     fn rename_krate(&self, name: &str) -> Self {
@@ -368,6 +382,35 @@ impl TupleId {
 pub struct GlobalId(Interned<GlobalIdInner>);
 
 impl GlobalId {
+    /// Import a def_id from the frontend
+    pub fn from_frontend(id: hax_frontend_exporter::DefId, is_value: bool) -> Self {
+        let mut def_id: DefIdInner = id.into();
+        use hax_frontend_exporter::DefKind as DK;
+
+        let mut popped_ctor = false;
+        if let Some(last) = def_id.path.last()
+            && matches!(&last.data, DefPathItem::Ctor)
+        {
+            def_id.path.pop();
+            popped_ctor = true;
+            if let Some(parent) = def_id.parent.as_ref() {
+                def_id.parent = parent.parent;
+            }
+        }
+
+        let is_constructor = is_value
+            && (matches!(&def_id.kind, DK::Variant | DK::Union | DK::Struct) || popped_ctor);
+        let inner = GlobalIdInner::Concrete(ConcreteId {
+            def_id: ExplicitDefId {
+                is_constructor,
+                def_id: def_id.intern(),
+            },
+            moved: None,
+            suffix: None,
+        });
+        Self(inner.intern())
+    }
+
     /// Extracts the Crate info
     pub fn krate(self) -> &'static str {
         match self.0.get() {
@@ -461,6 +504,20 @@ impl GlobalId {
                 concrete_id.rename_krate(name);
                 Self(GlobalIdInner::Concrete(concrete_id).intern())
             }
+        }
+    }
+
+    /// Add a suffix to a GlobalId
+    pub fn with_suffix(self, suffix: ReservedSuffix) -> Self {
+        match self.0.get() {
+            GlobalIdInner::Concrete(concrete_id) => Self(
+                GlobalIdInner::Concrete(ConcreteId {
+                    suffix: Some(suffix),
+                    ..concrete_id.clone()
+                })
+                .intern(),
+            ),
+            GlobalIdInner::Tuple(_) | GlobalIdInner::FreshModule(_) => self,
         }
     }
 }

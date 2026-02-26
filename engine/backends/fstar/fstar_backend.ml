@@ -1964,6 +1964,31 @@ let fstar_headers (bo : BackendOptions.t) (mod_name : string) =
      else [ "open Core_models" ])
   |> String.concat ~sep:"\n"
 
+(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
+    `unsize_identity_typ` *)
+let unsize_as_identity =
+  (* Tells if a unsize should be treated as identity by type *)
+  let rec unsize_identity_typ = function
+    | TArray _ -> true
+    | TRef { typ; _ } -> unsize_identity_typ typ
+    | _ -> false
+  in
+  let visitor =
+    object
+      inherit [_] U.Visitors.map as super
+
+      method! visit_expr () e =
+        match e.e with
+        | App { f = { e = GlobalVar f; _ }; args = [ x ]; _ }
+          when Global_ident.eq_name Rust_primitives__unsize f
+               && unsize_identity_typ x.typ ->
+            let x = super#visit_expr () x in
+            { e with e = Ascription { e = x; typ = e.typ } }
+        | _ -> super#visit_expr () e
+    end
+  in
+  visitor#visit_item ()
+
 (** Translate as F* (the "legacy" printer) *)
 let translate_as_fstar m (bo : BackendOptions.t) ~(bundles : AST.item list list)
     (items : AST.item list) : Types.file list =
@@ -2041,30 +2066,10 @@ module TransformToInputLanguage =
   ]
   [@ocamlformat "disable"]
 
-(** Rewrites `unsize x` to `x <: τ` when `τ` is in the allowlist described by
-    `unsize_identity_typ` *)
-let unsize_as_identity =
-  (* Tells if a unsize should be treated as identity by type *)
-  let rec unsize_identity_typ = function
-    | TArray _ -> true
-    | TRef { typ; _ } -> unsize_identity_typ typ
-    | _ -> false
-  in
-  let visitor =
-    object
-      inherit [_] U.Visitors.map as super
-
-      method! visit_expr () e =
-        match e.e with
-        | App { f = { e = GlobalVar f; _ }; args = [ x ]; _ }
-          when Global_ident.eq_name Rust_primitives__unsize f
-               && unsize_identity_typ x.typ ->
-            let x = super#visit_expr () x in
-            { e with e = Ascription { e = x; typ = e.typ } }
-        | _ -> super#visit_expr () e
-    end
-  in
-  visitor#visit_item ()
+let post_process_items =
+  List.map ~f:unsize_as_identity
+  >> List.map ~f:unsize_as_identity
+  >> List.map ~f:U.Mappers.add_typ_ascription
 
 let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     AST.item list =
@@ -2081,10 +2086,5 @@ let apply_phases (bo : BackendOptions.t) (items : Ast.Rust.item list) :
     (* else *)
     items
   in
-  let items =
-    TransformToInputLanguage.ditems items
-    |> List.map ~f:unsize_as_identity
-    |> List.map ~f:unsize_as_identity
-    |> List.map ~f:U.Mappers.add_typ_ascription
-  in
+  let items = TransformToInputLanguage.ditems items |> post_process_items in
   items

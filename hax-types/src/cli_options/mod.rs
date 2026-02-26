@@ -191,6 +191,11 @@ pub enum Backend<E: Extension> {
     /// This is a command that regenerates code for the rust engine.
     #[clap(hide = true)]
     GenerateRustEngineNames,
+    /// A debugger for the Rust engine
+    Debugger {
+        #[arg(long, short)]
+        interactive: bool,
+    },
 }
 
 impl fmt::Display for Backend<()> {
@@ -533,6 +538,11 @@ pub struct ExtensibleOptions<E: Extension> {
     #[arg(long, default_value = "human")]
     pub message_format: MessageFormat,
 
+    /// Enables experimental FullDef format for items exported from the frontend
+    /// in the haxmeta file.
+    #[arg(long, env = "HAX_EXPERIMENTAL_FULL_DEF")]
+    pub experimental_full_def: bool,
+
     #[group(flatten)]
     pub extension: E::Options,
 }
@@ -584,6 +594,7 @@ pub struct ExporterOptions {
     /// When exporting, the driver sets `--cfg hax_backend_{backkend}`, thus we need this information.
     pub backend: Option<BackendName>,
     pub body_kinds: Vec<ExportBodyKind>,
+    pub experimental_full_def: bool,
 }
 
 #[derive_group(Serializers)]
@@ -597,6 +608,7 @@ pub enum BackendName {
     Lean,
     Rust,
     GenerateRustEngineNames,
+    Debugger,
 }
 
 impl fmt::Display for BackendName {
@@ -610,6 +622,7 @@ impl fmt::Display for BackendName {
             BackendName::Lean => "lean",
             BackendName::Rust => "rust",
             BackendName::GenerateRustEngineNames => "generate_rust_engine_names",
+            BackendName::Debugger => "debugger",
         };
         write!(f, "{name}")
     }
@@ -622,6 +635,7 @@ impl From<&Options> for ExporterOptions {
             force_cargo_build: options.force_cargo_build.clone(),
             backend: options.command.backend_name(),
             body_kinds: options.command.body_kinds(),
+            experimental_full_def: options.experimental_full_def,
         }
     }
 }
@@ -637,6 +651,7 @@ impl<E: Extension> From<&Backend<E>> for BackendName {
             Backend::Lean { .. } => BackendName::Lean,
             Backend::Rust { .. } => BackendName::Rust,
             Backend::GenerateRustEngineNames { .. } => BackendName::GenerateRustEngineNames,
+            Backend::Debugger { .. } => BackendName::Debugger,
         }
     }
 }

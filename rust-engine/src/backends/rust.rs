@@ -509,7 +509,6 @@ const _: () = {
                     docs![&expr.ty]
                 ]
                 .parens(),
-                ExprKind::Deref(expr) => docs!["*", expr],
                 ExprKind::Let { lhs, rhs, body } => docs![
                     "let",
                     space!(),
@@ -567,10 +566,12 @@ const _: () = {
                 ExprKind::Loop { .. } => {
                     todo!("loop with explicit state or with a label")
                 }
-                ExprKind::Break { value, label: None } => docs!["break", space!(), value],
+                ExprKind::Break {
+                    value, label: None, ..
+                } => docs!["break", space!(), value],
                 ExprKind::Break { .. } => todo!("break with a label"),
                 ExprKind::Return { value } => docs!["return", space!(), value],
-                ExprKind::Continue { label: None } => docs!["continue"],
+                ExprKind::Continue { label: None, .. } => docs!["continue"],
                 ExprKind::Continue { .. } => todo!("continue with a label"),
                 ExprKind::Closure {
                     params,
@@ -731,6 +732,7 @@ const _: () = {
                     name,
                     generics,
                     items,
+                    safety: _,
                 } => docs![
                     "trait",
                     space!(),
@@ -745,9 +747,7 @@ const _: () = {
                     of_trait: (trait_, trait_args),
                     items,
                     parent_bounds: _,
-                    safety,
                 } => docs![
-                    safety,
                     "impl",
                     self.generic_params(&generics.params),
                     space!(),
@@ -763,7 +763,7 @@ const _: () = {
                 ItemKind::Alias { name, item } => {
                     docs!["type", self.id_name(*name), reflow!(" = "), item, ";"]
                 }
-                ItemKind::Use { .. } => nil!(),
+                ItemKind::RustModule | ItemKind::Use { .. } => nil!(),
                 ItemKind::Quote { quote, .. } => docs![quote],
                 ItemKind::Error { .. } => todo!("resugaring"),
                 ItemKind::Resugared(resugared_item_kind) => docs![resugared_item_kind],
@@ -797,6 +797,7 @@ const _: () = {
                     docs![line_!(), body, line_!(),].nest(INDENT).braces()
                 ],
                 ImplItemKind::Resugared(_resugared_impl_item_kind) => todo!(),
+                ImplItemKind::Error(_) => todo!(),
             }
         }
         fn metadata(&self, metadata: &Metadata) -> DocBuilder<A> {
