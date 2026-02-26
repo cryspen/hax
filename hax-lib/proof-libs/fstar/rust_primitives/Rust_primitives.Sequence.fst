@@ -27,7 +27,7 @@ let seq_create #t (x: t) (n: usize): t_Seq t = Seq.create (v n) x
 let seq_len #t (s: t_Seq t): usize = mk_usize (Seq.length s)
 
 let seq_drain #t (s: t_Seq t) (b: usize) (e: usize{e >=. b && e <=. seq_len s}): t_Seq t & t_Seq t = 
-  Seq.slice s (v b) (v e), Seq.append (Seq.slice s 0 (v b)) (Seq.slice s (v e) (Seq.length s))
+  Seq.append (Seq.slice s 0 (v b)) (Seq.slice s (v e) (Seq.length s)), Seq.slice s (v b) (v e)
 
 let seq_remove #t (s: t_Seq t) (i: usize{v i >= 0 && i <. seq_len s}): t_Seq t & t = 
   Seq.append (Seq.slice s 0 (v i)) (Seq.slice s (1 + v i) (Seq.length s)), Rust_primitives.Slice.slice_index s i 
