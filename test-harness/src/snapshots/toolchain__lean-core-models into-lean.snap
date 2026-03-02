@@ -146,13 +146,11 @@ def test (_ : rust_primitives.hax.Tuple0) :
   let o3 : Bool ←
     (core_models.option.Impl.is_some_and i32 (i32 -> RustM Bool)
       (← (core_models.clone.Clone.clone (core_models.option.Option i32) o1))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.eq x (0 : i32)) : RustM Bool)));
+      (fun x => (do (x ==? (0 : i32)) : RustM Bool)));
   let o3 : Bool ←
     (core_models.option.Impl.is_none_or i32 (i32 -> RustM Bool)
       (← (core_models.clone.Clone.clone (core_models.option.Option i32) o1))
-      (fun x =>
-        (do (rust_primitives.hax.machine_int.eq x (0 : i32)) : RustM Bool)));
+      (fun x => (do (x ==? (0 : i32)) : RustM Bool)));
   let o4 : i32 ←
     (core_models.option.Impl.unwrap i32
       (core_models.option.Option.Some (0 : i32)));

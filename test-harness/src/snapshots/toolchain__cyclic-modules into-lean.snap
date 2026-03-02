@@ -366,7 +366,7 @@ namespace cyclic_modules.rec2_same_name
 
 @[spec]
 def f (x : i32) : RustM i32 := do
-  if (← (rust_primitives.hax.machine_int.gt x (0 : i32))) then do
+  if (← (x >? (0 : i32))) then do
     (cyclic_modules.rec1_same_name.f (← (x -? (1 : i32))))
   else do
     (pure (0 : i32))

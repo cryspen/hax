@@ -51,11 +51,126 @@ instance : ToNat u8 where
 
 infixl:58 " ^^^? " => fun a b => pure (HXor.hXor a b)
 infixl:60 " &&&? " => fun a b => pure (HAnd.hAnd a b)
+infixl:60 " |||? " => fun a b => pure (HOr.hOr a b)
+prefix:75 "~?"     => fun a => pure (~~~a)
 
-@[simp, spec, specset bv, hax_bv_decide]
-def CoreModels.Ops.Arith.Neg.neg {α} [Neg α] (x:α) : RustM α := pure (-x)
+/-
 
-abbrev core.cmp.PartialEq.eq {α} [BEq α] (a b : α) : RustM Bool := pure (BEq.beq a b)
+## Boolean comparisons
+
+Boolean comparisons that are prettyfied for the integer and boolean types.
+
+-/
+
+namespace rust_primitives.cmp
+
+def eq {α : Type} [BEq α] (a b : α) : RustM Bool := pure (a == b)
+def ne {α : Type} [BEq α] (a b : α) : RustM Bool := pure (a != b)
+def lt {α : Type} [LT α] [DecidableLT α] (a b : α) : RustM Bool :=
+  pure (decide (a < b))
+def le {α : Type} [LE α] [DecidableLE α] (a b : α) : RustM Bool :=
+  pure (decide (a <= b))
+def gt {α : Type} [LT α] [DecidableLT α] (a b : α) : RustM Bool :=
+  pure (decide (a > b))
+def ge {α : Type} [LE α] [DecidableLE α] (a b : α) : RustM Bool :=
+  pure (decide (a >= b))
+
+infixl:80 " ==? "  => rust_primitives.cmp.eq
+infixl:80 " !=? "  => rust_primitives.cmp.ne
+infixl:80 " <? "   => rust_primitives.cmp.lt
+infixl:80 " <=? "  => rust_primitives.cmp.le
+infixl:80 " >? "   => rust_primitives.cmp.gt
+infixl:80 " >=? "  => rust_primitives.cmp.ge
+
+attribute [spec 100, specset bv, hax_bv_decide]
+rust_primitives.cmp.eq
+rust_primitives.cmp.ne
+rust_primitives.cmp.lt
+rust_primitives.cmp.le
+rust_primitives.cmp.gt
+rust_primitives.cmp.ge
+
+open Lean in
+set_option hygiene false in
+macro "declare_comparison_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:term : command => do
+
+  let signed ← match s.raw[0].getKind with
+  | `signed => pure true
+  | `unsigned => pure false
+  | _ => throw .unsupportedSyntax
+
+  if signed then
+    return ← `(
+      namespace $typeName
+
+      @[specset int]
+      def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toInt == y.toInt) ⌝ ⦄ := by
+        mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
+
+      @[specset int]
+      def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toInt != y.toInt) ⌝ ⦄ := by
+        mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toInt_inj]
+
+      @[specset int]
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt < y.toInt) ⌝ ⦄ := by
+        mvcgen [lt]; simp [x.lt_iff_toInt_lt]
+
+      @[specset int]
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≤ y.toInt) ⌝ ⦄ := by
+        mvcgen [le]; simp [x.le_iff_toInt_le]
+
+      @[specset int]
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toInt > y.toInt ) ⌝ ⦄ := by
+        mvcgen [gt]; simp [y.lt_iff_toInt_lt]
+
+      @[specset int]
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toInt ≥ y.toInt) ⌝ ⦄ := by
+        mvcgen [ge]; simp [y.le_iff_toInt_le]
+
+      end $typeName
+    )
+  else return ← `(
+      namespace $typeName
+
+      @[specset int]
+      def eq_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ eq x y ⦃ ⇓ r => ⌜ r = (x.toNat == y.toNat) ⌝ ⦄ := by
+        mvcgen [eq]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
+
+      @[specset int]
+      def ne_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ne x y ⦃ ⇓ r => ⌜ r = (x.toNat != y.toNat) ⌝ ⦄ := by
+        mvcgen [ne]; rw [← @Bool.coe_iff_coe]; simp [x.toNat_inj]
+
+      @[specset int]
+      def lt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ lt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat < y.toNat) ⌝ ⦄ := by
+        mvcgen [lt]
+
+      @[specset int]
+      def le_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ le x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≤ y.toNat) ⌝ ⦄ := by
+        mvcgen [le]
+
+      @[specset int]
+      def gt_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ gt x y ⦃ ⇓ r => ⌜ r = decide (x.toNat > y.toNat ) ⌝ ⦄ := by
+        mvcgen [gt]
+
+      @[specset int]
+      def ge_spec (x y : $typeName) : ⦃ ⌜ True ⌝ ⦄ ge x y ⦃ ⇓ r => ⌜ r = decide (x.toNat ≥ y.toNat) ⌝ ⦄ := by
+        mvcgen [ge]
+
+      end $typeName
+  )
+
+declare_comparison_specs signed Int8 8
+declare_comparison_specs signed Int16 16
+declare_comparison_specs signed Int32 32
+declare_comparison_specs signed Int64 64
+declare_comparison_specs signed ISize System.Platform.numBits
+declare_comparison_specs unsigned UInt8 8
+declare_comparison_specs unsigned UInt16 16
+declare_comparison_specs unsigned UInt32 32
+declare_comparison_specs unsigned UInt64 64
+declare_comparison_specs unsigned USize64 64
+
+end rust_primitives.cmp
 
 set_option linter.unusedVariables false in
 
