@@ -609,17 +609,6 @@ opaque replace (T : Type) (dest : T) (src : T) :
 --  See [`std::mem::drop`]
 opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0 
 
---  See [`std::ptr::read`]
-def copy
-    (T : Type)
-    [trait_constr_copy_associated_type_i0 :
-      core_models.marker.Copy.AssociatedTypes
-      T]
-    [trait_constr_copy_i0 : core_models.marker.Copy T ]
-    (x : T) :
-    RustM T := do
-  (rust_primitives.mem.copy T x)
-
 --  See [`std::mem::take`]
 opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T) 
 
@@ -1886,13 +1875,10 @@ def Impl_2.next_hoisted (T : Type) (self : (Iter T)) :
       (0 : usize))) then
       (pure (rust_primitives.hax.Tuple2.mk self core_models.option.Option.None))
     else
-      let res : T ← (rust_primitives.sequence.seq_first T (Iter._0 self));
-      let self : (Iter T) :=
-        {self
-        with _0 := (← (rust_primitives.sequence.seq_slice T
-          (Iter._0 self)
-          (1 : usize)
-          (← (rust_primitives.sequence.seq_len T (Iter._0 self)))))};
+      let ⟨tmp0, out⟩ ←
+        (rust_primitives.sequence.seq_remove T (Iter._0 self) (0 : usize));
+      let self : (Iter T) := {self with _0 := tmp0};
+      let res : T := out;
       (pure (rust_primitives.hax.Tuple2.mk
         self
         (core_models.option.Option.Some res)));
@@ -1989,7 +1975,16 @@ def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
   (rust_primitives.hax.machine_int.eq (← (Impl.len T s)) (0 : usize))
 
 --  See [`std::slice::contains`]
-opaque Impl.contains (T : Type) (s : (RustSlice T)) (v : T) : RustM Bool 
+opaque Impl.contains
+    (T : Type)
+    [trait_constr_contains_associated_type_i0 :
+      core.cmp.PartialEq.AssociatedTypes
+      T
+      T]
+    [trait_constr_contains_i0 : core.cmp.PartialEq T T ]
+    (s : (RustSlice T))
+    (v : T) :
+    RustM Bool 
 
 --  See [`std::slice::copy_within`]
 opaque Impl.copy_within
@@ -2007,86 +2002,6 @@ opaque Impl.copy_within
 --  See [`std::slice::binary_search`]
 opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
     RustM (core_models.result.Result usize usize) 
-
---  See [`std::slice::copy_from_slice`]
-def Impl.copy_from_slice
-    (T : Type)
-    [trait_constr_copy_from_slice_associated_type_i0 :
-      core_models.marker.Copy.AssociatedTypes
-      T]
-    [trait_constr_copy_from_slice_i0 : core_models.marker.Copy T ]
-    (s : (RustSlice T))
-    (src : (RustSlice T)) :
-    RustM (RustSlice T) := do
-  let ⟨tmp0, out⟩ ← (rust_primitives.mem.replace (RustSlice T) s src);
-  let s : (RustSlice T) := tmp0;
-  let _ := out;
-  (pure s)
-
-@[spec]
-def
-      Impl.copy_from_slice.spec
-      (T : Type)
-      [trait_constr_copy_from_slice_associated_type_i0 :
-        core_models.marker.Copy.AssociatedTypes
-        T]
-      [trait_constr_copy_from_slice_i0 : core_models.marker.Copy T ]
-      (s : (RustSlice T))
-      (src : (RustSlice T)) :
-    Spec
-      (requires := do
-        (rust_primitives.hax.machine_int.eq
-          (← (Impl.len T s))
-          (← (Impl.len T src))))
-      (ensures := fun _ => pure True)
-      (Impl.copy_from_slice
-        (T : Type)
-        (s : (RustSlice T))
-        (src : (RustSlice T))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.copy_from_slice] <;> try grind
-}
-
---  See [`std::slice::clone_from_slice`]
-def Impl.clone_from_slice
-    (T : Type)
-    [trait_constr_clone_from_slice_associated_type_i0 :
-      core_models.clone.Clone.AssociatedTypes
-      T]
-    [trait_constr_clone_from_slice_i0 : core_models.clone.Clone T ]
-    (s : (RustSlice T))
-    (src : (RustSlice T)) :
-    RustM (RustSlice T) := do
-  let ⟨tmp0, out⟩ ← (rust_primitives.mem.replace (RustSlice T) s src);
-  let s : (RustSlice T) := tmp0;
-  let _ := out;
-  (pure s)
-
-@[spec]
-def
-      Impl.clone_from_slice.spec
-      (T : Type)
-      [trait_constr_clone_from_slice_associated_type_i0 :
-        core_models.clone.Clone.AssociatedTypes
-        T]
-      [trait_constr_clone_from_slice_i0 : core_models.clone.Clone T ]
-      (s : (RustSlice T))
-      (src : (RustSlice T)) :
-    Spec
-      (requires := do
-        (rust_primitives.hax.machine_int.eq
-          (← (Impl.len T s))
-          (← (Impl.len T src))))
-      (ensures := fun _ => pure True)
-      (Impl.clone_from_slice
-        (T : Type)
-        (s : (RustSlice T))
-        (src : (RustSlice T))) := {
-  pureRequires := by constructor; mvcgen <;> try grind
-  pureEnsures := by constructor; intros; mvcgen <;> try grind
-  contract := by mvcgen[Impl.clone_from_slice] <;> try grind
-}
 
 --  See [`std::slice::split_at`]
 def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :

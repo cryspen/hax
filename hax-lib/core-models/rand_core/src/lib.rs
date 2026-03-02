@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 pub trait RngCore {
     // Required methods
     fn next_u32(&mut self) -> u32;

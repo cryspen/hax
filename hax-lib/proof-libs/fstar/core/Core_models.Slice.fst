@@ -25,10 +25,18 @@ let impl__is_empty (#v_T: Type0) (s: t_Slice v_T) : bool = (impl__len #v_T s <: 
 
 /// See [`std::slice::contains`]
 assume
-val impl__contains': #v_T: Type0 -> s: t_Slice v_T -> v: v_T -> bool
+val impl__contains':
+    #v_T: Type0 ->
+    {| i0: Core_models.Cmp.t_PartialEq v_T v_T |} ->
+    s: t_Slice v_T ->
+    v: v_T
+  -> bool
 
 unfold
-let impl__contains (#v_T: Type0) = impl__contains' #v_T
+let impl__contains
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
+     = impl__contains' #v_T #i0
 
 /// See [`std::slice::copy_within`]
 assume
@@ -63,9 +71,7 @@ let impl__copy_from_slice
     : Prims.Pure (t_Slice v_T)
       (requires (impl__len #v_T s <: usize) =. (impl__len #v_T src <: usize))
       (fun _ -> Prims.l_True) =
-  let (tmp0: t_Slice v_T), (out: t_Slice v_T) = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
-  let s:t_Slice v_T = tmp0 in
-  let _:t_Slice v_T = out in
+  let s:t_Slice v_T = Rust_primitives.Slice.slice_clone_from_slice #v_T s src in
   s
 
 /// See [`std::slice::clone_from_slice`]
@@ -76,9 +82,7 @@ let impl__clone_from_slice
     : Prims.Pure (t_Slice v_T)
       (requires (impl__len #v_T s <: usize) =. (impl__len #v_T src <: usize))
       (fun _ -> Prims.l_True) =
-  let (tmp0: t_Slice v_T), (out: t_Slice v_T) = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
-  let s:t_Slice v_T = tmp0 in
-  let _:t_Slice v_T = out in
+  let s:t_Slice v_T = Rust_primitives.Slice.slice_clone_from_slice #v_T s src in
   s
 
 /// See [`std::slice::split_at`]
@@ -269,7 +273,7 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize
     f_get
     =
     fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
-      if self.Core_models.Ops.Range.f_start <. (impl__len #v_T slice <: usize)
+      if self.Core_models.Ops.Range.f_start <=. (impl__len #v_T slice <: usize)
       then
         Core_models.Option.Option_Some
         (Rust_primitives.Slice.slice_slice #v_T
@@ -323,7 +327,7 @@ let impl_6 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t
     =
     fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
       if
-        self.Core_models.Ops.Range.f_start <. self.Core_models.Ops.Range.f_end &&
+        self.Core_models.Ops.Range.f_start <=. self.Core_models.Ops.Range.f_end &&
         self.Core_models.Ops.Range.f_end <=. (impl__len #v_T slice <: usize)
       then
         Core_models.Option.Option_Some

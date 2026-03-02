@@ -3,5 +3,6 @@
 
 import Hax.Rust_primitives
 import Hax.MissingCore.Clone
+import Hax.MissingCore.Cmp
 import Hax.MissingCore.Marker
 import Hax.MissingCore.Num

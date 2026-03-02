@@ -84,11 +84,6 @@ pub fn replace<T>(dest: &mut T, src: T) -> T {
 #[hax_lib::opaque]
 pub fn drop<T>(_x: T) {}
 
-/// See [`std::ptr::read`]
-pub fn copy<T: Copy>(x: &T) -> T {
-    rust_primitives::mem::copy(x)
-}
-
 /// See [`std::mem::take`]
 #[hax_lib::opaque]
 pub unsafe fn take<T>(x: &mut T) -> T {
@@ -123,20 +118,4 @@ mod manually_drop {
     pub struct ManuallyDrop<T: ?Sized> {
         value: T,
     }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::testing::Inject;
-    use proptest::prelude::*;
-
-    // Commented out: rust_primitives::mem::copy is unimplemented (needs Copy trait bound)
-    // proptest! {
-    //     #[test]
-    //     fn test_copy(x in any::<u8>()) {
-    //         let model = x.inject();
-    //         let copied = super::copy(&model);
-    //         prop_assert_eq!(copied, model);
-    //     }
-    // }
 }

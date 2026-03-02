@@ -260,5 +260,45 @@ mod tests {
         fn test_int_eq(x in any::<u8>(), y in any::<u8>()) {
             prop_assert_eq!(<u8 as PartialEq<u8>>::eq(&x.inject(), &y.inject()), std::cmp::PartialEq::eq(&x, &y));
         }
+
+        #[test]
+        fn test_int_neq(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::Neq::neq(&x.inject(), &y.inject()),
+                x != y
+            );
+        }
+
+        #[test]
+        fn test_int_lt(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::lt(&x.inject(), &y.inject()),
+                x < y
+            );
+        }
+
+        #[test]
+        fn test_int_le(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::le(&x.inject(), &y.inject()),
+                x <= y
+            );
+        }
+
+        #[test]
+        fn test_int_gt(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::gt(&x.inject(), &y.inject()),
+                x > y
+            );
+        }
+
+        #[test]
+        fn test_int_ge(x in any::<u8>(), y in any::<u8>()) {
+            prop_assert_eq!(
+                super::PartialOrdDefaults::ge(&x.inject(), &y.inject()),
+                x >= y
+            );
+        }
     }
 }
