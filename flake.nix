@@ -241,10 +241,13 @@
           };
           default = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
+            packages = defaultPackages;
+          };
+          fstar = pkgs.mkShell {
+            inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             shellHook = ''
               export HAX_HOME=$(git rev-parse --show-toplevel)
-              export HAX_PROOF_LIBS_HOME="$HAX_HOME/proof-libs/fstar"
-              export HAX_LIBS_HOME="$HAX_HOME/hax-lib"
+              export FSTAR_HOME="${fstar}"
             '';
             packages = defaultPackages ++ [ fstar ];
           };
