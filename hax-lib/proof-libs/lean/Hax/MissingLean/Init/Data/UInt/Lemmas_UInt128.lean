@@ -1,5 +1,7 @@
 import Hax.MissingLean.Lean.Tactic.Simp.BuiltinSimpProcs.UInt
 
+-- Adapted from Init/Data/UInt/Lemmas.lean from the Lean v4.29.0-rc1 source code
+
 set_option autoImplicit true
 open Std
 

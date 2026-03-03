@@ -3,6 +3,8 @@ import Hax.MissingLean.Init.Data.UInt.Lemmas_UInt128
 import Hax.MissingLean.Lean.Tactic.Simp.BuiltinSimpProcs.SInt
 import Hax.MissingLean.Lean.Tactic.Simp.BuiltinSimpProcs.UInt
 
+-- Adapted from Init/Data/SInt/Lemmas.lean from the Lean v4.29.0-rc1 source code
+
 declare_int_theorems Int128 128
 
 theorem Int128.toInt.inj {x y : Int128} (h : x.toInt = y.toInt) : x = y := Int128.toBitVec.inj (BitVec.eq_of_toInt_eq h)

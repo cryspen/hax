@@ -3,7 +3,7 @@ import Lean.Meta.Tactic.Simp.BuiltinSimprocs.SInt
 
 set_option autoImplicit true
 
--- Adapted from Init/Data/SInt/Basic.lean in the Lean 4 source code (Int64 section), with 64 replaced by 128.
+-- Adapted from Init/Data/SInt/Basic.lean from the Lean v4.29.0-rc1 source code
 
 structure Int128 where
   ofUInt128 :: toUInt128 : UInt128

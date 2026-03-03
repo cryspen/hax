@@ -1,4 +1,6 @@
 
+-- Adapted from Init/Prelude.lean from the Lean v4.29.0-rc1 source code
+
 abbrev UInt128.size : Nat := 340282366920938463463374607431768211456
 
 structure UInt128 where
