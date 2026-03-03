@@ -1,3 +1,5 @@
+import Hax.MissingLean.Init.Data.SInt.Basic_Int128
+import Hax.MissingLean.Init.Data.UInt.Basic
 
 open Lean in
 set_option hygiene false in
@@ -16,17 +18,17 @@ macro "additional_int_decls" typeName:ident width:term : command => do `(
   @[grind .]
   theorem addOverflow_iff {a b : $typeName} : addOverflow a b ↔
       a.toInt + b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt + b.toInt < - 2 ^ ($width - 1) := by
-    simp [addOverflow, BitVec.saddOverflow]
+    simp [addOverflow, BitVec.saddOverflow] <;> rfl
 
   @[grind .]
   theorem subOverflow_iff {a b : $typeName} : subOverflow a b ↔
       a.toInt - b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt - b.toInt < - 2 ^ ($width - 1) := by
-    simp [subOverflow, BitVec.ssubOverflow]
+    simp [subOverflow, BitVec.ssubOverflow] <;> rfl
 
   @[grind .]
   theorem mulOverflow_iff {a b : $typeName} : mulOverflow a b ↔
       a.toInt * b.toInt ≥ 2 ^ ($width - 1) ∨ a.toInt * b.toInt < - 2 ^ ($width - 1) := by
-    simp [mulOverflow, BitVec.smulOverflow]
+    simp [mulOverflow, BitVec.smulOverflow] <;> rfl
 
   @[grind =]
   theorem toInt_add_of_not_addOverflow {x y : $typeName} (h : ¬ addOverflow x y) :
@@ -47,6 +49,7 @@ additional_int_decls Int8 8
 additional_int_decls Int16 16
 additional_int_decls Int32 32
 additional_int_decls Int64 64
+additional_int_decls Int128 128
 additional_int_decls ISize System.Platform.numBits
 
 open Lean in
@@ -58,6 +61,7 @@ macro "declare_missing_int_conversions" : command => do
     (`Int16, 16),
     (`Int32, 32),
     (`Int64, 64),
+    (`Int128, 128),
     (`ISize, 0)
   ]
   let dst : List (Name × Nat) := [
@@ -65,6 +69,7 @@ macro "declare_missing_int_conversions" : command => do
     (`UInt16, 16),
     (`UInt32, 32),
     (`UInt64, 64),
+    (`UInt128, 128),
     (`USize, 0),
   ]
   for (srcName, srcIdx) in src do
