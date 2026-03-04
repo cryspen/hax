@@ -379,21 +379,21 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
     namespace $typeName
 
       /-- Specification for rust addition -/
-      @[spec]
+      @[specset int]
       theorem haxAdd_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `addOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x +? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX + y.$toX ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Add.add]; $grind
 
       /-- Specification for rust subtraction -/
-      @[spec]
+      @[specset int]
       theorem haxSub_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `subOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x -? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX - y.$toX ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Sub.sub]; $grind
 
       /-- Specification for rust multiplication -/
-      @[spec]
+      @[specset int]
       theorem haxMul_spec {x y : $typeName}
           (h : ¬ $(mkIdent (typeName.getId ++ `mulOverflow)) x y) :
           ⦃ ⌜ True ⌝ ⦄ (x *? y) ⦃ ⇓ r => ⌜ r.$toX = x.$toX * y.$toX ⌝ ⦄ := by
@@ -402,14 +402,14 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   if signed then
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Specification for rust negation for signed integers-/
-      @[spec]
+      @[specset int]
       theorem haxNeg_spec {x : $typeName} (hx : x ≠ $minValue) :
           ⦃ ⌜ True ⌝ ⦄ (-? x) ⦃ ⇓ r => ⌜ r.toInt = - x.toInt ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Neg.neg]
         rw [toInt_neg_of_ne_intMin hx]
 
       /-- Specification for rust multiplication for signed integers-/
-      @[spec]
+      @[specset int]
       theorem haxDiv_spec {x y : $typeName}
           (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tdiv y.toInt ⌝ ⦄ := by
@@ -420,7 +420,7 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
         | inr hx => apply toInt_div_of_ne_right x y hx
 
       /-- Specification for rust remainder for signed integers -/
-      @[spec]
+      @[specset int]
       theorem haxRem_spec (x y : $typeName)
           (hx : x ≠ $minValue ∨ y ≠ -1) (hy : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toInt = x.toInt.tmod y.toInt ⌝ ⦄ :=  by
@@ -431,13 +431,13 @@ macro "declare_Hax_int_ops_spec" s:(&"signed" <|> &"unsigned") typeName:ident wi
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
       /-- Specification for rust multiplication for unsigned integers -/
-      @[spec]
+      @[specset int]
       theorem haxDiv_spec (x y : $typeName) (h : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x /? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat / y.toNat ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Div.div]
 
       /-- Specification for rust remainder for unsigned integers -/
-      @[spec]
+      @[specset int]
       theorem haxRem_spec (x y : $typeName) (h : ¬ y = 0) :
           ⦃ ⌜ True ⌝ ⦄ (x %? y) ⦃ ⇓ r => ⌜ r.toNat = x.toNat % y.toNat ⌝ ⦄ := by
         mvcgen [rust_primitives.ops.arith.Rem.rem]
