@@ -120,9 +120,9 @@ open Lean.Order
 
 instance {α} : PartialOrder (RustM α) := inferInstanceAs (PartialOrder (FlatOrder RustM.div))
 
-noncomputable instance {α} : CCPO (RustM α) := inferInstanceAs (CCPO (FlatOrder RustM.div))
+instance {α} : CCPO (RustM α) := inferInstanceAs (CCPO (FlatOrder RustM.div))
 
-noncomputable instance : MonoBind RustM where
+instance : MonoBind RustM where
   bind_mono_left h := by
     cases h
     · exact FlatOrder.rel.bot
