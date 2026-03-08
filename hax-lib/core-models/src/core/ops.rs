@@ -82,6 +82,10 @@ pub mod bit {
         type Output;
         fn bitand(self, rhs: Rhs) -> Self::Output;
     }
+    trait BitOr<Rhs = Self> {
+        type Output;
+        fn bitor(self, rhs: Rhs) -> Self::Output;
+    }
 }
 
 pub mod control_flow {
