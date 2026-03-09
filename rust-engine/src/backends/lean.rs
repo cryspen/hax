@@ -1893,7 +1893,7 @@ const _: () = {
                         ]
                         .group(),
                         line!(),
-                        self.monad_extract_simplify(body),
+                        self.monad_extract(body),
                     ]
                     .group()
                     .nest(INDENT),
