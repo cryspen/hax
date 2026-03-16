@@ -1,6 +1,6 @@
 import Hax.rust_primitives.RustM
 import Hax.rust_primitives.USize64
-import Hax.rust_primitives.num
+import Hax.rust_primitives.ops
 
 open Std.Do
 set_option mvcgen.warning false

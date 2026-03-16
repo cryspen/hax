@@ -1,5 +1,5 @@
 import Hax.rust_primitives.RustM
-import Hax.rust_primitives.num
+import Hax.rust_primitives.ops
 
 structure rust_primitives.sequence.Seq α where
   val : Array α
@@ -27,4 +27,4 @@ def rust_primitives.sequence.seq_slice
   if s ≤ e && e ≤ .ofNat seq.val.size then
     pure ⟨seq.val[s.toNat:e.toNat].toArray, by grind⟩
   else
-    .fail .undef
+    .fail .arrayOutOfBounds
