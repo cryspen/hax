@@ -20,13 +20,12 @@ def findGoalForMVar (mvarId : MVarId) : TacticM (Option MVarId) := do
     -- No goal contains the mvar — it was either assigned or only appears in side conditions.
     -- If still unassigned, assign it to a default value.
     unless ← mvarId.isAssignedOrDelayedAssigned do
+      let (_, mvarId) ← mvarId.intros
       let mvarType ← mvarId.getType
       trace `Hax.hax_construct_pure fun () =>
         m!"findGoalForMVar: mvar {mkMVar mvarId} unassigned, assigning default of type {mvarType}"
-      let defaultVal ← withAssignableSyntheticOpaque do
-        mkDefault mvarType
-      withAssignableSyntheticOpaque do
-        mvarId.assign defaultVal
+      let defaultVal ← mkDefault mvarType
+      mvarId.assign defaultVal
     return none
   if goals.length > 1 then
     throwError m!"hax_construct_pure: multiple goals contain the crucial metavariable. \
@@ -61,7 +60,7 @@ def haxConstructPure (mvarId : MVarId) : TacticM Unit := do
     let goal ← substVars goal
     trace `Hax.hax_construct_pure fun () => m!"Goal after `subst`: {goal}"
     -- Assign the meta-variable by reflexivity
-    withAssignableSyntheticOpaque goal.applyRfl
+    goal.applyRfl
     pruneSolvedGoals
 where
   /-- Collect all machine integer variables that should be converted into integers. We want to
@@ -106,49 +105,47 @@ partial def haxPurifyStep (crucialMVar : MVarId) (fuel : Nat := 100) : TacticM U
 
     -- TODO: Layer 1 — meta-level match handling (Step 4 of the plan)
 
-    -- Layer 2 — try @[purify] lemmas (single step only; recursion outside try/catch)
-    -- Replace the synthetic opaque crucial mvar with a natural one so that `apply` can
-    -- freely unify the postcondition (e.g., `r = ?p` unifies with `r = if c then ?pa else ?pb`).
-    let savedBeforePurify ← saveState
-    let crucialMVarType ← crucialMVar.getType
-    let natMVar ← mkFreshExprMVar crucialMVarType MetavarKind.natural
-    withAssignableSyntheticOpaque do
-      crucialMVar.assign natMVar
+    -- Layer 2 — try @[purify] lemmas via `mspec_no_bind`
     let purifyDecls := purifyExt.getState env
     for declName in purifyDecls do
       let saved ← saveState
       try
-        let newGoals ← goal.apply (← mkConstWithFreshMVarLevels declName)
         let otherGoals := allGoals.filter (· != goal)
-        setGoals (newGoals ++ otherGoals)
+        setGoals (goal :: otherGoals)
+        let declNameSyntax ← `($(mkIdent declName))
+        evalTactic (← `(tactic| mspec_no_bind $declNameSyntax))
         pruneSolvedGoals
         trace `Hax.hax_construct_pure fun () =>
-          m!"haxPurifyStep: applied @[purify] lemma `{declName}`, new goals: {newGoals}"
+          m!"haxPurifyStep: applied @[purify] lemma `{declName}` via mspec"
       catch e =>
         let msg ← e.toMessageData.toString
         trace `Hax.hax_construct_pure fun () =>
           m!"haxPurifyStep: @[purify] lemma `{declName}` failed: {msg}"
         saved.restore
         continue
-      -- Purify lemma succeeded — the natural mvar has been assigned (e.g., ?nat := if c then ?pa else ?pb).
-      -- Find the new crucial mvars from the assigned expression and recurse on each.
-      -- Only consider goals whose type is a Triple (Hoare triple), skipping type/instance goals.
-      let assignedExpr ← instantiateMVars natMVar
-      let candidateMVars := (assignedExpr.collectMVars {}).result
+      -- Purify lemma succeeded. Find all Triple/SPred.entails goals produced by mspec
+      -- and recurse on each, isolating the goal so the recursive call sees only it.
       let currentGoals ← getGoals
       let tripleGoals ← currentGoals.filterM fun g => do
         let ty ← instantiateMVars (← g.getType)
-        -- Strip forall binders to handle goals like `∀ h, ⦃...⦄ ... ⦃...⦄`
         let body := ty.getForallBody
         return body.isAppOf ``Std.Do.Triple || body.isAppOf ``Std.Do.SPred.entails
-      for newMVar in candidateMVars do
-        let hasTripleGoal ← tripleGoals.anyM (fun g => liftM (goalContainsMVar newMVar g))
-        if hasTripleGoal then
-          haxPurifyStep newMVar (fuel - 1)
+          || body.isAppOf ``Std.Tactic.Do.MGoalEntails
+      trace `Hax.hax_construct_pure fun () =>
+        m!"triple Goals: {tripleGoals}"
+      let mut otherGoals := currentGoals.filter (fun g => !tripleGoals.contains g)
+      trace `Hax.hax_construct_pure fun () =>
+        m!"other Goals: {otherGoals}"
+      for tripleGoal in tripleGoals do
+        let ty ← instantiateMVars (← tripleGoal.getType)
+        let goalMVars := (ty.collectMVars {}).result
+        setGoals [tripleGoal]
+        for mvarId in goalMVars do
+          haxPurifyStep mvarId (fuel - 1)
+        otherGoals := otherGoals ++ (← getGoals)
+      setGoals otherGoals
+      pruneSolvedGoals
       return
-
-    -- No purify lemma succeeded — revert the natural mvar assignment before falling through.
-    savedBeforePurify.restore
 
     -- Layer 3 — mvcgen fallback: one step of straight-line code
     do
@@ -156,7 +153,7 @@ partial def haxPurifyStep (crucialMVar : MVarId) (fuel : Nat := 100) : TacticM U
       try
         let otherGoals := allGoals.filter (· != goal)
         setGoals (goal :: otherGoals)
-        evalTactic (← `(tactic| mvcgen -leave -trivial (stepLimit := some 1)))
+        evalTactic (← `(tactic| hax_mvcgen -leave -trivial (stepLimit := some 1)))
         let newGoals ← getGoals
         -- Check that mvcgen actually made progress (goal types changed)
         let newGoalTypes ← newGoals.mapM (·.getType)
@@ -199,7 +196,7 @@ def elabHaxConstructPure : Tactic := fun _stx => do
   let u ← mkFreshLevelMVar
   let type : Q(Type) ← mkFreshExprMVar (mkSort u) MetavarKind.natural Name.anonymous
   let mvarP : Q($type → Prop) ← mkFreshExprMVar q($type → Prop)
-  let mvarVal : Q($type) ← mkFreshExprSyntheticOpaqueMVar type
+  let mvarVal : Q($type) ← mkFreshExprMVar type MetavarKind.natural
   replaceMainGoal (← goal.apply q(@Subtype.mk $type $mvarP $mvarVal))
   -- Recursively purify the program
   haxPurifyStep mvarVal.mvarId!
