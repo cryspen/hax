@@ -182,7 +182,12 @@ partial def purifyStep (pureMVar : MVarId) (fuel : Nat := 100) : TacticM Unit :=
         evalTactic (← `(tactic| mleave))
         finalizePureMVar pureMVar
         return
-      -- mvcgen step succeeded — recurse outside try/catch
+      -- mvcgen step succeeded — check that the mvar wasn't duplicated across goals, then recurse
+      let postMvcgenGoals ← getGoals
+      let mvarGoals ← postMvcgenGoals.filterM (fun g => liftM (goalContainsMVar pureMVar g))
+      if mvarGoals.length > 1 then
+        throwError m!"hax_construct_pure: mvcgen split the pure mvar across multiple goals. \
+          Previous goal was:\n{goalType}"
       purifyStep pureMVar (fuel - 1)
 
 /-- The `hax_construct_pure` tactic should be applied to goals of the form
