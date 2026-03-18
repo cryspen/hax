@@ -328,7 +328,13 @@ let driver_for_rust_engine () : unit =
   in
   Concrete_ident.ImplInfoStore.init
     (Concrete_ident_generated.impl_infos @ query.impl_infos);
-  let response = driver_for_rust_engine_inner query in
+  let response, diagnostics =
+    Diagnostics.capture (fun () -> driver_for_rust_engine_inner query)
+  in
+  List.iter
+    ~f:(fun diag ->
+      Diagnostic (Diagnostics.to_thir_diagnostic diag) |> Hax_io.write)
+    diagnostics;
   send_debug_strings ();
   Hax_io.write_json ([%yojson_of: Rust_engine_types.response] response);
   Hax_io.write_json ([%yojson_of: Types.from_engine] Exit)
