@@ -79,8 +79,11 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
       if s < e
       then
         match (← body init s) with
+        -- Rust: `return`
         | .Break (.Break res ) => pure (ControlFlow.Break res)
+        -- Rust: `break`
         | .Break (.Continue ⟨ ⟨ ⟩, res⟩) => pure (ControlFlow.Continue res)
+        -- Rust: `continue`
         | .Continue res => fold_range_return (s + 1) e inv res body pureInv
       else
         pure (ControlFlow.Continue init)

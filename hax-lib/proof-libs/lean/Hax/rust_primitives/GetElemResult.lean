@@ -1,5 +1,5 @@
 import Hax.rust_primitives.RustM
-import Hax.rust_primitives.num
+import Hax.rust_primitives.ops
 import Hax.rust_primitives.sequence
 import Hax.rust_primitives.hax.array
 import Hax.Tactic.SpecSet

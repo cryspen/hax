@@ -61,7 +61,7 @@ structure Tuple8 (α0 α1 α2 α3 α4 α5 α6 α7 : Type) where
   _6 : α6
   _7 : α7
 
-structure Tuple9 (α0 α1 α2 α3 α4 α5 α6 α7 α8 α9 : Type) where
+structure Tuple9 (α0 α1 α2 α3 α4 α5 α6 α7 α8 : Type) where
   _0 : α0
   _1 : α1
   _2 : α2

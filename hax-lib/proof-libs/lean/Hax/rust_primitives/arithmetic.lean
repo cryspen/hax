@@ -1,5 +1,5 @@
 import Hax.rust_primitives.RustM
-import Hax.rust_primitives.num
+import Hax.rust_primitives.ops
 
 open Lean in
 set_option hygiene false in

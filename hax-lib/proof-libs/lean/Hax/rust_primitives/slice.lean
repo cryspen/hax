@@ -47,4 +47,4 @@ def rust_primitives.slice.slice_slice
   if s ≤ e && e ≤ .ofNat seq.val.size then
     pure ⟨seq.val[s.toNat:e.toNat].toArray, by grind⟩
   else
-    .fail .undef
+    .fail .arrayOutOfBounds

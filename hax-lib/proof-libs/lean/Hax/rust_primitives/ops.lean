@@ -272,7 +272,12 @@ macro "declare_Hax_int_ops" s:(&"signed" <|> &"unsigned") typeName:ident width:t
           else if y = 0 then .fail .divisionByZero
           else pure (x % y)
 
-      instance : rust_primitives.ops.arith.Neg $typeName where neg := fun x => pure (- x)
+      /-- Negation on signed integers. Panics on overflow (when `x` is `minValue`). -/
+      instance : rust_primitives.ops.arith.Neg $typeName where
+        neg x :=
+          if x = $(mkIdent (typeName.getId ++ `minValue))
+          then .fail .integerOverflow
+          else pure (- x)
     )
   else -- unsigned
     cmds := cmds.append $ ← Syntax.getArgs <$> `(
