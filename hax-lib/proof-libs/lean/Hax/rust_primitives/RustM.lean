@@ -112,6 +112,15 @@ instance instWPMonad : WPMonad RustM (.except Error .pure) where
   wp_pure := by intros; ext Q; rfl
   wp_bind x f := by ext Q; cases x <;> rfl
 
+@[spec]
+theorem fail_spec {α : Type} (e : Error) (Q : PostCond _ _) (h : ExceptConds.true ⊢ₑ Q.snd) :
+  ⦃ ⌜ True ⌝ ⦄ (RustM.fail e : RustM α) ⦃ Q ⦄  := by
+  refine Triple.iff.mpr ?_
+  mleave
+  simp only [ExceptConds.entails, ExceptConds.fst_true, SPred.entails_nil, SPred.down_pure,
+    forall_const, and_true] at h
+  exact h e
+
 section Order
 
 open Lean.Order

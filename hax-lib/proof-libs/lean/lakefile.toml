@@ -11,6 +11,11 @@ maxSynthPendingDepth = 3
 [[lean_lib]]
 name = "Hax"
 
+[[lean_lib]]
+name = "HaxTest"
+srcDir = "test"
+globs = ["HaxTest"]
+
 [[require]]
 name = "Qq"
 git = "https://github.com/leanprover-community/quote4"
