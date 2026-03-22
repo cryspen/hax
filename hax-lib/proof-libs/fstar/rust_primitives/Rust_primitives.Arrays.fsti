@@ -8,7 +8,14 @@ open FStar.List.Tot.Properties
 val list_create (#a: Type) (n: nat) (x: a): Tot (l:list a{FStar.List.Tot.length l == n})
 
 /// Helper: create a list of `n` elements using a function
-val list_init (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a): Tot (l:list a{FStar.List.Tot.length l == n})
+let rec list_init (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a): Tot (l:list a{FStar.List.Tot.length l == n}) (decreases n)
+  = if n = 0 then []
+    else f 0 :: list_init (n-1) (fun (i:nat{i < n-1}) -> f (i+1))
+
+/// Lemma: indexing into list_init
+val list_init_index (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a) (k: nat{k < n}):
+  Lemma (ensures FStar.List.Tot.index (list_init n f) k == f k)
+  [SMTPat (FStar.List.Tot.index (list_init n f) k)]
 
 /// Helper: extract a sublist from index `i` to `j`
 val list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}):
@@ -73,10 +80,9 @@ let to_list (#t:Type) (s: t_Slice t): list t = s
 val map_array (#a #b: Type) #n (arr: t_Array a n) (f: a -> b): t_Array b n
 
 /// Creates an array of size `l` using a function `f`
-val createi #t (l:usize) (f:(u:usize{u <. l} -> t))
-    : Pure (t_Array t l)
-      (requires True)
-      (ensures (fun res -> (forall i. FStar.List.Tot.index res (v i) == f i)))
+let createi #t (l:usize) (f:(u:usize{u <. l} -> t))
+    : t_Array t l
+  = list_init (v l) (fun i -> f (sz i))
 
 unfold let map #a #b #p
   (f:(x:a{p x} -> b))

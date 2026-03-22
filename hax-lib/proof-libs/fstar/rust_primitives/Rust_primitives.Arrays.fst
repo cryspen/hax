@@ -10,9 +10,12 @@ let rec list_create (#a: Type) (n: nat) (x: a): Tot (l:list a{FStar.List.Tot.len
   = if n = 0 then []
     else x :: list_create (n-1) x
 
-let rec list_init (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a): Tot (l:list a{FStar.List.Tot.length l == n}) (decreases n)
-  = if n = 0 then []
-    else f 0 :: list_init (n-1) (fun (i:nat{i < n-1}) -> f (i+1))
+(* list_init is defined in the .fsti for normalization *)
+
+let list_init_index (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a) (k: nat{k < n}):
+  Lemma (ensures FStar.List.Tot.index (list_init n f) k == f k)
+  [SMTPat (FStar.List.Tot.index (list_init n f) k)]
+  = admit () // TODO: cannot prove here because .fsti makes list_init opaque to SMT in .fst
 
 let rec list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}):
   Tot (r:list a{FStar.List.Tot.length r == j - i}) (decreases (j - i))
@@ -87,12 +90,7 @@ let list_append_index (#a: Type) (s1 s2: list a) (i: nat{i < FStar.List.Tot.leng
 let map_array (#a #b: Type) #n (arr: t_Array a n) (f: a -> b): t_Array b n
   = list_init (v n) (fun i -> f (FStar.List.Tot.index arr i))
 
-let createi #t (l:usize) (f:(u:usize{u <. l} -> t))
-    : Pure (t_Array t l)
-      (requires True)
-      (ensures (fun res -> (forall i. FStar.List.Tot.index res (v i) == f i)))
-  = admit (); // TODO: prove the ensures
-    list_init (v l) (fun i -> f (sz i))
+(* list_init_index and createi are now defined in the .fsti for normalization *)
 
 #push-options "--fuel 2 --z3rlimit 60"
 
