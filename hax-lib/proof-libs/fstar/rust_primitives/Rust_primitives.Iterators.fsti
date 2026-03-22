@@ -25,10 +25,10 @@ val foldi_range_step_by  (#n:inttype) (#acc_t:Type)
 /// Predicate that asserts a slice `s_chunk` is exactly the nth chunk
 /// of the sequence `s`
 let nth_chunk_of #t
-  (s: Seq.seq t)
-  (s_chunk: Seq.seq t {Seq.length s_chunk > 0})
-  (chunk_nth: nat {chunk_nth < Seq.length s / Seq.length s_chunk})
-  =  Seq.slice s (Seq.length s_chunk * chunk_nth) (Seq.length s_chunk * (chunk_nth + 1))
+  (s: list t)
+  (s_chunk: list t {FStar.List.Tot.length s_chunk > 0})
+  (chunk_nth: nat {chunk_nth < FStar.List.Tot.length s / FStar.List.Tot.length s_chunk})
+  =  Rust_primitives.Arrays.list_slice s (FStar.List.Tot.length s_chunk * chunk_nth) (FStar.List.Tot.length s_chunk * (chunk_nth + 1))
   == s_chunk
 
 val foldi_chunks_exact
@@ -40,7 +40,7 @@ val foldi_chunks_exact
   (f: ( acc:acc_t
       -> it: (usize & t_Array t chunk_len) {
               let (i, s_chunk) = it in
-                v i < Seq.length s / v chunk_len
+                v i < FStar.List.Tot.length s / v chunk_len
               /\ nth_chunk_of s s_chunk (v i)
               /\ inv acc i
         }
@@ -53,7 +53,7 @@ val fold_chunks_exact
                  (#t:Type) (#acc_t:Type)
                  (#inv:(acc_t -> Type))
                  (s:t_Slice t)
-                 (chunk_len:usize{v chunk_len > 0}) // /\ Seq.length s % v chunk_len == 0})
+                 (chunk_len:usize{v chunk_len > 0}) // /\ FStar.List.Tot.length s % v chunk_len == 0})
                  (acc:acc_t{inv acc})
                  (f: (acc:acc_t -> it:t_Array t chunk_len{inv acc}
                        -> acc':acc_t{inv acc'}))
@@ -67,8 +67,8 @@ val foldi_slice  (#t:Type) (#acc_t:Type)
                  (f: (acc:acc_t -> it:(usize & t){
                                   let (i,item) = it in
                                   v i >= 0 /\
-                                  v i < Seq.length sl /\
-                                  Seq.index sl (v i) == item /\
+                                  v i < FStar.List.Tot.length sl /\
+                                  FStar.List.Tot.index sl (v i) == item /\
                                   inv acc i}
                        -> acc':acc_t{inv acc' (fst it +! sz 1)}))
                  : res:acc_t{inv res (length sl)}

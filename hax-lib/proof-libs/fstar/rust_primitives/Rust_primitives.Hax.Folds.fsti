@@ -8,10 +8,10 @@ open FStar.Mul
 /// Predicate that asserts a slice `s_chunk` is exactly the nth chunk
 /// of the sequence `s`
 let nth_chunk_of #t
-  (s: Seq.seq t)
-  (s_chunk: Seq.seq t {Seq.length s_chunk > 0})
-  (chunk_nth: nat {chunk_nth < Seq.length s / Seq.length s_chunk})
-  =  Seq.slice s (Seq.length s_chunk * chunk_nth) (Seq.length s_chunk * (chunk_nth + 1))
+  (s: list t)
+  (s_chunk: list t {FStar.List.Tot.length s_chunk > 0})
+  (chunk_nth: nat {chunk_nth < FStar.List.Tot.length s / FStar.List.Tot.length s_chunk})
+  =  Rust_primitives.Arrays.list_slice s (FStar.List.Tot.length s_chunk * chunk_nth) (FStar.List.Tot.length s_chunk * (chunk_nth + 1))
   == s_chunk
 
 /// Fold function that is generated for `for` loops iterating on
@@ -20,12 +20,12 @@ val fold_enumerated_chunked_slice
   (#t: Type0) (#acc_t: Type0)
   (chunk_size: usize {v chunk_size > 0})
   (s: t_Slice t)
-  (inv: acc_t -> (i:usize{v i <= Seq.length s / v chunk_size}) -> Type0)
+  (inv: acc_t -> (i:usize{v i <= FStar.List.Tot.length s / v chunk_size}) -> Type0)
   (init: acc_t {inv init (sz 0)})
   (f: ( acc:acc_t
       -> item:(usize & t_Slice t) {
         let (i, s_chunk) = item in
-          v i < Seq.length s / v chunk_size
+          v i < FStar.List.Tot.length s / v chunk_size
         /\ length s_chunk == chunk_size
         /\ nth_chunk_of s s_chunk (v i)
         /\ inv acc i
@@ -35,7 +35,7 @@ val fold_enumerated_chunked_slice
       }
       )
   )
-  : result: acc_t {inv result (mk_int (Seq.length s / v chunk_size))}
+  : result: acc_t {inv result (mk_int (FStar.List.Tot.length s / v chunk_size))}
 
 /// Fold function that is generated for `for` loops iterating on
 /// `s.chunks_exact(chunk_size)`-like iterators
@@ -65,7 +65,7 @@ val fold_enumerated_slice
   (s: t_Slice t)
   (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
   (init: acc_t {inv init (sz 0)})
-  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) /\ inv acc  (fst i)}
+  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == FStar.List.Tot.index s (v (fst i)) /\ inv acc  (fst i)}
                  -> acc':acc_t    {v (fst i) < v (length s) /\ inv acc' (fst i)}))
   : result: acc_t {inv result (length s)}
 
@@ -74,7 +74,7 @@ val fold_enumerated_slice_return
   (s: t_Slice t)
   (inv: acc_t -> (i:usize{v i <= v (length s)}) -> Type0)
   (init: acc_t {inv init (sz 0)})
-  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == Seq.index s (v (fst i)) (*/\ inv acc  (fst i)*)}
+  (f: (acc:acc_t -> i:(usize & t) {v (fst i) < v (length s) /\ snd i == FStar.List.Tot.index s (v (fst i)) (*/\ inv acc  (fst i)*)}
                  -> Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret (unit & acc_t)) (acc':acc_t)    (*{v (fst i) < v (length s) /\ inv acc' (fst i)}*)))
   : result: Core_models.Ops.Control_flow.t_ControlFlow ret acc_t(* {inv result (length s)} *)
 

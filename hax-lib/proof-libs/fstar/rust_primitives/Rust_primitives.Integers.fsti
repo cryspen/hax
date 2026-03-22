@@ -1,6 +1,7 @@
 module Rust_primitives.Integers
 
 open FStar.Mul
+open Rust_primitives.BitOps
 
 #set-options "--max_fuel 0 --max_ifuel 1 --z3rlimit 20"
 
@@ -43,7 +44,7 @@ let signed t = match t with
 
 type uinttype = t:inttype{unsigned t}
 
-val size_bits:n:nat{n == 32 \/ n == 64}
+include Rust_primitives.SizeBits
 
 let bits t = match t with
   | U8 | I8 -> 8 
@@ -158,6 +159,16 @@ let to_int128 (x:i128) : FStar.Int128.t  = FStar.Int128.int_to_t (v x)
 
 let modulus (t:inttype) = pow2 (bits t)
 
+(* Convert a range_t value to its unsigned (two's complement) representation *)
+let to_uint (t:inttype) (x: range_t t): (r:nat{r < pow2 (bits t)}) =
+  if x >= 0 then x else x + pow2 (bits t)
+
+(* Convert an unsigned value back to a range_t *)
+let from_uint (t:inttype) (x: nat{x < pow2 (bits t)}): range_t t =
+  if unsigned t then x
+  else if x >= pow2 (bits t - 1) then x - pow2 (bits t)
+  else x
+
 (* Wrap-around modulo: wraps into [-p/2; p/2[ *)
 let op_At_Percent (v:int) (p:int{p>0 /\ p%2=0}) : Tot int =
   let m = v % p in if m >= p/2 then m - p else m
@@ -262,7 +273,10 @@ let ones (#t:inttype) : n:int_t t =
 let zero (#t:inttype) : n:int_t t =
   mk_int #t 0
 
-val lognot: #t:inttype -> int_t t -> int_t t
+[@@"opaque_to_smt"]
+let lognot (#t:inttype) (a:int_t t) : int_t t =
+  if unsigned t then mk_int (pow2 (bits t) - 1 - v a)
+  else mk_int (-1 - v a)
 val lognot_lemma: #t:inttype -> a:int_t t -> Lemma
   (lognot #t zero == ones /\
    lognot #t ones == zero /\
@@ -271,10 +285,9 @@ val lognot_lemma: #t:inttype -> a:int_t t -> Lemma
    (unsigned t ==> v (lognot a)  = pow2 (bits t) - 1 - v a)
    )
 
-val logxor: #t:inttype
-  -> int_t t
-  -> int_t t
-  -> int_t t
+[@@"opaque_to_smt"]
+let logxor (#t:inttype) (a b: int_t t): int_t t =
+  mk_int (from_uint t (nat_logxor (to_uint t (v a)) (to_uint t (v b)) (bits t)))
  
 val logxor_lemma: #t:inttype -> a:int_t t -> b:int_t t -> Lemma
   (a `logxor` a == zero /\
@@ -286,10 +299,9 @@ val logxor_lemma: #t:inttype -> a:int_t t -> b:int_t t -> Lemma
    ones `logxor` a == lognot a /\
    a `logxor` ones == lognot a)
     
-val logand: #t:inttype
-  -> int_t t
-  -> int_t t
-  -> int_t t
+[@@"opaque_to_smt"]
+let logand (#t:inttype) (a b: int_t t): int_t t =
+  mk_int (from_uint t (nat_logand (to_uint t (v a)) (to_uint t (v b)) (bits t)))
 
 val logand_lemma: #t:inttype -> a:int_t t -> b:int_t t ->
   Lemma (logand a zero == zero /\
@@ -309,10 +321,9 @@ val logand_mask_lemma: #t:inttype
          mk_int (v a % pow2 m))
   [SMTPat (logand #t a (sub #t (mk_int #t (pow2 m)) (mk_int #t 1)))]
 
-val logor: #t:inttype
-  -> int_t t
-  -> int_t t
-  -> int_t t
+[@@"opaque_to_smt"]
+let logor (#t:inttype) (a b: int_t t): int_t t =
+  mk_int (from_uint t (nat_logor (to_uint t (v a)) (to_uint t (v b)) (bits t)))
 
 val logor_disjoint: #t:inttype -> a:int_t t -> b:int_t t -> m:nat{m < bits t} ->
   Lemma
@@ -343,8 +354,12 @@ val shift_right_lemma (#t:inttype) (#t':inttype)
     Lemma (v (shift_right #t #t' a b) == (v a / pow2 (v b)))
           [SMTPat (shift_right #t #t' a b)]
     
-val shift_left (#t:inttype) (#t':inttype)
+#push-options "--z3version 4.13.3"
+[@@"opaque_to_smt"]
+let shift_left (#t:inttype) (#t':inttype)
     (a:int_t t) (b:shiftval t t') : int_t t
+    = mk_int #t ((v a * pow2 (v b)) @%. t)
+#pop-options
 
 val shift_left_positive_lemma (#t:inttype) (#t':inttype)
     (a:int_t t) (b:shiftval t t'):
@@ -353,15 +368,19 @@ val shift_left_positive_lemma (#t:inttype) (#t':inttype)
           [SMTPat (shift_left #t #t' a b)]
 
 
-val rotate_right: #t:inttype{unsigned t} -> #t':inttype
-  -> a:int_t t
-  -> rotval t t'
-  -> int_t t
+[@@"opaque_to_smt"]
+let rotate_right (#t:inttype{unsigned t}) (#t':inttype) (a:int_t t) (b:rotval t t') : int_t t =
+  let n = bits t in
+  let s = v b in
+  let ua = v a in
+  mk_int (from_uint t (nat_logor (ua / pow2 s) ((ua % pow2 s) * pow2 (n - s)) n))
 
-val rotate_left: #t:inttype{unsigned t} -> #t':inttype
-  -> a:int_t t
-  -> rotval t t'
-  -> int_t t
+[@@"opaque_to_smt"]
+let rotate_left (#t:inttype{unsigned t}) (#t':inttype) (a:int_t t) (b:rotval t t') : int_t t =
+  let n = bits t in
+  let s = v b in
+  let ua = v a in
+  mk_int (from_uint t (nat_logor ((ua * pow2 s) % pow2 n) (ua / pow2 (n - s)) n))
 
 let shift_right_i (#t:inttype) (#t':inttype) (s:shiftval t t') (u:int_t t) : int_t t = shift_right u s
 
