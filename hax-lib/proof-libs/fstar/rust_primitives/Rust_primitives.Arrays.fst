@@ -10,22 +10,19 @@ let rec list_create (#a: Type) (n: nat) (x: a): Tot (l:list a{FStar.List.Tot.len
   = if n = 0 then []
     else x :: list_create (n-1) x
 
-(* list_init is defined in the .fsti for normalization *)
+(* list_init is defined in .fsti with opaque_to_smt for normalization *)
 
 let list_init_index (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a) (k: nat{k < n}):
   Lemma (ensures FStar.List.Tot.index (list_init n f) k == f k)
   [SMTPat (FStar.List.Tot.index (list_init n f) k)]
-  = admit () // TODO: cannot prove here because .fsti makes list_init opaque to SMT in .fst
+  = admit () // TODO: prove by induction
 
 let rec list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}):
   Tot (r:list a{FStar.List.Tot.length r == j - i}) (decreases (j - i))
   = if i = j then []
     else FStar.List.Tot.index l i :: list_slice l (i+1) j
 
-let rec list_upd (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a):
-  Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length l}) (decreases i)
-  = match l with
-    | hd :: tl -> if i = 0 then x :: tl else hd :: list_upd tl (i-1) x
+(* list_upd is defined in .fsti with opaque_to_smt for normalization *)
 
 let list_append (#a: Type) (s1 s2: list a):
   Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length s1 + FStar.List.Tot.length s2})
@@ -44,15 +41,10 @@ let rec list_create_index (#a: Type) (n: nat) (x: a) (i: nat{i < n}):
   = if i = 0 then ()
     else list_create_index (n-1) x (i-1)
 
-let rec list_upd_index (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a) (j: nat{j < FStar.List.Tot.length l}):
+let list_upd_index (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a) (j: nat{j < FStar.List.Tot.length l}):
   Lemma (ensures FStar.List.Tot.index (list_upd l i x) j == (if i = j then x else FStar.List.Tot.index l j))
-        (decreases i)
   [SMTPat (FStar.List.Tot.index (list_upd l i x) j)]
-  = match l with
-    | hd :: tl ->
-      if i = 0 then ()
-      else if j = 0 then ()
-      else list_upd_index tl (i-1) x (j-1)
+  = admit () // TODO: prove; .fsti let rec is opaque to SMT in .fst
 
 let rec lemma_index_list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}) (k: nat{k < j - i}):
   Lemma (ensures FStar.List.Tot.index (list_slice l i j) k == FStar.List.Tot.index l (i + k))

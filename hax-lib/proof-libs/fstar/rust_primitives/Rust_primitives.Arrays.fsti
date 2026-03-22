@@ -7,7 +7,8 @@ open FStar.List.Tot.Properties
 /// Helper: create a list of `n` copies of `x`
 val list_create (#a: Type) (n: nat) (x: a): Tot (l:list a{FStar.List.Tot.length l == n})
 
-/// Helper: create a list of `n` elements using a function
+/// Helper: create a list of `n` elements using a function (transparent for normalization)
+[@@"opaque_to_smt"]
 let rec list_init (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a): Tot (l:list a{FStar.List.Tot.length l == n}) (decreases n)
   = if n = 0 then []
     else f 0 :: list_init (n-1) (fun (i:nat{i < n-1}) -> f (i+1))
@@ -21,9 +22,12 @@ val list_init_index (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a) (k: nat{k < n})
 val list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}):
   Tot (r:list a{FStar.List.Tot.length r == j - i})
 
-/// Helper: update the element at index `i`
-val list_upd (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a):
-  Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length l})
+/// Helper: update the element at index `i` (transparent for normalization)
+[@@"opaque_to_smt"]
+let rec list_upd (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a):
+  Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length l}) (decreases i)
+  = match l with
+    | hd :: tl -> if i = 0 then x :: tl else hd :: list_upd tl (i-1) x
 
 /// Helper: append two lists, preserving length info in the return type
 val list_append (#a: Type) (s1 s2: list a):
