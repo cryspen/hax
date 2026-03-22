@@ -18,6 +18,39 @@ val list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List
 val list_upd (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a):
   Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length l})
 
+/// Helper: append two lists, preserving length info in the return type
+val list_append (#a: Type) (s1 s2: list a):
+  Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length s1 + FStar.List.Tot.length s2})
+
+/// Lemma: list_slice at empty range returns []
+val list_slice_empty (#a: Type) (l: list a) (i: nat{i <= FStar.List.Tot.length l}):
+  Lemma (list_slice l i i == [])
+  [SMTPat (list_slice l i i)]
+
+/// Lemma: indexing into list_create returns the value
+val list_create_index (#a: Type) (n: nat) (x: a) (i: nat{i < n}):
+  Lemma (FStar.List.Tot.index (list_create n x) i == x)
+  [SMTPat (FStar.List.Tot.index (list_create n x) i)]
+
+/// Lemma: indexing into list_upd at the updated position returns the new value,
+/// and at other positions returns the original value
+val list_upd_index (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a) (j: nat{j < FStar.List.Tot.length l}):
+  Lemma (FStar.List.Tot.index (list_upd l i x) j == (if i = j then x else FStar.List.Tot.index l j))
+  [SMTPat (FStar.List.Tot.index (list_upd l i x) j)]
+
+/// Lemma: indexing into list_slice
+val list_slice_index (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}) (k: nat{k < j - i}):
+  Lemma (FStar.List.Tot.index (list_slice l i j) k == FStar.List.Tot.index l (i + k))
+  [SMTPat (FStar.List.Tot.index (list_slice l i j) k)]
+
+/// Lemma: indexing into list_append
+val list_append_index (#a: Type) (s1 s2: list a) (i: nat{i < FStar.List.Tot.length s1 + FStar.List.Tot.length s2}):
+  Lemma (FStar.List.Tot.index (list_append s1 s2) i ==
+    (if i < FStar.List.Tot.length s1
+     then FStar.List.Tot.index s1 i
+     else FStar.List.Tot.index s2 (i - FStar.List.Tot.length s1)))
+  [SMTPat (FStar.List.Tot.index (list_append s1 s2) i)]
+
 /// Rust slices and arrays are represented as lists
 type t_Slice t = s:list t{FStar.List.Tot.length s <= max_usize}
 type t_Array t (l:usize) = s: list t { FStar.List.Tot.length s == v l }
