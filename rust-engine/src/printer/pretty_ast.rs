@@ -287,7 +287,7 @@ pub trait PrettyAstExt<A: 'static>: Sized {
     }
 }
 
-impl<A: 'static + Clone, P: PrettyAst<A>> PrettyAstExt<A> for P {}
+impl<A: 'static + Clone + From<Span>, P: PrettyAst<A>> PrettyAstExt<A> for P {}
 
 /// Generate a dispatcher macro that forwards a token to specialised macros.
 macro_rules! make_cases_macro {
@@ -364,7 +364,7 @@ macro_rules! mk {
             /// Note that using `install_pretty_helpers!` will produce macro
             /// that implicitely use `self` as allocator. Take a look at a
             /// printer in the [`backends`] module for an example.
-            pub trait PrettyAst<A: 'static + Clone>: Sized + HasContextualSpan {
+            pub trait PrettyAst<A: 'static + Clone + From<Span>>: Sized + HasContextualSpan {
                 /// A name for this instance of `PrettyAst`.
                 /// Useful for diagnostics and debugging.
                 const NAME: &'static str;
@@ -420,7 +420,7 @@ macro_rules! mk {
 
             $(
                 method_deny_list!($ty{
-                    impl<A: 'static + Clone, P: PrettyAst<A>> ToDocument<P, A> for $ty {
+                    impl<A: 'static + Clone + From<Span>, P: PrettyAst<A>> ToDocument<P, A> for $ty {
                         fn to_document(&self, printer: &P) -> DocBuilder<A> {
                             span_handling!($ty{
                                 let printer = &(printer.with_span(self.span()));
@@ -430,7 +430,11 @@ macro_rules! mk {
                             //   Here is the place we (will) take care of spans, etc.
                             #[allow(deprecated)]
                             let print = <P as PrettyAst<A>>::[<$ty:snake>];
-                            print(printer, self)
+                            let doc = print(printer, self);
+                            span_handling!($ty{
+                                let doc = doc.annotate(A::from(self.span()));
+                            });
+                            doc
                         }
                     }
                 });
