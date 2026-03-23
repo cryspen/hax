@@ -7,8 +7,10 @@ open FStar.List.Tot.Properties
 /// Helper: create a list of `n` copies of `x`
 val list_create (#a: Type) (n: nat) (x: a): Tot (l:list a{FStar.List.Tot.length l == n})
 
-/// Helper: create a list of `n` elements using a function (transparent for normalization)
-[@@"opaque_to_smt"]
+/// Helper: create a list of `n` elements using a function
+/// OPTION A (current): let rec in .fsti; val list_init_index in .fsti, admit in .fst
+/// OPTION B (alternative): val in .fsti; let rec in .fst; let rec list_init_index in .fst (provable)
+/// TODO: investigate which option works better for ML-KEM verification
 let rec list_init (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a): Tot (l:list a{FStar.List.Tot.length l == n}) (decreases n)
   = if n = 0 then []
     else f 0 :: list_init (n-1) (fun (i:nat{i < n-1}) -> f (i+1))
@@ -22,8 +24,10 @@ val list_init_index (#a: Type) (n: nat) (f: (i:nat{i < n}) -> a) (k: nat{k < n})
 val list_slice (#a: Type) (l: list a) (i: nat) (j: nat{i <= j /\ j <= FStar.List.Tot.length l}):
   Tot (r:list a{FStar.List.Tot.length r == j - i})
 
-/// Helper: update the element at index `i` (transparent for normalization)
-[@@"opaque_to_smt"]
+/// Helper: update the element at index `i`
+/// OPTION A (current): let rec in .fsti; val list_upd_index in .fsti, admit in .fst
+/// OPTION B (alternative): val in .fsti; let rec in .fst; let rec list_upd_index in .fst (provable)
+/// TODO: investigate which option works better for ML-KEM verification
 let rec list_upd (#a: Type) (l: list a) (i: nat{i < FStar.List.Tot.length l}) (x: a):
   Tot (r:list a{FStar.List.Tot.length r == FStar.List.Tot.length l}) (decreases i)
   = match l with
