@@ -151,7 +151,8 @@ structure Foo where
   core_models.cmp.Eq Foo :=
   by constructor <;> exact Inhabited.default
 
-def CONSTANT : Foo := RustM.of_isOk (do (Foo.mk (field := (3 : u8)))) (by rfl)
+def CONSTANT : Foo :=
+  RustM.of_isOk (do (pure (Foo.mk (field := (3 : u8))))) (by rfl)
 
 @[spec]
 def numeric (_ : rust_primitives.hax.Tuple0) :
