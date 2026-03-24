@@ -505,11 +505,15 @@ const _: () = {
         /// Turns an expression of type `RustM T` into one of type `T` (out of the monad), providing
         /// reflexivity as a proof witness.
         fn monad_extract<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
-            if let ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) = expr.kind()
+            if let ExprKind::App { head, args, .. } = expr.kind()
+                && let ExprKind::GlobalId(PURE) = head.kind()
+                && let [pure_expr] = &args[..]
+                && let ExprKind::Literal(_) | ExprKind::GlobalId(_) | ExprKind::LocalId(_) =
+                    pure_expr.kind()
             {
                 // Pure values are displayed directly. Note that constructors, while pure, may
                 // contain sub-expressions that are not, so they must be wrapped in a do-block
-                docs![expr]
+                docs![pure_expr]
             } else {
                 // All other expressions are wrapped in a do-block, and extracted out of the monad
                 docs![
@@ -521,18 +525,6 @@ const _: () = {
                 ]
                 .group()
                 .nest(INDENT)
-            }
-        }
-
-        /// When possible, unwraps the `pure` surrounding an expression to simplify it
-        fn monad_extract_simplify<A: 'static + Clone>(&self, expr: &Expr) -> DocBuilder<A> {
-            if let ExprKind::App { head, args, .. } = expr.kind()
-                && let ExprKind::GlobalId(PURE) = head.kind()
-                && let [pure_expr] = &args[..]
-            {
-                self.monad_extract(pure_expr)
-            } else {
-                self.monad_extract(expr)
             }
         }
 
@@ -592,7 +584,7 @@ const _: () = {
                         .group(),
                         line!(),
                         if params.is_empty() {
-                            self.monad_extract_simplify(body)
+                            self.monad_extract(body)
                         } else {
                             docs![body]
                         },
@@ -869,7 +861,7 @@ const _: () = {
         fn generic_value(&self, generic_value: &GenericValue) -> DocBuilder<A> {
             match generic_value {
                 GenericValue::Ty(ty) => docs![ty],
-                GenericValue::Expr(expr) => docs![self.monad_extract(expr)].parens(),
+                GenericValue::Expr(expr) => docs![expr].parens(),
                 GenericValue::Lifetime => unreachable_by_invariant!(Drop_references),
             }
         }
@@ -1893,7 +1885,7 @@ const _: () = {
                         ]
                         .group(),
                         line!(),
-                        self.monad_extract_simplify(body),
+                        self.monad_extract(body),
                     ]
                     .group()
                     .nest(INDENT),
@@ -1974,7 +1966,7 @@ const _: () = {
                         softline!(),
                         ":=",
                         softline!(),
-                        self.monad_extract_simplify(body)
+                        self.monad_extract(body)
                     ]
                 }
                 ImplItemKind::Error(err) => docs!(err),
