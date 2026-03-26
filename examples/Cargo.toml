@@ -5,6 +5,7 @@ members = [
     "lean_barrett",
     "lean_adc",
     "lean_tutorial",
+    "loop_equivalence",
     "limited-order-book",
     "sha256",
     "barrett",

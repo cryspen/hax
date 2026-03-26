@@ -1,0 +1,11 @@
+name = "loop_equivalence"
+version = "0.1.0"
+defaultTargets = ["loop_equivalence"]
+
+[[lean_lib]]
+name = "loop_equivalence"
+roots = ["extraction.loop_equivalence"]
+
+[[require]]
+name = "Hax"
+path = "../../../../hax-lib/proof-libs/lean"
