@@ -85,6 +85,10 @@ function extract_lean() {
 
     sed -i 's/import Hax/import Hax.core_models.prologue\nimport Hax.Tactic.HaxSpec/g' "$OUT"
 
+    # Fix incorrect `core.` namespace references that should be `core_models.`
+    sed -i 's/\bcore\.marker\./core_models.marker./g' "$OUT"
+    sed -i 's/\bcore\.cmp\./core_models.cmp./g' "$OUT"
+
     cp "$OUT" ../proof-libs/lean/Hax/core_models/core_models.lean
 }
 

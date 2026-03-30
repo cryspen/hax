@@ -5,6 +5,11 @@ set_option mvcgen.warning false
 open rust_primitives.hax
 open Std.Do
 
+-- Filtered from extraction; define here for use by TryInto instance
+namespace core_models.array
+structure TryFromSliceError where
+end core_models.array
+
 namespace core_models.convert
 
 @[reducible] instance {α : Type} {n : usize} : TryInto.AssociatedTypes (RustSlice α) (RustArray α n) where

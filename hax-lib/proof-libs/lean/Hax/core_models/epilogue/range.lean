@@ -1,5 +1,16 @@
 import Hax.core_models.core_models
 
+-- ops.range is filtered from extraction; define here for use by epilogue
+namespace core_models.ops.range
+structure RangeTo (T : Type) where
+  _end : T
+structure RangeFrom (T : Type) where
+  start : T
+structure Range (T : Type) where
+  start : T
+  _end : T
+end core_models.ops.range
+
 open core_models.ops.range
 open Std.Do
 
