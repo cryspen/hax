@@ -94,6 +94,8 @@ instance instWP : WP RustM (.except Error (.except PUnit .pure)) :=
 instance instWPMonad : WPMonad RustM (.except Error (.except PUnit .pure)) :=
   inferInstanceAs (WPMonad (ExceptT Error Option) _)
 
+def holds (x: RustM Prop) : Prop := ⦃ ⌜ True ⌝ ⦄ x ⦃ ⇓ p => ⌜ p ⌝ ⦄
+
 section Order
 
 open Lean.Order

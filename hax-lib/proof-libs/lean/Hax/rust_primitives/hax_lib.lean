@@ -27,11 +27,8 @@ abbrev prop.Prop := Prop
 @[spec] def prop.constructors.ne      (a b : Prop) : RustM Prop := pure (a ≠ b)
 
 @[spec]
-def prop.constructors.forall {α : Type}
-    (p : α → RustM Prop)
-    (pureP : {p' : α -> Prop // ∀ a, ⦃⌜ True ⌝⦄ p a ⦃⇓ r => ⌜ r = (p' a) ⌝⦄} := by
-      set_option hax_mvcgen.specset "int" in hax_construct_pure <;> grind) : RustM Prop :=
-  pure (∀ a : α, pureP.val a)
+def prop.constructors.forall {α : Type} (p : α → RustM Prop) : RustM Prop :=
+  pure (∀ a : α, (p a).holds)
 
 @[spec]
 def prop.constructors.exists {α : Type}

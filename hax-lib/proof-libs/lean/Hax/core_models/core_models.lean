@@ -63,6 +63,9 @@ class Clone (Self : Type)
 instance Impl (T : Type) : Clone T where
   clone := fun (self : T) => do (pure self)
 
+attribute [spec] Clone.clone
+
+
 end core_models.clone
 
 
@@ -3815,4 +3818,3 @@ def Impl.get
   (SliceIndex.get I (RustSlice T) index s)
 
 end core_models.slice
-
