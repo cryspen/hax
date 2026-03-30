@@ -1,3 +1,3 @@
 import Hax.core_models.core_models
 
--- ops.deref is filtered from extraction; nothing to annotate here
+attribute [spec] core_models.ops.deref.Impl core_models.ops.deref.Deref.deref

@@ -13,6 +13,29 @@ set_option mvcgen.warning false
 set_option linter.unusedVariables false
 
 
+namespace core_models.array
+
+--  See [`std::array::TryFromSliceError`]
+structure TryFromSliceError where
+  -- no fields
+
+--  See [`std::array::as_slice`]
+@[spec]
+def Impl_23.as_slice (T : Type) (N : usize) (s : (RustArray T N)) :
+    RustM (RustSlice T) := do
+  (rust_primitives.slice.array_as_slice T (N) s)
+
+end core_models.array
+
+
+namespace core_models.array.iter
+
+structure IntoIter (T : Type) (N : usize) where
+  _0 : (rust_primitives.sequence.Seq T)
+
+end core_models.array.iter
+
+
 namespace core_models.borrow
 
 --  See [`std::borrow::Borrow`]
@@ -574,11 +597,51 @@ end core_models.num.error
 
 namespace core_models.num
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+@[spec]
+def Impl_6.wrapping_add (x : u8) (y : u8) : RustM u8 := do
+  (rust_primitives.arithmetic.wrapping_add_u8 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_6.wrapping_sub (x : u8) (y : u8) : RustM u8 := do
+  (rust_primitives.arithmetic.wrapping_sub_u8 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_6.wrapping_mul (x : u8) (y : u8) : RustM u8 := do
+  (rust_primitives.arithmetic.wrapping_mul_u8 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_6.pow (x : u8) (exp : u32) : RustM u8 := do
+  (rust_primitives.arithmetic.pow_u8 x exp)
+
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_6.leading_zeros (x : u8) : RustM u32
 
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_6.ilog2 (x : u8) : RustM u32
+
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+@[spec]
+def Impl_7.wrapping_add (x : u16) (y : u16) : RustM u16 := do
+  (rust_primitives.arithmetic.wrapping_add_u16 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_7.wrapping_sub (x : u16) (y : u16) : RustM u16 := do
+  (rust_primitives.arithmetic.wrapping_sub_u16 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_7.wrapping_mul (x : u16) (y : u16) : RustM u16 := do
+  (rust_primitives.arithmetic.wrapping_mul_u16 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_7.pow (x : u16) (exp : u32) : RustM u16 := do
+  (rust_primitives.arithmetic.pow_u16 x exp)
 
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_7.leading_zeros (x : u16) : RustM u32
@@ -586,11 +649,51 @@ opaque Impl_7.leading_zeros (x : u16) : RustM u32
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_7.ilog2 (x : u16) : RustM u32
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+@[spec]
+def Impl_8.wrapping_add (x : u32) (y : u32) : RustM u32 := do
+  (rust_primitives.arithmetic.wrapping_add_u32 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_8.wrapping_sub (x : u32) (y : u32) : RustM u32 := do
+  (rust_primitives.arithmetic.wrapping_sub_u32 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_8.wrapping_mul (x : u32) (y : u32) : RustM u32 := do
+  (rust_primitives.arithmetic.wrapping_mul_u32 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_8.pow (x : u32) (exp : u32) : RustM u32 := do
+  (rust_primitives.arithmetic.pow_u32 x exp)
+
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_8.leading_zeros (x : u32) : RustM u32
 
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_8.ilog2 (x : u32) : RustM u32
+
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+@[spec]
+def Impl_9.wrapping_add (x : u64) (y : u64) : RustM u64 := do
+  (rust_primitives.arithmetic.wrapping_add_u64 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_9.wrapping_sub (x : u64) (y : u64) : RustM u64 := do
+  (rust_primitives.arithmetic.wrapping_sub_u64 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_9.wrapping_mul (x : u64) (y : u64) : RustM u64 := do
+  (rust_primitives.arithmetic.wrapping_mul_u64 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_9.pow (x : u64) (exp : u32) : RustM u64 := do
+  (rust_primitives.arithmetic.pow_u64 x exp)
 
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_9.leading_zeros (x : u64) : RustM u32
@@ -598,11 +701,51 @@ opaque Impl_9.leading_zeros (x : u64) : RustM u32
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_9.ilog2 (x : u64) : RustM u32
 
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+@[spec]
+def Impl_10.wrapping_add (x : u128) (y : u128) : RustM u128 := do
+  (rust_primitives.arithmetic.wrapping_add_u128 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_10.wrapping_sub (x : u128) (y : u128) : RustM u128 := do
+  (rust_primitives.arithmetic.wrapping_sub_u128 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_10.wrapping_mul (x : u128) (y : u128) : RustM u128 := do
+  (rust_primitives.arithmetic.wrapping_mul_u128 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_10.pow (x : u128) (exp : u32) : RustM u128 := do
+  (rust_primitives.arithmetic.pow_u128 x exp)
+
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_10.leading_zeros (x : u128) : RustM u32
 
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_10.ilog2 (x : u128) : RustM u32
+
+--  See [`std::primitive::u8::wrapping_add`] (and similar for other unsigned integer types)
+@[spec]
+def Impl_11.wrapping_add (x : usize) (y : usize) : RustM usize := do
+  (rust_primitives.arithmetic.wrapping_add_usize x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_11.wrapping_sub (x : usize) (y : usize) : RustM usize := do
+  (rust_primitives.arithmetic.wrapping_sub_usize x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_11.wrapping_mul (x : usize) (y : usize) : RustM usize := do
+  (rust_primitives.arithmetic.wrapping_mul_usize x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_11.pow (x : usize) (exp : u32) : RustM usize := do
+  (rust_primitives.arithmetic.pow_usize x exp)
 
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_11.leading_zeros (x : usize) : RustM u32
@@ -610,11 +753,49 @@ opaque Impl_11.leading_zeros (x : usize) : RustM u32
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_11.ilog2 (x : usize) : RustM u32
 
+@[spec]
+def Impl_12.wrapping_add (x : i8) (y : i8) : RustM i8 := do
+  (rust_primitives.arithmetic.wrapping_add_i8 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_12.wrapping_sub (x : i8) (y : i8) : RustM i8 := do
+  (rust_primitives.arithmetic.wrapping_sub_i8 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_12.wrapping_mul (x : i8) (y : i8) : RustM i8 := do
+  (rust_primitives.arithmetic.wrapping_mul_i8 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_12.pow (x : i8) (exp : u32) : RustM i8 := do
+  (rust_primitives.arithmetic.pow_i8 x exp)
+
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_12.leading_zeros (x : i8) : RustM u32
 
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_12.ilog2 (x : i8) : RustM u32
+
+@[spec]
+def Impl_13.wrapping_add (x : i16) (y : i16) : RustM i16 := do
+  (rust_primitives.arithmetic.wrapping_add_i16 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_13.wrapping_sub (x : i16) (y : i16) : RustM i16 := do
+  (rust_primitives.arithmetic.wrapping_sub_i16 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_13.wrapping_mul (x : i16) (y : i16) : RustM i16 := do
+  (rust_primitives.arithmetic.wrapping_mul_i16 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_13.pow (x : i16) (exp : u32) : RustM i16 := do
+  (rust_primitives.arithmetic.pow_i16 x exp)
 
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_13.leading_zeros (x : i16) : RustM u32
@@ -622,11 +803,49 @@ opaque Impl_13.leading_zeros (x : i16) : RustM u32
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_13.ilog2 (x : i16) : RustM u32
 
+@[spec]
+def Impl_14.wrapping_add (x : i32) (y : i32) : RustM i32 := do
+  (rust_primitives.arithmetic.wrapping_add_i32 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_14.wrapping_sub (x : i32) (y : i32) : RustM i32 := do
+  (rust_primitives.arithmetic.wrapping_sub_i32 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_14.wrapping_mul (x : i32) (y : i32) : RustM i32 := do
+  (rust_primitives.arithmetic.wrapping_mul_i32 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_14.pow (x : i32) (exp : u32) : RustM i32 := do
+  (rust_primitives.arithmetic.pow_i32 x exp)
+
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_14.leading_zeros (x : i32) : RustM u32
 
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_14.ilog2 (x : i32) : RustM u32
+
+@[spec]
+def Impl_15.wrapping_add (x : i64) (y : i64) : RustM i64 := do
+  (rust_primitives.arithmetic.wrapping_add_i64 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_15.wrapping_sub (x : i64) (y : i64) : RustM i64 := do
+  (rust_primitives.arithmetic.wrapping_sub_i64 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_15.wrapping_mul (x : i64) (y : i64) : RustM i64 := do
+  (rust_primitives.arithmetic.wrapping_mul_i64 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_15.pow (x : i64) (exp : u32) : RustM i64 := do
+  (rust_primitives.arithmetic.pow_i64 x exp)
 
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_15.leading_zeros (x : i64) : RustM u32
@@ -634,11 +853,49 @@ opaque Impl_15.leading_zeros (x : i64) : RustM u32
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_15.ilog2 (x : i64) : RustM u32
 
+@[spec]
+def Impl_16.wrapping_add (x : i128) (y : i128) : RustM i128 := do
+  (rust_primitives.arithmetic.wrapping_add_i128 x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_16.wrapping_sub (x : i128) (y : i128) : RustM i128 := do
+  (rust_primitives.arithmetic.wrapping_sub_i128 x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_16.wrapping_mul (x : i128) (y : i128) : RustM i128 := do
+  (rust_primitives.arithmetic.wrapping_mul_i128 x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_16.pow (x : i128) (exp : u32) : RustM i128 := do
+  (rust_primitives.arithmetic.pow_i128 x exp)
+
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_16.leading_zeros (x : i128) : RustM u32
 
 --  See [`std::primitive::u8::ilog2`] (and similar for other integer types)
 opaque Impl_16.ilog2 (x : i128) : RustM u32
+
+@[spec]
+def Impl_17.wrapping_add (x : isize) (y : isize) : RustM isize := do
+  (rust_primitives.arithmetic.wrapping_add_isize x y)
+
+--  See [`std::primitive::u8::wrapping_sub`] (and similar for other integer types)
+@[spec]
+def Impl_17.wrapping_sub (x : isize) (y : isize) : RustM isize := do
+  (rust_primitives.arithmetic.wrapping_sub_isize x y)
+
+--  See [`std::primitive::u8::wrapping_mul`] (and similar for other integer types)
+@[spec]
+def Impl_17.wrapping_mul (x : isize) (y : isize) : RustM isize := do
+  (rust_primitives.arithmetic.wrapping_mul_isize x y)
+
+--  See [`std::primitive::u8::pow`] (and similar for other integer types)
+@[spec]
+def Impl_17.pow (x : isize) (exp : u32) : RustM isize := do
+  (rust_primitives.arithmetic.pow_isize x exp)
 
 --  See [`std::primitive::u8::leading_zeros`] (and similar for other integer types)
 opaque Impl_17.leading_zeros (x : isize) : RustM u32
@@ -890,6 +1147,14 @@ class FromResidual (Self : Type) (R : Type)
 end core_models.ops.try_trait
 
 
+namespace core_models.ops.deref
+
+@[spec]
+def Impl.deref_hoisted (T : Type) (self : T) : RustM T := do (pure self)
+
+end core_models.ops.deref
+
+
 namespace core_models.ops.drop
 
 --  See [`std::ops::Drop`]
@@ -901,6 +1166,28 @@ class Drop (Self : Type)
   drop (Self) : (Self -> RustM Self)
 
 end core_models.ops.drop
+
+
+namespace core_models.ops.range
+
+--  See [`std::ops::RangeTo`]
+structure RangeTo (T : Type) where
+  _end : T
+
+--  See [`std::ops::RangeFrom`]
+structure RangeFrom (T : Type) where
+  start : T
+
+--  See [`std::ops::Range`]
+structure Range (T : Type) where
+  start : T
+  _end : T
+
+--  See [`std::ops::RangeFull`]
+structure RangeFull where
+  -- no fields
+
+end core_models.ops.range
 
 
 namespace core_models.option
@@ -1532,6 +1819,16 @@ end core_models.result
 
 namespace core_models.slice
 
+--  See [`std::slice::len`]
+@[spec]
+def Impl.len (T : Type) (s : (RustSlice T)) : RustM usize := do
+  (rust_primitives.slice.slice_length T s)
+
+--  See [`std::slice::is_empty`]
+@[spec]
+def Impl.is_empty (T : Type) (s : (RustSlice T)) : RustM Bool := do
+  ((← (Impl.len T s)) ==? (0 : usize))
+
 --  See [`std::slice::contains`]
 opaque Impl.contains
     (T : Type)
@@ -1556,6 +1853,39 @@ opaque Impl.copy_within
     (src : R)
     (dest : usize) :
     RustM (RustSlice T)
+
+--  See [`std::slice::binary_search`]
+opaque Impl.binary_search (T : Type) (s : (RustSlice T)) (x : T) :
+    RustM (core_models.result.Result usize usize)
+
+--  See [`std::slice::split_at`]
+def Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize) :
+    RustM (rust_primitives.hax.Tuple2 (RustSlice T) (RustSlice T)) := do
+  (rust_primitives.slice.slice_split_at T s mid)
+
+set_option hax_mvcgen.specset "bv" in
+@[hax_spec]
+def Impl.split_at.spec (T : Type) (s : (RustSlice T)) (mid : usize) :
+    Spec
+      (requires := do (mid <=? (← (Impl.len T s))))
+      (ensures := fun _ => pure True)
+      (Impl.split_at (T : Type) (s : (RustSlice T)) (mid : usize)) := {
+  pureRequires := by hax_construct_pure <;> bv_decide
+  pureEnsures := by hax_construct_pure <;> bv_decide
+  contract := by hax_mvcgen [Impl.split_at] <;> bv_decide
+}
+
+--  See [`std::slice::split_at_checked`]
+@[spec]
+def Impl.split_at_checked (T : Type) (s : (RustSlice T)) (mid : usize) :
+    RustM
+    (core_models.option.Option
+      (rust_primitives.hax.Tuple2 (RustSlice T) (RustSlice T)))
+    := do
+  if (← (mid <=? (← (Impl.len T s)))) then do
+    (pure (core_models.option.Option.Some (← (Impl.split_at T s mid))))
+  else do
+    (pure core_models.option.Option.None)
 
 end core_models.slice
 
@@ -1877,6 +2207,25 @@ class Try (Self : Type)
 end core_models.ops.try_trait
 
 
+namespace core_models.ops.deref
+
+--  See [`std::ops::Deref`]
+class Deref.AssociatedTypes (Self : Type) where
+  Target : Type
+
+attribute [reducible] Deref.AssociatedTypes.Target
+
+abbrev Deref.Target :=
+  Deref.AssociatedTypes.Target
+
+class Deref (Self : Type)
+  [associatedTypes : outParam (Deref.AssociatedTypes (Self : Type))]
+  where
+  deref (Self) : (Self -> RustM associatedTypes.Target)
+
+end core_models.ops.deref
+
+
 namespace core_models.slice
 
 --  See [`std::slice::SliceIndex`]
@@ -1915,6 +2264,55 @@ class FromStr (Self : Type)
     (String -> RustM (core_models.result.Result Self associatedTypes.Err))
 
 end core_models.str.traits
+
+
+namespace core_models.array
+
+--  See [`std::array::map`]
+@[spec]
+def Impl_23.map
+    (T : Type)
+    (N : usize)
+    (F : Type)
+    (U : Type)
+    [trait_constr_map_associated_type_i0 :
+      core_models.ops.function.FnOnce.AssociatedTypes
+      F
+      T]
+    [trait_constr_map_i0 : core_models.ops.function.FnOnce
+      F
+      T
+      (associatedTypes := {
+        show core_models.ops.function.FnOnce.AssociatedTypes F T
+        by infer_instance
+        with Output := U})]
+    (s : (RustArray T N))
+    (f : (T -> RustM U)) :
+    RustM (RustArray U N) := do
+  (rust_primitives.slice.array_map T U (N) (T -> RustM U) s f)
+
+--  See [`std::array::from_fn`]
+@[spec]
+def from_fn
+    (T : Type)
+    (N : usize)
+    (F : Type)
+    [trait_constr_from_fn_associated_type_i0 :
+      core_models.ops.function.FnOnce.AssociatedTypes
+      F
+      usize]
+    [trait_constr_from_fn_i0 : core_models.ops.function.FnOnce
+      F
+      usize
+      (associatedTypes := {
+        show core_models.ops.function.FnOnce.AssociatedTypes F usize
+        by infer_instance
+        with Output := T})]
+    (f : (usize -> RustM T)) :
+    RustM (RustArray T N) := do
+  (rust_primitives.slice.array_from_fn T (N) (usize -> RustM T) f)
+
+end core_models.array
 
 
 namespace core_models.convert
@@ -2046,6 +2444,19 @@ instance Impl_1 (Arg1 : Type) (Arg2 : Type) (Arg3 : Type) (Out : Type) :
   call_once := (Impl_1.call_once_hoisted Arg1 Arg2 Arg3 Out)
 
 end core_models.ops.function
+
+
+namespace core_models.ops.deref
+
+@[reducible] instance Impl.AssociatedTypes (T : Type) :
+  Deref.AssociatedTypes T
+  where
+  Target := T
+
+instance Impl (T : Type) : Deref T where
+  deref := (Impl.deref_hoisted T)
+
+end core_models.ops.deref
 
 
 namespace core_models.option
