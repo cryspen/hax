@@ -18,6 +18,9 @@ function extract_lean() {
     LEAN_FILTERS=""
     LEAN_FILTERS+=" -core_models::result::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::result::**::expect" # Issue #1818
+    LEAN_FILTERS+=" -core_models::result::**::is_err"
+    LEAN_FILTERS+=" -core_models::result::**::unwrap_err"
+    LEAN_FILTERS+=" -core_models::result::**::expect_err"
     LEAN_FILTERS+=" -core_models::option::**::expect" # Issue #1818
     LEAN_FILTERS+=" -core_models::option::**::unwrap" # Issue #1818
     LEAN_FILTERS+=" -core_models::iter::traits::iterator::**" # Issue #1710
@@ -28,6 +31,8 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::array::iter::IntoIter"
     LEAN_FILTERS+=" -core_models::Convert::impl_6"
     LEAN_FILTERS+=" -core_models::mem::copy"
+    LEAN_FILTERS+=" -core_models::slice::**::clone_from_slice"
+    LEAN_FILTERS+=" -core_models::slice::**::copy_from_slice"
     LEAN_FILTERS+=" -core_models::num::**::wrapping_add"
     LEAN_FILTERS+=" -core_models::num::**::saturating_add"
     LEAN_FILTERS+=" -core_models::num::**::overflowing_add"
@@ -53,8 +58,6 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::slice::**::iter"
     LEAN_FILTERS+=" -core_models::slice::**::is_empty"
     LEAN_FILTERS+=" -core_models::slice::**::binary_search"
-    LEAN_FILTERS+=" -core_models::slice::**::copy_from_slice"
-    LEAN_FILTERS+=" -core_models::slice::**::clone_from_slice"
     LEAN_FILTERS+=" -core_models::slice::**::chunks"
     LEAN_FILTERS+=" -core_models::slice::**::chunks_exact"
     LEAN_FILTERS+=" -core_models::slice::**::split_at"
@@ -69,14 +72,13 @@ function extract_lean() {
     LEAN_FILTERS+=" -core_models::iter::adapters::map::**"
     LEAN_FILTERS+=" -core_models::ops::range::**"
     LEAN_FILTERS+=" -core_models::f32::**::abs"
-  
     LEAN_FILTERS+=" -core_models::num::**::from_be_bytes"
     LEAN_FILTERS+=" -core_models::num::**::from_le_bytes"
     LEAN_FILTERS+=" -core_models::num::**::to_be_bytes"
     LEAN_FILTERS+=" -core_models::num::**::to_le_bytes"
     LEAN_FILTERS+=" -core_models::num::**::rotate_left"
     LEAN_FILTERS+=" -core_models::num::**::rotate_right"
-    
+
     LEAN_FILTERS="$(echo "$LEAN_FILTERS" | xargs)"
     HAX_CORE_MODELS_EXTRACTION_MODE=on cargo hax into -i "$LEAN_FILTERS" lean
     OUT="proofs/lean/extraction/core_models.lean"

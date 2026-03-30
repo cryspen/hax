@@ -154,7 +154,7 @@ let run (options : Types.engine_options) : Types.output =
         | backend ->
             failwith
               ("The OCaml hax engine should never be called with backend `"
-              ^ [%show: Types.backend_for__null] backend
+              ^ [%show: Types.backend] backend
               ^ "`. This backend uses the newer rust engine. Please report \
                  this issue on our GitHub repository: \
                  https://github.com/cryspen/hax."))
@@ -273,13 +273,19 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
   if query.debug_bind_phase then Phase_utils.DebugBindPhase.enable ();
   match query.kind with
   | Types.ImportThir { input; translation_options } ->
-      let imported_items =
-        import_thir_items translation_options.include_namespaces input
+      let diagnostics, imported_items =
+        Diagnostics.try_ (fun () ->
+            import_thir_items translation_options.include_namespaces input)
       in
+      let imported_items = Option.value ~default:[] imported_items in
       let rust_ast_items =
         List.concat_map ~f:ExportRustAst.ditem imported_items
       in
-      Rust_engine_types.ImportThir { output = rust_ast_items }
+      Rust_engine_types.ImportThir
+        {
+          output = rust_ast_items;
+          diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;
+        }
   | Types.ApplyPhases { input; phases } ->
       let items = List.concat_map ~f:Import_ast.ditem input in
       let module Phase =
@@ -289,9 +295,15 @@ let driver_for_rust_engine_inner (query : Rust_engine_types.query) :
                phases
              |> Untyped_phases.bind_list)
       in
-      let items = Phase.ditems items in
+      let diagnostics, items =
+        Diagnostics.capture (fun () -> Phase.ditems items)
+      in
       let output = List.concat_map ~f:ExportFullAst.ditem items in
-      Rust_engine_types.ApplyPhases { output }
+      Rust_engine_types.ApplyPhases
+        {
+          output;
+          diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;
+        }
   | Types.Print { printer = Fstar backend_options; input } ->
       let open Fstar_backend in
       let items = List.concat_map ~f:Import_ast.ditem input in

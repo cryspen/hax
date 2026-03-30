@@ -110,7 +110,8 @@ and dglobal_ident ?(skip_projector : bool = false)
       | Types.Type { length } -> `TupleType (Int.of_string length)
       | Types.Constructor { length } -> `TupleCons (Int.of_string length)
       | Types.Field { length; field } ->
-          `TupleField (Int.of_string field, Int.of_string length))
+          let res = `TupleField (Int.of_string field, Int.of_string length) in
+          if skip_projector then res else `Projector res)
   | Types.FreshModule _ ->
       broken_invariant
         ("dglobal_ident: got a [`FreshModule _]: "
@@ -605,19 +606,13 @@ let ditem' (item : A.item_kind) : B.item' option =
         }
       |> Option.some
   | A.Impl
-      {
-        generics;
-        self_ty;
-        of_trait = trait_id, trait_generics;
-        items;
-        parent_bounds;
-      } ->
+      { generics; self_ty; of_trait = { trait_; args }; items; parent_bounds }
+    ->
       B.Impl
         {
           generics = dgenerics generics;
           self_ty = dty self_ty;
-          of_trait =
-            (dconcrete_ident trait_id, List.map ~f:dgeneric_value trait_generics);
+          of_trait = (dconcrete_ident trait_, List.map ~f:dgeneric_value args);
           items = List.map ~f:dimpl_item items;
           parent_bounds =
             List.map

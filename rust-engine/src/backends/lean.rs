@@ -153,7 +153,6 @@ impl Backend for LeanBackend {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         vec![
             RejectRawOrMutPointer.into(),
-            RejectImplTypeMethod.into(),
             RewriteLocalSelf.into(),
             TransformHaxLibInline.into(),
             Specialize.into(),
@@ -181,6 +180,7 @@ impl Backend for LeanBackend {
             SimplifyHoisting.into(),
             NewtypeAsRefinement.into(),
             ReorderFields.into(),
+            HoistAssociatedFns,
             SortItems.into(),
             FilterUnprintableItems,
             ExplicitMonadic,
@@ -509,6 +509,11 @@ const _: () = {
             {
                 // Pure values are displayed directly. Note that constructors, while pure, may
                 // contain sub-expressions that are not, so they must be wrapped in a do-block
+                docs![expr]
+            } else if let ExprKind::App { args, .. } = expr.kind()
+                && args.is_empty()
+            {
+                // Constants are pure values
                 docs![expr]
             } else {
                 // All other expressions are wrapped in a do-block, and extracted out of the monad
@@ -1774,7 +1779,7 @@ const _: () = {
                 ItemKind::Impl {
                     generics,
                     self_ty: _,
-                    of_trait: (trait_, args),
+                    of_trait: TraitGoal { trait_, args },
                     items,
                     parent_bounds: _,
                 } => {
@@ -1968,7 +1973,9 @@ const _: () = {
                 ]
                 .group()
                 .nest(INDENT),
-                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => {
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body })
+                    if generics.params.is_empty() =>
+                {
                     docs![
                         name,
                         softline!(),
@@ -1977,6 +1984,22 @@ const _: () = {
                         self.monad_extract_simplify(body)
                     ]
                 }
+                ImplItemKind::Resugared(ResugaredImplItemKind::Constant { body }) => docs![
+                    docs![
+                        name,
+                        softline!(),
+                        ":=",
+                        line!(),
+                        docs!["fun", line!(), generics, line!(), "=>",]
+                            .group()
+                            .nest(INDENT)
+                    ]
+                    .group(),
+                    line!(),
+                    self.monad_extract_simplify(body)
+                ]
+                .group()
+                .nest(INDENT),
                 ImplItemKind::Error(err) => docs!(err),
             }
         }

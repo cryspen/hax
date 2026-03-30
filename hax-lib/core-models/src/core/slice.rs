@@ -8,6 +8,7 @@ pub mod iter {
     use crate::option::Option;
     use rust_primitives::{sequence::*, slice::*};
 
+    /// See [`std::slice::Chunks`]
     pub struct Chunks<'a, T> {
         cs: usize,
         elements: &'a [T],
@@ -17,6 +18,7 @@ pub mod iter {
             Chunks { cs, elements }
         }
     }
+    /// See [`std::slice::ChunksExact`]
     pub struct ChunksExact<'a, T> {
         cs: usize,
         elements: &'a [T],
@@ -26,16 +28,16 @@ pub mod iter {
             ChunksExact { cs, elements }
         }
     }
-    pub struct Iter<T>(pub Seq<T>);
+    /// See [`std::slice::Iter`]
+    pub struct Iter<'a, T>(pub Seq<&'a T>);
 
-    impl<T> crate::iter::traits::iterator::Iterator for Iter<T> {
-        type Item = T;
+    impl<'a, T> crate::iter::traits::iterator::Iterator for Iter<'a, T> {
+        type Item = &'a T;
         fn next(&mut self) -> Option<Self::Item> {
             if seq_len(&self.0) == 0 {
                 Option::None
             } else {
-                let res = seq_first(&self.0);
-                self.0 = seq_slice(&self.0, 1, seq_len(&self.0));
+                let res = seq_remove(&mut self.0, 0);
                 Option::Some(res)
             }
         }
@@ -74,36 +76,44 @@ pub mod iter {
 
 #[hax_lib::attributes]
 impl<T> Slice<T> {
+    /// See [`std::slice::len`]
     fn len(s: &[T]) -> usize {
         rust_primitives::slice::slice_length(s)
     }
+    /// See [`std::slice::chunks`]
     fn chunks<'a>(s: &'a [T], cs: usize) -> iter::Chunks<'a, T> {
         iter::Chunks::new(cs, s)
     }
-    fn iter(s: &[T]) -> iter::Iter<T> {
+    /// See [`std::slice::iter`]
+    fn iter(s: &[T]) -> iter::Iter<'_, T> {
         iter::Iter(rust_primitives::sequence::seq_from_slice(s))
     }
+    /// See [`std::slice::chunks_exact`]
     fn chunks_exact<'a>(s: &'a [T], cs: usize) -> iter::ChunksExact<'a, T> {
         iter::ChunksExact::new(cs, s)
     }
+    /// See [`std::slice::copy_from_slice`]
     #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn copy_from_slice(s: &mut [T], src: &[T])
     where
-        T: crate::marker::Copy,
+        T: Copy,
     {
-        rust_primitives::mem::replace(s, src);
+        slice_clone_from_slice(s, src);
     }
+    /// See [`std::slice::clone_from_slice`]
     #[hax_lib::requires(Slice::len(s) == Slice::len(src))]
     fn clone_from_slice(s: &mut [T], src: &[T])
     where
-        T: crate::clone::Clone,
+        T: Clone,
     {
-        rust_primitives::mem::replace(s, src);
+        slice_clone_from_slice(s, src);
     }
+    /// See [`std::slice::split_at`]
     #[hax_lib::requires(mid <= Slice::len(s))]
     fn split_at(s: &[T], mid: usize) -> (&[T], &[T]) {
         rust_primitives::slice::slice_split_at(s, mid)
     }
+    /// See [`std::slice::split_at_checked`]
     fn split_at_checked(s: &[T], mid: usize) -> Option<(&[T], &[T])> {
         if mid <= Slice::len(s) {
             Option::Some(Self::split_at(s, mid))
@@ -111,13 +121,19 @@ impl<T> Slice<T> {
             Option::None
         }
     }
+    /// See [`std::slice::is_empty`]
     fn is_empty(s: &[T]) -> bool {
         Self::len(s) == 0
     }
+    /// See [`std::slice::contains`]
     #[hax_lib::opaque]
-    fn contains(s: &[T], v: T) -> bool {
+    fn contains(s: &[T], v: &T) -> bool
+    where
+        T: PartialEq,
+    {
         rust_primitives::slice::slice_contains(s, v)
     }
+    /// See [`std::slice::copy_within`]
     #[hax_lib::opaque]
     fn copy_within<R>(s: &[T], src: R, dest: usize) -> &[T]
     where
@@ -125,10 +141,12 @@ impl<T> Slice<T> {
     {
         todo!()
     }
+    /// See [`std::slice::binary_search`]
     #[hax_lib::opaque]
     fn binary_search(s: &[T], x: &T) -> Result<usize, usize> /* where T: super::ops::Ord */ {
         todo!()
     }
+    /// See [`std::slice::get`]
     fn get<I: SliceIndex<[T]>>(s: &[T], index: I) -> Option<&<I as SliceIndex<[T]>>::Output> {
         index.get(s)
     }
@@ -136,8 +154,8 @@ impl<T> Slice<T> {
 
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_lean, hax_lib::exclude)]
-impl<T> crate::iter::traits::collect::IntoIterator for &[T] {
-    type IntoIter = iter::Iter<T>;
+impl<'a, T> crate::iter::traits::collect::IntoIterator for &'a [T] {
+    type IntoIter = iter::Iter<'a, T>;
     fn into_iter(self) -> Self::IntoIter {
         Slice::iter(self)
     }
@@ -145,6 +163,7 @@ impl<T> crate::iter::traits::collect::IntoIterator for &[T] {
 use crate::option::Option;
 use rust_primitives::slice::*;
 
+/// See [`std::slice::SliceIndex`]
 #[hax_lib::attributes]
 pub trait SliceIndex<T: ?Sized> {
     type Output: ?Sized;
@@ -185,7 +204,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeFull {
 impl<T> SliceIndex<[T]> for crate::ops::range::RangeFrom<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
-        if self.start < slice.len() {
+        if self.start <= slice.len() {
             Option::Some(slice_slice(slice, self.start, slice.len()))
         } else {
             Option::None
@@ -209,7 +228,7 @@ impl<T> SliceIndex<[T]> for crate::ops::range::RangeTo<usize> {
 impl<T> SliceIndex<[T]> for crate::ops::range::Range<usize> {
     type Output = [T];
     fn get(self, slice: &[T]) -> Option<&[T]> {
-        if self.start < self.end && self.end <= slice.len() {
+        if self.start <= self.end && self.end <= slice.len() {
             Option::Some(slice_slice(slice, self.start, self.end))
         } else {
             Option::None
@@ -265,5 +284,143 @@ impl<T> crate::ops::index::Index<usize> for &[T] {
     #[hax_lib::requires(i < self.len())]
     fn index(&self, i: usize) -> &T {
         rust_primitives::slice::slice_index(self, i)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Slice;
+    use crate::testing::Inject;
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn test_len(slice in prop::collection::vec(any::<u8>(), 0..=20)) {
+            prop_assert_eq!(Slice::len(&slice[..]), slice.len());
+        }
+
+        #[test]
+        fn test_is_empty(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(Slice::is_empty(&slice[..]), slice.is_empty());
+        }
+
+        #[test]
+        fn test_contains(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            prop_assert_eq!(Slice::contains(&slice[..], &v), slice.contains(&v));
+        }
+
+        #[test]
+        fn test_split_at(slice in prop::collection::vec(any::<u8>(), 1..=10)) {
+            let mid = slice.len() / 2;
+            prop_assert_eq!(Slice::split_at(&slice[..], mid), slice.split_at(mid));
+        }
+
+        #[test]
+        fn test_split_at_checked(slice in prop::collection::vec(any::<u8>(), 1..=10), mid in 0usize..15) {
+            prop_assert_eq!(
+                Slice::split_at_checked(&slice[..], mid),
+                slice.split_at_checked(mid).inject()
+            );
+        }
+
+        #[test]
+        fn test_copy_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
+            let mut dest = vec![0u8; src.len()];
+            Slice::copy_from_slice(&mut dest[..], &src[..]);
+            prop_assert_eq!(dest, src);
+        }
+
+        #[test]
+        fn test_clone_from_slice(src in prop::collection::vec(any::<u8>(), 1..=10)) {
+            let mut dest = vec![0u8; src.len()];
+            Slice::clone_from_slice(&mut dest[..], &src[..]);
+            prop_assert_eq!(dest, src);
+        }
+
+        #[test]
+        fn test_get_usize(slice in prop::collection::vec(any::<u8>(), 1..=10), idx in any::<usize>()) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], idx).map(|v: &u8| *v),
+                slice.get(idx).copied().inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..10, end in 0usize..10) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::Range { start, end }),
+                slice.get(start..end).inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range_from(slice in prop::collection::vec(any::<u8>(), 1..=10), start in 0usize..15) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::RangeFrom { start }),
+                slice.get(start..).inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range_to(slice in prop::collection::vec(any::<u8>(), 1..=10), end in 0usize..15) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::RangeTo { end }),
+                slice.get(..end).inject()
+            );
+        }
+
+        #[test]
+        fn test_get_range_full(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(
+                Slice::get(&slice[..], crate::ops::range::RangeFull),
+                slice.get(..).inject()
+            );
+        }
+
+        #[test]
+        fn test_index_usize(slice in prop::collection::vec(any::<u8>(), 4..=4), idx in 0usize..4) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, idx),
+                &slice[idx]
+            );
+        }
+
+        #[test]
+        fn test_index_range(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..8, len in 0usize..8) {
+            let end = (start + len).min(8);
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::Range { start, end }),
+                &slice[start..end]
+            );
+        }
+
+        #[test]
+        fn test_index_range_to(slice in prop::collection::vec(any::<u8>(), 8..=8), end in 0usize..=8) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::RangeTo { end }),
+                &slice[..end]
+            );
+        }
+
+        #[test]
+        fn test_index_range_from(slice in prop::collection::vec(any::<u8>(), 8..=8), start in 0usize..=8) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::RangeFrom { start }),
+                &slice[start..]
+            );
+        }
+
+        #[test]
+        fn test_index_range_full(slice in prop::collection::vec(any::<u8>(), 8..=8)) {
+            let s: &[u8] = &slice[..];
+            prop_assert_eq!(
+                crate::ops::index::Index::index(&s, crate::ops::range::RangeFull),
+                &slice[..]
+            );
+        }
     }
 }

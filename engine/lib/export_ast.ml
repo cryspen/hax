@@ -567,8 +567,10 @@ module Make (FA : Features.T) = struct
             generics = dgenerics span generics;
             self_ty = dty span self_ty;
             of_trait =
-              ( dconcrete_ident trait_id,
-                List.map ~f:(dgeneric_value span) trait_generics );
+              {
+                trait_ = dconcrete_ident trait_id;
+                args = List.map ~f:(dgeneric_value span) trait_generics;
+              };
             items = List.map ~f:dimpl_item items;
             parent_bounds =
               List.map

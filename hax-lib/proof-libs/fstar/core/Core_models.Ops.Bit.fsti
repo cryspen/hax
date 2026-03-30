@@ -3,6 +3,7 @@ module Core_models.Ops.Bit
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::Shr`]
 class t_Shr (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_shr_pre:v_Self -> v_Rhs -> Type0;
@@ -11,6 +12,7 @@ class t_Shr (v_Self: Type0) (v_Rhs: Type0) = {
     -> Prims.Pure f_Output (f_shr_pre x0 x1) (fun result -> f_shr_post x0 x1 result)
 }
 
+/// See [`std::ops::Shl`]
 class t_Shl (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_shl_pre:v_Self -> v_Rhs -> Type0;
@@ -19,6 +21,7 @@ class t_Shl (v_Self: Type0) (v_Rhs: Type0) = {
     -> Prims.Pure f_Output (f_shl_pre x0 x1) (fun result -> f_shl_post x0 x1 result)
 }
 
+/// See [`std::ops::BitXor`]
 class t_BitXor (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_bitxor_pre:v_Self -> v_Rhs -> Type0;
@@ -27,6 +30,7 @@ class t_BitXor (v_Self: Type0) (v_Rhs: Type0) = {
     -> Prims.Pure f_Output (f_bitxor_pre x0 x1) (fun result -> f_bitxor_post x0 x1 result)
 }
 
+/// See [`std::ops::BitAnd`]
 class t_BitAnd (v_Self: Type0) (v_Rhs: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_bitand_pre:v_Self -> v_Rhs -> Type0;

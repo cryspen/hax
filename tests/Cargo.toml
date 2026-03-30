@@ -1,44 +1,35 @@
+[package]
+name = "new-tests"
+edition = "2024"
+
+
+[dependencies]
+# hax-adt-into.workspace = true
+# serde.workspace = true
+# serde_json.workspace = true
+# schemars.workspace = true
+# itertools.workspace = true
+# hax-frontend-exporter-options.workspace = true
+# tracing.workspace = true
+# paste = "1.0.11"
+# extension-traits = "1.0.1"
+# lazy_static = "1.4.0"
+anyhow = "1.0.100"
+hax-lib = { path = "../hax-lib" }
+hax-lib-protocol = { path = "../hax-lib-protocol" }
+hax-lib-protocol-macros = { path = "../hax-lib-protocol-macros" }
+hax-bounded-integers = { path = "../hax-bounded-integers" }
+typenum = "1.19.0"
+
+[dev-dependencies]
+anyhow = "1.0.100"
+
+[build-dependencies]
+anyhow = "1.0.100"
+walkdir = "2.5.0"
+syn = { version = "2.0.114", features = ["full"] }
+
 [workspace]
-members = [
-        "assert",
-        "enum-struct-variant",
-        "literals",
-        "slices",
-        "naming",
-        "if-let",
-        "let-else",
-        "enum-repr",
-        "pattern-or",
-        "side-effects",
-        "mut-ref-functionalization",
-        "generics",
-        "lean-tests",
-        "lean-core-models",
-        "loops",
-        "even",
-        "odd",
-        "never-type",
-        "attributes",
-        "attribute-opaque",
-        "raw-attributes",
-        "traits",
-        "dyn",
-        "reordering",
-        "nested-derefs",
-        "patterns",
-        "proverif-minimal",
-        "proverif-basic-structs",
-        "proverif-ping-pong",
-        "proverif-noise",
-        "proverif-fn-to-letfun",
-        "cli/include-flag",
-        "cli/interface-only",
-        "recursion",
-        "functions",
-        "guards",
-        "cyclic-modules",
-        "unsafe",
-        "constructor-as-closure",
-        "statics",
-]
-resolver = "2"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_backend_fstar)', 'cfg(hax_compilation)', 'cfg(hax_backend_lean)'] }

@@ -100,8 +100,9 @@ Changes to the Lean backend:
  - Fix string escaping (#1834)
 
 Miscellaneous:
-- Reserve extraction folder for auto-generated files in Lean examples (#1754)
-- Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
+ - Reserve extraction folder for auto-generated files in Lean examples (#1754)
+ - Add `lean_adc` example to the Lean examples section, demonstrating tactics introduced in PR(#1933)
+ - New testing framework for the engine(s) (cryspen/hax-evit/134)
 
 ## 0.3.5
 

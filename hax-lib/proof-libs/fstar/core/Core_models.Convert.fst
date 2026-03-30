@@ -3,12 +3,14 @@ module Core_models.Convert
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::convert::Into`]
 class t_Into (v_Self: Type0) (v_T: Type0) = {
   f_into_pre:self_: v_Self -> pred: Type0{true ==> pred};
   f_into_post:v_Self -> v_T -> Type0;
   f_into:x0: v_Self -> Prims.Pure v_T (f_into_pre x0) (fun result -> f_into_post x0 result)
 }
 
+/// See [`std::convert::From`]
 class t_From (v_Self: Type0) (v_T: Type0) = {
   f_from_pre:x: v_T -> pred: Type0{true ==> pred};
   f_from_post:v_T -> v_Self -> Type0;
@@ -24,6 +26,7 @@ let impl (#v_T #v_U: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Fro
     f_into = fun (self: v_T) -> f_from #v_U #v_T #FStar.Tactics.Typeclasses.solve self
   }
 
+/// See [`std::convert::Infallible`]
 type t_Infallible = | Infallible : t_Infallible
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
@@ -34,6 +37,7 @@ let impl_4 (#v_T: Type0) : t_From v_T v_T =
     f_from = fun (x: v_T) -> x
   }
 
+/// See [`std::convert::AsRef`]
 class t_AsRef (v_Self: Type0) (v_T: Type0) = {
   f_as_ref_pre:self_: v_Self -> pred: Type0{true ==> pred};
   f_as_ref_post:v_Self -> v_T -> Type0;
@@ -256,6 +260,7 @@ let impl_31: t_From isize i16 =
     f_from = fun (x: i16) -> cast (x <: i16) <: isize
   }
 
+/// See [`std::convert::TryInto`]
 class t_TryInto (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Error:Type0;
   f_try_into_pre:self_: v_Self -> pred: Type0{true ==> pred};
@@ -266,6 +271,7 @@ class t_TryInto (v_Self: Type0) (v_T: Type0) = {
         (fun result -> f_try_into_post x0 result)
 }
 
+/// See [`std::convert::TryFrom`]
 class t_TryFrom (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Error:Type0;
   f_try_from_pre:x: v_T -> pred: Type0{true ==> pred};

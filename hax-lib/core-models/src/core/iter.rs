@@ -11,6 +11,7 @@ pub mod traits {
         };
         use crate::ops::function::*;
         use crate::option::Option;
+        /// See [`std::iter::Iterator`]
         #[hax_lib::attributes]
         pub trait Iterator {
             type Item;
@@ -112,12 +113,14 @@ pub mod traits {
         // TODO rev: DoubleEndedIterator?
     }
     pub mod collect {
+        /// See [`std::iter::IntoIterator`]
         pub trait IntoIterator {
             // Ignoring type Item, and trait bound Iterator to avoid coinduction
             // type Item;
             type IntoIter; //: Iterator<Item = Self::Item>
             fn into_iter(self) -> Self::IntoIter;
         }
+        /// See [`std::iter::FromIterator`]
         #[hax_lib::attributes]
         pub trait FromIterator<A>: Sized {
             #[hax_lib::requires(true)]
@@ -130,6 +133,7 @@ pub mod adapters {
     pub mod enumerate {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        /// See [`std::iter::Enumerate`]
         pub struct Enumerate<I> {
             iter: I,
             count: usize,
@@ -160,6 +164,7 @@ pub mod adapters {
     pub mod step_by {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        /// See [`std::iter::StepBy`]
         pub struct StepBy<I> {
             iter: I,
             step: usize,
@@ -185,6 +190,7 @@ pub mod adapters {
         }
     }
     pub mod map {
+        /// See [`std::iter::Map`]
         pub struct Map<I, F> {
             iter: I,
             f: F,
@@ -211,6 +217,7 @@ pub mod adapters {
     pub mod take {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        /// See [`std::iter::Take`]
         pub struct Take<I> {
             iter: I,
             n: usize,
@@ -236,6 +243,7 @@ pub mod adapters {
     pub mod flat_map {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        /// See [`std::iter::FlatMap`]
         pub struct FlatMap<I, U, F> {
             it: I,
             f: F,
@@ -273,6 +281,7 @@ pub mod adapters {
     pub mod flatten {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        /// See [`std::iter::Flatten`]
         #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
         pub struct Flatten<I: Iterator>
         where
@@ -317,6 +326,7 @@ pub mod adapters {
     pub mod zip {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
+        /// See [`std::iter::Zip`]
         pub struct Zip<I1, I2> {
             it1: I1,
             it2: I2,

@@ -3,27 +3,42 @@ module Core_models.Slice
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::slice::len`]
 let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.slice_length #v_T s
 
+/// See [`std::slice::chunks`]
 let impl__chunks (#v_T: Type0) (s: t_Slice v_T) (cs: usize) : Core_models.Slice.Iter.t_Chunks v_T =
   Core_models.Slice.Iter.impl__new #v_T cs s
 
+/// See [`std::slice::iter`]
 let impl__iter (#v_T: Type0) (s: t_Slice v_T) : Core_models.Slice.Iter.t_Iter v_T =
   Core_models.Slice.Iter.Iter (Rust_primitives.Sequence.seq_from_slice #v_T s)
   <:
   Core_models.Slice.Iter.t_Iter v_T
 
+/// See [`std::slice::chunks_exact`]
 let impl__chunks_exact (#v_T: Type0) (s: t_Slice v_T) (cs: usize)
     : Core_models.Slice.Iter.t_ChunksExact v_T = Core_models.Slice.Iter.impl_1__new #v_T cs s
 
+/// See [`std::slice::is_empty`]
 let impl__is_empty (#v_T: Type0) (s: t_Slice v_T) : bool = (impl__len #v_T s <: usize) =. mk_usize 0
 
+/// See [`std::slice::contains`]
 assume
-val impl__contains': #v_T: Type0 -> s: t_Slice v_T -> v: v_T -> bool
+val impl__contains':
+    #v_T: Type0 ->
+    {| i0: Core_models.Cmp.t_PartialEq v_T v_T |} ->
+    s: t_Slice v_T ->
+    v: v_T
+  -> bool
 
 unfold
-let impl__contains (#v_T: Type0) = impl__contains' #v_T
+let impl__contains
+      (#v_T: Type0)
+      (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Cmp.t_PartialEq v_T v_T)
+     = impl__contains' #v_T #i0
 
+/// See [`std::slice::copy_within`]
 assume
 val impl__copy_within':
     #v_T: Type0 ->
@@ -40,6 +55,7 @@ let impl__copy_within
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
      = impl__copy_within' #v_T #v_R #i0
 
+/// See [`std::slice::binary_search`]
 assume
 val impl__binary_search': #v_T: Type0 -> s: t_Slice v_T -> x: v_T
   -> Core_models.Result.t_Result usize usize
@@ -47,6 +63,7 @@ val impl__binary_search': #v_T: Type0 -> s: t_Slice v_T -> x: v_T
 unfold
 let impl__binary_search (#v_T: Type0) = impl__binary_search' #v_T
 
+/// See [`std::slice::copy_from_slice`]
 let impl__copy_from_slice
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)
@@ -54,11 +71,10 @@ let impl__copy_from_slice
     : Prims.Pure (t_Slice v_T)
       (requires (impl__len #v_T s <: usize) =. (impl__len #v_T src <: usize))
       (fun _ -> Prims.l_True) =
-  let (tmp0: t_Slice v_T), (out: t_Slice v_T) = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
-  let s:t_Slice v_T = tmp0 in
-  let _:t_Slice v_T = out in
+  let s:t_Slice v_T = Rust_primitives.Slice.slice_clone_from_slice #v_T s src in
   s
 
+/// See [`std::slice::clone_from_slice`]
 let impl__clone_from_slice
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Clone.t_Clone v_T)
@@ -66,16 +82,16 @@ let impl__clone_from_slice
     : Prims.Pure (t_Slice v_T)
       (requires (impl__len #v_T s <: usize) =. (impl__len #v_T src <: usize))
       (fun _ -> Prims.l_True) =
-  let (tmp0: t_Slice v_T), (out: t_Slice v_T) = Rust_primitives.Mem.replace #(t_Slice v_T) s src in
-  let s:t_Slice v_T = tmp0 in
-  let _:t_Slice v_T = out in
+  let s:t_Slice v_T = Rust_primitives.Slice.slice_clone_from_slice #v_T s src in
   s
 
+/// See [`std::slice::split_at`]
 let impl__split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     : Prims.Pure (t_Slice v_T & t_Slice v_T)
       (requires mid <=. (impl__len #v_T s <: usize))
       (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_split_at #v_T s mid
 
+/// See [`std::slice::split_at_checked`]
 let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     : Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T) =
   if mid <=. (impl__len #v_T s <: usize)
@@ -183,6 +199,7 @@ let impl_11 (#v_T: Type0) : Core_models.Ops.Index.t_Index (t_Slice v_T) usize =
     f_index = fun (self: t_Slice v_T) (i: usize) -> Rust_primitives.Slice.slice_index #v_T self i
   }
 
+/// See [`std::slice::SliceIndex`]
 class t_SliceIndex (v_Self: Type0) (v_T: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_get_pre:self_: v_Self -> slice: v_T -> pred: Type0{true ==> pred};
@@ -193,6 +210,7 @@ class t_SliceIndex (v_Self: Type0) (v_T: Type0) = {
         (fun result -> f_get_post x0 x1 result)
 }
 
+/// See [`std::slice::get`]
 let impl__get
       (#v_T #v_I: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_SliceIndex v_I (t_Slice v_T))
@@ -255,7 +273,7 @@ let impl_4 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_RangeFrom usize
     f_get
     =
     fun (self: Core_models.Ops.Range.t_RangeFrom usize) (slice: t_Slice v_T) ->
-      if self.Core_models.Ops.Range.f_start <. (impl__len #v_T slice <: usize)
+      if self.Core_models.Ops.Range.f_start <=. (impl__len #v_T slice <: usize)
       then
         Core_models.Option.Option_Some
         (Rust_primitives.Slice.slice_slice #v_T
@@ -309,7 +327,7 @@ let impl_6 (#v_T: Type0) : t_SliceIndex (Core_models.Ops.Range.t_Range usize) (t
     =
     fun (self: Core_models.Ops.Range.t_Range usize) (slice: t_Slice v_T) ->
       if
-        self.Core_models.Ops.Range.f_start <. self.Core_models.Ops.Range.f_end &&
+        self.Core_models.Ops.Range.f_start <=. self.Core_models.Ops.Range.f_end &&
         self.Core_models.Ops.Range.f_end <=. (impl__len #v_T slice <: usize)
       then
         Core_models.Option.Option_Some

@@ -1,6 +1,7 @@
 use hax_frontend_exporter::SInto;
 use hax_frontend_exporter::state::LocalContextS;
 use hax_types::cli_options::PathOrDash;
+use hax_types::driver_api::HaxMeta;
 use hax_types::driver_api::Items;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::interface;

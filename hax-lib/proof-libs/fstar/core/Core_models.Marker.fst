@@ -3,6 +3,7 @@ module Core_models.Marker
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::marker::Copy`]
 class t_Copy (v_Self: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:Core_models.Clone.t_Clone v_Self
 }
@@ -10,12 +11,16 @@ class t_Copy (v_Self: Type0) = {
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let _ = fun (v_Self:Type0) {|i: t_Copy v_Self|} -> i._super_i0
 
+/// See [`std::marker::Send`]
 class t_Send (v_Self: Type0) = { __marker_trait_t_Send:Prims.unit }
 
+/// See [`std::marker::Sync`]
 class t_Sync (v_Self: Type0) = { __marker_trait_t_Sync:Prims.unit }
 
+/// See [`std::marker::Sized`]
 class t_Sized (v_Self: Type0) = { __marker_trait_t_Sized:Prims.unit }
 
+/// See [`std::marker::StructuralPartialEq`]
 class t_StructuralPartialEq (v_Self: Type0) = { __marker_trait_t_StructuralPartialEq:Prims.unit }
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]

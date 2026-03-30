@@ -3,6 +3,7 @@ module Core_models.Ops.Function
 open FStar.Mul
 open Rust_primitives
 
+/// See [`std::ops::FnOnce`]
 class t_FnOnce (v_Self: Type0) (v_Args: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]f_Output:Type0;
   f_call_once_pre:self_: v_Self -> args: v_Args -> pred: Type0{true ==> pred};
@@ -11,6 +12,7 @@ class t_FnOnce (v_Self: Type0) (v_Args: Type0) = {
     -> Prims.Pure f_Output (f_call_once_pre x0 x1) (fun result -> f_call_once_post x0 x1 result)
 }
 
+/// See [`std::ops::Fn`]
 class t_Fn (v_Self: Type0) (v_Args: Type0) = {
   [@@@ FStar.Tactics.Typeclasses.no_method]_super_i0:t_FnOnce v_Self v_Args;
   f_call_pre:self_: v_Self -> args: v_Args -> pred: Type0{true ==> pred};

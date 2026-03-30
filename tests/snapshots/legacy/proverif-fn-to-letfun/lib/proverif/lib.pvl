@@ -1,0 +1,131 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type new_tests__legacy__proverif_fn_to_letfun__lib__t_A.
+
+fun new_tests__legacy__proverif_fn_to_letfun__lib__t_A_to_bitstring(
+      new_tests__legacy__proverif_fn_to_letfun__lib__t_A
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__proverif_fn_to_letfun__lib__t_A_from_bitstring(bitstring)
+    : new_tests__legacy__proverif_fn_to_letfun__lib__t_A [typeConverter].
+const new_tests__legacy__proverif_fn_to_letfun__lib__t_A_default_value: new_tests__legacy__proverif_fn_to_letfun__lib__t_A.
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__t_A_default() =
+       new_tests__legacy__proverif_fn_to_letfun__lib__t_A_default_value.
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__t_A_err() =
+       let x = construct_fail() in new_tests__legacy__proverif_fn_to_letfun__lib__t_A_default_value.
+fun new_tests__legacy__proverif_fn_to_letfun__lib__A(nat, nat)
+    : new_tests__legacy__proverif_fn_to_letfun__lib__t_A [data].
+reduc forall 
+  new_tests__legacy__proverif_fn_to_letfun__lib__f_x: nat,
+  new_tests__legacy__proverif_fn_to_letfun__lib__f_y: nat
+;
+    accessor_new_tests__legacy__proverif_fn_to_letfun__lib__t_A_new_tests__legacy__proverif_fn_to_letfun__lib__f_x(
+      new_tests__legacy__proverif_fn_to_letfun__lib__A(
+        new_tests__legacy__proverif_fn_to_letfun__lib__f_x,
+        new_tests__legacy__proverif_fn_to_letfun__lib__f_y
+      )
+    ) = new_tests__legacy__proverif_fn_to_letfun__lib__f_x.
+reduc forall 
+  new_tests__legacy__proverif_fn_to_letfun__lib__f_x: nat,
+  new_tests__legacy__proverif_fn_to_letfun__lib__f_y: nat
+;
+    accessor_new_tests__legacy__proverif_fn_to_letfun__lib__t_A_new_tests__legacy__proverif_fn_to_letfun__lib__f_y(
+      new_tests__legacy__proverif_fn_to_letfun__lib__A(
+        new_tests__legacy__proverif_fn_to_letfun__lib__f_x,
+        new_tests__legacy__proverif_fn_to_letfun__lib__f_y
+      )
+    ) = new_tests__legacy__proverif_fn_to_letfun__lib__f_y.
+
+type new_tests__legacy__proverif_fn_to_letfun__lib__t_B.
+
+fun new_tests__legacy__proverif_fn_to_letfun__lib__t_B_to_bitstring(
+      new_tests__legacy__proverif_fn_to_letfun__lib__t_B
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__proverif_fn_to_letfun__lib__t_B_from_bitstring(bitstring)
+    : new_tests__legacy__proverif_fn_to_letfun__lib__t_B [typeConverter].
+const new_tests__legacy__proverif_fn_to_letfun__lib__t_B_default_value: new_tests__legacy__proverif_fn_to_letfun__lib__t_B.
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__t_B_default() =
+       new_tests__legacy__proverif_fn_to_letfun__lib__t_B_default_value.
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__t_B_err() =
+       let x = construct_fail() in new_tests__legacy__proverif_fn_to_letfun__lib__t_B_default_value.
+fun new_tests__legacy__proverif_fn_to_letfun__lib__B(bool)
+    : new_tests__legacy__proverif_fn_to_letfun__lib__t_B [data].
+reduc forall new_tests__legacy__proverif_fn_to_letfun__lib__f_b: bool;
+    accessor_new_tests__legacy__proverif_fn_to_letfun__lib__t_B_new_tests__legacy__proverif_fn_to_letfun__lib__f_b(
+      new_tests__legacy__proverif_fn_to_letfun__lib__B(
+        new_tests__legacy__proverif_fn_to_letfun__lib__f_b
+      )
+    ) = new_tests__legacy__proverif_fn_to_letfun__lib__f_b.
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_function(
+         wildcard1 : bitstring
+       ) =
+       true.
+
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(
+         b : bool
+       ) =
+       5.
+
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__longer_function(
+         x : bitstring
+       ) =
+       let b = (new_tests__legacy__proverif_fn_to_letfun__lib__some_function(())
+       ) in
+       let d = (
+         new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b)
+       ) in
+       new_tests__legacy__proverif_fn_to_letfun__lib__A(12,9).
+
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__another_longer_function(
+         wildcard2 : bitstring
+       ) =
+       let b = (new_tests__legacy__proverif_fn_to_letfun__lib__some_function(())
+       ) in
+       let d = (
+         new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b)
+       ) in
+       new_tests__legacy__proverif_fn_to_letfun__lib__B(false).
+
+letfun new_tests__legacy__proverif_fn_to_letfun__lib__void_function(
+         wildcard3 : bitstring
+       ) =
+       let b = (new_tests__legacy__proverif_fn_to_letfun__lib__some_function(())
+       ) in
+       let d = (
+         new_tests__legacy__proverif_fn_to_letfun__lib__some_other_function(b)
+       ) in
+       ().
+

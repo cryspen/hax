@@ -1,0 +1,2060 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+type new_tests__legacy__lean_tests__lib__traits__inheritance__t_S.
+
+fun new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__inheritance__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__inheritance__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_default_value: new_tests__legacy__lean_tests__lib__traits__inheritance__t_S.
+letfun new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_default() =
+       new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__inheritance__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__inheritance__S()
+    : new_tests__legacy__lean_tests__lib__traits__inheritance__t_S [data].
+
+
+type new_tests__legacy__lean_tests__lib__traits__default__t_S.
+
+fun new_tests__legacy__lean_tests__lib__traits__default__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__default__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__default__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__default__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__default__t_S_default_value: new_tests__legacy__lean_tests__lib__traits__default__t_S.
+letfun new_tests__legacy__lean_tests__lib__traits__default__t_S_default() =
+       new_tests__legacy__lean_tests__lib__traits__default__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__default__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__default__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__default__S(nat, v_A)
+    : new_tests__legacy__lean_tests__lib__traits__default__t_S [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__traits__default__0: nat,
+  new_tests__legacy__lean_tests__lib__traits__default__1: v_A
+;
+    accessor_new_tests__legacy__lean_tests__lib__traits__default__t_S_new_tests__legacy__lean_tests__lib__traits__default__0(
+      new_tests__legacy__lean_tests__lib__traits__default__S(
+        new_tests__legacy__lean_tests__lib__traits__default__0,
+        new_tests__legacy__lean_tests__lib__traits__default__1
+      )
+    ) = new_tests__legacy__lean_tests__lib__traits__default__0.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__traits__default__0: nat,
+  new_tests__legacy__lean_tests__lib__traits__default__1: v_A
+;
+    accessor_new_tests__legacy__lean_tests__lib__traits__default__t_S_new_tests__legacy__lean_tests__lib__traits__default__1(
+      new_tests__legacy__lean_tests__lib__traits__default__S(
+        new_tests__legacy__lean_tests__lib__traits__default__0,
+        new_tests__legacy__lean_tests__lib__traits__default__1
+      )
+    ) = new_tests__legacy__lean_tests__lib__traits__default__1.
+
+type new_tests__legacy__lean_tests__lib__traits__bounds__t_S1.
+
+fun new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__bounds__t_S1
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__bounds__t_S1 [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_default_value: new_tests__legacy__lean_tests__lib__traits__bounds__t_S1.
+letfun new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_default() =
+       new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__bounds__t_S1_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__bounds__S1()
+    : new_tests__legacy__lean_tests__lib__traits__bounds__t_S1 [data].
+
+
+type new_tests__legacy__lean_tests__lib__traits__bounds__t_S2.
+
+fun new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__bounds__t_S2
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__bounds__t_S2 [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_default_value: new_tests__legacy__lean_tests__lib__traits__bounds__t_S2.
+letfun new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_default() =
+       new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__bounds__t_S2_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__bounds__S2()
+    : new_tests__legacy__lean_tests__lib__traits__bounds__t_S2 [data].
+
+
+type new_tests__legacy__lean_tests__lib__traits__basic__t_S.
+
+fun new_tests__legacy__lean_tests__lib__traits__basic__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__basic__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__basic__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__basic__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__basic__t_S_default_value: new_tests__legacy__lean_tests__lib__traits__basic__t_S.
+letfun new_tests__legacy__lean_tests__lib__traits__basic__t_S_default() =
+       new_tests__legacy__lean_tests__lib__traits__basic__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__basic__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__basic__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__basic__S()
+    : new_tests__legacy__lean_tests__lib__traits__basic__t_S [data].
+
+
+type new_tests__legacy__lean_tests__lib__traits__associated_types__t_S.
+
+fun new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__associated_types__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__associated_types__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_default_value: new_tests__legacy__lean_tests__lib__traits__associated_types__t_S.
+letfun new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__associated_types__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__associated_types__S()
+    : new_tests__legacy__lean_tests__lib__traits__associated_types__t_S [data].
+
+
+type new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar.
+
+fun new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_to_bitstring(
+      new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar [typeConverter].
+const new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_default_value: new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar.
+letfun new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_default_value.
+letfun new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_err(
+
+       ) =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar_default_value.
+fun new_tests__legacy__lean_tests__lib__traits__associated_constant__Bar()
+    : new_tests__legacy__lean_tests__lib__traits__associated_constant__t_Bar [data].
+
+
+type new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S.
+
+fun new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_default_value: new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S.
+letfun new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_default() =
+       new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__miscellaneous__S(nat)
+    : new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__miscellaneous__f_f: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_new_tests__legacy__lean_tests__lib__structs__miscellaneous__f_f(
+      new_tests__legacy__lean_tests__lib__structs__miscellaneous__S(
+        new_tests__legacy__lean_tests__lib__structs__miscellaneous__f_f
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__miscellaneous__f_f.
+
+type new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S.
+
+fun new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default_value: new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S.
+letfun new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__base_expressions__S(
+      nat, nat, nat
+    )
+    : new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1(
+      new_tests__legacy__lean_tests__lib__structs__base_expressions__S(
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2,
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2(
+      new_tests__legacy__lean_tests__lib__structs__base_expressions__S(
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2,
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2: nat,
+  new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__base_expressions__t_S_new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3(
+      new_tests__legacy__lean_tests__lib__structs__base_expressions__S(
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f2,
+        new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__base_expressions__f_f3.
+
+type new_tests__legacy__lean_tests__lib__structs__t_T0.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_T0_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_T0
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_T0_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_T0 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_T0_default_value: new_tests__legacy__lean_tests__lib__structs__t_T0.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T0_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_T0_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T0_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_T0_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__T0()
+    : new_tests__legacy__lean_tests__lib__structs__t_T0 [data].
+
+
+type new_tests__legacy__lean_tests__lib__structs__t_T1.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_T1_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_T1
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_T1_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_T1 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_T1_default_value: new_tests__legacy__lean_tests__lib__structs__t_T1.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T1_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_T1_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T1_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_T1_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__T1(v_A)
+    : new_tests__legacy__lean_tests__lib__structs__t_T1 [data].
+reduc forall new_tests__legacy__lean_tests__lib__structs__0: v_A;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T1_new_tests__legacy__lean_tests__lib__structs__0(
+      new_tests__legacy__lean_tests__lib__structs__T1(
+        new_tests__legacy__lean_tests__lib__structs__0
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__0.
+
+type new_tests__legacy__lean_tests__lib__structs__t_T2.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_T2_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_T2
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_T2_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_T2 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_T2_default_value: new_tests__legacy__lean_tests__lib__structs__t_T2.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T2_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_T2_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T2_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_T2_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__T2(v_A, v_B)
+    : new_tests__legacy__lean_tests__lib__structs__t_T2 [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: v_B
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__0(
+      new_tests__legacy__lean_tests__lib__structs__T2(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__0.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: v_B
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__1(
+      new_tests__legacy__lean_tests__lib__structs__T2(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__1.
+
+type new_tests__legacy__lean_tests__lib__structs__t_T3.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_T3_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_T3
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_T3_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_T3 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_T3_default_value: new_tests__legacy__lean_tests__lib__structs__t_T3.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T3_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_T3_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T3_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_T3_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__T3(v_A, v_B, v_C)
+    : new_tests__legacy__lean_tests__lib__structs__t_T3 [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: v_B,
+  new_tests__legacy__lean_tests__lib__structs__2: v_C
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__0(
+      new_tests__legacy__lean_tests__lib__structs__T3(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1,
+        new_tests__legacy__lean_tests__lib__structs__2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__0.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: v_B,
+  new_tests__legacy__lean_tests__lib__structs__2: v_C
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__1(
+      new_tests__legacy__lean_tests__lib__structs__T3(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1,
+        new_tests__legacy__lean_tests__lib__structs__2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: v_B,
+  new_tests__legacy__lean_tests__lib__structs__2: v_C
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__2(
+      new_tests__legacy__lean_tests__lib__structs__T3(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1,
+        new_tests__legacy__lean_tests__lib__structs__2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__2.
+
+type new_tests__legacy__lean_tests__lib__structs__t_T3p.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_T3p_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_T3p
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_T3p_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_T3p [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_T3p_default_value: new_tests__legacy__lean_tests__lib__structs__t_T3p.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T3p_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_T3p_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_T3p_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_T3p_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__T3p(
+      v_A, new_tests__legacy__lean_tests__lib__structs__t_T2_of_v_B_v_C
+    )
+    : new_tests__legacy__lean_tests__lib__structs__t_T3p [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: new_tests__legacy__lean_tests__lib__structs__t_T2_of_v_B_v_C
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__0(
+      new_tests__legacy__lean_tests__lib__structs__T3p(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__0.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__0: v_A,
+  new_tests__legacy__lean_tests__lib__structs__1: new_tests__legacy__lean_tests__lib__structs__t_T2_of_v_B_v_C
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__1(
+      new_tests__legacy__lean_tests__lib__structs__T3p(
+        new_tests__legacy__lean_tests__lib__structs__0,
+        new_tests__legacy__lean_tests__lib__structs__1
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__1.
+
+type new_tests__legacy__lean_tests__lib__structs__t_S1.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_S1_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_S1
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_S1_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_S1 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_S1_default_value: new_tests__legacy__lean_tests__lib__structs__t_S1.
+letfun new_tests__legacy__lean_tests__lib__structs__t_S1_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_S1_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_S1_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_S1_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__S1(nat, nat)
+    : new_tests__legacy__lean_tests__lib__structs__t_S1 [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f1(
+      new_tests__legacy__lean_tests__lib__structs__S1(
+        new_tests__legacy__lean_tests__lib__structs__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f2(
+      new_tests__legacy__lean_tests__lib__structs__S1(
+        new_tests__legacy__lean_tests__lib__structs__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_f2.
+
+type new_tests__legacy__lean_tests__lib__structs__t_S2.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_S2_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_S2
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_S2_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_S2 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_S2_default_value: new_tests__legacy__lean_tests__lib__structs__t_S2.
+letfun new_tests__legacy__lean_tests__lib__structs__t_S2_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_S2_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_S2_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_S2_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__S2(
+      new_tests__legacy__lean_tests__lib__structs__t_S1, nat
+    )
+    : new_tests__legacy__lean_tests__lib__structs__t_S2 [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_f1: new_tests__legacy__lean_tests__lib__structs__t_S1,
+  new_tests__legacy__lean_tests__lib__structs__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S2_new_tests__legacy__lean_tests__lib__structs__f_f1(
+      new_tests__legacy__lean_tests__lib__structs__S2(
+        new_tests__legacy__lean_tests__lib__structs__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_f1: new_tests__legacy__lean_tests__lib__structs__t_S1,
+  new_tests__legacy__lean_tests__lib__structs__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S2_new_tests__legacy__lean_tests__lib__structs__f_f2(
+      new_tests__legacy__lean_tests__lib__structs__S2(
+        new_tests__legacy__lean_tests__lib__structs__f_f1,
+        new_tests__legacy__lean_tests__lib__structs__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_f2.
+
+type new_tests__legacy__lean_tests__lib__structs__t_S3.
+
+fun new_tests__legacy__lean_tests__lib__structs__t_S3_to_bitstring(
+      new_tests__legacy__lean_tests__lib__structs__t_S3
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__structs__t_S3_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__structs__t_S3 [typeConverter].
+const new_tests__legacy__lean_tests__lib__structs__t_S3_default_value: new_tests__legacy__lean_tests__lib__structs__t_S3.
+letfun new_tests__legacy__lean_tests__lib__structs__t_S3_default() =
+       new_tests__legacy__lean_tests__lib__structs__t_S3_default_value.
+letfun new_tests__legacy__lean_tests__lib__structs__t_S3_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__structs__t_S3_default_value.
+fun new_tests__legacy__lean_tests__lib__structs__S3(nat, nat, nat, nat, nat)
+    : new_tests__legacy__lean_tests__lib__structs__t_S3 [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_end: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_def: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_theorem: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_structure: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_inductive: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_end(
+      new_tests__legacy__lean_tests__lib__structs__S3(
+        new_tests__legacy__lean_tests__lib__structs__f_end,
+        new_tests__legacy__lean_tests__lib__structs__f_def,
+        new_tests__legacy__lean_tests__lib__structs__f_theorem,
+        new_tests__legacy__lean_tests__lib__structs__f_structure,
+        new_tests__legacy__lean_tests__lib__structs__f_inductive
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_end.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_end: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_def: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_theorem: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_structure: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_inductive: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_def(
+      new_tests__legacy__lean_tests__lib__structs__S3(
+        new_tests__legacy__lean_tests__lib__structs__f_end,
+        new_tests__legacy__lean_tests__lib__structs__f_def,
+        new_tests__legacy__lean_tests__lib__structs__f_theorem,
+        new_tests__legacy__lean_tests__lib__structs__f_structure,
+        new_tests__legacy__lean_tests__lib__structs__f_inductive
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_def.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_end: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_def: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_theorem: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_structure: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_inductive: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_theorem(
+      new_tests__legacy__lean_tests__lib__structs__S3(
+        new_tests__legacy__lean_tests__lib__structs__f_end,
+        new_tests__legacy__lean_tests__lib__structs__f_def,
+        new_tests__legacy__lean_tests__lib__structs__f_theorem,
+        new_tests__legacy__lean_tests__lib__structs__f_structure,
+        new_tests__legacy__lean_tests__lib__structs__f_inductive
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_theorem.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_end: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_def: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_theorem: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_structure: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_inductive: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_structure(
+      new_tests__legacy__lean_tests__lib__structs__S3(
+        new_tests__legacy__lean_tests__lib__structs__f_end,
+        new_tests__legacy__lean_tests__lib__structs__f_def,
+        new_tests__legacy__lean_tests__lib__structs__f_theorem,
+        new_tests__legacy__lean_tests__lib__structs__f_structure,
+        new_tests__legacy__lean_tests__lib__structs__f_inductive
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_structure.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__structs__f_end: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_def: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_theorem: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_structure: nat,
+  new_tests__legacy__lean_tests__lib__structs__f_inductive: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_inductive(
+      new_tests__legacy__lean_tests__lib__structs__S3(
+        new_tests__legacy__lean_tests__lib__structs__f_end,
+        new_tests__legacy__lean_tests__lib__structs__f_def,
+        new_tests__legacy__lean_tests__lib__structs__f_theorem,
+        new_tests__legacy__lean_tests__lib__structs__f_structure,
+        new_tests__legacy__lean_tests__lib__structs__f_inductive
+      )
+    ) = new_tests__legacy__lean_tests__lib__structs__f_inductive.
+
+type new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T.
+
+fun new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_to_bitstring(
+      new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T [typeConverter].
+const new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_default_value: new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T.
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_default() =
+       new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_default_value.
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T_default_value.
+fun new_tests__legacy__lean_tests__lib__specs__issue_1852___T()
+    : new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T [data].
+
+
+type new_tests__legacy__lean_tests__lib__opaque__t_S.
+
+fun new_tests__legacy__lean_tests__lib__opaque__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__opaque__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__opaque__t_S_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__opaque__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__opaque__t_S_default_value: new_tests__legacy__lean_tests__lib__opaque__t_S.
+letfun new_tests__legacy__lean_tests__lib__opaque__t_S_default() =
+       new_tests__legacy__lean_tests__lib__opaque__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__opaque__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__opaque__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__opaque__S()
+    : new_tests__legacy__lean_tests__lib__opaque__t_S [data].
+
+
+type new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct.
+
+fun new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_to_bitstring(
+      new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct [typeConverter].
+const new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_default_value: new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct.
+letfun new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_default() =
+       new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_default_value.
+letfun new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__opaque__t_OpaqueStruct_default_value.
+
+
+type new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz.
+
+fun new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_to_bitstring(
+      new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz [typeConverter].
+const new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_default_value: new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz.
+letfun new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_default_value.
+letfun new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz_default_value.
+fun new_tests__legacy__lean_tests__lib__monadic__trait_constants__Baz()
+    : new_tests__legacy__lean_tests__lib__monadic__trait_constants__t_Baz [data].
+
+
+type new_tests__legacy__lean_tests__lib__monadic__t_S.
+
+fun new_tests__legacy__lean_tests__lib__monadic__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__monadic__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__monadic__t_S_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__monadic__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__monadic__t_S_default_value: new_tests__legacy__lean_tests__lib__monadic__t_S.
+letfun new_tests__legacy__lean_tests__lib__monadic__t_S_default() =
+       new_tests__legacy__lean_tests__lib__monadic__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__monadic__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__monadic__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__monadic__S(nat)
+    : new_tests__legacy__lean_tests__lib__monadic__t_S [data].
+reduc forall new_tests__legacy__lean_tests__lib__monadic__f_f: nat;
+    accessor_new_tests__legacy__lean_tests__lib__monadic__t_S_new_tests__legacy__lean_tests__lib__monadic__f_f(
+      new_tests__legacy__lean_tests__lib__monadic__S(
+        new_tests__legacy__lean_tests__lib__monadic__f_f
+      )
+    ) = new_tests__legacy__lean_tests__lib__monadic__f_f.
+
+type new_tests__legacy__lean_tests__lib__loops__errors__t_Error.
+
+fun new_tests__legacy__lean_tests__lib__loops__errors__t_Error_to_bitstring(
+      new_tests__legacy__lean_tests__lib__loops__errors__t_Error
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__loops__errors__t_Error_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__loops__errors__t_Error [typeConverter].
+const new_tests__legacy__lean_tests__lib__loops__errors__t_Error_default_value: new_tests__legacy__lean_tests__lib__loops__errors__t_Error.
+letfun new_tests__legacy__lean_tests__lib__loops__errors__t_Error_default() =
+       new_tests__legacy__lean_tests__lib__loops__errors__t_Error_default_value.
+letfun new_tests__legacy__lean_tests__lib__loops__errors__t_Error_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__loops__errors__t_Error_default_value.
+fun new_tests__legacy__lean_tests__lib__loops__errors__Error_Foo()
+    : new_tests__legacy__lean_tests__lib__loops__errors__t_Error [data].
+
+fun new_tests__legacy__lean_tests__lib__loops__errors__Error_Bar(nat)
+    : new_tests__legacy__lean_tests__lib__loops__errors__t_Error [data].
+reduc forall new_tests__legacy__lean_tests__lib__loops__errors__0: nat;
+    accessor_new_tests__legacy__lean_tests__lib__loops__errors__t_Error_new_tests__legacy__lean_tests__lib__loops__errors__0(
+      new_tests__legacy__lean_tests__lib__loops__errors__Error_Bar(
+        new_tests__legacy__lean_tests__lib__loops__errors__0
+      )
+    ) = new_tests__legacy__lean_tests__lib__loops__errors__0.
+
+type new_tests__legacy__lean_tests__lib__enums__t_E.
+
+fun new_tests__legacy__lean_tests__lib__enums__t_E_to_bitstring(
+      new_tests__legacy__lean_tests__lib__enums__t_E
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__enums__t_E_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__enums__t_E [typeConverter].
+const new_tests__legacy__lean_tests__lib__enums__t_E_default_value: new_tests__legacy__lean_tests__lib__enums__t_E.
+letfun new_tests__legacy__lean_tests__lib__enums__t_E_default() =
+       new_tests__legacy__lean_tests__lib__enums__t_E_default_value.
+letfun new_tests__legacy__lean_tests__lib__enums__t_E_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__enums__t_E_default_value.
+fun new_tests__legacy__lean_tests__lib__enums__E_V1()
+    : new_tests__legacy__lean_tests__lib__enums__t_E [data].
+
+fun new_tests__legacy__lean_tests__lib__enums__E_V2()
+    : new_tests__legacy__lean_tests__lib__enums__t_E [data].
+
+fun new_tests__legacy__lean_tests__lib__enums__E_V3(nat)
+    : new_tests__legacy__lean_tests__lib__enums__t_E [data].
+reduc forall new_tests__legacy__lean_tests__lib__enums__0: nat;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__0(
+      new_tests__legacy__lean_tests__lib__enums__E_V3(
+        new_tests__legacy__lean_tests__lib__enums__0
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__0.
+fun new_tests__legacy__lean_tests__lib__enums__E_V4(nat, nat, nat)
+    : new_tests__legacy__lean_tests__lib__enums__t_E [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__0: nat,
+  new_tests__legacy__lean_tests__lib__enums__1: nat,
+  new_tests__legacy__lean_tests__lib__enums__2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__0(
+      new_tests__legacy__lean_tests__lib__enums__E_V4(
+        new_tests__legacy__lean_tests__lib__enums__0,
+        new_tests__legacy__lean_tests__lib__enums__1,
+        new_tests__legacy__lean_tests__lib__enums__2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__0.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__0: nat,
+  new_tests__legacy__lean_tests__lib__enums__1: nat,
+  new_tests__legacy__lean_tests__lib__enums__2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__1(
+      new_tests__legacy__lean_tests__lib__enums__E_V4(
+        new_tests__legacy__lean_tests__lib__enums__0,
+        new_tests__legacy__lean_tests__lib__enums__1,
+        new_tests__legacy__lean_tests__lib__enums__2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__0: nat,
+  new_tests__legacy__lean_tests__lib__enums__1: nat,
+  new_tests__legacy__lean_tests__lib__enums__2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__2(
+      new_tests__legacy__lean_tests__lib__enums__E_V4(
+        new_tests__legacy__lean_tests__lib__enums__0,
+        new_tests__legacy__lean_tests__lib__enums__1,
+        new_tests__legacy__lean_tests__lib__enums__2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__2.
+fun new_tests__legacy__lean_tests__lib__enums__E_V5(nat, nat)
+    : new_tests__legacy__lean_tests__lib__enums__t_E [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__enums__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__f_f1(
+      new_tests__legacy__lean_tests__lib__enums__E_V5(
+        new_tests__legacy__lean_tests__lib__enums__f_f1,
+        new_tests__legacy__lean_tests__lib__enums__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__enums__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__f_f2(
+      new_tests__legacy__lean_tests__lib__enums__E_V5(
+        new_tests__legacy__lean_tests__lib__enums__f_f1,
+        new_tests__legacy__lean_tests__lib__enums__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__f_f2.
+fun new_tests__legacy__lean_tests__lib__enums__E_V6(nat, nat)
+    : new_tests__legacy__lean_tests__lib__enums__t_E [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__enums__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__f_f1(
+      new_tests__legacy__lean_tests__lib__enums__E_V6(
+        new_tests__legacy__lean_tests__lib__enums__f_f1,
+        new_tests__legacy__lean_tests__lib__enums__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__f_f1.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__f_f1: nat,
+  new_tests__legacy__lean_tests__lib__enums__f_f2: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_E_new_tests__legacy__lean_tests__lib__enums__f_f2(
+      new_tests__legacy__lean_tests__lib__enums__E_V6(
+        new_tests__legacy__lean_tests__lib__enums__f_f1,
+        new_tests__legacy__lean_tests__lib__enums__f_f2
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__f_f2.
+
+type new_tests__legacy__lean_tests__lib__enums__t_MyList.
+
+fun new_tests__legacy__lean_tests__lib__enums__t_MyList_to_bitstring(
+      new_tests__legacy__lean_tests__lib__enums__t_MyList
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__enums__t_MyList_from_bitstring(bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__enums__t_MyList [typeConverter].
+const new_tests__legacy__lean_tests__lib__enums__t_MyList_default_value: new_tests__legacy__lean_tests__lib__enums__t_MyList.
+letfun new_tests__legacy__lean_tests__lib__enums__t_MyList_default() =
+       new_tests__legacy__lean_tests__lib__enums__t_MyList_default_value.
+letfun new_tests__legacy__lean_tests__lib__enums__t_MyList_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__enums__t_MyList_default_value.
+fun new_tests__legacy__lean_tests__lib__enums__MyList_Nil()
+    : new_tests__legacy__lean_tests__lib__enums__t_MyList [data].
+
+fun new_tests__legacy__lean_tests__lib__enums__MyList_Cons(
+      v_T, new_tests__legacy__lean_tests__lib__enums__t_MyList_of_v_T
+    )
+    : new_tests__legacy__lean_tests__lib__enums__t_MyList [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__f_hd: v_T,
+  new_tests__legacy__lean_tests__lib__enums__f_tl: new_tests__legacy__lean_tests__lib__enums__t_MyList_of_v_T
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_MyList_new_tests__legacy__lean_tests__lib__enums__f_hd(
+      new_tests__legacy__lean_tests__lib__enums__MyList_Cons(
+        new_tests__legacy__lean_tests__lib__enums__f_hd,
+        new_tests__legacy__lean_tests__lib__enums__f_tl
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__f_hd.
+reduc forall 
+  new_tests__legacy__lean_tests__lib__enums__f_hd: v_T,
+  new_tests__legacy__lean_tests__lib__enums__f_tl: new_tests__legacy__lean_tests__lib__enums__t_MyList_of_v_T
+;
+    accessor_new_tests__legacy__lean_tests__lib__enums__t_MyList_new_tests__legacy__lean_tests__lib__enums__f_tl(
+      new_tests__legacy__lean_tests__lib__enums__MyList_Cons(
+        new_tests__legacy__lean_tests__lib__enums__f_hd,
+        new_tests__legacy__lean_tests__lib__enums__f_tl
+      )
+    ) = new_tests__legacy__lean_tests__lib__enums__f_tl.
+
+type new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S.
+
+fun new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_from_bitstring(
+      bitstring
+    )
+    : new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_default_value: new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S.
+letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_default(
+
+       ) =
+       new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_err(
+       ) =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__constants__const_parameters__S(nat)
+    : new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S [data].
+reduc forall 
+  new_tests__legacy__lean_tests__lib__constants__const_parameters__0: nat
+;
+    accessor_new_tests__legacy__lean_tests__lib__constants__const_parameters__t_S_new_tests__legacy__lean_tests__lib__constants__const_parameters__0(
+      new_tests__legacy__lean_tests__lib__constants__const_parameters__S(
+        new_tests__legacy__lean_tests__lib__constants__const_parameters__0
+      )
+    ) = new_tests__legacy__lean_tests__lib__constants__const_parameters__0.
+
+type new_tests__legacy__lean_tests__lib__binops__t_S.
+
+fun new_tests__legacy__lean_tests__lib__binops__t_S_to_bitstring(
+      new_tests__legacy__lean_tests__lib__binops__t_S
+    )
+    : bitstring [typeConverter].
+fun new_tests__legacy__lean_tests__lib__binops__t_S_from_bitstring(bitstring)
+    : new_tests__legacy__lean_tests__lib__binops__t_S [typeConverter].
+const new_tests__legacy__lean_tests__lib__binops__t_S_default_value: new_tests__legacy__lean_tests__lib__binops__t_S.
+letfun new_tests__legacy__lean_tests__lib__binops__t_S_default() =
+       new_tests__legacy__lean_tests__lib__binops__t_S_default_value.
+letfun new_tests__legacy__lean_tests__lib__binops__t_S_err() =
+       let x = construct_fail() in new_tests__legacy__lean_tests__lib__binops__t_S_default_value.
+fun new_tests__legacy__lean_tests__lib__binops__S()
+    : new_tests__legacy__lean_tests__lib__binops__t_S [data].
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun new_tests__legacy__lean_tests__lib__traits__trait_level_args__test(
+         x : v_U, a : v_A, b : v_B
+       ) =
+       let wildcard3: bitstring = (
+         new_tests__legacy__lean_tests__lib__traits__trait_level_args__f_f1(x)
+       ) in
+       let wildcard2: bitstring = (
+         new_tests__legacy__lean_tests__lib__traits__trait_level_args__f_f2(x, a
+         )
+       ) in
+       let wildcard1: bitstring = (
+         new_tests__legacy__lean_tests__lib__traits__trait_level_args__f_f3(
+           x, a, b
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__traits__overlapping_methods__test(
+         wildcard4 : bitstring
+       ) =
+       let x:nat = (9) in
+       core_models__ops__arith__f_add(
+         core_models__ops__arith__f_add(
+           new_tests__legacy__lean_tests__lib__traits__overlapping_methods__f_f(
+             x
+           ),
+           new_tests__legacy__lean_tests__lib__traits__overlapping_methods__f_f(
+             x
+           )
+         ),
+         new_tests__legacy__lean_tests__lib__traits__overlapping_methods__f_f(x)
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__traits__inheritance__test(
+         wildcard5 : bitstring
+       ) =
+       let s = (new_tests__legacy__lean_tests__lib__traits__inheritance__S()) in
+       core_models__ops__arith__f_add(
+         new_tests__legacy__lean_tests__lib__traits__inheritance__f_f3(s), 1
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__traits__bounds__test(
+         x1 : new_tests__legacy__lean_tests__lib__traits__bounds__t_S1,
+         x2 : new_tests__legacy__lean_tests__lib__traits__bounds__t_S2
+       ) =
+       core_models__ops__arith__f_add(
+         new_tests__legacy__lean_tests__lib__traits__bounds__f_ff_test(x2, x1),
+         new_tests__legacy__lean_tests__lib__traits__bounds__f_f1(x1)
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__traits__basic__f(x : v_T) =
+       core_models__ops__arith__f_add(
+         new_tests__legacy__lean_tests__lib__traits__basic__f_f1(x),
+         new_tests__legacy__lean_tests__lib__traits__basic__f_f2(x, x)
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__traits__associated_constant__foo(
+         n : nat
+       ) =
+       core_models__ops__arith__f_add(
+         n,
+         new_tests__legacy__lean_tests__lib__traits__associated_constant__f_One(
+         )
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__structs__miscellaneous__test_tuples(
+         wildcard6 : bitstring
+       ) =
+       let lit = (1) in
+       let constr = (
+         new_tests__legacy__lean_tests__lib__structs__miscellaneous__S(42)
+       ) in
+       let proj = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__miscellaneous__t_S_new_tests__legacy__lean_tests__lib__structs__miscellaneous__f_f(
+           constr
+         )
+       ) in
+       let ite = (
+         if true
+         then ((1, 2))
+         else (
+           let z = (core_models__ops__arith__f_add(1, 2)) in
+           (z, z)
+         )
+       ) in
+       (1, 2).
+
+letfun new_tests__legacy__lean_tests__lib__structs__base_expressions__test(
+         wildcard14 : bitstring
+       ) =
+       let s1 = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(1,2,3)
+       ) in
+       let wildcard13: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0)
+       ) in
+       let wildcard12: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0)
+       ) in
+       let wildcard11: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0)
+       ) in
+       let wildcard10: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0,1)
+       ) in
+       let wildcard9: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0,1)
+       ) in
+       let wildcard8: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0,2)
+       ) in
+       let wildcard7: bitstring = (
+         new_tests__legacy__lean_tests__lib__structs__base_expressions__S(0,1,0)
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__structs__tuple_structs(
+         wildcard38 : bitstring
+       ) =
+       let t0 = (new_tests__legacy__lean_tests__lib__structs__T0()) in
+       let t1 = (new_tests__legacy__lean_tests__lib__structs__T1(1)) in
+       let t2 = (new_tests__legacy__lean_tests__lib__structs__T2(1, 2)) in
+       let t3 = (
+         new_tests__legacy__lean_tests__lib__structs__T3(
+           new_tests__legacy__lean_tests__lib__structs__T0(),
+           new_tests__legacy__lean_tests__lib__structs__T1(1),
+           new_tests__legacy__lean_tests__lib__structs__T2(1, 2)
+         )
+       ) in
+       let t3p = (
+         new_tests__legacy__lean_tests__lib__structs__T3p(
+           new_tests__legacy__lean_tests__lib__structs__T0(),
+           new_tests__legacy__lean_tests__lib__structs__T2(
+             new_tests__legacy__lean_tests__lib__structs__T1(1),
+             new_tests__legacy__lean_tests__lib__structs__T2(1, 2)
+           )
+         )
+       ) in
+       let new_tests__legacy__lean_tests__lib__structs__T0() = (t0) in
+       let new_tests__legacy__lean_tests__lib__structs__T1(u1) = (t1) in
+       let new_tests__legacy__lean_tests__lib__structs__T2(u2, u3) = (t2) in
+       let
+         new_tests__legacy__lean_tests__lib__structs__T3(
+           new_tests__legacy__lean_tests__lib__structs__T0(),
+           new_tests__legacy__lean_tests__lib__structs__T1(wildcard35: bitstring
+           ),
+           new_tests__legacy__lean_tests__lib__structs__T2(
+             wildcard36: bitstring, wildcard37: bitstring
+           )
+         )
+        = (t3) in
+       let
+         new_tests__legacy__lean_tests__lib__structs__T3p(
+           new_tests__legacy__lean_tests__lib__structs__T0(),
+           new_tests__legacy__lean_tests__lib__structs__T2(
+             new_tests__legacy__lean_tests__lib__structs__T1(
+               wildcard32: bitstring
+             ),
+             new_tests__legacy__lean_tests__lib__structs__T2(
+               wildcard33: bitstring, wildcard34: bitstring
+             )
+           )
+         )
+        = (t3p) in
+       let wildcard31: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T1_new_tests__legacy__lean_tests__lib__structs__0(
+           t1
+         )
+       ) in
+       let wildcard30: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__0(
+           t2
+         )
+       ) in
+       let wildcard29: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__1(
+           t2
+         )
+       ) in
+       let wildcard28: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__0(
+           t3
+         )
+       ) in
+       let wildcard27: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__1(
+           t3
+         )
+       ) in
+       let wildcard26: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__2(
+           t3
+         )
+       ) in
+       let wildcard25: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__1(
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_T3_new_tests__legacy__lean_tests__lib__structs__2(
+             t3
+           )
+         )
+       ) in
+       let wildcard24: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__0(
+           t3p
+         )
+       ) in
+       let wildcard23: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__1(
+           t3p
+         )
+       ) in
+       let wildcard22: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__0(
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__1(
+             accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__1(
+               t3p
+             )
+           )
+         )
+       ) in
+       let wildcard21: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__0(
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__1(
+             t3p
+           )
+         )
+       ) in
+       let wildcard20: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__structs__t_T2_new_tests__legacy__lean_tests__lib__structs__1(
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_T3p_new_tests__legacy__lean_tests__lib__structs__1(
+             t3p
+           )
+         )
+       ) in
+       let wildcard19: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__T0() = t0 in ()
+       ) in
+       let wildcard18: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__T1(u1) = t1 in ()
+       ) in
+       let wildcard17: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__T2(u2, u3) = t2 in ()
+       ) in
+       let wildcard16: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__T3(
+           new_tests__legacy__lean_tests__lib__structs__T0(),
+           new_tests__legacy__lean_tests__lib__structs__T1(u1),
+           new_tests__legacy__lean_tests__lib__structs__T2(u2, u3)
+         ) = t3 in ()
+       ) in
+       let wildcard15: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__T3p(
+           new_tests__legacy__lean_tests__lib__structs__T0(),
+           new_tests__legacy__lean_tests__lib__structs__T2(
+             new_tests__legacy__lean_tests__lib__structs__T1(u1),
+             new_tests__legacy__lean_tests__lib__structs__T2(u2, u3)
+           )
+         ) = t3p in ()
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__structs__normal_structs(
+         wildcard43 : bitstring
+       ) =
+       let s1 = (new_tests__legacy__lean_tests__lib__structs__S1(0,1)) in
+       let s2 = (
+         new_tests__legacy__lean_tests__lib__structs__S2(
+           new_tests__legacy__lean_tests__lib__structs__S1(2,3),4
+         )
+       ) in
+       let s3 = (new_tests__legacy__lean_tests__lib__structs__S3(0,0,0,0,0)) in
+       let new_tests__legacy__lean_tests__lib__structs__S1(f1,f2) = (s1) in
+       let new_tests__legacy__lean_tests__lib__structs__S1(f1,other_name_for_f2) = (
+         s1
+       ) in
+       let
+         new_tests__legacy__lean_tests__lib__structs__S2(
+           new_tests__legacy__lean_tests__lib__structs__S1(f1,f2)
+           ,other_name_for_f2
+         )
+        = (s2) in
+       let
+         new_tests__legacy__lean_tests__lib__structs__S3(
+           end,v_def,theorem,structure,inductive
+         )
+        = (s3) in
+       let wildcard42: bitstring = (
+         (
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f1(
+             s1
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f2(
+             s1
+           )
+         )
+       ) in
+       let wildcard41: bitstring = (
+         (
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f1(
+             s1
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f2(
+             s1
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f1(
+             accessor_new_tests__legacy__lean_tests__lib__structs__t_S2_new_tests__legacy__lean_tests__lib__structs__f_f1(
+               s2
+             )
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S1_new_tests__legacy__lean_tests__lib__structs__f_f2(
+             accessor_new_tests__legacy__lean_tests__lib__structs__t_S2_new_tests__legacy__lean_tests__lib__structs__f_f1(
+               s2
+             )
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S2_new_tests__legacy__lean_tests__lib__structs__f_f2(
+             s2
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_end(
+             s3
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_def(
+             s3
+           ),
+           accessor_new_tests__legacy__lean_tests__lib__structs__t_S3_new_tests__legacy__lean_tests__lib__structs__f_theorem(
+             s3
+           )
+         )
+       ) in
+       let wildcard40: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__S1(f1,f2) = s1 in ()
+       ) in
+       let wildcard39: bitstring = (
+         let new_tests__legacy__lean_tests__lib__structs__S2(
+           new_tests__legacy__lean_tests__lib__structs__S1(f1,other_name_for_f2)
+           ,f2
+         ) = s2 in ()
+       ) in
+       let new_tests__legacy__lean_tests__lib__structs__S3(
+         end,v_def,theorem,structure,inductive
+       ) = s3 in ().
+
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1945___mktuple(a : nat) =
+       let x = (a) in
+       core_models__cmp__f_eq(a, 0).
+
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___impl_T__test(
+         self : new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T
+       ) =
+       true.
+
+letfun new_tests__legacy__lean_tests__lib__specs__issue_1852___impl_T__func(
+         self : new_tests__legacy__lean_tests__lib__specs__issue_1852___t_T
+       ) =
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__specs__test(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__specs__uuse_previous_result(x : nat) =
+       new_tests__legacy__lean_tests__lib__specs__test(x).
+
+letfun new_tests__legacy__lean_tests__lib__specs__test_proof(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__specs__square(x : nat) =
+       core_models__ops__arith__f_mul(x, x).
+
+letfun new_tests__legacy__lean_tests__lib__specs__forall_and_exists(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__specs__fn_without_args(
+         wildcard44 : bitstring
+       ) =
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__specs__custom_pure_proofs(x : nat) =
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__recursion__factorial(n : nat) =
+       if core_models__cmp__f_eq(n, 0)
+       then (1)
+       else (
+         core_models__ops__arith__f_mul(
+           n,
+           new_tests__legacy__lean_tests__lib__recursion__factorial(
+             core_models__ops__arith__f_sub(n, 1)
+           )
+         )
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__opaque__an_opaque_fn(
+         wildcard45 : bitstring
+       ) =
+       rust_primitives__hax__dropped_body.
+
+letfun new_tests__legacy__lean_tests__lib__monadic__test(wildcard57 : bitstring) =
+       let wildcard56: bitstring = (9) in
+       let wildcard55: bitstring = (core_models__ops__arith__f_add(9, 9)) in
+       let wildcard54: bitstring = (
+         new_tests__legacy__lean_tests__lib__monadic__S(9)
+       ) in
+       let wildcard53: bitstring = (
+         new_tests__legacy__lean_tests__lib__monadic__S(
+           core_models__ops__arith__f_add(9, 9)
+         )
+       ) in
+       let wildcard52: bitstring = (
+         accessor_new_tests__legacy__lean_tests__lib__monadic__t_S_new_tests__legacy__lean_tests__lib__monadic__f_f(
+           new_tests__legacy__lean_tests__lib__monadic__S(
+             core_models__ops__arith__f_add(9, 9)
+           )
+         )
+       ) in
+       let wildcard51: bitstring = (
+         core_models__ops__arith__f_add(
+           accessor_new_tests__legacy__lean_tests__lib__monadic__t_S_new_tests__legacy__lean_tests__lib__monadic__f_f(
+             new_tests__legacy__lean_tests__lib__monadic__S(
+               core_models__ops__arith__f_add(9, 9)
+             )
+           ),
+           9
+         )
+       ) in
+       let wildcard50: bitstring = (
+         if true
+         then (core_models__ops__arith__f_add(3, 4))
+         else (core_models__ops__arith__f_sub(3, 4))
+       ) in
+       let wildcard49: bitstring = (
+         if core_models__cmp__f_eq(core_models__ops__arith__f_add(9, 9), 0)
+         then (core_models__ops__arith__f_add(3, 4))
+         else (core_models__ops__arith__f_sub(3, 4))
+       ) in
+       let wildcard48: bitstring = (
+         if true
+         then
+           (let x = (9) in
+            let wildcard46: bitstring = (core_models__ops__arith__f_add(3, x)) in
+            ())
+         else (
+           let y = (19) in
+           let wildcard47: bitstring = (
+             core_models__ops__arith__f_sub(
+               core_models__ops__arith__f_add(3, y), 4
+             )
+           ) in
+           ()
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__loops__errors__loop3(
+         wildcard58 : bitstring
+       ) =
+       let x = (0) in
+       let end:nat = (10) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 1,
+ f_end: end,
+ })) {
+ |x| {
+ {
+ let _: tuple0 = {
+ (if core_models::cmp::f_eq(i, 5) {
+ {
+ let..."
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__loops__errors__loop4(
+         wildcard59 : bitstring
+       ) =
+       let e = (0) in
+       let f = (|()|42) in
+       let e = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 0,
+ f_end: core_models::ops::function::f_call(f, Tuple1(Tuple0())),
+ })) {
+ |e| {
+ {
+ let _: tu..."
+         )
+       ) in
+       (e, e).
+
+letfun new_tests__legacy__lean_tests__lib__loops__loop1(wildcard60 : bitstring) =
+       let x:nat = (0) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 1,
+ f_end: 10,
+ })) {
+ |x| { core_models::ops::arith::f_add(x, i) }
+ })(x)
+ }"
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__loops__loop2(wildcard61 : bitstring) =
+       let x:nat = (0) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 1,
+ f_end: 10,
+ })) {
+ |x| {
+ {
+ let _: tuple0 = {
+ (if core_models::cmp::f_eq(i, 5) {
+ {
+ let ..."
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__loops__for_loop_with_spec(y : nat) =
+       let x:nat = (y) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (for i in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 0,
+ f_end: y,
+ })) {
+ |x| {
+ {
+ let _: tuple0 = {
+ hax_lib::e_internal_loop_invariant::<
+ int,
+..."
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__loops__while_loop1(s : nat) =
+       let x:nat = (s) in
+       let x = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |x| {
+ (if core_models::cmp::f_gt(x, 0) {
+ {
+ let _: tuple0 = {
+ hax_lib::e_internal_loop_decreases(hax_lib::int::f_to_int(x))
+ };
+ {
+ let x: int = { core_models::ops::arith::f_sub(x, 1) }..."
+         )
+       ) in
+       x.
+
+const new_tests__legacy__lean_tests__lib__floats__v_N: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__floats__test(wildcard62 : bitstring) =
+       let l0 = (1.0f64) in
+       let l1 = (0.9f64) in
+       let l2 = (5.0f32) in
+       let l5 = (new_tests__legacy__lean_tests__lib__floats__v_N) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__floats__f(
+         x : bitstring, y : bitstring
+       ) =
+       y.
+
+letfun new_tests__legacy__lean_tests__lib__enums__enums(wildcard64 : bitstring) =
+       let e_v1 = (new_tests__legacy__lean_tests__lib__enums__E_V1()) in
+       let e_v2 = (new_tests__legacy__lean_tests__lib__enums__E_V2()) in
+       let e_v3 = (new_tests__legacy__lean_tests__lib__enums__E_V3(23)) in
+       let e_v4 = (new_tests__legacy__lean_tests__lib__enums__E_V4(23, 12, 1)) in
+       let e_v5 = (new_tests__legacy__lean_tests__lib__enums__E_V5(23,43)) in
+       let e_v6 = (new_tests__legacy__lean_tests__lib__enums__E_V6(12,13)) in
+       let nil:new_tests__legacy__lean_tests__lib__enums__t_MyList_of_nat = (
+         new_tests__legacy__lean_tests__lib__enums__MyList_Nil()
+       ) in
+       let cons_1_ = (
+         new_tests__legacy__lean_tests__lib__enums__MyList_Cons(1,nil)
+       ) in
+       let cons_2_1_ = (
+         new_tests__legacy__lean_tests__lib__enums__MyList_Cons(2,cons_1_)
+       ) in
+       let new_tests__legacy__lean_tests__lib__enums__E_V1() = e_v1 in ()
+       else let new_tests__legacy__lean_tests__lib__enums__E_V2() = e_v1 in ()
+       else let new_tests__legacy__lean_tests__lib__enums__E_V3(
+         wildcard63: bitstring
+       ) = e_v1 in ()
+       else let new_tests__legacy__lean_tests__lib__enums__E_V4(x1, x2, x3) = e_v1 in (
+         let y1 = (core_models__ops__arith__f_add(x1, x2)) in
+         let y2 = (core_models__ops__arith__f_sub(y1, x2)) in
+         let y3 = (core_models__ops__arith__f_add(y2, x3)) in
+         ()
+       )
+       else let new_tests__legacy__lean_tests__lib__enums__E_V5(f1,f2) = e_v1 in (
+
+       )
+       else let new_tests__legacy__lean_tests__lib__enums__E_V6(
+         f1,other_name_for_f2
+       ) = e_v1 in ().
+
+letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__f(
+         wildcard65 : bitstring
+       ) =
+       v_N.
+
+const new_tests__legacy__lean_tests__lib__constants__const_parameters__v_N0: bitstring.
+
+const new_tests__legacy__lean_tests__lib__constants__const_parameters__v_N1: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__test(
+         wildcard67 : bitstring
+       ) =
+       let wildcard66: bitstring = (
+         core_models__ops__arith__f_add(
+           new_tests__legacy__lean_tests__lib__constants__const_parameters__f(()
+           ),
+           new_tests__legacy__lean_tests__lib__constants__const_parameters__f(()
+           )
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__constants__const_parameters__test2(
+         x : v_A
+       ) =
+       let s = (
+         new_tests__legacy__lean_tests__lib__constants__const_parameters__S(9)
+       ) in
+       let wildcard68: bitstring = (
+         core_models__ops__arith__f_add(
+           new_tests__legacy__lean_tests__lib__constants__const_parameters__f_f(
+             s
+           ),
+           new_tests__legacy__lean_tests__lib__constants__const_parameters__f_f(
+             x
+           )
+         )
+       ) in
+       let s = (
+         new_tests__legacy__lean_tests__lib__constants__const_parameters__S(9)
+       ) in
+       new_tests__legacy__lean_tests__lib__constants__const_parameters__f_f(x).
+
+const new_tests__legacy__lean_tests__lib__constants__v_C1: bitstring.
+
+const new_tests__legacy__lean_tests__lib__constants__v_C2: bitstring.
+
+const new_tests__legacy__lean_tests__lib__constants__v_C3: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__constants__computation(x : nat) =
+       core_models__ops__arith__f_add(core_models__ops__arith__f_add(x, x), 1).
+
+const new_tests__legacy__lean_tests__lib__constants__v_C4: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__constants__test(
+         wildcard69 : bitstring
+       ) =
+       let x = (
+         core_models__ops__arith__f_add(
+           new_tests__legacy__lean_tests__lib__constants__v_C1, 1
+         )
+       ) in
+       let y = (
+         core_models__ops__arith__f_add(
+           new_tests__legacy__lean_tests__lib__constants__v_C2,
+           new_tests__legacy__lean_tests__lib__constants__v_C3
+         )
+       ) in
+       let z = (
+         core_models__ops__arith__f_sub(
+           new_tests__legacy__lean_tests__lib__constants__v_C4,
+           new_tests__legacy__lean_tests__lib__constants__v_C3
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__casts__casting_edge_cases(
+         e_dummy : bool
+       ) =
+       let case1 = (core_models__cmp__f_eq(256, 0)) in
+       let case2 = (core_models__cmp__f_eq(-1, 255)) in
+       let case3 = (core_models__cmp__f_eq(-1, -1)) in
+       let case4 = (core_models__cmp__f_eq(128, -128)) in
+       let case5 = (core_models__cmp__f_eq(4294967295, -1)) in
+       case1 && case2 && case3 && case4 && case5.
+
+letfun new_tests__legacy__lean_tests__lib__casts__shift_after_cast(
+         x : nat, n : nat
+       ) =
+       core_models__ops__bit__f_shl(x, n).
+
+letfun new_tests__legacy__lean_tests__lib__casts__add_after_cast(
+         a : nat, b : nat, c : nat
+       ) =
+       core_models__ops__arith__f_add(core_models__ops__arith__f_add(a, b), c).
+
+letfun new_tests__legacy__lean_tests__lib__binops__noop(x : nat) =
+       x.
+
+letfun new_tests__legacy__lean_tests__lib__binops__neg_int(x : nat) =
+       core_models__ops__arith__f_neg(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_int(x : nat) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_bool(x : bool) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__index(x : bitstring) =
+       core_models__ops__index__f_index(x, 0).
+
+letfun new_tests__legacy__lean_tests__lib__binops__add_int(x : nat, y : nat) =
+       core_models__ops__arith__f_add(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__sub_int(x : nat, y : nat) =
+       core_models__ops__arith__f_sub(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__mul_int(x : nat, y : nat) =
+       core_models__ops__arith__f_mul(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__div_int(x : nat, y : nat) =
+       core_models__ops__arith__f_div(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__rem_int(x : nat, y : nat) =
+       core_models__ops__arith__f_rem(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__shr_int(x : nat, y : nat) =
+       core_models__ops__bit__f_shr(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__shl_int(x : nat, y : nat) =
+       core_models__ops__bit__f_shl(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitand_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitand(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitand_bool(
+         x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitand(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitor_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitor_bool(x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitxor_int(x : nat, y : nat) =
+       core_models__ops__bit__f_bitxor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__bitxor_bool(
+         x : bool, y : bool
+       ) =
+       core_models__ops__bit__f_bitxor(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__logical_op_and(
+         x : bool, y : bool
+       ) =
+       x && y.
+
+letfun new_tests__legacy__lean_tests__lib__binops__logical_op_or(
+         x : bool, y : bool
+       ) =
+       x || y.
+
+letfun new_tests__legacy__lean_tests__lib__binops__eq_int(x : nat, y : nat) =
+       core_models__cmp__f_eq(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__eq_bool(x : bool, y : bool) =
+       core_models__cmp__f_eq(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__neq_int(x : nat, y : nat) =
+       core_models__cmp__f_ne(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__neq_bool(x : bool, y : bool) =
+       core_models__cmp__f_ne(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__lt_int(x : nat, y : nat) =
+       core_models__cmp__f_lt(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__le_int(x : nat, y : nat) =
+       core_models__cmp__f_le(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__gt_int(x : nat, y : nat) =
+       core_models__cmp__f_gt(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__ge_int(x : nat, y : nat) =
+       core_models__cmp__f_ge(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__binops__not_s(
+         x : new_tests__legacy__lean_tests__lib__binops__t_S
+       ) =
+       core_models__ops__bit__f_not(x).
+
+letfun new_tests__legacy__lean_tests__lib__binops__add_s(
+         x : new_tests__legacy__lean_tests__lib__binops__t_S,
+         y : new_tests__legacy__lean_tests__lib__binops__t_S
+       ) =
+       core_models__ops__arith__f_add(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_projections__func(
+         d : v_D, f : v_F, u : v_U
+       ) =
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__get_both(
+         pair : v_P
+       ) =
+       (
+         new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__f_first(
+           pair
+         ),
+         new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__f_second(
+           pair
+         )
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__b(
+         wildcard70 : bitstring
+       ) =
+       let pair = ((42, true)) in
+       let both = (
+         new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__get_both(
+           pair
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__get_first_as_i32(
+         pair : v_P
+       ) =
+       new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__f_first(
+         pair
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__basic__just_the_first(
+         iter : v_I
+       ) =
+       new_tests__legacy__lean_tests__lib__associated_types__basic__f_first(iter
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__basic__first_plus_1_(
+         iter : v_I
+       ) =
+       core_models__ops__arith__f_add(
+         new_tests__legacy__lean_tests__lib__associated_types__basic__f_first(
+           iter
+         ),
+         1
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__associated_types__basic__a(
+         wildcard72 : bitstring
+       ) =
+       let wildcard71: bitstring = (
+         new_tests__legacy__lean_tests__lib__associated_types__basic__first_plus_1_(
+           true
+         )
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__array__f(x : bitstring) =
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__array__g(x : bitstring) =
+       let wildcard74: bitstring = (
+         new_tests__legacy__lean_tests__lib__array__f(x)
+       ) in
+       let wildcard73: bitstring = (
+         new_tests__legacy__lean_tests__lib__array__f(
+           rust_primitives__hax__repeat(0, 10)
+         )
+       ) in
+       ().
+
+const new_tests__legacy__lean_tests__lib__v_FORTYTWO: bitstring.
+
+const new_tests__legacy__lean_tests__lib__v_MINUS_FORTYTWO: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__returns42(wildcard75 : bitstring) =
+       new_tests__legacy__lean_tests__lib__v_FORTYTWO.
+
+letfun new_tests__legacy__lean_tests__lib__add_two_numbers(x : nat, y : nat) =
+       core_models__ops__arith__f_add(x, y).
+
+letfun new_tests__legacy__lean_tests__lib__letBinding(x : nat, y : nat) =
+       let useless = (()) in
+       let result1 = (core_models__ops__arith__f_add(x, y)) in
+       let result2 = (core_models__ops__arith__f_add(result1, 2)) in
+       core_models__ops__arith__f_add(result2, 1).
+
+letfun new_tests__legacy__lean_tests__lib__closure(wildcard76 : bitstring) =
+       let x = (41) in
+       let f1 = (|y|core_models__ops__arith__f_add(y, x)) in
+       let f2 = (
+         |y,z|core_models__ops__arith__f_add(
+           core_models__ops__arith__f_add(y, x), z
+         )
+       ) in
+       let res1 = (core_models__ops__function__f_call(f1, (1))) in
+       let res2 = (core_models__ops__function__f_call(f2, (2, 3))) in
+       core_models__ops__arith__f_add(res1, res2).
+
+letfun new_tests__legacy__lean_tests__lib__test_before_verbatime_single_line(
+         x : nat
+       ) =
+       42.
+
+letfun new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line(
+         x : nat
+       ) =
+       32.
+
+const new_tests__legacy__lean_tests__lib__v_NULL_CHAR: bitstring.
+
+letfun new_tests__legacy__lean_tests__lib__string_escapes(wildcard77 : bitstring
+       ) =
+       let e_empty = ("") in
+       let e_plain = ("hello world") in
+       let e_with_quotes = ("she said "hello"") in
+       let e_with_single_quote = ("it's fine") in
+       let e_with_backslash = ("path\to\file") in
+       let e_with_newline = ("line1
+line2") in
+       let e_with_tab = ("col1	col2") in
+       let e_with_carriage_return = ("beforeafter") in
+       let e_mixed = ("say "hello"
+and	'goodbye'\end") in
+       let e_carriage_return = ("carriagereturn") in
+       let e_control_chars = ("null byte bellchar font[0mreset") in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__nested_control_flow__nested_control_flow(
+         wildcard78 : bitstring
+       ) =
+       let x1 = (core_models__ops__arith__f_add(1, if true then (0) else (1))) in
+       let x2 = (core_models__ops__arith__f_add(1, 0)) in
+       let x = (9) in
+       let x3 = (
+         core_models__ops__arith__f_add(1, core_models__ops__arith__f_add(x, 1))
+       ) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__nested_control_flow__explicit_hoisting(
+         wildcard79 : bitstring
+       ) =
+       let x1_tmp = (if true then (0) else (1)) in
+       let x1 = (core_models__ops__arith__f_add(1, x1_tmp)) in
+       let x2_tmp = (0) in
+       let x2 = (core_models__ops__arith__f_add(1, x2_tmp)) in
+       let x3_tmp_x = (9) in
+       let x3_tmp = (core_models__ops__arith__f_add(x3_tmp_x, 1)) in
+       let x3 = (core_models__ops__arith__f_add(1, x3_tmp)) in
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__nested_control_flow__complex_nesting(
+         wildcard80 : bitstring
+       ) =
+       let x1 = (
+         if true
+         then
+           (let y = (
+              if false
+              then
+                (let z = (9) in
+                 let z = (core_models__ops__arith__f_add(1, z)) in
+                 core_models__ops__arith__f_add(z, 1))
+              else (
+                let z = (9) in
+                let z = (core_models__ops__arith__f_add(z, 1)) in
+                z
+              )
+            ) in
+            let y = (core_models__ops__arith__f_add(y, 1)) in
+            core_models__ops__arith__f_add(y, 1))
+         else (0)
+       ) in
+       let x1 = (core_models__ops__arith__f_add(x1, 1)) in
+       let x2 = (
+         let Some(nat_to_bitstring(a)) = Some(nat_to_bitstring(89)) in (
+           let y = (core_models__ops__arith__f_add(1, a)) in
+           let y = (core_models__ops__arith__f_add(y, 1)) in
+           if core_models__cmp__f_eq(y, 0)
+           then
+             (let z = (9) in
+              let z = (
+                core_models__ops__arith__f_add(
+                  core_models__ops__arith__f_add(z, y), 1
+                )
+              ) in
+              z)
+           else (10)
+         )
+         else let None() = Some(nat_to_bitstring(89)) in (
+           let y = (
+             if false
+             then (9)
+             else (
+               let z = (9) in
+               let z = (core_models__ops__arith__f_add(z, 1)) in
+               core_models__ops__arith__f_add(z, 9)
+             )
+           ) in
+           let y = (core_models__ops__arith__f_add(y, 1)) in
+           y
+         )
+       ) in
+       ((), ()).
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_const_matching(
+         x : nat, c : bitstring, s : bitstring, b : bool
+       ) =
+       let x = (
+         let (=0) = x in 42
+         else 0
+       ) in
+       let c = (
+         let (=`a`) = c in 42
+         else 0
+       ) in
+       let s = (
+         let (="Hello") = s in 42
+         else 0
+       ) in
+       let b = (
+         let (=true) = b in 42
+         else let (=false) = b in 0
+       ) in
+       let hoist6 = (todo return;) in
+       nat_err().
+
+letfun new_tests__legacy__lean_tests__lib__matching__test_binding_subpattern_matching(
+         x : bitstring
+       ) =
+       rust_primitives__hax__failure(
+         "Explicit rejection by a phase in the Hax engine:
+a node of kind [As_pattern] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+         "(match (x) {
+ Tuple2(0, pair @ Tuple2(a, b)) => {
+ core_models::ops::arith::f_add(
+ core_models::ops::arith::f_add(
+ core_models::ops::arith::f_add(a, b),
+ proj_proj_tuple0(pair),
+ ),
+ proj_proj_tuple..."
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__ite__test1(wildcard81 : bitstring) =
+       let x = (if true then (0) else (1)) in
+       if false then (2) else (3).
+
+letfun new_tests__legacy__lean_tests__lib__ite__test2(b : bool) =
+       let x = (if b then (0) else (9)) in
+       let y = (0) in
+       let y = (
+         if true
+         then
+           (core_models__ops__arith__f_add(
+              core_models__ops__arith__f_add(y, x), 1
+            ))
+         else (
+           core_models__ops__arith__f_sub(
+             core_models__ops__arith__f_sub(y, x), 1
+           )
+         )
+       ) in
+       if b
+       then
+         (let z = (core_models__ops__arith__f_add(y, y)) in
+          core_models__ops__arith__f_add(core_models__ops__arith__f_add(z, y), x
+          ))
+       else (
+         let z = (core_models__ops__arith__f_sub(y, x)) in
+         core_models__ops__arith__f_add(core_models__ops__arith__f_add(z, y), x)
+       ).
+
+letfun new_tests__legacy__lean_tests__lib__comments__f(wildcard82 : bitstring) =
+       ().
+
+letfun new_tests__legacy__lean_tests__lib__comments__heavily_documented(
+         wildcard83 : bitstring
+       ) =
+       4.
+

@@ -8,9 +8,14 @@ import Hax.rust_primitives
 
 namespace core.clone
 
-class Clone (Self : Type) where
+class Clone.AssociatedTypes (Self : Type) where
 
-def Clone.clone {Self: Type} : Self -> RustM Self :=
-  fun x => pure x
+class Clone (Self : Type) [associatedTypes : outParam (Clone.AssociatedTypes (Self : Type))] where
+  clone (Self) : (Self -> RustM Self)
+
+@[reducible] instance Impl.AssociatedTypes (T : Type) : Clone.AssociatedTypes T where
+
+instance Impl (T : Type) : Clone T where
+  clone x := pure x
 
 end core.clone

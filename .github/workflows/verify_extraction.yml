@@ -1,0 +1,46 @@
+name: Test backend verification
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  tests:
+    name: nix-action
+    runs-on: linux
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DeterminateSystems/nix-installer-action@main
+    - uses: cachix/cachix-action@v15
+      with:
+        name: hax
+        skipPush: true
+        extraPullNames: fstar-nix-versions, z3-nix-versions
+
+    - name: Install the toolchain
+      run: |
+        nix profile install nixpkgs#yq
+        nix profile install .#rustc
+        nix profile install .
+
+    - name: Verify F* tests
+      run: |
+        nix develop .#ci-examples --command just test -b fstar -j 1
+
+    - name: Verify Lean tests
+      run: |
+        nix develop .#ci-examples --command bash -c \
+          "elan default \$(cat hax-lib/proof-libs/lean/lean-toolchain) && lake build --dir hax-lib/proof-libs/lean && just test -b lean"
+
+    - name: Try to extract Rust By Examples
+      run: |
+        nix build .#rust-by-example-hax-extraction -L
+
+    - name: Test the examples
+      run: |
+        cd examples
+        nix develop ..#ci-examples --command make clean
+        nix develop ..#ci-examples --command make
