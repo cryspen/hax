@@ -23,10 +23,7 @@ class rust_primitives.hax.folds {int_type: Type} where
     (s e : int_type)
     (inv : α -> int_type -> RustM Prop)
     (init: α)
-    (body : α -> int_type -> RustM α)
-    (pureInv:
-        {i : α -> int_type -> Prop // ∀ a b, ⦃⌜ True ⌝⦄ inv a b ⦃⇓ r => ⌜ r = (i a b) ⌝⦄} := by
-      set_option hax_mvcgen.specset "bv" in hax_construct_pure <;> bv_decide) :
+    (body : α -> int_type -> RustM α) :
     RustM α
   /-- Encoding of Rust for-loops with early returns -/
   fold_range_return  {α_acc α_ret : Type}
@@ -34,10 +31,7 @@ class rust_primitives.hax.folds {int_type: Type} where
     (inv : α_acc -> int_type -> RustM Prop)
     (init: α_acc)
     (body : α_acc -> int_type ->
-      RustM (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc ))
-    (pureInv:
-        {i : α_acc -> int_type -> Prop // ∀ a b, ⦃⌜ True ⌝⦄ inv a b ⦃⇓ r => ⌜ r = (i a b) ⌝⦄} := by
-      set_option hax_mvcgen.specset "bv" in hax_construct_pure <;> bv_decide) :
+      RustM (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc )):
     RustM (ControlFlow α_ret α_acc)
 
 attribute [spec] rust_primitives.hax.folds.fold_range
@@ -58,10 +52,9 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
         (inv : α -> $typeName -> RustM Prop)
         (init: α)
         (body : α -> $typeName -> RustM α)
-        (pureInv: {i : α -> $typeName -> Prop // ∀ a b, ⦃⌜ True ⌝⦄ inv a b ⦃⇓ r => ⌜ r = (i a b) ⌝⦄})
         : RustM α := do
         if s < e
-        then fold_range (s + 1) e inv (← body init s) body pureInv
+        then fold_range (s + 1) e inv (← body init s) body
         else pure init
     termination_by (e - s)
     decreasing_by
@@ -74,8 +67,7 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
         (inv : α_acc -> $typeName -> RustM Prop)
         (init: α_acc)
         (body : α_acc -> $typeName ->
-          RustM (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc ))
-        (pureInv: {i : α_acc -> $typeName -> Prop // ∀ a b, ⦃⌜ True ⌝⦄ inv a b ⦃⇓ r => ⌜ r = (i a b) ⌝⦄}) := do
+          RustM (ControlFlow (ControlFlow α_ret (Tuple2 Tuple0 α_acc)) α_acc )) := do
       if s < e
       then
         match (← body init s) with
@@ -84,7 +76,7 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
         -- Rust: `break`
         | .Break (.Continue ⟨ ⟨ ⟩, res⟩) => pure (ControlFlow.Continue res)
         -- Rust: `continue`
-        | .Continue res => fold_range_return (s + 1) e inv res body pureInv
+        | .Continue res => fold_range_return (s + 1) e inv res body
       else
         pure (ControlFlow.Continue init)
     termination_by (e - s)
@@ -102,21 +94,20 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
     theorem $(mkIdent (s!"rust_primitives.hax.folds.fold_range_spec_bv_{typeName.getId}").toName) {α}
       (s e : $typeName)
       (inv : α -> $typeName -> RustM Prop)
-      (pureInv)
       (init: α)
       (body : α -> $typeName -> RustM α) :
       s ≤ e →
-      pureInv.val init s →
+      (inv init s).holds →
       (∀ (acc : α) (i : $typeName),
         s ≤ i →
         i < e →
-        pureInv.val acc i →
+        (inv acc i).holds →
         ⦃ ⌜ True ⌝ ⦄
         (body acc i)
-        ⦃ ⇓ res => ⌜ pureInv.val res (i+1) ⌝ ⦄) →
+        ⦃ ⇓ res => ⌜ (inv res (i+1)).holds ⌝ ⦄) →
       ⦃ ⌜ True ⌝ ⦄
-      ($(tyDot `fold_range) s e inv init body pureInv)
-      ⦃ ⇓ r => ⌜ pureInv.val r e ⌝ ⦄
+      ($(tyDot `fold_range) s e inv init body)
+      ⦃ ⇓ r => ⌜ (inv r e).holds ⌝ ⦄
     := by
       intro h_le h_inv_s h_body
       unfold $(tyDot `fold_range)
@@ -136,21 +127,20 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
     theorem $(mkIdent (s!"rust_primitives.hax.folds.fold_range_spec_int_{typeName.getId}").toName) {α}
         (s e : $typeName)
         (inv : α -> $typeName -> RustM Prop)
-        (pureInv)
         (init: α)
         (body : α -> $typeName -> RustM α) :
         s.toNat ≤ e.toNat →
-        pureInv.val init s →
+        (inv init s).holds →
         (∀ (acc : α) (i : $typeName),
           s.toNat ≤ i.toNat →
           i.toNat < e.toNat →
-          pureInv.val acc i →
+          (inv acc i).holds →
           ⦃ ⌜ True ⌝ ⦄
           (body acc i)
-          ⦃ ⇓ res => ⌜ pureInv.val res (i+1) ⌝ ⦄) →
+          ⦃ ⇓ res => ⌜ (inv res (i+1)).holds ⌝ ⦄) →
         ⦃ ⌜ True ⌝ ⦄
-        ($(tyDot `fold_range) s e inv init body pureInv)
-        ⦃ ⇓ r => ⌜ pureInv.val r e ⌝ ⦄ := by
+        ($(tyDot `fold_range) s e inv init body)
+        ⦃ ⇓ r => ⌜ (inv r e).holds ⌝ ⦄ := by
       apply $(mkIdent (s!"rust_primitives.hax.folds.fold_range_spec_bv_{typeName.getId}").toName)
 
   )

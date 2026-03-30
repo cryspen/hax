@@ -17,6 +17,8 @@ namespace loop_equivalence
 @[spec]
 def op (u : u64) : RustM u64 := do (u /? (2 : u64))
 
+attribute [spec] rust_primitives.cmp.UInt64.eq_spec
+
 def f (N : usize) (arr : (RustArray u64 N)) : RustM (RustArray u64 N) := do
   let _initial : (RustArray u64 N) ←
     (core_models.clone.Clone.clone (RustArray u64 N) arr);
@@ -105,36 +107,83 @@ theorem triple_implies {f : RustM α} {Q : _ → _} {p} :
   (⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ Q r → p ⌝ ⦄) →
   ((⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓r =>  ⌜ Q r ⌝ ⦄) → p) := by sorry
 
+attribute [local grind! .] USize64.toNat_lt_size
+
 set_option hax_mvcgen.specset "int"
 set_option maxHeartbeats 1_000_000
 theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
     (do pure True : RustM _ ).holds →
-    ⦃ ⌜ True ⌝ ⦄ (g N arr) ⦃ ⇓
-       arr_future => ⌜
+    ⦃ ⌜ True ⌝ ⦄
+    (g N arr)
+    ⦃ ⇓ arr_future => ⌜
          (do arr_future ==? (← (f N arr)): RustM _ ).holds ⌝ ⦄
  := by
-   unfold RustM.holds
    intro h_pre
-   hax_mvcgen [g] <;> (try grind [RustM.holds]) <;> unfold RustM.holds at *
+   hax_mvcgen [g] <;> try grind
    · intros
-     mvcgen <;> try grind
-   · sorry -- integer overflow
-   · sorry -- integer overflow
-   · sorry -- integer overflow
-   · sorry -- integer overflow
-   · sorry -- integer overflow
-   · sorry -- integer overflow
+     hax_mvcgen <;> try grind
    · -- loop step in g
-     sorry
+     hax_mvcgen <;> try grind
+     intro j
+     hax_mvcgen <;> try grind [USize64.toNat_add_of_lt] -- for-spec unfortunately contains a i+1 on machine ints
+     · -- j < 2 * i + 1
+      simp [BEq.beq]
+      expose_names
+      rw [USize64.toNat_add_of_lt (by grind)] at h_16
+      have : j.toNat < 2 * (i.toNat + 1) := by grind
+      apply triple_implies _ h_3
+      hax_mvcgen
+      intros ht
+      apply triple_implies _ (ht j) <;> clear ht
+      hax_mvcgen <;> try grind
+      · -- j < 2 * i
+        have : j.toNat < 2 * i.toNat := by grind
+        simp [BEq.beq]
+        rw [Vector.getElem_set_ne] at h_18
+        rw [Vector.getElem_set_ne] at h_18
+        grind
+        grind
+        grind
+      · -- j ≥ 2 * i
+        simp [BEq.beq]
+        rw [Vector.getElem_set] at h_18
+        rw [Vector.getElem_set] at h_18
+        rw [Vector.getElem_set_ne] at h_13
+        subst_vars
+        have : j = r_6 ∨ j = r_1 := by grind
+        cases this
+        subst_vars
+        simp
+        grind
+        grind
+        grind
+     · -- j ≥ 2 * (i + 1)
+      expose_names
+      apply triple_implies _ h_3
+      hax_mvcgen
+      intros ht
+      apply triple_implies _ (ht j) <;> clear ht
+      hax_mvcgen <;> try grind
+      · grind [USize64.toNat_add_of_lt]
+      · rw [USize64.toNat_add_of_lt (by grind)] at h_16
+        rw [Vector.getElem_set_ne] at h_19
+        rw [Vector.getElem_set_ne] at h_19
+        simp [BEq.beq]
+        intro h
+        subst_vars
+        grind
+        grind
+        grind
    · -- post-condition if N % 2 > 0 (then-branch)
-     hax_mvcgen [f] <;> (try grind [RustM.holds]) <;> unfold RustM.holds at *
+     hax_mvcgen [f] <;> try grind
 
      · -- [f] loop-invariant at the start of loop
        intros
-       hax_mvcgen <;> (try grind [RustM.holds]) <;> unfold RustM.holds at *
+       hax_mvcgen <;> try grind
 
      · -- prove that f's loop invariant holds at i + 1 after the body
        expose_names
+       hax_mvcgen <;> try grind
        intro j
        hax_mvcgen <;> try grind
        · -- j ≤ i
@@ -144,16 +193,26 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
            rw [ ← UInt64.toNat_div,
               UInt64.toNat_inj] at h_13
            simp
-           apply triple_implies _ (h_11 j)
+           apply triple_implies _ h_11
+           hax_mvcgen <;> try grind
+           intros ht
+           apply triple_implies _ (ht j)
            hax_mvcgen <;> try grind
          · subst_vars
            rw [Vector.getElem_set_ne] <;> try grind
-           apply triple_implies _ (h_11 j)
+           apply triple_implies _ h_11
+           intros
+           hax_mvcgen <;> try grind
+           intros ht
+           apply triple_implies _ (ht j)
            hax_mvcgen <;> try grind
        · -- j > i
          subst_vars
          rw [Vector.getElem_set_ne] <;> try grind
-         apply triple_implies _ (h_11 j)
+         apply triple_implies _ h_11
+         hax_mvcgen <;> try grind
+         intros ht
+         apply triple_implies _ (ht j)
          hax_mvcgen <;> try grind
          -- j > N trivially true
 
@@ -161,48 +220,33 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        expose_names
        simp [BEq.beq]
        ext i
-       apply triple_implies _ (h_9 (USize64.ofNat i)) <;> clear h_9
+       apply triple_implies _ h_9 <;> clear h_9
+       hax_mvcgen
+       intros ht
+       apply triple_implies _ (ht (USize64.ofNat i))
        hax_mvcgen <;> try grind
        · intro
-         apply triple_implies _ (h_1 (USize64.ofNat i)) <;> clear h_1
+         apply triple_implies _ (h_1) <;> clear h_1
+         hax_mvcgen
+         intros ht
+         apply triple_implies _ (ht (USize64.ofNat i))
          hax_mvcgen <;> try grind
          · intro
            subst_vars
            rw [Vector.getElem_set]
            split <;> try grind
-           · subst_vars
-             simp_all only [beq_iff_eq, USize64.toNat_inj]
-             rw [← USize64.toNat_sub_of_le] at * <;> try grind
-             expose_names
-             simp_all!
-             grind
-           · subst_vars
-             simp_all!
-             suffices (i = i % 18446744073709551616) by grind
-             grind
-         · have : (2*r + 1 = N) := by grind
-           simp_all only [decide_eq_true_iff.mp]
-           have : (i ≥ (N - 1).toNat) := by
-             simp
-             rw [ show (N-1) = 2*r by grind]
-             simp [decide_eq_false_iff_not.mp] at *
-             expose_names
-             have : 2 * r.toNat = 2 * r.toNat % 18446744073709551616 := by grind
-             rw [← this]
-             -- clearly true
-             sorry
-           have : (i = (N - 1).toNat) := by sorry
-           -- clearly true
-           sorry
-       · sorry -- i < N and i > N
-
+         · intro
+           subst_vars
+           rw [Vector.getElem_set]
+           split <;> try grind
    · -- post-condition if N % 2 = 0 (else-branch)
-     hax_mvcgen [f] <;> (try grind [RustM.holds]) <;> unfold RustM.holds at *
+     hax_mvcgen [f] <;> try grind
      · -- [f] loop-invariant at the start of loop
        intros
-       hax_mvcgen <;> (try grind [RustM.holds]) <;> unfold RustM.holds at *
+       hax_mvcgen <;> try grind
      · -- prove that f's loop invariant holds at i + 1 after the body
        expose_names
+       hax_mvcgen <;> try grind
        intro j
        hax_mvcgen <;> try grind
        · -- j ≤ i
@@ -212,16 +256,25 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
            rw [ ← UInt64.toNat_div,
               UInt64.toNat_inj] at h_8
            simp
-           apply triple_implies _ (h_6 j)
+           apply triple_implies _ h_6
+           hax_mvcgen
+           intros ht
+           apply triple_implies _ (ht j)
            hax_mvcgen <;> try grind
          · subst_vars
            rw [Vector.getElem_set_ne] <;> try grind
-           apply triple_implies _ (h_6 j)
+           apply triple_implies _ h_6
+           hax_mvcgen
+           intros ht
+           apply triple_implies _ (ht j)
            hax_mvcgen <;> try grind
        · -- j > i
          subst_vars
          rw [Vector.getElem_set_ne] <;> try grind
-         apply triple_implies _ (h_6 j)
+         apply triple_implies _ h_6
+         hax_mvcgen
+         intros ht
+         apply triple_implies _ (ht j)
          hax_mvcgen <;> try grind
          -- j > N trivially true
      · -- post-condition implied by [f] loop invariant at the end of the loop
@@ -234,13 +287,14 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        expose_names
        suffices toVec = toVec_1 by grind
        ext i
-       apply triple_implies _ (h_4 (USize64.ofNat i))
+       apply triple_implies _ h_4
+       hax_mvcgen
+       intros ht
+       apply triple_implies _ (ht (USize64.ofNat i))
        hax_mvcgen <;> try grind
        · intro
-         apply triple_implies _ (h_1 (USize64.ofNat i))
+         apply triple_implies _ h_1
+         hax_mvcgen
+         intros ht
+         apply triple_implies _ (ht (USize64.ofNat i))
          hax_mvcgen <;> try grind
-         intro
-         subst_vars
-         simp_all
-         grind
-       · sorry -- i < N and i > N
