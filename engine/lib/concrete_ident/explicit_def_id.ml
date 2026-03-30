@@ -96,7 +96,6 @@ let is_anon_assoc_ty did =
     Some ({ data = AnonAssocTy _; _ } : Types.disambiguated_def_path_item)]
     (List.last (to_def_id did).path)
 
-
 module ToRustAST = struct
   module A = Types
   module B = Rust_engine_types
