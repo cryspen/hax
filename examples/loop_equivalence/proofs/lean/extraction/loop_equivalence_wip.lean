@@ -2,6 +2,7 @@
 -- Experimental lean backend for Hax
 -- The Hax prelude library can be found in hax/proof-libs/lean
 import Hax
+import Hax.Tactic.HaxMvcgenAt
 import Std.Tactic.Do
 import Std.Do.Triple
 import Std.Tactic.Do.Syntax
