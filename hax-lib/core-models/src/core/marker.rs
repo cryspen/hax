@@ -1,5 +1,6 @@
 use super::clone::Clone;
 
+#[hax_lib::lean::after("attribute [-instance] core_models.marker.Copy.trait_constr_Copy_i0")]
 pub trait Copy: Clone {}
 pub trait Send {}
 pub trait Sync {}
