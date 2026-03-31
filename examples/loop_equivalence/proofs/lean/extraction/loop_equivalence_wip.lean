@@ -17,8 +17,6 @@ namespace loop_equivalence
 @[spec]
 def op (u : u64) : RustM u64 := do (u /? (2 : u64))
 
-attribute [spec] rust_primitives.cmp.UInt64.eq_spec
-
 def f (N : usize) (arr : (RustArray u64 N)) : RustM (RustArray u64 N) := do
   let _initial : (RustArray u64 N) ←
     (core_models.clone.Clone.clone (RustArray u64 N) arr);
@@ -107,6 +105,13 @@ theorem triple_implies {f : RustM α} {Q : _ → _} {p} :
   (⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ Q r → p ⌝ ⦄) →
   ((⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓r =>  ⌜ Q r ⌝ ⦄) → p) := by sorry
 
+
+@[specset int]
+def eq_spec (x y : RustArray u64 n) :
+  ⦃ ⌜ True ⌝ ⦄
+  (x ==? y)
+  ⦃ ⇓ r => ⌜ r = (∀ i (hi : i < n.toNat), x.toVec[i] == y.toVec[i]) ⌝ ⦄ := sorry
+
 attribute [local grind! .] USize64.toNat_lt_size
 
 set_option hax_mvcgen.specset "int"
@@ -119,18 +124,15 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
          (do arr_future ==? (← (f N arr)): RustM _ ).holds ⌝ ⦄
  := by
    intro h_pre
-   hax_mvcgen [g] <;> try grind
+   hax_mvcgen [g, -rust_primitives.cmp.eq] <;> try grind
    · intros
      hax_mvcgen <;> try grind
    · -- loop step in g
      hax_mvcgen <;> try grind
      intro j
-     hax_mvcgen <;> try grind [USize64.toNat_add_of_lt] -- for-spec unfortunately contains a i+1 on machine ints
+     hax_mvcgen <;> try grind
      · -- j < 2 * i + 1
-      simp [BEq.beq]
       expose_names
-      rw [USize64.toNat_add_of_lt (by grind)] at h_16
-      have : j.toNat < 2 * (i.toNat + 1) := by grind
       apply triple_implies _ h_3
       hax_mvcgen
       intros ht
@@ -138,16 +140,14 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       hax_mvcgen <;> try grind
       · -- j < 2 * i
         have : j.toNat < 2 * i.toNat := by grind
-        simp [BEq.beq]
-        rw [Vector.getElem_set_ne] at h_18
-        rw [Vector.getElem_set_ne] at h_18
+        rw [Vector.getElem_set_ne] at h_19
+        rw [Vector.getElem_set_ne] at h_19
         grind
         grind
         grind
       · -- j ≥ 2 * i
-        simp [BEq.beq]
-        rw [Vector.getElem_set] at h_18
-        rw [Vector.getElem_set] at h_18
+        rw [Vector.getElem_set] at h_19
+        rw [Vector.getElem_set] at h_19
         rw [Vector.getElem_set_ne] at h_13
         subst_vars
         have : j = r_6 ∨ j = r_1 := by grind
@@ -164,18 +164,15 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
       intros ht
       apply triple_implies _ (ht j) <;> clear ht
       hax_mvcgen <;> try grind
-      · grind [USize64.toNat_add_of_lt]
-      · rw [USize64.toNat_add_of_lt (by grind)] at h_16
-        rw [Vector.getElem_set_ne] at h_19
-        rw [Vector.getElem_set_ne] at h_19
-        simp [BEq.beq]
+      · rw [Vector.getElem_set_ne] at h_20
+        rw [Vector.getElem_set_ne] at h_20
         intro h
         subst_vars
         grind
         grind
         grind
    · -- post-condition if N % 2 > 0 (then-branch)
-     hax_mvcgen [f] <;> try grind
+     hax_mvcgen [f, -rust_primitives.cmp.eq] <;> try grind
 
      · -- [f] loop-invariant at the start of loop
        intros
@@ -189,10 +186,6 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
        · -- j ≤ i
          by_cases (j = i)
          · subst_vars
-           rw [Vector.getElem_set_self]
-           rw [ ← UInt64.toNat_div,
-              UInt64.toNat_inj] at h_13
-           simp
            apply triple_implies _ h_11
            hax_mvcgen <;> try grind
            intros ht
@@ -218,8 +211,8 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
 
      · -- post-condition implied by [f] loop invariant at the end of the loop
        expose_names
-       simp [BEq.beq]
-       ext i
+       simp only [h_10, beq_iff_eq]
+       intros i hi
        apply triple_implies _ h_9 <;> clear h_9
        hax_mvcgen
        intros ht
@@ -279,9 +272,7 @@ theorem g.spec (N : usize) (arr : (RustArray u64 N)) :
          -- j > N trivially true
      · -- post-condition implied by [f] loop invariant at the end of the loop
        expose_names
-       suffices r_1 = r_3 by
-         rw [this]
-         simp [BEq.beq]
+       simp only [h_5, beq_iff_eq]
        cases r_1
        cases r_3
        expose_names

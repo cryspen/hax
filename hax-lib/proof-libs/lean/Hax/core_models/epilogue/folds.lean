@@ -89,6 +89,16 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
       fold_range := $(tyDot `fold_range)
       fold_range_return := $(tyDot `fold_range_return)
 
+    private theorem $(tyDot `checked_add_one_of_lt) {i e : $typeName} (h : i < e) :
+        (i +? (1 : $typeName) : RustM $typeName) = pure (i + 1) := by
+      show (if $(tyDot `addOverflow) i 1 then _ else _) = _
+      rw [if_neg (show ¬ $(tyDot `addOverflow) i (1 : $typeName) from by
+        rw [$(tyRw `addOverflow_iff)]
+        have : i.toNat < e.toNat := h
+        have := $(tyDot `toNat_lt) e
+        have : (1 : $typeName).toNat = 1 := by decide
+        omega)]
+
     /-- Specification of Rust for-loops without early returns (for bv_decide) -/
     @[specset bv]
     theorem $(mkIdent (s!"rust_primitives.hax.folds.fold_range_spec_bv_{typeName.getId}").toName) {α}
@@ -104,7 +114,7 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
         (inv acc i).holds →
         ⦃ ⌜ True ⌝ ⦄
         (body acc i)
-        ⦃ ⇓ res => ⌜ (inv res (i+1)).holds ⌝ ⦄) →
+        ⦃ ⇓ res => ⌜ (do let i ← i +? 1; inv res i).holds ⌝ ⦄) →
       ⦃ ⌜ True ⌝ ⦄
       ($(tyDot `fold_range) s e inv init body)
       ⦃ ⇓ r => ⌜ (inv r e).holds ⌝ ⦄
@@ -114,6 +124,8 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
       mvcgen
       · mstart
         mspec h_body _ _ ($(tyDot `le_refl) s) (by assumption) h_inv_s
+        have h_add := $(tyDot `checked_add_one_of_lt) (show s < e from by assumption)
+        simp only [h_add, pure_bind] at *
         mspec $(mkIdent (s!"rust_primitives.hax.folds.fold_range_spec_bv_{typeName.getId}").toName)
           <;> grind
       · grind
@@ -137,7 +149,7 @@ macro "declare_fold_specs" s:(&"signed" <|> &"unsigned") typeName:ident width:te
           (inv acc i).holds →
           ⦃ ⌜ True ⌝ ⦄
           (body acc i)
-          ⦃ ⇓ res => ⌜ (inv res (i+1)).holds ⌝ ⦄) →
+          ⦃ ⇓ res => ⌜ (do let i ← i +? 1; inv res i).holds ⌝ ⦄) →
         ⦃ ⌜ True ⌝ ⦄
         ($(tyDot `fold_range) s e inv init body)
         ⦃ ⇓ r => ⌜ (inv r e).holds ⌝ ⦄ := by
