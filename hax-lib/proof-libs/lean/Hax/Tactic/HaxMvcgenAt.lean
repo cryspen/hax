@@ -25,16 +25,6 @@ theorem haxAdd_spec {x y : u64} :
 
 
 open Elab Tactic Meta
-
-/-- Nest multiple `withLocalDeclD` calls, passing all created fvars to the continuation. -/
-private partial def withLocalDeclsArray (decls : Array (Name × Expr))
-    (k : Array Expr → MetaM α) (i : Nat := 0) (acc : Array Expr := #[]) : MetaM α :=
-  if h : i < decls.size then
-    let (n, t) := decls[i]
-    withLocalDeclD n t fun f => withLocalDeclsArray decls k (i + 1) (acc.push f)
-  else
-    k acc
-
 set_option hygiene false in
 elab "hax_mvcgen" "at" h:ident : tactic => do
   let mainGoal ← getMainGoal
@@ -98,8 +88,8 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
         let mvarInst ← goal.withContext do
           withLocalDeclD `p (mkSort .zero) fun p => do
             let fDeclsNamed := (Array.range allFTypeAbs.size).map fun i =>
-              (Name.mkSimple s!"f{i + 1}", allFTypeAbs[i]!.beta #[p])
-            withLocalDeclsArray fDeclsNamed fun fs => do
+              (Name.mkSimple s!"f{i + 1}", fun _ : Array Expr => pure (allFTypeAbs[i]!.beta #[p]))
+            withLocalDeclsD fDeclsNamed fun fs => do
               mkLambdaFVars (#[p] ++ fs) (mkAppN fs[idx]! fArgs.toArray)
         pure (goal, mvarInst)
 
