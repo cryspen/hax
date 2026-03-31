@@ -51,12 +51,21 @@ elab "hax_mvcgen" "at" h:ident : tactic => do
     let .some lastDecl := lctx.findDeclRev? (fun decl => some decl)
       | Lean.Meta.throwTacticEx `hax_mvcgen goal (m!"Unexpected empty local context")
 
+    logInfo m!"{goal}"
+
     goal.withContext do
       let lctx ← getLCtx
       let mvarInst ← lctx.foldrM
         fun decl acc => do
           if decl.index <= lastDecl.index
           then pure acc
+          else if (← inferType decl.type).isProp then
+            if acc.isAppOf ``True.intro then
+              pure (mkFVar decl.fvarId)
+            else
+              pure (← mkAppM ``And.intro #[
+                mkFVar decl.fvarId,
+                acc])
           else
             pure (← mkAppOptM ``Exists.intro #[
               decl.type,
