@@ -12,6 +12,13 @@ theorem triple_in_hypothesis {f : RustM α} {Q : α → Assertion _} (p : Prop)
   (hp : ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => Q r → ⌜ p ⌝ ⦄) :
 p := sorry
 
+/-- For any `f` and postcondition `Q`, if `f` returns `r` satisfying `Q r`,
+then `f` satisfies the noThrow triple with postcondition `Q`.
+This holds for non-diverging `f` (which is guaranteed when the original triple is valid). -/
+theorem wp_self_implication (f : RustM α) (Q : α → Assertion (.except Error .pure)) :
+    ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓? r => ⟨ (Q r).down → ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓ r => Q r ⦄ ⟩ ⦄ := by
+  sorry
+
 #check PostCond
 
 -- @[specset int]
