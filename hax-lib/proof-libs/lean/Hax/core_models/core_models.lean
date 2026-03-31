@@ -673,11 +673,13 @@ opaque drop (T : Type) (_x : T) : RustM rust_primitives.hax.Tuple0
 @[spec]
 def copy
     (T : Type)
-    [trait_constr_copy_associated_type_i0 : core.marker.Copy.AssociatedTypes T]
-    [trait_constr_copy_i0 : core.marker.Copy T ]
+    [trait_constr_copy_associated_type_i0 :
+      core_models.marker.Copy.AssociatedTypes
+      T]
+    [trait_constr_copy_i0 : core_models.marker.Copy T ]
     (x : T) :
     RustM T := do
-  (pure x)
+  (rust_primitives.mem.copy T x)
 
 opaque take (T : Type) (x : T) : RustM (rust_primitives.hax.Tuple2 T T)
 
@@ -2317,6 +2319,20 @@ class BitAnd (Self : Type) (Rhs : Type)
       Type))]
   where
   bitand (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
+
+class BitOr.AssociatedTypes (Self : Type) (Rhs : Type) where
+  Output : Type
+
+attribute [reducible] BitOr.AssociatedTypes.Output
+
+abbrev BitOr.Output :=
+  BitOr.AssociatedTypes.Output
+
+class BitOr (Self : Type) (Rhs : Type)
+  [associatedTypes : outParam (BitOr.AssociatedTypes (Self : Type) (Rhs :
+      Type))]
+  where
+  bitor (Self) (Rhs) : (Self -> Rhs -> RustM associatedTypes.Output)
 
 end core_models.ops.bit
 
